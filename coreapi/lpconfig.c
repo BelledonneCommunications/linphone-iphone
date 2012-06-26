@@ -277,6 +277,18 @@ int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, i
 	else return default_value;
 }
 
+int64_t lp_config_get_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
+	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
+	if (str!=NULL) {
+#ifdef WIN32
+		return (int64_t)_atoi64(str);
+#else
+		return atoll(str);
+#endif
+	}
+	else return default_value;
+}
+
 float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *key, float default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	float ret=default_value;
@@ -311,6 +323,13 @@ void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, 
 	snprintf(tmp,sizeof(tmp),"%i",value);
 	lp_config_set_string(lpconfig,section,key,tmp);
 }
+
+void lp_config_set_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t value){
+	char tmp[30];
+	snprintf(tmp,sizeof(tmp),"%lli",(long long)value);
+	lp_config_set_string(lpconfig,section,key,tmp);
+}
+
 
 void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key, float value){
 	char tmp[30];

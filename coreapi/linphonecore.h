@@ -155,6 +155,7 @@ typedef struct _LinphoneCallLog{
 	float quality;
     int video_enabled;
 	struct _LinphoneCore *lc;
+	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 } LinphoneCallLog;
 
 

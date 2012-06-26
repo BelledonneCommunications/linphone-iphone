@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define _GNU_SOURCE
+
 #include "linphonecore.h"
 #include "sipsetup.h"
 #include "lpconfig.h"
@@ -85,23 +87,24 @@ static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct t
 #endif /*_WIN32_WCE*/
 }
 
-static void set_call_log_date(LinphoneCallLog *cl, const struct tm *loctime){
-	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",loctime);
+static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
+	struct tm loctime;
+#ifdef WIN32
+#if !defined(_WIN32_WCE)
+	loctime=*localtime(&start_time);
+	/*FIXME*/
+#endif /*_WIN32_WCE*/
+#else
+	localtime_r(&start_time,&loctime);
+#endif
+	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",&loctime);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
-	struct tm loctime;
 	cl->dir=call->dir;
-#ifdef WIN32
-#if !defined(_WIN32_WCE)
-	loctime=*localtime(&call->start_time);
-	/*FIXME*/
-#endif /*_WIN32_WCE*/
-#else
-	localtime_r(&call->start_time,&loctime);
-#endif
-	set_call_log_date(cl,&loctime);
+	cl->start_date_time=call->start_time;
+	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 	cl->to=to;
     cl->status=LinphoneCallAborted; /*default status*/
@@ -120,6 +123,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
+		lp_config_clean_section(cfg,logsection);
 		lp_config_set_int(cfg,logsection,"dir",cl->dir);
 		lp_config_set_int(cfg,logsection,"status",cl->status);
 		tmp=linphone_address_as_string(cl->from);
@@ -128,7 +132,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		tmp=linphone_address_as_string(cl->to);
 		lp_config_set_string(cfg,logsection,"to",tmp);
 		ms_free(tmp);
-		lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
+		lp_config_set_int64(cfg,logsection,"start_date_time",(int64_t)cl->start_date_time);
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
@@ -140,10 +144,17 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	}
 }
 
+static time_t string_to_time(const char *date){
+	struct tm tmtime={0};
+	strptime(date,"%c",&tmtime);
+	return mktime(&tmtime);
+}
+
 static void call_logs_read_from_config_file(LinphoneCore *lc){
 	char logsection[32];
 	int i;
 	const char *tmp;
+	uint64_t sec;
 	LpConfig *cfg=lc->config;
 	for(i=0;;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -155,8 +166,18 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->from=linphone_address_new(tmp);
 			tmp=lp_config_get_string(cfg,logsection,"to",NULL);
 			if (tmp) cl->to=linphone_address_new(tmp);
-			tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
-			if (tmp) strncpy(cl->start_date,tmp,sizeof(cl->start_date));
+			sec=lp_config_get_int64(cfg,logsection,"start_date_time",0);
+			if (sec) {
+				/*new call log format with date expressed in seconds */
+				cl->start_date_time=(time_t)sec;
+				set_call_log_date(cl,cl->start_date_time);
+			}else{
+				tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
+				if (tmp) {
+					strncpy(cl->start_date,tmp,sizeof(cl->start_date));
+					cl->start_date_time=string_to_time(cl->start_date);
+				}
+			}
 			cl->duration=lp_config_get_int(cfg,logsection,"duration",0);
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
