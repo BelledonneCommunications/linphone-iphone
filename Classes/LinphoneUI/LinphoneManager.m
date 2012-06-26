@@ -179,6 +179,8 @@ extern  void libmsbcg729_init();
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
+        case LinphoneCallPaused:
+        case LinphoneCallPausing:
         case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 			[callDelegate	displayInCall: call 
@@ -248,10 +250,20 @@ extern  void libmsbcg729_init();
 									  forUser:@"" 
 							  withDisplayName:@""];
             } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
+                call = linphone_core_get_current_call([LinphoneManager getLc]);
+                if(call) {
+                    const LinphoneCallParams* current = linphone_call_get_current_params(call);
+                    if (linphone_call_params_video_enabled(current)) {
+                        [callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                               forUser:lUserName 
+                                       withDisplayName:lDisplayName];
+                    } else {
+                        [callDelegate displayInCall:call 
+                                             FromUI:mCurrentViewController
+                                            forUser:lUserName 
+                                    withDisplayName:lDisplayName];
+                    }
+                }
 			}
 			break;
 		}
@@ -261,10 +273,20 @@ extern  void libmsbcg729_init();
 									  forUser:@"" 
 							  withDisplayName:@""];
             } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
+                call = linphone_core_get_current_call([LinphoneManager getLc]);
+                if(call) {
+                    const LinphoneCallParams* current = linphone_call_get_current_params(call);
+                    if (linphone_call_params_video_enabled(current)) {
+                        [callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                                forUser:lUserName 
+                                       withDisplayName:lDisplayName];
+                    } else {
+                        [callDelegate displayInCall:call 
+                                             FromUI:mCurrentViewController
+                                            forUser:lUserName 
+                                    withDisplayName:lDisplayName];
+                    }
+                }
 			}
 			break;
 		case LinphoneCallStreamsRunning:
