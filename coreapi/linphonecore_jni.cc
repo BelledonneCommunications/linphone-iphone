@@ -1209,7 +1209,7 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_takeSnapshot(	JNIEnv*  e
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_zoomVideo(		JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr, jfloat zoomFactor, jfloat cx, jfloat cy) {
-	linphone_call_zoom_video((LinphoneCall*)ptr, zoomFactor, cx, cy);
+	linphone_call_zoom_video((LinphoneCall*)ptr, zoomFactor, &cx, &cy);
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isIncoming(	JNIEnv*  env
