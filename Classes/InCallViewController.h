@@ -18,20 +18,18 @@
  */              
 
 #import <UIKit/UIKit.h>
-#import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
-#import "ConferenceCallDetailView.h"
-#import "UIVideoButton.h"
 #import "VideoZoomHandler.h"
-#import "UILinphone.h"
+#import "UICamSwitch.h"
 #import "CallDelegate.h"
 
-#include "linphonecore.h"
+#import "InCallTableViewController.h"
 
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CallActionSheetDelegate, UIGestureRecognizerDelegate> {
+@interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate> {
     
+    InCallTableViewController* callTableController;
     UITableView* callTableView;
     
     UIView* videoGroup;
@@ -41,37 +39,19 @@
     UIView* testVideoView;
 #endif
     UICamSwitch* videoCameraSwitch;
+    
     UIActivityIndicatorView* videoWaitingForFirstImage;
     
-    NSTimer *durationRefreasher;
-    NSTimer *glowingTimer;
-    
-    float glow;
-    NSIndexPath* activePath;
-	
-	ABPeoplePickerNavigationController* myPeoplePickerController;
-    
-    UITableViewCell* activeCallCell;
-    
-	VideoViewController* mVideoViewController;
-    ConferenceCallDetailView* conferenceDetail;
-    BOOL mVideoShown;
-	BOOL mVideoIsPending;
-    
-    UIImage* verified, *unverified;
-    UIActionSheet* visibleActionSheet;
-
     NSTimer* hideControlsTimer;
+    
+    BOOL videoShown;
     VideoZoomHandler* videoZoomHandler;
+    
+    UIActionSheet* visibleActionSheet;
 }
 
-+ (LinphoneCall*)retrieveCallAtIndex: (NSInteger) index inConference:(bool) conf;
-//+ (void)updateCellImageView:(UIImageView*)imageView Label:(UILabel*)label DetailLabel:(UILabel*)detailLabel AndAccessoryView:(UIView*)accessoryView withCall:(LinphoneCall*) call;
-
-@property (nonatomic, retain) IBOutlet UIViewController* conferenceDetail;
+@property (nonatomic, retain) IBOutlet InCallTableViewController* callTableController;
 @property (nonatomic, retain) IBOutlet UITableView* callTableView;
-
-@property (nonatomic, retain) IBOutlet VideoViewController* videoViewController;
 
 @property (nonatomic, retain) IBOutlet UIView* videoGroup;
 @property (nonatomic, retain) IBOutlet UIView* videoView;

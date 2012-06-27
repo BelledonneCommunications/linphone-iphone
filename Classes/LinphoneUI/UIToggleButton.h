@@ -20,14 +20,17 @@
 #import <UIKit/UIKit.h>
 
 @protocol UIToggleButtonDelegate 
-	-(void) onOn;
-	-(void) onOff;
-	-(bool) onUpdate;
+	- (void)onOn;
+	- (void)onOff;
+	- (bool)onUpdate;
 @end
 
 @interface UIToggleButton : UIButton <UIToggleButtonDelegate> {	
 }
--(bool) update;
--(bool) toggle;
+
+- (bool)update;
+- (void)setOn;
+- (void)setOff;
+- (bool)toggle;
 
 @end

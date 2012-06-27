@@ -518,13 +518,13 @@
 						<int key="NSvFlags">288</int>
 						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBUIButton" id="617539638">
+							<object class="IBUIButton" id="657970815">
 								<reference key="NSNextResponder" ref="32193173"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrameSize">{106, 69}</string>
 								<reference key="NSSuperview" ref="32193173"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="375677999"/>
+								<reference key="NSNextKeyView" ref="617539638"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -534,15 +534,15 @@
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="642864408">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-over.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage" id="940547924">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-inactif.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="755641438">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-actif.png</string>
 								</object>
@@ -552,13 +552,34 @@
 								</object>
 								<reference key="IBUIFont" ref="177658264"/>
 							</object>
-							<object class="IBUIButton" id="375677999">
+							<object class="IBUIButton" id="617539638">
+								<reference key="NSNextResponder" ref="32193173"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrameSize">{106, 69}</string>
+								<reference key="NSSuperview" ref="32193173"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="749717331"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
+								<reference key="IBUIHighlightedBackgroundImage" ref="642864408"/>
+								<reference key="IBUIDisabledBackgroundImage" ref="940547924"/>
+								<reference key="IBUINormalBackgroundImage" ref="755641438"/>
+								<reference key="IBUIFontDescription" ref="769584456"/>
+								<reference key="IBUIFont" ref="177658264"/>
+							</object>
+							<object class="IBUIButton" id="749717331">
 								<reference key="NSNextResponder" ref="32193173"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{106, 0}, {108, 69}}</string>
 								<reference key="NSSuperview" ref="32193173"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="992434254"/>
+								<reference key="NSNextKeyView" ref="375677999"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -579,6 +600,37 @@
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">appeler-actif.png</string>
+								</object>
+								<reference key="IBUIFontDescription" ref="769584456"/>
+								<reference key="IBUIFont" ref="177658264"/>
+							</object>
+							<object class="IBUIButton" id="375677999">
+								<reference key="NSNextResponder" ref="32193173"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrame">{{106, 0}, {108, 69}}</string>
+								<reference key="NSSuperview" ref="32193173"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="992434254"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<bool key="IBUIEnabled">NO</bool>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">add_call_more_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">add_call_more_disable.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">add_call_more_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="769584456"/>
 								<reference key="IBUIFont" ref="177658264"/>
@@ -622,7 +674,7 @@
 						<string key="NSFrame">{{0, 305}, {320, 69}}</string>
 						<reference key="NSSuperview" ref="542426306"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="617539638"/>
+						<reference key="NSNextKeyView" ref="657970815"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -753,14 +805,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">callButton</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="375677999"/>
-					</object>
-					<int key="connectionID">203</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">eightButton</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="616388880"/>
@@ -777,11 +821,35 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">addContact</string>
+						<string key="label">addContactButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="657970815"/>
+					</object>
+					<int key="connectionID">225</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">cancelButton</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="617539638"/>
 					</object>
-					<int key="connectionID">206</int>
+					<int key="connectionID">226</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addCallButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="375677999"/>
+					</object>
+					<int key="connectionID">227</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">callButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="749717331"/>
+					</object>
+					<int key="connectionID">231</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -802,12 +870,30 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">onAddContact:</string>
+						<string key="label">onCancelClick:</string>
 						<reference key="source" ref="617539638"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
-					<int key="connectionID">187</int>
+					<int key="connectionID">229</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onAddCallClick:</string>
+						<reference key="source" ref="375677999"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">228</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onAddContactClick:</string>
+						<reference key="source" ref="657970815"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">230</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -972,9 +1058,11 @@
 						<reference key="object" ref="32193173"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="375677999"/>
 							<reference ref="992434254"/>
+							<reference ref="657970815"/>
+							<reference ref="375677999"/>
 							<reference ref="617539638"/>
+							<reference ref="749717331"/>
 						</object>
 						<reference key="parent" ref="542426306"/>
 						<string key="objectName">toolBar</string>
@@ -983,19 +1071,31 @@
 						<int key="objectID">183</int>
 						<reference key="object" ref="617539638"/>
 						<reference key="parent" ref="32193173"/>
-						<string key="objectName">addContact</string>
+						<string key="objectName">cancelButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">185</int>
 						<reference key="object" ref="992434254"/>
 						<reference key="parent" ref="32193173"/>
-						<string key="objectName">backspace</string>
+						<string key="objectName">backspaceButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">184</int>
 						<reference key="object" ref="375677999"/>
 						<reference key="parent" ref="32193173"/>
-						<string key="objectName">call</string>
+						<string key="objectName">addCallButton</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">222</int>
+						<reference key="object" ref="657970815"/>
+						<reference key="parent" ref="32193173"/>
+						<string key="objectName">addContactButton</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">224</int>
+						<reference key="object" ref="749717331"/>
+						<reference key="parent" ref="32193173"/>
+						<string key="objectName">callButton</string>
 					</object>
 				</object>
 			</object>
@@ -1021,6 +1121,11 @@
 					<string>185.CustomClassName</string>
 					<string>185.IBPluginDependency</string>
 					<string>185.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
+					<string>222.IBPluginDependency</string>
+					<string>222.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
+					<string>224.CustomClassName</string>
+					<string>224.IBPluginDependency</string>
+					<string>224.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
 					<string>29.CustomClassName</string>
 					<string>29.IBPluginDependency</string>
 					<string>30.CustomClassName</string>
@@ -1075,10 +1180,15 @@
 					<real value="3"/>
 					<string>UICallButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="3"/>
+					<real value="0.0"/>
 					<string>UIEraseButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="3"/>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<real value="3"/>
+					<string>UICallButton</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<real value="0.0"/>
 					<string>UIDigitButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIDigitButton</string>
@@ -1130,7 +1240,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">221</int>
+			<int key="maxID">231</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1142,11 +1252,15 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>onAddContact:</string>
+							<string>onAddCallClick:</string>
+							<string>onAddContactClick:</string>
 							<string>onAddressChange:</string>
+							<string>onCancelClick:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 						</object>
@@ -1155,17 +1269,27 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>onAddContact:</string>
+							<string>onAddCallClick:</string>
+							<string>onAddContactClick:</string>
 							<string>onAddressChange:</string>
+							<string>onCancelClick:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBActionInfo">
-								<string key="name">onAddContact:</string>
+								<string key="name">onAddCallClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onAddContactClick:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">onAddressChange:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onCancelClick:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -1174,9 +1298,11 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addContact</string>
+							<string>addCallButton</string>
+							<string>addContactButton</string>
 							<string>addressField</string>
 							<string>callButton</string>
+							<string>cancelButton</string>
 							<string>eightButton</string>
 							<string>eraseButton</string>
 							<string>fiveButton</string>
@@ -1193,8 +1319,10 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UICallButton</string>
 							<string>UIButton</string>
 							<string>UITextField</string>
+							<string>UICallButton</string>
 							<string>UIButton</string>
 							<string>UIButton</string>
 							<string>UIEraseButton</string>
@@ -1215,9 +1343,11 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addContact</string>
+							<string>addCallButton</string>
+							<string>addContactButton</string>
 							<string>addressField</string>
 							<string>callButton</string>
+							<string>cancelButton</string>
 							<string>eightButton</string>
 							<string>eraseButton</string>
 							<string>fiveButton</string>
@@ -1235,7 +1365,11 @@
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">addContact</string>
+								<string key="name">addCallButton</string>
+								<string key="candidateClassName">UICallButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addContactButton</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1244,6 +1378,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">callButton</string>
+								<string key="candidateClassName">UICallButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">cancelButton</string>
 								<string key="candidateClassName">UIButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -1389,6 +1527,9 @@
 				<string>add-contact-actif.png</string>
 				<string>add-contact-inactif.png</string>
 				<string>add-contact-over.png</string>
+				<string>add_call_more_default.png</string>
+				<string>add_call_more_disable.png</string>
+				<string>add_call_more_over.png</string>
 				<string>appeler-actif.png</string>
 				<string>appeler-disabled.png</string>
 				<string>appeler-over.png</string>
@@ -1426,6 +1567,9 @@
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
+				<string>{214, 138}</string>
+				<string>{214, 138}</string>
+				<string>{214, 138}</string>
 				<string>{214, 138}</string>
 				<string>{214, 138}</string>
 				<string>{214, 138}</string>

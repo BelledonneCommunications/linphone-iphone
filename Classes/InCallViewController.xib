@@ -12,6 +12,7 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<string>IBUITableViewController</string>
 			<string>IBUITableView</string>
 			<string>IBUIActivityIndicatorView</string>
 			<string>IBUIView</string>
@@ -108,7 +109,7 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<double key="IBUIContentInset.top">0.0</double>
-						<double key="IBUIContentInset.bottom">10</double>
+						<double key="IBUIContentInset.bottom">20</double>
 						<double key="IBUIContentInset.left">0.0</double>
 						<double key="IBUIContentInset.right">0.0</double>
 						<bool key="IBUIAlwaysBounceVertical">YES</bool>
@@ -165,6 +166,15 @@
 				</object>
 				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+			</object>
+			<object class="IBUITableViewController" id="52918460">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
 			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -228,19 +238,35 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">callTableController</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="52918460"/>
+					</object>
+					<int key="connectionID">167</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dataSource</string>
 						<reference key="source" ref="662692377"/>
-						<reference key="destination" ref="841351856"/>
+						<reference key="destination" ref="52918460"/>
 					</object>
-					<int key="connectionID">107</int>
+					<int key="connectionID">168</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="662692377"/>
-						<reference key="destination" ref="841351856"/>
+						<reference key="destination" ref="52918460"/>
 					</object>
-					<int key="connectionID">108</int>
+					<int key="connectionID">169</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">view</string>
+						<reference key="source" ref="52918460"/>
+						<reference key="destination" ref="662692377"/>
+					</object>
+					<int key="connectionID">166</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -313,13 +339,22 @@
 						<int key="objectID">106</int>
 						<reference key="object" ref="662692377"/>
 						<reference key="parent" ref="858247959"/>
-						<string key="objectName">tableView</string>
+						<string key="objectName">callTableView</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">160</int>
 						<reference key="object" ref="972197710"/>
 						<reference key="parent" ref="858247959"/>
 						<string key="objectName">camSwitch</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">162</int>
+						<reference key="object" ref="52918460"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">callTableController</string>
 					</object>
 				</object>
 			</object>
@@ -339,6 +374,8 @@
 					<string>160.CustomClassName</string>
 					<string>160.IBPluginDependency</string>
 					<string>160.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
+					<string>162.CustomClassName</string>
+					<string>162.IBPluginDependency</string>
 					<string>9.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
@@ -355,6 +392,8 @@
 					<string>UICamSwitch</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="1"/>
+					<string>InCallTableViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
 			</object>
@@ -370,11 +409,19 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">161</int>
+			<int key="maxID">169</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">InCallTableViewController</string>
+					<string key="superclassName">UITableViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/InCallTableViewController.h</string>
+					</object>
+				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">InCallViewController</string>
 					<string key="superclassName">UIViewController</string>
@@ -382,26 +429,24 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>callTableController</string>
 							<string>callTableView</string>
-							<string>conferenceDetail</string>
 							<string>testVideoView</string>
 							<string>videoCameraSwitch</string>
 							<string>videoGroup</string>
 							<string>videoPreview</string>
 							<string>videoView</string>
-							<string>videoViewController</string>
 							<string>videoWaitingForFirstImage</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>InCallTableViewController</string>
 							<string>UITableView</string>
-							<string>UIViewController</string>
 							<string>UIView</string>
 							<string>UICamSwitch</string>
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIView</string>
-							<string>VideoViewController</string>
 							<string>UIActivityIndicatorView</string>
 						</object>
 					</object>
@@ -409,25 +454,24 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>callTableController</string>
 							<string>callTableView</string>
-							<string>conferenceDetail</string>
 							<string>testVideoView</string>
 							<string>videoCameraSwitch</string>
 							<string>videoGroup</string>
 							<string>videoPreview</string>
 							<string>videoView</string>
-							<string>videoViewController</string>
 							<string>videoWaitingForFirstImage</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">callTableView</string>
-								<string key="candidateClassName">UITableView</string>
+								<string key="name">callTableController</string>
+								<string key="candidateClassName">InCallTableViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">conferenceDetail</string>
-								<string key="candidateClassName">UIViewController</string>
+								<string key="name">callTableView</string>
+								<string key="candidateClassName">UITableView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">testVideoView</string>
@@ -448,10 +492,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">videoView</string>
 								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">videoViewController</string>
-								<string key="candidateClassName">VideoViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">videoWaitingForFirstImage</string>

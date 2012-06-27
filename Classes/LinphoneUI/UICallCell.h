@@ -21,24 +21,53 @@
 
 #include "linphonecore.h"
 
+
+@interface UICallCellData : NSObject {
+    @public
+    bool minimize;
+    LinphoneCall *call;
+}   
+
+- (id)init:(LinphoneCall*) call;
+
+@end
+
 @interface UICallCell : UITableViewCell {
+    @private
     UIView *firstBackground;
     UIView *otherBackground;
     
     UILabel *addressLabel;
-    UILabel *timeLabel;
-    UIImageView *stateView;
+    UILabel *stateLabel;
+    UIImageView *stateImage;
+    UIImageView *avatarImage;
+    
+    UIView *headerView;
+    UIView *avatarView;
+    
+    UICallCellData *data;
 }
+
+@property (weak) UICallCellData *data;
 
 @property (nonatomic, retain) IBOutlet UIView* firstBackground;
 @property (nonatomic, retain) IBOutlet UIView* otherBackground;
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel* timeLabel;
-@property (nonatomic, retain) IBOutlet UIImageView* stateView;
+@property (nonatomic, retain) IBOutlet UILabel* stateLabel;
+@property (nonatomic, retain) IBOutlet UIImageView* stateImage;
+@property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
+
+@property (nonatomic, retain) IBOutlet UIView* headerView;
+@property (nonatomic, retain) IBOutlet UIView* avatarView;
 
 - (void)firstCell;
 - (void)otherCell;
-- (void)updateCell:(LinphoneCall *)call;
+- (void)update;
+
+- (IBAction)doHeaderClick:(id)sender;
+
++ (int)getMaximizedHeight;
++ (int)getMinimizedHeight;
 
 @end

@@ -37,9 +37,10 @@
     [self update:[[LinphoneManager instance] currentView]];
 }
 
-- (void)receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {   
-    PhoneView view = [[notif.userInfo objectForKey: @"view"] intValue];
-    [self update:view];
+- (void)receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {  
+    NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
+    if(viewNumber != nil)
+        [self update:[viewNumber intValue]];
 }
 
 - (void)update:(PhoneView) view {

@@ -27,6 +27,8 @@
 @synthesize deleteButton;
 @synthesize detailsButton;
 
+#define DETAILS_DISABLED
+
 - (id)init {
     if ((self = [super init]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIHistoryCell"
@@ -87,7 +89,11 @@
 }
 
 - (void)exitEditMode {
+#ifdef DETAILS_DISABLED
+    [detailsButton setHidden:true];
+#else
     [detailsButton setHidden:false];
+#endif
     [deleteButton setHidden:true];
 }
 

@@ -21,7 +21,6 @@
 #import "LinphoneManager.h"
 #import "CoreTelephony/CTCallCenter.h"
 
-
 @implementation UICallButton
 
 static BOOL transferMode = NO;

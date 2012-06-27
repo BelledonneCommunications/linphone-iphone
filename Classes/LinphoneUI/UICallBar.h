@@ -26,14 +26,22 @@
 
 @interface UICallBar: UIViewController {
     UIPauseButton*      pauseButton;
+    UIButton*           startConferenceButton;
+    UIButton*           stopConferenceButton;
     UIVideoButton*      videoButton;
     UIMicroButton*      microButton;
-    UISpeakerButton*    speakerButton;    
+    UISpeakerButton*    speakerButton;   
+    UIButton*           optionsButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIPauseButton*   pauseButton;
+@property (nonatomic, retain) IBOutlet UIButton*        startConferenceButton;
+@property (nonatomic, retain) IBOutlet UIButton*        stopConferenceButton;
 @property (nonatomic, retain) IBOutlet UIVideoButton*   videoButton;
 @property (nonatomic, retain) IBOutlet UIMicroButton*   microButton;
 @property (nonatomic, retain) IBOutlet UISpeakerButton* speakerButton;
+@property (nonatomic, retain) IBOutlet UIButton* optionsButton;
+
+- (IBAction)onOptionsClick:(id)sender;
 
 @end

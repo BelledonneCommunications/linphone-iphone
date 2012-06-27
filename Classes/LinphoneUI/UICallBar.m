@@ -26,9 +26,12 @@
 @implementation UICallBar
 
 @synthesize pauseButton;
+@synthesize startConferenceButton;
+@synthesize stopConferenceButton;
 @synthesize videoButton;
 @synthesize microButton;
-@synthesize speakerButton;   
+@synthesize speakerButton;  
+@synthesize optionsButton;
 
 - (id)init {
     return [super initWithNibName:@"UICallBar" bundle:[NSBundle mainBundle]];
@@ -36,6 +39,10 @@
 
 - (void)viewDidLoad {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+}
+
+- (void)viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)callUpdate: (NSNotification*) notif {
@@ -51,6 +58,45 @@
     [microButton update];
     [pauseButton update];
     [videoButton update];
+    
+    if(linphone_core_get_calls_nb(lc) > 1) {
+        [pauseButton setHidden:true];
+        LinphoneCall *currentCall = linphone_core_get_current_call(lc);
+        if(currentCall == NULL || !linphone_call_get_current_params(currentCall)->in_conference) {
+            [startConferenceButton setHidden:false];    
+            [stopConferenceButton setHidden:true];   
+        } else {
+            [startConferenceButton setHidden:true];    
+            [stopConferenceButton setHidden:false];
+        }
+    } else {
+        [pauseButton setHidden:false];
+        [startConferenceButton setHidden:true];
+        [stopConferenceButton setHidden:true];
+    }
+}
+
+- (void)dealloc {
+    [pauseButton release];
+    [startConferenceButton release];
+    [stopConferenceButton release];
+    [videoButton release];
+    [microButton release];
+    [speakerButton release]; 
+    [optionsButton release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
+- (IBAction)onOptionsClick:(id)sender {
+    // Go to dialer view
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
+                           , @"setAddress:",
+                           nil] autorelease];
+    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
 }
 
 @end

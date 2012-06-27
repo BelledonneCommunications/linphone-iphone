@@ -36,6 +36,18 @@
 	return self.selected;
 }
 
+- (void)setOn {
+	if (!self.selected) {
+		[self toggle];
+	}
+}
+
+- (void)setOff {
+	if (self.selected) {
+		[self toggle];
+	}
+}
+
 - (bool)update {
 	self.selected = [self onUpdate];
 	return self.selected;
@@ -63,18 +75,22 @@
     return self;
 }	
 
+
 - (void)dealloc {
     [super dealloc];
 }
+
 
 -(void) onOn {
     /*[NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/
 }
+
 -(void) onOff {
     /*[NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/
 }
+
 -(bool) onUpdate {
     /*[NSException raise:NSInternalInconsistencyException 
                 format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/

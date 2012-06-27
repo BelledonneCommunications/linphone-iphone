@@ -185,14 +185,17 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 						<reference key="IBUINormalTitleShadowColor" ref="838911807"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="387794121">
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">options_over.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">add-call-over.png</string>
 						</object>
-						<reference key="IBUISelectedBackgroundImage" ref="387794121"/>
 						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">add-call-actif.png</string>
+							<string key="NSResourceName">options_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="794091713"/>
 						<reference key="IBUIFont" ref="993152718"/>
@@ -203,7 +206,7 @@
 						<string key="NSFrame">{{0, 67}, {105, 68}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="99607181"/>
+						<reference key="NSNextKeyView" ref="351323248"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -218,7 +221,7 @@
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">pause-over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="176604418">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">play-actif.png</string>
 						</object>
@@ -226,6 +229,58 @@
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">pause-actif.png</string>
 						</object>
+						<reference key="IBUIFontDescription" ref="794091713"/>
+						<reference key="IBUIFont" ref="993152718"/>
+					</object>
+					<object class="IBUIButton" id="351323248">
+						<reference key="NSNextResponder" ref="931774220"/>
+						<int key="NSvFlags">-2147483384</int>
+						<string key="NSFrame">{{0, 67}, {105, 68}}</string>
+						<reference key="NSSuperview" ref="931774220"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="882972580"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+							<string key="IBUIAccessibilityLabel">Start Conference</string>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<reference key="IBUINormalTitleShadowColor" ref="838911807"/>
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="636202283">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">start-conference-over.png</string>
+						</object>
+						<reference key="IBUISelectedBackgroundImage" ref="176604418"/>
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="441455868">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">start-conference-actif.png</string>
+						</object>
+						<reference key="IBUIFontDescription" ref="794091713"/>
+						<reference key="IBUIFont" ref="993152718"/>
+					</object>
+					<object class="IBUIButton" id="882972580">
+						<reference key="NSNextResponder" ref="931774220"/>
+						<int key="NSvFlags">-2147483384</int>
+						<string key="NSFrame">{{0, 67}, {105, 68}}</string>
+						<reference key="NSSuperview" ref="931774220"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="99607181"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+							<string key="IBUIAccessibilityLabel">Stop conference</string>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<reference key="IBUINormalTitleShadowColor" ref="838911807"/>
+						<reference key="IBUIHighlightedBackgroundImage" ref="636202283"/>
+						<reference key="IBUISelectedBackgroundImage" ref="176604418"/>
+						<reference key="IBUINormalBackgroundImage" ref="441455868"/>
 						<reference key="IBUIFontDescription" ref="794091713"/>
 						<reference key="IBUIFont" ref="993152718"/>
 					</object>
@@ -263,7 +318,6 @@
 						<string key="NSFrame">{{215, 67}, {105, 68}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -342,6 +396,39 @@
 					</object>
 					<int key="connectionID">16</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">optionsButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="62185125"/>
+					</object>
+					<int key="connectionID">19</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">stopConferenceButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="882972580"/>
+					</object>
+					<int key="connectionID">25</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">startConferenceButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="351323248"/>
+					</object>
+					<int key="connectionID">26</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onOptionsClick:</string>
+						<reference key="source" ref="62185125"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">20</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -374,6 +461,8 @@
 							<reference ref="62185125"/>
 							<reference ref="262544423"/>
 							<reference ref="693636558"/>
+							<reference ref="351323248"/>
+							<reference ref="882972580"/>
 						</array>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">callTabBar</string>
@@ -389,43 +478,55 @@
 						<int key="objectID">6</int>
 						<reference key="object" ref="976589610"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">back</string>
+						<string key="objectName">dialerButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">7</int>
 						<reference key="object" ref="99607181"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">hangup</string>
+						<string key="objectName">hangupButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">8</int>
 						<reference key="object" ref="542459126"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">pause</string>
+						<string key="objectName">pauseButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">10</int>
 						<reference key="object" ref="62185125"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">addCall</string>
+						<string key="objectName">optionsButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">12</int>
 						<reference key="object" ref="262544423"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">video</string>
+						<string key="objectName">videoButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">11</int>
 						<reference key="object" ref="693636558"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">micro</string>
+						<string key="objectName">microButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">9</int>
 						<reference key="object" ref="264394465"/>
 						<reference key="parent" ref="931774220"/>
-						<string key="objectName">speaker</string>
+						<string key="objectName">speakerButton</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">21</int>
+						<reference key="object" ref="351323248"/>
+						<reference key="parent" ref="931774220"/>
+						<string key="objectName">startConferenceButton</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">23</int>
+						<reference key="object" ref="882972580"/>
+						<reference key="parent" ref="931774220"/>
+						<string key="objectName">stopConferenceButton</string>
 					</object>
 				</array>
 			</object>
@@ -435,13 +536,17 @@
 				<string key="-2.CustomClassName">UIResponder</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="11.CustomClassName">UIMicroButton</string>
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="12.CustomClassName">UIVideoButton</string>
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="12.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="21.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="23.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="23.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -451,7 +556,7 @@
 				<real value="0.0" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.CustomClassName">UIPauseButton</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="9.CustomClassName">UISpeakerButton</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -460,23 +565,41 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">18</int>
+			<int key="maxID">26</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">UICallBar</string>
 					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">onOptionsClick:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">onOptionsClick:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">onOptionsClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="microButton">UIMicroButton</string>
+						<string key="optionsButton">UIButton</string>
 						<string key="pauseButton">UIPauseButton</string>
 						<string key="speakerButton">UISpeakerButton</string>
+						<string key="startConferenceButton">UIButton</string>
+						<string key="stopConferenceButton">UIButton</string>
 						<string key="videoButton">UIVideoButton</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="microButton">
 							<string key="name">microButton</string>
 							<string key="candidateClassName">UIMicroButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="optionsButton">
+							<string key="name">optionsButton</string>
+							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="pauseButton">
 							<string key="name">pauseButton</string>
@@ -485,6 +608,14 @@
 						<object class="IBToOneOutletInfo" key="speakerButton">
 							<string key="name">speakerButton</string>
 							<string key="candidateClassName">UISpeakerButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="startConferenceButton">
+							<string key="name">startConferenceButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="stopConferenceButton">
+							<string key="name">stopConferenceButton</string>
+							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="videoButton">
 							<string key="name">videoButton</string>
@@ -502,22 +633,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UIHangUpButton.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">UIMicroButton</string>
-					<string key="superclassName">UIToggleButton</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/UIMicroButton.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">UIPauseButton</string>
-					<string key="superclassName">UIToggleButton</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/UIPauseButton.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -566,13 +681,14 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="add-call-actif.png">{160, 134}</string>
-			<string key="add-call-over.png">{160, 134}</string>
+			<string key="add-call-over.png">{16, 16}</string>
 			<string key="clavier-secondaire-actif.png">{209, 136}</string>
 			<string key="clavier-secondaire-over.png">{209, 136}</string>
 			<string key="micro-OFF-actif.png">{160, 134}</string>
 			<string key="micro-ON-actif.png">{160, 134}</string>
 			<string key="micro-ON-over.png">{160, 134}</string>
+			<string key="options_default.png">{160, 134}</string>
+			<string key="options_over.png">{160, 134}</string>
 			<string key="pause-actif.png">{209, 136}</string>
 			<string key="pause-over.png">{209, 136}</string>
 			<string key="play-actif.png">{209, 136}</string>
@@ -581,6 +697,8 @@
 			<string key="speacker-OFF-actif.png">{160, 134}</string>
 			<string key="speacker-ON-actif.png">{160, 134}</string>
 			<string key="speacker-ON-over.png">{160, 134}</string>
+			<string key="start-conference-actif.png">{209, 136}</string>
+			<string key="start-conference-over.png">{209, 136}</string>
 			<string key="video-OFF-actif.png">{160, 134}</string>
 			<string key="video-OFF-disabled.png">{160, 134}</string>
 			<string key="video-ON-actif.png">{160, 134}</string>

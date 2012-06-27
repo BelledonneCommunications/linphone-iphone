@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 
 #import "HistoryTableViewController.h"
+#import "UIToggleButton.h"
 
 @interface HistoryViewController : UIViewController {
     @private
@@ -28,7 +29,7 @@
     
     UIButton *allButton;
     UIButton *missedButton;
-    UIButton *editButton;
+    UIToggleButton *editButton;
 }
 
 @property (nonatomic, retain) IBOutlet HistoryTableViewController* tableController;
@@ -36,7 +37,7 @@
 
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* missedButton;
-@property (nonatomic, retain) IBOutlet UIButton* editButton;
+@property (nonatomic, retain) IBOutlet UIToggleButton* editButton;
 
 - (IBAction)onAllClick:(id) event;
 - (IBAction)onMissedClick:(id) event;

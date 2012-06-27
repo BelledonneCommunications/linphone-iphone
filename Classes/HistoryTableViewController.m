@@ -30,8 +30,6 @@
     return self;
 }
 
-#pragma mark Table view methods
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
 }
@@ -102,6 +100,18 @@
 - (void) toggleEditMode {
     editMode = !editMode;
     [(UITableView*)[self view] reloadData];
+}
+
+- (void) enterEditMode {
+    if(!editMode) {
+        [self toggleEditMode];
+    }
+}
+
+- (void) exitEditMode {
+    if(editMode) {
+        [self toggleEditMode];
+    }
 }
 
 - (void)dealloc {

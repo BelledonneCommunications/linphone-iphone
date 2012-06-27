@@ -31,7 +31,9 @@
 @implementation DialerViewController
 
 @synthesize addressField;
-@synthesize addContact;
+@synthesize addContactButton;
+@synthesize cancelButton;
+@synthesize addCallButton;
 @synthesize callButton;
 @synthesize eraseButton;
 
@@ -52,12 +54,27 @@
     return [super initWithNibName:@"DialerViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
    // [[LinphoneManager instance] setRegistrationDelegate:self];
     
     //TODO
     //[mMainScreenWithVideoPreview showPreview:YES];
+    
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore *lc = [LinphoneManager getLc];
+        if(linphone_core_get_calls_nb(lc) > 0) {
+            [addCallButton setHidden:false];
+            [callButton setHidden:true];
+            [cancelButton setHidden:false]; 
+            [addContactButton setHidden:true];
+        } else {
+            [addCallButton setHidden:true];
+            [callButton setHidden:false];
+            [cancelButton setHidden:true];
+            [addContactButton setHidden:false];
+        }
+    }
+    [super viewWillAppear:animated];
 }
 
 - (void)viewDidLoad {
@@ -76,6 +93,7 @@
 	[starButton   initWithNumber:'*'   addressField:addressField dtmf:false];
 	[hashButton   initWithNumber:'#'   addressField:addressField dtmf:false];
 	[callButton   initWithAddress:addressField];
+	[addCallButton   initWithAddress:addressField];
 	[eraseButton  initWithAddressField:addressField];
 }
 
@@ -85,9 +103,11 @@
 
 - (void)dealloc {
 	[addressField release];
-    [addContact release];
+    [addContactButton release];
+    [cancelButton release];
     [eraseButton release];
 	[callButton release];
+    [addCallButton release];
     
 	[oneButton release];
 	[twoButton release];
@@ -111,19 +131,29 @@
     return YES;
 }
 
-- (IBAction)onAddContact: (id) event {
+- (IBAction)onAddContactClick: (id) event {
+    
+}
+
+- (IBAction)onCancelClick: (id) event {
+    [[LinphoneManager instance] changeView:PhoneView_InCall];
+}
+
+- (IBAction)onAddCallClick: (id) event {
     
 }
 
 - (IBAction)onAddressChange: (id)sender {
     if([[addressField text] length] > 0) {
-        [addContact setEnabled:TRUE];
+        [addContactButton setEnabled:TRUE];
         [eraseButton setEnabled:TRUE];
         [callButton setEnabled:TRUE];
+        [addCallButton setEnabled:TRUE];
     } else {
-        [addContact setEnabled:FALSE];
+        [addContactButton setEnabled:FALSE];
         [eraseButton setEnabled:FALSE];
         [callButton setEnabled:FALSE];
+        [addCallButton setEnabled:FALSE];
     }
 }
 

@@ -78,6 +78,13 @@ typedef enum _HistoryView {
     [tableController toggleEditMode];
 }
 
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [tableController exitEditMode];
+    [editButton setOff];
+}
+
 - (void)dealloc {
     [allButton release];
     [missedButton release];
