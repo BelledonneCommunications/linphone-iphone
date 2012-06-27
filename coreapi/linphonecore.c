@@ -132,11 +132,13 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		tmp=linphone_address_as_string(cl->to);
 		lp_config_set_string(cfg,logsection,"to",tmp);
 		ms_free(tmp);
-		lp_config_set_int64(cfg,logsection,"start_date_time",(int64_t)cl->start_date_time);
+		if (cl->start_date_time)
+			lp_config_set_int64(cfg,logsection,"start_date_time",(int64_t)cl->start_date_time);
+		else lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
-        lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
+		lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -145,9 +147,13 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 }
 
 static time_t string_to_time(const char *date){
+#ifndef WIN32
 	struct tm tmtime={0};
 	strptime(date,"%c",&tmtime);
 	return mktime(&tmtime);
+#else
+	return 0;
+#endif
 }
 
 static void call_logs_read_from_config_file(LinphoneCore *lc){
@@ -182,7 +188,7 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
-            cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
+			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
