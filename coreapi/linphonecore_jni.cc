@@ -1199,6 +1199,19 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCallLog(	JNIEnv*  en
 	return (jlong)linphone_call_get_call_log((LinphoneCall*)ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_takeSnapshot(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jstring path) {
+	const char* filePath = path != NULL ? env->GetStringUTFChars(path, NULL) : NULL;
+	linphone_call_take_video_snapshot((LinphoneCall*)ptr, filePath);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_zoomVideo(		JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jfloat zoomFactor, jfloat cx, jfloat cy) {
+	linphone_call_zoom_video((LinphoneCall*)ptr, zoomFactor, cx, cy);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isIncoming(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
