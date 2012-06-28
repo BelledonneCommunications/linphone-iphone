@@ -60,12 +60,13 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		const char *status=NULL;
 		gchar *start_date=NULL;
 		
+#if GLIB_CHECK_VERSION(2,26,0)
 		if (cl->start_date_time){
 			GDateTime *dt=g_date_time_new_from_unix_local(cl->start_date_time);
 			start_date=g_date_time_format(dt,"%c");
 			g_date_time_unref(dt);
 		}
-			
+#endif
 		
 		display=linphone_address_get_display_name (la);
 		if (display==NULL){
