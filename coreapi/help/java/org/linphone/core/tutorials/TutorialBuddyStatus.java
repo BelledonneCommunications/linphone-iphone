@@ -98,6 +98,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
+	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
 
 
 	public static void main(String[] args) {
