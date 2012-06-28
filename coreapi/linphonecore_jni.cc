@@ -492,6 +492,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_clearAuthInfos(JNIEnv* 
 	linphone_core_clear_all_auth_info((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_refreshRegisters(JNIEnv* env, jobject thiz,jlong lc) {
+	linphone_core_refresh_registers((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAuthInfo(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
