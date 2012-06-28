@@ -180,6 +180,9 @@ public interface LinphoneCore {
 			this.tcp = t.tcp;
 			this.tls = t.tls;
 		}
+		public String toString() {
+			return "udp["+udp+"] tcp["+tcp+"] tls["+tls+"]";
+		}
 	}
 	/**
 	 * Media (RTP) encryption enum-like.
@@ -776,4 +779,9 @@ public interface LinphoneCore {
 	 * Set missed calls count to zero
 	 */
 	public void resetMissedCallsCount();
+	/**
+	 * re-initiates registration if network is up.
+	 */
+	public void refreshRegisters();
+
 }
