@@ -534,15 +534,15 @@
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="642864408">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-over.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage" id="940547924">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-inactif.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="755641438">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">add-contact-actif.png</string>
 								</object>
@@ -567,9 +567,18 @@
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-								<reference key="IBUIHighlightedBackgroundImage" ref="642864408"/>
-								<reference key="IBUIDisabledBackgroundImage" ref="940547924"/>
-								<reference key="IBUINormalBackgroundImage" ref="755641438"/>
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">cancel_white_bg_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">cancel_white_bg_disabled.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">cancel_white_bg_default.png</string>
+								</object>
 								<reference key="IBUIFontDescription" ref="769584456"/>
 								<reference key="IBUIFont" ref="177658264"/>
 							</object>
@@ -641,6 +650,7 @@
 								<string key="NSFrame">{{214, 0}, {106, 69}}</string>
 								<reference key="NSSuperview" ref="32193173"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -1177,7 +1187,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="3"/>
+					<real value="0.0"/>
 					<string>UICallButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="0.0"/>
@@ -1536,6 +1546,9 @@
 				<string>backspace-actif.png</string>
 				<string>backspace-disabled.png</string>
 				<string>backspace-over.png</string>
+				<string>cancel_white_bg_default.png</string>
+				<string>cancel_white_bg_disabled.png</string>
+				<string>cancel_white_bg_over.png</string>
 				<string>champ-saisie-numero.png</string>
 				<string>diese-actif.png</string>
 				<string>diese-over.png</string>
@@ -1573,6 +1586,9 @@
 				<string>{214, 138}</string>
 				<string>{214, 138}</string>
 				<string>{214, 138}</string>
+				<string>{213, 138}</string>
+				<string>{213, 138}</string>
+				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>

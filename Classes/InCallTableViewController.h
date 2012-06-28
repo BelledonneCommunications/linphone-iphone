@@ -24,6 +24,7 @@
 #include "linphonecore.h"
 
 @interface InCallTableViewController : UITableViewController {
+    @private
     NSMutableDictionary* callCellData;
     NSTimer *updateTime;
 }

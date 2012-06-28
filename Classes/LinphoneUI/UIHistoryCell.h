@@ -35,6 +35,8 @@
 @property (nonatomic, retain) IBOutlet UIButton*    detailsButton;
 @property (nonatomic, retain) IBOutlet UIButton*    deleteButton;
 
+- (id)initWithIdentifier:(NSString*)identifier;
+
 - (IBAction)onDetails:(id) event;
 - (IBAction)onDelete:(id) event;
 

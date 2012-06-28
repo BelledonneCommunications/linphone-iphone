@@ -213,6 +213,20 @@
 		D31C9C95158A1C1000756B45 /* appel-sortant.png in Resources */ = {isa = PBXBuildFile; fileRef = D31C9C8F158A1C1000756B45 /* appel-sortant.png */; };
 		D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
 		D31C9C99158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
+		D3211BA6159C3D410098460B /* outgoing-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BA5159C3D410098460B /* outgoing-champ-numero-actif.png */; };
+		D3211BA7159C3D410098460B /* outgoing-champ-numero-actif.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BA5159C3D410098460B /* outgoing-champ-numero-actif.png */; };
+		D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3211BAE159C4EF00098460B /* UIConferenceHeader.m */; };
+		D3211BB1159C4EF10098460B /* UIConferenceHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3211BAE159C4EF00098460B /* UIConferenceHeader.m */; };
+		D3211BB2159C4EF10098460B /* UIConferenceHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3211BAF159C4EF10098460B /* UIConferenceHeader.xib */; };
+		D3211BB3159C4EF10098460B /* UIConferenceHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3211BAF159C4EF10098460B /* UIConferenceHeader.xib */; };
+		D3211BB9159C8A820098460B /* champ-courbe-autres-numeros-first.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BB8159C8A820098460B /* champ-courbe-autres-numeros-first.png */; };
+		D3211BBA159C8A820098460B /* champ-courbe-autres-numeros-first.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BB8159C8A820098460B /* champ-courbe-autres-numeros-first.png */; };
+		D3211BBE159CBFD60098460B /* cancel_white_bg_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBB159CBFD60098460B /* cancel_white_bg_default.png */; };
+		D3211BBF159CBFD70098460B /* cancel_white_bg_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBB159CBFD60098460B /* cancel_white_bg_default.png */; };
+		D3211BC0159CBFD70098460B /* cancel_white_bg_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBC159CBFD60098460B /* cancel_white_bg_disabled.png */; };
+		D3211BC1159CBFD70098460B /* cancel_white_bg_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBC159CBFD60098460B /* cancel_white_bg_disabled.png */; };
+		D3211BC2159CBFD70098460B /* cancel_white_bg_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBD159CBFD60098460B /* cancel_white_bg_over.png */; };
+		D3211BC3159CBFD70098460B /* cancel_white_bg_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBD159CBFD60098460B /* cancel_white_bg_over.png */; };
 		D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
 		D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
 		D326483815887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
@@ -933,6 +947,14 @@
 		D31C9C8F158A1C1000756B45 /* appel-sortant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "appel-sortant.png"; path = "Resources/appel-sortant.png"; sourceTree = "<group>"; };
 		D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryCell.h; sourceTree = "<group>"; };
 		D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHistoryCell.m; sourceTree = "<group>"; };
+		D3211BA5159C3D410098460B /* outgoing-champ-numero-actif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "outgoing-champ-numero-actif.png"; path = "Resources/outgoing-champ-numero-actif.png"; sourceTree = "<group>"; };
+		D3211BAD159C4EF00098460B /* UIConferenceHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIConferenceHeader.h; sourceTree = "<group>"; };
+		D3211BAE159C4EF00098460B /* UIConferenceHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIConferenceHeader.m; sourceTree = "<group>"; };
+		D3211BAF159C4EF10098460B /* UIConferenceHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIConferenceHeader.xib; sourceTree = "<group>"; };
+		D3211BB8159C8A820098460B /* champ-courbe-autres-numeros-first.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "champ-courbe-autres-numeros-first.png"; path = "Resources/champ-courbe-autres-numeros-first.png"; sourceTree = "<group>"; };
+		D3211BBB159CBFD60098460B /* cancel_white_bg_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cancel_white_bg_default.png; path = Resources/cancel_white_bg_default.png; sourceTree = "<group>"; };
+		D3211BBC159CBFD60098460B /* cancel_white_bg_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cancel_white_bg_disabled.png; path = Resources/cancel_white_bg_disabled.png; sourceTree = "<group>"; };
+		D3211BBD159CBFD60098460B /* cancel_white_bg_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cancel_white_bg_over.png; path = Resources/cancel_white_bg_over.png; sourceTree = "<group>"; };
 		D32409C1158B49A600C8C119 /* UILongTouchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILongTouchButton.h; sourceTree = "<group>"; };
 		D32409C2158B49A600C8C119 /* UILongTouchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILongTouchButton.m; sourceTree = "<group>"; };
 		D326483615887D5200930C67 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OrderedDictionary.h; path = Utils/OrderedDictionary.h; sourceTree = "<group>"; };
@@ -1572,6 +1594,9 @@
 				D31B4B1E159876C0002E6C72 /* UICompositeViewController.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeViewController.m */,
 				D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */,
+				D3211BAD159C4EF00098460B /* UIConferenceHeader.h */,
+				D3211BAE159C4EF00098460B /* UIConferenceHeader.m */,
+				D3211BAF159C4EF10098460B /* UIConferenceHeader.xib */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				D3A55FBE15877E69003FD403 /* UIContactCell.xib */,
@@ -1817,6 +1842,10 @@
 				D3D6A3A7159B0EFE005F692C /* cadenas.png */,
 				D3F83F801582278D00336684 /* cancel-actif.png */,
 				D3F83F811582278D00336684 /* cancel-over.png */,
+				D3211BBB159CBFD60098460B /* cancel_white_bg_default.png */,
+				D3211BBC159CBFD60098460B /* cancel_white_bg_disabled.png */,
+				D3211BBD159CBFD60098460B /* cancel_white_bg_over.png */,
+				D3211BB8159C8A820098460B /* champ-courbe-autres-numeros-first.png */,
 				D36C43CC158F2F370048BA40 /* champ-courbe-autres-numeros.png */,
 				D36C43CD158F2F370048BA40 /* champ-courbe-participant-conf.png */,
 				D3ED3E441585FB8C006C0DE4 /* champ-saisie-numero.png */,
@@ -1876,6 +1905,7 @@
 				D3D6A3A8159B0EFE005F692C /* options_default.png */,
 				D3D6A3A9159B0EFE005F692C /* options_disabled.png */,
 				D3D6A3AA159B0EFE005F692C /* options_over.png */,
+				D3211BA5159C3D410098460B /* outgoing-champ-numero-actif.png */,
 				D3F83EF8158205A100336684 /* pause-actif.png */,
 				D36C43ED158F61EA0048BA40 /* pause-champ-numero-actif.png */,
 				D36C43EE158F61EA0048BA40 /* pause-champ-numero-over.png */,
@@ -2304,6 +2334,12 @@
 				D31AAF69159B5C68002C6B02 /* finir-conference-actif.png in Resources */,
 				D31AAF6B159B5C68002C6B02 /* finir-conference-over.png in Resources */,
 				D31AAF6E159B65E1002C6B02 /* ring-champ-numero-actif.png in Resources */,
+				D3211BA6159C3D410098460B /* outgoing-champ-numero-actif.png in Resources */,
+				D3211BB2159C4EF10098460B /* UIConferenceHeader.xib in Resources */,
+				D3211BB9159C8A820098460B /* champ-courbe-autres-numeros-first.png in Resources */,
+				D3211BBE159CBFD60098460B /* cancel_white_bg_default.png in Resources */,
+				D3211BC0159CBFD70098460B /* cancel_white_bg_disabled.png in Resources */,
+				D3211BC2159CBFD70098460B /* cancel_white_bg_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2489,6 +2525,12 @@
 				D31AAF6A159B5C68002C6B02 /* finir-conference-actif.png in Resources */,
 				D31AAF6C159B5C68002C6B02 /* finir-conference-over.png in Resources */,
 				D31AAF6F159B65E1002C6B02 /* ring-champ-numero-actif.png in Resources */,
+				D3211BA7159C3D410098460B /* outgoing-champ-numero-actif.png in Resources */,
+				D3211BB3159C4EF10098460B /* UIConferenceHeader.xib in Resources */,
+				D3211BBA159C8A820098460B /* champ-courbe-autres-numeros-first.png in Resources */,
+				D3211BBF159CBFD70098460B /* cancel_white_bg_default.png in Resources */,
+				D3211BC1159CBFD70098460B /* cancel_white_bg_disabled.png in Resources */,
+				D3211BC3159CBFD70098460B /* cancel_white_bg_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2563,6 +2605,7 @@
 				D31B4B21159876C0002E6C72 /* UICompositeViewController.m in Sources */,
 				D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */,
 				D31AAF5E159B3919002C6B02 /* InCallTableViewController.m in Sources */,
+				D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2634,6 +2677,7 @@
 				D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */,
 				D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */,
 				D31AAF5F159B3919002C6B02 /* InCallTableViewController.m in Sources */,
+				D3211BB1159C4EF10098460B /* UIConferenceHeader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

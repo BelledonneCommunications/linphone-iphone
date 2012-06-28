@@ -49,6 +49,10 @@
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="617455101"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<object class="NSColor" key="IBUIBackgroundColor" id="293312528">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MCAwAA</bytes>
+								</object>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -83,6 +87,7 @@
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="846233730"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<reference key="IBUIBackgroundColor" ref="293312528"/>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
@@ -98,6 +103,7 @@
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="227927177"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<reference key="IBUIBackgroundColor" ref="293312528"/>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
@@ -111,10 +117,8 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="942473668"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="293312528">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="293312528"/>
+						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -130,7 +134,7 @@
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1003079266"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIOpaque">NO</bool>
+								<reference key="IBUIBackgroundColor" ref="293312528"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
@@ -146,12 +150,12 @@
 							<object class="IBUIButton" id="1003079266">
 								<reference key="NSNextResponder" ref="227927177"/>
 								<int key="NSvFlags">-2147483356</int>
-								<string key="NSFrameSize">{320, 68}</string>
+								<string key="NSFrameSize">{320, 63}</string>
 								<reference key="NSSuperview" ref="227927177"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="544229628"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIOpaque">NO</bool>
+								<reference key="IBUIBackgroundColor" ref="293312528"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
@@ -159,7 +163,7 @@
 								<reference key="IBUINormalTitleShadowColor" ref="127131304"/>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">champ-saisie-numero.png</string>
+									<string key="NSResourceName">champ-courbe-autres-numeros-first.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="955169232"/>
 								<reference key="IBUIFont" ref="269414177"/>
@@ -170,7 +174,7 @@
 								<string key="NSFrame">{{10, 0}, {206, 51}}</string>
 								<reference key="NSSuperview" ref="227927177"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="256572861"/>
+								<reference key="NSNextKeyView" ref="874892962"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -4593,6 +4597,40 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 							</object>
+							<object class="IBUIButton" id="874892962">
+								<reference key="NSNextResponder" ref="227927177"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{216, 6}, {41, 41}}</string>
+								<reference key="NSSuperview" ref="227927177"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="256572861"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUIContentEdgeInsets.top">8</double>
+								<double key="IBUIContentEdgeInsets.bottom">8</double>
+								<double key="IBUIContentEdgeInsets.left">8</double>
+								<double key="IBUIContentEdgeInsets.right">8</double>
+								<reference key="IBUINormalTitleShadowColor" ref="127131304"/>
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">play-champ-numero-over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUISelectedImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">pause-champ-numero-actif.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">play-champ-numero-actif.png</string>
+								</object>
+								<reference key="IBUIFontDescription" ref="955169232"/>
+								<reference key="IBUIFont" ref="269414177"/>
+							</object>
 							<object class="IBUILabel" id="932476762">
 								<reference key="NSNextResponder" ref="227927177"/>
 								<int key="NSvFlags">292</int>
@@ -4656,6 +4694,19 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="176711572"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
+				<reference key="IBUIBackgroundColor" ref="293312528"/>
+				<bool key="IBUIAutoresizesSubviews">NO</bool>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+			</object>
+			<object class="IBUIView" id="260763535">
+				<reference key="NSNextResponder"/>
+				<int key="NSvFlags">292</int>
+				<string key="NSFrameSize">{320, 460}</string>
+				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
+				<string key="NSReuseIdentifierKey">_NS:9</string>
+				<reference key="IBUIBackgroundColor" ref="293312528"/>
 				<bool key="IBUIAutoresizesSubviews">NO</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
@@ -4727,6 +4778,22 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<int key="connectionID">42</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">backgroundView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="260763535"/>
+					</object>
+					<int key="connectionID">46</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">pauseButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="874892962"/>
+					</object>
+					<int key="connectionID">48</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">doHeaderClick:</string>
 						<reference key="source" ref="544229628"/>
@@ -4791,6 +4858,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="1003079266"/>
 							<reference ref="111701986"/>
 							<reference ref="544229628"/>
+							<reference ref="874892962"/>
 						</array>
 						<reference key="parent" ref="675878782"/>
 						<string key="objectName">headerView</string>
@@ -4817,7 +4885,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<int key="objectID">18</int>
 						<reference key="object" ref="256572861"/>
 						<reference key="parent" ref="227927177"/>
-						<string key="objectName">stateView</string>
+						<string key="objectName">stateImage</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">19</int>
@@ -4842,6 +4910,18 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="846233730"/>
 						<reference key="parent" ref="176711572"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">45</int>
+						<reference key="object" ref="260763535"/>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">background</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">47</int>
+						<reference key="object" ref="874892962"/>
+						<reference key="parent" ref="227927177"/>
+						<string key="objectName">pauseButton</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4864,12 +4944,16 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="38.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="44.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="45.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="47.CustomClassName">UIPauseButton</string>
+				<string key="47.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="2" key="47.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">44</int>
+			<int key="maxID">48</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4894,6 +4978,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="firstBackground">UIView</string>
 						<string key="headerView">UIView</string>
 						<string key="otherBackground">UIView</string>
+						<string key="pauseButton">UIPauseButton</string>
 						<string key="stateImage">UIImageView</string>
 						<string key="stateLabel">UILabel</string>
 					</dictionary>
@@ -4922,6 +5007,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string key="name">otherBackground</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="pauseButton">
+							<string key="name">pauseButton</string>
+							<string key="candidateClassName">UIPauseButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="stateImage">
 							<string key="name">stateImage</string>
 							<string key="candidateClassName">UIImageView</string>
@@ -4936,6 +5025,22 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="minorKey">./Classes/UICallCell.h</string>
 					</object>
 				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIPauseButton</string>
+					<string key="superclassName">UIToggleButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIPauseButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIToggleButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIToggleButton.h</string>
+					</object>
+				</object>
 			</array>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
@@ -4948,9 +5053,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="avatar-inconnu.png">{320, 339}</string>
+			<string key="champ-courbe-autres-numeros-first.png">{640, 125}</string>
 			<string key="champ-courbe-autres-numeros.png">{640, 125}</string>
-			<string key="champ-saisie-numero.png">{640, 135}</string>
 			<string key="ombre-cotes-avatar.png">{640, 523}</string>
+			<string key="pause-champ-numero-actif.png">{43, 50}</string>
+			<string key="play-champ-numero-actif.png">{43, 46}</string>
+			<string key="play-champ-numero-over.png">{43, 46}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

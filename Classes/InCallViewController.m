@@ -397,11 +397,17 @@ const NSInteger SECURE_BUTTON_TAG=5;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    [super viewDidAppear:animated]; 
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewDidAppear:NO];
+    }  
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     if (visibleActionSheet != nil) {
         [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
     }
@@ -409,10 +415,26 @@ const NSInteger SECURE_BUTTON_TAG=5;
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
     }
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewWillDisappear:NO];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewWillAppear:NO];
+    }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
 	if (!videoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewDidDisappear:NO];
+    }  
 }
 
 - (void)viewDidUnload {
@@ -462,6 +484,12 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
 - (void)callUpdate: (NSNotification*) notif {  
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    
+    // Fake call update: Refresh UI
+    if(call == NULL) {
+        [self updateUIFromLinphoneState: YES];
+        return;
+    }
     
     // Handle data associated with the call
     if(state == LinphoneCallReleased) {
@@ -517,7 +545,7 @@ static void hideSpinner(LinphoneCall* lc, void* user_data);
             if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 1) {
                 [callTableController maximizeAll];
             }
-            //[self updateUIFromLinphoneState: YES];
+            [self updateUIFromLinphoneState: YES];
             break;
         }
         default:
@@ -790,4 +818,8 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             ms_error("Unhandled CallDelegate event of type: %d received - ignoring", type);
     }
 }
+
+
+
+
 @end

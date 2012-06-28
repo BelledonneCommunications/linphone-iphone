@@ -42,12 +42,13 @@
 @synthesize stateLabel;
 @synthesize stateImage;
 @synthesize avatarImage;
+@synthesize pauseButton;
 
 @synthesize headerView;
 @synthesize avatarView;
 
-- (id)init {
-    if ((self = [super init]) != nil) {
+- (id)initWithIdentifier:(NSString*)identifier {
+    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UICallCell"
                                                               owner:self
                                                             options:nil];
@@ -55,6 +56,9 @@
         if ([arrayOfViews count] >= 1) {
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
+        // Set selected+over background: IB lack !
+        [pauseButton setImage:[UIImage imageNamed:@"pause-champ-numero-over.png"] 
+                              forState:(UIControlStateHighlighted | UIControlStateSelected)];
     }
     return self;
 }
@@ -75,12 +79,13 @@
 }
 
 - (void)update {
-    if(data) {
-        LinphoneCall *call = data->call;
+    LinphoneCall *call = NULL;
+    if(data != nil && data->call != NULL) {
+        call = data->call;
         const LinphoneAddress* addr = linphone_call_get_remote_address(call);
     
-        if (addr) {
-            const char* lUserNameChars=linphone_address_get_username(addr);
+        if (addr != NULL) {
+            const char* lUserNameChars = linphone_address_get_username(addr);
             NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
             NSMutableString* mss = [[NSMutableString alloc] init];
             // contact name 
@@ -103,14 +108,19 @@
     
     
         LinphoneCallState state = linphone_call_get_state(call);
-        if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
-            [stateImage setImage:[UIImage imageNamed:@"pause-champ-numero-actif"]];
-        } else if(state == LinphoneCallOutgoingRinging) {
+        
+        if(state == LinphoneCallOutgoingRinging) {
             [stateImage setImage:[UIImage imageNamed:@"ring-champ-numero-actif"]];
+            [stateImage setHidden:false];
+            [pauseButton setHidden:true];
         } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
-            [stateImage setImage:nil];
+            [stateImage setImage:[UIImage imageNamed:@"outgoing-champ-numero-actif"]];
+            [stateImage setHidden:false];
+            [pauseButton setHidden:true];
         } else {
-            [stateImage setImage:[UIImage imageNamed:@"play-champ-numero-actif"]];
+            [stateImage setHidden:true];
+            [pauseButton setHidden:false];
+            [pauseButton update];
         }
     
         NSMutableString* msDuration = [[NSMutableString alloc] init];
@@ -131,6 +141,7 @@
             [avatarView setHidden:true];
         }
     }
+    [pauseButton setType:UIPauseButtonType_Call call:call];
 }
 
 - (IBAction)doHeaderClick:(id)sender {
@@ -143,12 +154,16 @@
 
 - (void)selfUpdate {
     UITableView *parentTable = (UITableView *)self.superview;
+    [parentTable beginUpdates];
+    [parentTable reloadData];
+    [parentTable endUpdates];
+    /*
     if(parentTable) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
             [parentTable reloadRowsAtIndexPaths:[[NSArray alloc] initWithObjects:index, nil] withRowAnimation:false];
         }
-    }
+    }*/
 }
 
 - (void)dealloc {
@@ -163,11 +178,11 @@
 }
 
 + (int)getMaximizedHeight {
-    return 300;
+    return 280;
 }
 
 + (int)getMinimizedHeight {
-    return 58;
+    return 54;
 }
 
 

@@ -25,17 +25,91 @@
 
 @implementation UIPauseButton
 
+- (void)myInit {
+    self->type = UIPauseButtonType_CurrentCall;
+}
+
+- (id)init{
+    self = [super init];
+    if (self) {
+		[self myInit];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self myInit];
+	}
+    return self;
+}	
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self myInit];
+    }
+    return self;
+}
+
+- (void)setType:(UIPauseButtonType) atype call:(LinphoneCall*)acall {
+    self->type = atype;
+    self->call = acall;
+}
+
 - (void)onOn {
-    LinphoneCall* currentCall = [UIPauseButton getCall];
-    if (currentCall != nil) {
-        linphone_core_pause_call([LinphoneManager getLc], currentCall);
+    switch (type) {
+        case UIPauseButtonType_Call:
+        {
+            if (call != nil) {
+                linphone_core_pause_call([LinphoneManager getLc], call);
+            }
+            break;
+        }
+        case UIPauseButtonType_Conference:
+        {
+            linphone_core_leave_conference([LinphoneManager getLc]);
+            
+            // Fake event
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self];
+            break;
+        }
+        case UIPauseButtonType_CurrentCall:
+        {
+            LinphoneCall* currentCall = [UIPauseButton getCall];
+            if (currentCall != nil) {
+                linphone_core_pause_call([LinphoneManager getLc], currentCall);
+            }
+            break;
+        }
     }
 }
 
 - (void)onOff {
-    LinphoneCall* currentCall = [UIPauseButton getCall];
-    if (currentCall != nil) {
-        linphone_core_resume_call([LinphoneManager getLc], currentCall);
+    switch (type) {
+        case UIPauseButtonType_Call:
+        {
+            if (call != nil) {
+                linphone_core_resume_call([LinphoneManager getLc], call);
+            }
+            break;
+        }
+        case UIPauseButtonType_Conference:
+        {
+            linphone_core_enter_conference([LinphoneManager getLc]);
+            // Fake event
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self];
+            break;
+        }
+        case UIPauseButtonType_CurrentCall:
+        {
+            LinphoneCall* currentCall = [UIPauseButton getCall];
+            if (currentCall != nil) {
+                linphone_core_resume_call([LinphoneManager getLc], currentCall);
+            }
+            break;
+        }
     }
 }
 
@@ -59,35 +133,53 @@
 }
 
 - (bool)onUpdate {
+    bool ret = false;
     // TODO: disable pause on not running call
     if([LinphoneManager isLcReady]) {
-        bool ret = false;
-        LinphoneCall* currentCall = [UIPauseButton getCall];
-        if (currentCall != nil) {
-            LinphoneCallState state = linphone_call_get_state(currentCall);
-            if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
-                ret = true;
+        LinphoneCore *lc = [LinphoneManager getLc];
+        switch (type) {
+            case UIPauseButtonType_Call:
+            {
+                if (call != nil) {
+                    LinphoneCallState state = linphone_call_get_state(call);
+                    if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
+                        ret = true;
+                    }
+                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                } else {
+                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                }
+                break;
+            }
+            case UIPauseButtonType_Conference:
+            {
+                if(linphone_core_get_conference_size(lc) > 0) {
+                    if (!linphone_core_is_in_conference(lc)) {
+                            ret = true;
+                    }
+                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                } else {
+                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                }
+                break;
+            }
+            case UIPauseButtonType_CurrentCall:
+            {
+                LinphoneCall* currentCall = [UIPauseButton getCall];
+                if (currentCall != nil) {
+                    LinphoneCallState state = linphone_call_get_state(currentCall);
+                    if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
+                        ret = true;
+                    }
+                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                } else {
+                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                }
+                break;
             }
         }
-        LinphoneCore* lc = [LinphoneManager getLc];
-        int callsCount = linphone_core_get_calls_nb(lc);
-        
-        if (currentCall) {
-            if (linphone_core_is_in_conference(lc)) {
-                [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:"is in conference"];
-            } else if ([UIPauseButton notInConferenceCallCount: lc] == callsCount && callsCount == 1) {
-                [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:"call count == 1"];
-            } else {
-                [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
-            }
-        } else {
-            [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
-        }
-        return ret;
-    } else {
-		//not ready yet
-		return false;
-	}
+    } 
+    return ret;
 }
 
 + (LinphoneCall*)getCall {

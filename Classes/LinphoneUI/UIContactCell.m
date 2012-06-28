@@ -24,8 +24,8 @@
 @synthesize firstNameLabel;
 @synthesize lastNameLabel;
 
-- (id)init {
-    if ((self = [super init]) != nil) {
+- (id)initWithIdentifier:(NSString*)identifier {
+    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIContactCell"
                                                               owner:self
                                                             options:nil];

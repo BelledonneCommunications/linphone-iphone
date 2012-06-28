@@ -1,4 +1,4 @@
-/* UIPauseButton.h
+/* UIConferenceHeader.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -10,29 +10,42 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */
 
-#import "UIToggleButton.h"
+#import "UIConferenceHeader.h"
 
-#import "linphonecore.h"
+#import "LinphoneManager.h"
 
-typedef enum _UIPauseButtonType {
-    UIPauseButtonType_CurrentCall,
-    UIPauseButtonType_Call,
-    UIPauseButtonType_Conference
-} UIPauseButtonType;
+@implementation UIConferenceHeader
 
-@interface UIPauseButton : UIToggleButton<UIToggleButtonDelegate> {
-    @private
-    UIPauseButtonType type;
-    LinphoneCall* call;
+@synthesize stateImage;
+@synthesize pauseButton;
+
+- (id)init {
+    return [super initWithNibName:@"UIConferenceHeader" bundle:[NSBundle mainBundle]];
 }
 
-- (void)setType:(UIPauseButtonType) type call:(LinphoneCall*)call;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Set selected+over background: IB lack !
+    [pauseButton setImage:[UIImage imageNamed:@"pause-champ-numero-over.png"] 
+                      forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [pauseButton setType:UIPauseButtonType_Conference call:nil];
+}
+
++ (int)getHeight {
+    return 50;
+}
+
+- (void)update {
+    [self view];
+    [stateImage setHidden:true];
+    [pauseButton update];
+}
 
 @end

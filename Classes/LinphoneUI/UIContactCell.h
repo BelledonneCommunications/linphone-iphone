@@ -30,4 +30,6 @@
 
 - (void)update:(ABRecordRef) record;
 
+- (id)initWithIdentifier:(NSString*)identifier;
+
 @end

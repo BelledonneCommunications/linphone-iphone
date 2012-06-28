@@ -23,25 +23,27 @@
 #import "UIPauseButton.h"
 #import "UISpeakerButton.h"
 #import "UIVideoButton.h"
+#import "UIHangUpButton.h"
 
 @interface UICallBar: UIViewController {
     UIPauseButton*      pauseButton;
-    UIButton*           startConferenceButton;
-    UIButton*           stopConferenceButton;
+    UIButton*           conferenceButton;
     UIVideoButton*      videoButton;
     UIMicroButton*      microButton;
     UISpeakerButton*    speakerButton;   
     UIButton*           optionsButton;
+    UIHangUpButton*     hangupButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIPauseButton*   pauseButton;
-@property (nonatomic, retain) IBOutlet UIButton*        startConferenceButton;
-@property (nonatomic, retain) IBOutlet UIButton*        stopConferenceButton;
+@property (nonatomic, retain) IBOutlet UIButton*        conferenceButton;
 @property (nonatomic, retain) IBOutlet UIVideoButton*   videoButton;
 @property (nonatomic, retain) IBOutlet UIMicroButton*   microButton;
 @property (nonatomic, retain) IBOutlet UISpeakerButton* speakerButton;
-@property (nonatomic, retain) IBOutlet UIButton* optionsButton;
+@property (nonatomic, retain) IBOutlet UIButton*        optionsButton;
+@property (nonatomic, retain) IBOutlet UIHangUpButton*  hangupButton;
 
 - (IBAction)onOptionsClick:(id)sender;
+- (IBAction)onConferenceClick:(id)sender;
 
 @end

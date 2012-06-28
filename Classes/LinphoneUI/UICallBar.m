@@ -26,18 +26,19 @@
 @implementation UICallBar
 
 @synthesize pauseButton;
-@synthesize startConferenceButton;
-@synthesize stopConferenceButton;
+@synthesize conferenceButton;
 @synthesize videoButton;
 @synthesize microButton;
 @synthesize speakerButton;  
 @synthesize optionsButton;
+@synthesize hangupButton;
 
 - (id)init {
     return [super initWithNibName:@"UICallBar" bundle:[NSBundle mainBundle]];
 }
 
 - (void)viewDidLoad {
+    [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
 }
 
@@ -58,28 +59,24 @@
     [microButton update];
     [pauseButton update];
     [videoButton update];
+    [hangupButton update];
     
     if(linphone_core_get_calls_nb(lc) > 1) {
-        [pauseButton setHidden:true];
-        LinphoneCall *currentCall = linphone_core_get_current_call(lc);
-        if(currentCall == NULL || !linphone_call_get_current_params(currentCall)->in_conference) {
-            [startConferenceButton setHidden:false];    
-            [stopConferenceButton setHidden:true];   
-        } else {
-            [startConferenceButton setHidden:true];    
-            [stopConferenceButton setHidden:false];
+        if(![pauseButton isHidden]) {
+            [pauseButton setHidden:true];
+            [conferenceButton setHidden:false];
         }
     } else {
-        [pauseButton setHidden:false];
-        [startConferenceButton setHidden:true];
-        [stopConferenceButton setHidden:true];
+        if([pauseButton isHidden]) {
+            [pauseButton setHidden:false];
+            [conferenceButton setHidden:true];
+        }
     }
 }
 
 - (void)dealloc {
     [pauseButton release];
-    [startConferenceButton release];
-    [stopConferenceButton release];
+    [conferenceButton release];
     [videoButton release];
     [microButton release];
     [speakerButton release]; 
@@ -97,6 +94,10 @@
                            , @"setAddress:",
                            nil] autorelease];
     [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+}
+
+- (IBAction)onConferenceClick:(id)sender {
+    linphone_core_add_all_to_conference([LinphoneManager getLc]);
 }
 
 @end

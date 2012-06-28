@@ -42,7 +42,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIHistoryCell"];
     if (cell == nil) {
-        cell = [[UIHistoryCell alloc] init];
+        cell = [[UIHistoryCell alloc] initWithIdentifier:@"UIHistoryCell"];
     }
     
 	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);

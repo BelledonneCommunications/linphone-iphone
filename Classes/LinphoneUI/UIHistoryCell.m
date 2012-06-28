@@ -29,8 +29,8 @@
 
 #define DETAILS_DISABLED
 
-- (id)init {
-    if ((self = [super init]) != nil) {
+- (id)initWithIdentifier:(NSString*)identifier {
+    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIHistoryCell"
                                                               owner:self
                                                             options:nil];
