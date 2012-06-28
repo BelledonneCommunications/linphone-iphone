@@ -103,14 +103,5 @@ public interface LinphoneCoreListener {
 	 * @param data
 	 */
 	void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
-	/**
-	 *  Report Notified message received for this identity.
-	 *  @param lc LinphoneCore
-	 *  @param call LinphoneCall in case the notify is part of a dialog, may be null
-	 *  @param from LinphoneAddress the message comes from
-	 *  @param event String the raw body of the notify event.
-	 *  
-	 */
-	void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event);
 }
 
