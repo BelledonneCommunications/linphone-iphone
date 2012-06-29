@@ -62,14 +62,14 @@
     }
 }
 
-- (void)myInit {
+- (void)initUIHangUpButton {
     [self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (id)init{
     self = [super init];
     if (self) {
-		[self myInit];
+		[self initUIHangUpButton];
     }
     return self;
 }
@@ -77,7 +77,7 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self myInit];
+		[self initUIHangUpButton];
 	}
     return self;
 }	
@@ -85,7 +85,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		[self myInit];
+		[self initUIHangUpButton];
     }
     return self;
 }

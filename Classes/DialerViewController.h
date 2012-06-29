@@ -55,6 +55,7 @@
 @property (nonatomic, retain) IBOutlet UICallButton* addCallButton;
 @property (nonatomic, retain) IBOutlet UIButton* cancelButton;
 @property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
+
 @property (nonatomic, retain) IBOutlet UIButton* oneButton;
 @property (nonatomic, retain) IBOutlet UIButton* twoButton;
 @property (nonatomic, retain) IBOutlet UIButton* threeButton;

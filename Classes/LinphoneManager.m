@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-#include "linphonecore_utils.h"
-#include "lpconfig.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -31,6 +29,10 @@
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "LinphoneCoreSettingsStore.h"
+
+#include "linphonecore_utils.h"
+#include "lpconfig.h"
+#include "private.h"
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
@@ -219,9 +221,9 @@ struct codec_name_pref_table codec_pref_table[]={
     return;
 }
 
-- (void)onCall:(LinphoneCall*) call StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+- (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
-    if(new_state == LinphoneCallReleased) {
+    if(state == LinphoneCallReleased) {
         if(linphone_call_get_user_pointer(call) != NULL) {
             free (linphone_call_get_user_pointer(call));
             linphone_call_set_user_pointer(call, NULL);
@@ -234,14 +236,19 @@ struct codec_name_pref_table codec_pref_table[]={
         linphone_call_set_user_pointer(call, data);
     }
     
-    if (new_state == LinphoneCallIncomingReceived) {
+    if (state == LinphoneCallIncomingReceived) {
         [self updateCallWithAddressBookData:call]; // display name is updated 
+    }
+    
+    if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
+            [self enableSpeaker:FALSE];
     }
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
                           [NSValue valueWithPointer:call], @"call",
-                          [NSNumber numberWithInt:new_state], @"state", 
+                          [NSNumber numberWithInt:state], @"state", 
                           [NSString stringWithUTF8String:message], @"message", nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
 }
@@ -532,7 +539,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-
 //scheduling loop
 - (void)iterate {
 	linphone_core_iterate(theLinphoneCore);
@@ -573,7 +579,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 /*************
  *lib linphone init method
  */
-- (void)startLibLinphone  {
+- (void)startLibLinphone {
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
@@ -610,11 +616,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-
+    const char* lPlay = [[myBundle pathForResource:@"toy-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_play_file(theLinphoneCore, lPlay);
 	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
@@ -665,11 +672,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			
 		}
 
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
-		//go directly to bg mode
-		[self enterBackgroundMode];
-	}
     NSUInteger cpucount = [[NSProcessInfo processInfo] processorCount];
 	ms_set_cpu_count(cpucount);
 
@@ -692,7 +694,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     ms_warning("Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
                ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
-	
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+		//go directly to bg mode
+		[self enterBackgroundMode];
+	}	
 }
 
 - (void)refreshRegisters{
@@ -741,6 +748,21 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 - (void)endInterruption {
     ms_message("Sound interruption ended!");
     //let the user resume the call manually.
+}
+
+- (void)enableSpeaker:(BOOL)enable {
+    //redirect audio to speaker
+    if(enable) {
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+        AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+                                 , sizeof (audioRouteOverride)
+                                 , &audioRouteOverride);
+    } else {
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+        AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
+                                 , sizeof (audioRouteOverride)
+                                 , &audioRouteOverride);
+    }
 }
 
 + (BOOL)runningOnIpad {

@@ -17,8 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 
-#import "UISpeakerButton.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "UISpeakerButton.h"
+
+#import "LinphoneManager.h"
+
 #include "linphonecore.h"
 
 @implementation UISpeakerButton
@@ -35,33 +38,46 @@ static void audioRouteChangeListenerCallback (
    
 }
 
+- (void)initUISpeakerButton {
+    AudioSessionInitialize(NULL, NULL, NULL, NULL);
+    OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+    if (lStatus) {
+        ms_error ("cannot register route change handler [%ld]",lStatus);
+    }
+}
+
 - (id)init {
-    if((self = [super init]) != nil) {
-   
-        AudioSessionInitialize(NULL, NULL, NULL, NULL);
-        OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
-        if (lStatus) {
-            ms_error ("cannot register route change handler [%ld]",lStatus);
-        }
+    self = [super init];
+    if (self) {
+		[self initUISpeakerButton];
     }
     return self;
 }
 
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUISpeakerButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUISpeakerButton];
+	}
+    return self;
+}	
 
 - (void)onOn {
-	//redirect audio to speaker
-	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-							 , sizeof (audioRouteOverride)
-							 , &audioRouteOverride);
-	
+	[[LinphoneManager instance] enableSpeaker:TRUE];
 }
+
 - (void)onOff {
-	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-							 , sizeof (audioRouteOverride)
-							 , &audioRouteOverride);
+    [[LinphoneManager instance] enableSpeaker:FALSE];
 }
+
 - (bool)onUpdate {
     CFStringRef lNewRoute=CFSTR("Unknown");
     UInt32 lNewRouteSize = sizeof(lNewRoute);

@@ -20,6 +20,9 @@
 #import "UICallBar.h"
 #import "LinphoneManager.h"
 
+#import "CPAnimationSequence.h"
+#import "CPAnimationStep.h"
+
 #include "linphonecore.h"
 #include "private.h"
 
@@ -32,6 +35,20 @@
 @synthesize speakerButton;  
 @synthesize optionsButton;
 @synthesize hangupButton;
+@synthesize padView;
+
+@synthesize oneButton;
+@synthesize twoButton;
+@synthesize threeButton;
+@synthesize fourButton;
+@synthesize fiveButton;
+@synthesize sixButton;
+@synthesize sevenButton;
+@synthesize eightButton;
+@synthesize nineButton;
+@synthesize starButton;
+@synthesize zeroButton;
+@synthesize hashButton;
 
 - (id)init {
     return [super initWithNibName:@"UICallBar" bundle:[NSBundle mainBundle]];
@@ -39,6 +56,20 @@
 
 - (void)viewDidLoad {
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
+    
+    [zeroButton   initWithNumber:'0'   addressField:nil dtmf:true];
+	[oneButton    initWithNumber:'1'   addressField:nil dtmf:true];
+	[twoButton    initWithNumber:'2'   addressField:nil dtmf:true];
+	[threeButton  initWithNumber:'3'   addressField:nil dtmf:true];
+	[fourButton   initWithNumber:'4'   addressField:nil dtmf:true];
+	[fiveButton   initWithNumber:'5'   addressField:nil dtmf:true];
+	[sixButton    initWithNumber:'6'   addressField:nil dtmf:true];
+	[sevenButton  initWithNumber:'7'   addressField:nil dtmf:true];
+	[eightButton  initWithNumber:'8'   addressField:nil dtmf:true];
+	[nineButton   initWithNumber:'9'   addressField:nil dtmf:true];
+	[starButton   initWithNumber:'*'   addressField:nil dtmf:true];
+	[hashButton   initWithNumber:'#'   addressField:nil dtmf:true];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
 }
 
@@ -47,6 +78,9 @@
 }
 
 - (void)callUpdate: (NSNotification*) notif {
+    //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    
     // check LinphoneCore is initialized
     LinphoneCore* lc = nil;
     if([LinphoneManager isLcReady])
@@ -72,6 +106,20 @@
             [conferenceButton setHidden:true];
         }
     }
+    
+    if(linphone_core_get_current_call(lc) == NULL) {
+        [self hidePad];
+    }
+
+    switch(state) {
+        LinphoneCallEnd:
+        LinphoneCallError:
+        LinphoneCallIncoming:
+        LinphoneCallOutgoing:
+            [self hidePad];
+        default:
+            break;
+    }
 }
 
 - (void)dealloc {
@@ -85,6 +133,54 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [super dealloc];
+}
+
+- (IBAction)onPadClick:(id)sender {
+    if([padView isHidden]) {
+        [self showPad];
+    } else {
+        [self hidePad];
+    }
+}
+
+- (void)showPad{
+    CGRect frame = [padView frame];
+    int original_y = frame.origin.y;
+    frame.origin.y = [[self view] frame].size.height;
+    [padView setFrame:frame];
+    [padView setHidden:FALSE];
+    CPAnimationSequence* move = [CPAnimationSequence sequenceWithSteps:
+                                 [CPAnimationStep for:0.5 animate:^{ 
+        CGRect frame = [padView frame];
+        frame.origin.y = original_y;
+        [padView setFrame:frame]; 
+    }],
+                                 nil
+                                 ];
+    [move run];
+    [move release];
+}
+
+- (void)hidePad{
+    CGRect frame = [padView frame];
+    int original_y = frame.origin.y;
+    
+    CPAnimationSequence* move = [CPAnimationSequence sequenceWithSteps:
+                                 [CPAnimationStep for:0.5 animate:^{ 
+        CGRect frame = [padView frame];
+        frame.origin.y = [[self view] frame].size.height;
+        [padView setFrame:frame]; 
+    }],
+                                 [CPAnimationStep after:0.0 animate:^{ 
+        CGRect frame = [padView frame];
+        frame.origin.y = original_y;
+        [padView setHidden:TRUE];
+        [padView setFrame:frame]; 
+    }], 
+                                 nil
+                                 ];
+    [move run];
+    [move release];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

@@ -31,14 +31,14 @@ enum TableSection {
     CallSection = 1
 };
 
-- (void)myInit {
+- (void)initInCallTableViewController {
     self->callCellData = [[NSMutableDictionary alloc] init];
 }
 
 - (id)init{
     self = [super init];
     if (self) {
-		[self myInit];
+		[self initInCallTableViewController];
     }
     return self;
 }
@@ -46,7 +46,7 @@ enum TableSection {
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-		[self myInit];
+		[self initInCallTableViewController];
     }
     return self;
 }
@@ -54,7 +54,7 @@ enum TableSection {
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self myInit];
+		[self initInCallTableViewController];
 	}
     return self;
 }	

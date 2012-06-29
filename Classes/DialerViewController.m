@@ -55,11 +55,15 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-   // [[LinphoneManager instance] setRegistrationDelegate:self];
-    
-    //TODO
-    //[mMainScreenWithVideoPreview showPreview:YES];
-    
+    [super viewWillAppear:animated];
+    [self update];
+}
+
+- (void)callUpdate:(NSNotification*)notif { 
+    [self update];
+}
+
+- (void)update {
     if([LinphoneManager isLcReady]) {
         LinphoneCore *lc = [LinphoneManager getLc];
         if(linphone_core_get_calls_nb(lc) > 0) {
@@ -74,7 +78,6 @@
             [addContactButton setHidden:false];
         }
     }
-    [super viewWillAppear:animated];
 }
 
 - (void)viewDidLoad {
@@ -95,6 +98,13 @@
 	[callButton   initWithAddress:addressField];
 	[addCallButton   initWithAddress:addressField];
 	[eraseButton  initWithAddressField:addressField];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+}
+
+- (void)viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setAddress:(NSString*) address {
@@ -121,6 +131,9 @@
 	[starButton release];
 	[zeroButton release];
 	[hashButton release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
 	[super dealloc];
 }
 

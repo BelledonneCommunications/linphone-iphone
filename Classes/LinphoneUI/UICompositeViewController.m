@@ -19,8 +19,6 @@
 
 #import "UICompositeViewController.h"
 
-#import <QuartzCore/QuartzCore.h>
-
 @implementation UICompositeViewDescription
 
 - (id)copy {
@@ -56,15 +54,16 @@
 @synthesize contentView;
 @synthesize tabBarView;
 
+@synthesize viewTransition;
 
-- (void)myInit {
+- (void)initUICompositeViewController {
     self->viewControllerCache = [[NSMutableDictionary alloc] init]; 
 }
 
 - (id)init{
     self = [super init];
     if (self) {
-		[self myInit];
+		[self initUICompositeViewController];
     }
     return self;
 }
@@ -72,7 +71,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-		[self myInit];
+		[self initUICompositeViewController];
     }
     return self;
 }
@@ -80,7 +79,7 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self myInit];
+		[self initUICompositeViewController];
 	}
     return self;
 }	
@@ -141,19 +140,14 @@
         currentViewDescription = description;
         
         // Animate only with a previous screen
-        if(oldViewDescription != nil) {
-            CATransition* trans = [CATransition animation];
-            [trans setType:kCATransitionPush];
-            [trans setDuration:0.35];
-            [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-            [trans setSubtype:kCATransitionFromRight];
-            [contentView.layer addAnimation:trans forKey:@"Transition"];
+        if(oldViewDescription != nil && viewTransition != nil) {
+            [contentView.layer addAnimation:viewTransition forKey:@"Transition"];
             if((oldViewDescription->stateBarEnabled == true && currentViewDescription->stateBarEnabled == false) ||
                (oldViewDescription->stateBarEnabled == false && currentViewDescription->stateBarEnabled == true)) {
-                [stateBarView.layer addAnimation:trans forKey:@"Transition"];
+                [stateBarView.layer addAnimation:viewTransition forKey:@"Transition"];
             }
             if(oldViewDescription->tabBar != currentViewDescription->tabBar) {
-                [tabBarView.layer addAnimation:trans forKey:@"Transition"];
+                [tabBarView.layer addAnimation:viewTransition forKey:@"Transition"];
             }
         }
         
@@ -230,10 +224,11 @@
         }
     } else {
         contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
-        if(currentViewDescription->fullscreen)
-            contentFrame.size.height += IPHONE_STATUSBAR_HEIGHT;
         tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
     }
+    
+    if(currentViewDescription->fullscreen)
+        contentFrame.size.height = [[UIScreen mainScreen] bounds].size.height + IPHONE_STATUSBAR_HEIGHT;
     
     // Resize innerView
     CGRect innerContentFrame = innerView.frame;

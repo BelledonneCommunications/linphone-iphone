@@ -30,7 +30,7 @@
 
 @synthesize mainViewController;
 
-- (void)myInit {
+- (void)initPhoneMainView {
     currentPhoneView = -1;
     loadCount = 0; // For avoiding IOS 4 bug
     
@@ -42,7 +42,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-		[self myInit];
+		[self initPhoneMainView];
     }
     return self;
 }
@@ -50,7 +50,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-		[self myInit];
+		[self initPhoneMainView];
     }
     return self;
 }
@@ -58,10 +58,51 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self myInit];
+		[self initPhoneMainView];
 	}
     return self;
 }	
+
+- (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
+    CATransition* trans = [CATransition animation];
+    [trans setType:kCATransitionPush];
+    [trans setDuration:0.35];
+    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    
+    bool left = false;
+    
+    if(old == PhoneView_Chat) {
+        if(new == PhoneView_Contacts ||
+           new == PhoneView_Dialer ||
+           new == PhoneView_Settings ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Settings) {
+        if(new == PhoneView_Dialer ||
+           new == PhoneView_Contacts ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Dialer) {
+        if(new == PhoneView_Contacts ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Contacts) {
+        if(new == PhoneView_History) {
+            left = true;
+        }
+    } 
+    
+    if(left) {
+        [trans setSubtype:kCATransitionFromLeft];
+    } else {
+        [trans setSubtype:kCATransitionFromRight];
+    }
+
+    return trans;
+}
 
 - (void)changeView: (NSNotification*) notif {   
     NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
@@ -75,6 +116,7 @@
         if(description == nil)
             return;
         if(view != currentPhoneView) {
+            [mainViewController setViewTransition:[self getTransition:currentPhoneView new:view]];
             [mainViewController changeView:description];
             currentPhoneView = view;
         } 

@@ -25,14 +25,14 @@
 
 @implementation UIPauseButton
 
-- (void)myInit {
+- (void)initUIPauseButton {
     self->type = UIPauseButtonType_CurrentCall;
 }
 
 - (id)init{
     self = [super init];
     if (self) {
-		[self myInit];
+		[self initUIPauseButton];
     }
     return self;
 }
@@ -40,7 +40,7 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self myInit];
+		[self initUIPauseButton];
 	}
     return self;
 }	
@@ -48,7 +48,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		[self myInit];
+		[self initUIPauseButton];
     }
     return self;
 }

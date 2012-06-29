@@ -18,6 +18,8 @@
  */ 
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
+
 #import "LinphoneManager.h"
 
 @interface UICompositeViewDescription: NSObject{
@@ -35,6 +37,7 @@
                                  tabBar:(NSString*)tabBar
                           tabBarEnabled:(BOOL) tabBarEnabled
                              fullscreen:(BOOL) fullscreen;
+
 @end
 
 @interface UICompositeViewController : UIViewController {
@@ -49,7 +52,10 @@
     NSMutableDictionary *viewControllerCache;
     
     UICompositeViewDescription *currentViewDescription;
+    CATransition *viewTransition;
 }
+
+@property (strong) CATransition *viewTransition;
 
 @property (nonatomic, retain) IBOutlet UIView* stateBarView;
 @property (nonatomic, retain) IBOutlet UIView* contentView;

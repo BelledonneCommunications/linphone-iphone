@@ -224,35 +224,6 @@
 								<reference key="IBUIFontDescription" ref="857420967"/>
 								<reference key="IBUIFont" ref="177658264"/>
 							</object>
-							<object class="IBUIButton" id="150499342">
-								<reference key="NSNextResponder" ref="242430033"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{0, 135}, {107, 54}}</string>
-								<reference key="NSSuperview" ref="242430033"/>
-								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="616388880"/>
-								<bool key="IBUIOpaque">NO</bool>
-								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<int key="IBUIContentHorizontalAlignment">0</int>
-								<int key="IBUIContentVerticalAlignment">0</int>
-								<reference key="IBUIHighlightedTitleColor" ref="923326808"/>
-								<object class="NSColor" key="IBUINormalTitleColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
-								</object>
-								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">7-over.png</string>
-								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">7-actif.png</string>
-								</object>
-								<reference key="IBUIFontDescription" ref="857420967"/>
-								<reference key="IBUIFont" ref="177658264"/>
-							</object>
 							<object class="IBUIButton" id="573280603">
 								<reference key="NSNextResponder" ref="242430033"/>
 								<int key="NSvFlags">292</int>
@@ -278,6 +249,35 @@
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">6-actif.png</string>
+								</object>
+								<reference key="IBUIFontDescription" ref="857420967"/>
+								<reference key="IBUIFont" ref="177658264"/>
+							</object>
+							<object class="IBUIButton" id="150499342">
+								<reference key="NSNextResponder" ref="242430033"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{0, 135}, {107, 54}}</string>
+								<reference key="NSSuperview" ref="242430033"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="616388880"/>
+								<bool key="IBUIOpaque">NO</bool>
+								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<reference key="IBUIHighlightedTitleColor" ref="923326808"/>
+								<object class="NSColor" key="IBUINormalTitleColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MC4xOTYwNzg0MyAwLjMwOTgwMzkzIDAuNTIxNTY4NjYAA</bytes>
+								</object>
+								<reference key="IBUINormalTitleShadowColor" ref="177190558"/>
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">7-over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">7-actif.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="857420967"/>
 								<reference key="IBUIFont" ref="177658264"/>
@@ -650,7 +650,6 @@
 								<string key="NSFrame">{{214, 0}, {106, 69}}</string>
 								<reference key="NSSuperview" ref="32193173"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>

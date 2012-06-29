@@ -116,6 +116,8 @@ typedef struct _LinphoneCallAppData {
 - (void)fullScreen:(BOOL) enabled;
 - (PhoneView) currentView;
 
+- (void)enableSpeaker:(BOOL)enable;
+
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
 
 @property Connectivity connectivity;

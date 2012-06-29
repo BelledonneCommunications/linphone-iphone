@@ -22,16 +22,12 @@
 
 @implementation UIVideoButton
 
-@synthesize  videoUpdateIndicator;
-
 - (void)onOn {
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
         return;
     
-    [videoUpdateIndicator startAnimating];
-    [videoUpdateIndicator setHidden: FALSE];
     [self setEnabled: FALSE];
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
@@ -51,8 +47,6 @@
     if (!linphone_core_video_enabled(lc))
         return;
     
-    [videoUpdateIndicator startAnimating];
-    [videoUpdateIndicator setHidden: FALSE];
     [self setEnabled: FALSE];
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 

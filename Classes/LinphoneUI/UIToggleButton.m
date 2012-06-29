@@ -53,16 +53,24 @@
 	return self.selected;
 }
 
-- (id)init {
+
+- (void)initUIToggleButton {
     [self update];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-	return self;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIToggleButton];
+    }
+    return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		[self init];
+		[self initUIToggleButton];
     }
     return self;
 }
@@ -70,11 +78,10 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self init];
+		[self initUIToggleButton];
 	}
     return self;
 }	
-
 
 - (void)dealloc {
     [super dealloc];

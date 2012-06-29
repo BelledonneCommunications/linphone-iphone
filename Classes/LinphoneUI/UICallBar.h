@@ -24,6 +24,7 @@
 #import "UISpeakerButton.h"
 #import "UIVideoButton.h"
 #import "UIHangUpButton.h"
+#import "UIDigitButton.h"
 
 @interface UICallBar: UIViewController {
     UIPauseButton*      pauseButton;
@@ -33,6 +34,21 @@
     UISpeakerButton*    speakerButton;   
     UIButton*           optionsButton;
     UIHangUpButton*     hangupButton;
+    UIView*             padView;
+    
+    //Key pad
+	UIDigitButton*  oneButton;
+	UIDigitButton*  twoButton;
+	UIDigitButton*  threeButton;
+	UIDigitButton*  fourButton;
+	UIDigitButton*  fiveButton;
+	UIDigitButton*  sixButton;
+	UIDigitButton*  sevenButton;
+	UIDigitButton*  eightButton;
+	UIDigitButton*  nineButton;
+	UIDigitButton*  starButton;
+	UIDigitButton*  zeroButton;
+	UIDigitButton*  hashButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIPauseButton*   pauseButton;
@@ -42,8 +58,23 @@
 @property (nonatomic, retain) IBOutlet UISpeakerButton* speakerButton;
 @property (nonatomic, retain) IBOutlet UIButton*        optionsButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton*  hangupButton;
+@property (nonatomic, retain) IBOutlet UIView*          padView;
+
+@property (nonatomic, retain) IBOutlet UIButton* oneButton;
+@property (nonatomic, retain) IBOutlet UIButton* twoButton;
+@property (nonatomic, retain) IBOutlet UIButton* threeButton;
+@property (nonatomic, retain) IBOutlet UIButton* fourButton;
+@property (nonatomic, retain) IBOutlet UIButton* fiveButton;
+@property (nonatomic, retain) IBOutlet UIButton* sixButton;
+@property (nonatomic, retain) IBOutlet UIButton* sevenButton;
+@property (nonatomic, retain) IBOutlet UIButton* eightButton;
+@property (nonatomic, retain) IBOutlet UIButton* nineButton;
+@property (nonatomic, retain) IBOutlet UIButton* starButton;
+@property (nonatomic, retain) IBOutlet UIButton* zeroButton;
+@property (nonatomic, retain) IBOutlet UIButton* hashButton;
 
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onConferenceClick:(id)sender;
+- (IBAction)onPadClick:(id)sender;
 
 @end
