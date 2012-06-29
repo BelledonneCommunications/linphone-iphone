@@ -77,6 +77,7 @@ static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
+static gboolean workaround_gtk_entry_chinese_bug=FALSE;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -347,6 +348,11 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	return w;
 }
 
+static void entry_unmapped(GtkWidget *entry){
+	g_message("Entry is unmapped, calling unrealize to workaround chinese bug.");
+	gtk_widget_unrealize(entry);
+}
+
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 	GtkBuilder *builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
 	GObject *w;
@@ -357,6 +363,15 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 	w=gtk_builder_get_object(builder,name);
 	if (w==NULL){
 		g_error("No widget named %s found in xml interface.",name);
+	}
+	if (workaround_gtk_entry_chinese_bug){
+		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0){
+			if (g_object_get_data(G_OBJECT(w),"entry_bug_workaround")==NULL){
+				g_object_set_data(G_OBJECT(w),"entry_bug_workaround",GINT_TO_POINTER(1));
+				g_message("%s is a GtkEntry",name);
+				g_signal_connect(G_OBJECT(w),"unmap",(GCallback)entry_unmapped,NULL);
+			}
+		}
 	}
 	return GTK_WIDGET(w);
 }
@@ -1765,6 +1780,9 @@ int main(int argc, char *argv[]){
 		char tmp[128];
 		snprintf(tmp,sizeof(tmp),"LANG=%s",lang);
 		_putenv(tmp);
+		if (strncmp(lang,"zh",2)==0){
+			workaround_gtk_entry_chinese_bug=TRUE;
+		}
 #else
 		setenv("LANG",lang,1);
 #endif
