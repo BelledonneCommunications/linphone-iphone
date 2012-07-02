@@ -765,29 +765,24 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     }
 }
 
+- (BOOL)isSpeakerEnabled {
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        ms_message("Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        return [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+    } else {
+        return false;
+    }
+}
+
 + (BOOL)runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 #endif
     return NO;
-}
-
-+ (void)set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason{
-    if (view.enabled != enabled) {
-        ms_message("UI - '%s' is now '%s' ('%s')", name, enabled ? "ENABLED" : "DISABLED", reason);
-        [view setEnabled:enabled];
-    }
-}
-
-+ (void)set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason{
-    if (view.hidden != hidden) {
-        ms_message("UI - '%s' is now '%s' ('%s')", name, hidden ? "HIDDEN" : "SHOWN", reason);
-        [view setHidden:hidden];
-    }
-}
-
-+ (void)logUIElementPressed:(const char*) name {
-    ms_message("UI - '%s' pressed", name);
 }
 
 @end

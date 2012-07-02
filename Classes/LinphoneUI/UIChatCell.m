@@ -25,6 +25,9 @@
 @synthesize displayNameLabel;
 @synthesize chatContentLabel;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     if ((self = [super init]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIChatCell"
@@ -38,9 +41,14 @@
     return self;
 }
 
-- (IBAction)onDetails: (id) event {
+- (void)dealloc {
+    [displayNameLabel release];
+    [chatContentLabel release];
     
+    [super dealloc];
 }
+
+#pragma mark - 
 
 - (void)update{
     
@@ -69,11 +77,11 @@
     [chatContentLabel setFrame: lastNameFrame];
 }
 
-- (void)dealloc {
-    [displayNameLabel release];
-    [chatContentLabel release];
+
+#pragma mark - Action Functions
+
+- (IBAction)onDetails: (id) event {
     
-    [super dealloc];
 }
 
 @end

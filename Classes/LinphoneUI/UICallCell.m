@@ -19,6 +19,8 @@
 
 #import "UICallCell.h"
 
+#import "LinphoneManager.h"
+
 @implementation UICallCellData
 
 - (id)init:(LinphoneCall*) acall {
@@ -43,9 +45,16 @@
 @synthesize stateImage;
 @synthesize avatarImage;
 @synthesize pauseButton;
+@synthesize removeButton;
 
 @synthesize headerView;
 @synthesize avatarView;
+
+@synthesize firstCell;
+@synthesize conferenceCall;
+
+
+#pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
@@ -63,15 +72,30 @@
     return self;
 }
 
-- (void)firstCell{
-    [firstBackground setHidden:false];
-    [otherBackground setHidden:true];
+- (void)dealloc {
+    [firstBackground release];
+    [otherBackground release];
+    [addressLabel release];
+    [stateLabel release];
+    [stateImage release];
+    [avatarImage release];
+    [headerView release];
+    [super dealloc];
 }
 
-- (void)otherCell{
-    [firstBackground setHidden:true];
-    [otherBackground setHidden:false];
+
+#pragma mark - Static cell sizes
+
++ (int)getMaximizedHeight {
+    return 280;
 }
+
++ (int)getMinimizedHeight {
+    return 54;
+}
+
+
+#pragma mark - 
 
 - (void)update:(UICallCellData*) adata {
     self->data = adata;
@@ -109,18 +133,25 @@
     
         LinphoneCallState state = linphone_call_get_state(call);
         
-        if(state == LinphoneCallOutgoingRinging) {
-            [stateImage setImage:[UIImage imageNamed:@"ring-champ-numero-actif"]];
-            [stateImage setHidden:false];
-            [pauseButton setHidden:true];
-        } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
-            [stateImage setImage:[UIImage imageNamed:@"outgoing-champ-numero-actif"]];
-            [stateImage setHidden:false];
-            [pauseButton setHidden:true];
+        if(!conferenceCall) {
+            if(state == LinphoneCallOutgoingRinging) {
+                [stateImage setImage:[UIImage imageNamed:@"ring-champ-numero-actif"]];
+                [stateImage setHidden:false];
+                [pauseButton setHidden:true];
+            } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
+                [stateImage setImage:[UIImage imageNamed:@"outgoing-champ-numero-actif"]];
+                [stateImage setHidden:false];
+                [pauseButton setHidden:true];
+            } else {
+                [stateImage setHidden:true];
+                [pauseButton setHidden:false];
+                [pauseButton update];
+            }
+            [removeButton setHidden:true];
         } else {
             [stateImage setHidden:true];
-            [pauseButton setHidden:false];
-            [pauseButton update];
+            [pauseButton setHidden:true];
+            [removeButton setHidden:false];
         }
     
         NSMutableString* msDuration = [[NSMutableString alloc] init];
@@ -142,14 +173,9 @@
         }
     }
     [pauseButton setType:UIPauseButtonType_Call call:call];
-}
-
-- (IBAction)doHeaderClick:(id)sender {
-    NSLog(@"Toggle UICallCell");
-    if(data) {
-        data->minimize = !data->minimize;
-        [self selfUpdate];
-    }
+    
+    [firstBackground setHidden:!firstCell];
+    [otherBackground setHidden:firstCell];
 }
 
 - (void)selfUpdate {
@@ -166,24 +192,20 @@
     }*/
 }
 
-- (void)dealloc {
-    [firstBackground release];
-    [otherBackground release];
-    [addressLabel release];
-    [stateLabel release];
-    [stateImage release];
-    [avatarImage release];
-    [headerView release];
-    [super dealloc];
+
+#pragma mark - Action Functions
+
+- (IBAction)doHeaderClick:(id)sender {
+    if(data) {
+        data->minimize = !data->minimize;
+        [self selfUpdate];
+    }
 }
 
-+ (int)getMaximizedHeight {
-    return 280;
+- (IBAction)doRemoveClick:(id)sender {
+    if(data != nil && data->call != NULL) {
+        linphone_core_remove_from_conference([LinphoneManager getLc], data->call);
+    }
 }
-
-+ (int)getMinimizedHeight {
-    return 54;
-}
-
 
 @end

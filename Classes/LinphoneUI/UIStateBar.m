@@ -30,9 +30,22 @@
 
 NSTimer *callQualityTimer;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"UIStateBar" bundle:[NSBundle mainBundle]];
 }
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [callQualityTimer invalidate];
+    [callQualityTimer release];
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -55,39 +68,18 @@ NSTimer *callQualityTimer;
     [self proxyConfigUpdate: config];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+- (void) viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [callQualityTimer invalidate];
 }
+
+
+#pragma mark - Event Functions
 
 - (void)registrationUpdate: (NSNotification*) notif {  
     LinphoneProxyConfig* config = NULL;
     linphone_core_get_default_proxy([LinphoneManager getLc], &config);
     [self proxyConfigUpdate:config];
-}
-
-- (void)callQualityUpdate { 
-    UIImage *image = nil;
-    if([LinphoneManager isLcReady]) {
-        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-        if(call != NULL) {
-            float quality = linphone_call_get_average_quality(call);
-            if(quality < 1) {
-                image = [UIImage imageNamed:@"quality-call-0.png"];
-            } else if (quality < 2) {
-                image = [UIImage imageNamed:@"quality-call-1.png"];
-            } else if (quality < 3) {
-                image = [UIImage imageNamed:@"quality-call-2.png"];
-            } else {
-                image = [UIImage imageNamed:@"quality-call-3.png"];
-            }
-        }
-    }
-    if(image != nil) {
-        [callQualityImage setHidden: false];
-        [callQualityImage setImage: image];
-    } else {
-        [callQualityImage setHidden: true];
-    }
 }
 
 - (void)proxyConfigUpdate: (LinphoneProxyConfig*) config {
@@ -148,16 +140,32 @@ NSTimer *callQualityTimer;
     [registrationStateImage setImage:image];
 }
 
-- (void) viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [callQualityTimer invalidate];
-}
 
-- (void) dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [callQualityTimer invalidate];
-    [callQualityTimer release];
-    [super dealloc];
+#pragma mark - 
+
+- (void)callQualityUpdate { 
+    UIImage *image = nil;
+    if([LinphoneManager isLcReady]) {
+        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if(call != NULL) {
+            float quality = linphone_call_get_average_quality(call);
+            if(quality < 1) {
+                image = [UIImage imageNamed:@"quality-call-0.png"];
+            } else if (quality < 2) {
+                image = [UIImage imageNamed:@"quality-call-1.png"];
+            } else if (quality < 3) {
+                image = [UIImage imageNamed:@"quality-call-2.png"];
+            } else {
+                image = [UIImage imageNamed:@"quality-call-3.png"];
+            }
+        }
+    }
+    if(image != nil) {
+        [callQualityImage setHidden: false];
+        [callQualityImage setImage: image];
+    } else {
+        [callQualityImage setHidden: true];
+    }
 }
 
 @end

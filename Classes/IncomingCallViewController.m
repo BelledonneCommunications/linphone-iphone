@@ -25,6 +25,9 @@
 @synthesize addressLabel;
 @synthesize avatarImage;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     self = [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
     if(self) {
@@ -42,6 +45,9 @@
     [super dealloc];
 }
 
+
+#pragma mark - Event Functions
+
 - (void)callUpdate:(NSNotification*)notif {  
     LinphoneCall *acall = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState astate = [[notif.userInfo objectForKey: @"state"] intValue];
@@ -50,15 +56,8 @@
     }
 }
 
-- (IBAction)onAcceptClick:(id)event {
-    linphone_core_accept_call([LinphoneManager getLc], call);
-    [self dismiss: IncomingCall_Accepted];
-}
 
-- (IBAction)onDeclineClick:(id)event {
-    linphone_core_terminate_call([LinphoneManager getLc], call);
-    [self dismiss: IncomingCall_Decline];
-}
+#pragma mark -
 
 - (void)update:(LinphoneCall*)acall {
     [self view]; //Force view load
@@ -74,6 +73,19 @@
 
 - (LinphoneCall*) getCall {
     return call;
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)onAcceptClick:(id)event {
+    linphone_core_accept_call([LinphoneManager getLc], call);
+    [self dismiss: IncomingCall_Accepted];
+}
+
+- (IBAction)onDeclineClick:(id)event {
+    linphone_core_terminate_call([LinphoneManager getLc], call);
+    [self dismiss: IncomingCall_Decline];
 }
 
 @end

@@ -22,16 +22,28 @@
 
 @implementation UIEraseButton
 
+#pragma mark - Lifecycle Functions
+
+-(void) initWithAddressField:(UITextField*) address {
+	mAddress = address;
+	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
+}
+
+- (void)dealloc {
+    [super dealloc];
+}
+
+
+#pragma mark - Action Functions
+
 -(void) touchDown:(id) sender {
   	if ([mAddress.text length] > 0) {
 		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
 	}  
 }
 
--(void) initWithAddressField:(UITextField*) address {
-	mAddress = address;
-	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
-}
+
+#pragma mark - UILongTouchButtonDelegate Functions
 
 - (void)onRepeatTouch {
 }
@@ -39,10 +51,5 @@
 - (void)onLongTouch {
     [mAddress setText:@""];
 }
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

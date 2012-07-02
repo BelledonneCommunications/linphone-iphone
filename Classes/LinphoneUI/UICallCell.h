@@ -34,6 +34,9 @@
 
 @interface UICallCell : UITableViewCell {
     @private
+    BOOL firstCell;
+    BOOL conferenceCall;
+    
     UIView *firstBackground;
     UIView *otherBackground;
     
@@ -41,6 +44,7 @@
     UILabel *stateLabel;
     UIImageView *stateImage;
     UIPauseButton *pauseButton;
+    UIButton *removeButton;
     UIImageView *avatarImage;
     
     UIView *headerView;
@@ -58,18 +62,21 @@
 @property (nonatomic, retain) IBOutlet UILabel* stateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* stateImage;
 @property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
+@property (nonatomic, retain) IBOutlet UIButton *removeButton;
 @property (nonatomic, retain) IBOutlet UIPauseButton *pauseButton;
 
 @property (nonatomic, retain) IBOutlet UIView* headerView;
 @property (nonatomic, retain) IBOutlet UIView* avatarView;
 
-- (void)firstCell;
-- (void)otherCell;
+@property (assign) BOOL firstCell;
+@property (assign) BOOL conferenceCall;
+
 - (void)update;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 
 - (IBAction)doHeaderClick:(id)sender;
+- (IBAction)doRemoveClick:(id)sender;
 
 + (int)getMaximizedHeight;
 + (int)getMinimizedHeight;

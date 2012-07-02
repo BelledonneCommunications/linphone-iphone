@@ -48,66 +48,110 @@ const NSInteger SECURE_BUTTON_TAG=5;
 @synthesize testVideoView;
 #endif
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"InCallViewController" bundle:[NSBundle mainBundle]];
 }
 
-//TODO
-/*
-- (void)orientationChanged: (NSNotification*) notif {   
-    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
-    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-    int newRotation = 0;
-    switch (orientation) {
-        case UIInterfaceOrientationLandscapeRight:
-            newRotation = 270;
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            newRotation = 90;
-            break;
-        default:
-            newRotation = 0;
+- (void)dealloc {
+    [callTableController release];
+    [callTableView release];
+    
+    [videoGroup release];
+    [videoView release];
+    [videoPreview release];
+#ifdef TEST_VIDEO_VIEW_CHANGE
+    [testVideoView release];
+#endif
+    [videoCameraSwitch release];
+    
+    [videoWaitingForFirstImage release];
+    
+    [videoZoomHandler release];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = YES;
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewDidAppear:NO];
+    }  
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (visibleActionSheet != nil) {
+        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
     }
-    if (oldLinphoneOrientation != newRotation) {
-        linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
-        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
-        
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-            //Orientation has changed, must call update call
-            linphone_core_update_call([LinphoneManager getLc], call, NULL);
-        
-        
-            // animate button images rotation
-#define degreesToRadians(x) (M_PI * x / 180.0)
-            CGAffineTransform transform = CGAffineTransformIdentity;
-            switch (orientation) {
-                case UIInterfaceOrientationLandscapeRight:
-                    transform = CGAffineTransformMakeRotation(degreesToRadians(90));
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    transform = CGAffineTransformMakeRotation(degreesToRadians(-90));
-                    break;
-                default:
-                    transform = CGAffineTransformIdentity;
-                    break;
-            }
-        
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.2f];
-                        //TODO
-            //endCtrl.imageView.transform = transform;
-            //mute.imageView.transform = transform;
-            //speaker.imageView.transform = transform;
-            //pause.imageView.transform = transform;
-            //contacts.imageView.transform = transform;
-            //addCall.imageView.transform = transform;
-            //addVideo.imageView.transform = transform;
-            //dialer.imageView.transform = transform;
-            [UIView commitAnimations];
-        }
-    }    
-}*/
+    if (hideControlsTimer != nil) {
+        [hideControlsTimer invalidate];
+        hideControlsTimer = nil;
+    }
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewWillDisappear:NO];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewWillAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+	UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = NO;
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewDidDisappear:NO];
+    }  
+}
+
+- (void)viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    // Set windows (warn memory leaks)
+    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+
+    
+    UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
+    [singleFingerTap setNumberOfTapsRequired:1];
+    [singleFingerTap setCancelsTouchesInView: FALSE];
+    [[[UIApplication sharedApplication].delegate window] addGestureRecognizer:singleFingerTap];
+    [singleFingerTap release];
+    
+    videoZoomHandler = [[VideoZoomHandler alloc] init];
+    [videoZoomHandler setup:videoGroup];
+    videoGroup.alpha = 0;
+    
+    [videoCameraSwitch setPreview:videoPreview];
+}
+
+
+#pragma mark - 
 
 - (void)showControls:(id)sender {
     if (hideControlsTimer) {
@@ -141,7 +185,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     
     if([[LinphoneManager instance] currentView] == PhoneView_InCall && videoShown)
         [[LinphoneManager instance] showTabBar: false];
-
+    
     if (hideControlsTimer) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
@@ -162,9 +206,10 @@ const NSInteger SECURE_BUTTON_TAG=5;
 #endif
 
 - (void)enableVideoDisplay:(BOOL)animation  {
+    if(videoShown)
+        return;
+    
     videoShown = true;
-    //TODO
-    //[self orientationChanged:nil];
     
     [videoZoomHandler resetZoom];
     
@@ -189,7 +234,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 #ifdef TEST_VIDEO_VIEW_CHANGE
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_debugChangeVideoView) userInfo:nil repeats:YES];
 #endif
-   // [self batteryLevelChanged:nil];
+    // [self batteryLevelChanged:nil];
     
     videoWaitingForFirstImage.hidden = NO;
     [videoWaitingForFirstImage startAnimating];
@@ -201,17 +246,20 @@ const NSInteger SECURE_BUTTON_TAG=5;
 }
 
 - (void)disableVideoDisplay:(BOOL)animation {
+    if(!videoShown)
+        return;
+    
     videoShown = false;
     if(animation) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:1.0];
     }
-
+    
     [videoGroup setAlpha:0.0];
     [[LinphoneManager instance] showTabBar: true];
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setAlpha:0.0];
-
+    
     if(animation) {
         [UIView commitAnimations];
     }
@@ -222,36 +270,6 @@ const NSInteger SECURE_BUTTON_TAG=5;
     }
     
     [[LinphoneManager instance] fullScreen:false];
-}
-
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // Set windows (warn memory leaks)
-    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
-    linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
-    
-    // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
-
-    
-    UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
-    [singleFingerTap setNumberOfTapsRequired:1];
-    [singleFingerTap setCancelsTouchesInView: FALSE];
-    [[[UIApplication sharedApplication].delegate window] addGestureRecognizer:singleFingerTap];
-    [singleFingerTap release];
-    
-    videoZoomHandler = [[VideoZoomHandler alloc] init];
-    [videoZoomHandler setup:videoGroup];
-    videoGroup.alpha = 0;
-    
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryLevelChanged:) name:UIDeviceBatteryLevelDidChangeNotification object:nil];
-    
-    
-    [videoCameraSwitch setPreview:videoPreview];
 }
 
 - (void)transferPressed {
@@ -314,66 +332,16 @@ const NSInteger SECURE_BUTTON_TAG=5;
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidAppear:NO];
-    }  
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if (visibleActionSheet != nil) {
-        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
-    }
-    if (hideControlsTimer != nil) {
-        [hideControlsTimer invalidate];
-        hideControlsTimer = nil;
-    }
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillDisappear:NO];
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillAppear:NO];
-    }   
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-
-	if (!videoShown) [[UIApplication sharedApplication] setIdleTimerDisabled:false];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidDisappear:NO];
-    }  
-}
-
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)displayVideoCall:(LinphoneCall*) call {
-	UIDevice *device = [UIDevice currentDevice];
-    device.proximityMonitoringEnabled = YES;
-    
-    if(!videoShown)
-        [self enableVideoDisplay: TRUE];
+- (void)displayVideoCall:(LinphoneCall*) call { 
+    [self enableVideoDisplay: TRUE];
 }
 
 - (void)displayTableCall:(LinphoneCall*) call {
-	UIDevice *device = [UIDevice currentDevice];
-    device.proximityMonitoringEnabled = YES;
-    
-    if(videoShown)
-        [self disableVideoDisplay: TRUE];
+    [self disableVideoDisplay: TRUE];
 }
+
+
+#pragma mark - Spinner Functions
 
 - (void)hideSpinnerIndicator: (LinphoneCall*)call {
     videoWaitingForFirstImage.hidden = TRUE;
@@ -383,6 +351,8 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     InCallViewController* thiz = (InCallViewController*) user_data;
     [thiz hideSpinnerIndicator:call];
 }
+
+#pragma mark - Event Functions
 
 - (void)callUpdate: (NSNotification*) notif {  
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
@@ -460,6 +430,8 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     
 }
 
+#pragma mark - ActionSheet Functions
+
 - (void)dismissActionSheet: (id)o {
     if (visibleActionSheet != nil) {
         [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
@@ -498,22 +470,6 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     /* start cancel timer */
     cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];
     [visibleActionSheet release];
-}
-
-- (void)dealloc {
-    [videoGroup release];
-    [callTableView release];
-    [videoView release];
-    [videoPreview release];
-#ifdef TEST_VIDEO_VIEW_CHANGE
-    [testVideoView release];
-#endif
-    [videoCameraSwitch release];
-    [videoWaitingForFirstImage release];
-     
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc]; 
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {

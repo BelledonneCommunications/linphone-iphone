@@ -50,9 +50,28 @@
 @synthesize zeroButton;
 @synthesize hashButton;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"UICallBar" bundle:[NSBundle mainBundle]];
 }
+
+- (void)dealloc {
+    [pauseButton release];
+    [conferenceButton release];
+    [videoButton release];
+    [microButton release];
+    [speakerButton release]; 
+    [optionsButton release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
@@ -71,11 +90,18 @@
 	[hashButton   initWithNumber:'#'   addressField:nil dtmf:true];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
+    
+    // Set selected+over background: IB lack !
+    [videoButton setBackgroundImage:[UIImage imageNamed:@"video-ON-disabled.png"] 
+                           forState:(UIControlStateDisabled | UIControlStateSelected)];
 }
 
 - (void)viewDidUnload {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+#pragma mark - Event Functions
 
 - (void)callUpdate: (NSNotification*) notif {
     //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
@@ -122,18 +148,53 @@
     }
 }
 
-- (void)dealloc {
-    [pauseButton release];
-    [conferenceButton release];
-    [videoButton release];
-    [microButton release];
-    [speakerButton release]; 
-    [optionsButton release];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [super dealloc];
+
+#pragma mark -  
+
+- (void)showPad{
+    if([padView isHidden]) {
+        CGRect frame = [padView frame];
+        int original_y = frame.origin.y;
+        frame.origin.y = [[self view] frame].size.height;
+        [padView setFrame:frame];
+        [padView setHidden:FALSE];
+        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                     [[CPAnimationStep for:0.5 animate:^{ 
+            CGRect frame = [padView frame];
+            frame.origin.y = original_y;
+            [padView setFrame:frame]; 
+        }] autorelease],
+                                     nil
+                                     ] autorelease];
+        [move run];
+    }
 }
+
+- (void)hidePad{
+    if(![padView isHidden]) {
+        CGRect frame = [padView frame];
+        int original_y = frame.origin.y;
+    
+        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                     [[CPAnimationStep for:0.5 animate:^{ 
+            CGRect frame = [padView frame];
+            frame.origin.y = [[self view] frame].size.height;
+            [padView setFrame:frame]; 
+        }] autorelease],
+                                     [[CPAnimationStep after:0.0 animate:^{ 
+            CGRect frame = [padView frame];
+            frame.origin.y = original_y;
+            [padView setHidden:TRUE];
+            [padView setFrame:frame]; 
+        }] autorelease], 
+                                     nil
+                                     ] autorelease];
+    [move run];
+    }
+}
+
+
+#pragma mark - Action Functions
 
 - (IBAction)onPadClick:(id)sender {
     if([padView isHidden]) {
@@ -141,46 +202,6 @@
     } else {
         [self hidePad];
     }
-}
-
-- (void)showPad{
-    CGRect frame = [padView frame];
-    int original_y = frame.origin.y;
-    frame.origin.y = [[self view] frame].size.height;
-    [padView setFrame:frame];
-    [padView setHidden:FALSE];
-    CPAnimationSequence* move = [CPAnimationSequence sequenceWithSteps:
-                                 [CPAnimationStep for:0.5 animate:^{ 
-        CGRect frame = [padView frame];
-        frame.origin.y = original_y;
-        [padView setFrame:frame]; 
-    }],
-                                 nil
-                                 ];
-    [move run];
-    [move release];
-}
-
-- (void)hidePad{
-    CGRect frame = [padView frame];
-    int original_y = frame.origin.y;
-    
-    CPAnimationSequence* move = [CPAnimationSequence sequenceWithSteps:
-                                 [CPAnimationStep for:0.5 animate:^{ 
-        CGRect frame = [padView frame];
-        frame.origin.y = [[self view] frame].size.height;
-        [padView setFrame:frame]; 
-    }],
-                                 [CPAnimationStep after:0.0 animate:^{ 
-        CGRect frame = [padView frame];
-        frame.origin.y = original_y;
-        [padView setHidden:TRUE];
-        [padView setFrame:frame]; 
-    }], 
-                                 nil
-                                 ];
-    [move run];
-    [move release];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

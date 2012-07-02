@@ -24,6 +24,9 @@
 @synthesize firstNameLabel;
 @synthesize lastNameLabel;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIContactCell"
@@ -36,6 +39,16 @@
     }
     return self;
 }
+
+- (void) dealloc {
+    [firstNameLabel release];
+    [lastNameLabel release];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - 
 
 - (void)touchUp:(id) sender {
     [self setHighlighted:true animated:true];
@@ -91,13 +104,6 @@
     
     [firstNameLabel setFrame: firstNameFrame];
     [lastNameLabel setFrame: lastNameFrame];
-}
-
-- (void) dealloc {
-    [firstNameLabel release];
-    [lastNameLabel release];
-
-    [super dealloc];
 }
 
 @end

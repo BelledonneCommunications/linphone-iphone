@@ -33,7 +33,7 @@ typedef void (^AnimationStep)(void);
 
 @property (nonatomic) NSTimeInterval delay;
 @property (nonatomic) NSTimeInterval duration;
-@property (nonatomic, copy) AnimationStep step;
+@property (nonatomic, strong) AnimationStep step;
 @property (nonatomic) UIViewAnimationOptions options;
 
 #pragma mark - execution

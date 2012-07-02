@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HistoryTableViewController : UITableViewController {
+@interface HistoryTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate> {
     @private
     BOOL editMode;
 }

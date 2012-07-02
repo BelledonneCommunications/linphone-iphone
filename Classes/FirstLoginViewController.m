@@ -29,9 +29,23 @@
 @synthesize passwordField;
 @synthesize waitView;
 
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"FirstLoginViewController" bundle:[NSBundle mainBundle]];
 }
+
+- (void)dealloc {
+    [super dealloc];
+	[loginButton dealloc];
+	[siteButton dealloc];
+	[usernameField dealloc];
+    [passwordField dealloc];
+	[waitView dealloc];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidAppear:(BOOL)animated { 
     [super viewDidAppear:animated];
@@ -49,6 +63,13 @@
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
 }
+
+- (void)viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+#pragma mark - Event Functions
 
 - (void)registrationUpdate: (NSNotification*) notif {  
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
@@ -91,19 +112,7 @@
     }
 }
 
-- (void)dealloc {
-    [super dealloc];
-	[loginButton dealloc];
-	[siteButton dealloc];
-	[usernameField dealloc];
-    [passwordField dealloc];
-	[waitView dealloc];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
+#pragma mark - Action Functions
 
 - (void)onSiteClick:(id)sender {
     NSURL *url = [NSURL URLWithString:siteButton.titleLabel.text];
@@ -135,6 +144,9 @@
         [[LinphoneManager instance].settingsStore synchronize];
 	};
 }
+
+
+#pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     // When the user presses return, take focus away from the text field so that the keyboard is dismissed.

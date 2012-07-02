@@ -35,14 +35,28 @@ typedef enum _HistoryView {
     History_MAX
 } HistoryView;
 
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
 }
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 	[self.tableView reloadData];
 }
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self changeView: History_All];
+}
+
+
+#pragma mark -
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
@@ -58,10 +72,7 @@ typedef enum _HistoryView {
     }
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self changeView: History_All];
-}
+#pragma mark - Action Functions
 
 - (IBAction)onAllClick: (id) event {
     [self changeView: History_All];

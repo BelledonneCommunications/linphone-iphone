@@ -11,9 +11,10 @@
 			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBProxyObject</string>
-			<string>IBUIView</string>
 			<string>IBUIButton</string>
+			<string>IBUIActivityIndicatorView</string>
+			<string>IBUIView</string>
+			<string>IBProxyObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -41,6 +42,7 @@
 						<string key="NSFrame">{{0, 335}, {320, 125}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -424,6 +426,7 @@
 						<string key="NSFrame">{{20, 57}, {281, 260}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="501543038"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -444,7 +447,7 @@
 								<string key="NSFrameSize">{80, 67}</string>
 								<reference key="NSSuperview" ref="143533231"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="693636558"/>
+								<reference key="NSNextKeyView" ref="1016105438"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -477,6 +480,18 @@
 									<double key="pointSize">15</double>
 								</object>
 								<reference key="IBUIFont" ref="172665800"/>
+							</object>
+							<object class="IBUIActivityIndicatorView" id="1016105438">
+								<reference key="NSNextResponder" ref="143533231"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrame">{{20, 18}, {37, 37}}</string>
+								<reference key="NSSuperview" ref="143533231"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="693636558"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIStyle">0</int>
 							</object>
 							<object class="IBUIButton" id="693636558">
 								<reference key="NSNextResponder" ref="143533231"/>
@@ -904,6 +919,14 @@
 					<int key="connectionID">20</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">waitView</string>
+						<reference key="source" ref="262544423"/>
+						<reference key="destination" ref="1016105438"/>
+					</object>
+					<int key="connectionID">60</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">onConferenceClick:</string>
 						<reference key="source" ref="351323248"/>
@@ -962,6 +985,7 @@
 							<reference ref="351323248"/>
 							<reference ref="99607181"/>
 							<reference ref="976589610"/>
+							<reference ref="1016105438"/>
 						</array>
 						<reference key="parent" ref="931774220"/>
 						<string key="objectName">buttons</string>
@@ -1106,6 +1130,12 @@
 						<reference key="parent" ref="556199520"/>
 						<string key="objectName">6</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">59</int>
+						<reference key="object" ref="1016105438"/>
+						<reference key="parent" ref="143533231"/>
+						<string key="objectName">waitView</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1120,7 +1150,7 @@
 				<real value="1" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="12.CustomClassName">UIVideoButton</string>
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="12.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="12.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="21.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="30.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1163,6 +1193,7 @@
 				<string key="43.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="43.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="59.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="6.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="7.CustomClassName">UIHangUpButton</string>
@@ -1179,7 +1210,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">58</int>
+			<int key="maxID">60</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1381,6 +1412,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">UIVideoButton</string>
 					<string key="superclassName">UIToggleButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">waitView</string>
+						<string key="NS.object.0">UIActivityIndicatorView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">waitView</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">waitView</string>
+							<string key="candidateClassName">UIActivityIndicatorView</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UIVideoButton.h</string>

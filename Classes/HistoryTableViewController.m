@@ -23,12 +23,17 @@
 
 @implementation HistoryTableViewController
 
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     if((self = [super init]) != nil) {
         self->editMode = false;
     }
     return self;
 }
+
+
+#pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
@@ -97,6 +102,9 @@
     [dispName release];
 }
 
+
+#pragma mark - 
+
 - (void) toggleEditMode {
     editMode = !editMode;
     [(UITableView*)[self view] reloadData];
@@ -112,10 +120,6 @@
     if(editMode) {
         [self toggleEditMode];
     }
-}
-
-- (void)dealloc {
-    [super dealloc];
 }
 
 @end

@@ -23,8 +23,6 @@
 
 @implementation ContactsTableViewController
 
-#pragma mark Table view methods
-
 void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactsTableViewController* controller = (ContactsTableViewController*)context;
     OrderedDictionary* lAddressBookMap = controller->addressBookMap;
@@ -72,12 +70,18 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
     [(UITableView *)controller.view reloadData];
 }
 
+
+#pragma mark - ViewController Functions
+
 - (void) viewDidLoad {
     addressBookMap  = [[OrderedDictionary alloc] init];
     addressBook = ABAddressBookCreate();
     ABAddressBookRegisterExternalChangeCallback (addressBook, sync_toc_address_book, self);
     sync_toc_address_book(addressBook, nil, self);
 }
+
+
+#pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return [addressBookMap count];
@@ -132,6 +136,9 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
     }
     CFRelease(lPhoneNumbers);
 }
+
+
+#pragma mark - Lifecycle Functions
 
 - (void)dealloc {
     [super dealloc];

@@ -25,9 +25,14 @@
 @synthesize settingsController;
 @synthesize navigationController;
 
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"SettingsViewController" bundle:[NSBundle mainBundle]];
 }
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     settingsController.delegate = self;
@@ -38,6 +43,37 @@
     navigationController.view.frame = self.view.frame;
     [self.view addSubview: navigationController.view];
 }
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewWillDisappear:NO];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewWillAppear:NO];
+    }   
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewDidAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [settingsController viewDidDisappear:NO];
+    }  
+}
+
+
+#pragma mark - IASKSettingsReaderFilterDelegate Functions
 
 - (NSDictionary*)filterPreferenceSpecifier:(NSDictionary *)specifier {
     if (![LinphoneManager isLcReady]) {
@@ -81,35 +117,10 @@
     return specifier;
 }
 
+
+#pragma mark - IASKSettingsDelegate Functions
+
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillDisappear:NO];
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillAppear:NO];
-    }   
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidAppear:NO];
-    }   
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidDisappear:NO];
-    }  
 }
 
 @end

@@ -19,7 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UILinphone.h"
+#import "UIEraseButton.h"
+#import "UICallButton.h"
+#import "UIDigitButton.h"
 
 @interface DialerViewController : UIViewController <UITextFieldDelegate>{
 

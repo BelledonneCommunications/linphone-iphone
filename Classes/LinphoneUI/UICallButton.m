@@ -25,6 +25,23 @@
 
 static BOOL transferMode = NO;
 
+#pragma mark - Lifecycle Functions
+
+-(void) initWithAddress:(UITextField*) address{
+	mAddress=[address retain];
+    transferMode = NO;
+	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)dealloc {
+    [super dealloc];
+	[mAddress release];
+	
+}
+
+
+#pragma mark - Statics Functions 
+
 +(void) enableTransforMode:(BOOL) enable {
     transferMode = enable;
 }
@@ -32,6 +49,9 @@ static BOOL transferMode = NO;
 +(BOOL) transforModeEnabled {
     return transferMode;
 }
+
+
+#pragma mark -
 
 -(void) touchUp:(id) sender {
 	if (!linphone_core_is_network_reachabled([LinphoneManager getLc])) {
@@ -108,26 +128,5 @@ static BOOL transferMode = NO;
 	}
 	
 }
-
-
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
--(void) initWithAddress:(UITextField*) address{
-	mAddress=[address retain];
-    transferMode = NO;
-	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)dealloc {
-    [super dealloc];
-	[mAddress release];
-	
-}
-
 
 @end

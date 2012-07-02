@@ -20,7 +20,7 @@
 #import <UIKit/UIKit.h>
 
 @class ConsoleViewController;
-@interface MoreViewController : UITableViewController {
+@interface MoreViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate> {
 
 	bool isLogViewEnabled;
 	

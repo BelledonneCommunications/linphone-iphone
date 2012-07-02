@@ -28,16 +28,38 @@
 @synthesize settingsButton;
 @synthesize chatButton;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"UIMainBar" bundle:[NSBundle mainBundle]];
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
+
 - (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveLinphoneMainViewChangeEvent:) name:@"LinphoneMainViewChange" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
     [self update:[[LinphoneManager instance] currentView]];
 }
 
-- (void)receiveLinphoneMainViewChangeEvent: (NSNotification*) notif {  
+- (void)viewDidUnload {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [historyButton release];
+    [contactsButton release];
+    [dialerButton release];
+    [settingsButton release];
+    [chatButton release];
+}
+
+#pragma mark - 
+
+- (void)changeView: (NSNotification*) notif {  
     NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
     if(viewNumber != nil)
         [self update:[viewNumber intValue]];
@@ -71,19 +93,8 @@
     }
 }
 
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [historyButton release];
-    [contactsButton release];
-    [dialerButton release];
-    [settingsButton release];
-    [chatButton release];
-}
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super dealloc];
-}
+#pragma mark - Action Functions
 
 - (IBAction)onHistoryClick: (id) sender {
     [[LinphoneManager instance] changeView:PhoneView_History];

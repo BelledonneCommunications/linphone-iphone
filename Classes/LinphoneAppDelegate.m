@@ -153,13 +153,15 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)setupGSMInteraction {
-	callCenter = [[CTCallCenter alloc] init];
-    callCenter.callEventHandler = ^(CTCall* call) {
-        // post on main thread
-        [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+    if (callCenter == nil) {
+        callCenter = [[CTCallCenter alloc] init];
+        callCenter.callEventHandler = ^(CTCall* call) {
+            // post on main thread
+            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
                                withObject:callCenter
                             waitUntilDone:YES];
-    };    
+        };    
+    }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    

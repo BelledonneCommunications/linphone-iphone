@@ -21,38 +21,8 @@
 
 @implementation UIToggleButton
 
-- (void)touchUp:(id) sender {
-	[self toggle];
-}
 
-- (bool)toggle {
-	if (self.selected) {
-		self.selected=!self.selected;
-		[self onOff];
-	} else {
-        self.selected=!self.selected;
-		[self onOn];
-	}
-	return self.selected;
-}
-
-- (void)setOn {
-	if (!self.selected) {
-		[self toggle];
-	}
-}
-
-- (void)setOff {
-	if (self.selected) {
-		[self toggle];
-	}
-}
-
-- (bool)update {
-	self.selected = [self onUpdate];
-	return self.selected;
-}
-
+#pragma mark - Lifecycle Functions
 
 - (void)initUIToggleButton {
     [self update];
@@ -87,6 +57,43 @@
     [super dealloc];
 }
 
+
+#pragma mark - 
+
+- (void)touchUp:(id) sender {
+	[self toggle];
+}
+
+- (bool)toggle {
+	if (self.selected) {
+		self.selected=!self.selected;
+		[self onOff];
+	} else {
+        self.selected=!self.selected;
+		[self onOn];
+	}
+	return self.selected;
+}
+
+- (void)setOn {
+	if (!self.selected) {
+		[self toggle];
+	}
+}
+
+- (void)setOff {
+	if (self.selected) {
+		[self toggle];
+	}
+}
+
+- (bool)update {
+	self.selected = [self onUpdate];
+	return self.selected;
+}
+
+
+#pragma mark - UIToggleButtonDelegate Functions
 
 -(void) onOn {
     /*[NSException raise:NSInternalInconsistencyException 

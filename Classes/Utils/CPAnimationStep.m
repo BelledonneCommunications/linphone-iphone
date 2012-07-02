@@ -43,9 +43,14 @@
 		instance.delay = theDelay;
 		instance.duration = theDuration;
 		instance.options = theOptions;
-		instance.step = [theStep copy];
+		instance.step = theStep;
 	}
 	return instance;
+}
+
+- (void)dealloc {
+    [step release];
+    [super dealloc];
 }
 
 #pragma mark action
@@ -65,6 +70,7 @@
 		self.consumableSteps = [[NSMutableArray alloc] initWithArray:[self animationStepArray]];
 	}
 	if (![self.consumableSteps count]) { // recursion anchor
+        [self.consumableSteps release];
 		self.consumableSteps = nil;
 		return; // we're done
 	}

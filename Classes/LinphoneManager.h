@@ -89,9 +89,6 @@ typedef struct _LinphoneCallAppData {
 + (LinphoneCore*) getLc;
 + (BOOL)isLcReady;
 + (BOOL)runningOnIpad;
-+ (void)set:(UIView*)view hidden: (BOOL) hidden withName:(const char*)name andReason:(const char*) reason;
-+ (void)set:(UIButton*)view enabled: (BOOL) enabled withName:(const char*)name andReason:(const char*) reason;
-+ (void)logUIElementPressed:(const char*) name;
 - (void)registerLogView:(id<LogView>) view;
 
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
@@ -117,6 +114,7 @@ typedef struct _LinphoneCallAppData {
 - (PhoneView) currentView;
 
 - (void)enableSpeaker:(BOOL)enable;
+- (BOOL)isSpeakerEnabled;
 
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
 

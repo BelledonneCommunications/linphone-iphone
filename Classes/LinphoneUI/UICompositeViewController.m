@@ -56,6 +56,9 @@
 
 @synthesize viewTransition;
 
+
+#pragma mark - Lifecycle Functions
+
 - (void)initUICompositeViewController {
     self->viewControllerCache = [[NSMutableDictionary alloc] init]; 
 }
@@ -92,6 +95,8 @@
     [currentViewDescription dealloc];
     [super dealloc];
 }
+
+#pragma mark - 
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {

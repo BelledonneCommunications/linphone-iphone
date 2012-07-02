@@ -29,6 +29,8 @@
 
 #define DETAILS_DISABLED
 
+#pragma mark - Lifecycle Functions
+
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIHistoryCell"
@@ -44,6 +46,18 @@
     return self;
 }
 
+- (void) dealloc {
+    [detailsButton release];
+    [deleteButton release];
+    [displayNameLabel release];
+    [imageView release];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - Action Functions
+
 - (IBAction)onDetails:(id) event {
     if(callLog != NULL) {
         
@@ -57,6 +71,9 @@
         [parentTable reloadData];
     }
 }
+
+
+#pragma mark - 
 
 - (void)update:(LinphoneCallLog*)  aCallLog {
     self->callLog = aCallLog;
@@ -95,15 +112,6 @@
     [detailsButton setHidden:false];
 #endif
     [deleteButton setHidden:true];
-}
-
-- (void) dealloc {
-    [detailsButton release];
-    [deleteButton release];
-    [displayNameLabel release];
-    [imageView release];
-    
-    [super dealloc];
 }
 
 @end

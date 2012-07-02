@@ -25,6 +25,10 @@
 #include "linphonecore.h"
 
 @implementation UISpeakerButton
+
+
+#pragma mark - Static Functions
+
 static AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
 
 static void audioRouteChangeListenerCallback (
@@ -70,6 +74,16 @@ static void audioRouteChangeListenerCallback (
     return self;
 }	
 
+- (void)dealloc {
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
+	if (lStatus) {
+		ms_error ("cannot un register route change handler [%ld]",lStatus);
+	}
+	[super dealloc];
+}
+
+#pragma mark - UIToggleButtonDelegate Functions
+
 - (void)onOn {
 	[[LinphoneManager instance] enableSpeaker:TRUE];
 }
@@ -79,27 +93,7 @@ static void audioRouteChangeListenerCallback (
 }
 
 - (bool)onUpdate {
-    CFStringRef lNewRoute=CFSTR("Unknown");
-    UInt32 lNewRouteSize = sizeof(lNewRoute);
-    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute
-                                                ,&lNewRouteSize
-                                                ,&lNewRoute);
-    if (!lStatus && CFStringGetLength(lNewRoute) > 0) {
-        char route[64];
-        CFStringGetCString(lNewRoute, route,sizeof(route), kCFStringEncodingUTF8);
-        ms_message("Current audio route is [%s]",route);
-        return (    kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("Speaker"),0) 
-                ||  kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("SpeakerAndMicrophone"),0));
-    } else 
-        return false;
-}
-
-- (void)dealloc {
-    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
-	if (lStatus) {
-		ms_error ("cannot un register route change handler [%ld]",lStatus);
-	}
-	[super dealloc];
+    return [[LinphoneManager instance] isSpeakerEnabled];
 }
 
 @end

@@ -21,11 +21,38 @@
 
 @implementation UILongTouchButton
 
-- (id)init {
+
+#pragma mark - Lifecycle Functions
+
+- (id)initUILongTouchButton {
 	[self addTarget:self action:@selector(___touchDown:) forControlEvents:UIControlEventTouchDown];
     [self addTarget:self action:@selector(___touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 	return self;
 }
+
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUILongTouchButton];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUILongTouchButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUILongTouchButton];
+	}
+    return self;
+}	
 
 - (void)___touchDown:(id) sender {
     [self performSelector:@selector(doLongTouch) withObject:nil afterDelay:0.5];
@@ -46,22 +73,6 @@
     [self onRepeatTouch];
 	[self performSelector:@selector(doRepeatTouch) withObject:nil afterDelay:0.1];
 }
-
-- (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-		[self init];
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-    self = [super initWithCoder:decoder];
-    if (self) {
-		[self init];
-	}
-    return self;
-}	
 
 - (void)onRepeatTouch {
     [NSException raise:NSInternalInconsistencyException 

@@ -22,6 +22,39 @@
 
 @implementation UIVideoButton
 
+@synthesize locked;
+@synthesize unlockVideoState;
+@synthesize waitView;
+
+- (void)initUIVideoButton {
+    self->locked = FALSE;
+    self->unlockVideoState = FALSE;
+}
+
+- (id)init{
+    self = [super init];
+    if (self) {
+		[self initUIVideoButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIVideoButton];
+	}
+    return self;
+}	
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIVideoButton];
+    }
+    return self;
+}
+
 - (void)onOn {
 	LinphoneCore* lc = [LinphoneManager getLc];
     
@@ -29,6 +62,10 @@
         return;
     
     [self setEnabled: FALSE];
+    [waitView startAnimating];
+    [self setLocked: TRUE];
+    [self setUnlockVideoState: TRUE];
+    
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
         LinphoneCallParams* call_params =  linphone_call_params_copy(linphone_call_get_current_params(call));
@@ -37,8 +74,7 @@
 		linphone_call_params_destroy(call_params);
     } else {
 		ms_warning("Cannot toggle video, because no current call");
-	}
-        
+	}   
 }
 
 - (void)onOff {
@@ -48,6 +84,10 @@
         return;
     
     [self setEnabled: FALSE];
+    [waitView startAnimating];
+    [self setLocked: TRUE];
+    [self setUnlockVideoState: FALSE];
+    
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
         LinphoneCallParams* call_params =  linphone_call_params_copy(linphone_call_get_current_params(call));
@@ -69,25 +109,44 @@
                 if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
                     if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
                         val = true;
+                        if(locked && unlockVideoState) {
+                            locked = FALSE;
+                            [waitView stopAnimating];
+                        }
+                    } else {
+                        if(locked && !unlockVideoState) {
+                            locked = FALSE;
+                            [waitView stopAnimating];
+                        }
                     }
-                    [self setEnabled:TRUE];
+                    if(!locked) {
+                        [self setEnabled:TRUE];
+                    }
                 } else {
                     // Disable button if the call is not running
                     [self setEnabled:FALSE];
+                    [waitView stopAnimating];
                 }
             } else {
                 // Disable button if there is no call
                 [self setEnabled:FALSE];
+                [waitView stopAnimating];
             }
         } else {
             // Disable button if video is not enabled
             [self setEnabled:FALSE];
+            [waitView stopAnimating];
         }
         return val;
     } else {
 		//not ready yet
 		return false;
 	}
+}
+
+- (void)dealloc {
+    [waitView release];
+    [super dealloc];
 }
 
 @end

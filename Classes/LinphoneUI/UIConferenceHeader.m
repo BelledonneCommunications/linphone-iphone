@@ -26,9 +26,21 @@
 @synthesize stateImage;
 @synthesize pauseButton;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"UIConferenceHeader" bundle:[NSBundle mainBundle]];
 }
+
+- (void)dealloc {
+    [stateImage release];
+    [pauseButton release];
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -38,9 +50,15 @@
     [pauseButton setType:UIPauseButtonType_Conference call:nil];
 }
 
+
+#pragma mark - Static size Functions
+
 + (int)getHeight {
     return 50;
 }
+
+
+#pragma mark - 
 
 - (void)update {
     [self view];

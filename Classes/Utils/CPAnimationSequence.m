@@ -32,10 +32,15 @@
 		}
 		instance.steps = [NSArray arrayWithArray:tempSteps];
 		va_end(args);
+        [tempSteps release];
 	}
 	return instance;
 }
 
+- (void) dealloc {
+    [steps release];
+    [super dealloc];
+}
 
 #pragma mark - property override
 

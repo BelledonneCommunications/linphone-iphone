@@ -50,34 +50,44 @@
 @synthesize zeroButton;
 @synthesize hashButton;
 
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"DialerViewController" bundle:[NSBundle mainBundle]];
 }
 
+- (void)dealloc {
+	[addressField release];
+    [addContactButton release];
+    [cancelButton release];
+    [eraseButton release];
+	[callButton release];
+    [addCallButton release];
+    
+	[oneButton release];
+	[twoButton release];
+	[threeButton release];
+	[fourButton release];
+	[fiveButton release];
+	[sixButton release];
+	[sevenButton release];
+	[eightButton release];
+	[nineButton release];
+	[starButton release];
+	[zeroButton release];
+	[hashButton release];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+	[super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self update];
-}
-
-- (void)callUpdate:(NSNotification*)notif { 
-    [self update];
-}
-
-- (void)update {
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore *lc = [LinphoneManager getLc];
-        if(linphone_core_get_calls_nb(lc) > 0) {
-            [addCallButton setHidden:false];
-            [callButton setHidden:true];
-            [cancelButton setHidden:false]; 
-            [addContactButton setHidden:true];
-        } else {
-            [addCallButton setHidden:true];
-            [callButton setHidden:false];
-            [cancelButton setHidden:true];
-            [addContactButton setHidden:false];
-        }
-    }
 }
 
 - (void)viewDidLoad {
@@ -107,35 +117,40 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+
+#pragma mark - Event Functions
+
+- (void)callUpdate:(NSNotification*)notif { 
+    [self update];
+}
+
+
+#pragma mark -
+
+- (void)update {
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore *lc = [LinphoneManager getLc];
+        if(linphone_core_get_calls_nb(lc) > 0) {
+            [addCallButton setHidden:false];
+            [callButton setHidden:true];
+            [cancelButton setHidden:false]; 
+            [addContactButton setHidden:true];
+        } else {
+            [addCallButton setHidden:true];
+            [callButton setHidden:false];
+            [cancelButton setHidden:true];
+            [addContactButton setHidden:false];
+        }
+    }
+}
+
+
 - (void)setAddress:(NSString*) address {
     [addressField setText:address];
 }
 
-- (void)dealloc {
-	[addressField release];
-    [addContactButton release];
-    [cancelButton release];
-    [eraseButton release];
-	[callButton release];
-    [addCallButton release];
-    
-	[oneButton release];
-	[twoButton release];
-	[threeButton release];
-	[fourButton release];
-	[fiveButton release];
-	[sixButton release];
-	[sevenButton release];
-	[eightButton release];
-	[nineButton release];
-	[starButton release];
-	[zeroButton release];
-	[hashButton release];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-	[super dealloc];
-}
+
+#pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == addressField) {
@@ -143,6 +158,9 @@
     } 
     return YES;
 }
+
+
+#pragma mark - Action Functions
 
 - (IBAction)onAddContactClick: (id) event {
     

@@ -413,7 +413,7 @@
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="allButton">UIButton</string>
 						<string key="linphoneButton">UIButton</string>
-						<string key="tableController">UITableViewController</string>
+						<string key="tableController">ContactsTableViewController</string>
 						<string key="tableView">UITableView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -427,7 +427,7 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="tableController">
 							<string key="name">tableController</string>
-							<string key="candidateClassName">UITableViewController</string>
+							<string key="candidateClassName">ContactsTableViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="tableView">
 							<string key="name">tableView</string>

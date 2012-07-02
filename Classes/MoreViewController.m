@@ -23,13 +23,16 @@
 #include "lpconfig.h"
 
 @implementation MoreViewController
+
 @synthesize web;
 @synthesize credit;
 @synthesize console;
 @synthesize creditText;
 @synthesize weburi;
 
-//Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+
+#pragma mark - Lifecycle Functions
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 	[creditText setText: [NSString stringWithFormat:creditText.text,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
@@ -39,37 +42,34 @@
 
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
 - (void)dealloc {
+    [credit release];
+	[creditText release];
+    
+	[web release];
+	[weburi release];
+	[console release];
+    
+	[consoleViewController release];
     [super dealloc];
 }
+
+
+#pragma mark - 
 
 -(void) enableLogView {
 	isLogViewEnabled = true;
 }
 
+
+#pragma mark - UITableViewDelegate Functions
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 2;
 }
+
+
+#pragma mark - UITableViewDataSource Functions
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
@@ -79,7 +79,6 @@
 	}
 }
 
-// Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (section == 0) {
 		return 1;

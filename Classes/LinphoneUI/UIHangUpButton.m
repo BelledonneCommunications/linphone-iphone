@@ -24,6 +24,9 @@
 
 @implementation UIHangUpButton
 
+
+#pragma mark - Static Functions
+
 + (bool)isInConference:(LinphoneCall*) call {
     if (!call)
         return false;
@@ -43,24 +46,8 @@
     return count;
 }
 
--(void) touchUp:(id) sender {
-    if([LinphoneManager isLcReady]) {
-        LinphoneCore* lc = [LinphoneManager getLc];
-        LinphoneCall* currentcall = linphone_core_get_current_call(lc);
-        if (linphone_core_is_in_conference(lc) || // In conference
-            (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
-            ) {
-            linphone_core_terminate_conference(lc);
-        } else if(currentcall != NULL) { // In a call
-            linphone_core_terminate_call(lc, currentcall);
-        } else {
-            const MSList* calls = linphone_core_get_calls(lc);
-            if (ms_list_size(calls) == 1) { // Only one call
-                linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
-            }
-        }
-    }
-}
+
+#pragma mark - Lifecycle Functions
 
 - (void)initUIHangUpButton {
     [self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
@@ -90,6 +77,13 @@
     return self;
 }
 
+- (void)dealloc {
+    [super dealloc];
+}
+
+
+#pragma mark - 
+
 - (void)update {
     if([LinphoneManager isLcReady]) {
         LinphoneCore * lc = [LinphoneManager getLc];
@@ -105,17 +99,25 @@
     [self setEnabled:false];
 }
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
+#pragma mark - Action Functions
 
-- (void)dealloc {
-    [super dealloc];
+-(void) touchUp:(id) sender {
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore* lc = [LinphoneManager getLc];
+        LinphoneCall* currentcall = linphone_core_get_current_call(lc);
+        if (linphone_core_is_in_conference(lc) || // In conference
+            (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
+            ) {
+            linphone_core_terminate_conference(lc);
+        } else if(currentcall != NULL) { // In a call
+            linphone_core_terminate_call(lc, currentcall);
+        } else {
+            const MSList* calls = linphone_core_get_calls(lc);
+            if (ms_list_size(calls) == 1) { // Only one call
+                linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
+            }
+        }
+    }
 }
-
 
 @end

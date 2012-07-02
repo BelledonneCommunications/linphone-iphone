@@ -25,31 +25,8 @@
 
 @synthesize sendDtmfDuringCall;
 
-- (void)touchDown:(id) sender {
-	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
-		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
-		[mAddress setText:newAddress];	
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
-	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc], mDigit);
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
-	}
-}
 
-- (void)touchUp:(id) sender {
-	linphone_core_stop_dtmf([LinphoneManager getLc]);
-}
-
-- (void)onRepeatTouch {
-}
-
-- (void)onLongTouch {
-    if (mDigit == '0') {
-        NSString* newAddress = [[mAddress.text substringToIndex: [mAddress.text length]-1]  stringByAppendingString:@"+"];
-        [mAddress setText:newAddress];
-        [mAddress sendActionsForControlEvents:UIControlEventEditingChanged];
-    }
-}
+#pragma mark - Lifecycle Functions
 
 - (void)initWithNumber:(char)digit {
 	[self initWithNumber:digit addressField:nil dtmf:true];
@@ -68,5 +45,36 @@
 	[mAddress release];
 }
 
+
+#pragma mark - Actions Functions
+
+- (void)touchDown:(id) sender {
+	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
+		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
+		[mAddress setText:newAddress];	
+		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
+	} else {
+		linphone_core_send_dtmf([LinphoneManager getLc], mDigit);
+		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
+	}
+}
+
+- (void)touchUp:(id) sender {
+	linphone_core_stop_dtmf([LinphoneManager getLc]);
+}
+
+
+#pragma mark - UILongTouchButtonDelegate Functions
+
+- (void)onRepeatTouch {
+}
+
+- (void)onLongTouch {
+    if (mDigit == '0') {
+        NSString* newAddress = [[mAddress.text substringToIndex: [mAddress.text length]-1]  stringByAppendingString:@"+"];
+        [mAddress setText:newAddress];
+        [mAddress sendActionsForControlEvents:UIControlEventEditingChanged];
+    }
+}
 
 @end

@@ -34,14 +34,45 @@ typedef enum _HistoryView {
     History_MAX
 } HistoryView;
 
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     return [super initWithNibName:@"HistoryViewController" bundle:[NSBundle mainBundle]];
 }
+
+- (void)dealloc {
+    [allButton release];
+    [missedButton release];
+    [editButton release];
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 	[self.tableView reloadData];
 }
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [tableController exitEditMode];
+    [editButton setOff];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self changeView: History_All];
+    
+    // Set selected+over background: IB lack !
+    [editButton setBackgroundImage:[UIImage imageNamed:@"ok-edit-list-history-over.png"] 
+                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
+}
+
+
+#pragma mark -
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
@@ -57,14 +88,8 @@ typedef enum _HistoryView {
     }
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self changeView: History_All];
-    
-    // Set selected+over background: IB lack !
-    [editButton setBackgroundImage:[UIImage imageNamed:@"ok-edit-list-history-over.png"] 
-                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
-}
+
+#pragma mark - Action Functions
 
 - (IBAction)onAllClick:(id) event {
     [self changeView: History_All];
@@ -78,18 +103,5 @@ typedef enum _HistoryView {
     [tableController toggleEditMode];
 }
 
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    [tableController exitEditMode];
-    [editButton setOff];
-}
-
-- (void)dealloc {
-    [allButton release];
-    [missedButton release];
-    [editButton release];
-    [super dealloc];
-}
 
 @end

@@ -30,6 +30,9 @@
 
 @synthesize mainViewController;
 
+
+#pragma mark - Lifecycle Functions
+
 - (void)initPhoneMainView {
     currentPhoneView = -1;
     loadCount = 0; // For avoiding IOS 4 bug
@@ -63,78 +66,22 @@
     return self;
 }	
 
-- (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
-    CATransition* trans = [CATransition animation];
-    [trans setType:kCATransitionPush];
-    [trans setDuration:0.35];
-    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    bool left = false;
+    [mainViewController release];
     
-    if(old == PhoneView_Chat) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_Dialer ||
-           new == PhoneView_Settings ||
-           new == PhoneView_History) {
-            left = true;
-        }
-    } else if(old == PhoneView_Settings) {
-        if(new == PhoneView_Dialer ||
-           new == PhoneView_Contacts ||
-           new == PhoneView_History) {
-            left = true;
-        }
-    } else if(old == PhoneView_Dialer) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_History) {
-            left = true;
-        }
-    } else if(old == PhoneView_Contacts) {
-        if(new == PhoneView_History) {
-            left = true;
-        }
-    } 
+    [viewDescriptions removeAllObjects];
+    [viewDescriptions release];
     
-    if(left) {
-        [trans setSubtype:kCATransitionFromLeft];
-    } else {
-        [trans setSubtype:kCATransitionFromRight];
-    }
-
-    return trans;
+    [modalControllers removeAllObjects];
+    [modalControllers release];
+    
+    [super dealloc];
 }
 
-- (void)changeView: (NSNotification*) notif {   
-    NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
-    NSNumber *tabBar = [notif.userInfo objectForKey: @"tabBar"];
-    NSNumber *fullscreen = [notif.userInfo objectForKey: @"fullscreen"];
-    
-    // Check view change
-    if(viewId != nil) {
-        PhoneView view = [viewId intValue];
-        UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
-        if(description == nil)
-            return;
-        if(view != currentPhoneView) {
-            [mainViewController setViewTransition:[self getTransition:currentPhoneView new:view]];
-            [mainViewController changeView:description];
-            currentPhoneView = view;
-        } 
-    }
-    
-    if(tabBar != nil) {
-        [mainViewController setToolBarHidden:![tabBar boolValue]];
-    }
-    
-    if(fullscreen != nil) {
-        [mainViewController setFullScreen:[fullscreen boolValue]];
-    }
-    
-    // Call abstractCall
-    NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
-    if(dict != nil)
-        [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
-}
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     // Avoid IOS 4 bug
@@ -259,6 +206,9 @@
     self->loadCount--;
 }
 
+
+#pragma mark - Event Functions
+
 - (void)registrationUpdate:(NSNotification*)notif { 
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
@@ -362,6 +312,82 @@
     
 }
 
+
+#pragma mark - 
+
+- (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
+    CATransition* trans = [CATransition animation];
+    [trans setType:kCATransitionPush];
+    [trans setDuration:0.35];
+    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    
+    bool left = false;
+    
+    if(old == PhoneView_Chat) {
+        if(new == PhoneView_Contacts ||
+           new == PhoneView_Dialer ||
+           new == PhoneView_Settings ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Settings) {
+        if(new == PhoneView_Dialer ||
+           new == PhoneView_Contacts ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Dialer) {
+        if(new == PhoneView_Contacts ||
+           new == PhoneView_History) {
+            left = true;
+        }
+    } else if(old == PhoneView_Contacts) {
+        if(new == PhoneView_History) {
+            left = true;
+        }
+    } 
+    
+    if(left) {
+        [trans setSubtype:kCATransitionFromLeft];
+    } else {
+        [trans setSubtype:kCATransitionFromRight];
+    }
+    
+    return trans;
+}
+
+- (void)changeView: (NSNotification*) notif {   
+    NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
+    NSNumber *tabBar = [notif.userInfo objectForKey: @"tabBar"];
+    NSNumber *fullscreen = [notif.userInfo objectForKey: @"fullscreen"];
+    
+    // Check view change
+    if(viewId != nil) {
+        PhoneView view = [viewId intValue];
+        UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
+        if(description == nil)
+            return;
+        if(view != currentPhoneView) {
+            [mainViewController setViewTransition:[self getTransition:currentPhoneView new:view]];
+            [mainViewController changeView:description];
+            currentPhoneView = view;
+        } 
+    }
+    
+    if(tabBar != nil) {
+        [mainViewController setToolBarHidden:![tabBar boolValue]];
+    }
+    
+    if(fullscreen != nil) {
+        [mainViewController setFullScreen:[fullscreen boolValue]];
+    }
+    
+    // Call abstractCall
+    NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
+    if(dict != nil)
+        [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
+}
+
 - (void)displayCallError:(LinphoneCall*) call message:(NSString*) message {
     const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
     NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
@@ -403,6 +429,8 @@
 	}
 }
 
+
+#pragma mark - ActionSheet Functions
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
 
@@ -489,6 +517,9 @@
     }
 }
 
+
+#pragma mark - Modal Functions
+
 - (void)modalViewDismiss:(UIModalViewController*)controller value:(int)value {
     [self removeModalViewController:controller];
 }
@@ -520,20 +551,6 @@
     [[self view].layer addAnimation:trans forKey:@"Disappear"];
     
     [[controller view] removeFromSuperview];
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [mainViewController release];
-    
-    [viewDescriptions removeAllObjects];
-    [viewDescriptions release];
-    
-    [modalControllers removeAllObjects];
-    [modalControllers release];
-    
-    [super dealloc];
 }
 
 @end

@@ -25,6 +25,9 @@
 
 @implementation UIPauseButton
 
+
+#pragma mark - Lifecycle Functions
+
 - (void)initUIPauseButton {
     self->type = UIPauseButtonType_CurrentCall;
 }
@@ -53,10 +56,47 @@
     return self;
 }
 
+
+#pragma mark - Static Functions
+
++ (bool)isInConference: (LinphoneCall*) call {
+    if (!call)
+        return false;
+    return linphone_call_get_current_params(call)->in_conference;
+}
+
++ (int)notInConferenceCallCount: (LinphoneCore*) lc {
+    int count = 0;
+    const MSList* calls = linphone_core_get_calls(lc);
+    
+    while (calls != 0) {
+        if (![UIPauseButton isInConference: (LinphoneCall*)calls->data]) {
+            count++;
+        }
+        calls = calls->next;
+    }
+    return count;
+}
+
++ (LinphoneCall*)getCall {
+    LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* currentCall = linphone_core_get_current_call(lc);
+	if (currentCall == nil && linphone_core_get_calls_nb(lc) == 1) {
+        currentCall = (LinphoneCall*) linphone_core_get_calls(lc)->data;
+    }
+    return currentCall;
+}
+
+
+#pragma mark - 
+
 - (void)setType:(UIPauseButtonType) atype call:(LinphoneCall*)acall {
     self->type = atype;
     self->call = acall;
 }
+
+
+#pragma mark - UIToggleButtonDelegate Functions
 
 - (void)onOn {
     switch (type) {
@@ -113,25 +153,6 @@
     }
 }
 
-+ (bool)isInConference: (LinphoneCall*) call {
-    if (!call)
-        return false;
-    return linphone_call_get_current_params(call)->in_conference;
-}
-
-+ (int)notInConferenceCallCount: (LinphoneCore*) lc {
-    int count = 0;
-    const MSList* calls = linphone_core_get_calls(lc);
-    
-    while (calls != 0) {
-        if (![UIPauseButton isInConference: (LinphoneCall*)calls->data]) {
-            count++;
-        }
-        calls = calls->next;
-    }
-    return count;
-}
-
 - (bool)onUpdate {
     bool ret = false;
     // TODO: disable pause on not running call
@@ -145,9 +166,9 @@
                     if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
                         ret = true;
                     }
-                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:TRUE];
                 } else {
-                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:FALSE];
                 }
                 break;
             }
@@ -157,9 +178,9 @@
                     if (!linphone_core_is_in_conference(lc)) {
                             ret = true;
                     }
-                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:TRUE];
                 } else {
-                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:FALSE];
                 }
                 break;
             }
@@ -171,28 +192,15 @@
                     if(state == LinphoneCallPaused || state == LinphoneCallPausing) {
                         ret = true;
                     }
-                    [LinphoneManager set:self enabled:TRUE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:TRUE];
                 } else {
-                    [LinphoneManager set:self enabled:FALSE withName:"PAUSE button" andReason:""];
+                    [self setEnabled:FALSE];
                 }
                 break;
             }
         }
     } 
     return ret;
-}
-
-+ (LinphoneCall*)getCall {
-    LinphoneCore* lc = [LinphoneManager getLc];
-    LinphoneCall* currentCall = linphone_core_get_current_call(lc);
-	if (currentCall == nil && linphone_core_get_calls_nb(lc) == 1) {
-        currentCall = (LinphoneCall*) linphone_core_get_calls(lc)->data;
-    }
-    return currentCall;
-}
-
-- (void)dealloc {
-    [super dealloc];
 }
 
 @end
