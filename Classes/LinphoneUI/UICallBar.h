@@ -35,6 +35,9 @@
     UIButton*           optionsButton;
     UIHangUpButton*     hangupButton;
     UIView*             padView;
+    UIView*             optionsView;
+    UIButton*           optionsAddButton;
+    UIButton*           optionsTransferButton;
     
     //Key pad
 	UIDigitButton*  oneButton;
@@ -59,6 +62,10 @@
 @property (nonatomic, retain) IBOutlet UIButton*        optionsButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton*  hangupButton;
 @property (nonatomic, retain) IBOutlet UIView*          padView;
+@property (nonatomic, retain) IBOutlet UIView*          optionsView;
+
+@property (nonatomic, retain) IBOutlet UIButton*        optionsAddButton;
+@property (nonatomic, retain) IBOutlet UIButton*        optionsTransferButton;
 
 @property (nonatomic, retain) IBOutlet UIButton* oneButton;
 @property (nonatomic, retain) IBOutlet UIButton* twoButton;
@@ -74,6 +81,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* sharpButton;
 
 - (IBAction)onOptionsClick:(id)sender;
+- (IBAction)onOptionsTransferClick:(id)sender;
+- (IBAction)onOptionsAddClick:(id)sender;
 - (IBAction)onConferenceClick:(id)sender;
 - (IBAction)onPadClick:(id)sender;
 

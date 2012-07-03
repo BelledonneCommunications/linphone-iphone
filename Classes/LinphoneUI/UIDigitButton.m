@@ -23,39 +23,59 @@
 
 @implementation UIDigitButton
 
-@synthesize sendDtmfDuringCall;
+@synthesize dtmf;
+@synthesize digit;
+@synthesize addressField;
 
 
 #pragma mark - Lifecycle Functions
 
-- (void)initWithNumber:(char)digit {
-	[self initWithNumber:digit addressField:nil dtmf:true];
-}
-
-- (void)initWithNumber:(char)digit  addressField:(UITextField*) address dtmf:(bool)sendDtmf{
-    sendDtmfDuringCall = sendDtmf;
-	mDigit=digit;
-	mAddress=address?[address retain]:nil;
+- (void)initUIDigitButton {
+    self->dtmf = FALSE;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIDigitButton];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIDigitButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIDigitButton];
+	}
+    return self;
+}	
+
 - (void)dealloc {
     [super dealloc];
-	[mAddress release];
+	[addressField release];
 }
 
 
 #pragma mark - Actions Functions
 
 - (void)touchDown:(id) sender {
-	if (mAddress && (!sendDtmfDuringCall || !linphone_core_in_call([LinphoneManager getLc]))) {
-		NSString* newAddress = [NSString stringWithFormat:@"%@%c",mAddress.text,mDigit];
-		[mAddress setText:newAddress];	
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, -1);
+	if (addressField && (!dtmf || !linphone_core_in_call([LinphoneManager getLc]))) {
+		NSString* newAddress = [NSString stringWithFormat:@"%@%c",addressField.text, digit];
+		[addressField setText:newAddress];	
+		linphone_core_play_dtmf([LinphoneManager getLc], digit, -1);
 	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc], mDigit);
-		linphone_core_play_dtmf([LinphoneManager getLc], mDigit, 100);
+		linphone_core_send_dtmf([LinphoneManager getLc], digit);
+		linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
 	}
 }
 
@@ -70,10 +90,10 @@
 }
 
 - (void)onLongTouch {
-    if (mDigit == '0') {
-        NSString* newAddress = [[mAddress.text substringToIndex: [mAddress.text length]-1]  stringByAppendingString:@"+"];
-        [mAddress setText:newAddress];
-        [mAddress sendActionsForControlEvents:UIControlEventEditingChanged];
+    if (digit == '0') {
+        NSString* newAddress = [[addressField.text substringToIndex: [addressField.text length]-1]  stringByAppendingString:@"+"];
+        [addressField setText:newAddress];
+        [addressField sendActionsForControlEvents:UIControlEventEditingChanged];
     }
 }
 

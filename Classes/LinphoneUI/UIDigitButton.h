@@ -24,16 +24,13 @@
 
 @interface UIDigitButton : UILongTouchButton<UILongTouchButtonDelegate> {
 @private
-	char  mDigit;
-	UITextField* mAddress;
-    
-    bool sendDtmfDuringCall;
-
+	char  digit;
+    bool  dtmf;
+	UITextField* addressField;    
 }
--(void) initWithNumber:(char)digit ;
--(void) initWithNumber:(char)digit addressField:(UITextField*) address dtmf:(bool)send;
 
-
-@property bool sendDtmfDuringCall;
+@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property char digit;
+@property bool dtmf;
 
 @end

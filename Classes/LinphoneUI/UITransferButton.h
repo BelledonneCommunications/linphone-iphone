@@ -1,6 +1,6 @@
-/* UIEraseButton.h
+/* UITransferButton.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,13 +15,11 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */    
 
 #import <UIKit/UIKit.h>
 
-#import "UILongTouchButton.h"
-
-@interface UIEraseButton : UILongTouchButton<UILongTouchButtonDelegate>  {
+@interface UITransferButton : UIButton {
 @private
 	UITextField* addressField;    
 }

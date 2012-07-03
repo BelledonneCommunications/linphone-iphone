@@ -74,7 +74,7 @@
 		self.consumableSteps = nil;
 		return; // we're done
 	}
-	AnimationStep completionStep = ^{
+	void (^completionStep)(BOOL) = ^(BOOL animated){
 		[self.consumableSteps removeLastObject];
 		[self runAnimated:animated]; // recurse!
 	};
@@ -87,13 +87,15 @@
 						 animations:currentStep.step
 						 completion:^(BOOL finished) {
 							 if (finished) {
-								 completionStep();
-							 }
+								 completionStep(TRUE);
+							 } else {
+                                 completionStep(FALSE);
+                             }
 						 }];
 	} else {
 		void (^execution)(void) = ^{
 			currentStep.step();
-			completionStep();
+			completionStep(FALSE);
 		};
 		
 		if (animated && currentStep.delay) {

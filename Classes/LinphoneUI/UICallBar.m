@@ -35,7 +35,12 @@
 @synthesize speakerButton;  
 @synthesize optionsButton;
 @synthesize hangupButton;
+
+@synthesize optionsAddButton;
+@synthesize optionsTransferButton;
+
 @synthesize padView;
+@synthesize optionsView;
 
 @synthesize oneButton;
 @synthesize twoButton;
@@ -65,6 +70,9 @@
     [speakerButton release]; 
     [optionsButton release];
     
+    [optionsAddButton release];
+    [optionsTransferButton release];
+    
     [oneButton release];
 	[twoButton release];
 	[threeButton release];
@@ -78,6 +86,9 @@
 	[zeroButton release];
 	[sharpButton release];
     
+    [padView release];
+    [optionsView release];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [super dealloc];
@@ -89,18 +100,30 @@
 - (void)viewDidLoad {
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
     
-    [zeroButton   initWithNumber:'0'   addressField:nil dtmf:true];
-	[oneButton    initWithNumber:'1'   addressField:nil dtmf:true];
-	[twoButton    initWithNumber:'2'   addressField:nil dtmf:true];
-	[threeButton  initWithNumber:'3'   addressField:nil dtmf:true];
-	[fourButton   initWithNumber:'4'   addressField:nil dtmf:true];
-	[fiveButton   initWithNumber:'5'   addressField:nil dtmf:true];
-	[sixButton    initWithNumber:'6'   addressField:nil dtmf:true];
-	[sevenButton  initWithNumber:'7'   addressField:nil dtmf:true];
-	[eightButton  initWithNumber:'8'   addressField:nil dtmf:true];
-	[nineButton   initWithNumber:'9'   addressField:nil dtmf:true];
-	[starButton   initWithNumber:'*'   addressField:nil dtmf:true];
-	[sharpButton   initWithNumber:'#'   addressField:nil dtmf:true];
+    [zeroButton setDigit:'0'];
+    [zeroButton setDtmf:true];
+	[oneButton    setDigit:'1'];
+    [oneButton setDtmf:true];
+	[twoButton    setDigit:'2'];
+    [twoButton setDtmf:true];
+	[threeButton  setDigit:'3'];
+    [threeButton setDtmf:true];
+	[fourButton   setDigit:'4'];
+    [fourButton setDtmf:true];
+	[fiveButton   setDigit:'5'];
+    [fiveButton setDtmf:true];
+	[sixButton    setDigit:'6'];
+    [sixButton setDtmf:true];
+	[sevenButton  setDigit:'7'];
+    [sevenButton setDtmf:true];
+	[eightButton  setDigit:'8'];
+    [eightButton setDtmf:true];
+	[nineButton   setDigit:'9'];
+    [nineButton setDtmf:true];
+	[starButton   setDigit:'*'];
+    [starButton setDtmf:true];
+	[sharpButton  setDigit:'#'];
+    [sharpButton setDtmf:true];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
     
@@ -141,13 +164,7 @@
     //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     
-    // check LinphoneCore is initialized
-    LinphoneCore* lc = nil;
-    if([LinphoneManager isLcReady])
-        lc = [LinphoneManager getLc];
-    
-    //TODO
-    //[LinphoneManager set:mergeCalls hidden:!pause.hidden withName:"MERGE button" andReason:"call count"];     
+    LinphoneCore* lc = [LinphoneManager getLc]; 
 
     [speakerButton update];
     [microButton update];
@@ -155,6 +172,8 @@
     [videoButton update];
     [hangupButton update];
     
+    
+    // Show Pause/Conference button following call count
     if(linphone_core_get_calls_nb(lc) > 1) {
         if(![pauseButton isHidden]) {
             [pauseButton setHidden:true];
@@ -167,16 +186,29 @@
         }
     }
     
-    if(linphone_core_get_current_call(lc) == NULL) {
+    // Disable menu when no call & no conference
+    if(linphone_core_get_current_call(lc) == NULL && linphone_core_is_in_conference(lc) == FALSE) {
         [self hidePad];
+        [self hideOptions];
+        [optionsButton setEnabled:FALSE];
+    } else {
+        [optionsButton setEnabled:TRUE];
     }
 
+    // Disable transfert in conference
+    if(linphone_core_is_in_conference(lc)) {
+        [optionsTransferButton setEnabled:FALSE];
+    } else {
+        [optionsTransferButton setEnabled:TRUE];
+    }
+    
     switch(state) {
         LinphoneCallEnd:
         LinphoneCallError:
         LinphoneCallIncoming:
         LinphoneCallOutgoing:
             [self hidePad];
+            [self hideOptions];
         default:
             break;
     }
@@ -193,7 +225,10 @@
         [padView setFrame:frame];
         [padView setHidden:FALSE];
         CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                     [[CPAnimationStep for:0.5 animate:^{ 
+                                     [[CPAnimationStep after:0.0 
+                                                         for:0.5
+                                                     options:UIViewAnimationOptionCurveEaseOut
+                                                     animate:^{ 
             CGRect frame = [padView frame];
             frame.origin.y = original_y;
             [padView setFrame:frame]; 
@@ -210,12 +245,16 @@
         int original_y = frame.origin.y;
     
         CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                     [[CPAnimationStep for:0.5 animate:^{ 
+                                      [[CPAnimationStep after:0.0 
+                                                          for:0.5
+                                                      options:UIViewAnimationOptionCurveEaseIn
+                                                      animate:^{ 
             CGRect frame = [padView frame];
             frame.origin.y = [[self view] frame].size.height;
             [padView setFrame:frame]; 
         }] autorelease],
-                                     [[CPAnimationStep after:0.0 animate:^{ 
+                                     [[CPAnimationStep after:0.0 
+                                                     animate:^{ 
             CGRect frame = [padView frame];
             frame.origin.y = original_y;
             [padView setHidden:TRUE];
@@ -224,6 +263,55 @@
                                      nil
                                      ] autorelease];
     [move run];
+    }
+}
+
+- (void)showOptions{
+    if([optionsView isHidden]) {
+        CGRect frame = [optionsView frame];
+        int original_y = frame.origin.y;
+        frame.origin.y = [[self view] frame].size.height;
+        [optionsView setFrame:frame];
+        [optionsView setHidden:FALSE];
+        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                      [[CPAnimationStep after:0.0
+                                                          for:0.5 
+                                                      options:UIViewAnimationOptionCurveEaseOut
+                                                      animate:^{ 
+            CGRect frame = [optionsView frame];
+            frame.origin.y = original_y;
+            [optionsView setFrame:frame]; 
+        }] autorelease],
+                                      nil
+                                      ] autorelease];
+        [move run];
+    }
+}
+
+- (void)hideOptions{
+    if(![optionsView isHidden]) {
+        CGRect frame = [optionsView frame];
+        int original_y = frame.origin.y;
+        
+        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                      [[CPAnimationStep after:0.0
+                                                          for:0.5
+                                                      options:UIViewAnimationOptionCurveEaseIn
+                                                      animate:^{ 
+            CGRect frame = [optionsView frame];
+            frame.origin.y = [[self view] frame].size.height;
+            [optionsView setFrame:frame]; 
+        }] autorelease],
+                                      [[CPAnimationStep after:0.0 
+                                                      animate:^{ 
+            CGRect frame = [optionsView frame];
+            frame.origin.y = original_y;
+            [optionsView setHidden:TRUE];
+            [optionsView setFrame:frame]; 
+        }] autorelease], 
+                                      nil
+                                      ] autorelease];
+        [move run];
     }
 }
 
@@ -238,13 +326,36 @@
     }
 }
 
-- (IBAction)onOptionsClick:(id)sender {
+- (IBAction)onOptionsTransferClick:(id)sender {
+    [self hideOptions];
     // Go to dialer view
     NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
                            [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
                            , @"setAddress:",
+                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: TRUE], nil] autorelease]
+                           , @"setTransferMode:",
                            nil] autorelease];
     [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+}
+
+- (IBAction)onOptionsAddClick:(id)sender {
+    [self hideOptions];
+    // Go to dialer view
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
+                           , @"setAddress:",
+                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
+                           , @"setTransferMode:",
+                           nil] autorelease];
+    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+}
+
+- (IBAction)onOptionsClick:(id)sender {
+    if([optionsView isHidden]) {
+        [self showOptions];
+    } else {
+        [self hideOptions];
+    }
 }
 
 - (IBAction)onConferenceClick:(id)sender {

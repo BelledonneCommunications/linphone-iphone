@@ -34,6 +34,7 @@
 @synthesize addContactButton;
 @synthesize cancelButton;
 @synthesize addCallButton;
+@synthesize transferButton;
 @synthesize callButton;
 @synthesize eraseButton;
 
@@ -53,7 +54,11 @@
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    return [super initWithNibName:@"DialerViewController" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"DialerViewController" bundle:[NSBundle mainBundle]];
+    if(self) {
+        self->transferMode = FALSE;
+    }
+    return self;
 }
 
 - (void)dealloc {
@@ -63,6 +68,7 @@
     [eraseButton release];
 	[callButton release];
     [addCallButton release];
+    [transferButton release];
     
 	[oneButton release];
 	[twoButton release];
@@ -93,21 +99,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	[zeroButton    initWithNumber:'0'   addressField:addressField   dtmf:false];
-	[oneButton     initWithNumber:'1'   addressField:addressField   dtmf:false];
-	[twoButton     initWithNumber:'2'   addressField:addressField   dtmf:false];
-	[threeButton   initWithNumber:'3'   addressField:addressField   dtmf:false];
-	[fourButton    initWithNumber:'4'   addressField:addressField   dtmf:false];
-	[fiveButton    initWithNumber:'5'   addressField:addressField   dtmf:false];
-	[sixButton     initWithNumber:'6'   addressField:addressField   dtmf:false];
-	[sevenButton   initWithNumber:'7'   addressField:addressField   dtmf:false];
-	[eightButton   initWithNumber:'8'   addressField:addressField   dtmf:false];
-	[nineButton    initWithNumber:'9'   addressField:addressField   dtmf:false];
-	[starButton    initWithNumber:'*'   addressField:addressField   dtmf:false];
-	[sharpButton   initWithNumber:'#'   addressField:addressField   dtmf:false];
-	[callButton    initWithAddress:addressField];
-	[addCallButton initWithAddress:addressField];
-	[eraseButton   initWithAddressField:addressField];
+	[zeroButton    setDigit:'0'];
+	[oneButton     setDigit:'1'];
+	[twoButton     setDigit:'2'];
+	[threeButton   setDigit:'3'];
+	[fourButton    setDigit:'4'];
+	[fiveButton    setDigit:'5'];
+	[sixButton     setDigit:'6'];
+	[sevenButton   setDigit:'7'];
+	[eightButton   setDigit:'8'];
+	[nineButton    setDigit:'9'];
+	[starButton    setDigit:'*'];
+	[sharpButton   setDigit:'#'];
     
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
@@ -131,7 +134,13 @@
     if([LinphoneManager isLcReady]) {
         LinphoneCore *lc = [LinphoneManager getLc];
         if(linphone_core_get_calls_nb(lc) > 0) {
-            [addCallButton setHidden:false];
+            if(transferMode) {
+                [addCallButton setHidden:true];
+                [transferButton setHidden:false];
+            } else {
+                [addCallButton setHidden:false];
+                [transferButton setHidden:true];
+            }
             [callButton setHidden:true];
             [cancelButton setHidden:false]; 
             [addContactButton setHidden:true];
@@ -140,13 +149,18 @@
             [callButton setHidden:false];
             [cancelButton setHidden:true];
             [addContactButton setHidden:false];
+            [transferButton setHidden:true];
         }
     }
 }
 
-
 - (void)setAddress:(NSString*) address {
     [addressField setText:address];
+}
+
+- (void)setTransferMode:(NSNumber*) n {
+    transferMode = [n boolValue];
+    [self update];
 }
 
 
@@ -170,21 +184,19 @@
     [[LinphoneManager instance] changeView:PhoneView_InCall];
 }
 
-- (IBAction)onAddCallClick: (id) event {
-    
-}
-
 - (IBAction)onAddressChange: (id)sender {
     if([[addressField text] length] > 0) {
         [addContactButton setEnabled:TRUE];
         [eraseButton setEnabled:TRUE];
         [callButton setEnabled:TRUE];
         [addCallButton setEnabled:TRUE];
+        [transferButton setEnabled:TRUE];
     } else {
         [addContactButton setEnabled:FALSE];
         [eraseButton setEnabled:FALSE];
         [callButton setEnabled:FALSE];
         [addCallButton setEnabled:FALSE];
+        [transferButton setEnabled:FALSE];
     }
 }
 

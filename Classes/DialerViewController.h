@@ -21,10 +21,10 @@
 
 #import "UIEraseButton.h"
 #import "UICallButton.h"
+#import "UITransferButton.h"
 #import "UIDigitButton.h"
 
 @interface DialerViewController : UIViewController <UITextFieldDelegate>{
-
 @private
 	//Buttons
 	UITextField*    addressField;
@@ -33,6 +33,7 @@
 	UIEraseButton*  eraseButton;
 	UICallButton*   callButton;
     UICallButton*   addCallButton;
+    UITransferButton*   transferButton;
 
 	//Key pad
 	UIDigitButton*  oneButton;
@@ -47,14 +48,18 @@
 	UIDigitButton*  starButton;
 	UIDigitButton*  zeroButton;
 	UIDigitButton*  sharpButton;
+    
+    BOOL transferMode;
 }
 
 - (void)setAddress:(NSString*) address;
+- (void)setTransferMode:(NSNumber*) enable;
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;
 @property (nonatomic, retain) IBOutlet UIButton* addContactButton;
 @property (nonatomic, retain) IBOutlet UICallButton* callButton;
 @property (nonatomic, retain) IBOutlet UICallButton* addCallButton;
+@property (nonatomic, retain) IBOutlet UITransferButton* transferButton;
 @property (nonatomic, retain) IBOutlet UIButton* cancelButton;
 @property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
 
@@ -73,7 +78,6 @@
 
 - (IBAction)onAddContactClick: (id) event;
 - (IBAction)onBackClick: (id) event;
-- (IBAction)onAddCallClick: (id) event;
 - (IBAction)onAddressChange: (id)sender;
 
 @end

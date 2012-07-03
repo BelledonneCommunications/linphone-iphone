@@ -259,9 +259,7 @@
 		case LinphoneCallConnected:
         case LinphoneCallUpdated:
         {
-            if ([[LinphoneManager instance] currentView] != PhoneView_InCall) {
-                [[LinphoneManager instance] changeView:PhoneView_InCall];
-            }
+            [[LinphoneManager instance] changeView:PhoneView_InCall];
             break;
         }
         case LinphoneCallUpdatedByRemote:
@@ -270,9 +268,7 @@
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
             if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                if ([[LinphoneManager instance] currentView] != PhoneView_InCall) {
-                    [[LinphoneManager instance] changeView:PhoneView_InCall];
-                }
+                [[LinphoneManager instance] changeView:PhoneView_InCall];
             }
             break;
         }
@@ -284,32 +280,27 @@
         {
             [self dismissIncomingCall:call];
             if (canHideInCallView) {
-                if ([[LinphoneManager instance] currentView] != PhoneView_Dialer) {
-                    // Go to dialer view
-                    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                                          , @"setAddress:",
-                                          nil] autorelease];
-                    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
-                }
+                // Go to dialer view
+                NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                                        [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
+                                        , @"setAddress:",
+                                        [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
+                                        , @"setTransferMode:",
+                                        nil] autorelease];
+                [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
             } else {
-                if ([[LinphoneManager instance] currentView] != PhoneView_InCall) {
-                    [[LinphoneManager instance] changeView:PhoneView_InCall];
-                }
+                [[LinphoneManager instance] changeView:PhoneView_InCall];
 			}
 			break;
         }
 		case LinphoneCallStreamsRunning:
         {
-            if ([[LinphoneManager instance] currentView] != PhoneView_InCall) {
-                [[LinphoneManager instance] changeView:PhoneView_InCall];
-            }
+            [[LinphoneManager instance] changeView:PhoneView_InCall];
 			break;
         }
         default:
             break;
 	}
-    
 }
 
 

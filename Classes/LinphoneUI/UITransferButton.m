@@ -1,6 +1,6 @@
-/* UICallButton.m
+/* UITransferButton.m
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,14 +15,13 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
-
-#import "UICallButton.h"
+ */ 
+#import "UITransferButton.h"
 #import "LinphoneManager.h"
 
 #import <CoreTelephony/CTCallCenter.h>
 
-@implementation UICallButton
+@implementation UITransferButton
 
 @synthesize addressField;
 
@@ -99,7 +98,7 @@
 		
 		if ([addressField.text length] == 0) return; //just return
 		if ([addressField.text hasPrefix:@"sip:"]) {
-            linphone_core_invite_with_params([LinphoneManager getLc],[addressField.text cStringUsingEncoding:[NSString defaultCStringEncoding]],lcallParams);
+            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), [addressField.text cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		} else if ( proxyCfg==nil){
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
 															message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
@@ -117,9 +116,9 @@
 			LinphoneAddress* tmpAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));
 			linphone_address_set_username(tmpAddress,normalizedUserName);
 			linphone_address_set_display_name(tmpAddress,(lDisplayName)?[lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]:nil);
-
-
-            linphone_core_invite_address_with_params([LinphoneManager getLc],tmpAddress,lcallParams) ;
+            
+            
+            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
 			
 			linphone_address_destroy(tmpAddress);
 		}

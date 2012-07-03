@@ -12,12 +12,13 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<string>IBUITableViewController</string>
-			<string>IBUITableView</string>
-			<string>IBUIActivityIndicatorView</string>
-			<string>IBUIView</string>
 			<string>IBUIButton</string>
 			<string>IBProxyObject</string>
+			<string>IBUIImageView</string>
+			<string>IBUIActivityIndicatorView</string>
+			<string>IBUITableViewController</string>
+			<string>IBUITableView</string>
+			<string>IBUIView</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -42,6 +43,24 @@
 				<int key="NSvFlags">274</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<object class="IBUIImageView" id="474099173">
+						<reference key="NSNextResponder" ref="858247959"/>
+						<int key="NSvFlags">274</int>
+						<string key="NSFrameSize">{320, 460}</string>
+						<reference key="NSSuperview" ref="858247959"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+							<string key="IBUIAccessibilityLabel"/>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<object class="NSCustomResource" key="IBUIImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">numpad_background.png</string>
+						</object>
+					</object>
 					<object class="IBUIView" id="1009068048">
 						<reference key="NSNextResponder" ref="858247959"/>
 						<int key="NSvFlags">292</int>
@@ -103,7 +122,7 @@
 						<string key="NSFrame">{{0, -10}, {320, 480}}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="1009068048"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:418</string>
 						<reference key="IBUIBackgroundColor" ref="95762599"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -134,6 +153,7 @@
 						<string key="NSFrameSize">{85, 33}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -307,6 +327,7 @@
 							<reference ref="1009068048"/>
 							<reference ref="662692377"/>
 							<reference ref="972197710"/>
+							<reference ref="474099173"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -353,7 +374,7 @@
 						<int key="objectID">160</int>
 						<reference key="object" ref="972197710"/>
 						<reference key="parent" ref="858247959"/>
-						<string key="objectName">camSwitch</string>
+						<string key="objectName">videoCameraSwitch</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">162</int>
@@ -363,6 +384,12 @@
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">callTableController</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">171</int>
+						<reference key="object" ref="474099173"/>
+						<reference key="parent" ref="858247959"/>
+						<string key="objectName">background</string>
 					</object>
 				</object>
 			</object>
@@ -384,6 +411,7 @@
 					<string>160.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
 					<string>162.CustomClassName</string>
 					<string>162.IBPluginDependency</string>
+					<string>171.IBPluginDependency</string>
 					<string>9.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
@@ -403,6 +431,7 @@
 					<string>InCallTableViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -417,7 +446,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">169</int>
+			<int key="maxID">171</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -553,11 +582,13 @@
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSArray" key="dict.sortedKeys">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>numpad_background.png</string>
 				<string>switch_camera_default.png</string>
 				<string>switch_camera_over.png</string>
 			</object>
 			<object class="NSArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>{640, 523}</string>
 				<string>{170, 65}</string>
 				<string>{170, 65}</string>
 			</object>

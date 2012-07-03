@@ -22,23 +22,49 @@
 
 @implementation UIEraseButton
 
+@synthesize addressField;
+
+
 #pragma mark - Lifecycle Functions
 
--(void) initWithAddressField:(UITextField*) address {
-	mAddress = address;
+- (void)initUIEraseButton {
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 }
 
-- (void)dealloc {
-    [super dealloc];
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIEraseButton];
+    }
+    return self;
 }
 
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIEraseButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIEraseButton];
+	}
+    return self;
+}	
+
+- (void)dealloc {
+    [super dealloc];
+	[addressField release];
+}
 
 #pragma mark - Action Functions
 
 -(void) touchDown:(id) sender {
-  	if ([mAddress.text length] > 0) {
-		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
+  	if ([addressField.text length] > 0) {
+		[addressField setText:[addressField.text substringToIndex:[addressField.text length]-1]];
 	}  
 }
 
@@ -49,7 +75,7 @@
 }
 
 - (void)onLongTouch {
-    [mAddress setText:@""];
+    [addressField setText:@""];
 }
 
 @end

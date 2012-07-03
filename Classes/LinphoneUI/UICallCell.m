@@ -117,21 +117,17 @@
     return 54;
 }
 
-- (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target
-{   
+- (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {   
     [UIView animateWithDuration:1.0
                           delay: 0.0
-                        options: ([target alpha] == 1.0f)? UIViewAnimationOptionCurveEaseIn: UIViewAnimationOptionCurveEaseOut
+                        options: UIViewAnimationOptionRepeat | 
+                                 UIViewAnimationOptionAutoreverse | 
+                                 UIViewAnimationOptionAllowUserInteraction | 
+                                 UIViewAnimationOptionCurveEaseIn
                      animations:^{
-                         if([target alpha] == 1.0f)
-                             [target setAlpha:0.0f];
-                         else
                              [target setAlpha:1.0f];
                      }
                      completion:^(BOOL finished){
-                         if(finished) {
-                             [self startBlinkAnimation: animationID target:target];
-                         }
                      }];
 
 }
