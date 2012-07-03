@@ -48,7 +48,7 @@
 	UIDigitButton*  nineButton;
 	UIDigitButton*  starButton;
 	UIDigitButton*  zeroButton;
-	UIDigitButton*  hashButton;
+	UIDigitButton*  sharpButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIPauseButton*   pauseButton;
@@ -71,7 +71,7 @@
 @property (nonatomic, retain) IBOutlet UIButton* nineButton;
 @property (nonatomic, retain) IBOutlet UIButton* starButton;
 @property (nonatomic, retain) IBOutlet UIButton* zeroButton;
-@property (nonatomic, retain) IBOutlet UIButton* hashButton;
+@property (nonatomic, retain) IBOutlet UIButton* sharpButton;
 
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onConferenceClick:(id)sender;

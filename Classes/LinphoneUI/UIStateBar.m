@@ -121,19 +121,19 @@ NSTimer *callQualityTimer;
             break;
         case LinphoneRegistrationFailed:
             registrationStateImage.hidden = NO;
-            image = [UIImage imageNamed:@"status_error.png"];
+            image = [UIImage imageNamed:@"led_error.png"];
             break;
         case LinphoneRegistrationNone:
             registrationStateImage.hidden = NO;
-            image =[UIImage imageNamed:@"status_disconnected.png"];
+            image =[UIImage imageNamed:@"led_disconnected.png"];
             break;
         case LinphoneRegistrationProgress:
             registrationStateImage.hidden = NO;
-            image = [UIImage imageNamed:@"status_inprogress.png"];
+            image = [UIImage imageNamed:@"led_inprogress.png"];
             break;
         case LinphoneRegistrationOk:
             registrationStateImage.hidden = NO;
-            image = [UIImage imageNamed:@"status_connected.png"];
+            image = [UIImage imageNamed:@"led_connected.png"];
             break;
     }
     [registrationStateLabel setText:message];
@@ -150,13 +150,13 @@ NSTimer *callQualityTimer;
         if(call != NULL) {
             float quality = linphone_call_get_average_quality(call);
             if(quality < 1) {
-                image = [UIImage imageNamed:@"quality-call-0.png"];
+                image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
             } else if (quality < 2) {
-                image = [UIImage imageNamed:@"quality-call-1.png"];
+                image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
             } else if (quality < 3) {
-                image = [UIImage imageNamed:@"quality-call-2.png"];
+                image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
             } else {
-                image = [UIImage imageNamed:@"quality-call-3.png"];
+                image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
             }
         }
     }

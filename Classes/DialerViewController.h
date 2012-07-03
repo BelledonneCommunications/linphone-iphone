@@ -46,7 +46,7 @@
 	UIDigitButton*  nineButton;
 	UIDigitButton*  starButton;
 	UIDigitButton*  zeroButton;
-	UIDigitButton*  hashButton;
+	UIDigitButton*  sharpButton;
 }
 
 - (void)setAddress:(NSString*) address;
@@ -69,10 +69,10 @@
 @property (nonatomic, retain) IBOutlet UIButton* nineButton;
 @property (nonatomic, retain) IBOutlet UIButton* starButton;
 @property (nonatomic, retain) IBOutlet UIButton* zeroButton;
-@property (nonatomic, retain) IBOutlet UIButton* hashButton;
+@property (nonatomic, retain) IBOutlet UIButton* sharpButton;
 
 - (IBAction)onAddContactClick: (id) event;
-- (IBAction)onCancelClick: (id) event;
+- (IBAction)onBackClick: (id) event;
 - (IBAction)onAddCallClick: (id) event;
 - (IBAction)onAddressChange: (id)sender;
 

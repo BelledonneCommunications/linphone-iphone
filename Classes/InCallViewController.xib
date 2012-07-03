@@ -131,7 +131,7 @@
 					<object class="IBUIButton" id="972197710">
 						<reference key="NSNextResponder" ref="858247959"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrameSize">{84, 61}</string>
+						<string key="NSFrameSize">{85, 33}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -558,8 +558,8 @@
 			</object>
 			<object class="NSArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{167, 122}</string>
-				<string>{167, 122}</string>
+				<string>{170, 65}</string>
+				<string>{170, 65}</string>
 			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">1181</string>

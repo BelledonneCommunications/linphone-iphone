@@ -48,7 +48,7 @@
 @synthesize nineButton;
 @synthesize starButton;
 @synthesize zeroButton;
-@synthesize hashButton;
+@synthesize sharpButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -75,7 +75,7 @@
 	[nineButton release];
 	[starButton release];
 	[zeroButton release];
-	[hashButton release];
+	[sharpButton release];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -93,21 +93,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	[zeroButton   initWithNumber:'0'   addressField:addressField dtmf:false];
-	[oneButton    initWithNumber:'1'   addressField:addressField dtmf:false];
-	[twoButton    initWithNumber:'2'   addressField:addressField dtmf:false];
-	[threeButton  initWithNumber:'3'   addressField:addressField dtmf:false];
-	[fourButton   initWithNumber:'4'   addressField:addressField dtmf:false];
-	[fiveButton   initWithNumber:'5'   addressField:addressField dtmf:false];
-	[sixButton    initWithNumber:'6'   addressField:addressField dtmf:false];
-	[sevenButton  initWithNumber:'7'   addressField:addressField dtmf:false];
-	[eightButton  initWithNumber:'8'   addressField:addressField dtmf:false];
-	[nineButton   initWithNumber:'9'   addressField:addressField dtmf:false];
-	[starButton   initWithNumber:'*'   addressField:addressField dtmf:false];
-	[hashButton   initWithNumber:'#'   addressField:addressField dtmf:false];
-	[callButton   initWithAddress:addressField];
-	[addCallButton   initWithAddress:addressField];
-	[eraseButton  initWithAddressField:addressField];
+	[zeroButton    initWithNumber:'0'   addressField:addressField   dtmf:false];
+	[oneButton     initWithNumber:'1'   addressField:addressField   dtmf:false];
+	[twoButton     initWithNumber:'2'   addressField:addressField   dtmf:false];
+	[threeButton   initWithNumber:'3'   addressField:addressField   dtmf:false];
+	[fourButton    initWithNumber:'4'   addressField:addressField   dtmf:false];
+	[fiveButton    initWithNumber:'5'   addressField:addressField   dtmf:false];
+	[sixButton     initWithNumber:'6'   addressField:addressField   dtmf:false];
+	[sevenButton   initWithNumber:'7'   addressField:addressField   dtmf:false];
+	[eightButton   initWithNumber:'8'   addressField:addressField   dtmf:false];
+	[nineButton    initWithNumber:'9'   addressField:addressField   dtmf:false];
+	[starButton    initWithNumber:'*'   addressField:addressField   dtmf:false];
+	[sharpButton   initWithNumber:'#'   addressField:addressField   dtmf:false];
+	[callButton    initWithAddress:addressField];
+	[addCallButton initWithAddress:addressField];
+	[eraseButton   initWithAddressField:addressField];
     
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
@@ -166,7 +166,7 @@
     
 }
 
-- (IBAction)onCancelClick: (id) event {
+- (IBAction)onBackClick: (id) event {
     [[LinphoneManager instance] changeView:PhoneView_InCall];
 }
 

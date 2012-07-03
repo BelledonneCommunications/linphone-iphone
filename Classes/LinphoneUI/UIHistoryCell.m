@@ -82,14 +82,13 @@
 	UIImage *image;
 	if (aCallLog->dir == LinphoneCallIncoming) {
         if (aCallLog->status == LinphoneCallSuccess) {
-            image = [UIImage imageNamed:aCallLog->video_enabled?@"appel-entrant.png":@"appel-entrant.png"];
+            image = [UIImage imageNamed:@"call_status_incoming.png"];
         } else {
-            //missed call
-            image = [UIImage imageNamed:@"appel-manque.png"];
+            image = [UIImage imageNamed:@"call_status_missed.png"];
         }
 		partyToDisplay = aCallLog->from;
 	} else {
-		image = [UIImage imageNamed:aCallLog->video_enabled?@"appel-sortant.png":@"appel-sortant.png"];
+		image = [UIImage imageNamed:@"call_status_outgoing.png"];
 		partyToDisplay = aCallLog->to;
 	}
     

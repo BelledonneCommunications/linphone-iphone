@@ -107,11 +107,11 @@
 						</object>
 						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">bouton-detail-contact-over.png</string>
+							<string key="NSResourceName">list_details_over.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">bouton-detail-contact-actif.png</string>
+							<string key="NSResourceName">list_details_default.png</string>
 						</object>
 						<object class="IBUIFontDescription" key="IBUIFontDescription" id="954936864">
 							<int key="type">2</int>
@@ -129,6 +129,7 @@
 						<string key="NSFrame">{{276, 0}, {44, 44}}</string>
 						<reference key="NSSuperview" ref="702431052"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -142,11 +143,11 @@
 						<reference key="IBUINormalTitleShadowColor" ref="936824754"/>
 						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">croix-supprimer-ligne-liste-history-over.png</string>
+							<string key="NSResourceName">list_delete_over.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">croix-supprimer-ligne-liste-history-actif.png</string>
+							<string key="NSResourceName">list_delete_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="954936864"/>
 						<reference key="IBUIFont" ref="377778557"/>
@@ -284,7 +285,7 @@
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="15.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
-				<real value="0.0" key="15.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="15.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -356,10 +357,10 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="bouton-detail-contact-actif.png">{45, 45}</string>
-			<string key="bouton-detail-contact-over.png">{45, 45}</string>
-			<string key="croix-supprimer-ligne-liste-history-actif.png">{45, 45}</string>
-			<string key="croix-supprimer-ligne-liste-history-over.png">{45, 45}</string>
+			<string key="list_delete_default.png">{45, 45}</string>
+			<string key="list_delete_over.png">{45, 45}</string>
+			<string key="list_details_default.png">{45, 45}</string>
+			<string key="list_details_over.png">{45, 45}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

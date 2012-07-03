@@ -37,8 +37,7 @@
     BOOL firstCell;
     BOOL conferenceCall;
     
-    UIView *firstBackground;
-    UIView *otherBackground;
+    UIImageView* headerBackgroundImage;
     
     UILabel *addressLabel;
     UILabel *stateLabel;
@@ -55,8 +54,7 @@
 
 @property (weak) UICallCellData *data;
 
-@property (nonatomic, retain) IBOutlet UIView* firstBackground;
-@property (nonatomic, retain) IBOutlet UIView* otherBackground;
+@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundImage;
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* stateLabel;

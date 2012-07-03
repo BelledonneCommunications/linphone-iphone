@@ -37,8 +37,7 @@
 
 @synthesize data;
 
-@synthesize firstBackground;
-@synthesize otherBackground;
+@synthesize headerBackgroundImage;
 
 @synthesize addressLabel;
 @synthesize stateLabel;
@@ -66,15 +65,14 @@
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
         // Set selected+over background: IB lack !
-        [pauseButton setImage:[UIImage imageNamed:@"pause-champ-numero-over.png"] 
+        [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
     }
     return self;
 }
 
 - (void)dealloc {
-    [firstBackground release];
-    [otherBackground release];
+    [headerBackgroundImage release];
     [addressLabel release];
     [stateLabel release];
     [stateImage release];
@@ -135,11 +133,11 @@
         
         if(!conferenceCall) {
             if(state == LinphoneCallOutgoingRinging) {
-                [stateImage setImage:[UIImage imageNamed:@"ring-champ-numero-actif"]];
+                [stateImage setImage:[UIImage imageNamed:@"call_state_ringing_default.png"]];
                 [stateImage setHidden:false];
                 [pauseButton setHidden:true];
             } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
-                [stateImage setImage:[UIImage imageNamed:@"outgoing-champ-numero-actif"]];
+                [stateImage setImage:[UIImage imageNamed:@"call_state_outgoing_default.png"]];
                 [stateImage setHidden:false];
                 [pauseButton setHidden:true];
             } else {
@@ -148,10 +146,16 @@
                 [pauseButton update];
             }
             [removeButton setHidden:true];
+            if(firstCell) {
+                [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call_first.png"]];
+            } else {
+                [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call.png"]];
+            }
         } else {
             [stateImage setHidden:true];
             [pauseButton setHidden:true];
             [removeButton setHidden:false];
+            [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
         }
     
         NSMutableString* msDuration = [[NSMutableString alloc] init];
@@ -173,9 +177,6 @@
         }
     }
     [pauseButton setType:UIPauseButtonType_Call call:call];
-    
-    [firstBackground setHidden:!firstCell];
-    [otherBackground setHidden:firstCell];
 }
 
 - (void)selfUpdate {

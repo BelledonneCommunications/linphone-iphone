@@ -12,8 +12,8 @@
 	<string></string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>icone-linphone-57.png</string>
-		<string>icone-linphone-72.png</string>
+		<string>linphone_icon_57.png</string>
+		<string>linphone_icon_72.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
@@ -32,7 +32,7 @@
 	<key>NSMainNibFile</key>
 	<string>LinphoneApp</string>
 	<key>NSMainNibFile~ipad</key>
-	<string>MainScreenWithVideoPreview</string>
+	<string>LinphoneApp</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

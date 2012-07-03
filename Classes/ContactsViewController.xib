@@ -61,13 +61,13 @@
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC41AA</bytes>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+								<object class="NSCustomResource" key="IBUISelectedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">all-contacts-selectionne.png</string>
+									<string key="NSResourceName">contacts_all_selected.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">all-contacts-actif.png</string>
+									<string key="NSResourceName">contacts_all_default.png</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="1011869415">
 									<int key="type">2</int>
@@ -96,13 +96,13 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="873246362"/>
-								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+								<object class="NSCustomResource" key="IBUISelectedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">linphone-selectionne.png</string>
+									<string key="NSResourceName">contacts_linphone_selected.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">linphone-actif.png</string>
+									<string key="NSResourceName">contacts_linphone_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="1011869415"/>
 								<reference key="IBUIFont" ref="895098900"/>
@@ -124,13 +124,13 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="873246362"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">add-contact-depuis-detail-over.png</string>
+									<string key="NSResourceName">contacts_add_over.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">add-contact-depuis-detail-actif.png</string>
+									<string key="NSResourceName">contacts_add_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="1011869415"/>
 								<reference key="IBUIFont" ref="895098900"/>
@@ -156,6 +156,7 @@
 						<string key="NSFrame">{{0, 58}, {320, 402}}</string>
 						<reference key="NSSuperview" ref="812520855"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:10</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -331,19 +332,19 @@
 						<int key="objectID">4</int>
 						<reference key="object" ref="257572356"/>
 						<reference key="parent" ref="95706395"/>
-						<string key="objectName">all</string>
+						<string key="objectName">allButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">5</int>
 						<reference key="object" ref="596330568"/>
 						<reference key="parent" ref="95706395"/>
-						<string key="objectName">linphone</string>
+						<string key="objectName">linphoneButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
 						<reference key="object" ref="600417980"/>
 						<reference key="parent" ref="95706395"/>
-						<string key="objectName">addContact</string>
+						<string key="objectName">addButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">69</int>
@@ -370,7 +371,7 @@
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="4.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="5.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="5.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="6.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="69.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -450,12 +451,12 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="add-contact-depuis-detail-actif.png">{214, 117}</string>
-			<string key="add-contact-depuis-detail-over.png">{214, 117}</string>
-			<string key="all-contacts-actif.png">{213, 117}</string>
-			<string key="all-contacts-selectionne.png">{213, 117}</string>
-			<string key="linphone-actif.png">{213, 117}</string>
-			<string key="linphone-selectionne.png">{213, 117}</string>
+			<string key="contacts_add_default.png">{214, 117}</string>
+			<string key="contacts_add_over.png">{214, 117}</string>
+			<string key="contacts_all_default.png">{213, 117}</string>
+			<string key="contacts_all_selected.png">{213, 117}</string>
+			<string key="contacts_linphone_default.png">{213, 117}</string>
+			<string key="contacts_linphone_selected.png">{213, 117}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

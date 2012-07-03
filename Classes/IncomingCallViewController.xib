@@ -4520,7 +4520,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">ombre-cotes-avatar.png</string>
+									<string key="NSResourceName">avatar_shadow.png</string>
 								</object>
 							</object>
 							<object class="IBUIImageView" id="632401698">
@@ -4535,7 +4535,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">avatar-inconnu.png</string>
+									<string key="NSResourceName">avatar_unknown.png</string>
 								</object>
 							</object>
 						</array>
@@ -4554,7 +4554,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBUIView" id="299451957">
 								<reference key="NSNextResponder" ref="442322210"/>
 								<int key="NSvFlags">-2147483356</int>
-								<string key="NSFrame">{{0, 9}, {320, 67}}</string>
+								<string key="NSFrame">{{0, 10}, {320, 67}}</string>
 								<reference key="NSSuperview" ref="442322210"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="348909292"/>
@@ -4585,22 +4585,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<object class="NSColor" key="IBUIHighlightedTitleColor" id="373994809">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MQA</bytes>
-								</object>
-								<object class="NSColor" key="IBUINormalTitleColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-								</object>
 								<reference key="IBUINormalTitleShadowColor" ref="365714543"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">decrocher-over.png</string>
+									<string key="NSResourceName">accept_over.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">decrocher-actif.png</string>
+									<string key="NSResourceName">accept_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="301682065"/>
 								<reference key="IBUIFont" ref="179340956"/>
@@ -4611,6 +4603,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="NSFrame">{{160, 0}, {160, 77}}</string>
 								<reference key="NSSuperview" ref="442322210"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -4619,19 +4612,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<reference key="IBUIHighlightedTitleColor" ref="373994809"/>
-								<object class="NSColor" key="IBUINormalTitleColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-								</object>
 								<reference key="IBUINormalTitleShadowColor" ref="365714543"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">refuser-over.png</string>
+									<string key="NSResourceName">decline_over.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">refuser-actif.png</string>
+									<string key="NSResourceName">decline_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="301682065"/>
 								<reference key="IBUIFont" ref="179340956"/>
@@ -4751,19 +4739,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<int key="objectID">7</int>
 						<reference key="object" ref="908036430"/>
 						<reference key="parent" ref="442322210"/>
-						<string key="objectName">accept</string>
+						<string key="objectName">acceptButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
 						<reference key="object" ref="348909292"/>
 						<reference key="parent" ref="442322210"/>
-						<string key="objectName">decline</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">5</int>
-						<reference key="object" ref="299451957"/>
-						<reference key="parent" ref="442322210"/>
-						<string key="objectName">mask</string>
+						<string key="objectName">declineButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">8</int>
@@ -4807,6 +4789,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="parent" ref="735497316"/>
 						<string key="objectName">avatarImage</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">5</int>
+						<reference key="object" ref="299451957"/>
+						<reference key="parent" ref="442322210"/>
+						<string key="objectName">mask</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -4823,9 +4811,9 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="6.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="6.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
@@ -4839,7 +4827,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">IncomingCallViewController</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">UIModalViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="onAcceptClick:">id</string>
 						<string key="onDeclineClick:">id</string>
@@ -4873,6 +4861,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="minorKey">./Classes/IncomingCallViewController.h</string>
 					</object>
 				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIModalViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIModalViewController.h</string>
+					</object>
+				</object>
 			</array>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
@@ -4884,14 +4880,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="avatar-inconnu.png">{320, 339}</string>
+			<string key="accept_default.png">{320, 154}</string>
+			<string key="accept_over.png">{320, 154}</string>
+			<string key="avatar_shadow.png">{16, 16}</string>
+			<string key="avatar_unknown.png">{320, 339}</string>
 			<string key="champ-courbe-autres-numeros.png">{640, 125}</string>
 			<string key="champ-titre-incoming.png">{640, 135}</string>
-			<string key="decrocher-actif.png">{320, 154}</string>
-			<string key="decrocher-over.png">{320, 154}</string>
-			<string key="ombre-cotes-avatar.png">{640, 523}</string>
-			<string key="refuser-actif.png">{320, 154}</string>
-			<string key="refuser-over.png">{320, 154}</string>
+			<string key="decline_default.png">{320, 154}</string>
+			<string key="decline_over.png">{320, 154}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

@@ -48,7 +48,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">barre-noire-top.png</string>
+							<string key="NSResourceName">statebar_background.png</string>
 						</object>
 					</object>
 					<object class="IBUIImageView" id="332800514">
@@ -208,7 +208,7 @@
 						<int key="objectID">13</int>
 						<reference key="object" ref="327031870"/>
 						<reference key="parent" ref="848661322"/>
-						<string key="objectName">callQualityImage</string>
+						<string key="objectName">callQualityIndicatorImage</string>
 					</object>
 				</array>
 			</object>
@@ -269,7 +269,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="barre-noire-top.png">{640, 46}</string>
+			<string key="statebar_background.png">{640, 46}</string>
 			<string key="status_disconnected.png">{18, 17}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>

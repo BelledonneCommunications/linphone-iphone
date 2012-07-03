@@ -70,29 +70,21 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<object class="NSColor" key="IBUIHighlightedTitleColor" id="859874036">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MQA</bytes>
-						</object>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
 						<object class="NSColor" key="IBUINormalTitleShadowColor" id="260229542">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">history-over.png</string>
+							<string key="NSResourceName">history_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">history-selectionne.png</string>
+							<string key="NSResourceName">history_selected.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">history-actif.png</string>
+							<string key="NSResourceName">history_default.png</string>
 						</object>
 						<object class="IBUIFontDescription" key="IBUIFontDescription" id="978094057">
 							<int key="type">2</int>
@@ -120,23 +112,18 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<reference key="IBUIHighlightedTitleColor" ref="859874036"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">contacts-over.png</string>
+							<string key="NSResourceName">contacts_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">contacts-selectionne.png</string>
+							<string key="NSResourceName">contacts_selected.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">contacts-actif.png</string>
+							<string key="NSResourceName">contacts_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
@@ -157,23 +144,18 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<reference key="IBUIHighlightedTitleColor" ref="859874036"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">settings-over.png</string>
+							<string key="NSResourceName">settings_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">settings-selectionne.png</string>
+							<string key="NSResourceName">settings_selected.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">settings-actif.png</string>
+							<string key="NSResourceName">settings_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
@@ -195,13 +177,17 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-actif.png</string>
+							<string key="NSResourceName">dialer_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">dialer-over.png</string>
+							<string key="NSResourceName">dialer_selected.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUINormalImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">dialer_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
@@ -212,6 +198,7 @@
 						<string key="NSFrame">{{256, 0}, {64, 77}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -221,23 +208,18 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<reference key="IBUIHighlightedTitleColor" ref="859874036"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="260229542"/>
-						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">tchat-over.png</string>
+							<string key="NSResourceName">chat_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">tchat-selectionne.png</string>
+							<string key="NSResourceName">chat_selected.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">tchat-actif.png</string>
+							<string key="NSResourceName">chat_default.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="978094057"/>
 						<reference key="IBUIFont" ref="98882926"/>
@@ -437,7 +419,7 @@
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="6.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="2" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -528,20 +510,21 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="contacts-actif.png">{128, 154}</string>
-			<string key="contacts-over.png">{128, 154}</string>
-			<string key="contacts-selectionne.png">{128, 154}</string>
-			<string key="dialer-actif.png">{128, 154}</string>
-			<string key="dialer-over.png">{128, 154}</string>
-			<string key="history-actif.png">{128, 154}</string>
-			<string key="history-over.png">{128, 154}</string>
-			<string key="history-selectionne.png">{128, 154}</string>
-			<string key="settings-actif.png">{128, 154}</string>
-			<string key="settings-over.png">{128, 154}</string>
-			<string key="settings-selectionne.png">{128, 154}</string>
-			<string key="tchat-actif.png">{128, 154}</string>
-			<string key="tchat-over.png">{128, 154}</string>
-			<string key="tchat-selectionne.png">{128, 154}</string>
+			<string key="chat_default.png">{128, 154}</string>
+			<string key="chat_over.png">{128, 154}</string>
+			<string key="chat_selected.png">{128, 154}</string>
+			<string key="contacts_default.png">{128, 154}</string>
+			<string key="contacts_over.png">{128, 154}</string>
+			<string key="contacts_selected.png">{128, 154}</string>
+			<string key="dialer_default.png">{128, 154}</string>
+			<string key="dialer_over.png">{128, 154}</string>
+			<string key="dialer_selected.png">{128, 154}</string>
+			<string key="history_default.png">{128, 154}</string>
+			<string key="history_over.png">{128, 154}</string>
+			<string key="history_selected.png">{128, 154}</string>
+			<string key="settings_default.png">{128, 154}</string>
+			<string key="settings_over.png">{128, 154}</string>
+			<string key="settings_selected.png">{128, 154}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

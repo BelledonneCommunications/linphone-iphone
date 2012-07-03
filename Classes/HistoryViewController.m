@@ -67,7 +67,7 @@ typedef enum _HistoryView {
     [self changeView: History_All];
     
     // Set selected+over background: IB lack !
-    [editButton setBackgroundImage:[UIImage imageNamed:@"ok-edit-list-history-over.png"] 
+    [editButton setImage:[UIImage imageNamed:@"history_ok_over.png"] 
                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 

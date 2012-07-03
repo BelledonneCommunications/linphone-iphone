@@ -27,7 +27,7 @@
 
 @property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
 
-- (IBAction)onNew:(id) event;
+- (IBAction)onAdd:(id) event;
 - (IBAction)onEdit:(id) event;
 
 @end

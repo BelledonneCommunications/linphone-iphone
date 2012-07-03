@@ -61,17 +61,17 @@
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC41AA</bytes>
 								</object>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">tchat-new-discussion-over.png</string>
+									<string key="NSResourceName">chat_add_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">chat_add_default.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">all-call-selectionne.png</string>
-								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">tchat-new-discussion-actif.png</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="854320817">
 									<int key="type">2</int>
@@ -100,17 +100,17 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="378691752"/>
-								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">tchat-edit-over.png</string>
+									<string key="NSResourceName">chat_edit_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">chat_edit_default.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">missed-selectionne.png</string>
-								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">tchat-edit-actif.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="854320817"/>
 								<reference key="IBUIFont" ref="704081311"/>
@@ -136,6 +136,7 @@
 						<string key="NSFrame">{{0, 58}, {320, 402}}</string>
 						<reference key="NSSuperview" ref="1010501960"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -232,12 +233,12 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">onNew:</string>
+						<string key="label">onAdd:</string>
 						<reference key="source" ref="174033966"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
-					<int key="connectionID">15</int>
+					<int key="connectionID">19</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -294,13 +295,13 @@
 						<int key="objectID">9</int>
 						<reference key="object" ref="1001279594"/>
 						<reference key="parent" ref="852221244"/>
-						<string key="objectName">edit</string>
+						<string key="objectName">editButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">10</int>
 						<reference key="object" ref="174033966"/>
 						<reference key="parent" ref="852221244"/>
-						<string key="objectName">new</string>
+						<string key="objectName">addButton</string>
 					</object>
 				</array>
 			</object>
@@ -310,20 +311,20 @@
 				<string key="-2.CustomClassName">UIResponder</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="4.CustomClassName">ChatTableViewController</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">18</int>
+			<int key="maxID">19</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -339,16 +340,16 @@
 					<string key="className">ChatViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="onAdd:">id</string>
 						<string key="onEdit:">id</string>
-						<string key="onNew:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="onEdit:">
-							<string key="name">onEdit:</string>
+						<object class="IBActionInfo" key="onAdd:">
+							<string key="name">onAdd:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="onNew:">
-							<string key="name">onNew:</string>
+						<object class="IBActionInfo" key="onEdit:">
+							<string key="name">onEdit:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -380,11 +381,11 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="all-call-selectionne.png">{213, 117}</string>
+			<string key="chat_add_default.png">{320, 117}</string>
+			<string key="chat_add_over.png">{320, 117}</string>
+			<string key="chat_edit_default.png">{320, 117}</string>
+			<string key="chat_edit_over.png">{320, 117}</string>
 			<string key="missed-selectionne.png">{213, 117}</string>
-			<string key="tchat-edit-actif.png">{320, 117}</string>
-			<string key="tchat-edit-over.png">{320, 117}</string>
-			<string key="tchat-new-discussion-actif.png">{320, 117}</string>
-			<string key="tchat-new-discussion-over.png">{320, 117}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

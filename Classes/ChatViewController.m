@@ -27,7 +27,7 @@
     return [super initWithNibName:@"ChatViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (IBAction)onNew: (id) event {
+- (IBAction)onAdd: (id) event {
     
 }
 

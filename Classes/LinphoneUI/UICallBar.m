@@ -48,7 +48,7 @@
 @synthesize nineButton;
 @synthesize starButton;
 @synthesize zeroButton;
-@synthesize hashButton;
+@synthesize sharpButton;
 
 
 #pragma mark - Lifecycle Functions
@@ -64,6 +64,19 @@
     [microButton release];
     [speakerButton release]; 
     [optionsButton release];
+    
+    [oneButton release];
+	[twoButton release];
+	[threeButton release];
+	[fourButton release];
+	[fiveButton release];
+	[sixButton release];
+	[sevenButton release];
+	[eightButton release];
+	[nineButton release];
+	[starButton release];
+	[zeroButton release];
+	[sharpButton release];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -87,13 +100,34 @@
 	[eightButton  initWithNumber:'8'   addressField:nil dtmf:true];
 	[nineButton   initWithNumber:'9'   addressField:nil dtmf:true];
 	[starButton   initWithNumber:'*'   addressField:nil dtmf:true];
-	[hashButton   initWithNumber:'#'   addressField:nil dtmf:true];
+	[sharpButton   initWithNumber:'#'   addressField:nil dtmf:true];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
     
-    // Set selected+over background: IB lack !
-    [videoButton setBackgroundImage:[UIImage imageNamed:@"video-ON-disabled.png"] 
+    // Set selected+disabled background: IB lack !
+    [videoButton setImage:[UIImage imageNamed:@"video_on_disabled.png"] 
                            forState:(UIControlStateDisabled | UIControlStateSelected)];
+    // Set selected+over background: IB lack !
+    [videoButton setImage:[UIImage imageNamed:@"video_on_over.png"] 
+                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+disabled background: IB lack !
+    [speakerButton setImage:[UIImage imageNamed:@"speaker_on_disabled.png"] 
+                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+    // Set selected+over background: IB lack !
+    [speakerButton setImage:[UIImage imageNamed:@"speaker_on_over.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+disabled background: IB lack !
+    [microButton setImage:[UIImage imageNamed:@"micro_on_disabled.png"] 
+                   forState:(UIControlStateDisabled | UIControlStateSelected)];
+    // Set selected+over background: IB lack !
+    [microButton setImage:[UIImage imageNamed:@"micro_on_over.png"] 
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [pauseButton setImage:[UIImage imageNamed:@"pause_on_over.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
 - (void)viewDidUnload {
