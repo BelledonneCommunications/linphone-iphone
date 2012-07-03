@@ -226,6 +226,7 @@ enum TableSection {
     bool inConference = indexPath.section == ConferenceSection;
     
     LinphoneCore* lc = [LinphoneManager getLc];
+    LinphoneCall* currentCall = linphone_core_get_current_call(lc);
     LinphoneCall* call = [InCallTableViewController retrieveCallAtIndex:indexPath.row inConference:inConference];
     [cell setData:[self addCallData:call]];
     
@@ -235,7 +236,8 @@ enum TableSection {
     } else {
         [cell setFirstCell:false];
     }
-    [cell setConferenceCall:inConference];
+    [cell setCurrentCall:(currentCall == call)];
+    [cell setConferenceCell:inConference];
     [cell update];
     
     if (linphone_core_get_calls_nb(lc) > 1 || linphone_core_get_conference_size(lc) > 0) {

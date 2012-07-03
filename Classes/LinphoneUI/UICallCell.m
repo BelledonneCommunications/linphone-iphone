@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "UICallCell.h"
 
 #import "LinphoneManager.h"
@@ -38,6 +40,7 @@
 @synthesize data;
 
 @synthesize headerBackgroundImage;
+@synthesize headerBackgroundHightlightImage;
 
 @synthesize addressLabel;
 @synthesize stateLabel;
@@ -50,8 +53,8 @@
 @synthesize avatarView;
 
 @synthesize firstCell;
-@synthesize conferenceCall;
-
+@synthesize conferenceCell;
+@synthesize currentCall;
 
 #pragma mark - Lifecycle Functions
 
@@ -67,6 +70,8 @@
         // Set selected+over background: IB lack !
         [pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"] 
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        self->currentCall = FALSE;
     }
     return self;
 }
@@ -82,7 +87,27 @@
 }
 
 
-#pragma mark - Static cell sizes
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    self->currentCall = FALSE;
+    [headerBackgroundHightlightImage setAlpha:0.0f];
+}
+
+#pragma mark - Properties Functions
+
+- (void)setCurrentCall:(BOOL) val {
+    BOOL oldVal = currentCall;
+    currentCall = val;
+    if(oldVal != val) {
+        if (currentCall) {
+            [self startBlinkAnimation:@"Blink" target:headerBackgroundHightlightImage];
+        } else {
+            [self stopBlinkAnimation:@"Blink" target:headerBackgroundHightlightImage];
+        }
+    }
+}
+
+#pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
     return 280;
@@ -92,7 +117,31 @@
     return 54;
 }
 
+- (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target
+{   
+    [UIView animateWithDuration:1.0
+                          delay: 0.0
+                        options: ([target alpha] == 1.0f)? UIViewAnimationOptionCurveEaseIn: UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         if([target alpha] == 1.0f)
+                             [target setAlpha:0.0f];
+                         else
+                             [target setAlpha:1.0f];
+                     }
+                     completion:^(BOOL finished){
+                         if(finished) {
+                             [self startBlinkAnimation: animationID target:target];
+                         }
+                     }];
 
+}
+
+- (void)stopBlinkAnimation:(NSString *)animationID target:(UIView *)target {
+    [target.layer removeAnimationForKey:animationID];
+    [target setAlpha:0.0f];
+}
+
+         
 #pragma mark - 
 
 - (void)update:(UICallCellData*) adata {
@@ -131,7 +180,7 @@
     
         LinphoneCallState state = linphone_call_get_state(call);
         
-        if(!conferenceCall) {
+        if(!conferenceCell) {
             if(state == LinphoneCallOutgoingRinging) {
                 [stateImage setImage:[UIImage imageNamed:@"call_state_ringing_default.png"]];
                 [stateImage setHidden:false];
@@ -148,8 +197,10 @@
             [removeButton setHidden:true];
             if(firstCell) {
                 [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call_first.png"]];
+                [headerBackgroundHightlightImage setImage:[UIImage imageNamed:@"cell_call_first_hightlight.png"]];
             } else {
                 [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call.png"]];
+                [headerBackgroundHightlightImage setImage:[UIImage imageNamed:@"cell_call_hightlight.png"]];
             }
         } else {
             [stateImage setHidden:true];
@@ -157,7 +208,7 @@
             [removeButton setHidden:false];
             [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
         }
-    
+        
         NSMutableString* msDuration = [[NSMutableString alloc] init];
         int duration = linphone_call_get_duration(call);
         [msDuration appendFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil];
@@ -181,16 +232,15 @@
 
 - (void)selfUpdate {
     UITableView *parentTable = (UITableView *)self.superview;
-    [parentTable beginUpdates];
+    /*[parentTable beginUpdates];
     [parentTable reloadData];
-    [parentTable endUpdates];
-    /*
+    [parentTable endUpdates];*/
     if(parentTable) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
             [parentTable reloadRowsAtIndexPaths:[[NSArray alloc] initWithObjects:index, nil] withRowAnimation:false];
         }
-    }*/
+    }
 }
 
 

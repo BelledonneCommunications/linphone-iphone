@@ -35,9 +35,11 @@
 @interface UICallCell : UITableViewCell {
     @private
     BOOL firstCell;
-    BOOL conferenceCall;
+    BOOL conferenceCell;
+    BOOL currentCall;
     
     UIImageView* headerBackgroundImage;
+    UIImageView* headerBackgroundHightlightImage;
     
     UILabel *addressLabel;
     UILabel *stateLabel;
@@ -55,6 +57,7 @@
 @property (weak) UICallCellData *data;
 
 @property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundHightlightImage;
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* stateLabel;
@@ -67,7 +70,8 @@
 @property (nonatomic, retain) IBOutlet UIView* avatarView;
 
 @property (assign) BOOL firstCell;
-@property (assign) BOOL conferenceCall;
+@property (assign) BOOL conferenceCell;
+@property (nonatomic, assign) BOOL currentCall;
 
 - (void)update;
 
