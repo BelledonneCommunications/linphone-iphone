@@ -41,6 +41,15 @@ typedef enum _HistoryView {
     return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
 }
 
+- (void)dealloc {
+    [tableController release];
+    [tableView release];
+    
+    [allButton release];
+    [linphoneButton release];
+    
+    [super dealloc];
+}
 
 #pragma mark - ViewController Functions
 
@@ -53,6 +62,14 @@ typedef enum _HistoryView {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self changeView: History_All];
+    
+    // Set selected+over background: IB lack !
+    [linphoneButton setImage:[UIImage imageNamed:@"contacts_linphone_selected.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [allButton setImage:[UIImage imageNamed:@"contacts_all_selected.png"] 
+                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
 

@@ -42,9 +42,13 @@ typedef enum _HistoryView {
 }
 
 - (void)dealloc {
+    [tableController release];
+    [tableView release];
+    
     [allButton release];
     [missedButton release];
     [editButton release];
+    
     [super dealloc];
 }
 
@@ -69,6 +73,14 @@ typedef enum _HistoryView {
     // Set selected+over background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"history_ok_over.png"] 
                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [allButton setImage:[UIImage imageNamed:@"history_all_selected.png"] 
+                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [missedButton setImage:[UIImage imageNamed:@"history_missed_selected.png"] 
+               forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
 
