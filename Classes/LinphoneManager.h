@@ -29,7 +29,8 @@
 #include "linphonecore.h"
 
 typedef enum _PhoneView {
-    PhoneView_FirstLoginView,
+    PhoneView_Wizard,
+    PhoneView_FirstLogin,
     PhoneView_Dialer,
     PhoneView_History,
     PhoneView_Settings,

@@ -143,10 +143,15 @@ int __aeabi_idiv(int a, int b) {
 - (void)setupUI {
 	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
         // Change to fist login view
-        [[LinphoneManager instance] changeView: PhoneView_FirstLoginView];
+        [[LinphoneManager instance] changeView: PhoneView_FirstLogin];
     } else {
         // Change to default view
-        [[LinphoneManager instance] changeView: PhoneView_Dialer];
+        const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+        if(list != NULL) {
+            [[LinphoneManager instance] changeView: PhoneView_Dialer];
+        } else {
+            [[LinphoneManager instance] changeView: PhoneView_Wizard];
+        }
     }
 	
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;

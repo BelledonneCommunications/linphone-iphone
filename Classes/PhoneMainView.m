@@ -167,16 +167,28 @@
     [viewDescriptions setObject:chatDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
  
     //
-    // IncomingCall View
+    // FirstLogin View
     //
-    UICompositeViewDescription *incomingCallDescription = [UICompositeViewDescription alloc];
-    incomingCallDescription->content = @"FirstLoginViewController";
-    incomingCallDescription->tabBar = nil;
-    incomingCallDescription->tabBarEnabled = false;
-    incomingCallDescription->stateBar = nil;
-    incomingCallDescription->stateBarEnabled = false;
-    incomingCallDescription->fullscreen = false;
-    [viewDescriptions setObject:incomingCallDescription forKey:[NSNumber numberWithInt: PhoneView_FirstLoginView]];
+    UICompositeViewDescription *firstLoginDescription = [UICompositeViewDescription alloc];
+    firstLoginDescription->content = @"FirstLoginViewController";
+    firstLoginDescription->tabBar = nil;
+    firstLoginDescription->tabBarEnabled = false;
+    firstLoginDescription->stateBar = nil;
+    firstLoginDescription->stateBarEnabled = false;
+    firstLoginDescription->fullscreen = false;
+    [viewDescriptions setObject:firstLoginDescription forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
+    
+    //
+    // Wizard View
+    //
+    UICompositeViewDescription *wizardDescription = [UICompositeViewDescription alloc];
+    wizardDescription->content = @"WizardViewController";
+    wizardDescription->tabBar = nil;
+    wizardDescription->tabBarEnabled = false;
+    wizardDescription->stateBar = nil;
+    wizardDescription->stateBarEnabled = false;
+    wizardDescription->fullscreen = false;
+    [viewDescriptions setObject:wizardDescription forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
     
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 

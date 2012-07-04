@@ -24,7 +24,7 @@
 #import "UITransferButton.h"
 #import "UIDigitButton.h"
 
-@interface DialerViewController : UIViewController <UITextFieldDelegate>{
+@interface DialerViewController : UIViewController <UITextFieldDelegate> {
 @private
 	//Buttons
 	UITextField*    addressField;
