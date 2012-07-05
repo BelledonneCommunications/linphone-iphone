@@ -19,9 +19,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UICompositeViewController.h"
+
 #import "ContactsTableViewController.h"
 
-@interface ContactsViewController : UIViewController {
+@interface ContactsViewController : UIViewController<UICompositeViewDelegate> {
     ContactsTableViewController *tableController;
     UITableView *tableView;
     

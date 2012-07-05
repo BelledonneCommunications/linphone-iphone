@@ -24,19 +24,13 @@
 
 @synthesize addressLabel;
 @synthesize avatarImage;
+@synthesize call;
 
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    self = [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
-    if(self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(callUpdate:) 
-                                                     name:@"LinphoneCallUpdate" 
-                                                   object:nil];
-    }
-    return self;
+    return [super initWithNibName:@"IncomingCallViewController" bundle:[NSBundle mainBundle]];
 }
 
 - (void)dealloc {
@@ -46,20 +40,50 @@
 }
 
 
+#pragma mark - ViewController Functions
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(callUpdateEvent:) 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    
+    [self callUpdate:call state:linphone_call_get_state(call)];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+}
+
+
+
 #pragma mark - Event Functions
 
-- (void)callUpdate:(NSNotification*)notif {  
+- (void)callUpdateEvent:(NSNotification*)notif {  
     LinphoneCall *acall = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState astate = [[notif.userInfo objectForKey: @"state"] intValue];
+    [self callUpdate:acall state:astate];
+}
+
+
+#pragma mark - 
+
+- (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {  
     if(call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
         [self dismiss: IncomingCall_Aborted];
     }
 }
 
 
-#pragma mark -
+#pragma mark - Property Functions
 
-- (void)update:(LinphoneCall*)acall {
+- (void)setCall:(LinphoneCall*)acall {
     [self view]; //Force view load
     
     call = acall;

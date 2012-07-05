@@ -58,13 +58,12 @@ extern  void libmsbcg729_init();
 
 @implementation LinphoneManager
 
-PhoneView currentView = -1;
-
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
 @synthesize defaultExpires;
 @synthesize settingsStore;
+@synthesize database;
 
 struct codec_name_pref_table{
     const char *name;
@@ -110,44 +109,57 @@ struct codec_name_pref_table codec_pref_table[]={
 
 - (id)init {
     assert (!theLinphoneManager);
-    if ((self= [super init])) {
+    if ((self = [super init])) {
         mFastAddressBook = [[FastAddressBook alloc] init];
+        database = NULL;
         theLinphoneManager = self;
-		self.defaultExpires=600;
+		self.defaultExpires = 600;
+        [self openDatabase];
     }
     return self;
 }
 
+- (void)dealloc {
+    [mFastAddressBook release];
+    [self closeDatabase];
+    
+    [super dealloc];
+}
+
+- (void)openDatabase {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:@"database.txt"];
+
+    // Copy default database
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    //[fileManager removeItemAtPath:databaseDocumentPath error:&error]; //TODO REMOVE
+    if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
+        NSLog(@"Create sqlite 3 database");
+        NSString *resourceDocumentPath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"sqlite"];
+        [fileManager copyItemAtPath:resourceDocumentPath toPath:databaseDocumentPath error:&error];
+        if(error != nil) {
+            NSLog(@"Can't copy database: %@", [error localizedDescription]);
+            return;
+        }
+    }
+
+    if(sqlite3_open([databaseDocumentPath UTF8String], &database) != SQLITE_OK) {
+        NSLog(@"Can't open \"%@\" sqlite3 database.", databaseDocumentPath);
+    }
+}
+
+- (void)closeDatabase {
+    if(database != NULL) {
+        if(sqlite3_close(database) != SQLITE_OK) {
+            NSLog(@"Can't close sqlite3 database.");
+        }
+    }
+}
+
 + (LinphoneManager*)instance {
 	return theLinphoneManager;
-}
-
-- (void) showTabBar:(BOOL) show {
-    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithBool:show] forKey:@"tabBar"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
-}
-
-- (void)fullScreen:(BOOL) enabled {
-    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithBool:enabled] forKey:@"fullscreen"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
-}
-
-- (void)changeView:(PhoneView) view {
-    [self changeView:view dict:nil];
-}
-
-- (void)changeView:(PhoneView) view dict:(NSDictionary *)dict {
-    currentView = view;
-    
-    NSMutableDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
-    if(dict != nil)
-        [mdict setObject:dict forKey:@"args"];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
-}
-
-- (PhoneView)currentView {
-    return currentView;
 }
 
 -(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {

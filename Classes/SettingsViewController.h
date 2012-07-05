@@ -19,9 +19,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UICompositeViewController.h"
 #import "IASKAppSettingsViewController.h"
 
-@interface SettingsViewController: UIViewController<IASKSettingsReaderFilterDelegate, IASKSettingsDelegate> {
+@interface SettingsViewController: UIViewController<IASKSettingsReaderFilterDelegate, IASKSettingsDelegate, UICompositeViewDelegate> {
     IASKAppSettingsViewController *settingsController;
     UINavigationController *navigationController;
 }

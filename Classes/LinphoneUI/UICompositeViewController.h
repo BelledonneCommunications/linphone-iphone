@@ -40,6 +40,12 @@
 
 @end
 
+@protocol UICompositeViewDelegate <NSObject>
+
++ (UICompositeViewDescription*) compositeViewDescription;
+
+@end
+
 @interface UICompositeViewController : UIViewController {
     @private
     UIView *stateBarView;

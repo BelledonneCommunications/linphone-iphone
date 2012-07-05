@@ -30,6 +30,8 @@
     LinphoneCallLog *callLog;
 }
 
+@property (assign) LinphoneCallLog *callLog;
+
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
 @property (nonatomic, retain) IBOutlet UILabel*     displayNameLabel;
 @property (nonatomic, retain) IBOutlet UIButton*    detailsButton;
@@ -40,7 +42,7 @@
 - (IBAction)onDetails:(id) event;
 - (IBAction)onDelete:(id) event;
 
-- (void)update:(LinphoneCallLog*)  callLogs;
+- (void)update;
 - (void)enterEditMode;
 - (void)exitEditMode;
 

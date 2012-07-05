@@ -20,6 +20,7 @@
 
 #import "FirstLoginViewController.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
 @implementation FirstLoginViewController
 
@@ -36,21 +37,63 @@
 }
 
 - (void)dealloc {
-    [super dealloc];
 	[loginButton dealloc];
 	[siteButton dealloc];
 	[usernameField dealloc];
     [passwordField dealloc];
 	[waitView dealloc];
+    
+    // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
 }
+
+
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"FirstLoginViewController";
+    description->tabBar = nil;
+    description->tabBarEnabled = false;
+    description->stateBar = nil;
+    description->stateBarEnabled = false;
+    description->fullscreen = false;
+    return description;
+}
+
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidAppear:(BOOL)animated { 
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated { 
+    [super viewWillAppear:animated];
 	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
 	[passwordField setText:[[LinphoneManager instance].settingsStore objectForKey:@"password_preference"]];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(registrationUpdateEvent:) 
+                                                 name:@"LinphoneRegistrationUpdate" 
+                                               object:nil];
+    
+    // Update on show
+    const MSList* list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+    if(list != NULL) {
+        LinphoneProxyConfig *config = (LinphoneProxyConfig*) list->data;
+        if(config) {
+            [self registrationUpdate:linphone_proxy_config_get_state(config)];
+        }
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneRegistrationUpdate" 
+                                                  object:nil];
 }
 
 - (void)viewDidLoad {
@@ -59,26 +102,24 @@
 		siteUrl=@"http://www.linphone.org";
 	}
 	[siteButton setTitle:siteUrl forState:UIControlStateNormal];
-    
-    // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
 }
-
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 
 #pragma mark - Event Functions
 
-- (void)registrationUpdate: (NSNotification*) notif {  
-    LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
+- (void)registrationUpdateEvent:(NSNotification*)notif {  
+    [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue]];
+}
+
+
+#pragma mark - 
+
+- (void)registrationUpdate:(LinphoneRegistrationState)state {
     switch (state) {
         case LinphoneRegistrationOk: 
         {
             [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"]; 
             [self.waitView setHidden:true];
-            [[LinphoneManager instance] changeView:PhoneView_Dialer];
+            [[PhoneMainView instance] changeView:PhoneView_Dialer];
             break;
         }
         case LinphoneRegistrationNone: 

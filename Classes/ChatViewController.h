@@ -20,14 +20,15 @@
 #import <UIKit/UIKit.h>
 
 #import "ChatTableViewController.h"
+#import "UICompositeViewController.h"
 
-@interface ChatViewController : UIViewController {
+@interface ChatViewController : UIViewController<UICompositeViewDelegate> {
     ChatTableViewController *tableController;
 }
 
 @property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
 
-- (IBAction)onAdd:(id) event;
-- (IBAction)onEdit:(id) event;
+- (IBAction)onAddClick:(id) event;
+- (IBAction)onEditClick:(id) event;
 
 @end

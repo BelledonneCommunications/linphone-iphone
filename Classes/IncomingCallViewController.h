@@ -38,12 +38,9 @@ typedef enum _IncomingCallStates {
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
+@property (nonatomic, assign) LinphoneCall* call;
 
 - (IBAction)onAcceptClick:(id) event;
 - (IBAction)onDeclineClick:(id) event;
-
-- (void)update:(LinphoneCall*)call;
-
-- (LinphoneCall*) getCall;
 
 @end

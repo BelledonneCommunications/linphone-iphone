@@ -20,6 +20,7 @@
 #import "HistoryTableViewController.h"
 #import "UIHistoryCell.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
 @implementation HistoryTableViewController
 
@@ -58,10 +59,14 @@
     else 
         [cell exitEditMode];
     
-    [cell update:callLogs];
+    [cell setCallLog:callLogs];
+    [cell update];
 	
     return cell;
 }
+
+
+#pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
@@ -96,7 +101,7 @@
                           [[[NSArray alloc] initWithObjects: phoneNumber, nil] autorelease]
                           , @"setAddress:",
                           nil] autorelease];
-    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
 
 	[phoneNumber release];
     [dispName release];

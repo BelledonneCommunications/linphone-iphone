@@ -1,4 +1,4 @@
-/* ChatTableViewController.h
+/* ChatRoomTableViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,12 +17,44 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
 
-#import <UIKit/UIKit.h>
+#import "ChatRoomTableViewController.h"
+#import "UIChatCell.h"
 
-@interface ChatTableViewController : UITableViewController {
-    NSArray *data;
+@implementation ChatRoomTableViewController
+
+@synthesize data;
+
+
+#pragma mark - 
+
+- (void)setData:(NSArray *)adata {
+    if(self->data != nil)
+        [self->data release];
+    self->data = [adata retain];
+    [[self tableView] reloadData];
 }
 
-@property (nonatomic, retain) NSArray *data;
+
+#pragma mark - UITableViewDataSource Functions
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [data count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatCell"];
+    if (cell == nil) {
+        cell = [[UIChatCell alloc] init];
+    }
+    
+    [cell setChat:[data objectAtIndex:[indexPath row]]];
+    [cell update];
+    
+    return cell;
+}
 
 @end

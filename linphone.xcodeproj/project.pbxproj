@@ -223,6 +223,15 @@
 		D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
 		D32942A41594C94300556A1C /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
 		D32942A51594C94300556A1C /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
+		D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
+		D32B6E2515A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
+		D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
+		D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
+		D32B6E2C15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
+		D32B6E2D15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
+		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
+		D32B6E3815A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
+		D32B6E3915A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D3432A62158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
@@ -423,6 +432,16 @@
 		D3A55FBD15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A55FBF15877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
 		D3A55FC015877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
+		D3B9A3DF15A58C450096EA4E /* chat_field.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DA15A58C440096EA4E /* chat_field.png */; };
+		D3B9A3E015A58C450096EA4E /* chat_field.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DA15A58C440096EA4E /* chat_field.png */; };
+		D3B9A3E115A58C450096EA4E /* chat_ok_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */; };
+		D3B9A3E215A58C450096EA4E /* chat_ok_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */; };
+		D3B9A3E315A58C450096EA4E /* chat_ok_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */; };
+		D3B9A3E415A58C450096EA4E /* chat_ok_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */; };
+		D3B9A3E515A58C450096EA4E /* chat_send_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DD15A58C440096EA4E /* chat_send_default.png */; };
+		D3B9A3E615A58C450096EA4E /* chat_send_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DD15A58C440096EA4E /* chat_send_default.png */; };
+		D3B9A3E715A58C450096EA4E /* chat_send_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DE15A58C450096EA4E /* chat_send_over.png */; };
+		D3B9A3E815A58C450096EA4E /* chat_send_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B9A3DE15A58C450096EA4E /* chat_send_over.png */; };
 		D3C2814B15A2D38D0098AA42 /* dialer_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C2814A15A2D38D0098AA42 /* dialer_selected.png */; };
 		D3C2814C15A2D38D0098AA42 /* dialer_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C2814A15A2D38D0098AA42 /* dialer_selected.png */; };
 		D3C2815215A2D64A0098AA42 /* numpad_star_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C2815115A2D64A0098AA42 /* numpad_star_over.png */; };
@@ -525,6 +544,14 @@
 		D3F34F311599B008005BE94F /* avatar_shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F34F2F1599B008005BE94F /* avatar_shadow.png */; };
 		D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
 		D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
+		D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
+		D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
+		D3F795D815A582810077328B /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F795D515A582800077328B /* ChatRoomViewController.xib */; };
+		D3F795D915A582810077328B /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F795D515A582800077328B /* ChatRoomViewController.xib */; };
+		D3F795DD15A5831C0077328B /* chat_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DB15A5831C0077328B /* chat_back_default.png */; };
+		D3F795DE15A5831C0077328B /* chat_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DB15A5831C0077328B /* chat_back_default.png */; };
+		D3F795DF15A5831C0077328B /* chat_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DC15A5831C0077328B /* chat_back_over.png */; };
+		D3F795E015A5831C0077328B /* chat_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DC15A5831C0077328B /* chat_back_over.png */; };
 		D3F83EEC1582021700336684 /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* InCallViewController.m */; };
 		D3F83EED1582021700336684 /* InCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* InCallViewController.m */; };
 		D3F83EEE1582021700336684 /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83EEB1582021700336684 /* InCallViewController.xib */; };
@@ -979,6 +1006,13 @@
 		D32648421588F6FA00930C67 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
 		D32648431588F6FB00930C67 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
 		D32942A31594C94200556A1C /* SettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsViewController.xib; sourceTree = "<group>"; };
+		D32B6E2315A5B2020033019F /* chat_send_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_send_disabled.png; path = Resources/chat_send_disabled.png; sourceTree = "<group>"; };
+		D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomTableViewController.h; sourceTree = "<group>"; };
+		D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatRoomTableViewController.m; sourceTree = "<group>"; };
+		D32B6E2B15A5C0800033019F /* database.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = database.sqlite; path = Resources/database.sqlite; sourceTree = "<group>"; };
+		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		D32B6E3615A5C2430033019F /* ChatModel.h */ = {isa = PBXFileReference; fileEncoding = 4; name = ChatModel.h; path = Model/ChatModel.h; sourceTree = "<group>"; };
+		D32B6E3715A5C2430033019F /* ChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChatModel.m; path = Model/ChatModel.m; sourceTree = "<group>"; };
 		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
 		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* led_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_connected.png; path = Resources/led_connected.png; sourceTree = "<group>"; };
@@ -1115,6 +1149,11 @@
 		D3A55FBA15877E5E003FD403 /* UIContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactCell.h; sourceTree = "<group>"; };
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
 		D3A55FBE15877E69003FD403 /* UIContactCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactCell.xib; sourceTree = "<group>"; };
+		D3B9A3DA15A58C440096EA4E /* chat_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_field.png; path = Resources/chat_field.png; sourceTree = "<group>"; };
+		D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_default.png; path = Resources/chat_ok_default.png; sourceTree = "<group>"; };
+		D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_over.png; path = Resources/chat_ok_over.png; sourceTree = "<group>"; };
+		D3B9A3DD15A58C440096EA4E /* chat_send_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_send_default.png; path = Resources/chat_send_default.png; sourceTree = "<group>"; };
+		D3B9A3DE15A58C450096EA4E /* chat_send_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_send_over.png; path = Resources/chat_send_over.png; sourceTree = "<group>"; };
 		D3C2814A15A2D38D0098AA42 /* dialer_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialer_selected.png; path = Resources/dialer_selected.png; sourceTree = "<group>"; };
 		D3C2815115A2D64A0098AA42 /* numpad_star_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_star_over.png; path = Resources/numpad_star_over.png; sourceTree = "<group>"; };
 		D3C714B2159DB84400705B8E /* toy-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "toy-mono.wav"; path = "Resources/toy-mono.wav"; sourceTree = "<group>"; };
@@ -1175,6 +1214,11 @@
 		D3F34F2F1599B008005BE94F /* avatar_shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = avatar_shadow.png; path = Resources/avatar_shadow.png; sourceTree = "<group>"; };
 		D3F34F331599C354005BE94F /* UIModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIModalViewController.h; sourceTree = "<group>"; };
 		D3F34F341599C354005BE94F /* UIModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIModalViewController.m; sourceTree = "<group>"; };
+		D3F795D315A582800077328B /* ChatRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomViewController.h; sourceTree = "<group>"; };
+		D3F795D415A582800077328B /* ChatRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatRoomViewController.m; sourceTree = "<group>"; };
+		D3F795D515A582800077328B /* ChatRoomViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatRoomViewController.xib; sourceTree = "<group>"; };
+		D3F795DB15A5831C0077328B /* chat_back_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_back_default.png; path = Resources/chat_back_default.png; sourceTree = "<group>"; };
+		D3F795DC15A5831C0077328B /* chat_back_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_back_over.png; path = Resources/chat_back_over.png; sourceTree = "<group>"; };
 		D3F83EE91582021700336684 /* InCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InCallViewController.h; sourceTree = "<group>"; };
 		D3F83EEA1582021700336684 /* InCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InCallViewController.m; sourceTree = "<group>"; };
 		D3F83EEB1582021700336684 /* InCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InCallViewController.xib; sourceTree = "<group>"; };
@@ -1233,6 +1277,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
@@ -1331,8 +1376,14 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D32B6E3515A5C2200033019F /* Model */,
 				340751E4150E4D0200B89C47 /* CallDelegate.h */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
+				D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */,
+				D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */,
+				D3F795D315A582800077328B /* ChatRoomViewController.h */,
+				D3F795D415A582800077328B /* ChatRoomViewController.m */,
+				D3F795D515A582800077328B /* ChatRoomViewController.xib */,
 				D3EA540B1598528B0037DC6B /* ChatTableViewController.h */,
 				D3EA540C1598528B0037DC6B /* ChatTableViewController.m */,
 				D35E7594159460560066B1C1 /* ChatViewController.h */,
@@ -1747,6 +1798,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -1867,11 +1919,19 @@
 				D36C43CD158F2F370048BA40 /* cell_conference.png */,
 				D3EA5401159852080037DC6B /* chat_add_default.png */,
 				D3EA5402159852080037DC6B /* chat_add_over.png */,
+				D3F795DB15A5831C0077328B /* chat_back_default.png */,
+				D3F795DC15A5831C0077328B /* chat_back_over.png */,
 				D38327F11580FE3A00FA0D23 /* chat_default.png */,
 				D3EA53FF159852080037DC6B /* chat_edit_default.png */,
 				D3EA5400159852080037DC6B /* chat_edit_over.png */,
+				D3B9A3DA15A58C440096EA4E /* chat_field.png */,
+				D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */,
+				D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */,
 				D38327FF158100E400FA0D23 /* chat_over.png */,
 				D38327F21580FE3A00FA0D23 /* chat_selected.png */,
+				D3B9A3DD15A58C440096EA4E /* chat_send_default.png */,
+				D32B6E2315A5B2020033019F /* chat_send_disabled.png */,
+				D3B9A3DE15A58C450096EA4E /* chat_send_over.png */,
 				D31AAF61159B5B6E002C6B02 /* conference_default.png */,
 				D31AAF62159B5B6E002C6B02 /* conference_over.png */,
 				D354980E15875608000081D8 /* contacts_add_default.png */,
@@ -1883,6 +1943,7 @@
 				D354980415875534000081D8 /* contacts_linphone_selected.png */,
 				D38327FC158100E400FA0D23 /* contacts_over.png */,
 				D38327EC1580FE3A00FA0D23 /* contacts_selected.png */,
+				D32B6E2B15A5C0800033019F /* database.sqlite */,
 				D3F83F761582253100336684 /* decline_default.png */,
 				D3F83F771582253100336684 /* decline_over.png */,
 				D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */,
@@ -2027,6 +2088,15 @@
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
 			);
 			name = Utils;
+			sourceTree = "<group>";
+		};
+		D32B6E3515A5C2200033019F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D32B6E3615A5C2430033019F /* ChatModel.h */,
+				D32B6E3715A5C2430033019F /* ChatModel.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 		D37DC6C31594AE5600B2A5EB /* InAppSettingsKit */ = {
@@ -2399,6 +2469,16 @@
 				D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */,
 				D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */,
 				D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */,
+				D3F795D815A582810077328B /* ChatRoomViewController.xib in Resources */,
+				D3F795DD15A5831C0077328B /* chat_back_default.png in Resources */,
+				D3F795DF15A5831C0077328B /* chat_back_over.png in Resources */,
+				D3B9A3DF15A58C450096EA4E /* chat_field.png in Resources */,
+				D3B9A3E115A58C450096EA4E /* chat_ok_default.png in Resources */,
+				D3B9A3E315A58C450096EA4E /* chat_ok_over.png in Resources */,
+				D3B9A3E515A58C450096EA4E /* chat_send_default.png in Resources */,
+				D3B9A3E715A58C450096EA4E /* chat_send_over.png in Resources */,
+				D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */,
+				D32B6E2C15A5C0800033019F /* database.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2599,6 +2679,16 @@
 				D350F22D15A43D3400149E54 /* setup_welcome_logo.png in Resources */,
 				D35406F815A47E9E007E7E81 /* button_background_default.png in Resources */,
 				D35406FA15A47E9E007E7E81 /* button_background_over.png in Resources */,
+				D3F795D915A582810077328B /* ChatRoomViewController.xib in Resources */,
+				D3F795DE15A5831C0077328B /* chat_back_default.png in Resources */,
+				D3F795E015A5831C0077328B /* chat_back_over.png in Resources */,
+				D3B9A3E015A58C450096EA4E /* chat_field.png in Resources */,
+				D3B9A3E215A58C450096EA4E /* chat_ok_default.png in Resources */,
+				D3B9A3E415A58C450096EA4E /* chat_ok_over.png in Resources */,
+				D3B9A3E615A58C450096EA4E /* chat_send_default.png in Resources */,
+				D3B9A3E815A58C450096EA4E /* chat_send_over.png in Resources */,
+				D32B6E2515A5B2020033019F /* chat_send_disabled.png in Resources */,
+				D32B6E2D15A5C0800033019F /* database.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2676,6 +2766,9 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */,
+				D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */,
+				D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
+				D32B6E3815A5C2430033019F /* ChatModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2750,6 +2843,9 @@
 				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */,
+				D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */,
+				D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
+				D32B6E3915A5C2430033019F /* ChatModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

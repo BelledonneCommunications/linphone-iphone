@@ -37,33 +37,48 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [historyButton release];
+    [contactsButton release];
+    [dialerButton release];
+    [settingsButton release];
+    [chatButton release];
+    
     [super dealloc];
 }
 
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidLoad {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeView:) name:@"LinphoneMainViewChange" object:nil];
-    [self update:[[LinphoneManager instance] currentView]];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(changeViewEvent:) 
+                                                 name:@"LinphoneMainViewChange" 
+                                               object:nil];
+    [self update:[[PhoneMainView instance] currentView]];
 }
 
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [historyButton release];
-    [contactsButton release];
-    [dialerButton release];
-    [settingsButton release];
-    [chatButton release];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneMainViewChange" 
+                                                  object:nil];
 }
 
-#pragma mark - 
 
-- (void)changeView: (NSNotification*) notif {  
+#pragma mark - Event Functions
+
+- (void)changeViewEvent: (NSNotification*) notif {  
     NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
     if(viewNumber != nil)
         [self update:[viewNumber intValue]];
 }
+
+
+#pragma mark - 
 
 - (void)update:(PhoneView) view {
     if(view == PhoneView_History) {
@@ -97,23 +112,23 @@
 #pragma mark - Action Functions
 
 - (IBAction)onHistoryClick: (id) sender {
-    [[LinphoneManager instance] changeView:PhoneView_History];
+    [[PhoneMainView instance] changeView:PhoneView_History];
 }
 
 - (IBAction)onContactsClick: (id) event {
-    [[LinphoneManager instance] changeView:PhoneView_Contacts];
+    [[PhoneMainView instance] changeView:PhoneView_Contacts];
 }
 
 - (IBAction)onDialerClick: (id) event {
-    [[LinphoneManager instance] changeView:PhoneView_Dialer];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer];
 }
 
 - (IBAction)onSettingsClick: (id) event {
-    [[LinphoneManager instance] changeView:PhoneView_Settings];
+    [[PhoneMainView instance] changeView:PhoneView_Settings];
 }
 
 - (IBAction)onChatClick: (id) event {
-    [[LinphoneManager instance] changeView:PhoneView_Chat];
+    [[PhoneMainView instance] changeView:PhoneView_Chat];
 }
 
 

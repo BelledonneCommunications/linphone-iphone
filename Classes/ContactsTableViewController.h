@@ -22,7 +22,7 @@
 
 #import "OrderedDictionary.h"
 
-@interface ContactsTableViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate> {
+@interface ContactsTableViewController : UITableViewController {
     OrderedDictionary* addressBookMap;
     
     ABAddressBookRef addressBook;

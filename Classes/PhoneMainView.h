@@ -24,6 +24,20 @@
 #import "UICompositeViewController.h"
 #import "UIModalViewController.h"
 
+typedef enum _PhoneView {
+    PhoneView_Wizard,
+    PhoneView_FirstLogin,
+    PhoneView_Dialer,
+    PhoneView_History,
+    PhoneView_Settings,
+    PhoneView_Chat,
+    PhoneView_ChatRoom,
+    PhoneView_Contacts,
+    PhoneView_InCall,
+    PhoneView_IncomingCall,
+    PhoneView_END
+} PhoneView;
+
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
     @private
     UICompositeViewController *mainViewController;
@@ -31,14 +45,28 @@
     NSMutableArray *modalControllers;
     
     NSMutableDictionary *viewDescriptions;
-    PhoneView currentPhoneView;
-    
+
     UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
     
     int loadCount;
+    
+    PhoneView currentView;
+    NSMutableArray* viewStack;
 }
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
+
+- (void)changeView:(PhoneView)view;
+- (void)changeView:(PhoneView)view push:(BOOL)push;
+- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict;
+- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push;
+- (void)popView;
+- (void)popView:(NSDictionary *)dict;
+- (void)showTabBar:(BOOL)show;
+- (void)fullScreen:(BOOL)enabled;
+- (PhoneView)currentView;
+
++ (PhoneMainView*) instance;
 
 @end

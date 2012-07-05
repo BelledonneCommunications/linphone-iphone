@@ -19,6 +19,7 @@
 
 #import "UICallBar.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
 #import "CPAnimationSequence.h"
 #import "CPAnimationStep.h"
@@ -125,8 +126,6 @@
 	[sharpButton  setDigit:'#'];
     [sharpButton setDtmf:true];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
-    
     // Set selected+disabled background: IB lack !
     [videoButton setImage:[UIImage imageNamed:@"video_on_disabled.png"] 
                            forState:(UIControlStateDisabled | UIControlStateSelected)];
@@ -153,17 +152,40 @@
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(callUpdateEvent:) 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    
+    // Update on show
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+    [self callUpdate:call state:state];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneCallUpdate" 
+                                                  object:nil];
+}
 
 #pragma mark - Event Functions
 
-- (void)callUpdate: (NSNotification*) notif {
-    //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+- (void)callUpdateEvent:(NSNotification*)notif {
+    LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    
+    [self callUpdate:call state:state];
+}
+
+
+#pragma mark - 
+
+- (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {  
     LinphoneCore* lc = [LinphoneManager getLc]; 
 
     [speakerButton update];
@@ -335,7 +357,7 @@
                            [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: TRUE], nil] autorelease]
                            , @"setTransferMode:",
                            nil] autorelease];
-    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
@@ -347,7 +369,7 @@
                            [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
                            , @"setTransferMode:",
                            nil] autorelease];
-    [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

@@ -19,10 +19,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UICompositeViewController.h"
 #import "HistoryTableViewController.h"
 #import "UIToggleButton.h"
 
-@interface HistoryViewController : UIViewController {
+@interface HistoryViewController : UIViewController<UICompositeViewDelegate> {
     @private
     HistoryTableViewController *tableController;
     UITableView *tableView;

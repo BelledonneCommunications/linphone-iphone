@@ -1,6 +1,6 @@
-/* HistoryTableViewController.h
+/* ChatRoomViewController.h
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,17 +15,30 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */ 
 
 #import <UIKit/UIKit.h>
 
-@interface HistoryTableViewController : UITableViewController {
-    @private
-    BOOL editMode;
+#import "UICompositeViewController.h"
+#import "ChatRoomTableViewController.h"
+#import "ChatModel.h"
+
+@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
+    ChatRoomTableViewController *tableController;
+    UITextField *messageField;
+    UIButton *sendButton;
 }
 
-- (void) toggleEditMode;
-- (void) enterEditMode;
-- (void) exitEditMode;
+- (void) setRemoteContact:(NSString*)remoteContact;
+
+@property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
+
+@property (nonatomic, retain) IBOutlet UITextField* messageField;
+@property (nonatomic, retain) IBOutlet UIButton* sendButton;
+
+- (IBAction)onBackClick:(id)event;
+- (IBAction)onEditClick:(id)event;
+- (IBAction)onMessageChange:(id)sender;
+- (IBAction)onSendClick:(id)event;
 
 @end

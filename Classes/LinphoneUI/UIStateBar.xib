@@ -63,7 +63,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">status_disconnected.png</string>
+							<string key="NSResourceName">led_disconnected.png</string>
 						</object>
 					</object>
 					<object class="IBUILabel" id="200467549">
@@ -269,8 +269,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="led_disconnected.png">{18, 17}</string>
 			<string key="statebar_background.png">{640, 46}</string>
-			<string key="status_disconnected.png">{18, 17}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

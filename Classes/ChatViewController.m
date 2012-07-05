@@ -18,21 +18,58 @@
  */ 
 
 #import "ChatViewController.h"
+#import "PhoneMainView.h"
 
+#import "ChatModel.h"
 @implementation ChatViewController
 
 @synthesize tableController;
+
+
+#pragma mark - Lifecycle Functions
 
 - (id)init {
     return [super initWithNibName:@"ChatViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (IBAction)onAdd: (id) event {
-    
+
+#pragma mark - ViewController Functions
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [tableController setData:[ChatModel listConversations]];
 }
 
-- (IBAction)onEdit: (id) event {
 
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription*) compositeViewDescription {
+    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"ChatViewController";
+    description->tabBar = @"UIMainBar";
+    description->tabBarEnabled = true;
+    description->stateBar = nil;
+    description->stateBarEnabled = false;
+    description->fullscreen = false;
+    return description;
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)onAddClick:(id)event {
+    [[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE];
+}
+
+- (IBAction)onEditClick:(id)event {
+    ChatModel* line= [[ChatModel alloc] init];
+    line.localContact = @"";
+    line.remoteContact = @"truc";
+    line.message = @"blabla";
+    line.direction = [NSNumber numberWithInt:1];
+    line.time = [NSDate date];
+    [line create];
+    [tableController setData:[ChatModel listConversations]];
 }
 
 @end

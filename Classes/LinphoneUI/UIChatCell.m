@@ -25,6 +25,7 @@
 @synthesize displayNameLabel;
 @synthesize chatContentLabel;
 
+@synthesize chat;
 
 #pragma mark - Lifecycle Functions
 
@@ -50,31 +51,33 @@
 
 #pragma mark - 
 
-- (void)update{
+- (void)update {
+    [avatarView setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
     
-    [avatarView setImage:[UIImage imageNamed:@"avatar-small.png"]];
+    [displayNameLabel setText:[chat remoteContact]];
+    [chatContentLabel setText:[chat message]];
     
     //
     // Adapt size
     //
-    CGRect firstNameFrame = [displayNameLabel frame];
-    CGRect lastNameFrame = [chatContentLabel frame];
+    CGRect displayNameFrame = [displayNameLabel frame];
+    CGRect chatContentFrame = [chatContentLabel frame];
     
-    lastNameFrame.origin.x -= firstNameFrame.size.width;
+    chatContentFrame.origin.x -= displayNameFrame.size.width;
     
     // Compute firstName size
     CGSize contraints;
     contraints.height = [displayNameLabel frame].size.height;
     contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [displayNameLabel frame].origin.x;
     CGSize firstNameSize = [[displayNameLabel text] sizeWithFont:[displayNameLabel font] constrainedToSize: contraints];
-    firstNameFrame.size.width = firstNameSize.width;
+    displayNameFrame.size.width = firstNameSize.width;
     
     // Compute lastName size & position
-    lastNameFrame.origin.x += firstNameFrame.size.width;
-    lastNameFrame.size.width = (contraints.width + [displayNameLabel frame].origin.x) - lastNameFrame.origin.x;
+    chatContentFrame.origin.x += displayNameFrame.size.width;
+    chatContentFrame.size.width = (contraints.width + [displayNameLabel frame].origin.x) - chatContentFrame.origin.x;
     
-    [displayNameLabel setFrame: firstNameFrame];
-    [chatContentLabel setFrame: lastNameFrame];
+    [displayNameLabel setFrame: displayNameFrame];
+    [chatContentLabel setFrame: chatContentFrame];
 }
 
 

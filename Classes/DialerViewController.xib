@@ -521,7 +521,7 @@
 								</object>
 								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">cancel_white_bg_disabled.png</string>
+									<string key="NSResourceName">back_disabled.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="769584456"/>
 								<reference key="IBUIFont" ref="177658264"/>
@@ -1286,7 +1286,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<real value="1"/>
+					<real value="3"/>
 					<string>UICallButton</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<real value="3"/>
@@ -1677,6 +1677,7 @@
 				<string>add_contact_disabled.png</string>
 				<string>add_contact_over.png</string>
 				<string>back_default.png</string>
+				<string>back_disabled.png</string>
 				<string>back_over.png</string>
 				<string>backspace_default.png</string>
 				<string>backspace_disabled.png</string>
@@ -1684,7 +1685,6 @@
 				<string>call_default.png</string>
 				<string>call_disabled.png</string>
 				<string>call_over.png</string>
-				<string>cancel_white_bg_disabled.png</string>
 				<string>dialer_address_background.png</string>
 				<string>numpad_background.png</string>
 				<string>numpad_eight_default.png</string>
@@ -1725,10 +1725,10 @@
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
 				<string>{213, 138}</string>
-				<string>{214, 138}</string>
-				<string>{214, 138}</string>
-				<string>{214, 138}</string>
 				<string>{213, 138}</string>
+				<string>{214, 138}</string>
+				<string>{214, 138}</string>
+				<string>{214, 138}</string>
 				<string>{640, 135}</string>
 				<string>{640, 523}</string>
 				<string>{220, 113}</string>

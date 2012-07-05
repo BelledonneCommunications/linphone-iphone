@@ -19,17 +19,24 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ChatModel.h"
+
 @interface UIChatCell : UITableViewCell {
     UIImageView *avatarView;
     UILabel *displayNameLabel;
     UILabel *chatContentLabel;
+    
+    ChatModel *chat;
 }
+
+- (void)update;
+
+@property (weak) ChatModel *chat;
 
 @property (nonatomic, retain) IBOutlet UIImageView *avatarView;
 @property (nonatomic, retain) IBOutlet UILabel* displayNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
 
-- (IBAction)onDetails: (id) event;
+- (IBAction)onDetails:(id)event;
 
-- (void)update;
 @end

@@ -83,9 +83,25 @@
 	[zeroButton release];
 	[sharpButton release];
     
+    
+    // Remove all observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
 	[super dealloc];
+}
+
+
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"DialerViewController";
+    description->tabBar = @"UIMainBar";
+    description->tabBarEnabled = true;
+    description->stateBar = @"UIStateBar";
+    description->stateBarEnabled = true;
+    description->fullscreen = false;
+    return description;
 }
 
 
@@ -93,7 +109,26 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self update];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(callUpdateEvent:) 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    
+    // Update on show
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+    [self callUpdate:call state:state];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneCallUpdate" 
+                                                  object:nil];
 }
 
 - (void)viewDidLoad {
@@ -111,26 +146,20 @@
 	[nineButton    setDigit:'9'];
 	[starButton    setDigit:'*'];
 	[sharpButton   setDigit:'#'];
-    
-    // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callUpdate:) name:@"LinphoneCallUpdate" object:nil];
 }
-
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 
 #pragma mark - Event Functions
 
-- (void)callUpdate:(NSNotification*)notif { 
-    [self update];
+- (void)callUpdateEvent:(NSNotification*)notif { 
+    LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    [self callUpdate:call state:state];
 }
 
 
 #pragma mark -
 
-- (void)update {
+- (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {
     if([LinphoneManager isLcReady]) {
         LinphoneCore *lc = [LinphoneManager getLc];
         if(linphone_core_get_calls_nb(lc) > 0) {
@@ -160,7 +189,9 @@
 
 - (void)setTransferMode:(NSNumber*) n {
     transferMode = [n boolValue];
-    [self update];
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+    [self callUpdate:call state:state];
 }
 
 
@@ -181,7 +212,7 @@
 }
 
 - (IBAction)onBackClick: (id) event {
-    [[LinphoneManager instance] changeView:PhoneView_InCall];
+    [[PhoneMainView instance] changeView:PhoneView_InCall];
 }
 
 - (IBAction)onAddressChange: (id)sender {

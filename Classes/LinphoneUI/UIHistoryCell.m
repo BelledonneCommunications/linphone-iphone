@@ -22,6 +22,7 @@
 
 @implementation UIHistoryCell
 
+@synthesize callLog;
 @synthesize displayNameLabel;
 @synthesize imageView;
 @synthesize deleteButton;
@@ -75,21 +76,21 @@
 
 #pragma mark - 
 
-- (void)update:(LinphoneCallLog*)  aCallLog {
-    self->callLog = aCallLog;
+- (void)update {
+    
     // Set up the cell...
 	LinphoneAddress* partyToDisplay; 
 	UIImage *image;
-	if (aCallLog->dir == LinphoneCallIncoming) {
-        if (aCallLog->status == LinphoneCallSuccess) {
+	if (callLog->dir == LinphoneCallIncoming) {
+        if (callLog->status == LinphoneCallSuccess) {
             image = [UIImage imageNamed:@"call_status_incoming.png"];
         } else {
             image = [UIImage imageNamed:@"call_status_missed.png"];
         }
-		partyToDisplay = aCallLog->from;
+		partyToDisplay = callLog->from;
 	} else {
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
-		partyToDisplay = aCallLog->to;
+		partyToDisplay = callLog->to;
 	}
     
 	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";

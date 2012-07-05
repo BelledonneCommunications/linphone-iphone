@@ -47,19 +47,22 @@ NSTimer *callQualityTimer;
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // Set observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registrationUpdate:) name:@"LinphoneRegistrationUpdate" object:nil];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     // Set callQualityTimer
     [callQualityImage setHidden: true];
 	callQualityTimer = [NSTimer scheduledTimerWithTimeInterval:1 
-													 target:self 
-												   selector:@selector(callQualityUpdate) 
-												   userInfo:nil 
-													repeats:YES];
+                                                        target:self 
+                                                      selector:@selector(callQualityUpdate) 
+                                                      userInfo:nil 
+                                                       repeats:YES];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(registrationUpdate:) 
+                                                 name:@"LinphoneRegistrationUpdate" 
+                                               object:nil];
     
     // Update to default state
     LinphoneProxyConfig* config = NULL;
@@ -68,8 +71,14 @@ NSTimer *callQualityTimer;
     [self proxyConfigUpdate: config];
 }
 
-- (void) viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self  
+                                                    name:@"LinphoneRegistrationUpdate" 
+                                                  object:nil];
+    
     [callQualityTimer invalidate];
 }
 
@@ -81,6 +90,9 @@ NSTimer *callQualityTimer;
     linphone_core_get_default_proxy([LinphoneManager getLc], &config);
     [self proxyConfigUpdate:config];
 }
+
+
+#pragma mark - 
 
 - (void)proxyConfigUpdate: (LinphoneProxyConfig*) config {
     LinphoneRegistrationState state;

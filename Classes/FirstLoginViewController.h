@@ -19,7 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FirstLoginViewController : UIViewController<UITextFieldDelegate>{
+#import "UICompositeViewController.h"
+
+@interface FirstLoginViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
 	UIButton* loginButton;
 	UIButton* siteButton;
 	UITextField* usernameField;

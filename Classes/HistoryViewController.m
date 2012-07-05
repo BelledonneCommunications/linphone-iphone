@@ -53,6 +53,19 @@ typedef enum _HistoryView {
 }
 
 
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription*) compositeViewDescription {
+    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"HistoryViewController";
+    description->tabBar = @"UIMainBar";
+    description->tabBarEnabled = true;
+    description->stateBar = nil;
+    description->stateBarEnabled = false;
+    description->fullscreen = false;
+    return description;
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidAppear:(BOOL)animated {

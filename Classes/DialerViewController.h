@@ -19,12 +19,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UICompositeViewController.h"
+
 #import "UIEraseButton.h"
 #import "UICallButton.h"
 #import "UITransferButton.h"
 #import "UIDigitButton.h"
 
-@interface DialerViewController : UIViewController <UITextFieldDelegate> {
+@interface DialerViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
 @private
 	//Buttons
 	UITextField*    addressField;

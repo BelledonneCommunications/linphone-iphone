@@ -20,6 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
+#import <sqlite3.h>
 
 #import "LogView.h"
 #import "IASKSettingsReader.h"
@@ -27,19 +28,6 @@
 #import "IASKAppSettingsViewController.h"
 
 #include "linphonecore.h"
-
-typedef enum _PhoneView {
-    PhoneView_Wizard,
-    PhoneView_FirstLogin,
-    PhoneView_Dialer,
-    PhoneView_History,
-    PhoneView_Settings,
-    PhoneView_Chat,
-    PhoneView_Contacts,
-    PhoneView_InCall,
-    PhoneView_IncomingCall,
-    PhoneView_END
-} PhoneView;
 
 typedef enum _Connectivity {
 	wifi,
@@ -79,9 +67,8 @@ typedef struct _LinphoneCallAppData {
 	const char*  frontCamId;
 	const char*  backCamId;
     
-    PhoneView currentView;
-    
     id<IASKSettingsStore> settingsStore;
+    sqlite3 *database;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -108,12 +95,6 @@ typedef struct _LinphoneCallAppData {
 - (void)setupNetworkReachabilityCallback;
 - (void)refreshRegisters;
 
-- (void)changeView:(PhoneView) view;
-- (void)changeView:(PhoneView) view dict:(NSDictionary *)dict;
-- (void)showTabBar:(BOOL) show;
-- (void)fullScreen:(BOOL) enabled;
-- (PhoneView) currentView;
-
 - (void)enableSpeaker:(BOOL)enable;
 - (BOOL)isSpeakerEnabled;
 
@@ -123,6 +104,7 @@ typedef struct _LinphoneCallAppData {
 @property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
+@property (readonly) sqlite3* database;
 
 @end
 

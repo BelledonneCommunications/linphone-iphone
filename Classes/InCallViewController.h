@@ -23,11 +23,12 @@
 #import "UICamSwitch.h"
 #import "CallDelegate.h"
 
+#import "UICompositeViewController.h"
 #import "InCallTableViewController.h"
 
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate> {
+@interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate, UICompositeViewDelegate> {
     
     InCallTableViewController* callTableController;
     UITableView* callTableView;

@@ -20,8 +20,24 @@
 #import "ChatTableViewController.h"
 #import "UIChatCell.h"
 
+#import "linphonecore.h"
+#import "PhoneMainView.h"
+
 @implementation ChatTableViewController
 
+@synthesize data;
+
+
+#pragma mark - 
+
+- (void)setData:(NSArray *)adata {
+    if(self->data != nil)
+        [self->data release];
+    self->data = [adata retain];
+    [[self tableView] reloadData];
+}
+
+#pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -30,7 +46,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+    return [data count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -40,9 +56,25 @@
         cell = [[UIChatCell alloc] init];
     }
     
+    [cell setChat:[data objectAtIndex:[indexPath row]]];
     [cell update];
     
     return cell;
+}
+
+
+#pragma mark - UITableViewDelegate Functions
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    ChatModel *chat = [data objectAtIndex:[indexPath row]];
+    
+    // Go to dialer view
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
+                           , @"setRemoteContact:",
+                           nil] autorelease];
+    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
 }
 
 @end

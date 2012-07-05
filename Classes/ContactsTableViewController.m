@@ -20,6 +20,7 @@
 #import "ContactsTableViewController.h"
 #import "UIContactCell.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
 @implementation ContactsTableViewController
 
@@ -127,7 +128,7 @@ void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, 
                                   [[[NSArray alloc] initWithObjects: number, nil] autorelease]
                                   , @"setAddress:",
                                   nil] autorelease];
-            [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+            [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
             
             CFRelease(lNumber);
             break;

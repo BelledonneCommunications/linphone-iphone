@@ -24,9 +24,10 @@
 - (id)copy {
     UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
     copy->content = self->content;
+    copy->stateBar = self->stateBar;
+    copy->stateBarEnabled = self->stateBarEnabled;
     copy->tabBar = self->tabBar;
     copy->tabBarEnabled = self->tabBarEnabled;
-    copy->stateBarEnabled = self->stateBarEnabled;
     copy->fullscreen = self->fullscreen;
     return copy;
 }
@@ -156,13 +157,13 @@
             }
         }
         
-        if(contentViewController != nil) {
+        if(oldViewDescription != nil && contentViewController != nil && oldViewDescription->content != currentViewDescription->content) {
             [UICompositeViewController removeSubView: contentViewController];
         }
-        if(tabBarViewController != nil) {
+        if(oldViewDescription != nil && tabBarViewController != nil && oldViewDescription->tabBar != currentViewDescription->tabBar) {
             [UICompositeViewController removeSubView: tabBarViewController];
         }
-        if(stateBarViewController != nil) {
+        if(oldViewDescription != nil && stateBarViewController != nil && oldViewDescription->stateBar != currentViewDescription->stateBar) {
             [UICompositeViewController removeSubView: stateBarViewController];
         }
 
@@ -253,9 +254,15 @@
     
     // Change view
     if(description != nil) {
-        [UICompositeViewController addSubView: contentViewController view:contentView];
-        [UICompositeViewController addSubView: tabBarViewController view:tabBarView];
-        [UICompositeViewController addSubView: stateBarViewController view:stateBarView];
+        if(oldViewDescription == nil || oldViewDescription->content != currentViewDescription->content) {
+            [UICompositeViewController addSubView: contentViewController view:contentView];
+        }
+        if(oldViewDescription == nil || oldViewDescription->tabBar != currentViewDescription->tabBar) {
+            [UICompositeViewController addSubView: tabBarViewController view:tabBarView];
+        }
+        if(oldViewDescription == nil || oldViewDescription->stateBar != currentViewDescription->stateBar) {
+            [UICompositeViewController addSubView: stateBarViewController view:stateBarView];
+        }
     }
     
     // Dealloc old view description

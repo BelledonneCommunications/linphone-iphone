@@ -1,6 +1,6 @@
-/* HistoryTableViewController.h
+/* ChatModel.h
  *
- * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,17 +15,33 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */     
+ */ 
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface HistoryTableViewController : UITableViewController {
+@interface ChatModel : NSObject {
     @private
-    BOOL editMode;
+    NSNumber *chatId;
+    NSString *localContact;
+    NSString *remoteContact;
+    NSNumber *direction;
+    NSString *message;
+    NSDate *time;
 }
 
-- (void) toggleEditMode;
-- (void) enterEditMode;
-- (void) exitEditMode;
+@property (nonatomic, readonly) NSNumber *chatId;
+@property (nonatomic, copy) NSString *localContact;
+@property (nonatomic, copy) NSString *remoteContact;
+@property (nonatomic, copy) NSNumber *direction;
+@property (nonatomic, copy) NSString *message;
+@property (nonatomic, copy) NSDate *time;
+
+- (void) create;
++ (ChatModel*) read:(NSNumber*)id;
+- (void) update;
+- (void) delete;
+
++ (NSArray *) listConversations;
++ (NSArray *) listMessages:(NSString *)contact;
 
 @end

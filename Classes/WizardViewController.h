@@ -19,7 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WizardViewController : UIViewController <UITextFieldDelegate> {
+#import "UICompositeViewController.h"
+
+@interface WizardViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
     UIView *contentView;
     
     UIView *welcomeView;

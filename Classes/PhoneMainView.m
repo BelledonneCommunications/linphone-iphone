@@ -24,7 +24,19 @@
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
 
+#import "ChatRoomViewController.h"
+#import "ChatViewController.h"
+#import "DialerViewController.h"
+#import "ContactsViewController.h"
+#import "HistoryViewController.h"
+#import "InCallViewController.h"
+#import "SettingsViewController.h"
+#import "FirstLoginViewController.h"
+#import "WizardViewController.h"
+
 #import "AbstractCall.h"
+
+static PhoneMainView* phoneMainViewInstance=nil;
 
 @implementation PhoneMainView
 
@@ -34,7 +46,10 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initPhoneMainView {
-    currentPhoneView = -1;
+    assert (!phoneMainViewInstance);
+    phoneMainViewInstance = self;
+    currentView = -1;
+    viewStack = [[NSMutableArray alloc] init];
     loadCount = 0; // For avoiding IOS 4 bug
     
     // Init view descriptions
@@ -77,6 +92,8 @@
     [modalControllers removeAllObjects];
     [modalControllers release];
     
+    [viewStack release];
+    
     [super dealloc];
 }
 
@@ -91,110 +108,22 @@
     [super viewDidLoad];
     [[self view] addSubview: mainViewController.view];
     
-    //
-    // Main View
-    //
-    UICompositeViewDescription *dialerDescription = [UICompositeViewDescription alloc];
-    dialerDescription->content = @"DialerViewController";
-    dialerDescription->tabBar = @"UIMainBar";
-    dialerDescription->tabBarEnabled = true;
-    dialerDescription->stateBar = @"UIStateBar";
-    dialerDescription->stateBarEnabled = true;
-    dialerDescription->fullscreen = false;
-    [viewDescriptions setObject:dialerDescription forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
-    
-    
-    //
-    // Contacts View
-    //
-    UICompositeViewDescription *contactsDescription = [UICompositeViewDescription alloc];
-    contactsDescription->content = @"ContactsViewController";
-    contactsDescription->tabBar = @"UIMainBar";
-    contactsDescription->tabBarEnabled = true;
-    contactsDescription->stateBar = nil;
-    contactsDescription->stateBarEnabled = false;
-    contactsDescription->fullscreen = false;
-    [viewDescriptions setObject:contactsDescription forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
-    
-    
-    //
-    // Call History View
-    //
-    UICompositeViewDescription *historyDescription = [UICompositeViewDescription alloc];
-    historyDescription->content = @"HistoryViewController";
-    historyDescription->tabBar = @"UIMainBar";
-    historyDescription->tabBarEnabled = true;
-    historyDescription->stateBar = nil;
-    historyDescription->stateBarEnabled = false;
-    historyDescription->fullscreen = false;
-    [viewDescriptions setObject:historyDescription forKey:[NSNumber numberWithInt: PhoneView_History]];
-    
-    //
-    // InCall View
-    //
-    UICompositeViewDescription *inCallDescription = [UICompositeViewDescription alloc];
-    inCallDescription->content = @"InCallViewController";
-    inCallDescription->tabBar = @"UICallBar";
-    inCallDescription->tabBarEnabled = true;
-    inCallDescription->stateBar = @"UIStateBar";
-    inCallDescription->stateBarEnabled = true;
-    inCallDescription->fullscreen = false;
-    [viewDescriptions setObject:inCallDescription forKey:[NSNumber numberWithInt: PhoneView_InCall]];
-    
-    
-    //
-    // Settings View
-    //
-    UICompositeViewDescription *settingsDescription = [UICompositeViewDescription alloc];
-    settingsDescription->content = @"SettingsViewController";
-    settingsDescription->tabBar = @"UIMainBar";
-    settingsDescription->tabBarEnabled = true;
-    settingsDescription->stateBar = nil;
-    settingsDescription->stateBarEnabled = false;
-    settingsDescription->fullscreen = false;
-    [viewDescriptions setObject:settingsDescription forKey:[NSNumber numberWithInt: PhoneView_Settings]];
-    
-    //
-    // Chat View
-    //
-    UICompositeViewDescription *chatDescription = [UICompositeViewDescription alloc];
-    chatDescription->content = @"ChatViewController";
-    chatDescription->tabBar = @"UIMainBar";
-    chatDescription->tabBarEnabled = true;
-    chatDescription->stateBar = nil;
-    chatDescription->stateBarEnabled = false;
-    chatDescription->fullscreen = false;
-    [viewDescriptions setObject:chatDescription forKey:[NSNumber numberWithInt: PhoneView_Chat]];
- 
-    //
-    // FirstLogin View
-    //
-    UICompositeViewDescription *firstLoginDescription = [UICompositeViewDescription alloc];
-    firstLoginDescription->content = @"FirstLoginViewController";
-    firstLoginDescription->tabBar = nil;
-    firstLoginDescription->tabBarEnabled = false;
-    firstLoginDescription->stateBar = nil;
-    firstLoginDescription->stateBarEnabled = false;
-    firstLoginDescription->fullscreen = false;
-    [viewDescriptions setObject:firstLoginDescription forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
-    
-    //
-    // Wizard View
-    //
-    UICompositeViewDescription *wizardDescription = [UICompositeViewDescription alloc];
-    wizardDescription->content = @"WizardViewController";
-    wizardDescription->tabBar = nil;
-    wizardDescription->tabBarEnabled = false;
-    wizardDescription->stateBar = nil;
-    wizardDescription->stateBarEnabled = false;
-    wizardDescription->fullscreen = false;
-    [viewDescriptions setObject:wizardDescription forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
+    // Init descriptions
+    [viewDescriptions setObject:[ChatRoomViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_ChatRoom]];
+    [viewDescriptions setObject:[ChatViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Chat]];
+    [viewDescriptions setObject:[DialerViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
+    [viewDescriptions setObject:[ContactsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
+    [viewDescriptions setObject:[HistoryViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_History]];
+    [viewDescriptions setObject:[InCallViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_InCall]];
+    [viewDescriptions setObject:[SettingsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Settings]];
+    [viewDescriptions setObject:[FirstLoginViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
+    [viewDescriptions setObject:[WizardViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     // Set observers
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(changeView:) 
-                                                 name:@"LinphoneMainViewChange" 
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
                                                  name:@"LinphoneCallUpdate" 
@@ -203,17 +132,31 @@
                                              selector:@selector(registrationUpdate:) 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // Remove observers
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:@"LinphoneRegistrationUpdate" 
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:UIDeviceBatteryLevelDidChangeNotification 
+                                               object:nil];
+}
+
 - (void)viewDidUnload {
     [super viewDidUnload];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     // Avoid IOS 4 bug
     self->loadCount--;
 }
@@ -271,7 +214,7 @@
 		case LinphoneCallConnected:
         case LinphoneCallUpdated:
         {
-            [[LinphoneManager instance] changeView:PhoneView_InCall];
+            [self changeView:PhoneView_InCall];
             break;
         }
         case LinphoneCallUpdatedByRemote:
@@ -280,7 +223,7 @@
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
             if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                [[LinphoneManager instance] changeView:PhoneView_InCall];
+                [self changeView:PhoneView_InCall];
             }
             break;
         }
@@ -299,15 +242,15 @@
                                         [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
                                         , @"setTransferMode:",
                                         nil] autorelease];
-                [[LinphoneManager instance] changeView:PhoneView_Dialer dict:dict];
+                [self changeView:PhoneView_Dialer dict:dict];
             } else {
-                [[LinphoneManager instance] changeView:PhoneView_InCall];
+                [self changeView:PhoneView_InCall];
 			}
 			break;
         }
 		case LinphoneCallStreamsRunning:
         {
-            [[LinphoneManager instance] changeView:PhoneView_InCall];
+            [self changeView:PhoneView_InCall];
 			break;
         }
         default:
@@ -318,12 +261,27 @@
 
 #pragma mark - 
 
-- (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
++ (CATransition*)getBackwardTransition {
     CATransition* trans = [CATransition animation];
     [trans setType:kCATransitionPush];
     [trans setDuration:0.35];
     [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [trans setSubtype:kCATransitionFromLeft];
     
+    return trans;
+}
+
++ (CATransition*)getForwardTransition {
+    CATransition* trans = [CATransition animation];
+    [trans setType:kCATransitionPush];
+    [trans setDuration:0.35];
+    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [trans setSubtype:kCATransitionFromRight];
+    
+    return trans;
+}
+
++ (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
     bool left = false;
     
     if(old == PhoneView_Chat) {
@@ -351,44 +309,80 @@
     } 
     
     if(left) {
-        [trans setSubtype:kCATransitionFromLeft];
+        return [PhoneMainView getBackwardTransition];
     } else {
-        [trans setSubtype:kCATransitionFromRight];
+        return [PhoneMainView getForwardTransition];
     }
-    
-    return trans;
 }
 
-- (void)changeView: (NSNotification*) notif {   
-    NSNumber *viewId = [notif.userInfo objectForKey: @"view"];
-    NSNumber *tabBar = [notif.userInfo objectForKey: @"tabBar"];
-    NSNumber *fullscreen = [notif.userInfo objectForKey: @"fullscreen"];
-    
-    // Check view change
-    if(viewId != nil) {
-        PhoneView view = [viewId intValue];
-        UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
-        if(description == nil)
-            return;
-        if(view != currentPhoneView) {
-            [mainViewController setViewTransition:[self getTransition:currentPhoneView new:view]];
-            [mainViewController changeView:description];
-            currentPhoneView = view;
-        } 
++ (PhoneMainView *) instance {
+    return phoneMainViewInstance;
+}
+
+- (void) showTabBar:(BOOL) show {
+    [mainViewController setToolBarHidden:!show];
+}
+
+- (void)fullScreen:(BOOL) enabled {
+    [mainViewController setFullScreen:enabled];
+}
+
+- (void)changeView:(PhoneView)view {
+    [self changeView:view dict:nil push:FALSE];
+}
+
+- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict {
+    [self changeView:view dict:dict push:FALSE];
+}
+
+- (void)changeView:(PhoneView)view push:(BOOL)push {
+    [self changeView:view dict:nil push:push];
+}
+
+- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push {
+    if(push && currentView != -1) {
+        [viewStack addObject:[NSNumber numberWithInt: currentView]];
+    } else {
+        [viewStack removeAllObjects];
     }
+    [self _changeView:view dict:dict transition:nil];
+}
+
+- (void)_changeView:(PhoneView)view dict:(NSDictionary *)dict transition:(CATransition*)transition {
+    UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
+    if(description == nil)
+        return;
     
-    if(tabBar != nil) {
-        [mainViewController setToolBarHidden:![tabBar boolValue]];
-    }
-    
-    if(fullscreen != nil) {
-        [mainViewController setFullScreen:[fullscreen boolValue]];
-    }
+    if(view != currentView) {
+        if(transition == nil)
+            transition = [PhoneMainView getTransition:currentView new:view];
+        [mainViewController setViewTransition:transition];
+        [mainViewController changeView:description];
+        currentView = view;
+    } 
     
     // Call abstractCall
-    NSDictionary *dict = [notif.userInfo objectForKey: @"args"];
     if(dict != nil)
         [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
+    
+    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+}
+
+- (void)popView {
+    [self popView:nil];
+}
+
+- (void)popView:(NSDictionary *)dict {
+    if([viewStack count] > 0) {
+        PhoneView view = [[viewStack lastObject] intValue];
+        [viewStack removeLastObject];
+        [self _changeView:view dict:dict transition:[PhoneMainView getBackwardTransition]];
+    } 
+}
+
+- (PhoneView)currentView {
+    return currentView;
 }
 
 - (void)displayCallError:(LinphoneCall*) call message:(NSString*) message {
@@ -461,7 +455,7 @@
 		}
 	} else {     
         IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
-        [controller update:call];
+        [controller setCall:call];
         [self addModalViewController:controller];
 	}
 }

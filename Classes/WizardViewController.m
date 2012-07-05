@@ -23,6 +23,8 @@
 
 #import "LinphoneManager.h"
 
+#import "PhoneMainView.h"
+
 typedef enum _ViewElement {
     ViewElement_Username = 100,
     ViewElement_Password = 101,
@@ -71,6 +73,20 @@ typedef enum _ViewElement {
     [historyViews release];
     
     [super dealloc];
+}
+
+
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription*) compositeViewDescription {
+UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"WizardViewController";
+    description->tabBar = nil;
+    description->tabBarEnabled = false;
+    description->stateBar = nil;
+    description->stateBarEnabled = false;
+    description->fullscreen = false;
+    return description;
 }
 
 
@@ -168,7 +184,7 @@ typedef enum _ViewElement {
 }
 
 - (IBAction)onCancelClick:(id)sender {
-    [[LinphoneManager instance] changeView:PhoneView_Dialer];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer];
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
