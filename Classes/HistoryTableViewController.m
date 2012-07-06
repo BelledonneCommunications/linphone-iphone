@@ -24,6 +24,7 @@
 
 @implementation HistoryTableViewController
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)init {

@@ -139,7 +139,7 @@
         return;
     }
     
-    const char *sql = [[NSString stringWithFormat:@"DELETE chat WHERE id=%@",
+    const char *sql = [[NSString stringWithFormat:@"DELETE FROM chat WHERE id=%@",
                         chatId] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
@@ -224,6 +224,30 @@
     NSArray *fArray = [NSArray arrayWithArray: array];
     [array release];
     return fArray;
+}
+
++ (void) removeConversation:(NSString *)contact {
+    sqlite3* database = [[LinphoneManager instance] database];
+    if(database == NULL) {
+        NSLog(@"Database not ready");
+        return;
+    }
+    
+    const char *sql = [[NSString stringWithFormat:@"DELETE FROM chat WHERE remoteContact=\"%@\"",
+                        contact] UTF8String];
+    sqlite3_stmt *sqlStatement;
+    if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
+        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        return;
+    }    
+    
+    if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
+        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        sqlite3_finalize(sqlStatement);
+        return;
+    }
+    
+    sqlite3_finalize(sqlStatement);
 }
 
 @end

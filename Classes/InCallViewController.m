@@ -101,10 +101,6 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidAppear:NO];
-    }  
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -143,6 +139,10 @@ const NSInteger SECURE_BUTTON_TAG=5;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [callTableController viewDidAppear:NO];
+    }  
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

@@ -51,7 +51,6 @@ NSTimer *callQualityTimer;
     [super viewWillAppear:animated];
     
     // Set callQualityTimer
-    [callQualityImage setHidden: true];
 	callQualityTimer = [NSTimer scheduledTimerWithTimeInterval:1 
                                                         target:self 
                                                       selector:@selector(callQualityUpdate) 
@@ -63,6 +62,9 @@ NSTimer *callQualityTimer;
                                              selector:@selector(registrationUpdate:) 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                object:nil];
+    
+    
+    [callQualityImage setHidden: true];
     
     // Update to default state
     LinphoneProxyConfig* config = NULL;

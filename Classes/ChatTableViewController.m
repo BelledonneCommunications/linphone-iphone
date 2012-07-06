@@ -25,16 +25,46 @@
 
 @implementation ChatTableViewController
 
-@synthesize data;
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    if((self = [super init]) != nil) {
+        self->editMode = false;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    if(data != nil)
+        [data release];
+    [super dealloc];
+}
 
 
 #pragma mark - 
 
-- (void)setData:(NSArray *)adata {
-    if(self->data != nil)
-        [self->data release];
-    self->data = [adata retain];
-    [[self tableView] reloadData];
+- (void)reloadData {
+    if(data != nil)
+        [data release];
+    data = [[ChatModel listConversations] retain];
+}
+
+- (void) toggleEditMode {
+    editMode = !editMode;
+    [(UITableView*)[self view] reloadData];
+}
+
+- (void) enterEditMode {
+    if(!editMode) {
+        [self toggleEditMode];
+    }
+}
+
+- (void) exitEditMode {
+    if(editMode) {
+        [self toggleEditMode];
+    }
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -46,6 +76,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    [self reloadData];
     return [data count];
 }
 
@@ -53,10 +84,14 @@
 {
     UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatCell"];
     if (cell == nil) {
-        cell = [[UIChatCell alloc] init];
+        cell = [[UIChatCell alloc] initWithIdentifier:@"UIChatCell"];
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
+    if(editMode) 
+        [cell enterEditMode];
+    else 
+        [cell exitEditMode];
     [cell update];
     
     return cell;

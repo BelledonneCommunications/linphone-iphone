@@ -20,13 +20,15 @@
 #import "ChatRoomViewController.h"
 #import "PhoneMainView.h"
 
+#import <NinePatch.h>
+
 @implementation ChatRoomViewController
 
 
 @synthesize tableController;
 @synthesize sendButton;
 @synthesize messageField;
-
+@synthesize editButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -36,7 +38,9 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+    [tableController release];
+    [messageField release];
+    [sendButton release];
     [super dealloc];
 }
 
@@ -56,8 +60,16 @@
 
 #pragma mark - ViewController Functions
 
+
+- (void)viewDidLoad {
+    // Set selected+over background: IB lack !
+    [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
+                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+}
+
+
 - (void)viewWillAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+    [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(keyboardWillShow:) 
                                                  name:UIKeyboardWillShowNotification 
@@ -66,10 +78,13 @@
                                              selector:@selector(keyboardWillHide:) 
                                                  name:UIKeyboardWillHideNotification 
                                                object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceivedEvent:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+    
+    [tableController exitEditMode];
+    [editButton setOff];
     [[tableController tableView] reloadData];
 }
 
@@ -81,13 +96,35 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillHideNotification 
                                                   object:nil];
+        
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneTextReceived" 
+                                                    object:nil];
+}
+
+-(void)didReceiveMemoryWarning {
+    [TUNinePatchCache flushCache]; // will remove any images cache (freeing any cached but unused images)
 }
 
 
 #pragma mark - 
 
-- (void)setRemoteContact:(NSString*)remoteContact {
-    [tableController setData:[ChatModel listMessages:remoteContact]];
+- (void)setRemoteContact:(NSString*)aRemoteContact {
+    remoteContact = aRemoteContact;
+    [tableController setRemoteContact: remoteContact];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)textReceivedEvent:(NSNotification *)notif {
+    //LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
+    LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
+    //NSString *message = [[notif userInfo] objectForKey:@"message"];
+    if([[NSString stringWithUTF8String:linphone_address_get_username(from)] 
+        caseInsensitiveCompare:remoteContact] == NSOrderedSame) {
+        [[tableController tableView] reloadData];
+    }
 }
 
 
@@ -142,7 +179,7 @@
 }
 
 - (IBAction)onEditClick:(id)event {
-    
+    [tableController toggleEditMode];
 }
 
 - (IBAction)onSendClick:(id)event {

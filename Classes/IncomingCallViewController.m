@@ -49,7 +49,6 @@
                                              selector:@selector(callUpdateEvent:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
-    
     [self callUpdate:call state:linphone_call_get_state(call)];
 }
 

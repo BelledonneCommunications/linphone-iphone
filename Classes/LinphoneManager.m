@@ -29,6 +29,7 @@
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "LinphoneCoreSettingsStore.h"
+#import "ChatModel.h"
 
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
@@ -355,6 +356,28 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
 
+- (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
+    
+    // Save message in database
+    ChatModel *chat = [[ChatModel alloc] init];
+    [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_get_username(from)]];
+    [chat setMessage:[NSString stringWithUTF8String:message]];
+    [chat setDirection:[NSNumber numberWithInt:1]];
+    [chat create];
+    
+    // Post event
+    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+                           [NSValue valueWithPointer:room], @"room", 
+                           [NSValue valueWithPointer:from], @"from",
+                           [NSString stringWithUTF8String:message], @"message", 
+                           nil] autorelease];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self userInfo:dict]; 
+}
+
+static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
+    [(LinphoneManager*)linphone_core_get_user_data(lc) onTextReceived:lc room:room from:from message:message];
+}
+
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
@@ -366,7 +389,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_message=linphone_iphone_log,
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
-	.text_received=NULL,
+	.text_received=linphone_iphone_text_received,
 	.dtmf_received=NULL,
     .transfer_state_changed=linphone_iphone_transfer_state_changed
 };

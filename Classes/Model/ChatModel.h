@@ -24,7 +24,7 @@
     NSNumber *chatId;
     NSString *localContact;
     NSString *remoteContact;
-    NSNumber *direction;
+    NSNumber *direction; //0 outgoing 1 incoming
     NSString *message;
     NSDate *time;
 }
@@ -43,5 +43,6 @@
 
 + (NSArray *) listConversations;
 + (NSArray *) listMessages:(NSString *)contact;
++ (void) removeConversation:(NSString *)contact;
 
 @end

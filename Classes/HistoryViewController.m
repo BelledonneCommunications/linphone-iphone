@@ -68,15 +68,11 @@ typedef enum _HistoryView {
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-	[self.tableView reloadData];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [tableController exitEditMode];
     [editButton setOff];
+	[self.tableView reloadData];
 }
 
 - (void)viewDidLoad {

@@ -24,7 +24,7 @@
 @implementation ChatViewController
 
 @synthesize tableController;
-
+@synthesize editButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -33,11 +33,48 @@
 }
 
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [tableController release];
+    [editButton release];
+    
+    [super dealloc];
+}
+
 #pragma mark - ViewController Functions
+
+- (void)viewDidLoad {
+    // Set selected+over background: IB lack !
+    [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
+                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [tableController setData:[ChatModel listConversations]];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceivedEvent:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+    
+    [tableController exitEditMode];
+    [editButton setOff];
+    [[tableController tableView] reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneTextReceived" 
+                                                  object:nil];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)textReceivedEvent:(NSNotification *)notif {
+    [[tableController tableView] reloadData];
 }
 
 
@@ -62,14 +99,7 @@
 }
 
 - (IBAction)onEditClick:(id)event {
-    ChatModel* line= [[ChatModel alloc] init];
-    line.localContact = @"";
-    line.remoteContact = @"truc";
-    line.message = @"blabla";
-    line.direction = [NSNumber numberWithInt:1];
-    line.time = [NSDate date];
-    [line create];
-    [tableController setData:[ChatModel listConversations]];
+    [tableController toggleEditMode];
 }
 
 @end

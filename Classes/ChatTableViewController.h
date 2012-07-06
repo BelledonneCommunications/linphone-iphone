@@ -20,9 +20,13 @@
 #import <UIKit/UIKit.h>
 
 @interface ChatTableViewController : UITableViewController {
+@private
+    BOOL editMode;
     NSArray *data;
 }
 
-@property (nonatomic, retain) NSArray *data;
+- (void) toggleEditMode;
+- (void) enterEditMode;
+- (void) exitEditMode;
 
 @end

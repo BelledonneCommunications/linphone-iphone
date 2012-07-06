@@ -18,22 +18,37 @@
  */ 
 
 #import "ChatRoomTableViewController.h"
-#import "UIChatCell.h"
+#import "UIChatRoomCell.h"
+#import "UIChatRoomHeader.h"
 
 @implementation ChatRoomTableViewController
 
-@synthesize data;
-
+@synthesize remoteContact;
 
 #pragma mark - 
 
-- (void)setData:(NSArray *)adata {
-    if(self->data != nil)
-        [self->data release];
-    self->data = [adata retain];
-    [[self tableView] reloadData];
+- (void)reloadData {
+    if(data != nil)
+        [data release];
+    data = [[ChatModel listMessages:remoteContact] retain];
 }
 
+- (void) toggleEditMode {
+    editMode = !editMode;
+    [(UITableView*)[self view] reloadData];
+}
+
+- (void) enterEditMode {
+    if(!editMode) {
+        [self toggleEditMode];
+    }
+}
+
+- (void) exitEditMode {
+    if(editMode) {
+        [self toggleEditMode];
+    }
+}
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -42,19 +57,45 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    [self reloadData];
     return [data count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatCell"];
+    UIChatRoomCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatRoomCell"];
     if (cell == nil) {
-        cell = [[UIChatCell alloc] init];
+        cell = [[UIChatRoomCell alloc] initWithIdentifier:@"UIChatRoomCell"];
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
+    if(editMode) 
+        [cell enterEditMode];
+    else 
+        [cell exitEditMode];
     [cell update];
     
     return cell;
+}
+
+
+#pragma mark - UITableViewelegate Functions
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {    
+    UIChatRoomHeader *headerController = [[UIChatRoomHeader alloc] init];
+    UIView *headerView = [headerController view];
+    [headerController setContact:remoteContact];
+    [headerController update];
+    [headerController release];
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 
+    return [UIChatRoomHeader height];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    ChatModel *chat = [data objectAtIndex:[indexPath row]];
+    return [UIChatRoomCell height:chat];
 }
 
 @end

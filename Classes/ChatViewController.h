@@ -19,14 +19,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIToggleButton.h"
+
 #import "ChatTableViewController.h"
 #import "UICompositeViewController.h"
 
 @interface ChatViewController : UIViewController<UICompositeViewDelegate> {
     ChatTableViewController *tableController;
+    UIToggleButton *editButton;
 }
 
 @property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
+@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
 
 - (IBAction)onAddClick:(id) event;
 - (IBAction)onEditClick:(id) event;

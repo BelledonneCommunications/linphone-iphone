@@ -19,6 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIToggleButton.h"
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
 #import "ChatModel.h"
@@ -27,12 +28,14 @@
     ChatRoomTableViewController *tableController;
     UITextField *messageField;
     UIButton *sendButton;
+    NSString *remoteContact;
+    UIToggleButton *editButton;
 }
 
 - (void) setRemoteContact:(NSString*)remoteContact;
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
-
+@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
 @property (nonatomic, retain) IBOutlet UITextField* messageField;
 @property (nonatomic, retain) IBOutlet UIButton* sendButton;
 

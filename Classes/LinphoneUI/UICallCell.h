@@ -54,7 +54,7 @@
     UICallCellData *data;
 }
 
-@property (weak) UICallCellData *data;
+@property (retain) UICallCellData *data;
 
 @property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundHightlightImage;

@@ -68,14 +68,14 @@
 
 - (void)viewWillAppear:(BOOL)animated { 
     [super viewWillAppear:animated];
-	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
-	[passwordField setText:[[LinphoneManager instance].settingsStore objectForKey:@"password_preference"]];
-    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdateEvent:) 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                object:nil];
+    
+	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
+	[passwordField setText:[[LinphoneManager instance].settingsStore objectForKey:@"password_preference"]];
     
     // Update on show
     const MSList* list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);

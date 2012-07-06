@@ -101,6 +101,7 @@
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {
+        [controller view]; // Load the view
         if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
             [controller viewWillAppear:NO];
         }

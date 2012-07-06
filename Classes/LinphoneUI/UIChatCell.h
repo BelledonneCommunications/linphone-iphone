@@ -22,21 +22,28 @@
 #import "ChatModel.h"
 
 @interface UIChatCell : UITableViewCell {
-    UIImageView *avatarView;
+    UIImageView *avatarImage;
     UILabel *displayNameLabel;
     UILabel *chatContentLabel;
+    UIButton *detailsButton;
+    UIButton *deleteButton;
     
     ChatModel *chat;
 }
 
-- (void)update;
-
-@property (weak) ChatModel *chat;
-
-@property (nonatomic, retain) IBOutlet UIImageView *avatarView;
+@property (retain) ChatModel *chat;
+@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel* displayNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
+@property (nonatomic, retain) IBOutlet UIButton *detailsButton;
+@property (nonatomic, retain) IBOutlet UIButton * deleteButton;
 
-- (IBAction)onDetails:(id)event;
+- (id)initWithIdentifier:(NSString*)identifier;
+- (void)update;
+- (void)enterEditMode;
+- (void)exitEditMode;
+
+- (IBAction)onDetailsClick:(id)event;
+- (IBAction)onDeleteClick:(id)event;
 
 @end

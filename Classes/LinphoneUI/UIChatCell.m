@@ -18,19 +18,23 @@
  */
 
 #import "UIChatCell.h"
+#import "PhoneMainView.h"
+
 
 @implementation UIChatCell
 
-@synthesize avatarView;
+@synthesize avatarImage;
 @synthesize displayNameLabel;
 @synthesize chatContentLabel;
+@synthesize detailsButton;
+@synthesize deleteButton;
 
 @synthesize chat;
 
 #pragma mark - Lifecycle Functions
 
-- (id)init {
-    if ((self = [super init]) != nil) {
+- (id)initWithIdentifier:(NSString*)identifier {
+    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIChatCell"
                                                               owner:self
                                                             options:nil];
@@ -45,6 +49,11 @@
 - (void)dealloc {
     [displayNameLabel release];
     [chatContentLabel release];
+    [avatarImage release];
+    [detailsButton release];
+    [deleteButton release];
+    
+    [chat release];
     
     [super dealloc];
 }
@@ -52,10 +61,12 @@
 #pragma mark - 
 
 - (void)update {
-    [avatarView setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
     
-    [displayNameLabel setText:[chat remoteContact]];
-    [chatContentLabel setText:[chat message]];
+    if (chat != nil) {
+        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
+        [displayNameLabel setText:[chat remoteContact]];
+        [chatContentLabel setText:[chat message]];
+    }
     
     //
     // Adapt size
@@ -80,11 +91,33 @@
     [chatContentLabel setFrame: chatContentFrame];
 }
 
+- (void)enterEditMode {
+    [deleteButton setHidden:false];
+    [detailsButton setHidden:true];
+}
+
+- (void)exitEditMode {
+    [detailsButton setHidden:false];
+    [deleteButton setHidden:true];
+}
 
 #pragma mark - Action Functions
 
-- (IBAction)onDetails: (id) event {
-    
+- (IBAction)onDetailsClick: (id) event {
+    // Go to dialer view
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
+                           , @"setRemoteContact:",
+                           nil] autorelease];
+    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
+}
+
+- (IBAction)onDeleteClick: (id) event {
+    if(chat != NULL) {
+        [ChatModel removeConversation:[chat remoteContact]];
+        UITableView *parentTable = (UITableView *)self.superview;
+        [parentTable reloadData];
+    }
 }
 
 @end

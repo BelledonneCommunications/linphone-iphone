@@ -159,7 +159,6 @@
                                              selector:@selector(callUpdateEvent:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
-    
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;

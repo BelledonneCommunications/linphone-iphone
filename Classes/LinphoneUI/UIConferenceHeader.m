@@ -61,7 +61,7 @@
 #pragma mark - 
 
 - (void)update {
-    [self view];
+    [self view]; // Force view load
     [stateImage setHidden:true];
     [pauseButton update];
 }
