@@ -23,6 +23,7 @@
 
 @synthesize firstNameLabel;
 @synthesize lastNameLabel;
+@synthesize avatarImage;
 
 
 #pragma mark - Lifecycle Functions
@@ -43,6 +44,7 @@
 - (void) dealloc {
     [firstNameLabel release];
     [lastNameLabel release];
+    [avatarImage release];
     
     [super dealloc];
 }
@@ -65,12 +67,12 @@
     CFStringRef lLocalizedLastName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
     
     if(lLocalizedFirstName != nil)
-        [firstNameLabel setText: [(NSString *)lLocalizedFirstName retain]];
+        [firstNameLabel setText: (NSString *)lLocalizedFirstName];
     else
         [firstNameLabel setText: @""];
     
     if(lLocalizedLastName != nil)
-        [lastNameLabel setText: [(NSString *)lLocalizedLastName retain]];
+        [lastNameLabel setText: (NSString *)lLocalizedLastName];
     else
         [lastNameLabel setText: @""];
     
@@ -82,6 +84,17 @@
         CFRelease(lLocalizedFirstName);
     if(lFirstName != nil)
         CFRelease(lFirstName);
+    
+    NSData  *imgData = (NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
+    if(imgData != NULL) {
+        UIImage *img = [[UIImage alloc] initWithData:imgData];
+        [avatarImage setImage:img];
+        [img release];
+    } else {
+        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
+    }
+
+
     
     //
     // Adapt size

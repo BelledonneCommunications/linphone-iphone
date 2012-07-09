@@ -21,12 +21,7 @@
 
 @interface ChatTableViewController : UITableViewController {
 @private
-    BOOL editMode;
     NSArray *data;
 }
-
-- (void) toggleEditMode;
-- (void) enterEditMode;
-- (void) exitEditMode;
 
 @end

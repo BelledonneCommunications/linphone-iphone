@@ -24,13 +24,13 @@
 
 @synthesize addressBook;
 
- -(Contact*) getMatchingRecord:(NSString*) number {
+- (Contact*)getMatchingRecord:(NSString*) number {
      @synchronized (mAddressBookMap){
       return (Contact*) [mAddressBookMap objectForKey:number];   
      } 
 }
 
-+(NSString*) appendCountryCodeIfPossible:(NSString*) number {
++ (NSString*)appendCountryCodeIfPossible:(NSString*) number {
     if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
         NSString* lCountryCode = [[LinphoneManager instance].settingsStore objectForKey:@"countrycode_preference"];
         if (lCountryCode && [lCountryCode length]>0) {
@@ -40,7 +40,8 @@
     }
     return number;
 }
-+(NSString*) normalizePhoneNumber:(NSString*) number  {
+
++ (NSString*)normalizePhoneNumber:(NSString*) number  {
     NSString* lNormalizedNumber =  [(NSString*)number stringByReplacingOccurrencesOfString:@" " withString:@""];
     lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
     lNormalizedNumber = [lNormalizedNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
@@ -48,6 +49,7 @@
     lNormalizedNumber = [FastAddressBook appendCountryCodeIfPossible:lNormalizedNumber];
     return lNormalizedNumber;
 }
+
 void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     NSMutableDictionary* lAddressBookMap = (NSMutableDictionary*)context;
     @synchronized (lAddressBookMap) {
@@ -73,14 +75,21 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
         CFRelease(lContacts);
     }
 }
--(FastAddressBook*) init {
+
+- (FastAddressBook*)init {
     if ((self = [super init])) {
         mAddressBookMap  = [[NSMutableDictionary alloc] init];
         addressBook = ABAddressBookCreate();
-        ABAddressBookRegisterExternalChangeCallback (addressBook,sync_address_book,mAddressBookMap);
+        ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, mAddressBookMap);
         sync_address_book(addressBook,nil,mAddressBookMap);
     }
     return self;
+}
+
+- (void)dealloc {
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, mAddressBookMap);
+    
+    [super dealloc];
 }
 
 @end
@@ -88,16 +97,18 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
 @synthesize record;
 @synthesize numberType;
 
--(id) initWithRecord:(ABRecordRef) aRecord ofType:(NSString*) type {
+- (id)initWithRecord:(ABRecordRef) aRecord ofType:(NSString*) type {
      if ((self = [super init])) {
          record=CFRetain(aRecord);
          numberType= [type?type:@"unknown" retain];
      }
     return self;
 }
+
 - (void)dealloc {
     CFRelease(record);
     [numberType release];
     [super dealloc];
 }
+
 @end

@@ -23,10 +23,12 @@
 @interface UIContactCell : UITableViewCell {
     UILabel *firstNameLabel;
     UILabel *lastNameLabel;
+    UIImageView *avatarImage;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* lastNameLabel;
+@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 
 - (void)update:(ABRecordRef) record;
 

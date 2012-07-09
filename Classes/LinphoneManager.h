@@ -57,6 +57,7 @@ typedef struct _LinphoneCallAppData {
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
+    
 @private
 	NSTimer* mIterateTimer;
 	id<LogView> mLogView;	
@@ -82,6 +83,9 @@ typedef struct _LinphoneCallAppData {
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
 + (BOOL)codecIsSupported:(NSString *) prefName;
     
+
+- (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
+
 - (void)startLibLinphone;
 - (BOOL)isNotIphone3G;
 - (void)destroyLibLinphone;

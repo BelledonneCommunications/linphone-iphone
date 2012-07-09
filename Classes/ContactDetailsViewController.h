@@ -1,4 +1,4 @@
-/* UIChatRoomCell.h
+/* ContactDetailsViewController.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -10,37 +10,27 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
+ *  GNU General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */  
+ */              
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
 
-#import "ChatModel.h"
+#import "UICompositeViewController.h"
+#import "ContactDetailsTableViewController.h"
 
-@interface UIChatRoomCell : UITableViewCell {
-    UIImageView *backgroundImage;
-    UIView *contentView;
-    UILabel *messageLabel;
-    UIButton *deleteButton;
-    
-    ChatModel *chat;
+@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate> {
+    ContactDetailsTableViewController *tableController;
+    ABRecordRef contact;
 }
 
-@property (retain) ChatModel *chat;
-@property (nonatomic, retain) IBOutlet UIView *contentView;
-@property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
-@property (nonatomic, retain) IBOutlet UILabel *messageLabel;
-@property (nonatomic, retain) IBOutlet UIButton *deleteButton;
+@property (nonatomic, assign) ABRecordRef contact;
+@property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
 
-- (id)initWithIdentifier:(NSString*)identifier;
-+ (CGFloat)height:(ChatModel*)chat;
-
-- (void)update;
-
-- (IBAction)onDeleteClick:(id)event;
+- (IBAction)onBackClick:(id)event;
 
 @end

@@ -91,14 +91,25 @@
     [chatContentLabel setFrame: chatContentFrame];
 }
 
-- (void)enterEditMode {
-    [deleteButton setHidden:false];
-    [detailsButton setHidden:true];
+- (void)setEditing:(BOOL)editing {
+    [self setEditing:editing animated:FALSE];
 }
 
-- (void)exitEditMode {
-    [detailsButton setHidden:false];
-    [deleteButton setHidden:true];
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    if(animated) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+    }
+    if(editing) {
+        [deleteButton setAlpha:1.0f];
+        [detailsButton setAlpha:0.0f]; 
+    } else {
+        [detailsButton setAlpha:1.0f];
+        [deleteButton setAlpha:0.0f];    
+    }
+    if(animated) {
+        [UIView commitAnimations];
+    }
 }
 
 #pragma mark - Action Functions

@@ -26,6 +26,9 @@
     OrderedDictionary* addressBookMap;
     
     ABAddressBookRef addressBook;
+    BOOL sipFilter;
 }
+
+@property (nonatomic, assign) BOOL sipFilter;
 
 @end

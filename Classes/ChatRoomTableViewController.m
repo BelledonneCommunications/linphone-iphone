@@ -33,22 +33,14 @@
     data = [[ChatModel listMessages:remoteContact] retain];
 }
 
-- (void) toggleEditMode {
-    editMode = !editMode;
-    [(UITableView*)[self view] reloadData];
+
+#pragma mark - Property Functions
+
+- (void)setRemoteContact:(NSString *)aremoteContact {
+    self->remoteContact = aremoteContact;
+    [[self tableView] reloadData];
 }
 
-- (void) enterEditMode {
-    if(!editMode) {
-        [self toggleEditMode];
-    }
-}
-
-- (void) exitEditMode {
-    if(editMode) {
-        [self toggleEditMode];
-    }
-}
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -68,17 +60,13 @@
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
-    if(editMode) 
-        [cell enterEditMode];
-    else 
-        [cell exitEditMode];
     [cell update];
     
     return cell;
 }
 
 
-#pragma mark - UITableViewelegate Functions
+#pragma mark - UITableViewDelegate Functions
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {    
     UIChatRoomHeader *headerController = [[UIChatRoomHeader alloc] init];

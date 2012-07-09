@@ -62,6 +62,40 @@ static UIFont *CELL_FONT = nil;
 
 - (void)update {
     if(chat != nil) {
+        [messageLabel setText:[chat message]];
+    }
+}
+
+- (void)setEditing:(BOOL)editing {
+    [self setEditing:editing animated:FALSE];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    if(animated) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+    }
+    if(editing) {
+        [deleteButton setAlpha:1.0f];
+    } else {
+        [deleteButton setAlpha:0.0f];    
+    }
+    if(animated) {
+        [UIView commitAnimations];
+    }
+}
+
+- (void)resizeContent {
+    // Resize content
+    {
+        CGRect frame = [contentView frame];
+        frame.origin.x = 0.0f;
+        frame.origin.y = 0.0f;
+        frame.size = [self frame].size;
+    [   contentView setFrame:frame];
+    }
+    
+    if(chat != nil) {
         if([chat direction]) {
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];
@@ -69,11 +103,14 @@ static UIFont *CELL_FONT = nil;
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_outgoing"]];
         }
-        [messageLabel setText:[chat message]];
     }
-    CGRect frame = [messageLabel frame];
-    frame.size.height = [UIChatRoomCell messageHeight:[chat message]];
-    [messageLabel setFrame:frame];
+    
+    // Resize message
+    {
+        CGRect frame = [messageLabel frame];
+        frame.size.height = [UIChatRoomCell messageHeight:[chat message]];
+        [messageLabel setFrame:frame];
+    }
 }
 
 + (CGFloat)messageHeight:(NSString*)message {
@@ -94,21 +131,12 @@ static UIFont *CELL_FONT = nil;
     return height;
 }
 
-- (void)enterEditMode {
-    [deleteButton setHidden:false];
-}
-
-- (void)exitEditMode {
-    [deleteButton setHidden:true];
-}
 
 #pragma mark - View Functions
 
 - (void)layoutSubviews {
-    // Resize content
-    CGRect frame = [contentView frame];
-    frame.size = [self frame].size;
-    [contentView setFrame:frame];
+    [super layoutSubviews];
+    [self resizeContent];
 }
 
 

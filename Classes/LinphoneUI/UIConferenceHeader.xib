@@ -48,7 +48,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">champ-titre-conference.png</string>
+							<string key="NSResourceName">header_conference.png</string>
 						</object>
 					</object>
 					<object class="IBUIImageView" id="242054672">
@@ -57,6 +57,7 @@
 						<string key="NSFrame">{{224, 14}, {25, 25}}</string>
 						<reference key="NSSuperview" ref="232140160"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -267,7 +268,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="champ-titre-conference.png">{640, 135}</string>
+			<string key="header_conference.png">{640, 135}</string>
 			<string key="pause-champ-numero-actif.png">{43, 50}</string>
 			<string key="play-champ-numero-actif.png">{43, 46}</string>
 			<string key="play-champ-numero-over.png">{43, 46}</string>

@@ -93,25 +93,35 @@
 		partyToDisplay = callLog->to;
 	}
     
-	const char* username = linphone_address_get_username(partyToDisplay)!=0?linphone_address_get_username(partyToDisplay):"";
-    //const char* displayName = linphone_address_get_display_name(partyToDisplay);
-    
+	const char* username = (linphone_address_get_display_name(partyToDisplay) != 0)? linphone_address_get_display_name(partyToDisplay):linphone_address_get_username(partyToDisplay);
+
     [displayNameLabel setText:[NSString stringWithUTF8String: username]];
     [imageView setImage: image];
 }
 
-- (void)enterEditMode {
-    [deleteButton setHidden:false];
-    [detailsButton setHidden:true];
+- (void)setEditing:(BOOL)editing {
+    [self setEditing:editing animated:FALSE];
 }
 
-- (void)exitEditMode {
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    if(animated) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+    }
+    if(editing) {
+        [deleteButton setAlpha:1.0f];
+        [detailsButton setAlpha:0.0f]; 
+    } else {
 #ifdef DETAILS_DISABLED
-    [detailsButton setHidden:true];
+        [detailsButton setAlpha:0.0f];
 #else
-    [detailsButton setHidden:false];
+        [detailsButtonsetAlpha:1.0f];
 #endif
-    [deleteButton setHidden:true];
+        [deleteButton setAlpha:0.0f];    
+    }
+    if(animated) {
+        [UIView commitAnimations];
+    }
 }
 
 @end

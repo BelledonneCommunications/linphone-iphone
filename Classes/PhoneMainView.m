@@ -33,6 +33,7 @@
 #import "SettingsViewController.h"
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
+#import "ContactDetailsViewController.h"
 
 #import "AbstractCall.h"
 
@@ -118,6 +119,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [viewDescriptions setObject:[SettingsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Settings]];
     [viewDescriptions setObject:[FirstLoginViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
     [viewDescriptions setObject:[WizardViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
+    [viewDescriptions setObject:[ContactDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_ContactDetails]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -22,15 +22,10 @@
 
 @interface ChatRoomTableViewController : UITableViewController {
 @private
-    BOOL editMode;
     NSArray *data;
     NSString *remoteContact;
 }
 
 @property (nonatomic, retain) NSString *remoteContact;
-
-- (void) toggleEditMode;
-- (void) enterEditMode;
-- (void) exitEditMode;
 
 @end

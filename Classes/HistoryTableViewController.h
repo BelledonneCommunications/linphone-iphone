@@ -21,11 +21,10 @@
 
 @interface HistoryTableViewController : UITableViewController {
     @private
-    BOOL editMode;
+    BOOL missedFilter;
+    NSMutableArray *callLogs;
 }
 
-- (void) toggleEditMode;
-- (void) enterEditMode;
-- (void) exitEditMode;
+@property (nonatomic, assign) BOOL missedFilter;
 
 @end

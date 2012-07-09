@@ -35,6 +35,7 @@ typedef enum _HistoryView {
     History_MAX
 } HistoryView;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -70,7 +71,7 @@ typedef enum _HistoryView {
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-	[self.tableView reloadData];
+	[self changeView:History_All];
 }
 
 - (void)viewDidLoad {
@@ -91,17 +92,21 @@ typedef enum _HistoryView {
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
+
+        [tableController setSipFilter:FALSE];
         allButton.selected = TRUE;
     } else {
         allButton.selected = FALSE;
     }
     
     if(view == History_Linphone) {
+        [tableController setSipFilter:TRUE];
         linphoneButton.selected = TRUE;
     } else {
         linphoneButton.selected = FALSE;
     }
 }
+
 
 #pragma mark - Action Functions
 

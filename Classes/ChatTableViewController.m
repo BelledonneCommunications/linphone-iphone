@@ -28,13 +28,6 @@
 
 #pragma mark - Lifecycle Functions
 
-- (id)init {
-    if((self = [super init]) != nil) {
-        self->editMode = false;
-    }
-    return self;
-}
-
 - (void)dealloc {
     if(data != nil)
         [data release];
@@ -48,23 +41,6 @@
     if(data != nil)
         [data release];
     data = [[ChatModel listConversations] retain];
-}
-
-- (void) toggleEditMode {
-    editMode = !editMode;
-    [(UITableView*)[self view] reloadData];
-}
-
-- (void) enterEditMode {
-    if(!editMode) {
-        [self toggleEditMode];
-    }
-}
-
-- (void) exitEditMode {
-    if(editMode) {
-        [self toggleEditMode];
-    }
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -88,10 +64,6 @@
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
-    if(editMode) 
-        [cell enterEditMode];
-    else 
-        [cell exitEditMode];
     [cell update];
     
     return cell;

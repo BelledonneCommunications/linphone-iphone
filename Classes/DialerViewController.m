@@ -193,6 +193,13 @@
     [self callUpdate:call state:state];
 }
 
+- (void)call:(NSString*)address {
+    [self call:address displayName:nil];
+}
+
+- (void)call:(NSString*)address displayName:(NSString *)displayName {
+    [[LinphoneManager instance] call:address displayName:displayName transfer:transferMode];
+}
 
 #pragma mark - UITextFieldDelegate Functions
 

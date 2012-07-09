@@ -70,7 +70,8 @@ typedef enum _HistoryView {
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [tableController exitEditMode];
+    [[tableController tableView] setEditing:FALSE];
+    [self changeView: History_All];
     [editButton setOff];
 	[self.tableView reloadData];
 }
@@ -98,12 +99,14 @@ typedef enum _HistoryView {
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
         allButton.selected = TRUE;
+        [tableController setMissedFilter:FALSE];
     } else {
         allButton.selected = FALSE;
     }
     
     if(view == History_Missed) {
         missedButton.selected = TRUE;
+        [tableController setMissedFilter:TRUE];
     } else {
         missedButton.selected = FALSE;
     }
@@ -121,7 +124,7 @@ typedef enum _HistoryView {
 }
 
 - (IBAction)onEditClick:(id) event {
-    [tableController toggleEditMode];
+    [[tableController tableView] setEditing:![[tableController tableView] isEditing] animated:TRUE];
 }
 
 

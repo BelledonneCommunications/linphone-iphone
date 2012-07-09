@@ -40,8 +40,6 @@
 
 - (id)initWithIdentifier:(NSString*)identifier;
 - (void)update;
-- (void)enterEditMode;
-- (void)exitEditMode;
 
 - (IBAction)onDetailsClick:(id)event;
 - (IBAction)onDeleteClick:(id)event;

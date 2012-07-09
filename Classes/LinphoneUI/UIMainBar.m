@@ -86,7 +86,7 @@
     } else {
         historyButton.selected = FALSE;
     }
-    if(view == PhoneView_Contacts) {
+    if(view == PhoneView_Contacts || view == PhoneView_ContactDetails) {
         contactsButton.selected = TRUE;
     } else {
         contactsButton.selected = FALSE;
@@ -101,7 +101,7 @@
     } else {
         settingsButton.selected = FALSE;
     }
-    if(view == PhoneView_Chat) {
+    if(view == PhoneView_Chat || view == PhoneView_ChatRoom) {
         chatButton.selected = TRUE;
     } else {
         chatButton.selected = FALSE;

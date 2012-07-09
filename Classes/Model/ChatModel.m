@@ -199,7 +199,7 @@
         return [[[NSArray alloc] init] autorelease];
     }
     
-    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time FROM chat WHERE remoteContact=\"%@\" ORDER BY time ASC",
+    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time FROM chat WHERE remoteContact=\"%@\" ORDER BY time DESC",
                         contact] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {

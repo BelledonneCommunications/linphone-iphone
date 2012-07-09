@@ -33,6 +33,7 @@ typedef enum _PhoneView {
     PhoneView_Chat,
     PhoneView_ChatRoom,
     PhoneView_Contacts,
+    PhoneView_ContactDetails,
     PhoneView_InCall,
     PhoneView_IncomingCall,
     PhoneView_END

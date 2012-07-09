@@ -25,6 +25,7 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <CoreTelephony/CTCallCenter.h>
 
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
@@ -363,6 +364,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_get_username(from)]];
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
+    [chat setTime:[NSDate date]];
     [chat create];
     
     // Post event
@@ -818,6 +820,76 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
 #endif
     return NO;
+}
+
+
+- (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer {
+    if (!linphone_core_is_network_reachabled(theLinphoneCore)) {
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
+														message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call",nil) 
+													   delegate:nil 
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+											  otherButtonTitles:nil];
+		[error show];
+        [error release];
+		return;
+	}
+    
+    CTCallCenter* ct = [[CTCallCenter alloc] init];
+    if ([ct.currentCalls count] > 0) {
+        ms_error("GSM call in progress, cancelling outgoing SIP call request");
+		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot make call",nil)
+														message:NSLocalizedString(@"Please terminate GSM call",nil) 
+													   delegate:nil 
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+											  otherButtonTitles:nil];
+		[error show];
+        [error release];
+        [ct release];
+		return;
+    }
+    [ct release];
+    
+	LinphoneProxyConfig* proxyCfg;	
+	//get default proxy
+	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
+	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
+
+	if ([address length] == 0) return; //just return
+	if ([address hasPrefix:@"sip:"]) {
+        LinphoneAddress* linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);  
+        if(displayName!=nil) {
+            linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        }
+        if(transfer) {
+            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        } else {
+            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
+        }
+        linphone_address_destroy(linphoneAddress);
+	} else if ( proxyCfg==nil){
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
+														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
+													   delegate:nil 
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
+											  otherButtonTitles:nil];
+		[error show];
+		[error release];
+	} else {
+		char normalizedUserName[256];
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));  
+		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
+        linphone_address_set_username(linphoneAddress, normalizedUserName);
+        if(displayName!=nil) {
+            linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        }
+        if(transfer) {
+            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
+        } else {
+            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress,lcallParams);
+        }
+	}
+	linphone_call_params_destroy(lcallParams);
 }
 
 @end

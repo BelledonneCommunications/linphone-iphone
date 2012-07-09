@@ -24,26 +24,70 @@
 
 @implementation HistoryTableViewController
 
+@synthesize missedFilter;
 
 #pragma mark - Lifecycle Functions
 
+- (void)initHistoryTableViewController {
+    callLogs = [[NSMutableArray alloc] init];
+    missedFilter = false;
+}
+
 - (id)init {
-    if((self = [super init]) != nil) {
-        self->editMode = false;
+    self = [super init];
+    if (self) {
+		[self initHistoryTableViewController];
     }
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initHistoryTableViewController];
+	}
+    return self;
+}	
+
+- (void)dealloc {
+    [callLogs release];
+    [super dealloc];
+}
+
+
+#pragma mark - Property Functions
+
+- (void)setMissedFilter:(BOOL)amissedFilter {
+    self->missedFilter = amissedFilter;
+    [[self tableView] reloadData];
+}
+
 
 #pragma mark - UITableViewDataSource Functions
+
+- (void)loadData {
+    [callLogs removeAllObjects];
+	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+    while(logs != NULL) {
+        LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
+        if(missedFilter) {
+            if (log->status == LinphoneCallMissed) {
+                [callLogs addObject:[NSValue valueWithPointer: log]];
+            }
+        } else {
+            [callLogs addObject:[NSValue valueWithPointer: log]];
+        }
+        logs = ms_list_next(logs);
+    }
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-	return ms_list_size(logs);
+    [self loadData];
+	return [callLogs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -52,15 +96,8 @@
         cell = [[UIHistoryCell alloc] initWithIdentifier:@"UIHistoryCell"];
     }
     
-	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row);
-    
-    if(editMode) 
-        [cell enterEditMode];
-    else 
-        [cell exitEditMode];
-    
-    [cell setCallLog:callLogs];
+    LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+    [cell setCallLog:log];
     [cell update];
 	
     return cell;
@@ -72,13 +109,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	
-	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-	LinphoneCallLog*  callLogs = ms_list_nth_data(logs,  indexPath.row) ;
+    LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
 	LinphoneAddress* partyToCall; 
-	if (callLogs->dir == LinphoneCallIncoming) {
-		partyToCall=callLogs->from;
+	if (log->dir == LinphoneCallIncoming) {
+		partyToCall=log->from;
 	} else {
-		partyToCall=callLogs->to;
+		partyToCall=log->to;
 	}
 	const char* username = linphone_address_get_username(partyToCall)!=0?linphone_address_get_username(partyToCall):"";
 	const char* displayName = linphone_address_get_display_name(partyToCall)!=0?linphone_address_get_display_name(partyToCall):"";
@@ -99,33 +135,13 @@
     
     // Go to dialer view
     NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                          [[[NSArray alloc] initWithObjects: phoneNumber, nil] autorelease]
-                          , @"setAddress:",
+                          [[[NSArray alloc] initWithObjects: phoneNumber, dispName, nil] autorelease]
+                          , @"call:displayName:",
                           nil] autorelease];
     [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
 
 	[phoneNumber release];
     [dispName release];
-}
-
-
-#pragma mark - 
-
-- (void) toggleEditMode {
-    editMode = !editMode;
-    [(UITableView*)[self view] reloadData];
-}
-
-- (void) enterEditMode {
-    if(!editMode) {
-        [self toggleEditMode];
-    }
-}
-
-- (void) exitEditMode {
-    if(editMode) {
-        [self toggleEditMode];
-    }
 }
 
 @end

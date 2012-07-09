@@ -43,7 +43,5 @@
 - (IBAction)onDelete:(id) event;
 
 - (void)update;
-- (void)enterEditMode;
-- (void)exitEditMode;
 
 @end

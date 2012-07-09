@@ -41,6 +41,7 @@
     [tableController release];
     [messageField release];
     [sendButton release];
+    [editButton release];
     [super dealloc];
 }
 
@@ -83,7 +84,7 @@
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
     
-    [tableController exitEditMode];
+    [[tableController tableView] setEditing:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
 }
@@ -179,7 +180,7 @@
 }
 
 - (IBAction)onEditClick:(id)event {
-    [tableController toggleEditMode];
+    [[tableController tableView] setEditing:![[tableController tableView] isEditing] animated:TRUE];
 }
 
 - (IBAction)onSendClick:(id)event {
