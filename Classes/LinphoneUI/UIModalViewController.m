@@ -21,14 +21,52 @@
 
 @implementation UIModalViewController
 
-- (void)dismiss:(int)value {
+- (void)initUIModalViewController {
+    dismissed = FALSE;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIModalViewController];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+		[self initUIModalViewController];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIModalViewController];
+	}
+    return self;
+}	
+
+- (void)dismiss:(id)value {
     if(modalDelegate != nil)
         [modalDelegate modalViewDismiss:self value:value];
+    
+    if(!dismissed) {
+        dismissed = true;
+        [self autorelease];
+    }
 }
 
 - (void)dismiss{
     if(modalDelegate != nil)
-        [modalDelegate modalViewDismiss:self value:0];
+        [modalDelegate modalViewDismiss:self value:nil];
+    
+    if(!dismissed) {
+        dismissed = true;
+        [self autorelease];
+    }
 }
 
 - (void)setModalDelegate:(id<UIModalViewDelegate>)delegate {

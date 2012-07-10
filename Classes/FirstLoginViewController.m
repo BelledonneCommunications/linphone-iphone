@@ -37,11 +37,11 @@
 }
 
 - (void)dealloc {
-	[loginButton dealloc];
-	[siteButton dealloc];
-	[usernameField dealloc];
-    [passwordField dealloc];
-	[waitView dealloc];
+	[loginButton release];
+	[siteButton release];
+	[usernameField release];
+    [passwordField release];
+	[waitView release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -97,6 +97,8 @@
 }
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
 	NSString* siteUrl = [[LinphoneManager instance].settingsStore objectForKey:@"first_login_view_url"];
 	if (siteUrl==nil) {
 		siteUrl=@"http://www.linphone.org";

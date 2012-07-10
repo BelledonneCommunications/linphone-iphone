@@ -1,4 +1,4 @@
-/* ContactDetailsViewController.h
+/* UIEditableTableViewCell.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,26 +15,14 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */  
 
 #import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
 
-#import "UICompositeViewController.h"
-#import "ContactDetailsTableViewController.h"
-#import "UIToggleButton.h"
-
-@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate> {
-    ContactDetailsTableViewController *tableController;
-    ABRecordRef contact;
-    UIToggleButton *editButton;
+@interface UIEditableTableViewCell : UITableViewCell<UITextFieldDelegate> {
+    UITextField *detailTextField;
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
-@property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-
-- (IBAction)onBackClick:(id)event;
-- (IBAction)onEditClick:(id)event;
+@property (nonatomic, retain) IBOutlet UITextField *detailTextField;
 
 @end

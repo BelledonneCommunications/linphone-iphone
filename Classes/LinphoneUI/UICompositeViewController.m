@@ -93,7 +93,7 @@
     [stateBarView release];
     [tabBarView release];
     [viewControllerCache removeAllObjects];
-    [currentViewDescription dealloc];
+    [currentViewDescription release];
     [super dealloc];
 }
 
@@ -268,7 +268,7 @@
     
     // Dealloc old view description
     if(oldViewDescription != nil) {
-        [oldViewDescription dealloc];
+        [oldViewDescription release];
     }
 }
 

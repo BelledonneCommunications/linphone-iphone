@@ -75,7 +75,7 @@
 
 - (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {  
     if(call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
-        [self dismiss: IncomingCall_Aborted];
+        [self dismiss: [NSNumber numberWithInt: IncomingCall_Aborted]];
     }
 }
 
@@ -103,12 +103,12 @@
 
 - (IBAction)onAcceptClick:(id)event {
     linphone_core_accept_call([LinphoneManager getLc], call);
-    [self dismiss: IncomingCall_Accepted];
+    [self dismiss: [NSNumber numberWithInt:IncomingCall_Accepted]];
 }
 
 - (IBAction)onDeclineClick:(id)event {
     linphone_core_terminate_call([LinphoneManager getLc], call);
-    [self dismiss: IncomingCall_Decline];
+    [self dismiss: [NSNumber numberWithInt:IncomingCall_Decline]];
 }
 
 @end

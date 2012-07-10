@@ -93,6 +93,7 @@ UICompositeViewDescription *description = [UICompositeViewDescription alloc];
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
     [self changeView:welcomeView back:FALSE animation:FALSE];
 }
 

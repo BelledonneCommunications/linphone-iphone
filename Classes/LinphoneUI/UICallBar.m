@@ -99,6 +99,8 @@
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
     
     [zeroButton setDigit:'0'];

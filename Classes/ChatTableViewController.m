@@ -45,22 +45,20 @@
 
 #pragma mark - UITableViewDataSource Functions
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     [self reloadData];
     return [data count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatCell"];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *kCellId = @"UIChatCell";
+    UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[UIChatCell alloc] initWithIdentifier:@"UIChatCell"];
+        cell = [[[UIChatCell alloc] initWithIdentifier:kCellId] autorelease];
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];

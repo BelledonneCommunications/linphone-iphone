@@ -45,6 +45,8 @@
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
     // Set selected+over background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
@@ -56,8 +58,8 @@
                                              selector:@selector(textReceivedEvent:) 
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
-    
-    [[tableController tableView] setEditing:FALSE];
+    if([tableController isEditing])
+        [tableController setEditing:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
 }
@@ -99,7 +101,7 @@
 }
 
 - (IBAction)onEditClick:(id)event {
-    [[tableController tableView] setEditing:![[tableController tableView] isEditing] animated:TRUE];
+    [tableController setEditing:![tableController isEditing] animated:TRUE];
 }
 
 @end

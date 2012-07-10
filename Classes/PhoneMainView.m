@@ -36,6 +36,7 @@
 #import "ContactDetailsViewController.h"
 
 #import "AbstractCall.h"
+#import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
 
@@ -55,7 +56,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     // Init view descriptions
     viewDescriptions = [[NSMutableDictionary alloc] init];
-    modalControllers = [[NSMutableArray alloc] init];
 }
 
 - (id)init {
@@ -89,9 +89,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     [viewDescriptions removeAllObjects];
     [viewDescriptions release];
-    
-    [modalControllers removeAllObjects];
-    [modalControllers release];
     
     [viewStack release];
     
@@ -458,7 +455,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 	} else {     
         IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
         [controller setCall:call];
-        [self addModalViewController:controller];
+        [controller setModalDelegate:self];
+        [[self view] addModalView:[controller view]];
 	}
 }
 
@@ -519,37 +517,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 #pragma mark - Modal Functions
 
-- (void)modalViewDismiss:(UIModalViewController*)controller value:(int)value {
-    [self removeModalViewController:controller];
-}
-
-- (void)addModalViewController:(UIModalViewController*)controller {
-    [controller setModalDelegate:self];
-    [modalControllers insertObject:controller atIndex:0];
-    
-    CATransition* trans = [CATransition animation];
-    [trans setType:kCATransitionFade];
-    [trans setDuration:0.35];
-    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-    [trans setSubtype:kCATransitionFromRight];
-    [[self view].layer addAnimation:trans forKey:@"Appear"];
-    
-    [[self view] addSubview:[controller view]];
-    [[self view] bringSubviewToFront:[controller view]];
-}
-
-- (void)removeModalViewController:(UIModalViewController*)controller {
+- (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value {
     [controller setModalDelegate:nil];
-    [modalControllers removeObject:controller];
-    
-    CATransition* trans = [CATransition animation];
-    [trans setType:kCATransitionFade];
-    [trans setDuration:0.35];
-    [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-    [trans setSubtype:kCATransitionFromRight];
-    [[self view].layer addAnimation:trans forKey:@"Disappear"];
-    
-    [[controller view] removeFromSuperview];
+    [[self view] removeModalView:[controller view]];
 }
 
 @end

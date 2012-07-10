@@ -46,17 +46,34 @@
 }
 
 
+#pragma mark - 
+
++ (void)removeBackground:(UIView*)view {
+    if([view isKindOfClass:[UITableView class]]) {
+          [view setBackgroundColor:[UIColor clearColor]];  
+    }
+    for(UIView *subview in [view subviews]) {
+        [SettingsViewController removeBackground:subview];
+    }
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
     settingsController.delegate = self;
     settingsController.settingsReaderDelegate = self;
     settingsController.settingsStore=[[LinphoneManager instance] settingsStore];
     settingsController.showCreditsFooter = FALSE;
     
     navigationController.view.frame = self.view.frame;
+    [SettingsViewController removeBackground:navigationController.view];
+    [SettingsViewController removeBackground:settingsController.view];
     [self.view addSubview: navigationController.view];
 }
+
+
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];

@@ -63,7 +63,7 @@ enum TableSection {
 
 - (void)dealloc {
     [callCellData removeAllObjects];
-    [callCellData dealloc];
+    [callCellData release];
     [super dealloc];
 }
 
@@ -196,9 +196,10 @@ enum TableSection {
 #pragma mark - UITableViewDataSource Functions
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UICallCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UICallCell"];
+    static NSString *kCellId = @"UICallCell";
+    UICallCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[UICallCell alloc] initWithIdentifier:@"UICallCell"];
+        cell = [[[UICallCell alloc] initWithIdentifier:kCellId] autorelease];
     }
     
     bool inConference = indexPath.section == ConferenceSection;

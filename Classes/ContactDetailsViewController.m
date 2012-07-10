@@ -24,6 +24,7 @@
 
 @synthesize tableController;
 @synthesize contact;
+@synthesize editButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -40,10 +41,26 @@
 
 #pragma mark - Property Functions
 
-
 - (void)setContact:(ABRecordRef)acontact {
     self->contact = acontact;
     [tableController setContact:contact];
+}
+
+
+#pragma mark - ViewController Functions
+
+- (void)viewDidLoad{
+    [super viewDidLoad];
+    // Set selected+over background: IB lack !
+    [editButton setImage:[UIImage imageNamed:@"contact_ok_over.png"] 
+                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if([tableController isEditing])
+        [tableController setEditing:FALSE];
+    [editButton setOff];
 }
 
 
@@ -65,6 +82,10 @@
 
 - (IBAction)onBackClick:(id)event {
     [[PhoneMainView instance] popView];
+}
+
+- (IBAction)onEditClick:(id)event {
+    [tableController setEditing:![tableController isEditing] animated:TRUE];
 }
 
 @end

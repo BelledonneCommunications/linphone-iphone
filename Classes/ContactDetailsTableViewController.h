@@ -20,11 +20,16 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
-@interface ContactDetailsTableViewController : UITableViewController {
+#import "ContactDetailsLabelViewController.h"
+
+@interface ContactDetailsTableViewController : UITableViewController<UIModalViewDelegate> {
 @private
     ABRecordRef contact;
     NSMutableArray *dataCache;
     ABAddressBookRef addressBook;
+    ContactDetailsLabelViewController *contactDetailsLabelViewController;
+    NSMutableArray *labelArray;
+    NSIndexPath *editingIndexPath;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;

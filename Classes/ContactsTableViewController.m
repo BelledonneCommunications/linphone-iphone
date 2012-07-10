@@ -155,9 +155,10 @@ static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIContactCell"];
+    static NSString *kCellId = @"UIContactCell";
+    UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[UIContactCell alloc] initWithIdentifier:@"UIContactCell"];
+        cell = [[[UIContactCell alloc] initWithIdentifier:kCellId] autorelease];
     }
     
     OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]]; 

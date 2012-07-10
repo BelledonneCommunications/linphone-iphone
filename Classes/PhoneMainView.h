@@ -43,8 +43,6 @@ typedef enum _PhoneView {
     @private
     UICompositeViewController *mainViewController;
     
-    NSMutableArray *modalControllers;
-    
     NSMutableDictionary *viewDescriptions;
 
     UIActionSheet *incomingCallActionSheet;

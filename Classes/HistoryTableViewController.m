@@ -91,9 +91,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIHistoryCell"];
+    static NSString *kCellId = @"UIHistoryCell";
+    UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[UIHistoryCell alloc] initWithIdentifier:@"UIHistoryCell"];
+        cell = [[[UIHistoryCell alloc] initWithIdentifier:kCellId] autorelease];
     }
     
     LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];

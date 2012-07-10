@@ -23,16 +23,17 @@
 
 @protocol UIModalViewDelegate <NSObject>
 
-- (void)modalViewDismiss:(UIModalViewController*)controller value:(int)value;
+- (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value;
 
 @end
 
 @interface UIModalViewController : UIViewController {
+    BOOL dismissed;
     id<UIModalViewDelegate> modalDelegate;
 }
 
 - (void)setModalDelegate:(id<UIModalViewDelegate>)delegate;
-- (void)dismiss:(int)value;
+- (void)dismiss:(id)value;
 - (void)dismiss;
 
 @end

@@ -54,9 +54,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIChatRoomCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UIChatRoomCell"];
+    static NSString *kCellId = @"UIChatRoomCell";
+    UIChatRoomCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[UIChatRoomCell alloc] initWithIdentifier:@"UIChatRoomCell"];
+        cell = [[[UIChatRoomCell alloc] initWithIdentifier:kCellId] autorelease];
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
