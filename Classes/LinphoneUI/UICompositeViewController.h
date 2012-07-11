@@ -61,7 +61,7 @@
     CATransition *viewTransition;
 }
 
-@property (strong) CATransition *viewTransition;
+@property (retain) CATransition *viewTransition;
 
 @property (nonatomic, retain) IBOutlet UIView* stateBarView;
 @property (nonatomic, retain) IBOutlet UIView* contentView;

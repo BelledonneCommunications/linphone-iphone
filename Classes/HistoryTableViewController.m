@@ -99,7 +99,6 @@
     
     LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
     [cell setCallLog:log];
-    [cell update];
 	
     return cell;
 }

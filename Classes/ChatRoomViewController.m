@@ -86,7 +86,7 @@
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
     if([tableController isEditing])
-        [tableController setEditing:FALSE];
+        [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
 }

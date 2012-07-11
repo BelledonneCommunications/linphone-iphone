@@ -38,21 +38,6 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="57178294">
-						<reference key="NSNextResponder" ref="770392660"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrameSize">{320, 394}</string>
-						<reference key="NSSuperview" ref="770392660"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="844572400"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<object class="NSCustomResource" key="IBUIImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">numpad_background.png</string>
-						</object>
-					</object>
 					<object class="IBUIView" id="844572400">
 						<reference key="NSNextResponder" ref="770392660"/>
 						<int key="NSvFlags">292</int>
@@ -148,7 +133,6 @@
 								<string key="NSFrame">{{160, 0}, {160, 77}}</string>
 								<reference key="NSSuperview" ref="1057285194"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -185,15 +169,9 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="57178294"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
-				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MQA</bytes>
-					<object class="NSColorSpace" key="NSCustomColorSpace" id="713651496">
-						<int key="NSID">2</int>
-					</object>
-				</object>
+				<reference key="IBUIBackgroundColor" ref="981989056"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 			<object class="IBUIView" id="741268807">
@@ -221,7 +199,6 @@
 						<string key="NSFrame">{{40, 313}, {240, 44}}</string>
 						<reference key="NSSuperview" ref="741268807"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -337,7 +314,6 @@
 						<string key="NSFrame">{{33, 269}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="361414027"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -419,7 +395,9 @@
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
-							<reference key="NSCustomColorSpace" ref="713651496"/>
+							<object class="NSColorSpace" key="NSCustomColorSpace" id="713651496">
+								<int key="NSID">2</int>
+							</object>
 						</object>
 						<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 						<float key="IBUIMinimumFontSize">17</float>
@@ -535,7 +513,6 @@
 						<string key="NSFrame">{{33, 330}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="183617546"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -612,7 +589,6 @@
 						<string key="NSFrame">{{32, 330}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="101753691"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -829,7 +805,6 @@
 						<string key="NSFrame">{{34, 330}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="71390966"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -1080,7 +1055,6 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="844572400"/>
 							<reference ref="1057285194"/>
-							<reference ref="57178294"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1101,12 +1075,6 @@
 						</array>
 						<reference key="parent" ref="770392660"/>
 						<string key="objectName">tabBar</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">15</int>
-						<reference key="object" ref="57178294"/>
-						<reference key="parent" ref="770392660"/>
-						<string key="objectName">background</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">16</int>
@@ -1344,7 +1312,6 @@
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="13.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="16.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="17.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1494,7 +1461,6 @@
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="button_background_default.png">{550, 101}</string>
 			<string key="button_background_over.png">{550, 101}</string>
-			<string key="numpad_background.png">{640, 523}</string>
 			<string key="setup_back_default.png">{320, 154}</string>
 			<string key="setup_back_disabled.png">{320, 154}</string>
 			<string key="setup_back_over.png">{320, 154}</string>

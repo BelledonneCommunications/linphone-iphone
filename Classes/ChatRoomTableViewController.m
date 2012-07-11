@@ -41,7 +41,6 @@
     [[self tableView] reloadData];
 }
 
-
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -61,7 +60,6 @@
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
-    [cell update];
     
     return cell;
 }
@@ -73,7 +71,6 @@
     UIChatRoomHeader *headerController = [[UIChatRoomHeader alloc] init];
     UIView *headerView = [headerController view];
     [headerController setContact:remoteContact];
-    [headerController update];
     [headerController release];
     return headerView;
 }

@@ -86,15 +86,15 @@
 						</object>
 						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">play-champ-numero-over.png</string>
+							<string key="NSResourceName">call_state_play_over.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">pause-champ-numero-actif.png</string>
+							<string key="NSResourceName">call_state_pause_default.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">play-champ-numero-actif.png</string>
+							<string key="NSResourceName">call_state_play_default.png</string>
 						</object>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
 							<int key="type">2</int>
@@ -268,10 +268,10 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="call_state_pause_default.png">{43, 50}</string>
+			<string key="call_state_play_default.png">{43, 46}</string>
+			<string key="call_state_play_over.png">{43, 46}</string>
 			<string key="header_conference.png">{640, 135}</string>
-			<string key="pause-champ-numero-actif.png">{43, 50}</string>
-			<string key="play-champ-numero-actif.png">{43, 46}</string>
-			<string key="play-champ-numero-over.png">{43, 46}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

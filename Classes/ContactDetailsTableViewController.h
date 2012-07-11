@@ -21,17 +21,32 @@
 #import <AddressBook/AddressBook.h>
 
 #import "ContactDetailsLabelViewController.h"
+#import "UIContactDetailsHeader.h"
+#import "UIContactDetailsFooter.h"
 
-@interface ContactDetailsTableViewController : UITableViewController<UIModalViewDelegate> {
+@interface ContactDetailsTableViewController : UITableViewController<UIModalViewDelegate, UITextFieldDelegate> {
 @private
     ABRecordRef contact;
+    ABRecordID contactID;
     NSMutableArray *dataCache;
     ABAddressBookRef addressBook;
     ContactDetailsLabelViewController *contactDetailsLabelViewController;
     NSMutableArray *labelArray;
     NSIndexPath *editingIndexPath;
+    BOOL inhibUpdate;
+@public
+    UIContactDetailsHeader *headerController;
+    UIContactDetailsFooter *footerController;
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
+@property (nonatomic, assign) ABRecordID contactID;
+
+- (void)newContact;
+- (void)newContact:(NSString*)address;
+- (void)removeContact;
+
+- (void)loadData;
+- (void)saveData;
+- (void)resetData;
 
 @end

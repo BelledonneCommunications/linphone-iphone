@@ -52,7 +52,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">numpad_background.png</string>
+							<string key="NSResourceName">background.png</string>
 						</object>
 					</object>
 					<object class="IBUIView" id="735497316">
@@ -4903,11 +4903,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<string key="accept_over.png">{320, 154}</string>
 			<string key="avatar_shadow.png">{640, 523}</string>
 			<string key="avatar_unknown.png">{320, 339}</string>
+			<string key="background.png">{16, 16}</string>
 			<string key="cell_call_first.png">{640, 125}</string>
 			<string key="decline_default.png">{320, 154}</string>
 			<string key="decline_over.png">{320, 154}</string>
 			<string key="header_incoming.png">{640, 135}</string>
-			<string key="numpad_background.png">{640, 523}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

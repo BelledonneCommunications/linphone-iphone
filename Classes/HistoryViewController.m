@@ -71,7 +71,7 @@ typedef enum _HistoryView {
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if([tableController isEditing])
-        [tableController setEditing:FALSE];
+        [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [self changeView: History_All];
 	[self.tableView reloadData];

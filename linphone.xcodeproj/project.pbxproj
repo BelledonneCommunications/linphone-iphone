@@ -242,6 +242,10 @@
 		D32B6E3915A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
+		D32D5AA715ADE5D9008593F3 /* button_alert_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */; };
+		D32D5AA815ADE5D9008593F3 /* button_alert_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */; };
+		D32D5AA915ADE5D9008593F3 /* button_alert_background_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA615ADE5D9008593F3 /* button_alert_background_over.png */; };
+		D32D5AAA15ADE5D9008593F3 /* button_alert_background_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA615ADE5D9008593F3 /* button_alert_background_over.png */; };
 		D3432A62158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
 		D3432A63158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
 		D3432A64158A4446001C6B0B /* led_error.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5D158A4446001C6B0B /* led_error.png */; };
@@ -527,6 +531,10 @@
 		D3D6A3B4159B0EFE005F692C /* options_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A3A9159B0EFE005F692C /* options_disabled.png */; };
 		D3D6A3B5159B0EFE005F692C /* options_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A3AA159B0EFE005F692C /* options_over.png */; };
 		D3D6A3B6159B0EFE005F692C /* options_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A3AA159B0EFE005F692C /* options_over.png */; };
+		D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */; };
+		D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */; };
+		D3E8F68815ADE05B0065A226 /* UIContactDetailsFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */; };
+		D3E8F68915ADE05B0065A226 /* UIContactDetailsFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
 		D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
 		D3EA5403159852080037DC6B /* chat_edit_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA53FF159852080037DC6B /* chat_edit_default.png */; };
@@ -547,8 +555,8 @@
 		D3EA5419159858A80037DC6B /* list_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5416159858A80037DC6B /* list_delete_default.png */; };
 		D3EA541A159858A80037DC6B /* list_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5417159858A80037DC6B /* list_delete_over.png */; };
 		D3EA541B159858A80037DC6B /* list_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5417159858A80037DC6B /* list_delete_over.png */; };
-		D3ED3E411585FB4A006C0DE4 /* numpad_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E401585FB4A006C0DE4 /* numpad_background.png */; };
-		D3ED3E421585FB4A006C0DE4 /* numpad_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E401585FB4A006C0DE4 /* numpad_background.png */; };
+		D3ED3E411585FB4A006C0DE4 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E401585FB4A006C0DE4 /* background.png */; };
+		D3ED3E421585FB4A006C0DE4 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E401585FB4A006C0DE4 /* background.png */; };
 		D3ED3E451585FB8C006C0DE4 /* dialer_address_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */; };
 		D3ED3E461585FB8C006C0DE4 /* dialer_address_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */; };
 		D3ED3E521585FFFD006C0DE4 /* statebar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E511585FFFD006C0DE4 /* statebar_background.png */; };
@@ -1092,6 +1100,8 @@
 		D32B6E3715A5C2430033019F /* ChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ChatModel.m; path = Model/ChatModel.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
 		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
+		D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_alert_background_default.png; path = Resources/button_alert_background_default.png; sourceTree = "<group>"; };
+		D32D5AA615ADE5D9008593F3 /* button_alert_background_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_alert_background_over.png; path = Resources/button_alert_background_over.png; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* led_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_connected.png; path = Resources/led_connected.png; sourceTree = "<group>"; };
 		D3432A5D158A4446001C6B0B /* led_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_error.png; path = Resources/led_error.png; sourceTree = "<group>"; };
 		D3432A5E158A4446001C6B0B /* call_quality_indicator_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_quality_indicator_0.png; path = Resources/call_quality_indicator_0.png; sourceTree = "<group>"; };
@@ -1279,6 +1289,9 @@
 		D3D6A3A8159B0EFE005F692C /* options_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_default.png; path = Resources/options_default.png; sourceTree = "<group>"; };
 		D3D6A3A9159B0EFE005F692C /* options_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_disabled.png; path = Resources/options_disabled.png; sourceTree = "<group>"; };
 		D3D6A3AA159B0EFE005F692C /* options_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_over.png; path = Resources/options_over.png; sourceTree = "<group>"; };
+		D3E8F68315ADE0570065A226 /* UIContactDetailsFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactDetailsFooter.h; sourceTree = "<group>"; };
+		D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactDetailsFooter.m; sourceTree = "<group>"; };
+		D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactDetailsFooter.xib; sourceTree = "<group>"; };
 		D3EA53FB159850E80037DC6B /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
 		D3EA53FC159850E80037DC6B /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
 		D3EA53FF159852080037DC6B /* chat_edit_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_edit_default.png; path = Resources/chat_edit_default.png; sourceTree = "<group>"; };
@@ -1292,7 +1305,7 @@
 		D3EA5413159853C90037DC6B /* UIChatCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatCell.xib; sourceTree = "<group>"; };
 		D3EA5416159858A80037DC6B /* list_delete_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = list_delete_default.png; path = Resources/list_delete_default.png; sourceTree = "<group>"; };
 		D3EA5417159858A80037DC6B /* list_delete_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = list_delete_over.png; path = Resources/list_delete_over.png; sourceTree = "<group>"; };
-		D3ED3E401585FB4A006C0DE4 /* numpad_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_background.png; path = Resources/numpad_background.png; sourceTree = "<group>"; };
+		D3ED3E401585FB4A006C0DE4 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background.png; path = Resources/background.png; sourceTree = "<group>"; };
 		D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialer_address_background.png; path = Resources/dialer_address_background.png; sourceTree = "<group>"; };
 		D3ED3E511585FFFD006C0DE4 /* statebar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = statebar_background.png; path = Resources/statebar_background.png; sourceTree = "<group>"; };
 		D3ED3E6715861A53006C0DE4 /* add_contact_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_contact_default.png; path = Resources/add_contact_default.png; sourceTree = "<group>"; };
@@ -1806,6 +1819,9 @@
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				D3A55FBE15877E69003FD403 /* UIContactCell.xib */,
+				D3E8F68315ADE0570065A226 /* UIContactDetailsFooter.h */,
+				D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */,
+				D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */,
 				D37C639215AADDAE009D0BAC /* UIContactDetailsHeader.h */,
 				D37C639315AADDAE009D0BAC /* UIContactDetailsHeader.m */,
 				D37C639415AADDAF009D0BAC /* UIContactDetailsHeader.xib */,
@@ -2007,6 +2023,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */,
+				D32D5AA615ADE5D9008593F3 /* button_alert_background_over.png */,
 				D3F83F741582253100336684 /* accept_default.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
@@ -2134,7 +2152,7 @@
 				D3F83EF6158205A100336684 /* micro_on_default.png */,
 				D35EA76215A2DF8D003E025D /* micro_on_disabled.png */,
 				D3F83EF7158205A100336684 /* micro_on_over.png */,
-				D3ED3E401585FB4A006C0DE4 /* numpad_background.png */,
+				D3ED3E401585FB4A006C0DE4 /* background.png */,
 				D3F83F3C1582223B00336684 /* numpad_eight_default.png */,
 				D3F83F3D1582223B00336684 /* numpad_eight_over.png */,
 				D3F83F361582223B00336684 /* numpad_five_default.png */,
@@ -2519,7 +2537,7 @@
 				D3F83F7C1582253100336684 /* decline_default.png in Resources */,
 				D3F83F7E1582253100336684 /* decline_over.png in Resources */,
 				D3F83F9215824D3600336684 /* LinphoneApp.xib in Resources */,
-				D3ED3E411585FB4A006C0DE4 /* numpad_background.png in Resources */,
+				D3ED3E411585FB4A006C0DE4 /* background.png in Resources */,
 				D3ED3E451585FB8C006C0DE4 /* dialer_address_background.png in Resources */,
 				D3ED3E521585FFFD006C0DE4 /* statebar_background.png in Resources */,
 				D3ED3E6A15861A53006C0DE4 /* add_contact_default.png in Resources */,
@@ -2681,6 +2699,9 @@
 				D3C6526D15AC228A0092A874 /* contact_ok_over.png in Resources */,
 				D378906715AC373B00BD776C /* ContactDetailsLabelViewController.xib in Resources */,
 				D378906A15AC37C800BD776C /* contact_bar_background.png in Resources */,
+				D3E8F68815ADE05B0065A226 /* UIContactDetailsFooter.xib in Resources */,
+				D32D5AA715ADE5D9008593F3 /* button_alert_background_default.png in Resources */,
+				D32D5AA915ADE5D9008593F3 /* button_alert_background_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2750,7 +2771,7 @@
 				D3F83F7D1582253100336684 /* decline_default.png in Resources */,
 				D3F83F7F1582253100336684 /* decline_over.png in Resources */,
 				D3F83F9315824D3600336684 /* LinphoneApp.xib in Resources */,
-				D3ED3E421585FB4A006C0DE4 /* numpad_background.png in Resources */,
+				D3ED3E421585FB4A006C0DE4 /* background.png in Resources */,
 				D3ED3E461585FB8C006C0DE4 /* dialer_address_background.png in Resources */,
 				D3ED3E531585FFFD006C0DE4 /* statebar_background.png in Resources */,
 				D3ED3E6B15861A53006C0DE4 /* add_contact_default.png in Resources */,
@@ -2911,6 +2932,9 @@
 				D3C6526E15AC228A0092A874 /* contact_ok_over.png in Resources */,
 				D378906815AC373B00BD776C /* ContactDetailsLabelViewController.xib in Resources */,
 				D378906B15AC37C800BD776C /* contact_bar_background.png in Resources */,
+				D3E8F68915ADE05B0065A226 /* UIContactDetailsFooter.xib in Resources */,
+				D32D5AA815ADE5D9008593F3 /* button_alert_background_default.png in Resources */,
+				D32D5AAA15ADE5D9008593F3 /* button_alert_background_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2999,6 +3023,7 @@
 				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D378907515AC448A00BD776C /* UIView+ModalStack.m in Sources */,
+				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3084,6 +3109,7 @@
 				D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D378907615AC448A00BD776C /* UIView+ModalStack.m in Sources */,
+				D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

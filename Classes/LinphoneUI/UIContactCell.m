@@ -24,7 +24,7 @@
 @synthesize firstNameLabel;
 @synthesize lastNameLabel;
 @synthesize avatarImage;
-
+@synthesize contact;
 
 #pragma mark - Lifecycle Functions
 
@@ -50,6 +50,13 @@
 }
 
 
+#pragma mark - Property Functions
+
+- (void)setContact:(ABRecordRef)acontact {
+    contact = acontact;
+    [self update];
+}
+
 #pragma mark - 
 
 - (void)touchUp:(id) sender {
@@ -60,10 +67,10 @@
     [self setHighlighted:false animated:true];
 }
 
-- (void)update:(ABRecordRef) record {
-    CFStringRef lFirstName = ABRecordCopyValue(record, kABPersonFirstNameProperty);
+- (void)update {
+    CFStringRef lFirstName = ABRecordCopyValue(contact, kABPersonFirstNameProperty);
     CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
-    CFStringRef lLastName = ABRecordCopyValue(record, kABPersonLastNameProperty);
+    CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);
     CFStringRef lLocalizedLastName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
     
     if(lLocalizedFirstName != nil)
@@ -85,11 +92,12 @@
     if(lFirstName != nil)
         CFRelease(lFirstName);
     
-    NSData  *imgData = (NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);
-    if(imgData != NULL) {
-        UIImage *img = [[UIImage alloc] initWithData:imgData];
+    if(ABPersonHasImageData(contact)) {
+        CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, kABPersonImageFormatThumbnail);
+        UIImage *img = [[UIImage alloc] initWithData:(NSData*)imgData];
         [avatarImage setImage:img];
         [img release];
+        CFRelease(imgData);
     } else {
         [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
     }

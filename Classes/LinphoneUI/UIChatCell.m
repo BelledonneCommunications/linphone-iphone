@@ -58,6 +58,15 @@
     [super dealloc];
 }
 
+
+#pragma mark - Property Funcitons
+
+- (void)setChat:(ChatModel *)achat {
+    chat = achat;
+    [self update];
+}
+
+
 #pragma mark - 
 
 - (void)update {

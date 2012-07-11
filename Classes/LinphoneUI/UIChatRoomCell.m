@@ -60,6 +60,17 @@ static UIFont *CELL_FONT = nil;
 
 #pragma mark - 
 
+- (void)setChat:(ChatModel *)achat {
+    if(chat != nil) {
+        [chat release];
+    }
+    chat = achat;
+    [self update];
+}
+
+
+#pragma mark - 
+
 - (void)update {
     if(chat != nil) {
         [messageLabel setText:[chat message]];

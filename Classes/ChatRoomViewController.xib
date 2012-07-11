@@ -39,21 +39,6 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="521265930">
-						<reference key="NSNextResponder" ref="589117993"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrameSize">{320, 460}</string>
-						<reference key="NSSuperview" ref="589117993"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="333187864"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<object class="NSCustomResource" key="IBUIImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">numpad_background.png</string>
-						</object>
-					</object>
 					<object class="IBUIView" id="333187864">
 						<reference key="NSNextResponder" ref="589117993"/>
 						<int key="NSvFlags">290</int>
@@ -151,7 +136,7 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="833509359"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor">
+						<object class="NSColor" key="IBUIBackgroundColor" id="460939904">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
@@ -176,7 +161,6 @@
 								<string key="NSFrame">{{250, 0}, {70, 59}}</string>
 								<reference key="NSSuperview" ref="833509359"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -270,13 +254,9 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="521265930"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
-				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MQA</bytes>
-					<reference key="NSCustomColorSpace" ref="774336446"/>
-				</object>
+				<reference key="IBUIBackgroundColor" ref="460939904"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 			<object class="IBUITableViewController" id="926385140">
@@ -427,7 +407,6 @@
 							<reference ref="333187864"/>
 							<reference ref="879615756"/>
 							<reference ref="833509359"/>
-							<reference ref="521265930"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -495,12 +474,6 @@
 						<reference key="parent" ref="0"/>
 						<string key="objectName">tableController</string>
 					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">34</int>
-						<reference key="object" ref="521265930"/>
-						<reference key="parent" ref="589117993"/>
-						<string key="objectName">background</string>
-					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -518,7 +491,6 @@
 				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="29.CustomClassName">ChatRoomTableViewController</string>
 				<string key="29.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -625,7 +597,6 @@
 			<string key="chat_send_default.png">{140, 117}</string>
 			<string key="chat_send_disabled.png">{140, 117}</string>
 			<string key="chat_send_over.png">{140, 117}</string>
-			<string key="numpad_background.png">{640, 523}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

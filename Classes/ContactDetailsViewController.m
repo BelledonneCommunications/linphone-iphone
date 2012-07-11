@@ -26,10 +26,12 @@
 @synthesize contact;
 @synthesize editButton;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)init  {
-    return [super initWithNibName:@"ContactDetailsViewController" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"ContactDetailsViewController" bundle:[NSBundle mainBundle]];
+    return self;
 }
 
 - (void)dealloc {
@@ -39,11 +41,28 @@
 }
 
 
+#pragma mark - 
+
+- (void)newContact {
+    [tableController newContact];
+    [tableController setEditing:TRUE animated:FALSE];
+    [[tableController tableView] reloadData];
+    [editButton setOn];
+}
+
+- (void)newContact:(NSString*)address {
+    [tableController newContact:address];
+    [tableController setEditing:TRUE animated:FALSE];
+    [[tableController tableView] reloadData];
+    [editButton setOn];
+}
+
+
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
     self->contact = acontact;
-    [tableController setContact:contact];
+    [tableController setContactID:ABRecordGetRecordID(acontact)];
 }
 
 
@@ -54,15 +73,29 @@
     // Set selected+over background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"contact_ok_over.png"] 
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Force view load
+    [tableController->footerController view];
+    [tableController->footerController->removeButton addTarget:self 
+                                                        action:@selector(onRemove:) 
+                                              forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if([tableController isEditing])
-        [tableController setEditing:FALSE];
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    [tableController->footerController->removeButton removeTarget:self 
+                                                           action:@selector(onRemove:) 
+                                                 forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    if([tableController isEditing]) {
+        [tableController resetData];
+        [tableController setEditing:FALSE animated:FALSE];
+    }
+    [super viewWillAppear:animated];
     [editButton setOff];
 }
-
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -81,11 +114,32 @@
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-    [[PhoneMainView instance] popView];
+    if([tableController isEditing]) {
+        [tableController setEditing:FALSE animated:FALSE];
+        [tableController resetData];
+        [editButton setOff];
+        if([tableController contactID] == kABRecordInvalidID) {
+            [[PhoneMainView instance] popView];
+        }
+    } else {
+        [[PhoneMainView instance] popView];
+    }
 }
 
 - (IBAction)onEditClick:(id)event {
+    [[tableController tableView] beginUpdates];
     [tableController setEditing:![tableController isEditing] animated:TRUE];
+    [[tableController tableView] endUpdates];
+    if(![tableController isEditing]) {
+        [tableController saveData];
+    }
+}
+
+- (IBAction)onRemove:(id)event {
+    [tableController setEditing:FALSE animated:FALSE];
+    [tableController removeContact];
+    [editButton setOff];
+    [[PhoneMainView instance] popView];
 }
 
 @end

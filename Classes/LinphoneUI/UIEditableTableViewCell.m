@@ -33,7 +33,6 @@
         UIView *parent = [self.detailTextLabel superview];
         self.detailTextField = [[UITextField alloc] init];
         [self.detailTextField setHidden:TRUE];
-        [self.detailTextField setDelegate:self];
         [self.detailTextField setClearButtonMode: UITextFieldViewModeWhileEditing];
         [self.detailTextField setContentVerticalAlignment: UIControlContentVerticalAlignmentCenter];
 
@@ -57,12 +56,12 @@
     [super layoutSubviews];	
     
     CGRect frame;
-    frame.origin.x = 83;
+    frame.origin.x = [self.textLabel frame].size.width + 15;
     frame.origin.y = 0;
     frame.size.height = 44;
     
-    CGRect superframe = [self frame];
-    frame.size.width = superframe.size.width - frame.origin.x - 10;
+    CGRect superframe = [[self.detailTextField superview]frame];
+    frame.size.width = superframe.size.width - frame.origin.x;
     [self.detailTextField setFrame:frame];
 }
 
@@ -87,14 +86,6 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-}
-
-
-#pragma mark - UITextFieldDelegate Functions
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
-    return YES;
 }
 
 @end

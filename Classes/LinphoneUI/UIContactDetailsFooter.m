@@ -1,4 +1,4 @@
-/* ContactDetailsViewController.h
+/* UIContactDetailsFooter.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -10,34 +10,41 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */ 
 
-#import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
+#import "UIContactDetailsFooter.h"
 
-#import "UICompositeViewController.h"
-#import "ContactDetailsTableViewController.h"
-#import "UIToggleButton.h"
+@implementation UIContactDetailsFooter
 
-@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate> {
-    ContactDetailsTableViewController *tableController;
-    ABRecordRef contact;
-    UIToggleButton *editButton;
+@synthesize removeButton;
+
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    return self = [super initWithNibName:@"UIContactDetailsFooter" bundle:[NSBundle mainBundle]];
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
-@property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
+- (void)dealloc {
+    [removeButton release];
+    
+    [super dealloc];
+}
 
-- (IBAction)onBackClick:(id)event;
-- (IBAction)onEditClick:(id)event;
 
-- (void)newContact;
-- (void)newContact:(NSString*)address;
+#pragma mark -
+
++ (CGFloat)height:(BOOL)editing {
+    if(editing) {
+        return 80.0f;
+    } else {
+        return 0.000001f;  // Hack UITableView = 0
+    }
+}
 
 @end

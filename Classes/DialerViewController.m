@@ -214,7 +214,12 @@
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick: (id) event {
-    
+    // Go to Contact details view
+    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                           [[[NSArray alloc] initWithObjects:[addressField text], nil] autorelease]
+                           , @"newContact:",
+                           nil] autorelease];
+    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
 }
 
 - (IBAction)onBackClick: (id) event {

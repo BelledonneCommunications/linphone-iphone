@@ -31,7 +31,7 @@
     ChatModel *chat;
 }
 
-@property (retain) ChatModel *chat;
+@property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel* displayNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
@@ -39,7 +39,6 @@
 @property (nonatomic, retain) IBOutlet UIButton * deleteButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
-- (void)update;
 
 - (IBAction)onDetailsClick:(id)event;
 - (IBAction)onDeleteClick:(id)event;

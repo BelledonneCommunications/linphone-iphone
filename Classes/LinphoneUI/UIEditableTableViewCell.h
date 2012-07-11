@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIEditableTableViewCell : UITableViewCell<UITextFieldDelegate> {
+@interface UIEditableTableViewCell : UITableViewCell {
     UITextField *detailTextField;
 }
 

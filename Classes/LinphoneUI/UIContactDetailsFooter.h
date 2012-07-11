@@ -1,4 +1,4 @@
-/* ContactDetailsViewController.h
+/* UIContactDetailsFooter.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -10,34 +10,22 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */              
+ */ 
 
 #import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
 
-#import "UICompositeViewController.h"
-#import "ContactDetailsTableViewController.h"
-#import "UIToggleButton.h"
-
-@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate> {
-    ContactDetailsTableViewController *tableController;
-    ABRecordRef contact;
-    UIToggleButton *editButton;
+@interface UIContactDetailsFooter : UIViewController {
+    @public
+    UIButton *removeButton;
 }
 
-@property (nonatomic, assign) ABRecordRef contact;
-@property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
-@property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, retain) IBOutlet UIButton *removeButton;
 
-- (IBAction)onBackClick:(id)event;
-- (IBAction)onEditClick:(id)event;
-
-- (void)newContact;
-- (void)newContact:(NSString*)address;
++ (CGFloat)height:(BOOL)editing;
 
 @end

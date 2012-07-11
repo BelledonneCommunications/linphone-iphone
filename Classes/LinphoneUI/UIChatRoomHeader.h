@@ -27,13 +27,11 @@
     NSString *contact;
 }
 
-@property (copy) NSString *contact;
+@property (nonatomic, copy) NSString *contact;
     
 @property (nonatomic, retain) IBOutlet UILabel *contactLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 
 + (CGFloat)height;
-
-- (void)update;
 
 @end

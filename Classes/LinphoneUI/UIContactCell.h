@@ -24,13 +24,13 @@
     UILabel *firstNameLabel;
     UILabel *lastNameLabel;
     UIImageView *avatarImage;
+    ABRecordRef contact;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;
 @property (nonatomic, retain) IBOutlet UILabel* lastNameLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
-
-- (void)update:(ABRecordRef) record;
+@property (nonatomic, assign) ABRecordRef contact;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

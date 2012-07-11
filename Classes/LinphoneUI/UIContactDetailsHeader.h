@@ -20,20 +20,33 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
-@interface UIContactDetailsHeader : UIViewController {
+@interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate> {
     UILabel *contactLabel;
     UIImageView *avatarImage;
+    UIView *normalView;
+    UIView *editView;
+    UITableView *tableView;
     
+    NSArray *propertyList;
     ABRecordRef contact;
+    BOOL editing;
 }
 
-@property (assign) ABRecordRef contact;
+@property (nonatomic, assign) ABRecordRef contact;
     
 @property (nonatomic, retain) IBOutlet UILabel *contactLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 
-+ (CGFloat)height;
+@property (nonatomic, retain) IBOutlet UIView *normalView;
+@property (nonatomic, retain) IBOutlet UIView *editView;
+@property (nonatomic, retain) IBOutlet UITableView *tableView;
 
-- (void)update;
+@property(nonatomic,getter=isEditing) BOOL editing; 
+
++ (CGFloat)height:(BOOL)editing;
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated;
+- (void)setEditing:(BOOL)editing;
+- (BOOL)isEditing;
 
 @end

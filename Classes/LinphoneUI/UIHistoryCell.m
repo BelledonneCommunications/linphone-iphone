@@ -59,6 +59,14 @@
 
 #pragma mark - Action Functions
 
+- (void)setCallLog:(LinphoneCallLog *)acallLog {
+    callLog = acallLog;
+    [self update];
+}
+
+
+#pragma mark - Action Functions
+
 - (IBAction)onDetails:(id) event {
     if(callLog != NULL) {
         

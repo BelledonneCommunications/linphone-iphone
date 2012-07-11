@@ -62,7 +62,6 @@
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
-    [cell update];
     
     return cell;
 }

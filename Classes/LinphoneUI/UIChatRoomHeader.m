@@ -40,6 +40,17 @@
 }
 
 
+#pragma mark - Property Functions
+
+- (void)setContact:(NSString *)acontact {
+    if(contact != nil) {
+        [contact release];
+    }
+    contact = [acontact copy];
+    [self update];
+}
+
+
 #pragma mark - 
 
 - (void)update {

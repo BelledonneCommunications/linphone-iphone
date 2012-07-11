@@ -30,7 +30,7 @@
     ChatModel *chat;
 }
 
-@property (retain) ChatModel *chat;
+@property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIView *contentView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
 @property (nonatomic, retain) IBOutlet UILabel *messageLabel;
@@ -39,7 +39,6 @@
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat;
 
-- (void)update;
 
 - (IBAction)onDeleteClick:(id)event;
 
