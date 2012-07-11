@@ -55,6 +55,14 @@
 }
 
 
+#pragma mark - ViewController Functions
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+}
+
+
 #pragma mark - Propery Functions
 
 - (void)setContact:(ABRecordRef)acontact {

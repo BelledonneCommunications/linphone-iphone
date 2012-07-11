@@ -586,7 +586,7 @@ static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef
         [headerController setEditing:[self isEditing] animated:FALSE];
         return headerView;
     } else {
-        return [super tableView:tableView viewForHeaderInSection:section];
+        return nil;
     }
 }
 
@@ -595,13 +595,13 @@ static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef
         UIView *footerView = [footerController view];
         return footerView;
     } else {
-        return [super tableView:tableView viewForHeaderInSection:section];
+        return nil;
     }
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if(section == 0) {
-        return [super tableView:tableView titleForHeaderInSection:section];
+        return nil;
     } else {
         return @"SIP";
     }

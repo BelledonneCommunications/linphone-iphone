@@ -187,6 +187,9 @@ static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kNewContactCellId];
         if (cell == nil) {  
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kNewContactCellId] autorelease];
+            //TODO
+            /*
+            [cell setSelectedBackgroundView:[[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_hightlight.png"]]autorelease]];*/
         }
         [cell.textLabel setText:@"Add new contact"];
         return cell;

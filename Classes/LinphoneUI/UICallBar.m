@@ -152,6 +152,10 @@
     // Set selected+over background: IB lack !
     [pauseButton setImage:[UIImage imageNamed:@"pause_on_over.png"] 
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [optionsButton setImage:[UIImage imageNamed:@"options_over.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -290,6 +294,7 @@
 }
 
 - (void)showOptions{
+    [optionsButton setEnabled:TRUE];
     if([optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;
@@ -312,6 +317,7 @@
 }
 
 - (void)hideOptions{
+    [optionsButton setEnabled:FALSE];
     if(![optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;

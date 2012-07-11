@@ -79,6 +79,7 @@
     [tableController->footerController->removeButton addTarget:self 
                                                         action:@selector(onRemove:) 
                                               forControlEvents:UIControlEventTouchUpInside];
+    [[tableController tableView] setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewDidUnload {
