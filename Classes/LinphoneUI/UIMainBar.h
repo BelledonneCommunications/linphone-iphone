@@ -24,17 +24,17 @@
     UIButton *contactsButton;
     UIButton *dialerButton;
     UIButton *settingsButton;
-    UIButton *chatButton;
+    UIButton *moreButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* historyButton;
 @property (nonatomic, retain) IBOutlet UIButton* contactsButton;
 @property (nonatomic, retain) IBOutlet UIButton* dialerButton;
 @property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet UIButton* chatButton;
+@property (nonatomic, retain) IBOutlet UIButton* moreButton;
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;
 -(IBAction) onDialerClick: (id) event;
 -(IBAction) onSettingsClick: (id) event;
--(IBAction) onChatClick: (id) event;
+-(IBAction) onMoreClick: (id) event;
 @end

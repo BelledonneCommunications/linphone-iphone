@@ -357,6 +357,7 @@
 
 - (IBAction)onOptionsTransferClick:(id)sender {
     [self hideOptions];
+    /* MODIFICATION: Disable tansfer
     // Go to dialer view
     NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
                            [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
@@ -365,6 +366,7 @@
                            , @"setTransferMode:",
                            nil] autorelease];
     [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+     */
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {

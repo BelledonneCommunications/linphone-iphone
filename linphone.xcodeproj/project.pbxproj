@@ -11,7 +11,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
 		220FAD3110765B400068D98F /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2810765B400068D98F /* libeXosip2.a */; };
 		220FAD3210765B400068D98F /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		220FAD3610765B400068D98F /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2D10765B400068D98F /* libosip2.a */; };
@@ -39,7 +38,6 @@
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
-		225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		226183AD1472527D0037138E /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		226183AE1472527D0037138E /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		226183B0147259670037138E /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
@@ -69,8 +67,6 @@
 		22D8F124147548E2008C97DB /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		22D8F125147548E2008C97DB /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* oldphone-mono.wav */; };
 		22D8F12D147548E2008C97DB /* ConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81E111C44E100B04932 /* ConsoleViewController.xib */; };
-		22D8F12E147548E2008C97DB /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
-		22D8F137147548E2008C97DB /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		22D8F138147548E2008C97DB /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		22D8F139147548E2008C97DB /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
 		22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2218A92412FBE1340088A667 /* FirstLoginViewController.xib */; };
@@ -148,7 +144,6 @@
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -727,6 +722,20 @@
 		D3F83F8F15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D3F83F9215824D3600336684 /* LinphoneApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F9115824D3500336684 /* LinphoneApp.xib */; };
 		D3F83F9315824D3600336684 /* LinphoneApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F9115824D3500336684 /* LinphoneApp.xib */; };
+		D3F9A9A515AEBA460045320F /* castel_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A315AEBA460045320F /* castel_icon_57.png */; };
+		D3F9A9A615AEBA460045320F /* castel_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A315AEBA460045320F /* castel_icon_57.png */; };
+		D3F9A9A715AEBA460045320F /* castel_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A415AEBA460045320F /* castel_icon_72.png */; };
+		D3F9A9A815AEBA460045320F /* castel_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A415AEBA460045320F /* castel_icon_72.png */; };
+		D3F9A9AA15AEBAB00045320F /* accept_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A915AEBAB00045320F /* accept_disabled.png */; };
+		D3F9A9AB15AEBAB00045320F /* accept_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9A915AEBAB00045320F /* accept_disabled.png */; };
+		D3F9A9AF15AEBC060045320F /* more_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AC15AEBC060045320F /* more_default.png */; };
+		D3F9A9B015AEBC060045320F /* more_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AC15AEBC060045320F /* more_default.png */; };
+		D3F9A9B115AEBC060045320F /* more_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AD15AEBC060045320F /* more_over.png */; };
+		D3F9A9B215AEBC060045320F /* more_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AD15AEBC060045320F /* more_over.png */; };
+		D3F9A9B315AEBC060045320F /* more_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AE15AEBC060045320F /* more_selected.png */; };
+		D3F9A9B415AEBC060045320F /* more_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9AE15AEBC060045320F /* more_selected.png */; };
+		D3F9A9B615AEBD2D0045320F /* contact_edit_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */; };
+		D3F9A9B715AEBD2D0045320F /* contact_edit_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -775,7 +784,6 @@
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		22058C70116E305000B08DDD /* linphone_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_57.png; path = Resources/linphone_icon_57.png; sourceTree = "<group>"; };
 		220FAC79107654FC0068D98F /* eX_call.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_call.h; sourceTree = "<group>"; };
 		220FAC7A107654FC0068D98F /* eX_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_message.h; sourceTree = "<group>"; };
 		220FAC7B107654FC0068D98F /* eX_options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_options.h; sourceTree = "<group>"; };
@@ -918,7 +926,6 @@
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
 		2248E90D12F7E4CF00220D9C /* UIDigitButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButton.m; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		225CB2F911ABB76400628906 /* linphone-banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-banner.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-banner.png"; sourceTree = "<group>"; };
 		226183AA1472527D0037138E /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		226183AB1472527D0037138E /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		226183AF147259670037138E /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
@@ -1047,7 +1054,6 @@
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_72.png; path = Resources/linphone_icon_72.png; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1412,6 +1418,13 @@
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
 		D3F83F9115824D3500336684 /* LinphoneApp.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LinphoneApp.xib; sourceTree = "<group>"; };
+		D3F9A9A315AEBA460045320F /* castel_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = castel_icon_57.png; path = Resources/castel_icon_57.png; sourceTree = "<group>"; };
+		D3F9A9A415AEBA460045320F /* castel_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = castel_icon_72.png; path = Resources/castel_icon_72.png; sourceTree = "<group>"; };
+		D3F9A9A915AEBAB00045320F /* accept_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = accept_disabled.png; path = Resources/accept_disabled.png; sourceTree = "<group>"; };
+		D3F9A9AC15AEBC060045320F /* more_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_default.png; path = Resources/more_default.png; sourceTree = "<group>"; };
+		D3F9A9AD15AEBC060045320F /* more_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_over.png; path = Resources/more_over.png; sourceTree = "<group>"; };
+		D3F9A9AE15AEBC060045320F /* more_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_selected.png; path = Resources/more_selected.png; sourceTree = "<group>"; };
+		D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_edit_background.png; path = Resources/contact_edit_background.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2042,6 +2055,7 @@
 			isa = PBXGroup;
 			children = (
 				D3F83F741582253100336684 /* accept_default.png */,
+				D3F9A9A915AEBAB00045320F /* accept_disabled.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
 				D3D6A39C159B0EEF005F692C /* add_call_disabled.png */,
@@ -2082,6 +2096,8 @@
 				D31C9C8D158A1C1000756B45 /* call_status_incoming.png */,
 				D31C9C8E158A1C1000756B45 /* call_status_missed.png */,
 				D31C9C8F158A1C1000756B45 /* call_status_outgoing.png */,
+				D3F9A9A315AEBA460045320F /* castel_icon_57.png */,
+				D3F9A9A415AEBA460045320F /* castel_icon_72.png */,
 				D36C43CC158F2F370048BA40 /* cell_call.png */,
 				D3211BB8159C8A820098460B /* cell_call_first.png */,
 				D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */,
@@ -2111,6 +2127,7 @@
 				D3128FE715AABE4E00A2147A /* contact_back_default.png */,
 				D3128FE815AABE4E00A2147A /* contact_back_over.png */,
 				D378906915AC37C800BD776C /* contact_bar_background.png */,
+				D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */,
 				D3128FE915AABE4E00A2147A /* contact_edit_default.png */,
 				D3128FEA15AABE4E00A2147A /* contact_edit_over.png */,
 				D37C638D15AAD251009D0BAC /* contact_number.png */,
@@ -2154,10 +2171,7 @@
 				D3432A70158A45AF001C6B0B /* led_disconnected.png */,
 				D3432A5D158A4446001C6B0B /* led_error.png */,
 				D3432A6F158A45AF001C6B0B /* led_inprogress.png */,
-				225CB2F911ABB76400628906 /* linphone-banner.png */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
-				22058C70116E305000B08DDD /* linphone_icon_57.png */,
-				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
 				2274550710700509006EC466 /* linphonerc */,
 				341FCA8D149798210084BC26 /* linphonerc-ipad */,
 				D3EA5416159858A80037DC6B /* list_delete_default.png */,
@@ -2171,6 +2185,9 @@
 				D3F83EF6158205A100336684 /* micro_on_default.png */,
 				D35EA76215A2DF8D003E025D /* micro_on_disabled.png */,
 				D3F83EF7158205A100336684 /* micro_on_over.png */,
+				D3F9A9AC15AEBC060045320F /* more_default.png */,
+				D3F9A9AD15AEBC060045320F /* more_over.png */,
+				D3F9A9AE15AEBC060045320F /* more_selected.png */,
 				D3F83F3C1582223B00336684 /* numpad_eight_default.png */,
 				D3F83F3D1582223B00336684 /* numpad_eight_over.png */,
 				D3F83F361582223B00336684 /* numpad_five_default.png */,
@@ -2490,8 +2507,6 @@
 				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
 				2237D4091084D7A9001383EE /* oldphone-mono.wav in Resources */,
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
-				22058C71116E305000B08DDD /* linphone_icon_57.png in Resources */,
-				225CB2FA11ABB76400628906 /* linphone-banner.png in Resources */,
 				2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */,
 				2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */,
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
@@ -2500,7 +2515,6 @@
 				3422AA5014975EC9000D4E8A /* InCallViewController-ipad.xib in Resources */,
 				3422AA5314978352000D4E8A /* PhoneViewController-ipad.xib in Resources */,
 				341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */,
-				34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */,
 				D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */,
 				D347347E1580E5F8003C7B8C /* history_default.png in Resources */,
 				D347347F1580E5F8003C7B8C /* history_selected.png in Resources */,
@@ -2732,6 +2746,13 @@
 				C9C8254915AE204D00D493FA /* transfer_call_over.png in Resources */,
 				C9C8254C15AE207B00D493FA /* options_selected.png in Resources */,
 				C9C8254F15AE256100D493FA /* transfer_call_disabled.png in Resources */,
+				D3F9A9A515AEBA460045320F /* castel_icon_57.png in Resources */,
+				D3F9A9A715AEBA460045320F /* castel_icon_72.png in Resources */,
+				D3F9A9AA15AEBAB00045320F /* accept_disabled.png in Resources */,
+				D3F9A9AF15AEBC060045320F /* more_default.png in Resources */,
+				D3F9A9B115AEBC060045320F /* more_over.png in Resources */,
+				D3F9A9B315AEBC060045320F /* more_selected.png in Resources */,
+				D3F9A9B615AEBD2D0045320F /* contact_edit_background.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2745,8 +2766,6 @@
 				22D8F124147548E2008C97DB /* untitled.plist in Resources */,
 				22D8F125147548E2008C97DB /* oldphone-mono.wav in Resources */,
 				22D8F12D147548E2008C97DB /* ConsoleViewController.xib in Resources */,
-				22D8F12E147548E2008C97DB /* linphone_icon_57.png in Resources */,
-				22D8F137147548E2008C97DB /* linphone-banner.png in Resources */,
 				22D8F138147548E2008C97DB /* MoreViewController.xib in Resources */,
 				22D8F139147548E2008C97DB /* oldphone-mono-30s.caf in Resources */,
 				22D8F13B147548E2008C97DB /* FirstLoginViewController.xib in Resources */,
@@ -2971,6 +2990,13 @@
 				C9C8254A15AE204D00D493FA /* transfer_call_over.png in Resources */,
 				C9C8254D15AE207B00D493FA /* options_selected.png in Resources */,
 				C9C8255015AE256100D493FA /* transfer_call_disabled.png in Resources */,
+				D3F9A9A615AEBA460045320F /* castel_icon_57.png in Resources */,
+				D3F9A9A815AEBA460045320F /* castel_icon_72.png in Resources */,
+				D3F9A9AB15AEBAB00045320F /* accept_disabled.png in Resources */,
+				D3F9A9B015AEBC060045320F /* more_default.png in Resources */,
+				D3F9A9B215AEBC060045320F /* more_over.png in Resources */,
+				D3F9A9B415AEBC060045320F /* more_selected.png in Resources */,
+				D3F9A9B715AEBD2D0045320F /* contact_edit_background.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

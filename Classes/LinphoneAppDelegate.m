@@ -146,12 +146,13 @@ int __aeabi_idiv(int a, int b) {
         [[PhoneMainView instance] changeView: PhoneView_FirstLogin];
     } else {
         // Change to default view
+        /* MODIFICATION: Disable Wizard
         const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
-        if(list != NULL) {
+        if(list != NULL) {*/
             [[PhoneMainView instance] changeView: PhoneView_Dialer];
-        } else {
+        /*} else {
             [[PhoneMainView instance] changeView: PhoneView_Wizard];
-        }
+        }*/
     }
 	
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;

@@ -5,18 +5,33 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>Linphone</string>
+	<string>Castel</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string>castel_icon_57.png</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>linphone_icon_57.png</string>
 		<string>linphone_icon_72.png</string>
+		<string>castel_icon_57.png</string>
+		<string>castel_icon_72.png</string>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>linphone_icon_57.png</string>
+				<string>linphone_icon_72.png</string>
+				<string>castel_icon_57.png</string>
+				<string>castel_icon_72.png</string>
+			</array>
+		</dict>
+	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>org.linphone.phone</string>
+	<string>com.castel.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

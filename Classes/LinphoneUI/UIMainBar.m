@@ -26,7 +26,7 @@
 @synthesize contactsButton;
 @synthesize dialerButton;
 @synthesize settingsButton;
-@synthesize chatButton;
+@synthesize moreButton;
 
 
 #pragma mark - Lifecycle Functions
@@ -42,7 +42,7 @@
     [contactsButton release];
     [dialerButton release];
     [settingsButton release];
-    [chatButton release];
+    [moreButton release];
     
     [super dealloc];
 }
@@ -102,9 +102,9 @@
         settingsButton.selected = FALSE;
     }
     if(view == PhoneView_Chat || view == PhoneView_ChatRoom) {
-        chatButton.selected = TRUE;
+        moreButton.selected = TRUE;
     } else {
-        chatButton.selected = FALSE;
+        moreButton.selected = FALSE;
     }
 }
 
@@ -127,7 +127,7 @@
     [[PhoneMainView instance] changeView:PhoneView_Settings];
 }
 
-- (IBAction)onChatClick: (id) event {
+- (IBAction)onMoreClick: (id) event {
     [[PhoneMainView instance] changeView:PhoneView_Chat];
 }
 
