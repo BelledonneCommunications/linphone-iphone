@@ -19,6 +19,7 @@
 
 #import "IncomingCallViewController.h"
 #import "LinphoneManager.h"
+#import "FastAddressBook.h"
 
 @implementation IncomingCallViewController
 
@@ -83,15 +84,45 @@
 #pragma mark - Property Functions
 
 - (void)setCall:(LinphoneCall*)acall {
+    call = acall;
+    [self update];
+}
+
+- (void)update {
     [self view]; //Force view load
     
-    call = acall;
-    const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* displayName = [displayNameChars?[[NSString alloc] initWithUTF8String:displayNameChars]:@"" autorelease];
+    UIImage *image;
+    NSString* address;
+    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    if (addr != NULL) {
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        const char* lDisplayName = linphone_address_get_display_name(addr);
+        const char* lUserName = linphone_address_get_username(addr);
+        if (lDisplayName) 
+            address = [NSString stringWithUTF8String:lDisplayName];
+        else if(lUserName) 
+            address = [NSString stringWithUTF8String:lUserName];
+        if(lAddress) {
+            NSString *address = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+            image = [FastAddressBook getContactImage:contact thumbnail:false];
+        }
+    } else {
+        [addressLabel setText:@"Unknown"];
+    }
     
-    [addressLabel setText:([displayName length]>0)?displayName:userName];
+    // Set Image
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown.png"];
+    }
+    [avatarImage setImage:image];
+    
+    // Set Address
+    if(address == nil) {
+        address = @"Unknown";
+    }
+    [addressLabel setText:address];
 }
 
 - (LinphoneCall*) getCall {
