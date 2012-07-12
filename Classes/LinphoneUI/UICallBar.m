@@ -294,7 +294,7 @@
 }
 
 - (void)showOptions{
-    [optionsButton setEnabled:TRUE];
+    [optionsButton setSelected:TRUE];
     if([optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;
@@ -317,7 +317,7 @@
 }
 
 - (void)hideOptions{
-    [optionsButton setEnabled:FALSE];
+    [optionsButton setSelected:FALSE];
     if(![optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;
