@@ -40,7 +40,7 @@
 @synthesize data;
 
 @synthesize headerBackgroundImage;
-@synthesize headerBackgroundHightlightImage;
+@synthesize headerBackgroundHighlightImage;
 
 @synthesize addressLabel;
 @synthesize stateLabel;
@@ -90,7 +90,7 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     self->currentCall = FALSE;
-    [headerBackgroundHightlightImage setAlpha:0.0f];
+    [headerBackgroundHighlightImage setAlpha:0.0f];
 }
 
 #pragma mark - Properties Functions
@@ -100,9 +100,9 @@
     currentCall = val;
     if(oldVal != val) {
         if (currentCall) {
-            [self startBlinkAnimation:@"Blink" target:headerBackgroundHightlightImage];
+            [self startBlinkAnimation:@"Blink" target:headerBackgroundHighlightImage];
         } else {
-            [self stopBlinkAnimation:@"Blink" target:headerBackgroundHightlightImage];
+            [self stopBlinkAnimation:@"Blink" target:headerBackgroundHighlightImage];
         }
     }
 }
@@ -193,10 +193,10 @@
             [removeButton setHidden:true];
             if(firstCell) {
                 [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call_first.png"]];
-                [headerBackgroundHightlightImage setImage:[UIImage imageNamed:@"cell_call_first_hightlight.png"]];
+                [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_first_highlight.png"]];
             } else {
                 [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call.png"]];
-                [headerBackgroundHightlightImage setImage:[UIImage imageNamed:@"cell_call_hightlight.png"]];
+                [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_highlight.png"]];
             }
         } else {
             [stateImage setHidden:true];

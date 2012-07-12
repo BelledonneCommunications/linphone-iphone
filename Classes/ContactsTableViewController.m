@@ -189,7 +189,7 @@ static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kNewContactCellId] autorelease];
             //TODO
             /*
-            [cell setSelectedBackgroundView:[[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_hightlight.png"]]autorelease]];*/
+            [cell setSelectedBackgroundView:[[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_highlight.png"]]autorelease]];*/
         }
         [cell.textLabel setText:@"Add new contact"];
         return cell;

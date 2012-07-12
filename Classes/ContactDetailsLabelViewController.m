@@ -68,6 +68,8 @@
     UITableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {  
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kCellId] autorelease];
+        //TODO
+        /*[cell setSelectedBackgroundView:[[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_highlight.png"]]autorelease]];*/
     }
     NSString* key = [[dataList allKeys] objectAtIndex:[indexPath row]];
     [cell.textLabel setText:[dataList objectForKey:key]];

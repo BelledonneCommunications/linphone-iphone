@@ -4808,19 +4808,19 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">headerBackgroundHightlightImage</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="174867822"/>
-					</object>
-					<int key="connectionID">57</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">selectedBackgroundView</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="260763535"/>
 					</object>
 					<int key="connectionID">58</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">headerBackgroundHighlightImage</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="174867822"/>
+					</object>
+					<int key="connectionID">59</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -4965,7 +4965,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<int key="objectID">56</int>
 						<reference key="object" ref="174867822"/>
 						<reference key="parent" ref="227927177"/>
-						<string key="objectName">headerBackgroundHightlightImage</string>
+						<string key="objectName">headerBackgroundHighlightImage</string>
 					</object>
 				</array>
 			</object>
@@ -4999,7 +4999,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">58</int>
+			<int key="maxID">59</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5024,7 +5024,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="addressLabel">UILabel</string>
 						<string key="avatarImage">UIImageView</string>
 						<string key="avatarView">UIView</string>
-						<string key="headerBackgroundHightlightImage">UIImageView</string>
+						<string key="headerBackgroundHighlightImage">UIImageView</string>
 						<string key="headerBackgroundImage">UIImageView</string>
 						<string key="headerView">UIView</string>
 						<string key="pauseButton">UIPauseButton</string>
@@ -5045,8 +5045,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string key="name">avatarView</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="headerBackgroundHightlightImage">
-							<string key="name">headerBackgroundHightlightImage</string>
+						<object class="IBToOneOutletInfo" key="headerBackgroundHighlightImage">
+							<string key="name">headerBackgroundHighlightImage</string>
 							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="headerBackgroundImage">

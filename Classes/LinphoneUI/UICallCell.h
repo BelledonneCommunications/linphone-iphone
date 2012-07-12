@@ -39,7 +39,7 @@
     BOOL currentCall;
     
     UIImageView* headerBackgroundImage;
-    UIImageView* headerBackgroundHightlightImage;
+    UIImageView* headerBackgroundHighlightImage;
     
     UILabel *addressLabel;
     UILabel *stateLabel;
@@ -57,7 +57,7 @@
 @property (retain) UICallCellData *data;
 
 @property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundImage;
-@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundHightlightImage;
+@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundHighlightImage;
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* stateLabel;
