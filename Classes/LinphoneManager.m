@@ -38,6 +38,7 @@
 
 static LinphoneCore* theLinphoneCore=nil;
 static LinphoneManager* theLinphoneManager=nil;
+const NSString *CONTACT_SIP_FIELD = @"SIP";
 
 extern void libmsilbc_init();
 #ifdef HAVE_AMR
@@ -66,6 +67,7 @@ extern  void libmsbcg729_init();
 @synthesize defaultExpires;
 @synthesize settingsStore;
 @synthesize database;
+@synthesize fastAddressBook;
 
 struct codec_name_pref_table{
     const char *name;
@@ -112,7 +114,7 @@ struct codec_name_pref_table codec_pref_table[]={
 - (id)init {
     assert (!theLinphoneManager);
     if ((self = [super init])) {
-        mFastAddressBook = [[FastAddressBook alloc] init];
+        fastAddressBook = [[FastAddressBook alloc] init];
         database = NULL;
         theLinphoneManager = self;
 		self.defaultExpires = 600;
@@ -122,7 +124,7 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 - (void)dealloc {
-    [mFastAddressBook release];
+    [fastAddressBook release];
     [self closeDatabase];
     
     [super dealloc];
@@ -164,50 +166,7 @@ struct codec_name_pref_table codec_pref_table[]={
 	return theLinphoneManager;
 }
 
--(NSString*) getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log {
-    //1 normalize
-    NSString* lNormalizedNumber = [FastAddressBook normalizePhoneNumber:number];
-    Contact* lContact = [mFastAddressBook getMatchingRecord:lNormalizedNumber];
-    if (lContact) {
-        CFStringRef lDisplayName = ABRecordCopyCompositeName(lContact.record);
-        
-        if (log) {
-            //add phone type
-            char ltmpString[256];
-            CFStringRef lFormatedString = CFStringCreateWithFormat(NULL,NULL,CFSTR("phone_type:%@;"),lContact.numberType);
-            CFStringGetCString(lFormatedString, ltmpString,sizeof(ltmpString), kCFStringEncodingUTF8);
-            linphone_call_log_set_ref_key(log, ltmpString);
-            CFRelease(lFormatedString);
-        }
-        return [(NSString*)lDisplayName autorelease];   
-    }
-    //[number release];
- 
-    return nil;
-}
-
--(UIImage*) getImageFromAddressBook:(NSString *)number {
-    NSString* lNormalizedNumber = [FastAddressBook normalizePhoneNumber:number];
-    Contact* lContact = [mFastAddressBook getMatchingRecord:lNormalizedNumber];
-    if (lContact) {
-        ABRecordRef person = ABAddressBookGetPersonWithRecordID(mFastAddressBook.addressBook, ABRecordGetRecordID(lContact.record));            
-        if (ABPersonHasImageData(person)) {
-            NSData* d;
-            // ios 4.1+
-            if ( &ABPersonCopyImageDataWithFormat != nil) {
-                d = (NSData*)ABPersonCopyImageDataWithFormat(person, kABPersonImageFormatThumbnail);
-            } else {
-                d = (NSData*)ABPersonCopyImageData(person);
-            }
-            return [UIImage imageWithData:[d autorelease]];
-        }
-    }
-    /* return default image */
-    return [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"contact_vide" ofType:@"png"]];
-    //return nil;
-}
-
--(void) updateCallWithAddressBookData:(LinphoneCall*) call {
+-(void) updateCallWithAddressBookData:(LinphoneCall*) call {/*
     //1 copy adress book
     LinphoneCallLog* lLog = linphone_call_get_call_log(call);
     LinphoneAddress* lAddress;
@@ -232,7 +191,7 @@ struct codec_name_pref_table codec_pref_table[]={
     }
     
     [lE164Number release];
-    return;
+    return;*/
 }
 
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {

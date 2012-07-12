@@ -29,6 +29,8 @@
 
 #include "linphonecore.h"
 
+extern const NSString *CONTACT_SIP_FIELD;
+
 typedef enum _Connectivity {
 	wifi,
 	wwan
@@ -64,9 +66,10 @@ typedef struct _LinphoneCallAppData {
 	bool isbackgroundModeEnabled;
     
 	Connectivity connectivity;
-    FastAddressBook* mFastAddressBook;
 	const char*  frontCamId;
 	const char*  backCamId;
+    
+    FastAddressBook* fastAddressBook;
     
     id<IASKSettingsStore> settingsStore;
     sqlite3 *database;
@@ -93,8 +96,6 @@ typedef struct _LinphoneCallAppData {
 - (BOOL)enterBackgroundMode;
 - (void)becomeActive;
 - (void)kickOffNetworkConnection;
-- (NSString*)getDisplayNameFromAddressBook:(NSString*) number andUpdateCallLog:(LinphoneCallLog*)log; 
-- (UIImage*)getImageFromAddressBook:(NSString*) number;
 
 - (void)setupNetworkReachabilityCallback;
 - (void)refreshRegisters;
@@ -103,7 +104,7 @@ typedef struct _LinphoneCallAppData {
 - (BOOL)isSpeakerEnabled;
 
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
-
+@property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;

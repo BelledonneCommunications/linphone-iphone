@@ -53,8 +53,6 @@
 
 @synthesize contactID;
 
-static const NSString *CONTACT_SIP_FIELD = @"SIP";
-
 #pragma mark - Lifecycle Functions
 
 - (void)initContactDetailsTableViewController {
@@ -72,7 +70,7 @@ static const NSString *CONTACT_SIP_FIELD = @"SIP";
     footerController = [[UIContactDetailsFooter alloc] init];
      
     addressBook = ABAddressBookCreate();
-    ABAddressBookRegisterExternalChangeCallback(addressBook, sync_toc_address_book, self);
+    ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
 
 - (id)init {
@@ -92,7 +90,7 @@ static const NSString *CONTACT_SIP_FIELD = @"SIP";
 }	
 
 - (void)dealloc {
-    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_toc_address_book, self);
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     
     [labelArray release];
@@ -159,7 +157,7 @@ static const NSString *CONTACT_SIP_FIELD = @"SIP";
     return [dict autorelease];
 }
 
-static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactDetailsTableViewController* controller = (ContactDetailsTableViewController*)context;
     if(!controller->inhibUpdate) {
         [controller resetData];

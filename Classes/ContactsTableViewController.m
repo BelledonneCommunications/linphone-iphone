@@ -33,7 +33,7 @@
     addressBookMap  = [[OrderedDictionary alloc] init];
     
     addressBook = ABAddressBookCreate();
-    ABAddressBookRegisterExternalChangeCallback(addressBook, sync_toc_address_book, self);
+    ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
 
 - (id)init {
@@ -53,7 +53,7 @@
 }	
 
 - (void)dealloc {
-    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_toc_address_book, self);
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     [addressBookMap removeAllObjects];
     [super dealloc];
@@ -70,11 +70,12 @@
 
 #pragma mark - 
 
-static void sync_toc_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactsTableViewController* controller = (ContactsTableViewController*)context;
     ABAddressBookRevert(addressBook);
     [(UITableView *)controller.view reloadData];
 }
+
 
 #pragma mark - ViewController Functions
 

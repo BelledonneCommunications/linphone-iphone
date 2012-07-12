@@ -20,26 +20,17 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 
-@interface Contact :  NSObject {
-    ABRecordRef record;
-    NSString* numberType;
-}
--(id) initWithRecord:(ABRecordRef) record ofType:(NSString*) type;
-@property (nonatomic, readonly) ABRecordRef record;
-@property (nonatomic, readonly) NSString* numberType;
-@end
-
 @interface FastAddressBook :  NSObject {
     NSMutableDictionary* mAddressBookMap;  
     
     ABAddressBookRef addressBook;
 }
 
--(Contact*) getMatchingRecord:(NSString*) number ;
-+(NSString*) appendCountryCodeIfPossible:(NSString*) number ;
-+(NSString*) normalizePhoneNumber:(NSString*) number ;
--(id) init ;
-
-@property (nonatomic, readonly) ABAddressBookRef addressBook;
++ (NSString*)getContactDisplayName:(ABRecordRef)contact;
++ (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
+- (ABRecordRef)getContact:(NSString*)address;
++ (NSString*)appendCountryCodeIfPossible:(NSString*)number;
++ (NSString*)normalizePhoneNumber:(NSString*)number;
++ (NSString*)normalizeSipURI:(NSString*)address;
 
 @end

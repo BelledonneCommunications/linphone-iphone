@@ -20,6 +20,7 @@
 #import "UIContactDetailsHeader.h"
 
 #import "UIEditableTableViewCell.h"
+#import "FastAddressBook.h"
 
 @implementation UIContactDetailsHeader
 
@@ -78,32 +79,16 @@
     if(contact) {
         // Avatar image
         {
-            if(ABPersonHasImageData(contact)) {
-                CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, kABPersonImageFormatThumbnail);
-                UIImage *img = [[UIImage alloc] initWithData:(NSData *)imgData];
-                [avatarImage setImage:img];
-                [img release];
-                CFRelease(imgData);
-            } else {
-                [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
+            UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
+            if(image == nil) {
+                image = [UIImage imageNamed:@"avatar_unknown_small.png"];
             }
+            [avatarImage setImage:image];
         }
     
         // Contact label
         {
-            CFStringRef lFirstName = ABRecordCopyValue(contact, kABPersonFirstNameProperty);
-            CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
-            CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);
-            CFStringRef lLocalizedLastName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
-            [contactLabel setText:[NSString stringWithFormat:@"%@ %@", (NSString*)lLocalizedFirstName, (NSString*)lLocalizedLastName]];
-            if(lLocalizedLastName != nil)
-                CFRelease(lLocalizedLastName);
-            if(lLastName != nil)
-                CFRelease(lLastName);
-            if(lLocalizedFirstName != nil)
-                CFRelease(lLocalizedFirstName);
-            if(lFirstName != nil)
-                CFRelease(lFirstName);
+            [contactLabel setText:[FastAddressBook getContactDisplayName:contact]];
         }
     }
 }

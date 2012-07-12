@@ -22,6 +22,7 @@
 #import "UICallCell.h"
 
 #import "LinphoneManager.h"
+#import "FastAddressBook.h"
 
 @implementation UICallCellData
 
@@ -150,29 +151,37 @@
     if(data != nil && data->call != NULL) {
         call = data->call;
         const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-    
+        UIImage *image;
+        NSString* address;
         if (addr != NULL) {
-            const char* lUserNameChars = linphone_address_get_username(addr);
-            NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-            NSMutableString* mss = [[NSMutableString alloc] init];
             // contact name 
-            const char* n = linphone_address_get_display_name(addr);
-            if (n) 
-                [mss appendFormat:@"%s", n, nil];
-            else
-                [mss appendFormat:@"%@",lUserName , nil];
-        
-            [addressLabel setText:mss];
-        
-            // TODO
-            //imageView.image = [[LinphoneManager instance] getImageFromAddressBook:lUserName];
-            [mss release];
+            const char* lAddress = linphone_address_as_string_uri_only(addr);
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName) 
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName) 
+                address = [NSString stringWithUTF8String:lUserName];
+            if(lAddress) {
+                NSString *address = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+                image = [FastAddressBook getContactImage:contact thumbnail:false];
+            }
         } else {
             [addressLabel setText:@"Unknown"];
-            //TODO
-            //imageView.image = nil;
         }
-    
+        
+        // Set Image
+        if(image == nil) {
+            image = [UIImage imageNamed:@"avatar_unknown.png"];
+        }
+        [avatarImage setImage:image];
+        
+        // Set Address
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        [addressLabel setText:address];
     
         LinphoneCallState state = linphone_call_get_state(call);
         
