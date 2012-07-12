@@ -25,7 +25,7 @@
 @implementation UIContactDetailsHeader
 
 @synthesize avatarImage;
-@synthesize contactLabel;
+@synthesize addressLabel;
 @synthesize contact;
 @synthesize normalView;
 @synthesize editView;
@@ -45,7 +45,7 @@
 
 - (void)dealloc {
     [avatarImage release];
-    [contactLabel release];
+    [addressLabel release];
     [normalView release];
     [editView release];
     [tableView release];
@@ -88,7 +88,7 @@
     
         // Contact label
         {
-            [contactLabel setText:[FastAddressBook getContactDisplayName:contact]];
+            [addressLabel setText:[FastAddressBook getContactDisplayName:contact]];
         }
     }
 }

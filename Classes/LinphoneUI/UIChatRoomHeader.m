@@ -22,7 +22,7 @@
 @implementation UIChatRoomHeader
 
 @synthesize avatarImage;
-@synthesize contactLabel;
+@synthesize addressLabel;
 @synthesize contact;
 
 
@@ -34,7 +34,7 @@
 
 - (void)dealloc {
     [avatarImage release];
-    [contactLabel release];
+    [addressLabel release];
     [contact release];
     [super dealloc];
 }
@@ -56,7 +56,7 @@
 - (void)update {
     if(contact != nil) {
         [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [contactLabel setText:contact];
+        [addressLabel setText:contact];
     }
 }
 

@@ -153,6 +153,10 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */; };
+		C90FAA7A15AF54E6002091CB /* HistoryDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */; };
+		C90FAA7B15AF54E6002091CB /* HistoryDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */; };
+		C90FAA7C15AF54E6002091CB /* HistoryDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */; };
 		C9C8254315AE204D00D493FA /* options_add_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8253F15AE204D00D493FA /* options_add_disabled.png */; };
 		C9C8254415AE204D00D493FA /* options_add_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8253F15AE204D00D493FA /* options_add_disabled.png */; };
 		C9C8254515AE204D00D493FA /* options_transfer_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = C9C8254015AE204D00D493FA /* options_transfer_disabled.png */; };
@@ -1053,6 +1057,9 @@
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsViewController.h; sourceTree = "<group>"; };
+		C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsViewController.m; sourceTree = "<group>"; };
+		C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryDetailsViewController.xib; sourceTree = "<group>"; };
 		C9C8253F15AE204D00D493FA /* options_add_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_add_disabled.png; path = Resources/options_add_disabled.png; sourceTree = "<group>"; };
 		C9C8254015AE204D00D493FA /* options_transfer_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_transfer_disabled.png; path = Resources/options_transfer_disabled.png; sourceTree = "<group>"; };
 		C9C8254115AE204D00D493FA /* transfer_call_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = transfer_call_default.png; path = Resources/transfer_call_default.png; sourceTree = "<group>"; };
@@ -1553,6 +1560,9 @@
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
 				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
+				C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */,
+				C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */,
+				C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */,
 				D3ED3EA41587334B006C0DE4 /* HistoryTableViewController.h */,
 				D3ED3EA51587334C006C0DE4 /* HistoryTableViewController.m */,
 				D3ED3EB515873928006C0DE4 /* HistoryViewController.h */,
@@ -2732,6 +2742,7 @@
 				C9C8254915AE204D00D493FA /* transfer_call_over.png in Resources */,
 				C9C8254C15AE207B00D493FA /* options_selected.png in Resources */,
 				C9C8254F15AE256100D493FA /* transfer_call_disabled.png in Resources */,
+				C90FAA7B15AF54E6002091CB /* HistoryDetailsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2971,6 +2982,7 @@
 				C9C8254A15AE204D00D493FA /* transfer_call_over.png in Resources */,
 				C9C8254D15AE207B00D493FA /* options_selected.png in Resources */,
 				C9C8255015AE256100D493FA /* transfer_call_disabled.png in Resources */,
+				C90FAA7C15AF54E6002091CB /* HistoryDetailsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3060,6 +3072,7 @@
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D378907515AC448A00BD776C /* UIView+ModalStack.m in Sources */,
 				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
+				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3146,6 +3159,7 @@
 				D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D378907615AC448A00BD776C /* UIView+ModalStack.m in Sources */,
 				D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
+				C90FAA7A15AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
