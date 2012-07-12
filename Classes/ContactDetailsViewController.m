@@ -51,12 +51,27 @@
 }
 
 - (void)newContact:(NSString*)address {
-    [tableController newContact:address];
+    [tableController newContact];
+    [tableController addSipField:address];
     [tableController setEditing:TRUE animated:FALSE];
     [[tableController tableView] reloadData];
     [editButton setOn];
 }
 
+- (void)editContact:(ABRecordRef)acontact {
+    [self setContact:acontact];
+    [tableController setEditing:TRUE animated:FALSE];
+    [[tableController tableView] reloadData];
+    [editButton setOn];
+}
+
+- (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
+    [self setContact:acontact];
+    [tableController addSipField:address];
+    [tableController setEditing:TRUE animated:FALSE];
+    [[tableController tableView] reloadData];
+    [editButton setOn];
+}
 
 #pragma mark - Property Functions
 
@@ -89,13 +104,37 @@
                                                  forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    if([tableController isEditing]) {
-        [tableController resetData];
-        [tableController setEditing:FALSE animated:FALSE];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewWillDisappear:NO];
     }
+    if([tableController isEditing]) {
+        [tableController setEditing:FALSE animated:FALSE];
+        [tableController resetData];
+        [editButton setOff];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [editButton setOff];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewWillAppear:NO];
+    }   
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewDidAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewDidDisappear:NO];
+    }  
 }
 
 #pragma mark - UICompositeViewDelegate Functions

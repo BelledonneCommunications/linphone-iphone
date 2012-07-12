@@ -42,8 +42,8 @@
 @property (nonatomic, assign) ABRecordID contactID;
 
 - (void)newContact;
-- (void)newContact:(NSString*)address;
 - (void)removeContact;
+- (void)addSipField:(NSString*)address;
 
 - (void)loadData;
 - (void)saveData;

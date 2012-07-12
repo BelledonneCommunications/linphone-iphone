@@ -39,5 +39,7 @@
 
 - (void)newContact;
 - (void)newContact:(NSString*)address;
+- (void)editContact:(ABRecordRef)contact;
+- (void)editContact:(ABRecordRef)contact address:(NSString*)address;
 
 @end

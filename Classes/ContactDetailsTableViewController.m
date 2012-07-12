@@ -277,6 +277,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)addEntry:(UITableView*)tableview section:(NSInteger)section animated:(BOOL)animated {
+    [self addEntry:tableview section:section animated:animated value:@""];
+}
+
+- (void)addEntry:(UITableView*)tableview section:(NSInteger)section animated:(BOOL)animated value:(NSString *)value{
     NSMutableArray *sectionArray = [dataCache objectAtIndex:section];
     NSUInteger count = [sectionArray count];
     if(section == 0) {
@@ -307,7 +311,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
             lMap = ABMultiValueCreateMutable(kABDictionaryPropertyType);
         }
         CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-        CFTypeRef values[] = { @"", CONTACT_SIP_FIELD };
+        CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
         CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
         ABMultiValueAddValueAndLabel(lMap, lDict, (CFStringRef)[labelArray objectAtIndex:0], &identifier);
         CFRelease(lDict);
@@ -395,20 +399,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [self loadData];
 }
 
-- (void)newContact:(NSString*)address {
-    contact = ABPersonCreate();
-    ABMultiValueRef lMap = ABMultiValueCreateMutable(kABDictionaryPropertyType);
-    CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-    CFTypeRef values[] = { [address copy], CONTACT_SIP_FIELD };
-    CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
-    ABMultiValueAddValueAndLabel(lMap, lDict, (CFStringRef)[labelArray objectAtIndex:0], NULL);
-    CFRelease(lDict);
-    
-    ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
-    CFRelease(lMap);
-    
-    self->contactID = kABRecordInvalidID;
-    [self loadData];
+- (void)addSipField:(NSString*)address {
+    [self addEntry:[self tableView] section:1 animated:FALSE value:address];
 }
 
 
