@@ -24,6 +24,9 @@
     UIButton *contactsButton;
     UIButton *dialerButton;
     UIButton *settingsButton;
+/* MODIFICATION Remove chat
+    UIButton *chatButton;
+*/
     UIButton *moreButton;
 }
 
@@ -31,10 +34,16 @@
 @property (nonatomic, retain) IBOutlet UIButton* contactsButton;
 @property (nonatomic, retain) IBOutlet UIButton* dialerButton;
 @property (nonatomic, retain) IBOutlet UIButton* settingsButton;
+/* MODIFICATION Remove chat
+@property (nonatomic, retain) IBOutlet UIButton* chatButton;
+ */
 @property (nonatomic, retain) IBOutlet UIButton* moreButton;
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;
 -(IBAction) onDialerClick: (id) event;
 -(IBAction) onSettingsClick: (id) event;
+/* MODIFICATION Remove chat
+-(IBAction) onChatClick: (id) event;
+ */
 -(IBAction) onMoreClick: (id) event;
 @end

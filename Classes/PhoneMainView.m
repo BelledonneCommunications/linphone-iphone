@@ -24,8 +24,10 @@
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
 
+/* MODIFICATION: Disable Chat
 #import "ChatRoomViewController.h"
 #import "ChatViewController.h"
+ */
 #import "DialerViewController.h"
 #import "ContactsViewController.h"
 #import "HistoryViewController.h"
@@ -107,8 +109,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[self view] addSubview: mainViewController.view];
     
     // Init descriptions
+    /* MODIFICATION: Disable Chat
     [viewDescriptions setObject:[ChatRoomViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_ChatRoom]];
     [viewDescriptions setObject:[ChatViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Chat]];
+     */
     [viewDescriptions setObject:[DialerViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
     [viewDescriptions setObject:[ContactsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
     [viewDescriptions setObject:[HistoryViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_History]];
@@ -283,6 +287,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 + (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
     bool left = false;
     
+    /* MODIFICATION: Disable Chat
     if(old == PhoneView_Chat) {
         if(new == PhoneView_Contacts ||
            new == PhoneView_Dialer ||
@@ -290,7 +295,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
            new == PhoneView_History) {
             left = true;
         }
-    } else if(old == PhoneView_Settings) {
+    } else */
+    if(old == PhoneView_Settings) {
         if(new == PhoneView_Dialer ||
            new == PhoneView_Contacts ||
            new == PhoneView_History) {

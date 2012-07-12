@@ -26,6 +26,9 @@
 @synthesize contactsButton;
 @synthesize dialerButton;
 @synthesize settingsButton;
+/* MODIFICATION Remove chat
+@synthesize chatButton;
+ */
 @synthesize moreButton;
 
 
@@ -101,11 +104,13 @@
     } else {
         settingsButton.selected = FALSE;
     }
+    
+    /* MODIFICATION Remove chat
     if(view == PhoneView_Chat || view == PhoneView_ChatRoom) {
         moreButton.selected = TRUE;
     } else {
         moreButton.selected = FALSE;
-    }
+    }*/
 }
 
 
@@ -127,8 +132,14 @@
     [[PhoneMainView instance] changeView:PhoneView_Settings];
 }
 
-- (IBAction)onMoreClick: (id) event {
+/* MODIFICATION Remove chat
+- (IBAction)onChatClick: (id) event {
     [[PhoneMainView instance] changeView:PhoneView_Chat];
+}
+*/
+
+- (IBAction)onMoreClick: (id) event {
+    //[[PhoneMainView instance] changeView:PhoneView_Chat];
 }
 
 

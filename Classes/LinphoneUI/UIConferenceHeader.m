@@ -54,7 +54,7 @@
 #pragma mark - Static size Functions
 
 + (int)getHeight {
-    return 50;
+    return 68; //MODIFICATION row behaviour
 }
 
 

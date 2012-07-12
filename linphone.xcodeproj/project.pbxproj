@@ -240,8 +240,6 @@
 		D32942A51594C94300556A1C /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
 		D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
 		D32B6E2515A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
-		D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
-		D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
 		D32B6E2C15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
 		D32B6E2D15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
@@ -336,10 +334,6 @@
 		D35E758A15932DE60066B1C1 /* backspace_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758815932DE60066B1C1 /* backspace_disabled.png */; };
 		D35E758D15934F360066B1C1 /* call_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* call_disabled.png */; };
 		D35E758E15934F360066B1C1 /* call_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E758C15934F360066B1C1 /* call_disabled.png */; };
-		D35E7597159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
-		D35E7598159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
-		D35E7599159460580066B1C1 /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E7596159460570066B1C1 /* ChatViewController.xib */; };
-		D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D35E7596159460570066B1C1 /* ChatViewController.xib */; };
 		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
 		D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
 		D35EA76315A2DF8D003E025D /* micro_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35EA76115A2DF8D003E025D /* micro_off_disabled.png */; };
@@ -478,10 +472,6 @@
 		D3A55FBD15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A55FBF15877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
 		D3A55FC015877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
-		D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatRoomCell.m */; };
-		D3A8BB7115A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatRoomCell.m */; };
-		D3A8BB7415A6C81A00F96BE5 /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7315A6C81A00F96BE5 /* UIChatRoomCell.xib */; };
-		D3A8BB7515A6C81A00F96BE5 /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7315A6C81A00F96BE5 /* UIChatRoomCell.xib */; };
 		D3A8BB7B15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7615A6CC3200F96BE5 /* chat_bubble_outgoing.png */; };
 		D3A8BB7C15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7615A6CC3200F96BE5 /* chat_bubble_outgoing.png */; };
 		D3A8BB7D15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7715A6CC3200F96BE5 /* chat_bubble_incoming.png */; };
@@ -514,10 +504,6 @@
 		D3C6526E15AC228A0092A874 /* contact_ok_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C6526A15AC228A0092A874 /* contact_ok_over.png */; };
 		D3C714B3159DB84400705B8E /* toy-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = D3C714B2159DB84400705B8E /* toy-mono.wav */; };
 		D3C714B4159DB84400705B8E /* toy-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = D3C714B2159DB84400705B8E /* toy-mono.wav */; };
-		D3D14E7715A70EE30074A527 /* UIChatRoomHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */; };
-		D3D14E7815A70EE30074A527 /* UIChatRoomHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */; };
-		D3D14E7915A70EE30074A527 /* UIChatRoomHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */; };
-		D3D14E7A15A70EE30074A527 /* UIChatRoomHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */; };
 		D3D14E7C15A711700074A527 /* avatar_shadow_small.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7B15A711700074A527 /* avatar_shadow_small.png */; };
 		D3D14E7D15A711700074A527 /* avatar_shadow_small.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7B15A711700074A527 /* avatar_shadow_small.png */; };
 		D3D6A39E159B0EEF005F692C /* add_call_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A39B159B0EEF005F692C /* add_call_default.png */; };
@@ -552,12 +538,6 @@
 		D3EA5408159852080037DC6B /* chat_add_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5401159852080037DC6B /* chat_add_default.png */; };
 		D3EA5409159852080037DC6B /* chat_add_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5402159852080037DC6B /* chat_add_over.png */; };
 		D3EA540A159852080037DC6B /* chat_add_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5402159852080037DC6B /* chat_add_over.png */; };
-		D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatTableViewController.m */; };
-		D3EA540E1598528B0037DC6B /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatTableViewController.m */; };
-		D3EA5411159853750037DC6B /* UIChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA5410159853750037DC6B /* UIChatCell.m */; };
-		D3EA5412159853750037DC6B /* UIChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA5410159853750037DC6B /* UIChatCell.m */; };
-		D3EA5414159853C90037DC6B /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5413159853C90037DC6B /* UIChatCell.xib */; };
-		D3EA5415159853C90037DC6B /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5413159853C90037DC6B /* UIChatCell.xib */; };
 		D3EA5418159858A80037DC6B /* list_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5416159858A80037DC6B /* list_delete_default.png */; };
 		D3EA5419159858A80037DC6B /* list_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5416159858A80037DC6B /* list_delete_default.png */; };
 		D3EA541A159858A80037DC6B /* list_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5417159858A80037DC6B /* list_delete_over.png */; };
@@ -620,10 +600,6 @@
 		D3F34F311599B008005BE94F /* avatar_shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F34F2F1599B008005BE94F /* avatar_shadow.png */; };
 		D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
 		D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
-		D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
-		D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
-		D3F795D815A582810077328B /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F795D515A582800077328B /* ChatRoomViewController.xib */; };
-		D3F795D915A582810077328B /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F795D515A582800077328B /* ChatRoomViewController.xib */; };
 		D3F795DD15A5831C0077328B /* chat_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DB15A5831C0077328B /* chat_back_default.png */; };
 		D3F795DE15A5831C0077328B /* chat_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DB15A5831C0077328B /* chat_back_default.png */; };
 		D3F795DF15A5831C0077328B /* chat_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F795DC15A5831C0077328B /* chat_back_over.png */; };
@@ -2634,7 +2610,6 @@
 				D35E757A15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
 				D35E758915932DE60066B1C1 /* backspace_disabled.png in Resources */,
 				D35E758D15934F360066B1C1 /* call_disabled.png in Resources */,
-				D35E7599159460580066B1C1 /* ChatViewController.xib in Resources */,
 				D37DC70B1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */,
 				D37DC70D1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */,
 				D37DC70F1594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */,
@@ -2647,7 +2622,6 @@
 				D3EA5405159852080037DC6B /* chat_edit_over.png in Resources */,
 				D3EA5407159852080037DC6B /* chat_add_default.png in Resources */,
 				D3EA5409159852080037DC6B /* chat_add_over.png in Resources */,
-				D3EA5414159853C90037DC6B /* UIChatCell.xib in Resources */,
 				D3EA5418159858A80037DC6B /* list_delete_default.png in Resources */,
 				D3EA541A159858A80037DC6B /* list_delete_over.png in Resources */,
 				D3F26BF315986B73005F9CAB /* IncomingCallViewController.xib in Resources */,
@@ -2705,7 +2679,6 @@
 				D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */,
 				D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */,
 				D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */,
-				D3F795D815A582810077328B /* ChatRoomViewController.xib in Resources */,
 				D3F795DD15A5831C0077328B /* chat_back_default.png in Resources */,
 				D3F795DF15A5831C0077328B /* chat_back_over.png in Resources */,
 				D3B9A3DF15A58C450096EA4E /* chat_field.png in Resources */,
@@ -2715,7 +2688,6 @@
 				D3B9A3E715A58C450096EA4E /* chat_send_over.png in Resources */,
 				D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */,
 				D32B6E2C15A5C0800033019F /* database.sqlite in Resources */,
-				D3A8BB7415A6C81A00F96BE5 /* UIChatRoomCell.xib in Resources */,
 				D3A8BB7B15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */,
 				D3A8BB7D15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */,
 				D3A8BB7F15A6CC3200F96BE5 /* setup_back_disabled.png in Resources */,
@@ -2723,7 +2695,6 @@
 				D3A8BB8315A6CC3200F96BE5 /* setup_start_disabled.png in Resources */,
 				D389363915A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */,
 				D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */,
-				D3D14E7915A70EE30074A527 /* UIChatRoomHeader.xib in Resources */,
 				D3D14E7C15A711700074A527 /* avatar_shadow_small.png in Resources */,
 				D3128FE315AABC7E00A2147A /* ContactDetailsViewController.xib in Resources */,
 				D3128FEF15AABE4E00A2147A /* contact_back_default.png in Resources */,
@@ -2879,7 +2850,6 @@
 				D35E757B15931E5D0066B1C1 /* switch_camera_over.png in Resources */,
 				D35E758A15932DE60066B1C1 /* backspace_disabled.png in Resources */,
 				D35E758E15934F360066B1C1 /* call_disabled.png in Resources */,
-				D35E759A159460580066B1C1 /* ChatViewController.xib in Resources */,
 				D37DC70C1594AE6F00B2A5EB /* IASKAppSettingsView.xib in Resources */,
 				D37DC70E1594AE6F00B2A5EB /* IASKAppSettingsWebView.xib in Resources */,
 				D37DC7101594AE6F00B2A5EB /* IASKPSSliderSpecifierViewCell.xib in Resources */,
@@ -2892,7 +2862,6 @@
 				D3EA5406159852080037DC6B /* chat_edit_over.png in Resources */,
 				D3EA5408159852080037DC6B /* chat_add_default.png in Resources */,
 				D3EA540A159852080037DC6B /* chat_add_over.png in Resources */,
-				D3EA5415159853C90037DC6B /* UIChatCell.xib in Resources */,
 				D3EA5419159858A80037DC6B /* list_delete_default.png in Resources */,
 				D3EA541B159858A80037DC6B /* list_delete_over.png in Resources */,
 				D3F26BF415986B73005F9CAB /* IncomingCallViewController.xib in Resources */,
@@ -2949,7 +2918,6 @@
 				D350F22D15A43D3400149E54 /* setup_welcome_logo.png in Resources */,
 				D35406F815A47E9E007E7E81 /* button_background_default.png in Resources */,
 				D35406FA15A47E9E007E7E81 /* button_background_over.png in Resources */,
-				D3F795D915A582810077328B /* ChatRoomViewController.xib in Resources */,
 				D3F795DE15A5831C0077328B /* chat_back_default.png in Resources */,
 				D3F795E015A5831C0077328B /* chat_back_over.png in Resources */,
 				D3B9A3E015A58C450096EA4E /* chat_field.png in Resources */,
@@ -2959,7 +2927,6 @@
 				D3B9A3E815A58C450096EA4E /* chat_send_over.png in Resources */,
 				D32B6E2515A5B2020033019F /* chat_send_disabled.png in Resources */,
 				D32B6E2D15A5C0800033019F /* database.sqlite in Resources */,
-				D3A8BB7515A6C81A00F96BE5 /* UIChatRoomCell.xib in Resources */,
 				D3A8BB7C15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */,
 				D3A8BB7E15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */,
 				D3A8BB8015A6CC3200F96BE5 /* setup_back_disabled.png in Resources */,
@@ -2967,7 +2934,6 @@
 				D3A8BB8415A6CC3200F96BE5 /* setup_start_disabled.png in Resources */,
 				D389363A15A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */,
 				D389363C15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */,
-				D3D14E7A15A70EE30074A527 /* UIChatRoomHeader.xib in Resources */,
 				D3D14E7D15A711700074A527 /* avatar_shadow_small.png in Resources */,
 				D3128FE415AABC7E00A2147A /* ContactDetailsViewController.xib in Resources */,
 				D3128FF015AABE4E00A2147A /* contact_back_default.png in Resources */,
@@ -3041,7 +3007,6 @@
 				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */,
 				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
-				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				D37DC6ED1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */,
@@ -3060,8 +3025,6 @@
 				D37DC7071594AE6F00B2A5EB /* IASKSwitch.m in Sources */,
 				D37DC7091594AE6F00B2A5EB /* IASKTextField.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
-				D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */,
-				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BEC159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeViewController.m in Sources */,
@@ -3072,13 +3035,9 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */,
-				D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */,
-				D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
 				D32B6E3815A5C2430033019F /* ChatModel.m in Sources */,
-				D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
-				D3D14E7715A70EE30074A527 /* UIChatRoomHeader.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639515AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
@@ -3127,7 +3086,6 @@
 				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
 				D36C43C7158F2E5A0048BA40 /* UICallCell.m in Sources */,
 				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
-				D35E7598159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */,
 				D37DC6C21594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				D37DC6EE1594AE6F00B2A5EB /* IASKAppSettingsViewController.m in Sources */,
@@ -3146,8 +3104,6 @@
 				D37DC7081594AE6F00B2A5EB /* IASKSwitch.m in Sources */,
 				D37DC70A1594AE6F00B2A5EB /* IASKTextField.m in Sources */,
 				D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */,
-				D3EA540E1598528B0037DC6B /* ChatTableViewController.m in Sources */,
-				D3EA5412159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BED159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF215986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */,
@@ -3158,13 +3114,9 @@
 				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */,
-				D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */,
-				D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
 				D32B6E3915A5C2430033019F /* ChatModel.m in Sources */,
-				D3A8BB7115A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
-				D3D14E7815A70EE30074A527 /* UIChatRoomHeader.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639615AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639C15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,

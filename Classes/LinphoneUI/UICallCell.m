@@ -115,7 +115,7 @@
 }
 
 + (int)getMinimizedHeight {
-    return 54;
+    return 63; //MODIFICATION Change row behaviour
 }
 
 - (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {   

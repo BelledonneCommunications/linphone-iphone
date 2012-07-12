@@ -264,6 +264,9 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3];
     [[PhoneMainView instance] showTabBar: true];
+    /* MODIFICATION show video in background */
+    [callTableView setAlpha:1.0];
+    /* */
     if ([LinphoneManager instance].frontCamId !=nil ) {
         // only show camera switch button if we have more than 1 camera
         [videoCameraSwitch setAlpha:1.0];
@@ -284,9 +287,12 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
     
-    if([[PhoneMainView instance] currentView] == PhoneView_InCall && videoShown)
+    if([[PhoneMainView instance] currentView] == PhoneView_InCall && videoShown) {
         [[PhoneMainView instance] showTabBar: false];
-    
+        /* MODIFICATION show video in background */
+        [callTableView setAlpha:0.0];
+        /* */
+    }
     if (hideControlsTimer) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
@@ -321,6 +327,10 @@ const NSInteger SECURE_BUTTON_TAG=5;
     
     [videoGroup setAlpha:1.0];
     [callTableView setAlpha:0.0];
+    
+    /* MODIFICATION show video in background */
+    [callTableController minimizeAll];
+    /* */
     
     if(animation) {
         [UIView commitAnimations];
@@ -358,6 +368,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
+
     [callTableView setAlpha:1.0];
     [videoCameraSwitch setAlpha:0.0];
     

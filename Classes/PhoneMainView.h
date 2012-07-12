@@ -30,8 +30,10 @@ typedef enum _PhoneView {
     PhoneView_Dialer,
     PhoneView_History,
     PhoneView_Settings,
+    /* MODIFICATION: Disable Chat
     PhoneView_Chat,
     PhoneView_ChatRoom,
+     */
     PhoneView_Contacts,
     PhoneView_ContactDetails,
     PhoneView_InCall,
