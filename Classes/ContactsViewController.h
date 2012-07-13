@@ -36,7 +36,10 @@
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
 
-- (IBAction)onAllClick:(id) event;
-- (IBAction)onLinphoneClick:(id) event;
+- (IBAction)onAllClick:(id)event;
+- (IBAction)onLinphoneClick:(id)event;
+- (IBAction)onAddContactClick:(id)event;
+
+- (void)setAddress:(NSString*)address;
 
 @end

@@ -58,7 +58,7 @@
 						<string key="NSFrame">{{20, 6}, {65, 65}}</string>
 						<reference key="NSSuperview" ref="1033790597"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="451441616"/>
+						<reference key="NSNextKeyView" ref="959860357"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -74,9 +74,10 @@
 							<object class="IBUILabel" id="683404399">
 								<reference key="NSNextResponder" ref="959860357"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{14, 37}, {199, 43}}</string>
+								<string key="NSFrame">{{0, 37}, {199, 43}}</string>
 								<reference key="NSSuperview" ref="959860357"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="451441616"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -102,7 +103,7 @@
 								</object>
 							</object>
 						</array>
-						<string key="NSFrame">{{93, 0}, {227, 80}}</string>
+						<string key="NSFrame">{{101, 0}, {219, 80}}</string>
 						<reference key="NSSuperview" ref="1033790597"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="683404399"/>
@@ -120,10 +121,9 @@
 							<object class="IBUITableView" id="579848711">
 								<reference key="NSNextResponder" ref="451441616"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrameSize">{227, 130}</string>
+								<string key="NSFrameSize">{219, 130}</string>
 								<reference key="NSSuperview" ref="451441616"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="959860357"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">10</int>
@@ -193,7 +193,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 								<float key="IBUISectionFooterHeight">10</float>
 							</object>
 						</array>
-						<string key="NSFrame">{{93, 0}, {227, 130}}</string>
+						<string key="NSFrame">{{101, 0}, {219, 130}}</string>
 						<reference key="NSSuperview" ref="1033790597"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="579848711"/>
@@ -231,14 +231,6 @@ AAgACAAIAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">contactLabel</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="683404399"/>
-					</object>
-					<int key="connectionID">11</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">editView</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="451441616"/>
@@ -260,6 +252,14 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<reference key="destination" ref="579848711"/>
 					</object>
 					<int key="connectionID">20</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addressLabel</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="683404399"/>
+					</object>
+					<int key="connectionID">21</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -342,7 +342,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<int key="objectID">8</int>
 						<reference key="object" ref="683404399"/>
 						<reference key="parent" ref="959860357"/>
-						<string key="objectName">contactLabel</string>
+						<string key="objectName">addressLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">15</int>
@@ -368,7 +368,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">20</int>
+			<int key="maxID">21</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -376,6 +376,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 					<string key="className">UIContactDetailsHeader</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="addressLabel">UILabel</string>
 						<string key="avatarImage">UIImageView</string>
 						<string key="contactLabel">UILabel</string>
 						<string key="editView">UIView</string>
@@ -383,6 +384,10 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<string key="tableView">UITableView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="addressLabel">
+							<string key="name">addressLabel</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="avatarImage">
 							<string key="name">avatarImage</string>
 							<string key="candidateClassName">UIImageView</string>

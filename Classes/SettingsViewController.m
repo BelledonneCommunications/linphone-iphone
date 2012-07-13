@@ -73,8 +73,6 @@
     [self.view addSubview: navigationController.view];
 }
 
-
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {

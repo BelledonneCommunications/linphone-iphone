@@ -24,8 +24,7 @@ enum CallDelegateType {
     CD_UNDEFINED = 0,
     CD_ZRTP,
     CD_VIDEO_UPDATE,
-    CD_STOP_VIDEO_ON_LOW_BATTERY,
-    CD_TRANSFER_CALL
+    CD_STOP_VIDEO_ON_LOW_BATTERY
 };
 
 @protocol CallActionSheetDelegate

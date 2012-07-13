@@ -32,12 +32,13 @@
     UIVideoButton*      videoButton;
     UIMicroButton*      microButton;
     UISpeakerButton*    speakerButton;   
-    UIButton*           optionsButton;
+    UIToggleButton*     optionsButton;
     UIHangUpButton*     hangupButton;
     UIView*             padView;
     UIView*             optionsView;
     UIButton*           optionsAddButton;
     UIButton*           optionsTransferButton;
+    UIToggleButton*     dialerButton;
     
     //Key pad
 	UIDigitButton*  oneButton;
@@ -59,13 +60,14 @@
 @property (nonatomic, retain) IBOutlet UIVideoButton*   videoButton;
 @property (nonatomic, retain) IBOutlet UIMicroButton*   microButton;
 @property (nonatomic, retain) IBOutlet UISpeakerButton* speakerButton;
-@property (nonatomic, retain) IBOutlet UIButton*        optionsButton;
+@property (nonatomic, retain) IBOutlet UIToggleButton*  optionsButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton*  hangupButton;
 @property (nonatomic, retain) IBOutlet UIView*          padView;
 @property (nonatomic, retain) IBOutlet UIView*          optionsView;
 
 @property (nonatomic, retain) IBOutlet UIButton*        optionsAddButton;
 @property (nonatomic, retain) IBOutlet UIButton*        optionsTransferButton;
+@property (nonatomic, retain) IBOutlet UIToggleButton*  dialerButton;
 
 @property (nonatomic, retain) IBOutlet UIButton* oneButton;
 @property (nonatomic, retain) IBOutlet UIButton* twoButton;

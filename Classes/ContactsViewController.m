@@ -18,6 +18,7 @@
  */              
 
 #import "ContactsViewController.h"
+#import "PhoneMainView.h"
 
 #import "AddressBook/ABPerson.h"
 
@@ -69,9 +70,34 @@ typedef enum _HistoryView {
 
 #pragma mark - ViewController Functions
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewWillDisappear:NO];
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-	[self changeView:History_All];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewWillAppear:NO];
+    }   
+    
+    [self changeView:History_All];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewDidAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [tableController viewDidDisappear:NO];
+    }  
 }
 
 - (void)viewDidLoad {
@@ -89,6 +115,10 @@ typedef enum _HistoryView {
 
 
 #pragma mark -
+
+- (void)setAddress:(NSString*)address {
+    [tableController setTempAddress:address];
+}
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
@@ -110,12 +140,30 @@ typedef enum _HistoryView {
 
 #pragma mark - Action Functions
 
-- (IBAction)onAllClick: (id) event {
+- (IBAction)onAllClick:(id)event {
     [self changeView: History_All];
 }
 
-- (IBAction)onLinphoneClick: (id) event {
+- (IBAction)onLinphoneClick:(id)event {
     [self changeView: History_Linphone];
+}
+
+- (IBAction)onAddContactClick:(id)event {
+    // Go to Contact details view
+    NSDictionary * dict;
+    if([tableController tempAddress] == nil) {
+        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                 [[[NSArray alloc] initWithObjects: nil] autorelease]
+                 , @"newContact",
+                 nil] autorelease];
+    } else {
+        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
+                 [[[NSArray alloc] initWithObjects: [tableController tempAddress], nil] autorelease]
+                 , @"newContact:",
+                 nil] autorelease];
+        [tableController setTempAddress:nil];
+    }
+    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
 }
 
 @end

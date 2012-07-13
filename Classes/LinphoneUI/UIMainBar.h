@@ -27,7 +27,9 @@
 /* MODIFICATION Remove chat
     UIButton *chatButton;
 */
-    UIButton *moreButton;
+	UIButton *moreButton;
+    UIView *historyNotificationView;
+    UILabel *historyNotificationLabel;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* historyButton;
@@ -38,6 +40,9 @@
 @property (nonatomic, retain) IBOutlet UIButton* chatButton;
  */
 @property (nonatomic, retain) IBOutlet UIButton* moreButton;
+@property (nonatomic, retain) IBOutlet UIView *historyNotificationView;
+@property (nonatomic, retain) IBOutlet UILabel *historyNotificationLabel;
+
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;
 -(IBAction) onDialerClick: (id) event;
@@ -46,4 +51,5 @@
 -(IBAction) onChatClick: (id) event;
  */
 -(IBAction) onMoreClick: (id) event;
+
 @end

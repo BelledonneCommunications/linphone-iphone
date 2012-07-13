@@ -1,4 +1,4 @@
-/* UIChatRoomHeader.m
+/* UILinphone.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,51 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
 
-#import "UIChatRoomHeader.h"
+#ifndef UILINPHONE_H
+#define UILINPHONE_H
 
-@implementation UIChatRoomHeader
+#define LINPHONE_TABLE_CELL_BACKGROUND_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
 
-@synthesize avatarImage;
-@synthesize addressLabel;
-@synthesize contact;
-
-
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-    return [super initWithNibName:@"UIChatRoomHeader" bundle:[NSBundle mainBundle]];
-}
-
-- (void)dealloc {
-    [avatarImage release];
-    [addressLabel release];
-    [contact release];
-    [super dealloc];
-}
-
-
-#pragma mark - Property Functions
-
-- (void)setContact:(NSString *)acontact {
-    if(contact != nil) {
-        [contact release];
-    }
-    contact = [acontact copy];
-    [self update];
-}
-
-
-#pragma mark - 
-
-- (void)update {
-    if(contact != nil) {
-        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [addressLabel setText:contact];
-    }
-}
-
-+ (CGFloat)height {
-    return 80.0f;
-}
-
-@end
+#endif

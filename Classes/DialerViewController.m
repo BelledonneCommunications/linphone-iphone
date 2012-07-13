@@ -217,9 +217,9 @@
     // Go to Contact details view
     NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
                            [[[NSArray alloc] initWithObjects:[addressField text], nil] autorelease]
-                           , @"newContact:",
+                           , @"setAddress:",
                            nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
+    [[PhoneMainView instance] changeView:PhoneView_Contacts dict:dict push:TRUE];
 }
 
 - (IBAction)onBackClick: (id) event {

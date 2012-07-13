@@ -21,7 +21,7 @@
 #import <AddressBook/AddressBook.h>
 
 @interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate> {
-    UILabel *contactLabel;
+    UILabel *addressLabel;
     UIImageView *avatarImage;
     UIView *normalView;
     UIView *editView;
@@ -34,7 +34,7 @@
 
 @property (nonatomic, assign) ABRecordRef contact;
     
-@property (nonatomic, retain) IBOutlet UILabel *contactLabel;
+@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 
 @property (nonatomic, retain) IBOutlet UIView *normalView;

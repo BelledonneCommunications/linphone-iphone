@@ -125,4 +125,19 @@
     [lastNameLabel setFrame: lastNameFrame];
 }
 
+- (void)setHighlighted:(BOOL)highlighted {
+    [self setHighlighted:highlighted animated:FALSE];
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    [super setHighlighted:highlighted animated:animated];
+    if(highlighted) {
+        [lastNameLabel setTextColor:[UIColor whiteColor]];
+        [firstNameLabel setTextColor:[UIColor whiteColor]];
+    } else {
+        [lastNameLabel setTextColor:[UIColor  blackColor]];
+        [firstNameLabel setTextColor:[UIColor blackColor]];   
+    }
+}
+
 @end

@@ -21,7 +21,7 @@
 #import "ChatModel.h"
 
 @interface UIChatRoomHeader : UIViewController {
-    UILabel *contactLabel;
+    UILabel *addressLabel;
     UIImageView *avatarImage;
     
     NSString *contact;
@@ -29,7 +29,7 @@
 
 @property (nonatomic, copy) NSString *contact;
     
-@property (nonatomic, retain) IBOutlet UILabel *contactLabel;
+@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 
 + (CGFloat)height;
