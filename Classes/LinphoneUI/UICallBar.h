@@ -53,6 +53,10 @@
 	UIDigitButton*  starButton;
 	UIDigitButton*  zeroButton;
 	UIDigitButton*  sharpButton;
+    
+    UIButton*       option1Button;
+    UIButton*       option2Button;
+    UIButton*       option3Button;
 }
 
 @property (nonatomic, retain) IBOutlet UIPauseButton*   pauseButton;
@@ -82,10 +86,18 @@
 @property (nonatomic, retain) IBOutlet UIButton* zeroButton;
 @property (nonatomic, retain) IBOutlet UIButton* sharpButton;
 
+@property (nonatomic, retain) IBOutlet UIButton* option1Button;
+@property (nonatomic, retain) IBOutlet UIButton* option2Button;
+@property (nonatomic, retain) IBOutlet UIButton* option3Button;
+
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onOptionsTransferClick:(id)sender;
 - (IBAction)onOptionsAddClick:(id)sender;
 - (IBAction)onConferenceClick:(id)sender;
 - (IBAction)onPadClick:(id)sender;
+
+- (IBAction)onOption1Click:(id)sender;
+- (IBAction)onOption2Click:(id)sender;
+- (IBAction)onOption3Click:(id)sender;
 
 @end

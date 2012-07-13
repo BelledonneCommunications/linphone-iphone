@@ -57,6 +57,9 @@
 @synthesize zeroButton;
 @synthesize sharpButton;
 
+@synthesize option1Button;
+@synthesize option2Button;
+@synthesize option3Button;
 
 #pragma mark - Lifecycle Functions
 
@@ -89,6 +92,10 @@
 	[zeroButton release];
 	[sharpButton release];
     
+    [option1Button release];
+    [option2Button release];
+    [option3Button release];
+    
     [padView release];
     [optionsView release];
     
@@ -110,7 +117,7 @@
 	[oneButton    setDigit:'1'];
     [oneButton setDtmf:true];
 	[twoButton    setDigit:'2'];
-    [twoButton setDtmf:true];
+    [twoButton  setDtmf:true];
 	[threeButton  setDigit:'3'];
     [threeButton setDtmf:true];
 	[fourButton   setDigit:'4'];
@@ -162,6 +169,18 @@
     // Set selected+over background: IB lack !
     [dialerButton setImage:[UIImage imageNamed:@"dialer_alt_back_over.png"] 
                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+     // Set label multilines: IB lack !
+    [option1Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option1Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
+    // Set label multilines: IB lack !
+    [option2Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option2Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
+    // Set label multilines: IB lack !
+    [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -395,6 +414,18 @@
     } else {
         [self hideOptions];
     }
+}
+
+- (IBAction)onOption1Click:(id)sender {
+    
+}
+
+- (IBAction)onOption2Click:(id)sender {
+
+}
+
+- (IBAction)onOption3Click:(id)sender {
+    
 }
 
 - (IBAction)onConferenceClick:(id)sender {

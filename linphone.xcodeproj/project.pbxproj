@@ -540,6 +540,10 @@
 		D3E84F3915B011AF00420DAC /* contact_cancel_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F3615B011AF00420DAC /* contact_cancel_default.png */; };
 		D3E84F3A15B011AF00420DAC /* contact_cancel_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F3715B011AF00420DAC /* contact_cancel_over.png */; };
 		D3E84F3B15B011AF00420DAC /* contact_cancel_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F3715B011AF00420DAC /* contact_cancel_over.png */; };
+		D3E84F5315B0265600420DAC /* dialer_alt_button_options_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F5115B0265600420DAC /* dialer_alt_button_options_default.png */; };
+		D3E84F5415B0265600420DAC /* dialer_alt_button_options_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F5115B0265600420DAC /* dialer_alt_button_options_default.png */; };
+		D3E84F5515B0265600420DAC /* dialer_alt_button_options_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F5215B0265600420DAC /* dialer_alt_button_options_over.png */; };
+		D3E84F5615B0265600420DAC /* dialer_alt_button_options_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E84F5215B0265600420DAC /* dialer_alt_button_options_over.png */; };
 		D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */; };
 		D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */; };
 		D3E8F68815ADE05B0065A226 /* UIContactDetailsFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */; };
@@ -1323,6 +1327,8 @@
 		D3E84F3615B011AF00420DAC /* contact_cancel_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_cancel_default.png; path = Resources/contact_cancel_default.png; sourceTree = "<group>"; };
 		D3E84F3715B011AF00420DAC /* contact_cancel_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_cancel_over.png; path = Resources/contact_cancel_over.png; sourceTree = "<group>"; };
 		D3E84F3C15B018A600420DAC /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
+		D3E84F5115B0265600420DAC /* dialer_alt_button_options_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialer_alt_button_options_default.png; path = Resources/dialer_alt_button_options_default.png; sourceTree = "<group>"; };
+		D3E84F5215B0265600420DAC /* dialer_alt_button_options_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialer_alt_button_options_over.png; path = Resources/dialer_alt_button_options_over.png; sourceTree = "<group>"; };
 		D3E8F68315ADE0570065A226 /* UIContactDetailsFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactDetailsFooter.h; sourceTree = "<group>"; };
 		D3E8F68415ADE0580065A226 /* UIContactDetailsFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactDetailsFooter.m; sourceTree = "<group>"; };
 		D3E8F68515ADE05A0065A226 /* UIContactDetailsFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactDetailsFooter.xib; sourceTree = "<group>"; };
@@ -2117,10 +2123,10 @@
 				D31C9C8D158A1C1000756B45 /* call_status_incoming.png */,
 				D31C9C8E158A1C1000756B45 /* call_status_missed.png */,
 				D31C9C8F158A1C1000756B45 /* call_status_outgoing.png */,
-				D3F9A9A315AEBA460045320F /* castel_icon_57.png */,
-				D3F9A9A415AEBA460045320F /* castel_icon_72.png */,
 				D3E84F1715B00F4100420DAC /* cancel_default.png */,
 				D3E84F1815B00F4100420DAC /* cancel_over.png */,
+				D3F9A9A315AEBA460045320F /* castel_icon_57.png */,
+				D3F9A9A415AEBA460045320F /* castel_icon_72.png */,
 				D36C43CC158F2F370048BA40 /* cell_call.png */,
 				D3211BB8159C8A820098460B /* cell_call_first.png */,
 				D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */,
@@ -2150,9 +2156,9 @@
 				D3128FE715AABE4E00A2147A /* contact_back_default.png */,
 				D3128FE815AABE4E00A2147A /* contact_back_over.png */,
 				D378906915AC37C800BD776C /* contact_bar_background.png */,
-				D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */,
 				D3E84F3615B011AF00420DAC /* contact_cancel_default.png */,
 				D3E84F3715B011AF00420DAC /* contact_cancel_over.png */,
+				D3F9A9B515AEBD2D0045320F /* contact_edit_background.png */,
 				D3128FE915AABE4E00A2147A /* contact_edit_default.png */,
 				D3128FEA15AABE4E00A2147A /* contact_edit_over.png */,
 				D37C638D15AAD251009D0BAC /* contact_number.png */,
@@ -2175,6 +2181,8 @@
 				D3E84F1B15B00F4100420DAC /* dialer_alt_back_default.png */,
 				D3E84F1C15B00F4100420DAC /* dialer_alt_back_over.png */,
 				D3E84F1D15B00F4100420DAC /* dialer_alt_background.png */,
+				D3E84F5115B0265600420DAC /* dialer_alt_button_options_default.png */,
+				D3E84F5215B0265600420DAC /* dialer_alt_button_options_over.png */,
 				D36C43CF158F2F370048BA40 /* dialer_alt_default.png */,
 				D36C43D0158F2F370048BA40 /* dialer_alt_over.png */,
 				D38327ED1580FE3A00FA0D23 /* dialer_default.png */,
@@ -2806,6 +2814,8 @@
 				D3E84F2A15B00F4100420DAC /* dialer_alt_background.png in Resources */,
 				D3E84F3815B011AF00420DAC /* contact_cancel_default.png in Resources */,
 				D3E84F3A15B011AF00420DAC /* contact_cancel_over.png in Resources */,
+				D3E84F5315B0265600420DAC /* dialer_alt_button_options_default.png in Resources */,
+				D3E84F5515B0265600420DAC /* dialer_alt_button_options_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3053,6 +3063,8 @@
 				D3E84F2B15B00F4100420DAC /* dialer_alt_background.png in Resources */,
 				D3E84F3915B011AF00420DAC /* contact_cancel_default.png in Resources */,
 				D3E84F3B15B011AF00420DAC /* contact_cancel_over.png in Resources */,
+				D3E84F5415B0265600420DAC /* dialer_alt_button_options_default.png in Resources */,
+				D3E84F5615B0265600420DAC /* dialer_alt_button_options_over.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
