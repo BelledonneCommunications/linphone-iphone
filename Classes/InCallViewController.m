@@ -266,10 +266,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     /* MODIFICATION show video in background */
     [callTableView setAlpha:1.0];
     /* */
-    if ([LinphoneManager instance].frontCamId !=nil ) {
-        // only show camera switch button if we have more than 1 camera
-        [videoCameraSwitch setAlpha:1.0];
-    }
+    [videoCameraSwitch setAlpha:1.0];
     [UIView commitAnimations];
     
     // hide controls in 5 sec
@@ -335,8 +332,14 @@ const NSInteger SECURE_BUTTON_TAG=5;
         [UIView commitAnimations];
     }
     
-    videoView.alpha = 1.0;
-    videoView.hidden = FALSE;
+    [videoView setAlpha: 1.0];
+    [videoView setHidden: FALSE];
+    
+    if ([LinphoneManager instance].frontCamId !=nil ) {
+        // only show camera switch button if we have more than 1 camera
+        [videoCameraSwitch setHidden:FALSE];
+    }
+    [videoCameraSwitch setAlpha:0.0];
     
     [[PhoneMainView instance] fullScreen: true];
     [[PhoneMainView instance] showTabBar: false];
@@ -369,7 +372,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [[PhoneMainView instance] showTabBar: true];
 
     [callTableView setAlpha:1.0];
-    [videoCameraSwitch setAlpha:0.0];
+    [videoCameraSwitch setHidden:TRUE];
     
     if(animation) {
         [UIView commitAnimations];

@@ -3339,6 +3339,7 @@
 					armv6,
 				);
 				CODE_SIGN_ENTITLEMENTS = untitled.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3378,6 +3379,7 @@
 					"-Objc",
 				);
 				PRODUCT_NAME = linphone;
+				PROVISIONING_PROFILE = "FF266D15-2709-4CF8-8B8E-C919C6A9F57B";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;

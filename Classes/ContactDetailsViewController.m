@@ -64,13 +64,15 @@
 }
 
 - (void)editContact:(ABRecordRef)acontact {
-    [self setContact:acontact];
+    self->contact = acontact;
+    [tableController setContactID:ABRecordGetRecordID(acontact)];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
-    [self setContact:acontact];
+    self->contact = acontact;
+    [tableController setContactID:ABRecordGetRecordID(acontact)];
     [tableController addSipField:address];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
@@ -154,11 +156,7 @@
 
 - (void)enableEdit:(BOOL)animated {
     if(![tableController isEditing]) {
-        if(animated)
-            [[tableController tableView] beginUpdates];
         [tableController setEditing:TRUE animated:animated];
-        if(animated)
-            [[tableController tableView] endUpdates];
     }
     [editButton setOn];
     [cancelButton setHidden:FALSE];
