@@ -21,6 +21,8 @@
 #import "UIHistoryCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "UACellBackgroundView.h"
+#import "UILinphone.h"
 
 @implementation HistoryTableViewController
 
@@ -95,6 +97,10 @@
     UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
         cell = [[[UIHistoryCell alloc] initWithIdentifier:kCellId] autorelease];
+        // Background View
+        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        cell.selectedBackgroundView = selectedBackgroundView;
+        [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
     LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];

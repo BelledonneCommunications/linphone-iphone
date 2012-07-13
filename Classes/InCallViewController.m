@@ -180,7 +180,6 @@ const NSInteger SECURE_BUTTON_TAG=5;
 
 #pragma mark - 
 
-
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState) state {
     // Update table
     [callTableView reloadData];  
@@ -373,66 +372,6 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [[PhoneMainView instance] fullScreen:false];
 }
 
-- (void)transferPressed {
-    /* allow only if call is active */
-    if (!linphone_core_get_current_call([LinphoneManager getLc]))
-        return;
-    
-    /* build UIActionSheet */
-    if (visibleActionSheet != nil) {
-        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
-    }
-    
-    CallDelegate* cd = [[CallDelegate alloc] init];
-    cd.eventType = CD_TRANSFER_CALL;
-    cd.delegate = self;
-    cd.call = linphone_core_get_current_call([LinphoneManager getLc]);
-    NSString* title = NSLocalizedString(@"Transfer to ...",nil);
-    visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
-                                                     delegate:cd 
-                                            cancelButtonTitle:nil  
-                                       destructiveButtonTitle:nil // NSLocalizedString(@"Other...",nil)
-                                            otherButtonTitles:nil];
-    
-    // add button for each trasnfer-to valid call
-    const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
-    while (calls) {
-        LinphoneCall* call = (LinphoneCall*) calls->data;
-        LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call));
-        if (call != cd.call && !linphone_call_get_current_params(call)->in_conference) {
-            const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-            NSString* btnTitle = [NSString stringWithFormat : NSLocalizedString(@"%s",nil), (linphone_address_get_display_name(addr) ?linphone_address_get_display_name(addr):linphone_address_get_username(addr))];
-            data->transferButtonIndex = [visibleActionSheet addButtonWithTitle:btnTitle];
-        } else {
-            data->transferButtonIndex = -1;
-        }
-        calls = calls->next;
-    }
-    
-    if (visibleActionSheet.numberOfButtons == 0) {
-        [visibleActionSheet release];
-        visibleActionSheet = nil;
-        
-        //TODO
-        /*[UICallButton enableTransforMode:YES];*/
-        [[PhoneMainView instance] changeView:PhoneView_Dialer];
-    } else {
-        // add 'Other' option
-        [visibleActionSheet addButtonWithTitle:NSLocalizedString(@"Other...",nil)];
-        
-        // add cancel button on iphone
-        if (![LinphoneManager runningOnIpad]) {
-            [visibleActionSheet addButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
-        }
-
-        visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-        if ([LinphoneManager runningOnIpad]) {
-            //[visibleActionSheet showFromRect:transfer.bounds inView:transfer animated:NO];
-        } else
-            [visibleActionSheet showInView:[[UIApplication sharedApplication].delegate window]];
-    }
-}
-
 - (void)displayVideoCall { 
     [self enableVideoDisplay: TRUE];
 }
@@ -532,31 +471,6 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             }
             linphone_call_params_destroy(paramsCopy);
             visibleActionSheet = nil;
-            break;
-        }
-        case CD_TRANSFER_CALL: {
-            LinphoneCall* call = (LinphoneCall*)datas;
-            // browse existing call and trasnfer to the one matching the btn id
-            const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);
-            while (calls) {
-                LinphoneCall* call2 = (LinphoneCall*) calls->data;
-                LinphoneCallAppData* data = ((LinphoneCallAppData*)linphone_call_get_user_pointer(call2));
-                if (data->transferButtonIndex == buttonIndex) {
-                    linphone_core_transfer_call_to_another([LinphoneManager getLc], call, call2);
-                    return;
-                }
-                data->transferButtonIndex = -1;
-                calls = calls->next;
-            }
-            if (![LinphoneManager runningOnIpad] && buttonIndex == (actionSheet.numberOfButtons - 1)) {
-                // cancel button
-                return;
-            }
-            // user must jhave pressed 'other...' button as we did not find a call
-            // with the correct indice
-            //TODO
-            //[UICallButton enableTransforMode:YES];
-            [[PhoneMainView instance] changeView:PhoneView_Dialer];
             break;
         }
         default:

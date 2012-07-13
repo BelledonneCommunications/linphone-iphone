@@ -27,7 +27,8 @@
 @synthesize dialerButton;
 @synthesize settingsButton;
 @synthesize chatButton;
-
+@synthesize historyNotificationView;
+@synthesize historyNotificationLabel;
 
 #pragma mark - Lifecycle Functions
 
@@ -43,6 +44,8 @@
     [dialerButton release];
     [settingsButton release];
     [chatButton release];
+    [historyNotificationView release];
+    [historyNotificationLabel release];
     
     [super dealloc];
 }
@@ -57,7 +60,16 @@
                                              selector:@selector(changeViewEvent:) 
                                                  name:@"LinphoneMainViewChange" 
                                                object:nil];
-    [self update:[[PhoneMainView instance] currentView]];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(callUpdate:) 
+                                                 name:@"LinphoneCallUpdate" 
+                                               object:nil];
+    [self updateView:[[PhoneMainView instance] currentView]];
+    if([LinphoneManager isLcReady]) {
+        [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+    } else {
+        [self updateMissed:0];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -66,21 +78,83 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneMainViewChange" 
                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneCallUpdate" 
+                                                  object:nil];
 }
 
 
 #pragma mark - Event Functions
 
+- (void)callUpdate: (NSNotification*) notif {  
+    //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    //LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+}
+
 - (void)changeViewEvent: (NSNotification*) notif {  
     NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
     if(viewNumber != nil)
-        [self update:[viewNumber intValue]];
+        [self updateView:[viewNumber intValue]];
 }
 
 
 #pragma mark - 
 
-- (void)update:(PhoneView) view {
+- (void)updateMissed:(int)missedCall {
+    if (missedCall > 0) {
+        if([historyNotificationView isHidden]) {
+            historyNotificationView.transform = CGAffineTransformIdentity;
+            [self startShakeAnimation:@"Shake" target:historyNotificationView];
+            [historyNotificationView setHidden:FALSE];
+        }
+        [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
+    } else {
+        if(![historyNotificationView isHidden]) {
+            [self stopShakeAnimation:@"Shake" target:historyNotificationView];
+            CGAffineTransform startCGA = [historyNotificationView transform];
+            [UIView animateWithDuration:0.4 
+                                  delay:0 
+                                options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 historyNotificationView.transform = CGAffineTransformConcat(startCGA, CGAffineTransformMakeScale(0.01f, 0.01f));
+                             }
+                             completion:^(BOOL finished){
+                                 [historyNotificationView setHidden:TRUE];
+                             }
+             ];
+        }
+    }
+}
+
+- (void)startShakeAnimation:(NSString *)animationID  target:(UIView *)target { 
+    [target setTransform:CGAffineTransformMakeTranslation(0, -4)];
+    [UIView animateWithDuration: 0.3
+                          delay: 0
+                        options: UIViewAnimationOptionRepeat | 
+     UIViewAnimationOptionAutoreverse | 
+     UIViewAnimationOptionAllowUserInteraction | 
+     UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         [target setTransform:CGAffineTransformMakeTranslation(0, 4)];
+                     }
+                     completion:^(BOOL finished){
+                     }];
+    
+}
+
+- (void)stopShakeAnimation:(NSString *)animationID target:(UIView *)target {
+    [target.layer removeAnimationForKey:animationID];
+}
+         
+- (void)updateView:(PhoneView) view {
+    // Reset missed call
+    if(view == PhoneView_History) {
+        linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
+        [self updateMissed:0];
+    }
+    
+    // Update buttons
     if(view == PhoneView_History) {
         historyButton.selected = TRUE;
     } else {

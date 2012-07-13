@@ -39,6 +39,7 @@
 
 @synthesize optionsAddButton;
 @synthesize optionsTransferButton;
+@synthesize dialerButton;
 
 @synthesize padView;
 @synthesize optionsView;
@@ -73,6 +74,7 @@
     
     [optionsAddButton release];
     [optionsTransferButton release];
+    [dialerButton release];
     
     [oneButton release];
 	[twoButton release];
@@ -156,6 +158,10 @@
     // Set selected+over background: IB lack !
     [optionsButton setImage:[UIImage imageNamed:@"options_over.png"] 
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [dialerButton setImage:[UIImage imageNamed:@"dialer_alt_back_over.png"] 
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -245,6 +251,7 @@
 #pragma mark -  
 
 - (void)showPad{
+    [dialerButton setOn];
     if([padView isHidden]) {
         CGRect frame = [padView frame];
         int original_y = frame.origin.y;
@@ -267,6 +274,7 @@
 }
 
 - (void)hidePad{
+    [dialerButton setOff];
     if(![padView isHidden]) {
         CGRect frame = [padView frame];
         int original_y = frame.origin.y;
@@ -294,7 +302,7 @@
 }
 
 - (void)showOptions{
-    [optionsButton setSelected:TRUE];
+    [optionsButton setOn];
     if([optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;
@@ -317,7 +325,7 @@
 }
 
 - (void)hideOptions{
-    [optionsButton setSelected:FALSE];
+    [optionsButton setOff];
     if(![optionsView isHidden]) {
         CGRect frame = [optionsView frame];
         int original_y = frame.origin.y;

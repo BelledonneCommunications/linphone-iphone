@@ -11,9 +11,11 @@
 			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBProxyObject</string>
-			<string>IBUIView</string>
 			<string>IBUIButton</string>
+			<string>IBUIImageView</string>
+			<string>IBUIView</string>
+			<string>IBUILabel</string>
+			<string>IBProxyObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -41,7 +43,7 @@
 						<string key="NSFrame">{{0, 11}, {320, 66}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="617445003"/>
+						<reference key="NSNextKeyView" ref="698962606"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -95,6 +97,71 @@
 							<double key="NSSize">15</double>
 							<int key="NSfFlags">16</int>
 						</object>
+					</object>
+					<object class="IBUIView" id="698962606">
+						<reference key="NSNextResponder" ref="1018893129"/>
+						<int key="NSvFlags">-2147483356</int>
+						<array class="NSMutableArray" key="NSSubviews">
+							<object class="IBUIImageView" id="307047814">
+								<reference key="NSNextResponder" ref="698962606"/>
+								<int key="NSvFlags">274</int>
+								<string key="NSFrameSize">{21, 21}</string>
+								<reference key="NSSuperview" ref="698962606"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="364959328"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">history_notification.png</string>
+								</object>
+							</object>
+							<object class="IBUILabel" id="364959328">
+								<reference key="NSNextResponder" ref="698962606"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrameSize">{21, 21}</string>
+								<reference key="NSSuperview" ref="698962606"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="617445003"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<bool key="IBUIClipsSubviews">YES</bool>
+								<int key="IBUIContentMode">7</int>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<string key="IBUIText">99</string>
+								<object class="NSColor" key="IBUITextColor">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MQA</bytes>
+								</object>
+								<nil key="IBUIHighlightedColor"/>
+								<int key="IBUIBaselineAdjustment">0</int>
+								<float key="IBUIMinimumFontSize">10</float>
+								<int key="IBUITextAlignment">1</int>
+								<object class="IBUIFontDescription" key="IBUIFontDescription">
+									<int key="type">1</int>
+									<double key="pointSize">14</double>
+								</object>
+								<object class="NSFont" key="IBUIFont">
+									<string key="NSName">Helvetica</string>
+									<double key="NSSize">14</double>
+									<int key="NSfFlags">16</int>
+								</object>
+							</object>
+						</array>
+						<string key="NSFrame">{{38, 5}, {21, 21}}</string>
+						<reference key="NSSuperview" ref="1018893129"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="307047814"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MCAwAA</bytes>
+						</object>
+						<bool key="IBUIAutoresizesSubviews">NO</bool>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIButton" id="617445003">
 						<reference key="NSNextResponder" ref="1018893129"/>
@@ -198,7 +265,6 @@
 						<string key="NSFrame">{{256, 0}, {64, 77}}</string>
 						<reference key="NSSuperview" ref="1018893129"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -289,6 +355,22 @@
 					<int key="connectionID">12</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">historyNotificationLabel</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="364959328"/>
+					</object>
+					<int key="connectionID">35</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">historyNotificationView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="698962606"/>
+					</object>
+					<int key="connectionID">36</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">onChatClick:</string>
 						<reference key="source" ref="55915342"/>
@@ -363,6 +445,7 @@
 							<reference ref="55915342"/>
 							<reference ref="83510153"/>
 							<reference ref="562688945"/>
+							<reference ref="698962606"/>
 						</array>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">mainTabBar</string>
@@ -404,6 +487,28 @@
 						<reference key="parent" ref="1018893129"/>
 						<string key="objectName">dialer</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">32</int>
+						<reference key="object" ref="698962606"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="307047814"/>
+							<reference ref="364959328"/>
+						</array>
+						<reference key="parent" ref="1018893129"/>
+						<string key="objectName">historyNotificationView</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">33</int>
+						<reference key="object" ref="307047814"/>
+						<reference key="parent" ref="698962606"/>
+						<string key="objectName">historyNotificationImage</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">34</int>
+						<reference key="object" ref="364959328"/>
+						<reference key="parent" ref="698962606"/>
+						<string key="objectName">historyNotificationLabel</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -413,6 +518,9 @@
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<dictionary class="NSMutableDictionary" key="3.IBAttributePlaceholdersKey"/>
 				<string key="3.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="5.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -429,7 +537,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">29</int>
+			<int key="maxID">36</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -470,6 +578,8 @@
 						<string key="contactsButton">UIButton</string>
 						<string key="dialerButton">UIButton</string>
 						<string key="historyButton">UIButton</string>
+						<string key="historyNotificationLabel">UILabel</string>
+						<string key="historyNotificationView">UIView</string>
 						<string key="settingsButton">UIButton</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -488,6 +598,14 @@
 						<object class="IBToOneOutletInfo" key="historyButton">
 							<string key="name">historyButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="historyNotificationLabel">
+							<string key="name">historyNotificationLabel</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="historyNotificationView">
+							<string key="name">historyNotificationView</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="settingsButton">
 							<string key="name">settingsButton</string>
@@ -520,6 +638,7 @@
 			<string key="dialer_over.png">{128, 154}</string>
 			<string key="dialer_selected.png">{128, 154}</string>
 			<string key="history_default.png">{128, 154}</string>
+			<string key="history_notification.png">{43, 43}</string>
 			<string key="history_over.png">{128, 154}</string>
 			<string key="history_selected.png">{128, 154}</string>
 			<string key="settings_default.png">{128, 154}</string>

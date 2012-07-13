@@ -74,14 +74,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(keyboardWillShow:) 
-                                                 name:UIKeyboardWillShowNotification 
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(keyboardWillHide:) 
-                                                 name:UIKeyboardWillHideNotification 
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceivedEvent:) 
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
@@ -93,13 +85,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification 
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillHideNotification 
-                                                  object:nil];
-        
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneTextReceived" 
                                                     object:nil];
@@ -130,42 +115,6 @@
     }
 }
 
-
-#pragma mark - Keyboard Event Functions
-
-- (void)keyboardWillHide:(NSNotification *)notif {
-    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-    NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView beginAnimations:@"resize" context:nil];
-    [UIView setAnimationDuration:duration];
-    [UIView setAnimationCurve:curve];
-    [UIView setAnimationBeginsFromCurrentState:TRUE];
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect frame = [[self view] frame];
-    CGPoint pos = {0, 0};
-    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
-    frame.size.height = endFrame.origin.y - gPos.y;
-    [[self view] setFrame:frame];
-    [UIView commitAnimations];
-}
-
-- (void)keyboardWillShow:(NSNotification *)notif {
-    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-    NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    [UIView beginAnimations:@"resize" context:nil];
-    [UIView setAnimationDuration:duration];
-    [UIView setAnimationCurve:curve];
-    [UIView setAnimationBeginsFromCurrentState:TRUE];
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect frame = [[self view] frame];
-    CGPoint pos = {0, 0};
-    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
-    frame.size.height = endFrame.origin.y - gPos.y;
-    [[self view] setFrame:frame];
-    [UIView commitAnimations];
-}
 
 #pragma mark - UITextFieldDelegate Functions
 

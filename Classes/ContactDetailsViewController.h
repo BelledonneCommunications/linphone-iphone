@@ -28,13 +28,18 @@
     ContactDetailsTableViewController *tableController;
     ABRecordRef contact;
     UIToggleButton *editButton;
+    UIButton *backButton;
+    UIButton *cancelButton;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;
 @property (nonatomic, retain) IBOutlet ContactDetailsTableViewController *tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, retain) IBOutlet UIButton *backButton;
+@property (nonatomic, retain) IBOutlet UIButton *cancelButton;
 
 - (IBAction)onBackClick:(id)event;
+- (IBAction)onCancelClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 
 - (void)newContact;

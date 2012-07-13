@@ -22,6 +22,8 @@
 
 #import "linphonecore.h"
 #import "PhoneMainView.h"
+#import "UACellBackgroundView.h"
+#import "UILinphone.h"
 
 @implementation ChatTableViewController
 
@@ -59,6 +61,12 @@
     UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
         cell = [[[UIChatCell alloc] initWithIdentifier:kCellId] autorelease];
+        
+        
+        // Background View
+        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        cell.selectedBackgroundView = selectedBackgroundView;
+        [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];

@@ -25,6 +25,8 @@
 @synthesize tableController;
 @synthesize contact;
 @synthesize editButton;
+@synthesize backButton;
+@synthesize cancelButton;
 
 
 #pragma mark - Lifecycle Functions
@@ -35,7 +37,12 @@
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [tableController release];
+    
+    [editButton release];
+    [backButton release];
+    [cancelButton release];
     
     [super dealloc];
 }
@@ -45,32 +52,28 @@
 
 - (void)newContact {
     [tableController newContact];
-    [tableController setEditing:TRUE animated:FALSE];
+    [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
-    [editButton setOn];
 }
 
 - (void)newContact:(NSString*)address {
     [tableController newContact];
     [tableController addSipField:address];
-    [tableController setEditing:TRUE animated:FALSE];
+    [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
-    [editButton setOn];
 }
 
 - (void)editContact:(ABRecordRef)acontact {
     [self setContact:acontact];
-    [tableController setEditing:TRUE animated:FALSE];
+    [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
-    [editButton setOn];
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
     [self setContact:acontact];
     [tableController addSipField:address];
-    [tableController setEditing:TRUE animated:FALSE];
+    [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
-    [editButton setOn];
 }
 
 #pragma mark - Property Functions
@@ -78,6 +81,7 @@
 - (void)setContact:(ABRecordRef)acontact {
     self->contact = acontact;
     [tableController setContactID:ABRecordGetRecordID(acontact)];
+    [self disableEdit:FALSE];
 }
 
 
@@ -94,7 +98,6 @@
     [tableController->footerController->removeButton addTarget:self 
                                                         action:@selector(onRemove:) 
                                               forControlEvents:UIControlEventTouchUpInside];
-    [[tableController tableView] setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewDidUnload {
@@ -109,11 +112,8 @@
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [tableController viewWillDisappear:NO];
     }
-    if([tableController isEditing]) {
-        [tableController setEditing:FALSE animated:FALSE];
-        [tableController resetData];
-        [editButton setOff];
-    }
+    [self disableEdit:FALSE];
+    [tableController resetData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -137,6 +137,7 @@
     }  
 }
 
+
 #pragma mark - UICompositeViewDelegate Functions
 
 + (UICompositeViewDescription*) compositeViewDescription {
@@ -151,34 +152,54 @@
 }
 
 
+- (void)enableEdit:(BOOL)animated {
+    if(![tableController isEditing]) {
+        if(animated)
+            [[tableController tableView] beginUpdates];
+        [tableController setEditing:TRUE animated:animated];
+        if(animated)
+            [[tableController tableView] endUpdates];
+    }
+    [editButton setOn];
+    [cancelButton setHidden:FALSE];
+    [backButton setHidden:TRUE];
+}
+
+- (void)disableEdit:(BOOL)animated {
+    if([tableController isEditing]) {
+        [tableController setEditing:FALSE animated:animated];
+    }
+    [editButton setOff];
+    [cancelButton setHidden:TRUE];
+    [backButton setHidden:FALSE];
+}
+
 #pragma mark - Action Functions
 
-- (IBAction)onBackClick:(id)event {
-    if([tableController isEditing]) {
-        [tableController setEditing:FALSE animated:FALSE];
-        [tableController resetData];
-        [editButton setOff];
-        if([tableController contactID] == kABRecordInvalidID) {
-            [[PhoneMainView instance] popView];
-        }
-    } else {
+- (IBAction)onCancelClick:(id)event {
+    [self disableEdit:FALSE];
+    [tableController resetData];
+    if([tableController contactID] == kABRecordInvalidID) {
         [[PhoneMainView instance] popView];
     }
 }
 
+- (IBAction)onBackClick:(id)event {
+    [[PhoneMainView instance] popView];
+}
+
 - (IBAction)onEditClick:(id)event {
-    [[tableController tableView] beginUpdates];
-    [tableController setEditing:![tableController isEditing] animated:TRUE];
-    [[tableController tableView] endUpdates];
-    if(![tableController isEditing]) {
+    if([tableController isEditing]) {
+        [self disableEdit:TRUE];
         [tableController saveData];
+    } else {
+        [self enableEdit:TRUE];
     }
 }
 
-- (IBAction)onRemove:(id)event {
-    [tableController setEditing:FALSE animated:FALSE];
+- (void)onRemove:(id)event {
+    [self disableEdit:FALSE];
     [tableController removeContact];
-    [editButton setOff];
     [[PhoneMainView instance] popView];
 }
 

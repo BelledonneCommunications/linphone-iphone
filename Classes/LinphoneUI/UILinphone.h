@@ -1,4 +1,4 @@
-/* UIMainBar.m
+/* UILinphone.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,32 +15,11 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */  
+ */ 
 
-#import <UIKit/UIKit.h>
+#ifndef UILINPHONE_H
+#define UILINPHONE_H
 
-@interface UIMainBar : UIViewController {
-    UIButton *historyButton;
-    UIButton *contactsButton;
-    UIButton *dialerButton;
-    UIButton *settingsButton;
-    UIButton *chatButton;
-    UIView *historyNotificationView;
-    UILabel *historyNotificationLabel;
-}
+#define LINPHONE_TABLE_CELL_BACKGROUND_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
 
-@property (nonatomic, retain) IBOutlet UIButton* historyButton;
-@property (nonatomic, retain) IBOutlet UIButton* contactsButton;
-@property (nonatomic, retain) IBOutlet UIButton* dialerButton;
-@property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet UIButton* chatButton;
-@property (nonatomic, retain) IBOutlet UIView *historyNotificationView;
-@property (nonatomic, retain) IBOutlet UILabel *historyNotificationLabel;
-
--(IBAction) onHistoryClick: (id) event;
--(IBAction) onContactsClick: (id) event;
--(IBAction) onDialerClick: (id) event;
--(IBAction) onSettingsClick: (id) event;
--(IBAction) onChatClick: (id) event;
-
-@end
+#endif

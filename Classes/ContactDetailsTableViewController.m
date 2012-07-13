@@ -21,6 +21,8 @@
 #import "PhoneMainView.h"
 #import "UIEditableTableViewCell.h"
 #import "UIView+ModalStack.h"
+#import "UACellBackgroundView.h"
+#import "UILinphone.h"
 
 @interface Entry : NSObject
 
@@ -104,6 +106,11 @@
 
 #pragma mark - ViewController Functions
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self loadData];
@@ -128,7 +135,8 @@
     contact = nil;
 }
 
-#pragma mark - 
+
+#pragma mark -
 
 + (BOOL)findAndResignFirstResponder:(UIView*)view {
     if (view.isFirstResponder) {
@@ -419,6 +427,14 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     UIEditableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {  
         cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
+        [cell.detailTextField setDelegate:self];
+        [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+        [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+        
+        // Background View
+        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        cell.selectedBackgroundView = selectedBackgroundView;
+        [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
     NSMutableArray *sectionDict = [dataCache objectAtIndex:[indexPath section]];
@@ -449,16 +465,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         CFRelease(lDict);
         CFRelease(lMap);
     }
-
+    
     [cell.textLabel setText:label];
     [cell.detailTextLabel setText:value];
     [cell.detailTextField setText:value];
-    [cell.detailTextField setDelegate:self];
     if ([indexPath section] == 0) {
         [cell.detailTextField setKeyboardType:UIKeyboardTypePhonePad];
         [cell.detailTextField setPlaceholder:@"Phone number"];
     } else {
-        [cell.detailTextField setKeyboardType:UIKeyboardTypeEmailAddress];
+        [cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
         [cell.detailTextField setPlaceholder:@"SIP address"];
     }
     
