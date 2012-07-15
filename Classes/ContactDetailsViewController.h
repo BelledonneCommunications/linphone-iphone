@@ -30,6 +30,9 @@
     UIToggleButton *editButton;
     UIButton *backButton;
     UIButton *cancelButton;
+    
+    ABAddressBookRef addressBook;
+    BOOL inhibUpdate;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;

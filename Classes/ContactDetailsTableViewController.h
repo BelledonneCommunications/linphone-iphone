@@ -27,26 +27,17 @@
 @interface ContactDetailsTableViewController : UITableViewController<UIModalViewDelegate, UITextFieldDelegate> {
 @private
     ABRecordRef contact;
-    ABRecordID contactID;
     NSMutableArray *dataCache;
-    ABAddressBookRef addressBook;
     ContactDetailsLabelViewController *contactDetailsLabelViewController;
     NSMutableArray *labelArray;
     NSIndexPath *editingIndexPath;
-    BOOL inhibUpdate;
 @public
     UIContactDetailsHeader *headerController;
     UIContactDetailsFooter *footerController;
 }
 
-@property (nonatomic, assign) ABRecordID contactID;
+@property (nonatomic, assign) ABRecordRef contact;
 
-- (void)newContact;
-- (void)removeContact;
 - (void)addSipField:(NSString*)address;
-
-- (void)loadData;
-- (void)saveData;
-- (void)resetData;
 
 @end

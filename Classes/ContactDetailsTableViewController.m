@@ -23,6 +23,7 @@
 #import "UIView+ModalStack.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "OrderedDictionary.h"
 
 @interface Entry : NSObject
 
@@ -53,8 +54,7 @@
 
 @implementation ContactDetailsTableViewController
 
-@synthesize contactID;
-
+@synthesize contact;
 
 #pragma mark - Lifecycle Functions
 
@@ -65,15 +65,9 @@
                   @"Linphone",
                   [NSString stringWithString:(NSString*)kABPersonPhoneMobileLabel], 
                   [NSString stringWithString:(NSString*)kABPersonPhoneIPhoneLabel],
-                  [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel],
-                  [NSString stringWithString:(NSString*)kABPersonPhoneHomeFAXLabel],
-                  [NSString stringWithString:(NSString*)kABPersonPhoneWorkFAXLabel], nil];
-    inhibUpdate = FALSE;
+                  [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel], nil];
     headerController = [[UIContactDetailsHeader alloc] init];
     footerController = [[UIContactDetailsFooter alloc] init];
-     
-    addressBook = ABAddressBookCreate();
-    ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
 
 - (id)init {
@@ -92,10 +86,7 @@
     return self;
 }	
 
-- (void)dealloc {
-    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
-    CFRelease(addressBook);
-    
+- (void)dealloc {   
     [labelArray release];
     [dataCache release];
     [headerController release];
@@ -159,88 +150,11 @@
 }
 
 - (NSDictionary*)getLocalizedLabels {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:[labelArray count]];
+    OrderedDictionary *dict = [[OrderedDictionary alloc] initWithCapacity:[labelArray count]];
     for(NSString *str in labelArray) {
         [dict setObject:[ContactDetailsTableViewController localizeLabel:str] forKey:str];
     }
     return [dict autorelease];
-}
-
-static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-    ContactDetailsTableViewController* controller = (ContactDetailsTableViewController*)context;
-    //ABAddressBookRevert(addressBook);
-    if(!controller->inhibUpdate && ![controller isEditing]) {
-        [controller resetData];
-    }
-}
-
-- (void)resetData {
-    if(contact == NULL) 
-        return;
-    
-    NSLog(@"Reset data to contact %p", contact);
-    ABAddressBookRevert(addressBook);
-    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(contact));
-    if(contact == NULL) {
-        [[footerController removeButton] sendActionsForControlEvents: UIControlEventTouchUpInside];
-        return;
-    }
-    [self loadData];
-}
-
-- (void)removeContact {
-    if(contact == NULL) 
-        return;
-    
-    // Remove contact from book
-    if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
-        NSError* error = NULL;
-        ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef*)&error);
-        if (error != NULL) {
-            NSLog(@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]);
-        } else {
-            NSLog(@"Remove contact %p: Success!", contact);
-        }
-        contact = NULL;
-        
-        // Save address book
-        error = NULL;
-        inhibUpdate = TRUE;
-        ABAddressBookSave(addressBook, (CFErrorRef*)&error);
-        inhibUpdate = FALSE;
-        if (error != NULL) {
-            NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
-        } else {
-            NSLog(@"Save AddressBook: Success!");
-        }
-    }
-}
-
-- (void)saveData {
-    if(contact == NULL) 
-        return;
-    
-    // Add contact to book
-    NSError* error = NULL;
-    if(ABRecordGetRecordID(contact) == kABRecordInvalidID) {
-        ABAddressBookAddRecord(addressBook, contact, (CFErrorRef*)&error);
-        if (error != NULL) {
-            NSLog(@"Add contact %p: Fail(%@)", contact, [error localizedDescription]);
-        } else {
-            NSLog(@"Add contact %p: Success!", contact);
-        }
-    }
-
-    // Save address book
-    error = NULL;
-    inhibUpdate = TRUE;
-    ABAddressBookSave(addressBook, (CFErrorRef*)&error);
-    inhibUpdate = FALSE;
-    if (error != NULL) {
-        NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
-    } else {
-        NSLog(@"Save AddressBook: Success!");
-    }
 }
 
 - (void)loadData {
@@ -341,10 +255,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         CFRelease(lMap);
     }
     
-    NSArray *tagInsertIndexPath = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:count inSection:section]];
-    
     if (animated) {
-        [tableview insertRowsAtIndexPaths:tagInsertIndexPath withRowAnimation:UITableViewRowAnimationFade];
+        // Update accessory
+        if (count > 0) {
+            [tableview reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:count -1 inSection:section]] withRowAnimation:FALSE];
+        }
+        [tableview insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:count inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -405,14 +321,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 #pragma mark - Property Functions
 
-- (void)setContactID:(ABRecordID)acontactID {
-    self->contactID = acontactID;
-    contact = ABAddressBookGetPersonWithRecordID(addressBook, contactID);
-    [self loadData];
-}
-
-- (void)newContact {
-    contact = ABPersonCreate();
+- (void)setContact:(ABRecordRef)acontact {
+    self->contact = acontact;
     [self loadData];
 }
 
@@ -561,7 +471,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if (editingStyle == UITableViewCellEditingStyleInsert) {
         [self.tableView beginUpdates];
 		[self addEntry:self.tableView section:[indexPath section] animated:TRUE];
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:FALSE];
         [self.tableView  endUpdates];
 	} else if (editingStyle == UITableViewCellEditingStyleDelete) {
         [self.tableView beginUpdates];
@@ -666,28 +575,30 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 - (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value {
     [[[self view]superview] removeModalView:[contactDetailsLabelViewController view]];
     contactDetailsLabelViewController = nil;
-    NSMutableArray *sectionDict = [dataCache objectAtIndex:[editingIndexPath section]];
-    Entry *entry = [sectionDict objectAtIndex:[editingIndexPath row]];
-    if([editingIndexPath section] == 0) {
-        ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-        ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
-        CFRelease(lcMap);
-        int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-        ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
-        ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
-        CFRelease(lMap);
-    } else if([editingIndexPath section] == 1) {
-        ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
-        ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
-        CFRelease(lcMap);
-        int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-        ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
-        ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
-        CFRelease(lMap);
+    if(value != nil) {
+        NSMutableArray *sectionDict = [dataCache objectAtIndex:[editingIndexPath section]];
+        Entry *entry = [sectionDict objectAtIndex:[editingIndexPath row]];
+        if([editingIndexPath section] == 0) {
+            ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
+            ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
+            ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
+            CFRelease(lMap);
+        } else if([editingIndexPath section] == 1) {
+            ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
+            ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
+            ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
+            CFRelease(lMap);
+        }
+        [self.tableView beginUpdates];
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject: editingIndexPath] withRowAnimation:FALSE];
+        [self.tableView endUpdates];
     }
-    [self.tableView beginUpdates];
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject: editingIndexPath] withRowAnimation:FALSE];
-    [self.tableView endUpdates];
     [editingIndexPath release];
     editingIndexPath = nil;
 }

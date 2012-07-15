@@ -33,11 +33,17 @@
 
 - (id)init  {
     self = [super initWithNibName:@"ContactDetailsViewController" bundle:[NSBundle mainBundle]];
+    if(self != nil) {
+        inhibUpdate = FALSE;
+        addressBook = ABAddressBookCreate();
+        ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
+    }
     return self;
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
+    CFRelease(addressBook);
     [tableController release];
     
     [editButton release];
@@ -50,39 +56,120 @@
 
 #pragma mark - 
 
+- (void)resetData {
+    NSLog(@"Reset data to contact %p", contact);
+    ABRecordID recordID = ABRecordGetRecordID(contact);
+    ABAddressBookRevert(addressBook);
+    contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
+    if(contact == NULL) {
+        [[PhoneMainView instance] popView];
+        return;
+    }
+    [tableController setContact:contact];
+}
+
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
+    ContactDetailsViewController* controller = (ContactDetailsViewController*)context;
+    if(!controller->inhibUpdate && ![[controller tableController] isEditing]) {
+        [controller resetData];
+    }
+}
+
+- (void)removeContact {
+    if(contact == NULL) {
+        [[PhoneMainView instance] popView];
+        return;
+    }
+    
+    // Remove contact from book
+    if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
+        NSError* error = NULL;
+        ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef*)&error);
+        if (error != NULL) {
+            NSLog(@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]);
+        } else {
+            NSLog(@"Remove contact %p: Success!", contact);
+        }
+        contact = NULL;
+        
+        // Save address book
+        error = NULL;
+        inhibUpdate = TRUE;
+        ABAddressBookSave(addressBook, (CFErrorRef*)&error);
+        inhibUpdate = FALSE;
+        if (error != NULL) {
+            NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+        } else {
+            NSLog(@"Save AddressBook: Success!");
+        }
+    }
+}
+
+- (void)saveData {
+    if(contact == NULL) {
+        [[PhoneMainView instance] popView];
+        return;
+    }
+    
+    // Add contact to book
+    NSError* error = NULL;
+    if(ABRecordGetRecordID(contact) == kABRecordInvalidID) {
+        ABAddressBookAddRecord(addressBook, contact, (CFErrorRef*)&error);
+        if (error != NULL) {
+            NSLog(@"Add contact %p: Fail(%@)", contact, [error localizedDescription]);
+        } else {
+            NSLog(@"Add contact %p: Success!", contact);
+        }
+    }
+    
+    // Save address book
+    error = NULL;
+    inhibUpdate = TRUE;
+    ABAddressBookSave(addressBook, (CFErrorRef*)&error);
+    inhibUpdate = FALSE;
+    if (error != NULL) {
+        NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+    } else {
+        NSLog(@"Save AddressBook: Success!");
+    }
+}
+
 - (void)newContact {
-    [tableController newContact];
+    self->contact = ABPersonCreate();
+    [tableController setContact:self->contact];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)newContact:(NSString*)address {
-    [tableController newContact];
+    self->contact = ABPersonCreate();
+    [tableController setContact:self->contact];
     [tableController addSipField:address];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)editContact:(ABRecordRef)acontact {
-    self->contact = acontact;
-    [tableController setContactID:ABRecordGetRecordID(acontact)];
+    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:self->contact];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
-    self->contact = acontact;
-    [tableController setContactID:ABRecordGetRecordID(acontact)];
+    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:self->contact];
     [tableController addSipField:address];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
+
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
-    self->contact = acontact;
-    [tableController setContactID:ABRecordGetRecordID(acontact)];
+    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:self->contact];
     [self disableEdit:FALSE];
 }
 
@@ -115,7 +202,7 @@
         [tableController viewWillDisappear:NO];
     }
     [self disableEdit:FALSE];
-    [tableController resetData];
+    [self resetData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -175,11 +262,8 @@
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-    [self disableEdit:FALSE];
-    [tableController resetData];
-    if([tableController contactID] == kABRecordInvalidID) {
-        [[PhoneMainView instance] popView];
-    }
+    [self disableEdit:TRUE];
+    [self resetData];
 }
 
 - (IBAction)onBackClick:(id)event {
@@ -189,7 +273,7 @@
 - (IBAction)onEditClick:(id)event {
     if([tableController isEditing]) {
         [self disableEdit:TRUE];
-        [tableController saveData];
+        [self saveData];
     } else {
         [self enableEdit:TRUE];
     }
@@ -197,7 +281,7 @@
 
 - (void)onRemove:(id)event {
     [self disableEdit:FALSE];
-    [tableController removeContact];
+    [self removeContact];
     [[PhoneMainView instance] popView];
 }
 
