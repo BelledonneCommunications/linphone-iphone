@@ -119,11 +119,10 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     miny -= 1;
 	
     CGFloat locations[2] = { 0.0, 1.0 };
-    CGColorSpaceRef myColorspace = CGColorSpaceCreateDeviceRGB();
+    CGColorSpaceRef myColorspace = CGColorGetColorSpace([[self backgroundColor] CGColor]);
     CGGradientRef myGradient = nil;
-    CGFloat redColor, greenColor, blueColor, alphaColor;
-    [[self backgroundColor] getRed:&redColor green:&greenColor blue:&blueColor alpha:&alphaColor];
-    CGFloat components[8] = {redColor, greenColor, blueColor, alphaColor, redColor * 0.766f, greenColor * 0.766f, blueColor * 0.766f, alphaColor};
+    const CGFloat *default_components = CGColorGetComponents([[self backgroundColor] CGColor]);
+    CGFloat components[8] = {default_components[0], default_components[1], default_components[2], default_components[3], default_components[0] * 0.766f, default_components[1] * 0.766f, default_components[2] * 0.766f, default_components[3]};
     CGContextSetStrokeColorWithColor(c, [[UIColor grayColor] CGColor]);
     CGContextSetLineWidth(c, lineWidth);
     CGContextSetAllowsAntialiasing(c, YES);
