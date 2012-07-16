@@ -28,7 +28,6 @@
 #import <CoreTelephony/CTCallCenter.h>
 
 #import "LinphoneManager.h"
-#import "FastAddressBook.h"
 #import "LinphoneCoreSettingsStore.h"
 #import "ChatModel.h"
 
@@ -166,34 +165,6 @@ struct codec_name_pref_table codec_pref_table[]={
 	return theLinphoneManager;
 }
 
--(void) updateCallWithAddressBookData:(LinphoneCall*) call {/*
-    //1 copy adress book
-    LinphoneCallLog* lLog = linphone_call_get_call_log(call);
-    LinphoneAddress* lAddress;
-    if (lLog->dir == LinphoneCallIncoming) {
-        lAddress=lLog->from;
-    } else {
-        lAddress=lLog->to;
-    }
-    const char* lUserName = linphone_address_get_username(lAddress); 
-    if (!lUserName) {
-        //just return
-        return;
-    }
-    
-    NSString* lE164Number = [[NSString alloc] initWithCString:lUserName encoding:[NSString defaultCStringEncoding]];
-    NSString* lDisplayName = [self getDisplayNameFromAddressBook:lE164Number andUpdateCallLog:lLog];
-    
-    if(lDisplayName) {        
-        linphone_address_set_display_name(lAddress, [lDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    } else {
-        ms_message("No contact entry found for  [%s] in address book",lUserName);
-    }
-    
-    [lE164Number release];
-    return;*/
-}
-
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
     if(state == LinphoneCallReleased) {
@@ -207,10 +178,6 @@ struct codec_name_pref_table codec_pref_table[]={
         LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
         data->batteryWarningShown = FALSE;
         linphone_call_set_user_pointer(call, data);
-    }
-    
-    if (state == LinphoneCallIncomingReceived) {
-        [self updateCallWithAddressBookData:call]; // display name is updated 
     }
     
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
@@ -324,6 +291,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
+    [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
     // Post event
@@ -826,7 +794,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
             linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
         }
         linphone_address_destroy(linphoneAddress);
-	} else if ( proxyCfg==nil){
+	} else if (proxyCfg==nil){
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
 														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
 													   delegate:nil 
@@ -840,7 +808,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
         linphone_address_set_username(linphoneAddress, normalizedUserName);
         if(displayName!=nil) {
-            linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+            linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
             linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);

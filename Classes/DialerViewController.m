@@ -194,12 +194,18 @@
 }
 
 - (void)call:(NSString*)address {
-    [self call:address displayName:nil];
+    NSString *displayName = nil;
+    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+    if(contact) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+    }
+    [self call:address displayName:displayName];
 }
 
 - (void)call:(NSString*)address displayName:(NSString *)displayName {
     [[LinphoneManager instance] call:address displayName:displayName transfer:transferMode];
 }
+
 
 #pragma mark - UITextFieldDelegate Functions
 

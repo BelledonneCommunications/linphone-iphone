@@ -21,7 +21,7 @@
 
 @interface ChatTableViewController : UITableViewController {
 @private
-    NSArray *data;
+    NSMutableArray *data;
 }
 
 @end

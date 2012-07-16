@@ -24,6 +24,7 @@
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
 #import "OrderedDictionary.h"
+#import "FastAddressBook.h"
 
 @interface Entry : NSObject
 
@@ -450,15 +451,13 @@
             CFRelease(lMap);
         }
         if(dest != nil) {
-            CFStringRef lDisplayName = ABRecordCopyCompositeName(contact);
-            NSString *displayName = [NSString stringWithString:(NSString*) lDisplayName];
-            CFRelease(lDisplayName);
+            NSString *displayName = [FastAddressBook getContactDisplayName:contact];
             
             // Go to dialer view
             [[PhoneMainView instance] changeView:PhoneView_Dialer
                                            calls:[NSArray arrayWithObjects:
                                                   [AbstractCall abstractCall:@"call:displayName:", dest, displayName],
-                                                  nil]];
+                                            nil]];
         }
     } else {
         NSString *key = nil;
@@ -496,13 +495,13 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     [ContactDetailsTableViewController findAndResignFirstResponder:[self tableView]];
     if (editingStyle == UITableViewCellEditingStyleInsert) {
-        [self.tableView beginUpdates];
-		[self addEntry:self.tableView section:[indexPath section] animated:TRUE];
-        [self.tableView  endUpdates];
+        [tableView beginUpdates];
+		[self addEntry:tableView section:[indexPath section] animated:TRUE];
+        [tableView  endUpdates];
 	} else if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.tableView beginUpdates];
-        [self removeEntry:self.tableView path:indexPath animated:TRUE];
-        [self.tableView  endUpdates];
+        [tableView beginUpdates];
+        [self removeEntry:tableView path:indexPath animated:TRUE];
+        [tableView  endUpdates];
     }
 }
 

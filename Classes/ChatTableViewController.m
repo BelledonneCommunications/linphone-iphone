@@ -37,12 +37,21 @@
 }
 
 
+#pragma mark - ViewController Functions 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self loadData];
+}
+
+
 #pragma mark - 
 
-- (void)reloadData {
+- (void)loadData {
     if(data != nil)
         [data release];
     data = [[ChatModel listConversations] retain];
+    [[self tableView] reloadData];
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -52,7 +61,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self reloadData];
     return [data count];
 }
 
@@ -87,6 +95,17 @@
                                           [AbstractCall abstractCall:@"setRemoteContact:", [chat remoteContact]],
                                           nil]
                                     push:TRUE];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
+        ChatModel *chat = [data objectAtIndex:[indexPath row]];
+        [data removeObjectAtIndex:[indexPath row]];
+        [ChatModel removeConversation:[chat remoteContact]];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
 }
 
 @end

@@ -21,6 +21,8 @@
 #import "UIChatRoomCell.h"
 #import "UIChatRoomHeader.h"
 
+#import <NinePatch.h>
+
 @implementation ChatRoomTableViewController
 
 @synthesize remoteContact;
@@ -33,13 +35,18 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [TUNinePatchCache flushCache]; // Clear cache
+}
 
 #pragma mark - 
 
-- (void)reloadData {
+- (void)loadData {
     if(data != nil)
         [data release];
     data = [[ChatModel listMessages:remoteContact] retain];
+    [[self tableView] reloadData];
 }
 
 
@@ -47,7 +54,9 @@
 
 - (void)setRemoteContact:(NSString *)aremoteContact {
     self->remoteContact = aremoteContact;
-    [[self tableView] reloadData];
+    [ChatModel readConversation:aremoteContact];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+    [self loadData];
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -57,7 +66,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self reloadData];
     return [data count];
 }
 

@@ -33,11 +33,13 @@
 @synthesize typeLabel;
 @synthesize typeHeaderLabel;
 @synthesize addressButton;
-
+@synthesize addContactButton;
 
 #pragma mark - LifeCycle Functions
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     [avatarImage release];
     [addressLabel release];
     [dateLabel release];
@@ -47,8 +49,9 @@
     [typeLabel release];
     [typeHeaderLabel release];
     [addressButton release];
+    [addContactButton release];
     
-     [super dealloc];
+    [super dealloc];
 }
 
 
@@ -78,16 +81,168 @@
 }
 
 
+#pragma mark - ViewController Functions
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [HistoryDetailsViewController adaptSize:dateHeaderLabel field:dateLabel];
+    [HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
+    [HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
+    [addressButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(update:) 
+                                                 name:@"LinphoneAddressBookUpdate" 
+                                               object:nil];
+    [self update];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneAddressBookUpdate" 
+                                                  object:nil];
+}
+
+
 #pragma mark - 
 
++ (void)adaptSize:(UILabel*)label field:(UIView*)field {
+    //
+    // Adapt size
+    //
+    CGRect labelFrame = [label frame];
+    CGRect fieldFrame = [field frame];
+    
+    fieldFrame.origin.x -= labelFrame.size.width;
+    
+    // Compute firstName size
+    CGSize contraints;
+    contraints.height = [label frame].size.height;
+    contraints.width = ([field frame].size.width + [field frame].origin.x) - [label frame].origin.x;
+    CGSize firstNameSize = [[label text] sizeWithFont:[label font] constrainedToSize: contraints];
+    labelFrame.size.width = firstNameSize.width;
+    
+    // Compute lastName size & position
+    fieldFrame.origin.x += labelFrame.size.width;
+    fieldFrame.size.width = (contraints.width + [label frame].origin.x) - fieldFrame.origin.x;
+    
+    [label setFrame: labelFrame];
+    [field setFrame: fieldFrame];
+}
+
 - (void)update {
-    // Set up the cell...
-	LinphoneAddress* partyToDisplay; 
+    // Don't update if callLog is null
+    if(callLog==NULL) {
+        return;
+    }
+    
+	LinphoneAddress* addr; 
 	if (callLog->dir == LinphoneCallIncoming) {
-		partyToDisplay = callLog->from;
+		addr = callLog->from;
 	} else {
-		partyToDisplay = callLog->to;
+		addr = callLog->to;
 	}
+    
+    UIImage *image = nil;
+    NSString* address  = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName) 
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName) 
+                address = [NSString stringWithUTF8String:lUserName];
+        }
+    }
+    
+    // Set Image
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown.png"];
+    }
+    [avatarImage setImage:image];
+    
+    // Set Address
+    if(address == nil) {
+        address = @"Unknown";
+    }
+    [addressLabel setText:address];
+    
+    // Hide/Show add button
+    if(contact) {
+        [addContactButton setHidden:TRUE];
+    } else {
+        [addContactButton setHidden:FALSE];
+    }
+    
+    // State
+    NSMutableString *state = [NSMutableString string];
+	if (callLog->dir == LinphoneCallIncoming) {
+		[state setString:@"Incoming call"];
+	} else {
+		[state setString:@"Outgoing call"];
+	}
+    switch (callLog->status) {
+        case LinphoneCallSuccess:
+            break;
+        case LinphoneCallAborted:
+            [state appendString:@" (Aborted)"];
+            break;
+        case LinphoneCallMissed:
+            [state appendString:@" (Missed)"];
+            break;
+        case LinphoneCallDeclined :
+            [state appendString:@" (Declined)"];
+            break;
+    }
+    [typeLabel setText:state];
+
+    // Date
+    NSDate *startData = [NSDate dateWithTimeIntervalSince1970:callLog->start_date_time];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [dateFormatter setLocale:locale];
+    [dateLabel setText:[dateFormatter stringFromDate:startData]];
+    [locale release];
+    [dateFormatter release];
+
+    // Duration
+    int duration = callLog->duration;
+    [durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
+    
+    if (addr != NULL) {
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress != NULL) {
+            [addressButton setTitle:[NSString stringWithUTF8String:lAddress] forState:UIControlStateNormal];
+            [addressButton setHidden:FALSE];
+        } else {
+           [addressButton setHidden:TRUE]; 
+        }
+    } else {
+        [addressButton setHidden:TRUE];
+    }
+    
 }
 
 
@@ -98,11 +253,54 @@
 }
 
 - (IBAction)onContactClick:(id)event {
-    
+    if(contact) {
+        [[PhoneMainView instance] changeView:PhoneView_ContactDetails 
+                                   calls:[NSArray arrayWithObject:[AbstractCall abstractCall:@"setContact:", contact]]
+                                    push:TRUE];
+    }
+}
+
+- (IBAction)onAddContactClick:(id)event {
+    [[PhoneMainView instance] changeView:PhoneView_Contacts 
+                                   calls:[NSArray arrayWithObject:[AbstractCall abstractCall:@"setAddress:", [[addressButton titleLabel] text]]]
+                                    push:TRUE];
 }
 
 - (IBAction)onAddressClick:(id)event {
-
+    LinphoneAddress* addr; 
+	if (callLog->dir == LinphoneCallIncoming) {
+		addr = callLog->from;
+	} else {
+		addr = callLog->to;
+	}
+    
+    const char* lAddress = linphone_address_as_string_uri_only(addr);
+    
+    NSString *displayName = nil;
+    if(contact != nil) {
+       displayName = [FastAddressBook getContactDisplayName:contact]; 
+    } else {
+        const char* lDisplayName = linphone_address_get_display_name(addr);
+        const char* lUserName = linphone_address_get_username(addr);
+        if (lDisplayName) 
+            displayName = [NSString stringWithUTF8String:lDisplayName];
+        else if(lUserName) 
+            displayName = [NSString stringWithUTF8String:lUserName];
+    }
+    
+    if(displayName != nil) {
+        // Go to dialer view
+        [[PhoneMainView instance] changeView:PhoneView_Dialer
+                                       calls:[NSArray arrayWithObjects:
+                                              [AbstractCall abstractCall:@"call:displayName:", [NSString stringWithUTF8String:lAddress], displayName],
+                                              nil]];
+    } else {
+        // Go to dialer view
+        [[PhoneMainView instance] changeView:PhoneView_Dialer
+                                       calls:[NSArray arrayWithObjects:
+                                              [AbstractCall abstractCall:@"call:", [NSString stringWithUTF8String:lAddress]],
+                                              nil]]; 
+    }
 }
 
 @end

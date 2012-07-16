@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1296</int>
-		<string key="IBDocument.SystemVersion">11D50</string>
+		<string key="IBDocument.SystemVersion">11E53</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
-		<string key="IBDocument.AppKitVersion">1138.32</string>
-		<string key="IBDocument.HIToolboxVersion">568.00</string>
+		<string key="IBDocument.AppKitVersion">1138.47</string>
+		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">1181</string>
@@ -41,13 +41,28 @@
 						<reference key="NSNextResponder" ref="581237105"/>
 						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
+							<object class="IBUIImageView" id="778261436">
+								<reference key="NSNextResponder" ref="136975389"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrameSize">{320, 58}</string>
+								<reference key="NSSuperview" ref="136975389"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="455083905"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">contact_bar_background.png</string>
+								</object>
+							</object>
 							<object class="IBUIButton" id="455083905">
 								<reference key="NSNextResponder" ref="136975389"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrameSize">{160, 58}</string>
 								<reference key="NSSuperview" ref="136975389"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="778261436"/>
+								<reference key="NSNextKeyView" ref="121359009"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -63,11 +78,11 @@
 								</object>
 								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">contact_back_over.png</string>
+									<string key="NSResourceName">history_back_over.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">contact_back_default.png</string>
+									<string key="NSResourceName">history_back_default.png</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="74407898">
 									<int key="type">2</int>
@@ -79,7 +94,7 @@
 									<int key="NSfFlags">16</int>
 								</object>
 							</object>
-							<object class="IBUIImageView" id="778261436">
+							<object class="IBUIButton" id="121359009">
 								<reference key="NSNextResponder" ref="136975389"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{160, 0}, {160, 58}}</string>
@@ -87,18 +102,31 @@
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="768037913"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">contact_bar_background.png</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+									<string key="IBUIAccessibilityLabel">Add contact</string>
 								</object>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<reference key="IBUINormalTitleShadowColor" ref="30732699"/>
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">history_add_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">history_add_default.png</string>
+								</object>
+								<reference key="IBUIFontDescription" ref="74407898"/>
+								<reference key="IBUIFont" ref="255564883"/>
 							</object>
 						</array>
 						<string key="NSFrameSize">{320, 58}</string>
 						<reference key="NSSuperview" ref="581237105"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="455083905"/>
+						<reference key="NSNextKeyView" ref="778261436"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -389,13 +417,17 @@
 						<string key="NSFrame">{{33, 273}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="581237105"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+						<double key="IBUIContentEdgeInsets.top">10</double>
+						<double key="IBUIContentEdgeInsets.bottom">10</double>
+						<double key="IBUIContentEdgeInsets.left">10</double>
+						<double key="IBUIContentEdgeInsets.right">10</double>
 						<string key="IBUINormalTitle">0102030405</string>
 						<reference key="IBUINormalTitleColor" ref="796303400"/>
 						<reference key="IBUINormalTitleShadowColor" ref="30732699"/>
@@ -510,6 +542,14 @@
 					<int key="connectionID">49</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addContactButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="121359009"/>
+					</object>
+					<int key="connectionID">52</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">onBackClick:</string>
 						<reference key="source" ref="455083905"/>
@@ -535,6 +575,15 @@
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onAddContactClick:</string>
+						<reference key="source" ref="121359009"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">53</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -573,8 +622,9 @@
 						<int key="objectID">6</int>
 						<reference key="object" ref="136975389"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="778261436"/>
 							<reference ref="455083905"/>
+							<reference ref="778261436"/>
+							<reference ref="121359009"/>
 						</array>
 						<reference key="parent" ref="581237105"/>
 						<string key="objectName">navigationBar</string>
@@ -699,6 +749,12 @@
 						<reference key="parent" ref="768037913"/>
 						<string key="objectName">headerButton</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">50</int>
+						<reference key="object" ref="121359009"/>
+						<reference key="parent" ref="136975389"/>
+						<string key="objectName">backButton</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -723,16 +779,18 @@
 				<real value="0.0" key="37.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="50.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="50.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">49</int>
+			<int key="maxID">53</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -740,11 +798,16 @@
 					<string key="className">HistoryDetailsViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="onAddContactClick:">id</string>
 						<string key="onAddressClick:">id</string>
 						<string key="onBackClick:">id</string>
 						<string key="onContactClick:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="onAddContactClick:">
+							<string key="name">onAddContactClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="onAddressClick:">
 							<string key="name">onAddressClick:</string>
 							<string key="candidateClassName">id</string>
@@ -759,6 +822,7 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="addContactButton">UIButton</string>
 						<string key="addressButton">UIButton</string>
 						<string key="addressLabel">UILabel</string>
 						<string key="avatarImage">UIImageView</string>
@@ -770,6 +834,10 @@
 						<string key="typeLabel">UILabel</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="addContactButton">
+							<string key="name">addContactButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="addressButton">
 							<string key="name">addressButton</string>
 							<string key="candidateClassName">UIButton</string>
@@ -827,9 +895,11 @@
 			<string key="avatar_unknown_small.png">{131, 131}</string>
 			<string key="button_background_default.png">{550, 101}</string>
 			<string key="button_background_over.png">{550, 101}</string>
-			<string key="contact_back_default.png">{320, 117}</string>
-			<string key="contact_back_over.png">{320, 117}</string>
 			<string key="contact_bar_background.png">{5, 117}</string>
+			<string key="history_add_default.png">{320, 117}</string>
+			<string key="history_add_over.png">{320, 117}</string>
+			<string key="history_back_default.png">{320, 117}</string>
+			<string key="history_back_over.png">{320, 117}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

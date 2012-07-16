@@ -34,6 +34,8 @@
     UILabel *typeLabel;
     UILabel *typeHeaderLabel;
     UIButton *addressButton;
+    UIButton *addContactButton;
+    ABRecordRef contact;
 }
 @property (nonatomic, retain) IBOutlet  UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel *addressLabel;
@@ -44,13 +46,14 @@
 @property (nonatomic, retain) IBOutlet UILabel *typeLabel;
 @property (nonatomic, retain) IBOutlet UILabel *typeHeaderLabel;
 @property (nonatomic, retain) IBOutlet UIButton *addressButton;
-
+@property (nonatomic, retain) IBOutlet UIButton *addContactButton;
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
 - (void)setCallLogValue:(NSValue*)vcallLog;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;
+- (IBAction)onAddContactClick:(id)event;
 - (IBAction)onAddressClick:(id)event;
 
 @end

@@ -347,6 +347,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)_changeView:(PhoneView)view calls:(NSArray *)calls transition:(CATransition*)transition {
+    NSLog(@"PhoneMainView: change view %d", view);
     UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
     if(description == nil)
         return;
@@ -375,6 +376,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)popView:(NSArray *)calls {
+    NSLog(@"PhoneMainView: Pop!");
     if([viewStack count] > 0) {
         PhoneView view = [[viewStack lastObject] intValue];
         [viewStack removeLastObject];

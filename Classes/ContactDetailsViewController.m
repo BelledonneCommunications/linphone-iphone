@@ -58,6 +58,7 @@
 
 - (void)resetData {
     if(contact == NULL) {
+        ABAddressBookRevert(addressBook);
         return;
     }
     
@@ -139,6 +140,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)newContact {
+    NSLog(@"New contact");
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -146,6 +148,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)newContact:(NSString*)address {
+    NSLog(@"New contact");
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -154,6 +157,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)editContact:(ABRecordRef)acontact {
+    NSLog(@"Edit contact %p", acontact);
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -161,6 +165,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
+    NSLog(@"Edit contact %p", acontact);
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -172,6 +177,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
+    NSLog(@"set contact %p", acontact);
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [self disableEdit:FALSE];
@@ -206,6 +212,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         [tableController viewWillDisappear:NO];
     }
     [self disableEdit:FALSE];
+    self->contact = NULL;
     [self resetData];
 }
 

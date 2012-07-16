@@ -108,10 +108,12 @@
 - (void)textReceivedEvent:(NSNotification *)notif {
     //LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
     LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
-    //NSString *message = [[notif userInfo] objectForKey:@"message"];
-    if([[NSString stringWithUTF8String:linphone_address_get_username(from)] 
-        caseInsensitiveCompare:remoteContact] == NSOrderedSame) {
-        [[tableController tableView] reloadData];
+    if(from != NULL) {
+        //NSString *message = [[notif userInfo] objectForKey:@"message"];
+        if([[NSString stringWithUTF8String:linphone_address_get_username(from)] 
+            caseInsensitiveCompare:remoteContact] == NSOrderedSame) {
+            [[tableController tableView] reloadData];
+        }
     }
 }
 

@@ -19,6 +19,7 @@
 
 #import "UIMainBar.h"
 #import "PhoneMainView.h"
+#import "ChatModel.h"
 
 @implementation UIMainBar
 
@@ -29,6 +30,8 @@
 @synthesize chatButton;
 @synthesize historyNotificationView;
 @synthesize historyNotificationLabel;
+@synthesize chatNotificationView;
+@synthesize chatNotificationLabel;
 
 #pragma mark - Lifecycle Functions
 
@@ -46,6 +49,8 @@
     [chatButton release];
     [historyNotificationView release];
     [historyNotificationLabel release];
+    [chatNotificationView release];
+    [chatNotificationLabel release];
     
     [super dealloc];
 }
@@ -64,12 +69,19 @@
                                              selector:@selector(callUpdate:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceived:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+    
+    // Update current view
     [self updateView:[[PhoneMainView instance] currentView]];
     if([LinphoneManager isLcReady]) {
-        [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+        [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
     } else {
-        [self updateMissed:0];
+        [self updateMissedCall:0];
     }
+    [self updateUnreadMessage:[ChatModel unreadMessages]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -81,6 +93,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneCallUpdate" 
                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneTextReceived" 
+                                                  object:nil];
 }
 
 
@@ -89,7 +104,7 @@
 - (void)callUpdate: (NSNotification*) notif {  
     //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     //LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+    [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
 }
 
 - (void)changeViewEvent: (NSNotification*) notif {  
@@ -98,20 +113,50 @@
         [self updateView:[viewNumber intValue]];
 }
 
+- (void)textReceived: (NSNotification*) notif {  
+    [self updateUnreadMessage:[ChatModel unreadMessages]];
+}
+
 
 #pragma mark - 
 
-- (void)updateMissed:(int)missedCall {
+- (void)updateUnreadMessage:(int)unreadMessage {
+    if (unreadMessage > 0) {
+        if([chatNotificationView isHidden]) {
+            chatNotificationView.transform = CGAffineTransformIdentity;
+            [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+            [chatNotificationView setHidden:FALSE];
+        }
+        [chatNotificationLabel setText:[NSString stringWithFormat:@"%i", unreadMessage]];
+    } else {
+        if(![chatNotificationView isHidden]) {
+            [self stopBounceAnimation:@"Bounce" target:chatNotificationView];
+            CGAffineTransform startCGA = [chatNotificationView transform];
+            [UIView animateWithDuration:0.4 
+                                  delay:0 
+                                options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+                             animations:^{
+                                 chatNotificationView.transform = CGAffineTransformConcat(startCGA, CGAffineTransformMakeScale(0.01f, 0.01f));
+                             }
+                             completion:^(BOOL finished){
+                                 [chatNotificationView setHidden:TRUE];
+                             }
+             ];
+        }
+    }
+}
+
+- (void)updateMissedCall:(int)missedCall {
     if (missedCall > 0) {
         if([historyNotificationView isHidden]) {
             historyNotificationView.transform = CGAffineTransformIdentity;
-            [self startShakeAnimation:@"Shake" target:historyNotificationView];
+            [self startBounceAnimation:@"Bounce" target:historyNotificationView];
             [historyNotificationView setHidden:FALSE];
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
     } else {
         if(![historyNotificationView isHidden]) {
-            [self stopShakeAnimation:@"Shake" target:historyNotificationView];
+            [self stopBounceAnimation:@"Bounce" target:historyNotificationView];
             CGAffineTransform startCGA = [historyNotificationView transform];
             [UIView animateWithDuration:0.4 
                                   delay:0 
@@ -127,7 +172,7 @@
     }
 }
 
-- (void)startShakeAnimation:(NSString *)animationID  target:(UIView *)target { 
+- (void)startBounceAnimation:(NSString *)animationID  target:(UIView *)target { 
     [target setTransform:CGAffineTransformMakeTranslation(0, -4)];
     [UIView animateWithDuration: 0.3
                           delay: 0
@@ -143,7 +188,7 @@
     
 }
 
-- (void)stopShakeAnimation:(NSString *)animationID target:(UIView *)target {
+- (void)stopBounceAnimation:(NSString *)animationID target:(UIView *)target {
     [target.layer removeAnimationForKey:animationID];
 }
          
@@ -151,7 +196,7 @@
     // Reset missed call
     if(view == PhoneView_History) {
         linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
-        [self updateMissed:0];
+        [self updateMissedCall:0];
     }
     
     // Update buttons

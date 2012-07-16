@@ -151,24 +151,30 @@
     if(data != nil && data->call != NULL) {
         call = data->call;
         const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-        UIImage *image;
-        NSString* address;
-        if (addr != NULL) {
+        
+        UIImage *image = nil;
+        NSString* address  = nil;
+        if(addr != NULL) {
+            BOOL useLinphoneAddress = true;
             // contact name 
             const char* lAddress = linphone_address_as_string_uri_only(addr);
-            const char* lDisplayName = linphone_address_get_display_name(addr);
-            const char* lUserName = linphone_address_get_username(addr);
-            if (lDisplayName) 
-                address = [NSString stringWithUTF8String:lDisplayName];
-            else if(lUserName) 
-                address = [NSString stringWithUTF8String:lUserName];
             if(lAddress) {
-                NSString *address = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+                if(contact) {
+                    image = [FastAddressBook getContactImage:contact thumbnail:false];
+                    address = [FastAddressBook getContactDisplayName:contact];
+                    useLinphoneAddress = false;
+                }
             }
-        } else {
-            [addressLabel setText:@"Unknown"];
+            if(useLinphoneAddress) {
+                const char* lDisplayName = linphone_address_get_display_name(addr);
+                const char* lUserName = linphone_address_get_username(addr);
+                if (lDisplayName) 
+                    address = [NSString stringWithUTF8String:lDisplayName];
+                else if(lUserName) 
+                    address = [NSString stringWithUTF8String:lUserName];
+            }
         }
         
         // Set Image
@@ -184,7 +190,6 @@
         [addressLabel setText:address];
     
         LinphoneCallState state = linphone_call_get_state(call);
-        
         if(!conferenceCell) {
             if(state == LinphoneCallOutgoingRinging) {
                 [stateImage setImage:[UIImage imageNamed:@"call_state_ringing_default.png"]];
@@ -214,11 +219,8 @@
             [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
         }
         
-        NSMutableString* msDuration = [[NSMutableString alloc] init];
         int duration = linphone_call_get_duration(call);
-        [msDuration appendFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil];
-        [stateLabel setText:msDuration];
-        [msDuration release];
+        [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
         
         if(!data->minimize) {
             CGRect frame = [self frame];

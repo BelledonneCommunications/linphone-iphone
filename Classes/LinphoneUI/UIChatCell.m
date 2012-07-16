@@ -134,9 +134,14 @@
 
 - (IBAction)onDeleteClick: (id) event {
     if(chat != NULL) {
-        [ChatModel removeConversation:[chat remoteContact]];
-        UITableView *parentTable = (UITableView *)self.superview;
-        [parentTable reloadData];
+        UIView *view = [self superview]; 
+        // Find TableViewCell
+        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        if(view != nil) {
+            UITableView *tableView = (UITableView*) view;
+            NSIndexPath *indexPath = [tableView indexPathForCell:self];
+            [[tableView dataSource] tableView:tableView commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
+        }
     }
 }
 

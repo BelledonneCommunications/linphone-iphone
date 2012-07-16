@@ -24,7 +24,7 @@
 @implementation UIHistoryCell
 
 @synthesize callLog;
-@synthesize displayNameLabel;
+@synthesize addressLabel;
 @synthesize imageView;
 @synthesize deleteButton;
 @synthesize detailsButton;
@@ -49,7 +49,7 @@
 - (void) dealloc {
     [detailsButton release];
     [deleteButton release];
-    [displayNameLabel release];
+    [addressLabel release];
     [imageView release];
     
     [super dealloc];
@@ -79,9 +79,14 @@
 
 - (IBAction)onDelete:(id)event {
     if(callLog != NULL) {
-        linphone_core_remove_call_log([LinphoneManager getLc], callLog);
-        UITableView *parentTable = (UITableView *)self.superview;
-        [parentTable reloadData];
+        UIView *view = [self superview]; 
+        // Find TableViewCell
+        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        if(view != nil) {
+            UITableView *tableView = (UITableView*) view;
+            NSIndexPath *indexPath = [tableView indexPathForCell:self];
+            [[tableView dataSource] tableView:tableView commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
+        }
     }
 }
 
@@ -91,7 +96,7 @@
 - (void)update {
     
     // Set up the cell...
-	LinphoneAddress* partyToDisplay; 
+	LinphoneAddress* addr; 
 	UIImage *image;
 	if (callLog->dir == LinphoneCallIncoming) {
         if (callLog->status == LinphoneCallSuccess) {
@@ -99,15 +104,36 @@
         } else {
             image = [UIImage imageNamed:@"call_status_missed.png"];
         }
-		partyToDisplay = callLog->from;
+		addr = callLog->from;
 	} else {
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
-		partyToDisplay = callLog->to;
+		addr = callLog->to;
 	}
     
-	const char* username = (linphone_address_get_display_name(partyToDisplay) != 0)? linphone_address_get_display_name(partyToDisplay):linphone_address_get_username(partyToDisplay);
+    NSString* address = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName) 
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName) 
+                address = [NSString stringWithUTF8String:lUserName];
+        }
+    }
 
-    [displayNameLabel setText:[NSString stringWithUTF8String: username]];
+    [addressLabel setText:address];
     [imageView setImage: image];
 }
 

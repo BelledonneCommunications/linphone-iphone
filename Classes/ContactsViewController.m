@@ -122,7 +122,6 @@ typedef enum _HistoryView {
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
-
         [tableController setSipFilter:FALSE];
         allButton.selected = TRUE;
     } else {

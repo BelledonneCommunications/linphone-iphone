@@ -26,6 +26,7 @@
 
 @synthesize addressField;
 
+
 #pragma mark - Lifecycle Functions
 
 - (void)initUICallButton {
@@ -66,7 +67,13 @@
 #pragma mark -
 
 - (void)touchUp:(id) sender {
-    [[LinphoneManager instance] call:[addressField text] displayName:nil transfer:FALSE];
+    NSString *address = [addressField text];
+    NSString *displayName = nil;
+    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+    if(contact) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+    }
+    [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
 }
 
 @end

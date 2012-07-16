@@ -21,7 +21,7 @@
 #import <AddressBook/AddressBook.h>
 
 @interface FastAddressBook :  NSObject {
-    NSMutableDictionary* mAddressBookMap;  
+    NSMutableDictionary* addressBookMap;  
     
     ABAddressBookRef addressBook;
 }

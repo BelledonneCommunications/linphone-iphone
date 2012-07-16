@@ -57,10 +57,19 @@
 }
 
 
+#pragma mark - ViewController Functions 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self loadData];
+}
+
+
 #pragma mark - Property Functions
 
 - (void)setMissedFilter:(BOOL)amissedFilter {
     self->missedFilter = amissedFilter;
+    [self loadData];
     [[self tableView] reloadData];
 }
 
@@ -88,7 +97,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self loadData];
 	return [callLogs count];
 }
 
@@ -147,6 +155,17 @@
 
 	[phoneNumber release];
     [dispName release];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
+        LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+        [callLogs removeObjectAtIndex:[indexPath row]];
+        linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
 }
 
 @end
