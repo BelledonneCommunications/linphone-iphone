@@ -570,7 +570,7 @@ static void sip_config_read(LinphoneCore *lc)
 	linphone_core_set_guess_hostname(lc,tmp);
 
 
-	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",15);
+	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
 
 	/* get proxies config */
@@ -1855,6 +1855,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
+				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
 				call->log->status=LinphoneCallMissed;
 				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
