@@ -193,20 +193,14 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
     
     // Go to Contact details view
-    NSDictionary * dict;
+    NSArray * calls;
     if(tempAddress == nil) {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: lPerson, nil] autorelease]
-                 , @"setContact:",
-                 nil] autorelease];
+        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"setContact:", lPerson]];
     } else {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: lPerson, tempAddress, nil] autorelease]
-                 , @"editContact:address:",
-                 nil] autorelease];
+        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"editContact:address:", lPerson, tempAddress]];
         [self setTempAddress:nil];
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
+    [[PhoneMainView instance] changeView:PhoneView_ContactDetails calls:calls push:TRUE];
 }
 
 @end

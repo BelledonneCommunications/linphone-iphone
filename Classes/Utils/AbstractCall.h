@@ -19,9 +19,17 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface AbstractCall : NSObject {
+    NSString *functionName;
+    NSArray *functionArgs;
 }
 
-+ (void)call:(id) object dict:(NSDictionary *) dict;
+@property (retain) NSString *functionName;
+@property (retain) NSArray *functionArgs;
+
++ (id)abstractCall:(NSString *)name, ...;
+- (id)init:(NSString *)name, ...;
+- (void)call:(id) object;
 
 @end

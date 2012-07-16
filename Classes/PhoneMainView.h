@@ -23,12 +23,14 @@
 #import "CallDelegate.h"
 #import "UICompositeViewController.h"
 #import "UIModalViewController.h"
+#import "AbstractCall.h"
 
 typedef enum _PhoneView {
     PhoneView_Wizard,
     PhoneView_FirstLogin,
     PhoneView_Dialer,
     PhoneView_History,
+    PhoneView_HistoryDetails,
     PhoneView_Settings,
     PhoneView_Chat,
     PhoneView_ChatRoom,
@@ -58,10 +60,10 @@ typedef enum _PhoneView {
 
 - (void)changeView:(PhoneView)view;
 - (void)changeView:(PhoneView)view push:(BOOL)push;
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict;
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push;
+- (void)changeView:(PhoneView)view calls:(NSArray *)calls;
+- (void)changeView:(PhoneView)view calls:(NSArray *)calls push:(BOOL)push;
 - (void)popView;
-- (void)popView:(NSDictionary *)dict;
+- (void)popView:(NSArray *)calls;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
 - (PhoneView)currentView;

@@ -66,6 +66,7 @@ typedef enum _HistoryView {
     return description;
 }
 
+
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {

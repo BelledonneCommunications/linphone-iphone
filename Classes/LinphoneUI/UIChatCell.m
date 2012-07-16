@@ -124,12 +124,12 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDetailsClick: (id) event {
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
-                           , @"setRemoteContact:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
+    // Go to Chat room view
+    [[PhoneMainView instance] changeView:PhoneView_ChatRoom 
+                                   calls:[NSArray arrayWithObjects:
+                                          [AbstractCall abstractCall:@"setRemoteContact:", [chat remoteContact]],
+                                          nil]
+                                    push:TRUE];
 }
 
 - (IBAction)onDeleteClick: (id) event {

@@ -150,20 +150,14 @@ typedef enum _HistoryView {
 
 - (IBAction)onAddContactClick:(id)event {
     // Go to Contact details view
-    NSDictionary * dict;
+    NSArray * calls;
     if([tableController tempAddress] == nil) {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: nil] autorelease]
-                 , @"newContact",
-                 nil] autorelease];
+        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"newContact"]];
     } else {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: [tableController tempAddress], nil] autorelease]
-                 , @"newContact:",
-                 nil] autorelease];
+        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"newContact:", [tableController tempAddress]]];
         [tableController setTempAddress:nil];
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
+    [[PhoneMainView instance] changeView:PhoneView_ContactDetails calls:calls push:TRUE];
 }
 
 @end

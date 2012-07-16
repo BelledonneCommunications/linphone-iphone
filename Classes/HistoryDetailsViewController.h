@@ -21,8 +21,9 @@
 #import "linphonecore.h"
 
 #import <AddressBook/AddressBook.h>
+#import "UICompositeViewController.h"
 
-@interface HistoryDetailsViewController : UIViewController {
+@interface HistoryDetailsViewController : UIViewController<UICompositeViewDelegate> {
     LinphoneCallLog *callLog;
     UIImageView *avatarImage;
     UILabel *addressLabel;
@@ -45,6 +46,8 @@
 @property (nonatomic, retain) IBOutlet UIButton *addressButton;
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;
+
+- (void)setCallLogValue:(NSValue*)vcallLog;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;

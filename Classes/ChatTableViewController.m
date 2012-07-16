@@ -81,12 +81,12 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
     
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
-                           , @"setRemoteContact:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
+    // Go to ChatRoom view
+    [[PhoneMainView instance] changeView:PhoneView_ChatRoom 
+                                   calls:[NSArray arrayWithObjects:
+                                          [AbstractCall abstractCall:@"setRemoteContact:", [chat remoteContact]],
+                                          nil]
+                                    push:TRUE];
 }
 
 @end

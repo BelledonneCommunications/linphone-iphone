@@ -365,26 +365,22 @@
 
 - (IBAction)onOptionsTransferClick:(id)sender {
     [self hideOptions];
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                           , @"setAddress:",
-                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: TRUE], nil] autorelease]
-                           , @"setTransferMode:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+    // Go to dialer view   
+    [[PhoneMainView instance] changeView:PhoneView_Dialer 
+                                   calls:[NSArray arrayWithObjects:
+                                          [AbstractCall abstractCall:@"setAddress:", @""],
+                                          [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: TRUE]],
+                                          nil]];
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
     [self hideOptions];
     // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                           , @"setAddress:",
-                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
-                           , @"setTransferMode:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer
+                                   calls:[NSArray arrayWithObjects:
+                                          [AbstractCall abstractCall:@"setAddress:", @""],
+                                          [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: FALSE]],
+                                          nil]];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

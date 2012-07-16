@@ -52,7 +52,25 @@
 }
 
 
+#pragma mark - UICompositeViewDelegate Functions
+
++ (UICompositeViewDescription*) compositeViewDescription {
+    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
+    description->content = @"HistoryDetailsViewController";
+    description->tabBar = @"UIMainBar";
+    description->tabBarEnabled = true;
+    description->stateBar = nil;
+    description->stateBarEnabled = false;
+    description->fullscreen = false;
+    return description;
+}
+
+
 #pragma mark - Property Functions
+
+- (void)setCallLogValue:(NSValue*)vcallLog {
+    [self setCallLog:[vcallLog pointerValue]];
+}
 
 - (void)setCallLog:(LinphoneCallLog *)acallLog {
     self->callLog = acallLog;

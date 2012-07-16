@@ -21,26 +21,69 @@
 
 @implementation AbstractCall
 
-+ (void)call:(id) object dict:(NSDictionary *) dict {
-    for (NSString* identifier in dict) {
-        if([identifier characterAtIndex:([identifier length] -1)] == ':') {
-            NSArray *arguments = [dict objectForKey:identifier];
-            SEL selector = NSSelectorFromString(identifier);
-            NSMethodSignature *signature = [object methodSignatureForSelector:selector];
-            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-            [invocation setTarget:object];
-            [invocation setSelector:selector];
-            for(int i=0; i<[arguments count]; i++)
-            {
-                id arg = [arguments objectAtIndex:i];
-                [invocation setArgument:&arg atIndex:i+2]; // The first two arguments are the hidden arguments self and _cmd
+@synthesize functionName;
+@synthesize functionArgs;
+
++ (id)abstractCall:(NSString *)name, ... {
+    AbstractCall *object;
+    va_list args;
+    va_start(args, name);
+    object = [[AbstractCall alloc] init:name args:args];
+    va_end(args);
+    return [object autorelease];
+}
+
+- (id)init:(NSString *)name, ... {
+    AbstractCall *object;
+    va_list args;
+    va_start(args, name);
+    object = [self init:name args:args];
+    va_end(args);
+    return object;
+}
+
+- (id)init:(NSString *)name args:(va_list)args {
+    self = [super init];
+    if(self != nil) {
+        self->functionName = name;
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        int count = 0;
+        for(int i = 0; i < [self->functionName length]; ++i) {
+            if([self->functionName characterAtIndex:i] == ':') {
+                ++count;
             }
-            [invocation invoke]; // Invoke the selector
-        } else {
-            NSDictionary *arguments = [dict objectForKey:identifier];
-            id new_object = [object performSelector:NSSelectorFromString(identifier)];
-            [AbstractCall call:new_object dict:arguments];
         }
+        for (int i = 0; i < count; ++i) {
+            id arg = va_arg(args, id);
+            [array addObject:arg];
+        }
+        self->functionArgs = array;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [functionName release];
+    [functionArgs release];
+    
+    [super dealloc];
+}
+
+- (void)call:(id)object {
+    @try {
+        SEL selector = NSSelectorFromString(functionName);
+        NSMethodSignature *signature = [object methodSignatureForSelector:selector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+        [invocation setTarget:object];
+        [invocation setSelector:selector];
+        for(int i=0; i<[functionArgs count]; i++)
+        {
+            id arg = [functionArgs objectAtIndex:i];
+            [invocation setArgument:&arg atIndex:i+2]; // The first two arguments are the hidden arguments self and _cmd
+        }
+        [invocation invoke]; // Invoke the selector
+    } @catch (NSException *exception) {
+        NSLog(@"Abstract Call: Can't call %@ with arguments %@ on %@", functionName, functionArgs, object);
     }
 }
 

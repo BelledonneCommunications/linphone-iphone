@@ -140,11 +140,10 @@
     NSString* dispName = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
     
     // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                          [[[NSArray alloc] initWithObjects: phoneNumber, dispName, nil] autorelease]
-                          , @"call:displayName:",
-                          nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+    [[PhoneMainView instance] changeView:PhoneView_Dialer                             
+                                   calls:[NSArray arrayWithObjects:
+                                          [AbstractCall abstractCall:@"call:displayName:", phoneNumber, dispName],
+                                          nil]];
 
 	[phoneNumber release];
     [dispName release];

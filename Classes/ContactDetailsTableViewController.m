@@ -455,11 +455,10 @@
             CFRelease(lDisplayName);
             
             // Go to dialer view
-            NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                                   [[[NSArray alloc] initWithObjects: dest, displayName, nil] autorelease]
-                                   , @"call:displayName:",
-                                   nil] autorelease];
-            [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+            [[PhoneMainView instance] changeView:PhoneView_Dialer
+                                           calls:[NSArray arrayWithObjects:
+                                                  [AbstractCall abstractCall:@"call:displayName:", dest, displayName],
+                                                  nil]];
         }
     } else {
         NSString *key = nil;

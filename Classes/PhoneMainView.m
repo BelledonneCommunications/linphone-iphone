@@ -28,14 +28,14 @@
 #import "ChatViewController.h"
 #import "DialerViewController.h"
 #import "ContactsViewController.h"
+#import "ContactDetailsViewController.h"
 #import "HistoryViewController.h"
+#import "HistoryDetailsViewController.h"
 #import "InCallViewController.h"
 #import "SettingsViewController.h"
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
-#import "ContactDetailsViewController.h"
 
-#import "AbstractCall.h"
 #import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
@@ -111,12 +111,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [viewDescriptions setObject:[ChatViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Chat]];
     [viewDescriptions setObject:[DialerViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
     [viewDescriptions setObject:[ContactsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
+    [viewDescriptions setObject:[ContactDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_ContactDetails]];
     [viewDescriptions setObject:[HistoryViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_History]];
+    [viewDescriptions setObject:[HistoryDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_HistoryDetails]];
     [viewDescriptions setObject:[InCallViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_InCall]];
     [viewDescriptions setObject:[SettingsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Settings]];
     [viewDescriptions setObject:[FirstLoginViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
     [viewDescriptions setObject:[WizardViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
-    [viewDescriptions setObject:[ContactDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_ContactDetails]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -235,13 +236,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
-                NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                                        [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                                        , @"setAddress:",
-                                        [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
-                                        , @"setTransferMode:",
-                                        nil] autorelease];
-                [self changeView:PhoneView_Dialer dict:dict];
+                [self changeView:PhoneView_Dialer 
+                            calls:[NSArray arrayWithObjects:
+                                   [AbstractCall abstractCall:@"setAddress:", @""],
+                                   [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: FALSE]],
+                                   nil]];
             } else {
                 [self changeView:PhoneView_InCall];
 			}
@@ -283,7 +282,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 + (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
     bool left = false;
     
-    if(old == PhoneView_Chat) {
+    if(old == PhoneView_Chat || old == PhoneView_ChatRoom) {
         if(new == PhoneView_Contacts ||
            new == PhoneView_Dialer ||
            new == PhoneView_Settings ||
@@ -301,7 +300,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
            new == PhoneView_History) {
             left = true;
         }
-    } else if(old == PhoneView_Contacts) {
+    } else if(old == PhoneView_Contacts || old == PhoneView_ContactDetails) {
         if(new == PhoneView_History) {
             left = true;
         }
@@ -327,27 +326,27 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)changeView:(PhoneView)view {
-    [self changeView:view dict:nil push:FALSE];
+    [self changeView:view calls:nil push:FALSE];
 }
 
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict {
-    [self changeView:view dict:dict push:FALSE];
+- (void)changeView:(PhoneView)view calls:(NSArray *)dict {
+    [self changeView:view calls:dict push:FALSE];
 }
 
 - (void)changeView:(PhoneView)view push:(BOOL)push {
-    [self changeView:view dict:nil push:push];
+    [self changeView:view calls:nil push:push];
 }
 
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push {
+- (void)changeView:(PhoneView)view calls:(NSArray *)calls push:(BOOL)push {
     if(push && currentView != -1) {
         [viewStack addObject:[NSNumber numberWithInt: currentView]];
     } else {
         [viewStack removeAllObjects];
     }
-    [self _changeView:view dict:dict transition:nil];
+    [self _changeView:view calls:calls transition:nil];
 }
 
-- (void)_changeView:(PhoneView)view dict:(NSDictionary *)dict transition:(CATransition*)transition {
+- (void)_changeView:(PhoneView)view calls:(NSArray *)calls transition:(CATransition*)transition {
     UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
     if(description == nil)
         return;
@@ -361,8 +360,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     } 
     
     // Call abstractCall
-    if(dict != nil)
-        [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
+    if(calls != nil) {
+        for(AbstractCall *call in calls) {
+            [call call:[mainViewController getCurrentViewController]];
+        }
+    }
     
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
@@ -372,11 +374,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [self popView:nil];
 }
 
-- (void)popView:(NSDictionary *)dict {
+- (void)popView:(NSArray *)calls {
     if([viewStack count] > 0) {
         PhoneView view = [[viewStack lastObject] intValue];
         [viewStack removeLastObject];
-        [self _changeView:view dict:dict transition:[PhoneMainView getBackwardTransition]];
+        [self _changeView:view calls:calls transition:[PhoneMainView getBackwardTransition]];
     } 
 }
 

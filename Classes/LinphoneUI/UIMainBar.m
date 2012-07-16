@@ -155,7 +155,7 @@
     }
     
     // Update buttons
-    if(view == PhoneView_History) {
+    if(view == PhoneView_History || view == PhoneView_HistoryDetails) {
         historyButton.selected = TRUE;
     } else {
         historyButton.selected = FALSE;

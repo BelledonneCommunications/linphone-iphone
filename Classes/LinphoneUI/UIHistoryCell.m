@@ -19,6 +19,7 @@
 
 #import "UIHistoryCell.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
 @implementation UIHistoryCell
 
@@ -27,8 +28,6 @@
 @synthesize imageView;
 @synthesize deleteButton;
 @synthesize detailsButton;
-
-#define DETAILS_DISABLED
 
 #pragma mark - Lifecycle Functions
 
@@ -69,7 +68,12 @@
 
 - (IBAction)onDetails:(id) event {
     if(callLog != NULL) {
-        
+        // Go to History details view
+        [[PhoneMainView instance] changeView:PhoneView_HistoryDetails 
+                                       calls:[NSArray arrayWithObjects:
+                                              [AbstractCall abstractCall:@"setCallLogValue:", [NSValue valueWithPointer: callLog]],
+                                              nil]
+                                        push:TRUE];
     }
 }
 
@@ -120,11 +124,7 @@
         [deleteButton setAlpha:1.0f];
         [detailsButton setAlpha:0.0f]; 
     } else {
-#ifdef DETAILS_DISABLED
-        [detailsButton setAlpha:0.0f];
-#else
-        [detailsButtonsetAlpha:1.0f];
-#endif
+        [detailsButton setAlpha:1.0f];
         [deleteButton setAlpha:0.0f];    
     }
     if(animated) {
