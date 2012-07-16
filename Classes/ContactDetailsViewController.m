@@ -57,6 +57,10 @@
 #pragma mark - 
 
 - (void)resetData {
+    if(contact == NULL) {
+        return;
+    }
+    
     NSLog(@"Reset data to contact %p", contact);
     ABRecordID recordID = ABRecordGetRecordID(contact);
     ABAddressBookRevert(addressBook);
