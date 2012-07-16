@@ -633,8 +633,6 @@
 		D3ED3EB4158738FB006C0DE4 /* HistoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3EB2158738FA006C0DE4 /* HistoryViewController.xib */; };
 		D3ED3EB81587392C006C0DE4 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED3EB615873929006C0DE4 /* HistoryViewController.m */; };
 		D3ED3EB91587392C006C0DE4 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED3EB615873929006C0DE4 /* HistoryViewController.m */; };
-		D3F26BEC159869A6005F9CAB /* AbstractCall.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F26BEB159869A6005F9CAB /* AbstractCall.m */; };
-		D3F26BED159869A6005F9CAB /* AbstractCall.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F26BEB159869A6005F9CAB /* AbstractCall.m */; };
 		D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F26BEF15986B71005F9CAB /* IncomingCallViewController.m */; };
 		D3F26BF215986B73005F9CAB /* IncomingCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F26BEF15986B71005F9CAB /* IncomingCallViewController.m */; };
 		D3F26BF315986B73005F9CAB /* IncomingCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BF015986B72005F9CAB /* IncomingCallViewController.xib */; };
@@ -1088,6 +1086,7 @@
 		C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsViewController.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsViewController.m; sourceTree = "<group>"; };
 		C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryDetailsViewController.xib; sourceTree = "<group>"; };
+		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
 		C9C8253F15AE204D00D493FA /* options_add_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_add_disabled.png; path = Resources/options_add_disabled.png; sourceTree = "<group>"; };
 		C9C8254015AE204D00D493FA /* options_transfer_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = options_transfer_disabled.png; path = Resources/options_transfer_disabled.png; sourceTree = "<group>"; };
 		C9C8254115AE204D00D493FA /* transfer_call_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = transfer_call_default.png; path = Resources/transfer_call_default.png; sourceTree = "<group>"; };
@@ -1393,8 +1392,6 @@
 		D3ED3EB2158738FA006C0DE4 /* HistoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryViewController.xib; sourceTree = "<group>"; };
 		D3ED3EB515873928006C0DE4 /* HistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryViewController.h; sourceTree = "<group>"; };
 		D3ED3EB615873929006C0DE4 /* HistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HistoryViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		D3F26BEA159869A6005F9CAB /* AbstractCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractCall.h; path = Utils/AbstractCall.h; sourceTree = "<group>"; };
-		D3F26BEB159869A6005F9CAB /* AbstractCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = AbstractCall.m; path = Utils/AbstractCall.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D3F26BEE15986B71005F9CAB /* IncomingCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncomingCallViewController.h; sourceTree = "<group>"; };
 		D3F26BEF15986B71005F9CAB /* IncomingCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncomingCallViewController.m; sourceTree = "<group>"; };
 		D3F26BF015986B72005F9CAB /* IncomingCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IncomingCallViewController.xib; sourceTree = "<group>"; };
@@ -2335,8 +2332,6 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D3F26BEA159869A6005F9CAB /* AbstractCall.h */,
-				D3F26BEB159869A6005F9CAB /* AbstractCall.m */,
 				D38935F715A6D06800A3A3AA /* CPAnimation */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
@@ -2344,6 +2339,7 @@
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
 				D3F9A9DD15AF0FFE0045320F /* TPKeyboardAvoiding */,
 				D3F9A9EB15AF27620045320F /* UACellBackgroundView */,
+				C9B3A6FD15B485DB006F52EE /* Utils.h */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -3150,7 +3146,6 @@
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
-				D3F26BEC159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeViewController.m in Sources */,
 				D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */,
@@ -3240,7 +3235,6 @@
 				D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */,
 				D3EA540E1598528B0037DC6B /* ChatTableViewController.m in Sources */,
 				D3EA5412159853750037DC6B /* UIChatCell.m in Sources */,
-				D3F26BED159869A6005F9CAB /* AbstractCall.m in Sources */,
 				D3F26BF215986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */,
 				D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */,

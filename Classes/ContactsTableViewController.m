@@ -23,6 +23,7 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "Utils.h"
 
 @implementation ContactsTableViewController
 
@@ -193,14 +194,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
     
     // Go to Contact details view
-    NSArray * calls;
-    if(tempAddress == nil) {
-        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"setContact:", lPerson]];
-    } else {
-        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"editContact:address:", lPerson, tempAddress]];
-        [self setTempAddress:nil];
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+    if(controller != nil) {
+        if(tempAddress == nil) {
+            [controller setContact:lPerson];
+        } else {
+            [controller editContact:lPerson address:tempAddress];
+            [self setTempAddress:nil];
+        }
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails calls:calls push:TRUE];
 }
 
 @end

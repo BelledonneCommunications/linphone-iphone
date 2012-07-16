@@ -19,8 +19,9 @@
 
 #import "ContactsViewController.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
-#import "AddressBook/ABPerson.h"
+#import <AddressBook/ABPerson.h>
 
 @implementation ContactsViewController
 
@@ -149,14 +150,15 @@ typedef enum _HistoryView {
 
 - (IBAction)onAddContactClick:(id)event {
     // Go to Contact details view
-    NSArray * calls;
-    if([tableController tempAddress] == nil) {
-        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"newContact"]];
-    } else {
-        calls = [NSArray arrayWithObject: [AbstractCall abstractCall:@"newContact:", [tableController tempAddress]]];
-        [tableController setTempAddress:nil];
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+    if(controller != nil) {
+        if([tableController tempAddress] == nil) {
+            [controller newContact];
+        } else {
+            [controller newContact:[tableController tempAddress]];
+            [tableController setTempAddress:nil];
+        }
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails calls:calls push:TRUE];
 }
 
 @end

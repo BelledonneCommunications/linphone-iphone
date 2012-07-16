@@ -49,8 +49,6 @@
 @property (nonatomic, retain) IBOutlet UIButton *addContactButton;
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
-- (void)setCallLogValue:(NSValue*)vcallLog;
-
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;

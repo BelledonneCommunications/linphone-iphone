@@ -20,10 +20,22 @@
 #import <UIKit/UIKit.h>
 
 #import "LinphoneManager.h"
-#import "CallDelegate.h"
 #import "UICompositeViewController.h"
 #import "UIModalViewController.h"
-#import "AbstractCall.h"
+
+#import "FirstLoginViewController.h"
+#import "IncomingCallViewController.h"
+#import "ChatRoomViewController.h"
+#import "ChatViewController.h"
+#import "DialerViewController.h"
+#import "ContactsViewController.h"
+#import "ContactDetailsViewController.h"
+#import "HistoryViewController.h"
+#import "HistoryDetailsViewController.h"
+#import "InCallViewController.h"
+#import "SettingsViewController.h"
+#import "FirstLoginViewController.h"
+#import "WizardViewController.h"
 
 typedef enum _PhoneView {
     PhoneView_Wizard,
@@ -58,12 +70,9 @@ typedef enum _PhoneView {
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
 
-- (void)changeView:(PhoneView)view;
-- (void)changeView:(PhoneView)view push:(BOOL)push;
-- (void)changeView:(PhoneView)view calls:(NSArray *)calls;
-- (void)changeView:(PhoneView)view calls:(NSArray *)calls push:(BOOL)push;
-- (void)popView;
-- (void)popView:(NSArray *)calls;
+- (UIViewController*)changeView:(PhoneView)view;
+- (UIViewController*)changeView:(PhoneView)view push:(BOOL)push;
+- (UIViewController*)popView;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
 - (PhoneView)currentView;

@@ -1,4 +1,4 @@
-/* AbstractCall.h
+/* Utils.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,19 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */   
 
-#import <Foundation/Foundation.h>
+#ifndef LINPHONE_UTILS_H
+#define LINPHONE_UTILS_H
 
+#define DYNAMIC_CAST(x, cls)                        \
+ ({                                                 \
+    cls *inst_ = (cls *)(x);                        \
+    [inst_ isKindOfClass:[cls class]]? inst_ : nil; \
+ })
 
-@interface AbstractCall : NSObject {
-    NSString *functionName;
-    NSArray *functionArgs;
-}
-
-@property (retain) NSString *functionName;
-@property (retain) NSArray *functionArgs;
-
-+ (id)abstractCall:(NSString *)name, ...;
-- (id)init:(NSString *)name, ...;
-- (void)call:(id) object;
-
-@end
+#endif

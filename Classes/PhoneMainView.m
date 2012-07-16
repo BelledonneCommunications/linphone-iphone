@@ -20,22 +20,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "PhoneMainView.h"
-
-#import "FirstLoginViewController.h"
-#import "IncomingCallViewController.h"
-
-#import "ChatRoomViewController.h"
-#import "ChatViewController.h"
-#import "DialerViewController.h"
-#import "ContactsViewController.h"
-#import "ContactDetailsViewController.h"
-#import "HistoryViewController.h"
-#import "HistoryDetailsViewController.h"
-#import "InCallViewController.h"
-#import "SettingsViewController.h"
-#import "FirstLoginViewController.h"
-#import "WizardViewController.h"
-
+#import "Utils.h"
 #import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
@@ -236,11 +221,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
-                [self changeView:PhoneView_Dialer 
-                            calls:[NSArray arrayWithObjects:
-                                   [AbstractCall abstractCall:@"setAddress:", @""],
-                                   [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: FALSE]],
-                                   nil]];
+                DialerViewController *controller = DYNAMIC_CAST([self changeView:PhoneView_Dialer], DialerViewController);
+                if(controller != nil) {
+                    [controller setAddress:@""];
+                    [controller setTransferMode:FALSE];
+                }
             } else {
                 [self changeView:PhoneView_InCall];
 			}
@@ -325,32 +310,24 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setFullScreen:enabled];
 }
 
-- (void)changeView:(PhoneView)view {
-    [self changeView:view calls:nil push:FALSE];
+- (UIViewController*)changeView:(PhoneView)view {
+    return [self changeView:view push:FALSE];
 }
 
-- (void)changeView:(PhoneView)view calls:(NSArray *)dict {
-    [self changeView:view calls:dict push:FALSE];
-}
-
-- (void)changeView:(PhoneView)view push:(BOOL)push {
-    [self changeView:view calls:nil push:push];
-}
-
-- (void)changeView:(PhoneView)view calls:(NSArray *)calls push:(BOOL)push {
+- (UIViewController*)changeView:(PhoneView)view push:(BOOL)push {
     if(push && currentView != -1) {
         [viewStack addObject:[NSNumber numberWithInt: currentView]];
     } else {
         [viewStack removeAllObjects];
     }
-    [self _changeView:view calls:calls transition:nil];
+    return [self _changeView:view transition:nil];
 }
 
-- (void)_changeView:(PhoneView)view calls:(NSArray *)calls transition:(CATransition*)transition {
+- (UIViewController*)_changeView:(PhoneView)view transition:(CATransition*)transition {
     NSLog(@"PhoneMainView: change view %d", view);
     UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
     if(description == nil)
-        return;
+        return nil;
     
     if(view != currentView) {
         if(transition == nil)
@@ -360,28 +337,26 @@ static PhoneMainView* phoneMainViewInstance=nil;
         currentView = view;
     } 
     
-    // Call abstractCall
-    if(calls != nil) {
-        for(AbstractCall *call in calls) {
-            [call call:[mainViewController getCurrentViewController]];
-        }
-    }
-    
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+    
+    return [mainViewController getCurrentViewController];
 }
 
-- (void)popView {
-    [self popView:nil];
+- (UIViewController*)popView {
+    return [self popView:nil];
 }
 
-- (void)popView:(NSArray *)calls {
+- (UIViewController*)popView:(NSArray *)calls {
     NSLog(@"PhoneMainView: Pop!");
     if([viewStack count] > 0) {
         PhoneView view = [[viewStack lastObject] intValue];
         [viewStack removeLastObject];
-        [self _changeView:view calls:calls transition:[PhoneMainView getBackwardTransition]];
+        [self _changeView:view transition:[PhoneMainView getBackwardTransition]];
+        
+        return [mainViewController getCurrentViewController];
     } 
+    return nil;
 }
 
 - (PhoneView)currentView {

@@ -25,6 +25,7 @@
 #import "UILinphone.h"
 #import "OrderedDictionary.h"
 #import "FastAddressBook.h"
+#import "Utils.h"
 
 @interface Entry : NSObject
 
@@ -454,10 +455,10 @@
             NSString *displayName = [FastAddressBook getContactDisplayName:contact];
             
             // Go to dialer view
-            [[PhoneMainView instance] changeView:PhoneView_Dialer
-                                           calls:[NSArray arrayWithObjects:
-                                                  [AbstractCall abstractCall:@"call:displayName:", dest, displayName],
-                                            nil]];
+            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+            if(controller != nil) {
+                [controller call:dest displayName:displayName];
+            }
         }
     } else {
         NSString *key = nil;

@@ -55,9 +55,10 @@
 }
 
 - (void)setAddress:(NSString*)address;
-- (void)setTransferMode:(NSNumber*)enable;
 - (void)call:(NSString*)address displayName:(NSString *)displayName;
 - (void)call:(NSString*)address;
+
+@property (nonatomic, assign) BOOL transferMode;
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;
 @property (nonatomic, retain) IBOutlet UIButton* addContactButton;

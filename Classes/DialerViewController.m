@@ -24,11 +24,14 @@
 #import "IncallViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 #include "linphonecore.h"
 #include "private.h"
 
 @implementation DialerViewController
+
+@synthesize transferMode;
 
 @synthesize addressField;
 @synthesize addContactButton;
@@ -186,8 +189,8 @@
     [addressField setText:address];
 }
 
-- (void)setTransferMode:(NSNumber*) n {
-    transferMode = [n boolValue];
+- (void)setTransferMode:(BOOL)atransferMode {
+    transferMode = atransferMode;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
@@ -220,9 +223,10 @@
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Contacts 
-                                    calls:[NSArray arrayWithObject:[AbstractCall abstractCall:@"setAddress:", [addressField text]]]
-                                    push:TRUE];
+    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Contacts push:TRUE], ContactsViewController);
+    if(controller != nil) {
+        [controller setAddress:[addressField text]];
+    }
 }
 
 - (IBAction)onBackClick: (id) event {

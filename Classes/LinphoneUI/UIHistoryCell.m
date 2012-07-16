@@ -20,6 +20,7 @@
 #import "UIHistoryCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 @implementation UIHistoryCell
 
@@ -69,11 +70,10 @@
 - (IBAction)onDetails:(id) event {
     if(callLog != NULL) {
         // Go to History details view
-        [[PhoneMainView instance] changeView:PhoneView_HistoryDetails 
-                                       calls:[NSArray arrayWithObjects:
-                                              [AbstractCall abstractCall:@"setCallLogValue:", [NSValue valueWithPointer: callLog]],
-                                              nil]
-                                        push:TRUE];
+        HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_HistoryDetails  push:TRUE], HistoryDetailsViewController);
+        if(controller != nil) {
+            [controller setCallLog:callLog];
+        }
     }
 }
 

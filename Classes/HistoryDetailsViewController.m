@@ -20,6 +20,7 @@
 #import "HistoryDetailsViewController.h"
 #import "PhoneMainView.h"
 #import "FastAddressBook.h"
+#import "Utils.h"
 
 @implementation HistoryDetailsViewController
 
@@ -70,10 +71,6 @@
 
 
 #pragma mark - Property Functions
-
-- (void)setCallLogValue:(NSValue*)vcallLog {
-    [self setCallLog:[vcallLog pointerValue]];
-}
 
 - (void)setCallLog:(LinphoneCallLog *)acallLog {
     self->callLog = acallLog;
@@ -254,16 +251,18 @@
 
 - (IBAction)onContactClick:(id)event {
     if(contact) {
-        [[PhoneMainView instance] changeView:PhoneView_ContactDetails 
-                                   calls:[NSArray arrayWithObject:[AbstractCall abstractCall:@"setContact:", contact]]
-                                    push:TRUE];
+        ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+        if(controller != nil) {
+            [controller setContact:contact];
+        }
     }
 }
 
 - (IBAction)onAddContactClick:(id)event {
-    [[PhoneMainView instance] changeView:PhoneView_Contacts 
-                                   calls:[NSArray arrayWithObject:[AbstractCall abstractCall:@"setAddress:", [[addressButton titleLabel] text]]]
-                                    push:TRUE];
+    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Contacts push:TRUE], ContactsViewController);
+    if(controller != nil) {
+        [controller setAddress:[[addressButton titleLabel] text]];
+    }
 }
 
 - (IBAction)onAddressClick:(id)event {
@@ -288,18 +287,14 @@
             displayName = [NSString stringWithUTF8String:lUserName];
     }
     
-    if(displayName != nil) {
-        // Go to dialer view
-        [[PhoneMainView instance] changeView:PhoneView_Dialer
-                                       calls:[NSArray arrayWithObjects:
-                                              [AbstractCall abstractCall:@"call:displayName:", [NSString stringWithUTF8String:lAddress], displayName],
-                                              nil]];
-    } else {
-        // Go to dialer view
-        [[PhoneMainView instance] changeView:PhoneView_Dialer
-                                       calls:[NSArray arrayWithObjects:
-                                              [AbstractCall abstractCall:@"call:", [NSString stringWithUTF8String:lAddress]],
-                                              nil]]; 
+    
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    if(controller != nil) {
+        if(displayName != nil) {
+            [controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
+        } else {
+            [controller call:[NSString stringWithUTF8String:lAddress]];
+        }
     }
 }
 

@@ -19,7 +19,7 @@
 
 #import "UIChatCell.h"
 #import "PhoneMainView.h"
-
+#import "Utils.h"
 
 @implementation UIChatCell
 
@@ -125,11 +125,10 @@
 
 - (IBAction)onDetailsClick: (id) event {
     // Go to Chat room view
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom 
-                                   calls:[NSArray arrayWithObjects:
-                                          [AbstractCall abstractCall:@"setRemoteContact:", [chat remoteContact]],
-                                          nil]
-                                    push:TRUE];
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom  push:TRUE], ChatRoomViewController);
+    if(controller !=nil) {
+        [controller setRemoteContact:[chat remoteContact]];
+    }
 }
 
 - (IBAction)onDeleteClick: (id) event {

@@ -23,6 +23,7 @@
 
 #import "CPAnimationSequence.h"
 #import "CPAnimationStep.h"
+#import "Utils.h"
 
 #include "linphonecore.h"
 #include "private.h"
@@ -366,21 +367,21 @@
 - (IBAction)onOptionsTransferClick:(id)sender {
     [self hideOptions];
     // Go to dialer view   
-    [[PhoneMainView instance] changeView:PhoneView_Dialer 
-                                   calls:[NSArray arrayWithObjects:
-                                          [AbstractCall abstractCall:@"setAddress:", @""],
-                                          [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: TRUE]],
-                                          nil]];
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    if(controller != nil) {
+        [controller setAddress:@""];
+        [controller setTransferMode:TRUE];
+    }
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
     [self hideOptions];
-    // Go to dialer view
-    [[PhoneMainView instance] changeView:PhoneView_Dialer
-                                   calls:[NSArray arrayWithObjects:
-                                          [AbstractCall abstractCall:@"setAddress:", @""],
-                                          [AbstractCall abstractCall:@"setTransferMode:", [NSNumber numberWithInt: FALSE]],
-                                          nil]];
+    // Go to dialer view   
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    if(controller != nil) {
+        [controller setAddress:@""];
+        [controller setTransferMode:FALSE];
+    }
 }
 
 - (IBAction)onOptionsClick:(id)sender {

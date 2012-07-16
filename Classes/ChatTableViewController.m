@@ -24,6 +24,7 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "Utils.h"
 
 @implementation ChatTableViewController
 
@@ -90,11 +91,10 @@
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
     
     // Go to ChatRoom view
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom 
-                                   calls:[NSArray arrayWithObjects:
-                                          [AbstractCall abstractCall:@"setRemoteContact:", [chat remoteContact]],
-                                          nil]
-                                    push:TRUE];
+    ChatRoomTableViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomTableViewController);
+    if(controller != nil) {
+        [controller setRemoteContact:[chat remoteContact]];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
