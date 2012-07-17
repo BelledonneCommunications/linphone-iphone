@@ -56,6 +56,11 @@
 }
 
 - (void)onOn {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button: Linphone core not ready"];
+        return;
+    }
+    
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
@@ -73,11 +78,16 @@
         linphone_core_update_call(lc, call, call_params);
 		linphone_call_params_destroy(call_params);
     } else {
-		ms_warning("Cannot toggle video, because no current call");
+		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button, because no current call"];
 	}   
 }
 
 - (void)onOff {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button: Linphone core not ready"];
+        return;
+    }
+    
 	LinphoneCore* lc = [LinphoneManager getLc];
     
     if (!linphone_core_video_enabled(lc))
@@ -95,7 +105,7 @@
         linphone_core_update_call(lc, call, call_params);
 		linphone_call_params_destroy(call_params);
     } else {
-		ms_warning("Cannot toggle video, because no current call");
+		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle video button, because no current call"];
 	}
 }
 
@@ -139,7 +149,7 @@
         }
         return val;
     } else {
-		//not ready yet
+		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update video button: Linphone core not ready"];
 		return false;
 	}
 }

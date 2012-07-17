@@ -26,4 +26,21 @@
     [inst_ isKindOfClass:[cls class]]? inst_ : nil; \
  })
 
+typedef enum _LinphoneLoggerSeverity {
+    LinphoneLoggerLog = 0,
+    LinphoneLoggerDebug,
+    LinphoneLoggerWarning,
+    LinphoneLoggerError,
+    LinphoneLoggerFatal
+} LinphoneLoggerSeverity;
+
+
+@interface LinphoneLogger : NSObject {
+
+}
++ (void)log:(LinphoneLoggerSeverity) severity format:(NSString *)format,...;
++ (void)logc:(LinphoneLoggerSeverity) severity format:(const char *)format,...;
+
+@end
+
 #endif

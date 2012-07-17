@@ -70,12 +70,14 @@
 #pragma mark - 
 
 - (void)update {
-    
-    if (chat != nil) {
-        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [displayNameLabel setText:[chat remoteContact]];
-        [chatContentLabel setText:[chat message]];
+    if(chat == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat cell: null chat"];
+        return;
     }
+    
+    [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
+    [displayNameLabel setText:[chat remoteContact]];
+    [chatContentLabel setText:[chat message]];
     
     //
     // Adapt size

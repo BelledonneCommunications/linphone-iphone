@@ -198,6 +198,10 @@
 #pragma mark - 
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {  
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call bar: Linphone core not ready"];
+        return;
+    }
     LinphoneCore* lc = [LinphoneManager getLc]; 
 
     [speakerButton update];

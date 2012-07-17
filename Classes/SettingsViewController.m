@@ -124,7 +124,7 @@
     }
     // NSLog(@"Specifier received: %@", identifier);
 	if ([identifier isEqualToString:@"silk_24k_preference"]) {
-		if (![[LinphoneManager instance] isNotIphone3G])
+		if (![LinphoneManager isNotIphone3G])
 			return nil;
 	}
     if ([identifier isEqualToString:@"backgroundmode_preference"]) {

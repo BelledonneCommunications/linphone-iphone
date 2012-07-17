@@ -1,4 +1,4 @@
-/* UIPassView.m
+/* UITransparentView.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,9 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */  
 
-#import "UIPassView.h"
+#import "UITransparentView.h"
 
-@implementation UIPassView
+@implementation UITransparentView
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
     BOOL pointInside = NO;

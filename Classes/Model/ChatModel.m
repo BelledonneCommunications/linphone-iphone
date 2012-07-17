@@ -65,19 +65,19 @@
 - (void)create {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return;
     }
     const char *sql = [[NSString stringWithFormat:@"INSERT INTO chat (localContact, remoteContact, direction, message, time, read) VALUES (\"%@\", \"%@\", %i, \"%@\", %f, %i)",
                         localContact, remoteContact, [direction intValue], message, [time timeIntervalSince1970], [read intValue]] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return;
     }
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
     }
 }
@@ -85,7 +85,7 @@
 + (ChatModel*)read:(NSNumber*)chatId {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return nil;
     }
 
@@ -93,7 +93,7 @@
                         chatId] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return nil;
     }
     
@@ -102,7 +102,7 @@
     if (err == SQLITE_ROW) {
         line = [[ChatModel alloc] initWithData:sqlStatement];
     } else if (err != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return nil;
     }
@@ -114,7 +114,7 @@
 - (void)update {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return;
     }
     
@@ -122,12 +122,12 @@
                         localContact, remoteContact, [direction intValue], message, [time timeIntervalSince1970], read, [chatId intValue]] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return;
     }
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return;
     }
@@ -138,7 +138,7 @@
 - (void)delete {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return;
     }
     
@@ -146,12 +146,12 @@
                         chatId] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return;
     }    
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return;
     }
@@ -166,14 +166,14 @@
     NSMutableArray *array = [NSMutableArray array];
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return array;
     }
     
     const char *sql = "SELECT id, localContact, remoteContact, direction, message, time, read FROM chat GROUP BY remoteContact ORDER BY time DESC";
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return array;
     }
     
@@ -184,7 +184,7 @@
     }
     
     if (err != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         return array;
     }
     
@@ -197,7 +197,7 @@
     NSMutableArray *array = [NSMutableArray array];
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return array;
     }
     
@@ -205,7 +205,7 @@
                         contact] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return array;
     }
     
@@ -216,7 +216,7 @@
     }
     
     if (err != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         return array;
     }
     
@@ -228,7 +228,7 @@
 + (void)removeConversation:(NSString *)contact {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return;
     }
     
@@ -236,12 +236,12 @@
                         contact] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return;
     }    
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return;
     }
@@ -253,19 +253,19 @@
     int count = -1;
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return count;
     }
     
     const char *sql = [[NSString stringWithFormat:@"SELECT count(*) FROM chat WHERE read=0"] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return count;
     }    
     
     if (sqlite3_step(sqlStatement) != SQLITE_ROW) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return count;
     }
@@ -279,7 +279,7 @@
 + (void)readConversation:(NSString *)contact {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
-        NSLog(@"Database not ready");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
         return;
     }
     
@@ -287,12 +287,12 @@
                         contact] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
-        NSLog(@"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
         return;
     }    
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
-        NSLog(@"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database));
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
         return;
     }

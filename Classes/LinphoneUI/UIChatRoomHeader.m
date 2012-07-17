@@ -18,6 +18,7 @@
  */ 
 
 #import "UIChatRoomHeader.h"
+#import "Utils.h"
 
 @implementation UIChatRoomHeader
 
@@ -54,10 +55,13 @@
 #pragma mark - 
 
 - (void)update {
-    if(contact != nil) {
-        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [addressLabel setText:contact];
+    if(contact == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
+        return;
     }
+    
+    [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
+    [addressLabel setText:contact];
 }
 
 + (CGFloat)height {

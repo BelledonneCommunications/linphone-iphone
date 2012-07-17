@@ -18,6 +18,7 @@
  */
 
 #import "CallDelegate.h"
+#import "Utils.h"
 
 @implementation CallDelegate
 
@@ -32,7 +33,7 @@
         timeout = nil;
     }
     if (eventType == CD_UNDEFINED) {
-        ms_error("Incorrect usage of CallDelegate/ActionSheet: eventType must be set");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Incorrect usage of CallDelegate/ActionSheet: eventType must be set"];
     }
     [delegate actionSheet:actionSheet ofType:eventType clickedButtonAtIndex:buttonIndex withUserDatas:call];
 }
@@ -47,7 +48,7 @@
 	if (buttonIndex != actionSheet.cancelButtonIndex) return;
 	
     if (eventType == CD_UNDEFINED) {
-        ms_error("Incorrect usage of CallDelegate/ActionSheet: eventType must be set");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Incorrect usage of CallDelegate/ActionSheet: eventType must be set"];
     }
 	
     [delegate actionSheet:actionSheet ofType:eventType clickedButtonAtIndex:buttonIndex withUserDatas:call];    
@@ -59,7 +60,7 @@
         timeout = nil;
     }
     if (eventType == CD_UNDEFINED) {
-        ms_error("Incorrect usage of CallDelegate/ActionSheet: eventType must be set");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Incorrect usage of CallDelegate/ActionSheet: eventType must be set"];
     }
     [delegate actionSheet:actionSheet ofType:eventType clickedButtonAtIndex:actionSheet.cancelButtonIndex withUserDatas:call];
 }

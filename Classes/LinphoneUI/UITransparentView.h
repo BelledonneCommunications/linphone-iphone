@@ -1,4 +1,4 @@
-/* UIPassView.h
+/* UITransparentView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -19,6 +19,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIPassView : UIView
+@interface UITransparentView : UIView
 
 @end

@@ -164,7 +164,7 @@
     if(contact == NULL) 
         return;
     
-    NSLog(@"Load data from contact %p", contact);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Load data from contact %p", contact];
     // Phone numbers 
     {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
@@ -242,7 +242,7 @@
             [entry release];
         } else {
             added = false;
-            NSLog(@"Can't add entry: %@", [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
         }
         CFRelease(lMap);
     } else if(section == 1) {
@@ -270,7 +270,7 @@
             [entry release];
         } else {
             added = false;
-            NSLog(@"Can't add entry: %@", [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't add entry: %@", [error localizedDescription]];
         }
         CFRelease(lMap);
     }
@@ -670,7 +670,7 @@
         }
         [cell.detailTextLabel setText:value];
     } else {
-        NSLog(@"Not valid UIEditableTableViewCell");
+        [LinphoneLogger logc:LinphoneLoggerError format:"Not valid UIEditableTableViewCell"];
     }
     return TRUE;
 }

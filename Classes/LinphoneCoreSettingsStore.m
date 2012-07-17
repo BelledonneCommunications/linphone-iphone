@@ -29,11 +29,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	NSUserDefaults *oldconfig=[NSUserDefaults standardUserDefaults];
 	NSArray *allkeys=[[oldconfig dictionaryRepresentation] allKeys];
     for(NSString* key in allkeys){
-        NSLog(@"Migrating old config item %@ to in app settings.",key);
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Migrating old config item %@ to in app settings.",key];
         [self setObject:[oldconfig objectForKey:key] forKey:key];
     }
     [self synchronize];
-    NSLog(@"Migration done");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Migration done"];
 }
 
 - (id)init {
@@ -82,8 +82,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             bool_t value = linphone_core_payload_type_enabled(lc,pt);
 			[self setBool:value  forKey: pref];
 		}else{
-			ms_warning("Codec %s/%i supported by core is not shown in iOS app config view.",
-					   pt->mime_type,pt->clock_rate);
+			[LinphoneLogger logc:LinphoneLoggerWarning format:"Codec %s/%i supported by core is not shown in iOS app config view.",
+					   pt->mime_type,pt->clock_rate];
 		}
 	}
 }
@@ -230,7 +230,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	LCSipTransports transportValue={0};
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(lc, &transportValue)) {
-			ms_error("cannot get current transport");	
+			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];	
 		}
 		// Only one port can be set at one time, the others's value is 0
 		if ([transport isEqualToString:@"tcp"]) {
@@ -246,10 +246,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
-			ms_error("unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			[LinphoneLogger logc:LinphoneLoggerError format:"unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]];
 		}
 		if (linphone_core_set_sip_transports(lc, &transportValue)) {
-			ms_error("cannot set transport");	
+			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
 		}
 	}
 	

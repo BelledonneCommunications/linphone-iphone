@@ -110,6 +110,41 @@ struct codec_name_pref_table codec_pref_table[]={
 	return TRUE;
 }
 
++ (BOOL)runningOnIpad {
+#ifdef UI_USER_INTERFACE_IDIOM
+    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
+#else
+    return NO;
+#endif
+}
+
++ (BOOL)isNotIphone3G
+{
+	static BOOL done=FALSE;
+	static BOOL result;
+	if (!done){
+		size_t size;
+		sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+		char *machine = malloc(size);
+		sysctlbyname("hw.machine", machine, &size, NULL, 0);
+		NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
+		free(machine);
+        
+		result = ![platform isEqualToString:@"iPhone1,2"];
+        
+		[platform release];
+		done=TRUE;
+	}
+    return result;
+}
+
++ (LinphoneManager*)instance {
+	return theLinphoneManager;
+}
+
+
+#pragma mark - Lifecycle Functions
+
 - (id)init {
     assert (!theLinphoneManager);
     if ((self = [super init])) {
@@ -129,6 +164,9 @@ struct codec_name_pref_table codec_pref_table[]={
     [super dealloc];
 }
 
+
+#pragma mark - Database Functions
+
 - (void)openDatabase {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0];
@@ -139,31 +177,81 @@ struct codec_name_pref_table codec_pref_table[]={
     NSError *error = nil;
     //[fileManager removeItemAtPath:databaseDocumentPath error:&error]; //TODO REMOVE
     if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
-        NSLog(@"Create sqlite 3 database");
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Create sqlite3 database"];
         NSString *resourceDocumentPath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"sqlite"];
         [fileManager copyItemAtPath:resourceDocumentPath toPath:databaseDocumentPath error:&error];
         if(error != nil) {
-            NSLog(@"Can't copy database: %@", [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't copy database: %@", [error localizedDescription]];
             return;
         }
     }
 
     if(sqlite3_open([databaseDocumentPath UTF8String], &database) != SQLITE_OK) {
-        NSLog(@"Can't open \"%@\" sqlite3 database.", databaseDocumentPath);
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", databaseDocumentPath];
     }
 }
 
 - (void)closeDatabase {
     if(database != NULL) {
         if(sqlite3_close(database) != SQLITE_OK) {
-            NSLog(@"Can't close sqlite3 database.");
+            [LinphoneLogger logc:LinphoneLoggerError format:"Can't close sqlite3 database."];
         }
     }
 }
 
-+ (LinphoneManager*)instance {
-	return theLinphoneManager;
+
+#pragma mark - Linphone Core Functions
+
++ (LinphoneCore*)getLc {
+	if (theLinphoneCore==nil) {
+		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
+	}
+	return theLinphoneCore;
 }
+
++ (BOOL)isLcReady {
+    return theLinphoneCore != nil;
+}
+
+
+#pragma mark - Logs Functions
+
+//generic log handler for debug version
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
+	NSString* format = [NSString stringWithUTF8String:fmt];
+	NSLogv(format, args);
+	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+	//[[LinphoneManager instance] addLog:formatedString];
+	[formatedString release];
+}
+
+//Error/warning log handler 
+static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
+	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
+	NSLog(log, NULL);
+	//[[LinphoneManager instance] addLog:log];
+}
+
+
+#pragma mark - Display Status Functions
+
+- (void)displayStatus:(NSString*) message {
+    // Post event
+    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+                           message, @"message", 
+                           nil] autorelease];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneDisplayStatus" object:self userInfo:dict];
+}
+
+
+static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
+    NSString* status = [[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]];
+	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:status];
+    [status release];
+}
+
+
+#pragma mark - Call State Functions
 
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
@@ -187,88 +275,27 @@ struct codec_name_pref_table codec_pref_table[]={
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
-                          [NSValue valueWithPointer:call], @"call",
-                          [NSNumber numberWithInt:state], @"state", 
-                          [NSString stringWithUTF8String:message], @"message", nil] autorelease];
+                           [NSValue valueWithPointer:call], @"call",
+                           [NSNumber numberWithInt:state], @"state", 
+                           [NSString stringWithUTF8String:message], @"message", nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
 }
 
-+ (LinphoneCore*)getLc {
-	if (theLinphoneCore==nil) {
-		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
-	}
-	return theLinphoneCore;
-}
-
-+ (BOOL)isLcReady {
-    return theLinphoneCore != nil;
-}
-
-- (void)addLog:(NSString*) log {
-	[mLogView addLog:log];
-}
-
-- (void)displayStatus:(NSString*) message {
-    // Post event
-    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
-                          message, @"message", 
-                          nil] autorelease];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneDisplayStatus" object:self userInfo:dict];
-}
-
-//generic log handler for debug version
-void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
-	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
-	NSLogv(format,args);
-	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-	[[LinphoneManager instance] addLog:formatedString];
-	[format release];
-	[formatedString release];
-}
-
-//Error/warning log handler 
-static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
-	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
-	NSLog(log,NULL);
-	[[LinphoneManager instance]addLog:log];
-}
-//status 
-static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
-    NSString* status = [[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]];
-	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:status];
-    [status release];
-}
-
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
-	/*LinphoneCallIdle,
-	 LinphoneCallIncomingReceived,
-	 LinphoneCallOutgoingInit,
-	 LinphoneCallOutgoingProgress,
-	 LinphoneCallOutgoingRinging,
-	 LinphoneCallOutgoingEarlyMedia,
-	 LinphoneCallConnected,
-	 LinphoneCallStreamsRunning,
-	 LinphoneCallPausing,
-	 LinphoneCallPaused,
-	 LinphoneCallResuming,
-	 LinphoneCallRefered,
-	 LinphoneCallError,
-	 LinphoneCallEnd,
-	 LinphoneCallPausedByRemote
-	 */
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onCall:call StateChanged: state withMessage:  message];
 }
 
+
+#pragma mark - Transfert State Functions
+
 static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCall* call, LinphoneCallState state) {
-    /*
-     LinhoneCallOutgoingProgress -> SalReferTrying
-     LinphoneCallConnected -> SalReferSuccess
-     LinphoneCallError -> SalReferFailed | *
-     */
 }
 
+
+#pragma mark - Registration State Functions
+
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
-    ms_warning("NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message];
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
@@ -282,6 +309,9 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
 	[(LinphoneManager*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
+
+
+#pragma mark - Text Received Functions
 
 - (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
     
@@ -307,21 +337,8 @@ static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *ro
     [(LinphoneManager*)linphone_core_get_user_data(lc) onTextReceived:lc room:room from:from message:message];
 }
 
-static LinphoneCoreVTable linphonec_vtable = {
-	.show =NULL,
-	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
-	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_recv = NULL,
-	.new_subscription_request = NULL,
-	.auth_info_requested = NULL,
-	.display_status = linphone_iphone_display_status,
-	.display_message=linphone_iphone_log,
-	.display_warning=linphone_iphone_log,
-	.display_url=NULL,
-	.text_received=linphone_iphone_text_received,
-	.dtmf_received=NULL,
-    .transfer_state_changed=linphone_iphone_transfer_state_changed
-};
+
+#pragma mark - Network Functions
 
 - (void)kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
@@ -338,24 +355,24 @@ static LinphoneCoreVTable linphonec_vtable = {
 }	
 
 static void showNetworkFlags(SCNetworkReachabilityFlags flags){
-	ms_message("Network connection flags:");
-	if (flags==0) ms_message("no flags.");
+	[LinphoneLogger logc:LinphoneLoggerLog format:"Network connection flags:"];
+	if (flags==0) [LinphoneLogger logc:LinphoneLoggerLog format:"no flags."];
 	if (flags & kSCNetworkReachabilityFlagsTransientConnection)
-		ms_message("kSCNetworkReachabilityFlagsTransientConnection");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsTransientConnection"];
 	if (flags & kSCNetworkReachabilityFlagsReachable)
-		ms_message("kSCNetworkReachabilityFlagsReachable");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsReachable"];
 	if (flags & kSCNetworkReachabilityFlagsConnectionRequired)
-		ms_message("kSCNetworkReachabilityFlagsConnectionRequired");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsConnectionRequired"];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)
-		ms_message("kSCNetworkReachabilityFlagsConnectionOnTraffic");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsConnectionOnTraffic"];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)
-		ms_message("kSCNetworkReachabilityFlagsConnectionOnDemand");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsConnectionOnDemand"];
 	if (flags & kSCNetworkReachabilityFlagsIsLocalAddress)
-		ms_message("kSCNetworkReachabilityFlagsIsLocalAddress");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsIsLocalAddress"];
 	if (flags & kSCNetworkReachabilityFlagsIsDirect)
-		ms_message("kSCNetworkReachabilityFlagsIsDirect");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsIsDirect"];
 	if (flags & kSCNetworkReachabilityFlagsIsWWAN)
-		ms_message("kSCNetworkReachabilityFlagsIsWWAN");
+		[LinphoneLogger logc:LinphoneLoggerLog format:"kSCNetworkReachabilityFlagsIsWWAN"];
 }
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx){
@@ -399,7 +416,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 					linphone_proxy_config_expires(proxy, 0);
 				} 
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
-				ms_message("Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
+				[LinphoneLogger logc:LinphoneLoggerLog format:"Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan")];
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
 		}
@@ -409,111 +426,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-- (BOOL)isNotIphone3G
-{
-	static BOOL done=FALSE;
-	static BOOL result;
-	if (!done){
-		size_t size;
-		sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-		char *machine = malloc(size);
-		sysctlbyname("hw.machine", machine, &size, NULL, 0);
-		NSString *platform = [[NSString alloc ] initWithUTF8String:machine];
-		free(machine);
-    
-		result = ![platform isEqualToString:@"iPhone1,2"];
-    
-		[platform release];
-		done=TRUE;
-	}
-    return result;
-}
-
-// no proxy configured alert 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1) {
-		[[[LinphoneManager instance] settingsStore] setBool:true forKey:@"check_config_disable_preference"];
-	}
-}
-
-- (void)destroyLibLinphone {
-	[mIterateTimer invalidate]; 
-	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-	[audioSession setDelegate:nil];
-	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
-        NSLog(@"Destroy linphonecore");
-		linphone_core_destroy(theLinphoneCore);
-		theLinphoneCore = nil;
-        SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-        if (proxyReachability)
-            CFRelease(proxyReachability);
-        proxyReachability=nil;
-        
-    }
-    
-}
-
-//**********************BG mode management*************************///////////
-- (BOOL)enterBackgroundMode {
-	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
-	linphone_core_stop_dtmf_stream(theLinphoneCore);
-	
-	if (proxyCfg && [settingsStore boolForKey:@"backgroundmode_preference"]) {
-		//For registration register
-		linphone_core_refresh_registers(theLinphoneCore);
-		
-		
-		//wait for registration answer
-		int i=0;
-		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
-			linphone_core_iterate(theLinphoneCore);
-			usleep(100000);
-		}
-		//register keepalive
-		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
-														   handler:^{
-															   ms_warning("keepalive handler");
-															   if (theLinphoneCore == nil) {
-																   ms_warning("It seems that Linphone BG mode was deactivated, just skipping");
-																   return;
-															   }
-															   //kick up network cnx, just in case
-															   [self kickOffNetworkConnection];
-															   [self refreshRegisters];
-															   linphone_core_iterate(theLinphoneCore);
-														   }
-			 ]) {
-			
-			
-			ms_message("keepalive handler succesfully registered"); 
-		} else {
-			ms_warning("keepalive handler cannot be registered");
-		}
-		LCSipTransports transportValue;
-		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
-			ms_error("cannot get current transport");	
-		}
-		return YES;
-	}
-	else {
-		ms_message("Entering lite bg mode");
-		[self destroyLibLinphone];
-        return NO;
-	}
-}
-
-//scheduling loop
-- (void)iterate {
-	linphone_core_iterate(theLinphoneCore);
-}
-
 - (void)setupNetworkReachabilityCallback {
 	SCNetworkReachabilityContext *ctx=NULL;
 	const char *nodeName="linphone.org";
 	
     if (proxyReachability) {
-        ms_message("Cancelling old network reachability");
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Cancelling old network reachability"];
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         CFRelease(proxyReachability);
         proxyReachability = nil;
@@ -524,25 +442,45 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	//initial state is network off should be done as soon as possible
 	SCNetworkReachabilityFlags flags;
 	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		ms_error("Cannot get reachability flags: %s", SCErrorString(SCError()));
+		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags: %s", SCErrorString(SCError())];
 		return;
 	}
 	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);
 
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
-		ms_error("Cannot register reachability cb: %s", SCErrorString(SCError()));
+		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register reachability cb: %s", SCErrorString(SCError())];
 		return;
 	}
 	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
-		ms_error("Cannot register schedule reachability cb: %s", SCErrorString(SCError()));
+		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register schedule reachability cb: %s", SCErrorString(SCError())];
 		return;
 	}
 }
 
 
-/*************
- *lib linphone init method
- */
+#pragma mark - 
+
+static LinphoneCoreVTable linphonec_vtable = {
+	.show =NULL,
+	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
+	.registration_state_changed = linphone_iphone_registration_state,
+	.notify_recv = NULL,
+	.new_subscription_request = NULL,
+	.auth_info_requested = NULL,
+	.display_status = linphone_iphone_display_status,
+	.display_message=linphone_iphone_log,
+	.display_warning=linphone_iphone_log,
+	.display_url=NULL,
+	.text_received=linphone_iphone_text_received,
+	.dtmf_received=NULL,
+    .transfer_state_changed=linphone_iphone_transfer_state_changed
+};
+
+//scheduling loop
+- (void)iterate {
+	linphone_core_iterate(theLinphoneCore);
+}
+
 - (void)startLibLinphone {
 	
 	//get default config from bundle
@@ -572,7 +510,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #endif
 	/* Initialize linphone core*/
 	
-    NSLog(@"Create linphonecore");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
@@ -617,7 +555,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     NSString* path = [myBundle pathForResource:@"nowebcamCIF" ofType:@"jpg"];
     if (path) {
         const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
-        ms_message("Using '%s' as source image for no webcam", imagePath);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Using '%s' as source image for no webcam", imagePath];
         linphone_core_set_static_picture(theLinphoneCore, imagePath);
     }
     
@@ -639,11 +577,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     NSUInteger cpucount = [[NSProcessInfo processInfo] processorCount];
 	ms_set_cpu_count(cpucount);
 
-	if (![self isNotIphone3G]){
+	if (![LinphoneManager isNotIphone3G]){
 		PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"SILK",24000);
 		if (pt) {
 			linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
-			ms_warning("SILK/24000 and video disabled on old iPhone 3G");
+			[LinphoneLogger logc:LinphoneLoggerWarning format:"SILK/24000 and video disabled on old iPhone 3G"];
 		}
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
@@ -655,9 +593,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     settingsStore = [[LinphoneCoreSettingsStore alloc] init];
     
-    ms_warning("Linphone [%s]  started on [%s]"
+    [LinphoneLogger logc:LinphoneLoggerWarning format:"Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
-               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]] );
+               ,[[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]];
     
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
@@ -666,23 +604,71 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}	
 }
 
-- (void)refreshRegisters{
-	/*first check if network is available*/
-	if (proxyReachability){
-		SCNetworkReachabilityFlags flags=0;
-		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-			ms_error("Cannot get reachability flags, re-creating reachability context.");
-			[self setupNetworkReachabilityCallback];
-		}else{
-			networkReachabilityCallBack(proxyReachability, flags, 0);
-			if (flags==0){
-				/*workaround iOS bug: reachability API cease to work after some time.*/
-				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
-				[self setupNetworkReachabilityCallback];
-			}
+
+- (void)destroyLibLinphone {
+	[mIterateTimer invalidate]; 
+	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+	[audioSession setDelegate:nil];
+	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
+		linphone_core_destroy(theLinphoneCore);
+		theLinphoneCore = nil;
+        SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        if (proxyReachability)
+            CFRelease(proxyReachability);
+        proxyReachability=nil;
+        
+    }
+    
+}
+
+- (BOOL)enterBackgroundMode {
+	LinphoneProxyConfig* proxyCfg;
+	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
+	linphone_core_stop_dtmf_stream(theLinphoneCore);
+	
+	if (proxyCfg && [settingsStore boolForKey:@"backgroundmode_preference"]) {
+		//For registration register
+		linphone_core_refresh_registers(theLinphoneCore);
+		
+		
+		//wait for registration answer
+		int i=0;
+		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
+			linphone_core_iterate(theLinphoneCore);
+			usleep(100000);
 		}
-	}else ms_error("No proxy reachability context created !");
-	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+		//register keepalive
+		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
+														   handler:^{
+															   [LinphoneLogger logc:LinphoneLoggerWarning format:"keepalive handler"];
+															   if (theLinphoneCore == nil) {
+																   [LinphoneLogger logc:LinphoneLoggerWarning format:"It seems that Linphone BG mode was deactivated, just skipping"];
+																   return;
+															   }
+															   //kick up network cnx, just in case
+															   [self kickOffNetworkConnection];
+															   [self refreshRegisters];
+															   linphone_core_iterate(theLinphoneCore);
+														   }
+			 ]) {
+			
+			
+			[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler succesfully registered"]; 
+		} else {
+			[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler cannot be registered"];
+		}
+		LCSipTransports transportValue;
+		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
+			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];	
+		}
+		return YES;
+	}
+	else {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Entering lite bg mode"];
+		[self destroyLibLinphone];
+        return NO;
+	}
 }
 
 - (void)becomeActive {
@@ -697,22 +683,39 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
 }
 
-- (void)registerLogView:(id<LogView>) view {
-	mLogView = view;
-}
-
 - (void)beginInterruption {
     LinphoneCall* c = linphone_core_get_current_call(theLinphoneCore);
-    ms_message("Sound interruption detected!");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Sound interruption detected!"];
     if (c) {
         linphone_core_pause_call(theLinphoneCore, c);
     }
 }
 
 - (void)endInterruption {
-    ms_message("Sound interruption ended!");
-    //let the user resume the call manually.
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Sound interruption ended!"];
 }
+
+- (void)refreshRegisters{
+	/*first check if network is available*/
+	if (proxyReachability){
+		SCNetworkReachabilityFlags flags=0;
+		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+			[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags, re-creating reachability context."];
+			[self setupNetworkReachabilityCallback];
+		}else{
+			networkReachabilityCallBack(proxyReachability, flags, 0);
+			if (flags==0){
+				/*workaround iOS bug: reachability API cease to work after some time.*/
+				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
+				[self setupNetworkReachabilityCallback];
+			}
+		}
+	}else [LinphoneLogger logc:LinphoneLoggerError format:"No proxy reachability context created !"];
+	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
+}
+
+
+#pragma mark - Speaker Functions
 
 - (void)enableSpeaker:(BOOL)enable {
     //redirect audio to speaker
@@ -735,20 +738,15 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
     if (!lStatus && lNewRouteSize > 0) {
         NSString *route = (NSString *) lNewRoute;
-        ms_message("Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
         return [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
     } else {
         return false;
     }
 }
 
-+ (BOOL)runningOnIpad {
-#ifdef UI_USER_INTERFACE_IDIOM
-    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
-#endif
-    return NO;
-}
 
+#pragma mark - Call Functions
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer {
     if (!linphone_core_is_network_reachabled(theLinphoneCore)) {
@@ -764,7 +762,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     CTCallCenter* ct = [[CTCallCenter alloc] init];
     if ([ct.currentCalls count] > 0) {
-        ms_error("GSM call in progress, cancelling outgoing SIP call request");
+        [LinphoneLogger logc:LinphoneLoggerError format:"GSM call in progress, cancelling outgoing SIP call request"];
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot make call",nil)
 														message:NSLocalizedString(@"Please terminate GSM call",nil) 
 													   delegate:nil 

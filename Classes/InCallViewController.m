@@ -469,7 +469,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                 linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
             } else {
                 // decline video
-                ms_message("User declined video proposal");
+                [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
                 linphone_core_accept_call_update([LinphoneManager getLc], call, NULL);
             }
             linphone_call_params_destroy(paramsCopy);
@@ -477,7 +477,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             break;
         }
         default:
-            ms_error("Unhandled CallDelegate event of type: %d received - ignoring", type);
+            [LinphoneLogger logc:LinphoneLoggerError format:"Unhandled CallDelegate event of type: %d received - ignoring", type];
     }
 }
 

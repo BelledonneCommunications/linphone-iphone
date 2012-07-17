@@ -62,7 +62,7 @@
         return;
     }
     
-    NSLog(@"Reset data to contact %p", contact);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Reset data to contact %p", contact];
     ABRecordID recordID = ABRecordGetRecordID(contact);
     ABAddressBookRevert(addressBook);
     contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
@@ -91,9 +91,9 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         NSError* error = NULL;
         ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            NSLog(@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Remove contact %p: Fail(%@)", contact, [error localizedDescription]];
         } else {
-            NSLog(@"Remove contact %p: Success!", contact);
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Remove contact %p: Success!", contact];
         }
         contact = NULL;
         
@@ -103,9 +103,9 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         ABAddressBookSave(addressBook, (CFErrorRef*)&error);
         inhibUpdate = FALSE;
         if (error != NULL) {
-            NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Save AddressBook: Fail(%@)", [error localizedDescription]];
         } else {
-            NSLog(@"Save AddressBook: Success!");
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Save AddressBook: Success!"];
         }
     }
 }
@@ -121,9 +121,9 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if(ABRecordGetRecordID(contact) == kABRecordInvalidID) {
         ABAddressBookAddRecord(addressBook, contact, (CFErrorRef*)&error);
         if (error != NULL) {
-            NSLog(@"Add contact %p: Fail(%@)", contact, [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Add contact %p: Fail(%@)", contact, [error localizedDescription]];
         } else {
-            NSLog(@"Add contact %p: Success!", contact);
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Add contact %p: Success!", contact];
         }
     }
     
@@ -133,14 +133,14 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABAddressBookSave(addressBook, (CFErrorRef*)&error);
     inhibUpdate = FALSE;
     if (error != NULL) {
-        NSLog(@"Save AddressBook: Fail(%@)", [error localizedDescription]);
+        [LinphoneLogger log:LinphoneLoggerError format:@"Save AddressBook: Fail(%@)", [error localizedDescription]];
     } else {
-        NSLog(@"Save AddressBook: Success!");
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Save AddressBook: Success!"];
     }
 }
 
 - (void)newContact {
-    NSLog(@"New contact");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -148,7 +148,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)newContact:(NSString*)address {
-    NSLog(@"New contact");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -157,7 +157,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)editContact:(ABRecordRef)acontact {
-    NSLog(@"Edit contact %p", acontact);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -165,7 +165,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
-    NSLog(@"Edit contact %p", acontact);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -177,7 +177,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
-    NSLog(@"set contact %p", acontact);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Set contact %p", acontact];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [self disableEdit:FALSE];

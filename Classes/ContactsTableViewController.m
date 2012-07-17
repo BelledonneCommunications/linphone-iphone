@@ -76,7 +76,7 @@
 #pragma mark - 
 
 - (void)reloadData {
-    NSLog(@"Load contact list");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Load contact list"];
     @synchronized (addressBookMap) {
         
         // Reset Address book

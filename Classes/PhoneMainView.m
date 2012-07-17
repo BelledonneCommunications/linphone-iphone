@@ -324,7 +324,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (UIViewController*)_changeView:(PhoneView)view transition:(CATransition*)transition {
-    NSLog(@"PhoneMainView: change view %d", view);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", view];
     UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
     if(description == nil)
         return nil;
@@ -348,7 +348,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (UIViewController*)popView:(NSArray *)calls {
-    NSLog(@"PhoneMainView: Pop!");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
     if([viewStack count] > 0) {
         PhoneView view = [[viewStack lastObject] intValue];
         [viewStack removeLastObject];
@@ -446,7 +446,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
     if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
         float level = [UIDevice currentDevice].batteryLevel;
-        ms_message("Video call is running. Battery level: %.2f", level);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Video call is running. Battery level: %.2f", level];
         if (level < 0.1 && !appData->batteryWarningShown) {
             // notify user
             CallDelegate* cd = [[CallDelegate alloc] init];

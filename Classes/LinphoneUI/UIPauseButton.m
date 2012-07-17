@@ -99,11 +99,17 @@
 #pragma mark - UIToggleButtonDelegate Functions
 
 - (void)onOn {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause button: Linphone core not ready"];
+        return;
+    }
     switch (type) {
         case UIPauseButtonType_Call:
         {
             if (call != nil) {
                 linphone_core_pause_call([LinphoneManager getLc], call);
+            } else {
+                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
             }
             break;
         }
@@ -120,6 +126,8 @@
             LinphoneCall* currentCall = [UIPauseButton getCall];
             if (currentCall != nil) {
                 linphone_core_pause_call([LinphoneManager getLc], currentCall);
+            } else {
+                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
             }
             break;
         }
@@ -127,11 +135,17 @@
 }
 
 - (void)onOff {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause button: Linphone core not ready"];
+        return;
+    }
     switch (type) {
         case UIPauseButtonType_Call:
         {
             if (call != nil) {
                 linphone_core_resume_call([LinphoneManager getLc], call);
+            } else {
+                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
             }
             break;
         }
@@ -147,6 +161,8 @@
             LinphoneCall* currentCall = [UIPauseButton getCall];
             if (currentCall != nil) {
                 linphone_core_resume_call([LinphoneManager getLc], currentCall);
+            } else {
+                [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot toggle pause buttton, because no current call"];
             }
             break;
         }
@@ -199,7 +215,9 @@
                 break;
             }
         }
-    } 
+    } else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update pause button: Linphone core not ready"];
+    }
     return ret;
 }
 

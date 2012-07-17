@@ -19,7 +19,7 @@
 
 #import <AudioToolbox/AudioToolbox.h>
 #import "UISpeakerButton.h"
-
+#import "Utils.h"
 #import "LinphoneManager.h"
 
 #include "linphonecore.h"
@@ -46,7 +46,7 @@ static void audioRouteChangeListenerCallback (
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
     OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
     if (lStatus) {
-        ms_error ("cannot register route change handler [%ld]",lStatus);
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
     }
 }
 
@@ -77,7 +77,7 @@ static void audioRouteChangeListenerCallback (
 - (void)dealloc {
     OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
 	if (lStatus) {
-		ms_error ("cannot un register route change handler [%ld]",lStatus);
+		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]",lStatus];
 	}
 	[super dealloc];
 }

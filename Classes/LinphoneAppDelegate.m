@@ -47,14 +47,14 @@ int __aeabi_idiv(int a, int b) {
     
     int callCount = [ct.currentCalls count];
     if (!callCount) {
-        NSLog(@"No GSM call -> enabling SIP calls");
+        [LinphoneLogger logc:LinphoneLoggerLog format:"No GSM call -> enabling SIP calls"];
         linphone_core_set_max_calls([LinphoneManager getLc], 3);
     } else {
-        NSLog(@"%d GSM call(s) -> disabling SIP calls", callCount);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"%d GSM call(s) -> disabling SIP calls", callCount];
         /* pause current call, if any */
         LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
         if (call) {
-            NSLog(@"Pausing SIP call");
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
             linphone_core_pause_call([LinphoneManager getLc], call);
         }
         linphone_core_set_max_calls([LinphoneManager getLc], 0);
@@ -134,7 +134,7 @@ int __aeabi_idiv(int a, int b) {
 
 - (void)loadDefaultSettings:(NSDictionary *) appDefaults {
     for(NSString* key in appDefaults){
-        NSLog(@"Overload %@ to in app settings.", key);
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Overload %@ to in app settings.", key];
         [[[LinphoneManager instance] settingsStore] setObject:[appDefaults objectForKey:key] forKey:key];
     }
     [[[LinphoneManager instance] settingsStore] synchronize];
@@ -212,7 +212,7 @@ int __aeabi_idiv(int a, int b) {
     LinphoneCall* call;
 	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
     if (!call) {
-        ms_warning("Local notification received with nil call");
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
         return;
     }
 	linphone_core_accept_call([LinphoneManager getLc], call);

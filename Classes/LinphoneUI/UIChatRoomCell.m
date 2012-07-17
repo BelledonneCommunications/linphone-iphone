@@ -18,6 +18,7 @@
  */  
 
 #import "UIChatRoomCell.h"
+#import "Utils.h"
 
 #import <NinePatch.h>
 
@@ -72,9 +73,11 @@ static UIFont *CELL_FONT = nil;
 #pragma mark - 
 
 - (void)update {
-    if(chat != nil) {
-        [messageLabel setText:[chat message]];
+    if(chat == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
+        return;
     }
+    [messageLabel setText:[chat message]];
 }
 
 - (void)setEditing:(BOOL)editing {

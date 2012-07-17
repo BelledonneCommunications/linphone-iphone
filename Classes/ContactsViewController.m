@@ -103,7 +103,6 @@ typedef enum _HistoryView {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self changeView: History_All];
     
     // Set selected+over background: IB lack !
     [linphoneButton setImage:[UIImage imageNamed:@"contacts_linphone_selected.png"] 
