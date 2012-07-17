@@ -385,7 +385,7 @@
 							<object class="IBUIButton" id="322088049">
 								<reference key="NSNextResponder" ref="1070539677"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{80, 67}</string>
+								<string key="NSFrame">{{3, 0}, {77, 68}}</string>
 								<reference key="NSSuperview" ref="1070539677"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="471717543"/>
@@ -420,7 +420,7 @@
 							<object class="IBUIButton" id="471717543">
 								<reference key="NSNextResponder" ref="1070539677"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{0, 58}, {80, 75}}</string>
+								<string key="NSFrame">{{3, 61}, {77, 68}}</string>
 								<reference key="NSSuperview" ref="1070539677"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="464536687"/>
@@ -450,7 +450,7 @@
 								<reference key="IBUIFont" ref="315645433"/>
 							</object>
 						</array>
-						<string key="NSFrame">{{240, 201}, {80, 134}}</string>
+						<string key="NSFrame">{{240, 205}, {80, 129}}</string>
 						<reference key="NSSuperview" ref="931774220"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="322088049"/>
@@ -1240,8 +1240,8 @@
 						<int key="objectID">87</int>
 						<reference key="object" ref="1070539677"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="471717543"/>
 							<reference ref="322088049"/>
+							<reference ref="471717543"/>
 						</array>
 						<reference key="parent" ref="931774220"/>
 						<string key="objectName">optionsView</string>
@@ -1570,6 +1570,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UIToggleButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UITransparentView</string>
+					<string key="superclassName">UIView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UITransparentView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
