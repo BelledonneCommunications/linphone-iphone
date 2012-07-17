@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define sal_h
 
 #include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/ice.h"
 #include "ortp/ortp_srtp.h"
 
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
@@ -135,6 +136,7 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
+	IceCheckList *ice_check_list;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4

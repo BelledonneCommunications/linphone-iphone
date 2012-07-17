@@ -245,6 +245,10 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
+		if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce){
+			md->streams[i].ice_check_list = ice_check_list_new();
+			ice_session_add_check_list(call->ice_session, md->streams[i].ice_check_list);
+		}
 	}
 	
 	linphone_address_destroy(addr);
@@ -338,10 +342,19 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) call->ice_session=ice_session_new();
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
-	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
-		linphone_core_run_stun_tests(call->core,call);
+	switch (linphone_core_get_firewall_policy(call->core)) {
+		case LinphonePolicyUseStun:
+			linphone_core_run_stun_tests(call->core,call);
+			break;
+		case LinphonePolicyUseIce:
+			ms_error("Gather ICE candidates");
+			break;
+		default:
+			break;
+	}
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
 		sal_call_set_referer(call->op,params->referer->op);
@@ -524,6 +537,10 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
+	}
+	if (obj->ice_session!=NULL) {
+		ice_session_destroy(obj->ice_session);
+		obj->ice_session=NULL;
 	}
 	if (obj->resultdesc!=NULL) {
 		sal_media_description_unref(obj->resultdesc);
@@ -937,6 +954,11 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->audio_port+1);
 		rtp_session_set_transports(audiostream->session,artp,artcp);
 	}
+	if (linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce){
+		rtp_session_set_pktinfo(audiostream->session,TRUE);
+		audiostream->ice_check_list = call->localdesc->streams[0].ice_check_list;
+		ice_check_list_register_success_cb(audiostream->ice_check_list, audio_stream_set_remote_from_ice, audiostream);
+	}
 
 	call->audiostream_app_evq = ortp_ev_queue_new();
 	rtp_session_register_event_queue(audiostream->session,call->audiostream_app_evq);
@@ -956,6 +978,11 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->video_port);
 			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
 			rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
+		}
+		if (linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce){
+			rtp_session_set_pktinfo(call->videostream->session,TRUE);
+			call->videostream->ice_check_list = call->localdesc->streams[1].ice_check_list;
+			ice_check_list_register_success_cb(call->videostream->ice_check_list, video_stream_set_remote_from_ice, call->videostream);
 		}
 		call->videostream_app_evq = ortp_ev_queue_new();
 		rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
@@ -1436,6 +1463,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		if (call->endpoint){
 			linphone_call_remove_from_conf(call);
 		}
+		if (call->audiostream->ice_check_list) ice_check_list_destroy(call->audiostream->ice_check_list);
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 	}
@@ -1446,6 +1474,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		rtp_session_unregister_event_queue(call->videostream->session,call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
+		if (call->videostream->ice_check_list) ice_check_list_destroy(call->videostream->ice_check_list);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}

@@ -35,6 +35,7 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "mediastreamer2/ice.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
 
@@ -135,6 +136,7 @@ struct _LinphoneCall
 	bool_t was_automatically_paused;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
+	IceSession *ice_session;
 };
 
 
