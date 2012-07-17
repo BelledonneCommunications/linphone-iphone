@@ -350,7 +350,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 			linphone_core_run_stun_tests(call->core,call);
 			break;
 		case LinphonePolicyUseIce:
-			ms_error("Gather ICE candidates");
+			linphone_core_gather_ice_candidates(call->core,call);
 			break;
 		default:
 			break;

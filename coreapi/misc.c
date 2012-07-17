@@ -562,6 +562,107 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	}
 }
 
+void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
+{
+	char addr[64];
+	int port;
+	int id;
+	ortp_socket_t audio_socks[2];
+	ortp_socket_t video_socks[2];
+	bool_t audio_responses[2];
+	bool_t video_responses[2];
+	struct sockaddr_storage ss;
+	socklen_t ss_len;
+	struct timeval init, cur;
+	double elapsed;
+	int loops = 0;
+	const LinphoneCallParams *params = linphone_call_get_current_params(call);
+	const char *server = linphone_core_get_stun_server(lc);
+
+	if (server == NULL) return;
+	if (lc->sip_conf.ipv6_enabled){
+		ms_warning("stun support is not implemented for ipv6");
+		return;
+	}
+
+	if (parse_hostname_to_addr(server, &ss, &ss_len) < 0) {
+		ms_error("Fail to parser stun server address: %s", server);
+		return;
+	}
+	if (lc->vtable.display_status != NULL)
+		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
+
+	audio_responses[0] = audio_responses[1] = FALSE;
+	video_responses[0] = video_responses[1] = FALSE;
+	audio_socks[0] = create_socket(call->audio_port);
+	if (audio_socks[0] == -1) return;
+	audio_socks[1] = create_socket(call->audio_port + 1);
+	if (audio_socks[1] == -1) return;
+	if (params->has_video) {
+		video_socks[0] = create_socket(call->video_port);
+		if (video_socks[0] == -1) return;
+		video_socks[1] = create_socket(call->video_port + 1);
+		if (video_socks[1] == -1) return;
+	} else {
+		video_socks[0] = video_socks[1] = -1;
+	}
+
+	gettimeofday(&init, NULL);
+	do {
+		if (loops % 20 == 0) {
+			ms_message("Sending stun requests...");
+			if (audio_responses[0] == FALSE) sendStunRequest(audio_socks[0], (struct sockaddr*)&ss, ss_len, 1, FALSE);
+			if (audio_responses[1] == FALSE) sendStunRequest(audio_socks[1], (struct sockaddr*)&ss, ss_len, 1, FALSE);
+			if (params->has_video) {
+				if (video_responses[0] == FALSE) sendStunRequest(video_socks[0], (struct sockaddr*)&ss, ss_len, 2, FALSE);
+				if (video_responses[1] == FALSE) sendStunRequest(video_socks[1], (struct sockaddr*)&ss, ss_len, 2, FALSE);
+			}
+		}
+#ifdef WIN32
+		Sleep(10);
+#else
+		usleep(10000);
+#endif
+
+		if (recvStunResponse(audio_socks[0], addr, &port, &id) > 0) {
+			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 1, NULL);
+			audio_responses[0] = TRUE;
+		}
+		if (recvStunResponse(audio_socks[1], addr, &port, &id) > 0) {
+			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 2, NULL);
+			audio_responses[1] = TRUE;
+		}
+		if (params->has_video) {
+			if (recvStunResponse(video_socks[0], addr, &port, &id) > 0) {
+				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 1, NULL);
+				video_responses[0] = TRUE;
+			}
+			if (recvStunResponse(video_socks[1], addr, &port, &id) > 0) {
+				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 2, NULL);
+				video_responses[1] = TRUE;
+			}
+		}
+
+		gettimeofday(&cur, NULL);
+		elapsed = ((cur.tv_sec - init.tv_sec) * 1000.0) +  ((cur.tv_usec - init.tv_usec) / 1000.0);
+		if (elapsed > 2000)  {
+			ms_message("Stun responses timeout, going ahead.");
+			break;
+		}
+		loops++;
+	} while (!((audio_responses[0] == TRUE) && (audio_responses[1] == TRUE)
+		&& (!params->has_video || ((video_responses[0] == TRUE) && (video_responses[1] == TRUE)))));
+
+	close_socket(audio_socks[0]);
+	close_socket(audio_socks[1]);
+	ice_dump_candidates(call->localdesc->streams[0].ice_check_list);
+	if (params->has_video) {
+		if (video_socks[0] != -1) close_socket(video_socks[0]);
+		if (video_socks[1] != -1) close_socket(video_socks[1]);
+		ice_dump_candidates(call->localdesc->streams[1].ice_check_list);
+	}
+}
+
 LinphoneCall * is_a_linphone_call(void *user_pointer){
 	LinphoneCall *call=(LinphoneCall*)user_pointer;
 	if (call==NULL) return NULL;
