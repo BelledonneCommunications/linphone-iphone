@@ -564,6 +564,7 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 
 void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
+	char local_addr[64];
 	char addr[64];
 	int port;
 	int id;
@@ -571,6 +572,8 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	ortp_socket_t video_socks[2];
 	bool_t audio_responses[2];
 	bool_t video_responses[2];
+	IceCandidate *audio_ice_bases[2];
+	IceCandidate *video_ice_bases[2];
 	struct sockaddr_storage ss;
 	socklen_t ss_len;
 	struct timeval init, cur;
@@ -594,6 +597,8 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 
 	audio_responses[0] = audio_responses[1] = FALSE;
 	video_responses[0] = video_responses[1] = FALSE;
+	audio_ice_bases[0] = audio_ice_bases[1] = NULL;
+	video_ice_bases[0] = video_ice_bases[1] = NULL;
 	audio_socks[0] = create_socket(call->audio_port);
 	if (audio_socks[0] == -1) return;
 	audio_socks[1] = create_socket(call->audio_port + 1);
@@ -605,6 +610,16 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		if (video_socks[1] == -1) return;
 	} else {
 		video_socks[0] = video_socks[1] = -1;
+	}
+	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
+		ms_error("Fail to get local ip");
+		return;
+	}
+	audio_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port, 1, NULL);
+	audio_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	if (params->has_video) {
+		video_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port, 1, NULL);
+		video_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 	}
 
 	gettimeofday(&init, NULL);
@@ -625,20 +640,20 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 #endif
 
 		if (recvStunResponse(audio_socks[0], addr, &port, &id) > 0) {
-			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 1, NULL);
+			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 1, audio_ice_bases[0]);
 			audio_responses[0] = TRUE;
 		}
 		if (recvStunResponse(audio_socks[1], addr, &port, &id) > 0) {
-			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 2, NULL);
+			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 2, audio_ice_bases[1]);
 			audio_responses[1] = TRUE;
 		}
 		if (params->has_video) {
 			if (recvStunResponse(video_socks[0], addr, &port, &id) > 0) {
-				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 1, NULL);
+				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 1, video_ice_bases[0]);
 				video_responses[0] = TRUE;
 			}
 			if (recvStunResponse(video_socks[1], addr, &port, &id) > 0) {
-				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 2, NULL);
+				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 2, video_ice_bases[1]);
 				video_responses[1] = TRUE;
 			}
 		}
