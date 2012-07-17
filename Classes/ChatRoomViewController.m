@@ -24,16 +24,22 @@
 
 @implementation ChatRoomViewController
 
-
 @synthesize tableController;
 @synthesize sendButton;
 @synthesize messageField;
 @synthesize editButton;
+@synthesize remoteAddress;
+@synthesize addressLabel;
+@synthesize avatarImage;
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    return [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
+    if (self != nil) {
+        self->chatRoom = NULL;
+    }
+    return self;
 }
 
 - (void)dealloc {
@@ -42,8 +48,12 @@
     [messageField release];
     [sendButton release];
     [editButton release];
+    [remoteAddress release];
+    [addressLabel release];
+    [avatarImage release];
     [super dealloc];
 }
+
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -74,6 +84,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(keyboardWillShow:) 
+                                                 name:UIKeyboardWillShowNotification 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(keyboardWillHide:) 
+                                                 name:UIKeyboardWillHideNotification 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceivedEvent:) 
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
@@ -85,6 +103,16 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    if(chatRoom != NULL) {
+        linphone_chat_room_destroy(chatRoom);
+        chatRoom = NULL;
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillShowNotification 
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillHideNotification 
+                                                  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneTextReceived" 
                                                     object:nil];
@@ -97,9 +125,66 @@
 
 #pragma mark - 
 
-- (void)setRemoteContact:(NSString*)aRemoteContact {
-    remoteContact = aRemoteContact;
-    [tableController setRemoteContact: remoteContact];
+- (void)setRemoteAddress:(NSString*)aRemoteAddress {
+    if(remoteAddress != nil) {
+        [remoteAddress release];
+    }
+    remoteAddress = [aRemoteAddress copy];
+    [tableController setRemoteAddress: remoteAddress];
+    
+    if(remoteAddress == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
+        return;
+    }
+    
+    NSString *displayName = nil;
+    UIImage *image = nil;
+    NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:remoteAddress];
+    ABRecordRef acontact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+    if(acontact != nil) {
+        displayName = [FastAddressBook getContactDisplayName:acontact];
+        image = [FastAddressBook getContactImage:acontact thumbnail:true];
+    }
+    
+    // Display name
+    if(displayName == nil) {
+        displayName = remoteAddress;
+    }
+    [addressLabel setText:displayName];
+    
+    // Avatar
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown_small.png"];
+    }
+    [avatarImage setImage:image];
+}
+
+- (BOOL)sendMessage:(NSString *)message {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Linphone core not ready"];
+        return FALSE;
+    }
+    if(remoteAddress == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Null remoteAddress"];
+        return FALSE;
+    }
+    if(chatRoom == NULL) {
+        chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
+    }
+    
+    // Save message in database
+    ChatModel *chat = [[ChatModel alloc] init];
+    [chat setRemoteContact:remoteAddress];
+    [chat setMessage:message];
+    [chat setDirection:[NSNumber numberWithInt:0]];
+    [chat setTime:[NSDate date]];
+    [chat setRead:[NSNumber numberWithInt:1]];
+    [chat create];
+    [tableController addChatEntry:chat];
+    [chat release];
+    
+    linphone_chat_room_send_message(chatRoom, [message UTF8String]);
+    return TRUE;
 }
 
 
@@ -107,13 +192,19 @@
 
 - (void)textReceivedEvent:(NSNotification *)notif {
     //LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
+    //NSString *message = [[notif userInfo] objectForKey:@"message"];
     LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
-    if(from != NULL) {
-        //NSString *message = [[notif userInfo] objectForKey:@"message"];
-        if([[NSString stringWithUTF8String:linphone_address_get_username(from)] 
-            caseInsensitiveCompare:remoteContact] == NSOrderedSame) {
-            [[tableController tableView] reloadData];
+    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
+    if(from != NULL && chat != NULL) {
+        if([[NSString stringWithUTF8String:linphone_address_as_string_uri_only(from)] 
+            caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
+            [chat setRead:[NSNumber numberWithInt:1]];
+            [chat update];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+            [tableController addChatEntry:chat];
         }
+    } else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Invalid textReceivedEvent"];
     }
 }
 
@@ -137,7 +228,9 @@
 }
 
 - (IBAction)onSendClick:(id)event {
-    [messageField endEditing:TRUE];
+    if([self sendMessage:[messageField text]]) {
+        [messageField setText:@""];
+    }
 }
 
 - (IBAction)onMessageChange:(id)sender {
@@ -146,6 +239,46 @@
     } else {
         [sendButton setEnabled:FALSE];
     }
+}
+
+#pragma mark - Keyboard Event Functions
+
+- (void)keyboardWillHide:(NSNotification *)notif {
+    CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    [UIView beginAnimations:@"resize" context:nil];
+    [UIView setAnimationDuration:duration];
+    [UIView setAnimationCurve:curve];
+    [UIView setAnimationBeginsFromCurrentState:TRUE];
+    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect frame = [[self view] frame];
+    /*
+    CGPoint pos = {0, 0};
+    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
+    frame.size.height = endFrame.origin.y - gPos.y;
+    */
+    frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
+    [[self view] setFrame:frame];
+    [UIView commitAnimations];
+}
+
+- (void)keyboardWillShow:(NSNotification *)notif {
+    CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    [UIView beginAnimations:@"resize" context:nil];
+    [UIView setAnimationDuration:duration];
+    [UIView setAnimationCurve:curve];
+    [UIView setAnimationBeginsFromCurrentState:TRUE];
+    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect frame = [[self view] frame];
+    /*CGPoint pos = {0, 0};
+    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
+    frame.size.height = endFrame.origin.y - gPos.y;*/
+    frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
+    [[self view] setFrame:frame];
+    [UIView commitAnimations];
 }
 
 @end

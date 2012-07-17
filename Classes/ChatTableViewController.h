@@ -24,4 +24,6 @@
     NSMutableArray *data;
 }
 
+- (void)loadData;
+
 @end

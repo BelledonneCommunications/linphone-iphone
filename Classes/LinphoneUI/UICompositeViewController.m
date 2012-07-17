@@ -97,6 +97,38 @@
     [super dealloc];
 }
 
+
+#pragma mark - ViewController Functions
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [contentViewController viewWillAppear:animated];
+    [tabBarViewController viewWillAppear:animated];
+    [stateBarViewController viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [contentViewController viewDidAppear:animated];
+    [tabBarViewController viewDidAppear:animated];
+    [stateBarViewController viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [contentViewController viewWillDisappear:animated];
+    [tabBarViewController viewWillDisappear:animated];
+    [stateBarViewController viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [contentViewController viewDidDisappear:animated];
+    [tabBarViewController viewDidDisappear:animated];
+    [stateBarViewController viewDidDisappear:animated];
+}
+
+
 #pragma mark - 
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {

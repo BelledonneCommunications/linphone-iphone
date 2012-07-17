@@ -209,13 +209,22 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    LinphoneCall* call;
-	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
-    if (!call) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
-        return;
+    if([notification.userInfo objectForKey:@"call"] != nil) {
+        LinphoneCall* call;
+        [(NSData*)[notification.userInfo objectForKey:@"call"] getBytes:&call];
+        if (!call) {
+            [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
+            return;
+        }
+        linphone_core_accept_call([LinphoneManager getLc], call);
+    } else if([notification.userInfo objectForKey:@"chat"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
+        // Go to ChatRoom view
+        ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomViewController);
+        if(controller != nil) {
+            [controller setRemoteAddress:remoteContact];
+        }
     }
-	linphone_core_accept_call([LinphoneManager getLc], call);
 }
 
 @end

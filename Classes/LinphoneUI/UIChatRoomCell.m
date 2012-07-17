@@ -25,9 +25,11 @@
 @implementation UIChatRoomCell
 
 @synthesize contentView;
+@synthesize messageView;
 @synthesize backgroundImage;
 @synthesize messageLabel;
 @synthesize deleteButton;
+@synthesize dateLabel;
 @synthesize chat;
 
 static const CGFloat CELL_MIN_HEIGHT = 65.0f;
@@ -50,8 +52,10 @@ static UIFont *CELL_FONT = nil;
 - (void)dealloc {
     [backgroundImage release];
     [contentView release];
+    [messageView release];
     [messageLabel release];
     [deleteButton release];
+    [dateLabel release];
     
     [chat release];
     
@@ -69,8 +73,10 @@ static UIFont *CELL_FONT = nil;
     [self update];
 }
 
-
-#pragma mark - 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    self->chat = nil;
+}
 
 - (void)update {
     if(chat == nil) {
@@ -78,6 +84,15 @@ static UIFont *CELL_FONT = nil;
         return;
     }
     [messageLabel setText:[chat message]];
+    
+    // Date
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    NSLocale *locale = [NSLocale currentLocale];
+    [dateFormatter setLocale:locale];
+    [dateLabel setText:[dateFormatter stringFromDate:[chat time]]];
+    [dateFormatter release];
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -110,20 +125,24 @@ static UIFont *CELL_FONT = nil;
     }
     
     if(chat != nil) {
-        if([chat direction]) {
+        CGPoint center = [contentView center];
+        if(![[chat direction] intValue]) { // Inverted	
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];
+            center.y += 6;
         } else {
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_outgoing"]];
+            center.y -= 6;
         }
+        [messageView setCenter:center];
     }
     
-    // Resize message
+    // Resize messageView
     {
-        CGRect frame = [messageLabel frame];
-        frame.size.height = [UIChatRoomCell messageHeight:[chat message]];
-        [messageLabel setFrame:frame];
+        CGRect frame = [messageView frame];
+        frame.size.height = [UIChatRoomCell messageHeight:[chat message]] + 10;
+        [messageView setFrame:frame];
     }
 }
 
@@ -139,7 +158,7 @@ static UIFont *CELL_FONT = nil;
 
 + (CGFloat)height:(ChatModel*)chat {
     CGFloat height = [UIChatRoomCell messageHeight:[chat message]];
-    height += 20;
+    height += 40;
     if(height < CELL_MIN_HEIGHT)
         height = CELL_MIN_HEIGHT;
     return height;
@@ -158,9 +177,14 @@ static UIFont *CELL_FONT = nil;
 
 - (IBAction)onDeleteClick: (id) event {
     if(chat != NULL) {
-        [chat delete];
-        UITableView *parentTable = (UITableView *)self.superview;
-        [parentTable reloadData];
+        UIView *view = [self superview]; 
+        // Find TableViewCell
+        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        if(view != nil) {
+            UITableView *tableView = (UITableView*) view;
+            NSIndexPath *indexPath = [tableView indexPathForCell:self];
+            [[tableView dataSource] tableView:tableView commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
+        }
     }
 }
 

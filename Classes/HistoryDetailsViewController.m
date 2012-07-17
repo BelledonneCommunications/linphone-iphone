@@ -215,12 +215,11 @@
     // Date
     NSDate *startData = [NSDate dateWithTimeIntervalSince1970:callLog->start_date_time];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    NSLocale *locale = [NSLocale currentLocale];
     [dateFormatter setLocale:locale];
     [dateLabel setText:[dateFormatter stringFromDate:startData]];
-    [locale release];
     [dateFormatter release];
 
     // Duration

@@ -265,6 +265,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     if (!linphone_call_get_user_pointer(call)) {
         LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
         data->batteryWarningShown = FALSE;
+        data->notification = nil;
         linphone_call_set_user_pointer(call, data);
     }
     
@@ -317,7 +318,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
-    [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_get_username(from)]];
+    [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(from)]];
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
@@ -329,8 +330,10 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
                            [NSValue valueWithPointer:room], @"room", 
                            [NSValue valueWithPointer:from], @"from",
                            [NSString stringWithUTF8String:message], @"message", 
+                           chat, @"chat", 
                            nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self userInfo:dict]; 
+    [chat release];
 }
 
 static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {

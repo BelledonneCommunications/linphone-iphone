@@ -42,7 +42,7 @@
         self.direction = [NSNumber numberWithInt:sqlite3_column_int(sqlStatement, 3)];
         self.message = [NSString stringWithUTF8String: (const char*) sqlite3_column_text(sqlStatement, 4)];
         self.time = [NSDate dateWithTimeIntervalSince1970:sqlite3_column_int(sqlStatement, 5)];
-        self.read = [NSDate dateWithTimeIntervalSince1970:sqlite3_column_int(sqlStatement, 6)];
+        self.read = [NSNumber numberWithInt:sqlite3_column_int(sqlStatement, 6)];
     }
     return self;
 }
@@ -80,6 +80,12 @@
         [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
     }
+    
+    if([self chatId] != nil) {
+        [self->chatId release];
+    } 
+    self->chatId = [[NSNumber alloc] initWithInt:sqlite3_last_insert_rowid(database)];
+    sqlite3_finalize(sqlStatement);
 }
 
 + (ChatModel*)read:(NSNumber*)chatId {
@@ -89,8 +95,8 @@
         return nil;
     }
 
-    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time, read FROM chat WHERE id=%@",
-                        chatId] UTF8String];
+    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time, read FROM chat WHERE id=%i",
+                        [chatId intValue]] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -118,8 +124,8 @@
         return;
     }
     
-    const char *sql = [[NSString stringWithFormat:@"UPDATE chat SET localContact=\"%@\", remoteContact=\"%@\", direction=%i, message=\"%@\", time=%f, read=%i WHERE id=%@",
-                        localContact, remoteContact, [direction intValue], message, [time timeIntervalSince1970], read, [chatId intValue]] UTF8String];
+    const char *sql = [[NSString stringWithFormat:@"UPDATE chat SET localContact=\"%@\", remoteContact=\"%@\", direction=%i, message=\"%@\", time=%f, read=%i WHERE id=%i",
+                        localContact, remoteContact, [direction intValue], message, [time timeIntervalSince1970], [read intValue], [chatId intValue]] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -142,8 +148,8 @@
         return;
     }
     
-    const char *sql = [[NSString stringWithFormat:@"DELETE FROM chat WHERE id=%@",
-                        chatId] UTF8String];
+    const char *sql = [[NSString stringWithFormat:@"DELETE FROM chat WHERE id=%i",
+                        [chatId intValue]] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -201,7 +207,7 @@
         return array;
     }
     
-    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time, read FROM chat WHERE remoteContact=\"%@\" ORDER BY time DESC",
+    const char *sql = [[NSString stringWithFormat:@"SELECT id, localContact, remoteContact, direction, message, time, read FROM chat WHERE remoteContact=\"%@\" ORDER BY time ASC",
                         contact] UTF8String];
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {

@@ -61,7 +61,7 @@
     if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
-    [[tableController tableView] reloadData];
+    [tableController loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -76,7 +76,7 @@
 #pragma mark - Event Functions
 
 - (void)textReceivedEvent:(NSNotification *)notif {
-    [[tableController tableView] reloadData];
+    [tableController loadData];
 }
 
 

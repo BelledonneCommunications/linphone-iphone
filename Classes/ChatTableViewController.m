@@ -91,9 +91,9 @@
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
     
     // Go to ChatRoom view
-    ChatRoomTableViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomTableViewController);
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomViewController);
     if(controller != nil) {
-        [controller setRemoteContact:[chat remoteContact]];
+        [controller setRemoteAddress:[chat remoteContact]];
     }
 }
 

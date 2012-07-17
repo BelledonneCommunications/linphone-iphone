@@ -19,12 +19,13 @@
 
 #import "UIChatCell.h"
 #import "PhoneMainView.h"
+#import "LinphoneManager.h"
 #import "Utils.h"
 
 @implementation UIChatCell
 
 @synthesize avatarImage;
-@synthesize displayNameLabel;
+@synthesize addressLabel;
 @synthesize chatContentLabel;
 @synthesize detailsButton;
 @synthesize deleteButton;
@@ -47,7 +48,7 @@
 }
 
 - (void)dealloc {
-    [displayNameLabel release];
+    [addressLabel release];
     [chatContentLabel release];
     [avatarImage release];
     [detailsButton release];
@@ -75,30 +76,50 @@
         return;
     }
     
-    [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-    [displayNameLabel setText:[chat remoteContact]];
+    NSString *displayName = nil;
+    UIImage *image = nil;
+    NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[chat remoteContact]];
+    ABRecordRef contact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+    if(contact != nil) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+        image = [FastAddressBook getContactImage:contact thumbnail:true];
+    }
+    
+    // Display name
+    if(displayName == nil) {
+        displayName = [chat remoteContact];
+    }
+    [addressLabel setText:displayName];
+    
+    // Avatar
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown_small.png"];
+    }
+    [avatarImage setImage:image];
+    
+    // Message
     [chatContentLabel setText:[chat message]];
     
     //
     // Adapt size
     //
-    CGRect displayNameFrame = [displayNameLabel frame];
+    CGRect displayNameFrame = [addressLabel frame];
     CGRect chatContentFrame = [chatContentLabel frame];
     
     chatContentFrame.origin.x -= displayNameFrame.size.width;
     
     // Compute firstName size
     CGSize contraints;
-    contraints.height = [displayNameLabel frame].size.height;
-    contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [displayNameLabel frame].origin.x;
-    CGSize firstNameSize = [[displayNameLabel text] sizeWithFont:[displayNameLabel font] constrainedToSize: contraints];
+    contraints.height = [addressLabel frame].size.height;
+    contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [addressLabel frame].origin.x;
+    CGSize firstNameSize = [[addressLabel text] sizeWithFont:[addressLabel font] constrainedToSize: contraints];
     displayNameFrame.size.width = firstNameSize.width;
     
     // Compute lastName size & position
     chatContentFrame.origin.x += displayNameFrame.size.width;
-    chatContentFrame.size.width = (contraints.width + [displayNameLabel frame].origin.x) - chatContentFrame.origin.x;
+    chatContentFrame.size.width = (contraints.width + [addressLabel frame].origin.x) - chatContentFrame.origin.x;
     
-    [displayNameLabel setFrame: displayNameFrame];
+    [addressLabel setFrame: displayNameFrame];
     [chatContentLabel setFrame: chatContentFrame];
 }
 
@@ -129,7 +150,7 @@
     // Go to Chat room view
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom  push:TRUE], ChatRoomViewController);
     if(controller !=nil) {
-        [controller setRemoteContact:[chat remoteContact]];
+        [controller setRemoteAddress:[chat remoteContact]];
     }
 }
 

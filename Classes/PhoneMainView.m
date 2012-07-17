@@ -18,6 +18,7 @@
  */   
 
 #import <QuartzCore/QuartzCore.h>
+#import <AudioToolbox/AudioServices.h>
 
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -108,6 +109,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewWillAppear:NO];
+    }   
+    
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
@@ -117,7 +122,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                              selector:@selector(registrationUpdate:) 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceived:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
@@ -127,6 +135,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewWillDisappear:NO];
+    }
+    
     // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:@"LinphoneCallUpdate" 
@@ -135,8 +147,25 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                                  name:@"LinphoneRegistrationUpdate" 
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewDidAppear:NO];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewDidDisappear:NO];
+    }  
 }
 
 - (void)viewDidUnload {
@@ -148,6 +177,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 
 #pragma mark - Event Functions
+
+- (void)textReceived:(NSNotification*)notif { 
+    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
+    if(chat != nil) {
+        [self displayMessage:chat];
+    }
+}
 
 - (void)registrationUpdate:(NSNotification*)notif { 
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
@@ -396,40 +432,89 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)dismissIncomingCall:(LinphoneCall*)call {
-	//cancel local notification, just in case
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
-		&& [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-		// cancel local notif if needed
-		[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	}
-}
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
 
+    if(appData != nil && appData->notification != nil) {
+        // cancel local notif if needed
+        [[UIApplication sharedApplication] cancelLocalNotification:appData->notification];
+        [appData->notification release];
+    }
+}
 
 #pragma mark - ActionSheet Functions
 
-- (void)displayIncomingCall:(LinphoneCall*) call{
-
-    const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* displayName = [displayNameChars?[[NSString alloc] initWithUTF8String:displayNameChars]:@"" autorelease];
-    
-	//TODO
-    //[mMainScreenWithVideoPreview showPreview:NO]; 
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+- (void)displayMessage:(ChatModel*)chat {
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        NSString* address = [chat remoteContact];
+        NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
+        ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+        if(contact) {
+            address = [FastAddressBook getContactDisplayName:contact];
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-		if (notif)
-		{
+		if (notif) {
 			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:userName];
-			notif.alertAction = @"Answer";
-			notif.soundName = @"oldphone-mono-30s.caf";
-            NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
-			notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
+			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"%@ sent you a message",nil), address];
+			notif.alertAction = NSLocalizedString(@"Show", nil);
+			notif.soundName = UILocalNotificationDefaultSoundName;
+			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
 			
-			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		}
+	} else {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    }
+}
+
+- (void)displayIncomingCall:(LinphoneCall*) call{
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+        NSString* address = nil;
+        if(addr != NULL) {
+            BOOL useLinphoneAddress = true;
+            // contact name 
+            const char* lAddress = linphone_address_as_string_uri_only(addr);
+            if(lAddress) {
+                NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+                if(contact) {
+                    address = [FastAddressBook getContactDisplayName:contact];
+                    useLinphoneAddress = false;
+                }
+            }
+            if(useLinphoneAddress) {
+                const char* lDisplayName = linphone_address_get_display_name(addr);
+                const char* lUserName = linphone_address_get_username(addr);
+                if (lDisplayName) 
+                    address = [NSString stringWithUTF8String:lDisplayName];
+                else if(lUserName) 
+                    address = [NSString stringWithUTF8String:lUserName];
+            }
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
+		// Create a new notification
+		appData->notification = [[UILocalNotification alloc] init];
+		if (appData->notification) {
+			appData->notification.repeatInterval = 0;
+			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil), address];
+			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
+			appData->notification.soundName = @"oldphone-mono-30s.caf";
+			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
+			
+			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
 		}
 	} else {     
         IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];

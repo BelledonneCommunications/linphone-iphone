@@ -52,8 +52,7 @@ struct NetworkReachabilityContext {
 
 typedef struct _LinphoneCallAppData {
     bool_t batteryWarningShown;
-    // transfer data
-    int transferButtonIndex;
+    UILocalNotification *notification;
 } LinphoneCallAppData;
 
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {

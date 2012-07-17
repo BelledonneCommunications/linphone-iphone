@@ -136,6 +136,9 @@
                 address = [NSString stringWithUTF8String:lUserName];
         }
     }
+    if(address == nil) {
+        address = @"Unknown";
+    }
 
     [addressLabel setText:address];
     [imageView setImage: image];

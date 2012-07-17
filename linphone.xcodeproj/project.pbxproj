@@ -531,10 +531,6 @@
 		D3C6526E15AC228A0092A874 /* contact_ok_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C6526A15AC228A0092A874 /* contact_ok_over.png */; };
 		D3C714B3159DB84400705B8E /* toy-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = D3C714B2159DB84400705B8E /* toy-mono.wav */; };
 		D3C714B4159DB84400705B8E /* toy-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = D3C714B2159DB84400705B8E /* toy-mono.wav */; };
-		D3D14E7715A70EE30074A527 /* UIChatRoomHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */; };
-		D3D14E7815A70EE30074A527 /* UIChatRoomHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */; };
-		D3D14E7915A70EE30074A527 /* UIChatRoomHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */; };
-		D3D14E7A15A70EE30074A527 /* UIChatRoomHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */; };
 		D3D14E7C15A711700074A527 /* avatar_shadow_small.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7B15A711700074A527 /* avatar_shadow_small.png */; };
 		D3D14E7D15A711700074A527 /* avatar_shadow_small.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D14E7B15A711700074A527 /* avatar_shadow_small.png */; };
 		D3D6A39E159B0EEF005F692C /* add_call_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A39B159B0EEF005F692C /* add_call_default.png */; };
@@ -1334,9 +1330,6 @@
 		D3C6526915AC228A0092A874 /* contact_ok_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_ok_default.png; path = Resources/contact_ok_default.png; sourceTree = "<group>"; };
 		D3C6526A15AC228A0092A874 /* contact_ok_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_ok_over.png; path = Resources/contact_ok_over.png; sourceTree = "<group>"; };
 		D3C714B2159DB84400705B8E /* toy-mono.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "toy-mono.wav"; path = "Resources/toy-mono.wav"; sourceTree = "<group>"; };
-		D3D14E7415A70EE20074A527 /* UIChatRoomHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatRoomHeader.h; sourceTree = "<group>"; };
-		D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatRoomHeader.m; sourceTree = "<group>"; };
-		D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatRoomHeader.xib; sourceTree = "<group>"; };
 		D3D14E7B15A711700074A527 /* avatar_shadow_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = avatar_shadow_small.png; path = Resources/avatar_shadow_small.png; sourceTree = "<group>"; };
 		D3D6A39B159B0EEF005F692C /* add_call_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_call_default.png; path = Resources/add_call_default.png; sourceTree = "<group>"; };
 		D3D6A39C159B0EEF005F692C /* add_call_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_call_disabled.png; path = Resources/add_call_disabled.png; sourceTree = "<group>"; };
@@ -1881,9 +1874,6 @@
 				D3A8BB6E15A6C7D500F96BE5 /* UIChatRoomCell.h */,
 				D3A8BB6F15A6C7D500F96BE5 /* UIChatRoomCell.m */,
 				D3A8BB7315A6C81A00F96BE5 /* UIChatRoomCell.xib */,
-				D3D14E7415A70EE20074A527 /* UIChatRoomHeader.h */,
-				D3D14E7515A70EE20074A527 /* UIChatRoomHeader.m */,
-				D3D14E7615A70EE30074A527 /* UIChatRoomHeader.xib */,
 				D31B4B1E159876C0002E6C72 /* UICompositeViewController.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeViewController.m */,
 				D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */,
@@ -2798,7 +2788,6 @@
 				D3A8BB8315A6CC3200F96BE5 /* setup_start_disabled.png in Resources */,
 				D389363915A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */,
 				D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */,
-				D3D14E7915A70EE30074A527 /* UIChatRoomHeader.xib in Resources */,
 				D3D14E7C15A711700074A527 /* avatar_shadow_small.png in Resources */,
 				D3128FE315AABC7E00A2147A /* ContactDetailsViewController.xib in Resources */,
 				D3128FEF15AABE4E00A2147A /* contact_back_default.png in Resources */,
@@ -3049,7 +3038,6 @@
 				D3A8BB8415A6CC3200F96BE5 /* setup_start_disabled.png in Resources */,
 				D389363A15A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */,
 				D389363C15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */,
-				D3D14E7A15A70EE30074A527 /* UIChatRoomHeader.xib in Resources */,
 				D3D14E7D15A711700074A527 /* avatar_shadow_small.png in Resources */,
 				D3128FE415AABC7E00A2147A /* ContactDetailsViewController.xib in Resources */,
 				D3128FF015AABE4E00A2147A /* contact_back_default.png in Resources */,
@@ -3165,7 +3153,6 @@
 				D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
-				D3D14E7715A70EE30074A527 /* UIChatRoomHeader.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639515AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
@@ -3255,7 +3242,6 @@
 				D3A8BB7115A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
-				D3D14E7815A70EE30074A527 /* UIChatRoomHeader.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639615AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639C15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
