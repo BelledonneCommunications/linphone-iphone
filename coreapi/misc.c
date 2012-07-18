@@ -574,6 +574,8 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	bool_t video_responses[2];
 	IceCandidate *audio_ice_bases[2];
 	IceCandidate *video_ice_bases[2];
+	IceCheckList *audio_check_list;
+	IceCheckList *video_check_list;
 	struct sockaddr_storage ss;
 	socklen_t ss_len;
 	struct timeval init, cur;
@@ -598,6 +600,14 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	video_responses[0] = video_responses[1] = FALSE;
 	audio_ice_bases[0] = audio_ice_bases[1] = NULL;
 	video_ice_bases[0] = video_ice_bases[1] = NULL;
+	if (call->dir == LinphoneCallOutgoing) {
+		audio_check_list = call->localdesc->streams[0].ice_check_list;
+		video_check_list = call->localdesc->streams[1].ice_check_list;
+	} else {
+		SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
+		audio_check_list = md->streams[0].ice_check_list;
+		video_check_list = md->streams[1].ice_check_list;
+	}
 	audio_socks[0] = create_socket(call->audio_port);
 	if (audio_socks[0] == -1) return;
 	audio_socks[1] = create_socket(call->audio_port + 1);
@@ -614,16 +624,11 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ms_error("Fail to get local ip");
 		return;
 	}
-	if (call->dir == LinphoneCallOutgoing) {
-		ice_session_set_role(call->ice_session, IR_Controlling);
-	} else {
-		ice_session_set_role(call->ice_session, IR_Controlled);
-	}
-	audio_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port, 1, NULL);
-	audio_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	audio_ice_bases[0] = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
+	audio_ice_bases[1] = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
 	if (call->params.has_video) {
-		video_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port, 1, NULL);
-		video_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		video_ice_bases[0] = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
+		video_ice_bases[1] = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 	}
 
 	gettimeofday(&init, NULL);
@@ -644,20 +649,20 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 #endif
 
 		if (recvStunResponse(audio_socks[0], addr, &port, &id) > 0) {
-			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 1, audio_ice_bases[0]);
+			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 1, audio_ice_bases[0]);
 			audio_responses[0] = TRUE;
 		}
 		if (recvStunResponse(audio_socks[1], addr, &port, &id) > 0) {
-			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 2, audio_ice_bases[1]);
+			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 2, audio_ice_bases[1]);
 			audio_responses[1] = TRUE;
 		}
 		if (call->params.has_video) {
 			if (recvStunResponse(video_socks[0], addr, &port, &id) > 0) {
-				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 1, video_ice_bases[0]);
+				ice_add_local_candidate(video_check_list, "srflx", addr, port, 1, video_ice_bases[0]);
 				video_responses[0] = TRUE;
 			}
 			if (recvStunResponse(video_socks[1], addr, &port, &id) > 0) {
-				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 2, video_ice_bases[1]);
+				ice_add_local_candidate(video_check_list, "srflx", addr, port, 2, video_ice_bases[1]);
 				video_responses[1] = TRUE;
 			}
 		}
@@ -677,11 +682,11 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 
 	close_socket(audio_socks[0]);
 	close_socket(audio_socks[1]);
-	ice_dump_candidates(call->localdesc->streams[0].ice_check_list);
+	ice_dump_candidates(audio_check_list);
 	if (call->params.has_video) {
 		if (video_socks[0] != -1) close_socket(video_socks[0]);
 		if (video_socks[1] != -1) close_socket(video_socks[1]);
-		ice_dump_candidates(call->localdesc->streams[1].ice_check_list);
+		ice_dump_candidates(video_check_list);
 	}
 }
 

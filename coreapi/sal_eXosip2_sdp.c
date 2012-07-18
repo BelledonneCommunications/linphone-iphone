@@ -394,6 +394,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
+	bool_t ice_lite = FALSE;
 	
 	addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (addr)
@@ -543,11 +544,20 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			ice_ufrag = attr->a_att_value;
 		} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 			ice_pwd = attr->a_att_value;
+		} else if (keywordcmp("ice-lite", attr->a_att_field) == 0) {
+			ice_lite = TRUE;
 		}
 	}
-	if ((ice_session != NULL) && (ice_ufrag != NULL) && (ice_pwd != NULL)) {
-		ice_session_set_remote_credentials(ice_session, ice_ufrag, ice_pwd);
-		ice_dump_session(ice_session);
+	if (ice_session != NULL) {
+		if (ice_lite == TRUE) {
+			ice_session_set_role(ice_session, IR_Controlling);
+		} else {
+			ice_session_set_role(ice_session, IR_Controlled);
+		}
+		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
+			ice_session_set_remote_credentials(ice_session, ice_ufrag, ice_pwd);
+			ice_dump_session(ice_session);
+		}
 	}
 	desc->nstreams=i;
 	return 0;

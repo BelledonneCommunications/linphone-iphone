@@ -342,7 +342,10 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
-	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) call->ice_session=ice_session_new();
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+		call->ice_session=ice_session_new();
+		ice_session_set_role(call->ice_session, IR_Controlling);
+	}
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
 	switch (linphone_core_get_firewall_policy(call->core)) {
@@ -388,11 +391,20 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
-	if (((SalOpBase *)op)->remote_media->streams[0].ice_check_list != NULL) call->ice_session=((SalOpBase *)op)->remote_media->streams[0].ice_check_list->session;
+	if (sal_call_get_remote_media_description(call->op)->streams[0].ice_check_list != NULL)
+		call->ice_session=sal_call_get_remote_media_description(call->op)->streams[0].ice_check_list->session;
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
-	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
-		linphone_core_run_stun_tests(call->core,call);
+	switch (linphone_core_get_firewall_policy(call->core)) {
+		case LinphonePolicyUseStun:
+			linphone_core_run_stun_tests(call->core,call);
+			break;
+		case LinphonePolicyUseIce:
+			linphone_core_gather_ice_candidates(call->core, call);
+			break;
+		default:
+			break;
+	}
 	discover_mtu(lc,linphone_address_get_domain(from));
 	return call;
 }
