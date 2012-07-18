@@ -388,6 +388,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) call->ice_session=ice_session_new();
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)
