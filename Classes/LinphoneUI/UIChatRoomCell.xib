@@ -40,7 +40,7 @@
 					<object class="IBUIImageView" id="340144998">
 						<reference key="NSNextResponder" ref="579600281"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrame">{{10, 10}, {300, 120}}</string>
+						<string key="NSFrame">{{5, 5}, {310, 130}}</string>
 						<reference key="NSSuperview" ref="579600281"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="456806949"/>
@@ -59,7 +59,7 @@
 							<object class="IBUILabel" id="281972462">
 								<reference key="NSNextResponder" ref="456806949"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrameSize">{280, 90}</string>
+								<string key="NSFrameSize">{294, 107}</string>
 								<reference key="NSSuperview" ref="456806949"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="859609488"/>
@@ -92,7 +92,7 @@
 							<object class="IBUIButton" id="859609488">
 								<reference key="NSNextResponder" ref="456806949"/>
 								<int key="NSvFlags">289</int>
-								<string key="NSFrame">{{236, 0}, {44, 44}}</string>
+								<string key="NSFrame">{{250, 0}, {44, 44}}</string>
 								<reference key="NSSuperview" ref="456806949"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="504194589"/>
@@ -131,10 +131,9 @@
 							<object class="IBUILabel" id="504194589">
 								<reference key="NSNextResponder" ref="456806949"/>
 								<int key="NSvFlags">265</int>
-								<string key="NSFrame">{{0, 90}, {280, 10}}</string>
+								<string key="NSFrame">{{14, 107}, {280, 7}}</string>
 								<reference key="NSSuperview" ref="456806949"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -149,16 +148,16 @@
 								<int key="IBUITextAlignment">2</int>
 								<object class="IBUIFontDescription" key="IBUIFontDescription">
 									<int key="type">1</int>
-									<double key="pointSize">12</double>
+									<double key="pointSize">10</double>
 								</object>
 								<object class="NSFont" key="IBUIFont">
 									<string key="NSName">Helvetica</string>
-									<double key="NSSize">12</double>
+									<double key="NSSize">10</double>
 									<int key="NSfFlags">16</int>
 								</object>
 							</object>
 						</array>
-						<string key="NSFrame">{{20, 20}, {280, 100}}</string>
+						<string key="NSFrame">{{13, 13}, {294, 114}}</string>
 						<reference key="NSSuperview" ref="579600281"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="281972462"/>
