@@ -57,6 +57,7 @@
 @synthesize conferenceCell;
 @synthesize currentCall;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString*)identifier {
@@ -96,6 +97,7 @@
     [data release];
     data = nil;
 }
+
 
 #pragma mark - Properties Functions
 
