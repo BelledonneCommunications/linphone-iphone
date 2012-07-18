@@ -614,6 +614,11 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ms_error("Fail to get local ip");
 		return;
 	}
+	if (call->dir == LinphoneCallOutgoing) {
+		ice_session_set_role(call->ice_session, IR_Controlling);
+	} else {
+		ice_session_set_role(call->ice_session, IR_Controlled);
+	}
 	audio_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port, 1, NULL);
 	audio_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
 	if (call->params.has_video) {
