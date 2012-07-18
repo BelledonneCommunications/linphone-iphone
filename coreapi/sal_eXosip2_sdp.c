@@ -158,6 +158,14 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
 			int_2char(desc->bandwidth));
+	if (desc->streams[0].ice_check_list != NULL) {
+		char buffer[512];
+		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_pwd(desc->streams[0].ice_check_list->session));
+		sdp_message_a_attribute_add(local, -1, osip_strdup("ice-pwd"), osip_strdup(buffer));
+		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_ufrag(desc->streams[0].ice_check_list->session));
+		sdp_message_a_attribute_add(local, -1, osip_strdup("ice-ufrag"), osip_strdup(buffer));
+	}
+
 	return local;
 }
 
@@ -194,6 +202,22 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 		snprintf (attr,sizeof(attr),"%i %s", payload_type_get_number(pt),pt->recv_fmtp);
 		sdp_message_a_attribute_add (msg, line, osip_strdup ("fmtp"),
 				     osip_strdup(attr));
+	}
+}
+
+static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc)
+{
+	char buffer[1024];
+	IceCandidate *candidate;
+	int i;
+
+	if (desc->ice_check_list != NULL) {
+		for (i = 0; i < ms_list_size(desc->ice_check_list->local_candidates); i++) {
+			candidate = ms_list_nth_data(desc->ice_check_list->local_candidates, i);
+			snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
+				candidate->foundation, candidate->componentID, candidate->priority, candidate->taddr.ip, candidate->taddr.port, ice_candidate_type(candidate));
+			sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
+		}
 	}
 }
 
@@ -305,7 +329,9 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			break;
 	}
 	if (dir) sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
+	add_ice_candidates(msg, lineno, desc);
 }
+
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
