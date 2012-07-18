@@ -579,7 +579,6 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	struct timeval init, cur;
 	double elapsed;
 	int loops = 0;
-	const LinphoneCallParams *params = linphone_call_get_current_params(call);
 	const char *server = linphone_core_get_stun_server(lc);
 
 	if (server == NULL) return;
@@ -603,7 +602,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	if (audio_socks[0] == -1) return;
 	audio_socks[1] = create_socket(call->audio_port + 1);
 	if (audio_socks[1] == -1) return;
-	if (params->has_video) {
+	if (call->params.has_video) {
 		video_socks[0] = create_socket(call->video_port);
 		if (video_socks[0] == -1) return;
 		video_socks[1] = create_socket(call->video_port + 1);
@@ -617,7 +616,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	}
 	audio_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port, 1, NULL);
 	audio_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
-	if (params->has_video) {
+	if (call->params.has_video) {
 		video_ice_bases[0] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port, 1, NULL);
 		video_ice_bases[1] = ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 	}
@@ -628,7 +627,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 			ms_message("Sending stun requests...");
 			if (audio_responses[0] == FALSE) sendStunRequest(audio_socks[0], (struct sockaddr*)&ss, ss_len, 1, FALSE);
 			if (audio_responses[1] == FALSE) sendStunRequest(audio_socks[1], (struct sockaddr*)&ss, ss_len, 1, FALSE);
-			if (params->has_video) {
+			if (call->params.has_video) {
 				if (video_responses[0] == FALSE) sendStunRequest(video_socks[0], (struct sockaddr*)&ss, ss_len, 2, FALSE);
 				if (video_responses[1] == FALSE) sendStunRequest(video_socks[1], (struct sockaddr*)&ss, ss_len, 2, FALSE);
 			}
@@ -647,7 +646,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 			ice_add_local_candidate(call->localdesc->streams[0].ice_check_list, "srflx", addr, port, 2, audio_ice_bases[1]);
 			audio_responses[1] = TRUE;
 		}
-		if (params->has_video) {
+		if (call->params.has_video) {
 			if (recvStunResponse(video_socks[0], addr, &port, &id) > 0) {
 				ice_add_local_candidate(call->localdesc->streams[1].ice_check_list, "srflx", addr, port, 1, video_ice_bases[0]);
 				video_responses[0] = TRUE;
@@ -666,7 +665,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		}
 		loops++;
 	} while (!((audio_responses[0] == TRUE) && (audio_responses[1] == TRUE)
-		&& (!params->has_video || ((video_responses[0] == TRUE) && (video_responses[1] == TRUE)))));
+		&& (!call->params.has_video || ((video_responses[0] == TRUE) && (video_responses[1] == TRUE)))));
 
 	ice_session_compute_candidates_foundations(call->ice_session);
 	ice_session_choose_default_candidates(call->ice_session);
@@ -674,7 +673,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	close_socket(audio_socks[0]);
 	close_socket(audio_socks[1]);
 	ice_dump_candidates(call->localdesc->streams[0].ice_check_list);
-	if (params->has_video) {
+	if (call->params.has_video) {
 		if (video_socks[0] != -1) close_socket(video_socks[0]);
 		if (video_socks[1] != -1) close_socket(video_socks[1]);
 		ice_dump_candidates(call->localdesc->streams[1].ice_check_list);
