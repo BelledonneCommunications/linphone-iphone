@@ -24,11 +24,14 @@
 #import "IncallViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 #include "linphonecore.h"
 #include "private.h"
 
 @implementation DialerViewController
+
+@synthesize transferMode;
 
 @synthesize addressField;
 @synthesize addContactButton;
@@ -93,15 +96,19 @@
 
 #pragma mark - UICompositeViewDelegate Functions
 
+static UICompositeViewDescription *compositeDescription = nil;
+
 + (UICompositeViewDescription *)compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"DialerViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = @"UIStateBar";
-    description->stateBarEnabled = true;
-    description->fullscreen = false;
-    return description;
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Dialer" 
+                                                                content:@"DialerViewController" 
+                                                               stateBar:@"UIStateBar" 
+                                                        stateBarEnabled:true 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -186,20 +193,26 @@
     [addressField setText:address];
 }
 
-- (void)setTransferMode:(NSNumber*) n {
-    transferMode = [n boolValue];
+- (void)setTransferMode:(BOOL)atransferMode {
+    transferMode = atransferMode;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
 }
 
 - (void)call:(NSString*)address {
-    [self call:address displayName:nil];
+    NSString *displayName = nil;
+    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
+    if(contact) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+    }
+    [self call:address displayName:displayName];
 }
 
 - (void)call:(NSString*)address displayName:(NSString *)displayName {
     [[LinphoneManager instance] call:address displayName:displayName transfer:transferMode];
 }
+
 
 #pragma mark - UITextFieldDelegate Functions
 
@@ -214,16 +227,16 @@
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick: (id) event {
-    // Go to Contact details view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects:[addressField text], nil] autorelease]
-                           , @"setAddress:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Contacts dict:dict push:TRUE];
+    [ContactSelection setSelectionMode:ContactSelectionModeEdit];
+    [ContactSelection setAddAddress:[addressField text]];
+    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
+    if(controller != nil) {
+        
+    }
 }
 
 - (IBAction)onBackClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_InCall];
+    [[PhoneMainView instance] changeCurrentView:[InCallViewController compositeViewDescription]];
 }
 
 - (IBAction)onAddressChange: (id)sender {

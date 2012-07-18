@@ -19,11 +19,13 @@
 
 #import "ChatRoomTableViewController.h"
 #import "UIChatRoomCell.h"
-#import "UIChatRoomHeader.h"
+#import "Utils.h"
+
+#import <NinePatch.h>
 
 @implementation ChatRoomTableViewController
 
-@synthesize remoteContact;
+@synthesize remoteAddress;
 
 
 #pragma mark - ViewController
@@ -33,22 +35,81 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [TUNinePatchCache flushCache]; // Clear cache
+    if(data != nil) {
+        [data removeAllObjects];
+        [data release];
+        data = nil;
+    }
+}
 
 #pragma mark - 
 
-- (void)reloadData {
-    if(data != nil)
+- (void)loadData {
+    if(data != nil) {
+        [data removeAllObjects];
         [data release];
-    data = [[ChatModel listMessages:remoteContact] retain];
+    }
+    data = [[ChatModel listMessages:remoteAddress] retain];
+    [[self tableView] reloadData];
+    [self scrollToLastUnread:false];
 }
 
+- (void)addChatEntry:(ChatModel*)chat {
+    if(data == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
+        return;
+    }
+    [self.tableView beginUpdates];
+    int pos = [data count];
+    [data insertObject:chat atIndex:pos];
+    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
+    [self scrollToLastUnread:true];
+}
+
+- (void)scrollToLastUnread:(BOOL)animated {
+    if(data == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
+        return;
+    }
+    
+    int index = -1;
+    // Find first unread & set all entry read
+    for(int i = 0; i <[data count]; ++i) {
+        ChatModel *chat = [data objectAtIndex:i];
+        if([[chat read] intValue] == 0) {
+            [chat setRead:[NSNumber numberWithInt:1]];
+            if(index == -1)
+                index = i;
+        }
+    }
+    if(index == -1) {
+        index = [data count] - 1;
+    }
+    
+    // Scroll to unread
+    if(index >= 0) {
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] 
+                              atScrollPosition:UITableViewScrollPositionMiddle 
+                                      animated:animated];
+    }
+}
 
 #pragma mark - Property Functions
 
-- (void)setRemoteContact:(NSString *)aremoteContact {
-    self->remoteContact = aremoteContact;
-    [[self tableView] reloadData];
+- (void)setRemoteAddress:(NSString *)aremoteAddress {
+    if(remoteAddress != nil) {
+        [remoteAddress release]; 
+    }
+    self->remoteAddress = [aremoteAddress copy];
+    [self loadData];
+    [ChatModel readConversation:remoteAddress];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
 }
+
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -57,7 +118,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self reloadData];
     return [data count];
 }
 
@@ -74,19 +134,19 @@
 }
 
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
+        ChatModel *chat = [data objectAtIndex:[indexPath row]];
+        [data removeObjectAtIndex:[indexPath row]];
+        [chat delete];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
+}
+
+
 #pragma mark - UITableViewDelegate Functions
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {    
-    UIChatRoomHeader *headerController = [[UIChatRoomHeader alloc] init];
-    UIView *headerView = [headerController view];
-    [headerController setContact:remoteContact];
-    [headerController release];
-    return headerView;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 
-    return [UIChatRoomHeader height];
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     ChatModel *chat = [data objectAtIndex:[indexPath row]];

@@ -95,9 +95,12 @@
             [self setEnabled:true];   
             return;
         }
-    } 
+    }  else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update hangup button: Linphone core not ready"];
+    }
     [self setEnabled:false];
 }
+
 
 #pragma mark - Action Functions
 
@@ -117,6 +120,8 @@
                 linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
             }
         }
+    } else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot trigger hangup button: Linphone core not ready"];
     }
 }
 

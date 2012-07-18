@@ -47,14 +47,14 @@ int __aeabi_idiv(int a, int b) {
     
     int callCount = [ct.currentCalls count];
     if (!callCount) {
-        NSLog(@"No GSM call -> enabling SIP calls");
+        [LinphoneLogger logc:LinphoneLoggerLog format:"No GSM call -> enabling SIP calls"];
         linphone_core_set_max_calls([LinphoneManager getLc], 3);
     } else {
-        NSLog(@"%d GSM call(s) -> disabling SIP calls", callCount);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"%d GSM call(s) -> disabling SIP calls", callCount];
         /* pause current call, if any */
         LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
         if (call) {
-            NSLog(@"Pausing SIP call");
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
             linphone_core_pause_call([LinphoneManager getLc], call);
         }
         linphone_core_set_max_calls([LinphoneManager getLc], 0);
@@ -134,7 +134,7 @@ int __aeabi_idiv(int a, int b) {
 
 - (void)loadDefaultSettings:(NSDictionary *) appDefaults {
     for(NSString* key in appDefaults){
-        NSLog(@"Overload %@ to in app settings.", key);
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Overload %@ to in app settings.", key];
         [[[LinphoneManager instance] settingsStore] setObject:[appDefaults objectForKey:key] forKey:key];
     }
     [[[LinphoneManager instance] settingsStore] synchronize];
@@ -143,15 +143,15 @@ int __aeabi_idiv(int a, int b) {
 - (void)setupUI {
 	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
         // Change to fist login view
-        [[PhoneMainView instance] changeView: PhoneView_FirstLogin];
+        [[PhoneMainView instance] changeCurrentView: [FirstLoginViewController compositeViewDescription]];
     } else {
         // Change to default view
         /* MODIFICATION: Disable Wizard
         const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
         if(list != NULL) {*/
-            [[PhoneMainView instance] changeView: PhoneView_Dialer];
+            [[PhoneMainView instance] changeCurrentView: [DialerViewController compositeViewDescription]];
         /*} else {
-            [[PhoneMainView instance] changeView: PhoneView_Wizard];
+            [[PhoneMainView instance] changeCurrentView: [WizardViewController compositeViewDescription]];
         }*/
     }
 	
@@ -210,13 +210,22 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    LinphoneCall* call;
-	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
-    if (!call) {
-        ms_warning("Local notification received with nil call");
-        return;
-    }
-	linphone_core_accept_call([LinphoneManager getLc], call);
+    if([notification.userInfo objectForKey:@"call"] != nil) {
+        LinphoneCall* call;
+        [(NSData*)[notification.userInfo objectForKey:@"call"] getBytes:&call];
+        if (!call) {
+            [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
+            return;
+        }
+        linphone_core_accept_call([LinphoneManager getLc], call);
+    } /* else if([notification.userInfo objectForKey:@"chat"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
+        // Go to ChatRoom view
+        ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+        if(controller != nil) {
+            [controller setRemoteAddress:remoteContact];
+        }
+    } */
 }
 
 @end

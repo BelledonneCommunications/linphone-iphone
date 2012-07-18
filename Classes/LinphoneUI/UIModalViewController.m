@@ -49,11 +49,24 @@
     return self;
 }	
 
+- (void)hideView {
+    if([self.view superview] !=nil) {
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [self viewWillDisappear:NO];
+        }   
+        [self.view removeFromSuperview];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [self viewDidDisappear:NO];
+        }  
+    }
+}
+
 - (void)dismiss:(id)value {
     if(modalDelegate != nil)
         [modalDelegate modalViewDismiss:self value:value];
     
     if(!dismissed) {
+        [self hideView];
         dismissed = true;
         [self autorelease];
     }
@@ -64,6 +77,7 @@
         [modalDelegate modalViewDismiss:self value:nil];
     
     if(!dismissed) {
+        [self hideView];
         dismissed = true;
         [self autorelease];
     }

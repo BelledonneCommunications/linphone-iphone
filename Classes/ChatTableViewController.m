@@ -24,6 +24,7 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "Utils.h"
 
 @implementation ChatTableViewController
 
@@ -37,12 +38,21 @@
 }
 
 
+#pragma mark - ViewController Functions 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self loadData];
+}
+
+
 #pragma mark - 
 
-- (void)reloadData {
+- (void)loadData {
     if(data != nil)
         [data release];
     data = [[ChatModel listConversations] retain];
+    [[self tableView] reloadData];
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -52,7 +62,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self reloadData];
     return [data count];
 }
 
@@ -81,12 +90,23 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
     
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
-                           , @"setRemoteContact:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
+    // Go to ChatRoom view
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+    if(controller != nil) {
+        [controller setRemoteAddress:[chat remoteContact]];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
+        ChatModel *chat = [data objectAtIndex:[indexPath row]];
+        [ChatModel removeConversation:[chat remoteContact]];
+        [data removeObjectAtIndex:[indexPath row]];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+    }
 }
 
 @end

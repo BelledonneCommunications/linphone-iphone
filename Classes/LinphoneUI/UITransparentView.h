@@ -1,4 +1,4 @@
-/* UIChatRoomHeader.m
+/* UITransparentView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -10,58 +10,15 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
+ *  GNU General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */       
 
-#import "UIChatRoomHeader.h"
+#import <UIKit/UIKit.h>
 
-@implementation UIChatRoomHeader
-
-@synthesize avatarImage;
-@synthesize addressLabel;
-@synthesize contact;
-
-
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-    return [super initWithNibName:@"UIChatRoomHeader" bundle:[NSBundle mainBundle]];
-}
-
-- (void)dealloc {
-    [avatarImage release];
-    [addressLabel release];
-    [contact release];
-    [super dealloc];
-}
-
-
-#pragma mark - Property Functions
-
-- (void)setContact:(NSString *)acontact {
-    if(contact != nil) {
-        [contact release];
-    }
-    contact = [acontact copy];
-    [self update];
-}
-
-
-#pragma mark - 
-
-- (void)update {
-    if(contact != nil) {
-        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [addressLabel setText:contact];
-    }
-}
-
-+ (CGFloat)height {
-    return 80.0f;
-}
+@interface UITransparentView : UIView
 
 @end

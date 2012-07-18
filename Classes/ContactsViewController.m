@@ -19,8 +19,38 @@
 
 #import "ContactsViewController.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
-#import "AddressBook/ABPerson.h"
+#import <AddressBook/ABPerson.h>
+
+@implementation ContactSelection
+
+static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
+static NSString* sAddAddress = nil;
+
++ (void)setSelectionMode:(ContactSelectionMode)selectionMode {
+    sSelectionMode = selectionMode;
+}
+
++ (ContactSelectionMode)getSelectionMode {
+    return sSelectionMode;
+}
+
++ (void)setAddAddress:(NSString*)address {
+    if(sAddAddress != nil) {
+        [sAddAddress release];
+        sAddAddress= nil;
+    }
+    if(address != nil) {
+        sAddAddress = [address retain];
+    }
+}
+
++ (NSString*)getAddAddress {
+    return sAddAddress;
+}
+
+@end
 
 @implementation ContactsViewController
 
@@ -29,6 +59,8 @@
 
 @synthesize allButton;
 @synthesize linphoneButton;
+@synthesize backButton;
+@synthesize addButton;
 
 typedef enum _HistoryView {
     History_All,
@@ -49,22 +81,27 @@ typedef enum _HistoryView {
     
     [allButton release];
     [linphoneButton release];
+    [backButton release];
+    [addButton release];
     
     [super dealloc];
 }
 
-
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"ContactsViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Contacts" 
+                                                                content:@"ContactsViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -73,36 +110,36 @@ typedef enum _HistoryView {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:NO];
+        [tableController viewWillDisappear:animated];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:NO];
+        [tableController viewWillAppear:animated];
     }   
     
     [self changeView:History_All];
+    [self update];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:NO];
+        [tableController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:NO];
+        [tableController viewDidDisappear:animated];
     }  
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self changeView: History_All];
     
     // Set selected+over background: IB lack !
     [linphoneButton setImage:[UIImage imageNamed:@"contacts_linphone_selected.png"] 
@@ -116,13 +153,8 @@ typedef enum _HistoryView {
 
 #pragma mark -
 
-- (void)setAddress:(NSString*)address {
-    [tableController setTempAddress:address];
-}
-
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
-
         [tableController setSipFilter:FALSE];
         allButton.selected = TRUE;
     } else {
@@ -134,6 +166,20 @@ typedef enum _HistoryView {
         linphoneButton.selected = TRUE;
     } else {
         linphoneButton.selected = FALSE;
+    }
+}
+
+- (void)update {
+    switch ([ContactSelection getSelectionMode]) {
+        case ContactSelectionModePhone:
+        case ContactSelectionModeMessage:
+            [addButton setHidden:TRUE];
+            [backButton setHidden:FALSE];
+            break;
+        default:
+            [addButton setHidden:FALSE];
+            [backButton setHidden:TRUE];
+            break;
     }
 }
 
@@ -150,20 +196,18 @@ typedef enum _HistoryView {
 
 - (IBAction)onAddContactClick:(id)event {
     // Go to Contact details view
-    NSDictionary * dict;
-    if([tableController tempAddress] == nil) {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: nil] autorelease]
-                 , @"newContact",
-                 nil] autorelease];
-    } else {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: [tableController tempAddress], nil] autorelease]
-                 , @"newContact:",
-                 nil] autorelease];
-        [tableController setTempAddress:nil];
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
+    if(controller != nil) {
+        if([ContactSelection getAddAddress] == nil) {
+            [controller newContact];
+        } else {
+            [controller newContact:[ContactSelection getAddAddress]];
+        }
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
+}
+
+- (IBAction)onBackClick:(id)event {
+    [[PhoneMainView instance] popCurrentView];
 }
 
 @end

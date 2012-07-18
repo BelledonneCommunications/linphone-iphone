@@ -20,24 +20,13 @@
 #import "UICamSwitch.h"
 #include "LinphoneManager.h"
 
-
 @implementation UICamSwitch
 @synthesize preview;
--(void) touchUp:(id) sender {
-	if (nextCamId!=currentCamId) {
-		ms_message("Switching from [%s] to [%s]",currentCamId,nextCamId);
-		linphone_core_set_video_device([LinphoneManager getLc], nextCamId);
-		nextCamId=currentCamId;
-		currentCamId = linphone_core_get_video_device([LinphoneManager getLc]);
-		linphone_core_update_call([LinphoneManager getLc]
-								  , linphone_core_get_current_call([LinphoneManager getLc])
-								  ,NULL);
-		linphone_core_set_native_preview_window_id([LinphoneManager getLc],
-                                                   (unsigned long)preview);
-	}
-}
 
-- (id) init {
+
+#pragma mark - Lifecycle Functions
+
+- (id)initUICamSwitch {
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	currentCamId = (char*)linphone_core_get_video_device([LinphoneManager getLc]);
 	if ([LinphoneManager instance].frontCamId !=nil ) {
@@ -52,18 +41,28 @@
 	}
 	return self;
 }
+
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUICamSwitch];
+    }
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame {
     
     self = [super initWithFrame:frame];
     if (self) {
-		[self init];
+		[self initUICamSwitch];
     }
     return self;
 }
+
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self init];
+		[self initUICamSwitch];
 	}
     return self;
 }	
@@ -75,7 +74,24 @@
 }
 
 
+#pragma mark - 
 
-
+-(void) touchUp:(id) sender {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot tigger camswitch button: Linphone core not ready"];
+        return;
+    }
+	if (nextCamId != currentCamId) {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Switching from [%s] to [%s]",currentCamId,nextCamId];
+		linphone_core_set_video_device([LinphoneManager getLc], nextCamId);
+		nextCamId=currentCamId;
+		currentCamId = linphone_core_get_video_device([LinphoneManager getLc]);
+		linphone_core_update_call([LinphoneManager getLc]
+								  , linphone_core_get_current_call([LinphoneManager getLc])
+								  , NULL);
+		/*linphone_core_set_native_preview_window_id([LinphoneManager getLc],
+                                                   (unsigned long)preview);*/
+	}
+}
 
 @end

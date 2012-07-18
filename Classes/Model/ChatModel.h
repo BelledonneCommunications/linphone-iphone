@@ -27,22 +27,26 @@
     NSNumber *direction; //0 outgoing 1 incoming
     NSString *message;
     NSDate *time;
+    NSNumber *read;
 }
 
-@property (nonatomic, readonly) NSNumber *chatId;
-@property (nonatomic, copy) NSString *localContact;
-@property (nonatomic, copy) NSString *remoteContact;
-@property (nonatomic, copy) NSNumber *direction;
-@property (nonatomic, copy) NSString *message;
-@property (nonatomic, copy) NSDate *time;
+@property (readonly) NSNumber *chatId;
+@property (copy) NSString *localContact;
+@property (copy) NSString *remoteContact;
+@property (copy) NSNumber *direction;
+@property (copy) NSString *message;
+@property (copy) NSDate *time;
+@property (copy) NSNumber *read;
 
-- (void) create;
-+ (ChatModel*) read:(NSNumber*)id;
-- (void) update;
-- (void) delete;
+- (void)create;
++ (ChatModel*)read:(NSNumber*)id;
+- (void)update;
+- (void)delete;
 
-+ (NSArray *) listConversations;
-+ (NSArray *) listMessages:(NSString *)contact;
-+ (void) removeConversation:(NSString *)contact;
++ (NSMutableArray *)listConversations;
++ (NSMutableArray *)listMessages:(NSString *)contact;
++ (void)removeConversation:(NSString *)contact;
++ (int)unreadMessages;
++ (void)readConversation:(NSString *)contact;
 
 @end

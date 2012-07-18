@@ -1,4 +1,4 @@
-/* AbstractCall.h
+/* UITransparentView.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -15,13 +15,30 @@
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */   
+ */  
 
-#import <Foundation/Foundation.h>
+#import "UITransparentView.h"
 
-@interface AbstractCall : NSObject {
+@implementation UITransparentView
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    BOOL pointInside = NO;
+    
+    for(UIView *child in [self subviews]) {
+        if(![child isHidden]) {
+            if(CGRectContainsPoint(child.frame, point)) {
+                CGPoint newPoint = point;
+                newPoint.x -= child.frame.origin.x;
+                newPoint.y -= child.frame.origin.y;
+                if([child pointInside:newPoint withEvent:event]) {
+                    pointInside = YES; 
+                    break;
+                }
+            }
+        }
+    }
+    
+    return pointInside;
 }
-
-+ (void)call:(id) object dict:(NSDictionary *) dict;
 
 @end

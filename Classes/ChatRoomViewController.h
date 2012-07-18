@@ -24,20 +24,31 @@
 #import "ChatRoomTableViewController.h"
 #import "ChatModel.h"
 
+#include "linphonecore.h"
+
 @interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
     ChatRoomTableViewController *tableController;
     UITextField *messageField;
     UIButton *sendButton;
-    NSString *remoteContact;
+    NSString *remoteAddress;
     UIToggleButton *editButton;
+    LinphoneChatRoom *chatRoom;
+    UILabel *addressLabel;
+    UIImageView *avatarImage;
+    UIView *headerView;
+    UIView *footerView;
 }
 
-- (void) setRemoteContact:(NSString*)remoteContact;
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
 @property (nonatomic, retain) IBOutlet UITextField* messageField;
 @property (nonatomic, retain) IBOutlet UIButton* sendButton;
+@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
+@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
+@property (nonatomic, retain) IBOutlet UIView *headerView;
+@property (nonatomic, retain) IBOutlet UIView *footerView;
+@property (nonatomic, copy) NSString *remoteAddress;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;

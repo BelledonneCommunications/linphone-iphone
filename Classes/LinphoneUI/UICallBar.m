@@ -23,6 +23,7 @@
 
 #import "CPAnimationSequence.h"
 #import "CPAnimationStep.h"
+#import "Utils.h"
 
 #include "linphonecore.h"
 #include "private.h"
@@ -216,6 +217,10 @@
 #pragma mark - 
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {  
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call bar: Linphone core not ready"];
+        return;
+    }
     LinphoneCore* lc = [LinphoneManager getLc]; 
 
     [speakerButton update];
@@ -385,27 +390,23 @@
 - (IBAction)onOptionsTransferClick:(id)sender {
     [self hideOptions];
     /* MODIFICATION: Disable tansfer
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                           , @"setAddress:",
-                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: TRUE], nil] autorelease]
-                           , @"setTransferMode:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
-     */
+    // Go to dialer view   
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+    if(controller != nil) {
+        [controller setAddress:@""];
+        [controller setTransferMode:TRUE];
+    }
+    */
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
     [self hideOptions];
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                           , @"setAddress:",
-                           [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
-                           , @"setTransferMode:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+    // Go to dialer view   
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+    if(controller != nil) {
+        [controller setAddress:@""];
+        [controller setTransferMode:FALSE];
+    }
 }
 
 - (IBAction)onOptionsClick:(id)sender {

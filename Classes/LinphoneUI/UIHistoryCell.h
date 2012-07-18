@@ -23,7 +23,7 @@
 
 @interface UIHistoryCell : UITableViewCell {
     UIImageView*    imageView;
-    UILabel*        displayNameLabel;
+    UILabel*        addressLabel;
     UIButton*       detailsButton;
     UIButton*       deleteButton;
     @private
@@ -33,7 +33,7 @@
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
 @property (nonatomic, retain) IBOutlet UIImageView* imageView;
-@property (nonatomic, retain) IBOutlet UILabel*     displayNameLabel;
+@property (nonatomic, retain) IBOutlet UILabel*     addressLabel;
 @property (nonatomic, retain) IBOutlet UIButton*    detailsButton;
 @property (nonatomic, retain) IBOutlet UIButton*    deleteButton;
 

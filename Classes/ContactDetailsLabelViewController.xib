@@ -59,6 +59,21 @@
 						<reference key="NSNextResponder" ref="1031663480"/>
 						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
+							<object class="IBUIImageView" id="868223268">
+								<reference key="NSNextResponder" ref="786589861"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrameSize">{320, 58}</string>
+								<reference key="NSSuperview" ref="786589861"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="1001416449"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">contact_bar_background.png</string>
+								</object>
+							</object>
 							<object class="IBUIButton" id="1031075615">
 								<reference key="NSNextResponder" ref="786589861"/>
 								<int key="NSvFlags">292</int>
@@ -95,21 +110,6 @@
 									<string key="NSName">Helvetica-Bold</string>
 									<double key="NSSize">15</double>
 									<int key="NSfFlags">16</int>
-								</object>
-							</object>
-							<object class="IBUIImageView" id="868223268">
-								<reference key="NSNextResponder" ref="786589861"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{160, 0}, {160, 58}}</string>
-								<reference key="NSSuperview" ref="786589861"/>
-								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="1001416449"/>
-								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">contact_bar_background.png</string>
 								</object>
 							</object>
 						</array>

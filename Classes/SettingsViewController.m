@@ -34,15 +34,19 @@
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"SettingsViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Settings" 
+                                                                content:@"SettingsViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar: @"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -76,28 +80,28 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillDisappear:NO];
+        [settingsController viewWillDisappear:animated];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillAppear:NO];
+        [settingsController viewWillAppear:animated];
     }   
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidAppear:NO];
+        [settingsController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidDisappear:NO];
+        [settingsController viewDidDisappear:animated];
     }  
 }
 
@@ -124,7 +128,7 @@
     }
     // NSLog(@"Specifier received: %@", identifier);
 	if ([identifier isEqualToString:@"silk_24k_preference"]) {
-		if (![[LinphoneManager instance] isNotIphone3G])
+		if (![LinphoneManager isNotIphone3G])
 			return nil;
 	}
     if ([identifier isEqualToString:@"backgroundmode_preference"]) {

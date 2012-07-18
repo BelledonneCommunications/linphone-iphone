@@ -121,7 +121,7 @@ enum TableSection {
     }
     
     if (calls == 0) {
-        ms_error("Cannot find call with index %d (in conf: %d)", index, conf);
+        [LinphoneLogger logc:LinphoneLoggerError format:"Cannot find call with index %d (in conf: %d)", index, conf];
         return nil;
     } else {
         return (LinphoneCall*)calls->data;

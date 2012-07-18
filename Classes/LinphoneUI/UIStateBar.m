@@ -112,14 +112,14 @@ NSTimer *callQualityTimer;
     
         switch (state) {
             case LinphoneRegistrationOk: 
-                message = @"Registered"; break;
+                message = NSLocalizedString(@"Registered", nil); break;
             case LinphoneRegistrationNone: 
             case LinphoneRegistrationCleared:
-                message = @"Not registered"; break;
+                message =  NSLocalizedString(@"Not registered", nil); break;
             case LinphoneRegistrationFailed: 
-                message = @"Registration failed"; break;
+                message =  NSLocalizedString(@"Registration failed", nil); break;
             case LinphoneRegistrationProgress: 
-                message = @"Registration in progress"; break;
+                message =  NSLocalizedString(@"Registration in progress", nil); break;
                 //case LinphoneRegistrationCleared: m= @"No SIP account"; break;
             default: break;
         }

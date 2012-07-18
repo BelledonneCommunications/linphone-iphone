@@ -61,7 +61,7 @@
     if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
-    [[tableController tableView] reloadData];
+    [tableController loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -76,28 +76,33 @@
 #pragma mark - Event Functions
 
 - (void)textReceivedEvent:(NSNotification *)notif {
-    [[tableController tableView] reloadData];
+    [tableController loadData];
 }
 
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"ChatViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Chat" 
+                                                                content:@"ChatViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar: @"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE];
+    [ContactSelection setSelectionMode:ContactSelectionModeMessage];
+    [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
 }
 
 - (IBAction)onEditClick:(id)event {

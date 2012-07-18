@@ -30,6 +30,8 @@
 	UIButton *moreButton;
     UIView *historyNotificationView;
     UILabel *historyNotificationLabel;
+    UIView *chatNotificationView;
+    UILabel *chatNotificationLabel;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* historyButton;
@@ -42,6 +44,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* moreButton;
 @property (nonatomic, retain) IBOutlet UIView *historyNotificationView;
 @property (nonatomic, retain) IBOutlet UILabel *historyNotificationLabel;
+@property (nonatomic, retain) IBOutlet UIView *chatNotificationView;
+@property (nonatomic, retain) IBOutlet UILabel *chatNotificationLabel;
 
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;

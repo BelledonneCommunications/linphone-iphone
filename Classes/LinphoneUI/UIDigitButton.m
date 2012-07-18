@@ -69,6 +69,10 @@
 #pragma mark - Actions Functions
 
 - (void)touchDown:(id) sender {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot trigger digit button: Linphone core not ready"];
+        return;
+    }
 	if (addressField && (!dtmf || !linphone_core_in_call([LinphoneManager getLc]))) {
 		NSString* newAddress = [NSString stringWithFormat:@"%@%c",addressField.text, digit];
 		[addressField setText:newAddress];	
@@ -80,6 +84,10 @@
 }
 
 - (void)touchUp:(id) sender {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot trigger digit button: Linphone core not ready"];
+        return;
+    }
 	linphone_core_stop_dtmf([LinphoneManager getLc]);
 }
 

@@ -27,10 +27,8 @@
     
     ABAddressBookRef addressBook;
     BOOL sipFilter;
-    NSString *tempAddress;
 }
 
-@property (nonatomic, retain) NSString* tempAddress;
 @property (nonatomic, assign) BOOL sipFilter;
 
 @end

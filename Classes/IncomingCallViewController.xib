@@ -40,7 +40,7 @@
 					<object class="IBUIImageView" id="915319957">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrameSize">{320, 460}</string>
+						<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="735497316"/>
@@ -57,7 +57,7 @@
 					</object>
 					<object class="IBUIView" id="735497316">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">288</int>
+						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIImageView" id="131610915">
 								<reference key="NSNextResponder" ref="735497316"/>
@@ -4541,7 +4541,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								</object>
 							</object>
 						</array>
-						<string key="NSFrameSize">{320, 395}</string>
+						<string key="NSFrame">{{0, 20}, {320, 395}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1023112121"/>
@@ -4551,11 +4551,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<object class="IBUIView" id="442322210">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">264</int>
+						<int key="NSvFlags">266</int>
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIView" id="299451957">
 								<reference key="NSNextResponder" ref="442322210"/>
-								<int key="NSvFlags">-2147483356</int>
+								<int key="NSvFlags">-2147483374</int>
 								<string key="NSFrame">{{0, 10}, {320, 67}}</string>
 								<reference key="NSSuperview" ref="442322210"/>
 								<reference key="NSWindow"/>
@@ -4574,7 +4574,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBUIButton" id="908036430">
 								<reference key="NSNextResponder" ref="442322210"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">278</int>
 								<string key="NSFrameSize">{160, 77}</string>
 								<reference key="NSSuperview" ref="442322210"/>
 								<reference key="NSWindow"/>
@@ -4617,7 +4617,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBUIButton" id="348909292">
 								<reference key="NSNextResponder" ref="442322210"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">275</int>
 								<string key="NSFrame">{{160, 0}, {160, 77}}</string>
 								<reference key="NSSuperview" ref="442322210"/>
 								<reference key="NSWindow"/>
@@ -4645,7 +4645,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="IBUIFont" ref="246253541"/>
 							</object>
 						</array>
-						<string key="NSFrame">{{0, 383}, {320, 77}}</string>
+						<string key="NSFrame">{{0, 403}, {320, 77}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="908036430"/>
@@ -4658,16 +4658,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</array>
-				<string key="NSFrame">{{0, 20}, {320, 460}}</string>
+				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="915319957"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">1</int>
-					<bytes key="NSRGB">MC45Njg2Mjc0NTEgMC45Njg2Mjc0NTEgMC45Njg2Mjc0NTEAA</bytes>
+					<int key="NSColorSpace">3</int>
+					<bytes key="NSWhite">MAA</bytes>
 				</object>
 				<bool key="IBUIAutoresizesSubviews">NO</bool>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 		</array>
@@ -4683,19 +4682,19 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">addressLabel</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="402572557"/>
-					</object>
-					<int key="connectionID">14</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">avatarImage</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="632401698"/>
 					</object>
 					<int key="connectionID">20</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addressLabel</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="402572557"/>
+					</object>
+					<int key="connectionID">14</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -4725,16 +4724,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<nil key="parent"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">1</int>
-						<reference key="object" ref="191373211"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="442322210"/>
-							<reference ref="735497316"/>
-							<reference ref="915319957"/>
-						</array>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">-1</int>
 						<reference key="object" ref="372490531"/>
 						<reference key="parent" ref="0"/>
@@ -4743,6 +4732,16 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBObjectRecord">
 						<int key="objectID">-2</int>
 						<reference key="object" ref="975951072"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">1</int>
+						<reference key="object" ref="191373211"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="915319957"/>
+							<reference ref="735497316"/>
+							<reference ref="442322210"/>
+						</array>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -4757,16 +4756,22 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="objectName">tabBar</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">7</int>
-						<reference key="object" ref="908036430"/>
+						<int key="objectID">5</int>
+						<reference key="object" ref="299451957"/>
 						<reference key="parent" ref="442322210"/>
-						<string key="objectName">acceptButton</string>
+						<string key="objectName">mask</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
 						<reference key="object" ref="348909292"/>
 						<reference key="parent" ref="442322210"/>
 						<string key="objectName">declineButton</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">7</int>
+						<reference key="object" ref="908036430"/>
+						<reference key="parent" ref="442322210"/>
+						<string key="objectName">acceptButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">8</int>
@@ -4781,6 +4786,24 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
+						<int key="objectID">21</int>
+						<reference key="object" ref="131610915"/>
+						<reference key="parent" ref="735497316"/>
+						<string key="objectName">addressBackgroundImage</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">19</int>
+						<reference key="object" ref="632401698"/>
+						<reference key="parent" ref="735497316"/>
+						<string key="objectName">avatarImage</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">18</int>
+						<reference key="object" ref="651495339"/>
+						<reference key="parent" ref="735497316"/>
+						<string key="objectName">avatarShadowImage</string>
+					</object>
+					<object class="IBObjectRecord">
 						<int key="objectID">9</int>
 						<reference key="object" ref="402572557"/>
 						<reference key="parent" ref="735497316"/>
@@ -4791,30 +4814,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="1023112121"/>
 						<reference key="parent" ref="735497316"/>
 						<string key="objectName">headerBackground</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">18</int>
-						<reference key="object" ref="651495339"/>
-						<reference key="parent" ref="735497316"/>
-						<string key="objectName">avatarShadowImage</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">19</int>
-						<reference key="object" ref="632401698"/>
-						<reference key="parent" ref="735497316"/>
-						<string key="objectName">avatarImage</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">5</int>
-						<reference key="object" ref="299451957"/>
-						<reference key="parent" ref="442322210"/>
-						<string key="objectName">mask</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">21</int>
-						<reference key="object" ref="131610915"/>
-						<reference key="parent" ref="735497316"/>
-						<string key="objectName">addressBackgroundImage</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">22</int>
@@ -4848,7 +4847,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">22</int>
+			<int key="maxID">24</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

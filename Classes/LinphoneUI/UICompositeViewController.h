@@ -23,7 +23,7 @@
 #import "LinphoneManager.h"
 
 @interface UICompositeViewDescription: NSObject{
-@public
+    NSString *name;
     NSString *content;
     NSString *stateBar;
     BOOL stateBarEnabled;
@@ -31,8 +31,18 @@
     BOOL tabBarEnabled;
     BOOL fullscreen;
 }
+
+@property (retain) NSString *name;
+@property (retain) NSString *content;
+@property (retain) NSString *stateBar;
+@property (assign) BOOL stateBarEnabled;
+@property (retain) NSString *tabBar;
+@property (assign) BOOL tabBarEnabled;
+@property (assign) BOOL fullscreen;
+
 - (id)copy;
-- (id)init:(NSString *)content stateBar:(NSString*)stateBar 
+- (BOOL)equal:(UICompositeViewDescription*) description;
+- (id)init:(NSString *)name content:(NSString *)content stateBar:(NSString*)stateBar 
                         stateBarEnabled:(BOOL) stateBarEnabled 
                                  tabBar:(NSString*)tabBar
                           tabBarEnabled:(BOOL) tabBarEnabled

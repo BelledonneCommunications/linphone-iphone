@@ -19,6 +19,7 @@
 
 #import "UIMainBar.h"
 #import "PhoneMainView.h"
+#import "ChatModel.h"
 
 @implementation UIMainBar
 
@@ -33,6 +34,8 @@
 
 @synthesize historyNotificationView;
 @synthesize historyNotificationLabel;
+@synthesize chatNotificationView;
+@synthesize chatNotificationLabel;
 
 #pragma mark - Lifecycle Functions
 
@@ -53,6 +56,8 @@
  */
     [historyNotificationView release];
     [historyNotificationLabel release];
+    [chatNotificationView release];
+    [chatNotificationLabel release];
     
     [super dealloc];
 }
@@ -71,12 +76,11 @@
                                              selector:@selector(callUpdate:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
-    [self updateView:[[PhoneMainView instance] currentView]];
-    if([LinphoneManager isLcReady]) {
-        [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
-    } else {
-        [self updateMissed:0];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceived:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+    [self update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -88,45 +92,100 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneCallUpdate" 
                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:@"LinphoneTextReceived" 
+                                                  object:nil];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(applicationWillEnterForeground:) 
+                                                 name:UIApplicationWillEnterForegroundNotification 
+                                               object:nil];
+}
+
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:UIApplicationWillEnterForegroundNotification 
+                                                  object:nil];
 }
 
 
 #pragma mark - Event Functions
 
-- (void)callUpdate: (NSNotification*) notif {  
-    //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
-    //LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    [self updateMissed:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+- (void)applicationWillEnterForeground:(NSNotification*)notif { 
+    // Force the animations 
+    [[self.view layer] removeAllAnimations];
+    [chatNotificationView setHidden:TRUE];
+    [historyNotificationView setHidden:TRUE];
+    [self update];
 }
 
-- (void)changeViewEvent: (NSNotification*) notif {  
-    NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
-    if(viewNumber != nil)
-        [self updateView:[viewNumber intValue]];
+- (void)callUpdate:(NSNotification*)notif {  
+    //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    //LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+}
+
+- (void)changeViewEvent:(NSNotification*)notif {  
+    //UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
+    //if(view != nil)
+    [self updateView:[[PhoneMainView instance] firstView]];
+}
+
+- (void)textReceived:(NSNotification*)notif {  
+    [self updateUnreadMessage:[ChatModel unreadMessages]];
 }
 
 
 #pragma mark - 
 
-- (void)updateMissed:(int)missedCall {
+- (void)update {
+    [self updateView:[[PhoneMainView instance] firstView]];
+    if([LinphoneManager isLcReady]) {
+        [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+    } else {
+        [self updateMissedCall:0];
+    }
+    [self updateUnreadMessage:[ChatModel unreadMessages]];
+}
+
+- (void)updateUnreadMessage:(int)unreadMessage{
+    if (unreadMessage > 0) {
+        if([chatNotificationView isHidden]) {
+            [chatNotificationView setHidden:FALSE];
+            [self appearAnimation:@"Appear" target:chatNotificationView completion:^(BOOL finished){
+                [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+            }];
+        }
+        [chatNotificationLabel setText:[NSString stringWithFormat:@"%i", unreadMessage]];
+    } else {
+        if(![chatNotificationView isHidden]) {
+            [self stopBounceAnimation:@"Bounce" target:chatNotificationView];
+            [self disappearAnimation:@"Disappear" target:chatNotificationView completion:^(BOOL finished){
+                [chatNotificationView setHidden:TRUE];
+            }];
+        }
+    }
+}
+
+- (void)updateMissedCall:(int)missedCall{
     if (missedCall > 0) {
         if([historyNotificationView isHidden]) {
-            historyNotificationView.transform = CGAffineTransformIdentity;
-            [self startShakeAnimation:@"Shake" target:historyNotificationView];
             [historyNotificationView setHidden:FALSE];
+            [self appearAnimation:@"Appear" target:historyNotificationView completion:^(BOOL finished){
+                [self startBounceAnimation:@"Bounce" target:historyNotificationView];
+            }];
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
     } else {
         if(![historyNotificationView isHidden]) {
-            [self stopShakeAnimation:@"Shake" target:historyNotificationView];
-            CGAffineTransform startCGA = [historyNotificationView transform];
-            [UIView animateWithDuration:0.4 
-                                  delay:0 
-                                options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
-                             animations:^{
-                                 historyNotificationView.transform = CGAffineTransformConcat(startCGA, CGAffineTransformMakeScale(0.01f, 0.01f));
-                             }
-                             completion:^(BOOL finished){
+            [self stopBounceAnimation:@"Bounce" target:historyNotificationView];
+            [self disappearAnimation:@"Disappear" target:historyNotificationView completion:^(BOOL finished){
                                  [historyNotificationView setHidden:TRUE];
                              }
              ];
@@ -134,8 +193,30 @@
     }
 }
 
-- (void)startShakeAnimation:(NSString *)animationID  target:(UIView *)target { 
-    [target setTransform:CGAffineTransformMakeTranslation(0, -4)];
+- (void)appearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
+    target.transform = CGAffineTransformMakeScale(0.01f, 0.01f);
+    [UIView animateWithDuration:0.4 
+                          delay:0 
+                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         target.transform = CGAffineTransformIdentity;
+                     }
+                     completion:completion];
+}
+
+- (void)disappearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
+    CGAffineTransform startCGA = [target transform];
+    [UIView animateWithDuration:0.4 
+                          delay:0 
+                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
+                     animations:^{
+                         target.transform = CGAffineTransformConcat(startCGA, CGAffineTransformMakeScale(0.01f, 0.01f));
+                     }
+                     completion:completion];
+}
+
+- (void)startBounceAnimation:(NSString *)animationID target:(UIView *)target { 
+    CGAffineTransform startCGA = [target transform];
     [UIView animateWithDuration: 0.3
                           delay: 0
                         options: UIViewAnimationOptionRepeat | 
@@ -143,49 +224,49 @@
      UIViewAnimationOptionAllowUserInteraction | 
      UIViewAnimationOptionCurveEaseIn
                      animations:^{
-                         [target setTransform:CGAffineTransformMakeTranslation(0, 4)];
+                         [target setTransform: CGAffineTransformConcat(startCGA, CGAffineTransformMakeTranslation(0, 8))];
                      }
                      completion:^(BOOL finished){
                      }];
     
 }
 
-- (void)stopShakeAnimation:(NSString *)animationID target:(UIView *)target {
+- (void)stopBounceAnimation:(NSString *)animationID target:(UIView *)target {
     [target.layer removeAnimationForKey:animationID];
 }
          
-- (void)updateView:(PhoneView) view {
+- (void)updateView:(UICompositeViewDescription*) view {
     // Reset missed call
-    if(view == PhoneView_History) {
+    if([view equal:[HistoryViewController compositeViewDescription]]) {
         linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
-        [self updateMissed:0];
+        [self updateMissedCall:0];
     }
     
     // Update buttons
-    if(view == PhoneView_History) {
+    if([view equal:[HistoryViewController compositeViewDescription]]) {
         historyButton.selected = TRUE;
     } else {
         historyButton.selected = FALSE;
     }
-    if(view == PhoneView_Contacts || view == PhoneView_ContactDetails) {
+    if([view equal:[ContactsViewController compositeViewDescription]]) {
         contactsButton.selected = TRUE;
     } else {
         contactsButton.selected = FALSE;
     }
-    if(view == PhoneView_Dialer) {
+    if([view equal:[DialerViewController compositeViewDescription]]) {
         dialerButton.selected = TRUE;
     } else {
         dialerButton.selected = FALSE;
     }
-    if(view == PhoneView_Settings) {
+    if([view equal:[SettingsViewController compositeViewDescription]]) {
         settingsButton.selected = TRUE;
     } else {
         settingsButton.selected = FALSE;
     }
     
     /* MODIFICATION Remove chat
-    if(view == PhoneView_Chat || view == PhoneView_ChatRoom) {
-        moreButton.selected = TRUE;
+    if([view equal:[ChatViewController compositeViewDescription]]) {
+        chatButton.selected = TRUE;
     } else {
         moreButton.selected = FALSE;
     }*/
@@ -195,30 +276,31 @@
 #pragma mark - Action Functions
 
 - (IBAction)onHistoryClick: (id) sender {
-    [[PhoneMainView instance] changeView:PhoneView_History];
+    [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
 }
 
 - (IBAction)onContactsClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Contacts];
+    [ContactSelection setSelectionMode:ContactSelectionModeNone];
+    [ContactSelection setAddAddress:nil];
+    [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
 
 - (IBAction)onDialerClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Dialer];
+    [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
 - (IBAction)onSettingsClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Settings];
+    [[PhoneMainView instance] changeCurrentView:[SettingsViewController compositeViewDescription]];
 }
 
 /* MODIFICATION Remove chat
 - (IBAction)onChatClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Chat];
+    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 }
 */
 
 - (IBAction)onMoreClick: (id) event {
     //[[PhoneMainView instance] changeView:PhoneView_Chat];
 }
-
 
 @end

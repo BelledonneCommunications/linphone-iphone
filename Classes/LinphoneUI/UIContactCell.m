@@ -18,7 +18,7 @@
  */  
 
 #import "UIContactCell.h"
-
+#import "Utils.h"
 #import "FastAddressBook.h"
 
 @implementation UIContactCell
@@ -71,6 +71,11 @@
 }
 
 - (void)update {
+    if(contact == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update contact cell: null contact"];
+        return;
+    }
+    
     CFStringRef lFirstName = ABRecordCopyValue(contact, kABPersonFirstNameProperty);
     CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
     CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);

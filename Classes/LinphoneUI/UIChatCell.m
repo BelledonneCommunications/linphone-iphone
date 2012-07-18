@@ -19,12 +19,13 @@
 
 #import "UIChatCell.h"
 #import "PhoneMainView.h"
-
+#import "LinphoneManager.h"
+#import "Utils.h"
 
 @implementation UIChatCell
 
 @synthesize avatarImage;
-@synthesize displayNameLabel;
+@synthesize addressLabel;
 @synthesize chatContentLabel;
 @synthesize detailsButton;
 @synthesize deleteButton;
@@ -47,7 +48,7 @@
 }
 
 - (void)dealloc {
-    [displayNameLabel release];
+    [addressLabel release];
     [chatContentLabel release];
     [avatarImage release];
     [detailsButton release];
@@ -70,33 +71,55 @@
 #pragma mark - 
 
 - (void)update {
-    
-    if (chat != nil) {
-        [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown_small.png"]];
-        [displayNameLabel setText:[chat remoteContact]];
-        [chatContentLabel setText:[chat message]];
+    if(chat == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat cell: null chat"];
+        return;
     }
+    
+    NSString *displayName = nil;
+    UIImage *image = nil;
+    NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[chat remoteContact]];
+    ABRecordRef contact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+    if(contact != nil) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+        image = [FastAddressBook getContactImage:contact thumbnail:true];
+    }
+    
+    // Display name
+    if(displayName == nil) {
+        displayName = [chat remoteContact];
+    }
+    [addressLabel setText:displayName];
+    
+    // Avatar
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown_small.png"];
+    }
+    [avatarImage setImage:image];
+    
+    // Message
+    [chatContentLabel setText:[chat message]];
     
     //
     // Adapt size
     //
-    CGRect displayNameFrame = [displayNameLabel frame];
+    CGRect displayNameFrame = [addressLabel frame];
     CGRect chatContentFrame = [chatContentLabel frame];
     
     chatContentFrame.origin.x -= displayNameFrame.size.width;
     
     // Compute firstName size
     CGSize contraints;
-    contraints.height = [displayNameLabel frame].size.height;
-    contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [displayNameLabel frame].origin.x;
-    CGSize firstNameSize = [[displayNameLabel text] sizeWithFont:[displayNameLabel font] constrainedToSize: contraints];
+    contraints.height = [addressLabel frame].size.height;
+    contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [addressLabel frame].origin.x;
+    CGSize firstNameSize = [[addressLabel text] sizeWithFont:[addressLabel font] constrainedToSize: contraints];
     displayNameFrame.size.width = firstNameSize.width;
     
     // Compute lastName size & position
     chatContentFrame.origin.x += displayNameFrame.size.width;
-    chatContentFrame.size.width = (contraints.width + [displayNameLabel frame].origin.x) - chatContentFrame.origin.x;
+    chatContentFrame.size.width = (contraints.width + [addressLabel frame].origin.x) - chatContentFrame.origin.x;
     
-    [displayNameLabel setFrame: displayNameFrame];
+    [addressLabel setFrame: displayNameFrame];
     [chatContentLabel setFrame: chatContentFrame];
 }
 
@@ -124,19 +147,23 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDetailsClick: (id) event {
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                           [[[NSArray alloc] initWithObjects: [chat remoteContact], nil] autorelease]
-                           , @"setRemoteContact:",
-                           nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_ChatRoom dict:dict push:TRUE];
+    // Go to Chat room view
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]  push:TRUE], ChatRoomViewController);
+    if(controller !=nil) {
+        [controller setRemoteAddress:[chat remoteContact]];
+    }
 }
 
 - (IBAction)onDeleteClick: (id) event {
     if(chat != NULL) {
-        [ChatModel removeConversation:[chat remoteContact]];
-        UITableView *parentTable = (UITableView *)self.superview;
-        [parentTable reloadData];
+        UIView *view = [self superview]; 
+        // Find TableViewCell
+        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        if(view != nil) {
+            UITableView *tableView = (UITableView*) view;
+            NSIndexPath *indexPath = [tableView indexPathForCell:self];
+            [[tableView dataSource] tableView:tableView commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
+        }
     }
 }
 

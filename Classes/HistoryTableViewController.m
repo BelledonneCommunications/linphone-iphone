@@ -23,6 +23,7 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "Utils.h"
 
 @implementation HistoryTableViewController
 
@@ -57,10 +58,19 @@
 }
 
 
+#pragma mark - ViewController Functions 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self loadData];
+}
+
+
 #pragma mark - Property Functions
 
 - (void)setMissedFilter:(BOOL)amissedFilter {
     self->missedFilter = amissedFilter;
+    [self loadData];
     [[self tableView] reloadData];
 }
 
@@ -88,7 +98,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self loadData];
 	return [callLogs count];
 }
 
@@ -115,39 +124,57 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	
-    LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
-	LinphoneAddress* partyToCall; 
-	if (log->dir == LinphoneCallIncoming) {
-		partyToCall=log->from;
+    LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+	LinphoneAddress* addr; 
+	if (callLog->dir == LinphoneCallIncoming) {
+		addr = callLog->from;
 	} else {
-		partyToCall=log->to;
-	}
-	const char* username = linphone_address_get_username(partyToCall)!=0?linphone_address_get_username(partyToCall):"";
-	const char* displayName = linphone_address_get_display_name(partyToCall)!=0?linphone_address_get_display_name(partyToCall):"";
-	const char* domain = linphone_address_get_domain(partyToCall);
-	
-	LinphoneProxyConfig* proxyCfg;
-	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
-	
-	NSString* phoneNumber;
-	
-	if (proxyCfg && (strcmp(domain, linphone_proxy_config_get_domain(proxyCfg)) == 0)) {
-		phoneNumber = [[NSString alloc] initWithCString:username encoding:[NSString defaultCStringEncoding]];
-	} else {
-		phoneNumber = [[NSString alloc] initWithCString:linphone_address_as_string_uri_only(partyToCall) encoding:[NSString defaultCStringEncoding]];
+		addr = callLog->to;
 	}
     
-    NSString* dispName = [[NSString alloc] initWithCString:displayName encoding:[NSString defaultCStringEncoding]];
+    NSString* displayName = nil;
+    NSString* address = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            address = [NSString stringWithUTF8String:lAddress];
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                displayName = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName) 
+                displayName = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName) 
+                displayName = [NSString stringWithUTF8String:lUserName];
+        }
+    }
     
-    // Go to dialer view
-    NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                          [[[NSArray alloc] initWithObjects: phoneNumber, dispName, nil] autorelease]
-                          , @"call:displayName:",
-                          nil] autorelease];
-    [[PhoneMainView instance] changeView:PhoneView_Dialer dict:dict];
+    if(address != nil) {
+        // Go to dialer view
+        DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+        if(controller != nil) {
+            [controller call:address displayName:displayName];
+        }
+    }
+}
 
-	[phoneNumber release];
-    [dispName release];
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        [tableView beginUpdates];
+        LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+        linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+        [callLogs removeObjectAtIndex:[indexPath row]];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
 }
 
 @end

@@ -84,6 +84,7 @@
     [stateImage release];
     [avatarImage release];
     [headerView release];
+    [data release];
     [super dealloc];
 }
 
@@ -92,9 +93,22 @@
     [super prepareForReuse];
     self->currentCall = FALSE;
     [headerBackgroundHighlightImage setAlpha:0.0f];
+    [data release];
+    data = nil;
 }
 
 #pragma mark - Properties Functions
+
+- (void)setData:(UICallCellData *)adata {
+    if(data !=nil) {
+        [data release];
+        data = nil;
+    }
+    if(adata !=nil) {
+        data = [adata retain];
+    }
+    [self update];
+}
 
 - (void)setCurrentCall:(BOOL) val {
     BOOL oldVal = currentCall;
@@ -107,6 +121,7 @@
         }
     }
 }
+
 
 #pragma mark - Static Functions
 
@@ -141,105 +156,100 @@
          
 #pragma mark - 
 
-- (void)update:(UICallCellData*) adata {
-    self->data = adata;
-    [self update];
-}
-
 - (void)update {
-    LinphoneCall *call = NULL;
-    if(data != nil && data->call != NULL) {
-        call = data->call;
-        const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-        UIImage *image;
-        NSString* address;
-        if (addr != NULL) {
-            // contact name 
-            const char* lAddress = linphone_address_as_string_uri_only(addr);
+    if(data == nil || data->call == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        return;
+    }
+    LinphoneCall *call = data->call;
+    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    
+    UIImage *image = nil;
+    NSString* address  = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name 
+        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+        }
+        if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
             const char* lUserName = linphone_address_get_username(addr);
             if (lDisplayName) 
                 address = [NSString stringWithUTF8String:lDisplayName];
             else if(lUserName) 
                 address = [NSString stringWithUTF8String:lUserName];
-            if(lAddress) {
-                NSString *address = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-                image = [FastAddressBook getContactImage:contact thumbnail:false];
-            }
-        } else {
-            [addressLabel setText:@"Unknown"];
         }
-        
-        // Set Image
-        if(image == nil) {
-            image = [UIImage imageNamed:@"avatar_unknown.png"];
-        }
-        [avatarImage setImage:image];
-        
-        // Set Address
-        if(address == nil) {
-            address = @"Unknown";
-        }
-        [addressLabel setText:address];
+    }
     
-        LinphoneCallState state = linphone_call_get_state(call);
-        
-        if(!conferenceCell) {
-            if(state == LinphoneCallOutgoingRinging) {
-                [stateImage setImage:[UIImage imageNamed:@"call_state_ringing_default.png"]];
-                [stateImage setHidden:false];
-                [pauseButton setHidden:true];
-            } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
-                [stateImage setImage:[UIImage imageNamed:@"call_state_outgoing_default.png"]];
-                [stateImage setHidden:false];
-                [pauseButton setHidden:true];
-            } else {
-                [stateImage setHidden:true];
-                [pauseButton setHidden:false];
-                [pauseButton update];
-            }
-            [removeButton setHidden:true];
-            if(firstCell) {
-                [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call_first.png"]];
-                [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_first_highlight.png"]];
-            } else {
-                [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call.png"]];
-                [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_highlight.png"]];
-            }
+    // Set Image
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown.png"];
+    }
+    [avatarImage setImage:image];
+    
+    // Set Address
+    if(address == nil) {
+        address = @"Unknown";
+    }
+    [addressLabel setText:address];
+    
+    LinphoneCallState state = linphone_call_get_state(call);
+    if(!conferenceCell) {
+        if(state == LinphoneCallOutgoingRinging) {
+            [stateImage setImage:[UIImage imageNamed:@"call_state_ringing_default.png"]];
+            [stateImage setHidden:false];
+            [pauseButton setHidden:true];
+        } else if(state == LinphoneCallOutgoingInit || state == LinphoneCallOutgoingProgress){
+            [stateImage setImage:[UIImage imageNamed:@"call_state_outgoing_default.png"]];
+            [stateImage setHidden:false];
+            [pauseButton setHidden:true];
         } else {
             [stateImage setHidden:true];
-            [pauseButton setHidden:true];
-            [removeButton setHidden:false];
-            [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
+            [pauseButton setHidden:false];
+            [pauseButton update];
         }
-        
-        NSMutableString* msDuration = [[NSMutableString alloc] init];
-        int duration = linphone_call_get_duration(call);
-        [msDuration appendFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil];
-        [stateLabel setText:msDuration];
-        [msDuration release];
-        
-        if(!data->minimize) {
-            CGRect frame = [self frame];
-            frame.size.height = [avatarView frame].size.height;
-            [self setFrame:frame];
-            [avatarView setHidden:false];
+        [removeButton setHidden:true];
+        if(firstCell) {
+            [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call_first.png"]];
+            [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_first_highlight.png"]];
         } else {
-            CGRect frame = [self frame];
-            frame.size.height = [headerView frame].size.height;
-            [self setFrame:frame];
-            [avatarView setHidden:true];
+            [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_call.png"]];
+            [headerBackgroundHighlightImage setImage:[UIImage imageNamed:@"cell_call_highlight.png"]];
         }
+    } else {
+        [stateImage setHidden:true];
+        [pauseButton setHidden:true];
+        [removeButton setHidden:false];
+        [headerBackgroundImage setImage:[UIImage imageNamed:@"cell_conference.png"]];
+    }
+    
+    int duration = linphone_call_get_duration(call);
+    [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
+    
+    if(!data->minimize) {
+        CGRect frame = [self frame];
+        frame.size.height = [avatarView frame].size.height;
+        [self setFrame:frame];
+        [avatarView setHidden:false];
+    } else {
+        CGRect frame = [self frame];
+        frame.size.height = [headerView frame].size.height;
+        [self setFrame:frame];
+        [avatarView setHidden:true];
     }
     [pauseButton setType:UIPauseButtonType_Call call:call];
 }
 
 - (void)selfUpdate {
     UITableView *parentTable = (UITableView *)self.superview;
-    /*[parentTable beginUpdates];
-    [parentTable reloadData];
-    [parentTable endUpdates];*/
     if(parentTable) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {

@@ -18,7 +18,7 @@
  */ 
 
 #import "UIContactDetailsHeader.h"
-
+#import "Utils.h"
 #import "UIEditableTableViewCell.h"
 #import "FastAddressBook.h"
 
@@ -69,28 +69,32 @@
 - (void)setContact:(ABRecordRef)acontact {
     contact = acontact;
     [self update];
-    [tableView reloadData];
 }
 
 
 #pragma mark - 
 
 - (void)update {
-    if(contact) {
-        // Avatar image
-        {
-            UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
-            if(image == nil) {
-                image = [UIImage imageNamed:@"avatar_unknown_small.png"];
-            }
-            [avatarImage setImage:image];
-        }
-    
-        // Contact label
-        {
-            [addressLabel setText:[FastAddressBook getContactDisplayName:contact]];
-        }
+    if(contact == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update contact details header: null contact"];
+        return;
     }
+    
+    // Avatar image
+    {
+        UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
+        if(image == nil) {
+            image = [UIImage imageNamed:@"avatar_unknown_small.png"];
+        }
+        [avatarImage setImage:image];
+    }
+    
+    // Contact label
+    {
+        [addressLabel setText:[FastAddressBook getContactDisplayName:contact]];
+    }
+    
+    [tableView reloadData];
 }
 
 + (CGFloat)height:(BOOL)editing {
@@ -217,10 +221,10 @@
         NSError* error = NULL;
         ABRecordSetValue(contact, property, [textField text], (CFErrorRef*)&error);
         if (error != NULL) {
-            NSLog(@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [error localizedDescription]);
+            [LinphoneLogger log:LinphoneLoggerError format:@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [error localizedDescription]];
         } 
     } else {
-        NSLog(@"Not valid UIEditableTableViewCell");
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Not valid UIEditableTableViewCell"];
     }
     return TRUE;
 }

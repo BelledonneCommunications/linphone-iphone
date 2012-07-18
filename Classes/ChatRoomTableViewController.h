@@ -19,13 +19,16 @@
 
 
 #import <UIKit/UIKit.h>
+#import "ChatModel.h"
 
 @interface ChatRoomTableViewController : UITableViewController {
 @private
-    NSArray *data;
-    NSString *remoteContact;
+    NSMutableArray *data;
+    NSString *remoteAddress;
 }
 
-@property (nonatomic, retain) NSString *remoteContact;
+@property (nonatomic, retain) NSString *remoteAddress;
+
+- (void)addChatEntry:(ChatModel*)chat;
 
 @end

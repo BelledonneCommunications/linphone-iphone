@@ -81,15 +81,19 @@ const NSInteger SECURE_BUTTON_TAG=5;
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"InCallViewController";
-    description->tabBar = @"UICallBar";
-    description->tabBarEnabled = true;
-    description->stateBar = @"UIStateBar";
-    description->stateBarEnabled = true;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"InCall" 
+                                                                content:@"InCallViewController" 
+                                                               stateBar:@"UIStateBar" 
+                                                        stateBarEnabled:true 
+                                                                 tabBar:@"UICallBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -113,7 +117,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
         hideControlsTimer = nil;
     }
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillDisappear:NO];
+        [callTableController viewWillDisappear:animated];
     }
     
     
@@ -126,7 +130,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillAppear:NO];
+        [callTableController viewWillAppear:animated];
     }   
     
     // Set observer
@@ -141,7 +145,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [self callUpdate:call state:state];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidAppear:NO];
+        [callTableController viewDidAppear:animated];
     }  
 }
 
@@ -153,7 +157,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     device.proximityMonitoringEnabled = NO;
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidDisappear:NO];
+        [callTableController viewDidDisappear:animated];
     }  
 }
 
@@ -283,7 +287,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
     
-    if([[PhoneMainView instance] currentView] == PhoneView_InCall && videoShown) {
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
         [[PhoneMainView instance] showTabBar: false];
         /* MODIFICATION show video in background */
         [callTableView setAlpha:0.0];
@@ -480,7 +484,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                 linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
             } else {
                 // decline video
-                ms_message("User declined video proposal");
+                [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
                 linphone_core_accept_call_update([LinphoneManager getLc], call, NULL);
             }
             linphone_call_params_destroy(paramsCopy);
@@ -488,7 +492,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
             break;
         }
         default:
-            ms_error("Unhandled CallDelegate event of type: %d received - ignoring", type);
+            [LinphoneLogger logc:LinphoneLoggerError format:"Unhandled CallDelegate event of type: %d received - ignoring", type];
     }
 }
 

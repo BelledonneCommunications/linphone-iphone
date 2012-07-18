@@ -24,17 +24,21 @@
 @interface UIChatRoomCell : UITableViewCell {
     UIImageView *backgroundImage;
     UIView *contentView;
+    UIView *messageView;
     UILabel *messageLabel;
     UIButton *deleteButton;
+    UILabel *dateLabel;
     
     ChatModel *chat;
 }
 
 @property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIView *contentView;
+@property (nonatomic, retain) IBOutlet UIView *messageView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
 @property (nonatomic, retain) IBOutlet UILabel *messageLabel;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
+@property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat;

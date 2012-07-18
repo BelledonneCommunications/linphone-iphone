@@ -21,30 +21,51 @@
 
 @implementation UICompositeViewDescription
 
+@synthesize name;
+@synthesize content;
+@synthesize stateBar;
+@synthesize stateBarEnabled;
+@synthesize tabBar;
+@synthesize tabBarEnabled;
+@synthesize fullscreen;
+
 - (id)copy {
     UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
-    copy->content = self->content;
-    copy->stateBar = self->stateBar;
-    copy->stateBarEnabled = self->stateBarEnabled;
-    copy->tabBar = self->tabBar;
-    copy->tabBarEnabled = self->tabBarEnabled;
-    copy->fullscreen = self->fullscreen;
+    copy.content = self.content;
+    copy.stateBar = self.stateBar;
+    copy.stateBarEnabled = self.stateBarEnabled;
+    copy.tabBar = self.tabBar;
+    copy.tabBarEnabled = self.tabBarEnabled;
+    copy.fullscreen = self.fullscreen;
     return copy;
 }
 
-- (id)init:(NSString *)acontent stateBar:(NSString*)astateBar 
+- (BOOL)equal:(UICompositeViewDescription*) description {
+    return [self.name compare:description.name] == NSOrderedSame;
+}
+
+- (id)init:(NSString *)aname content:(NSString *)acontent stateBar:(NSString*)astateBar 
                         stateBarEnabled:(BOOL) astateBarEnabled 
                                  tabBar:(NSString*)atabBar
                           tabBarEnabled:(BOOL) atabBarEnabled
                              fullscreen:(BOOL) afullscreen {
-    self->content = acontent;
-    self->stateBar = astateBar;
-    self->stateBarEnabled = astateBarEnabled;
-    self->tabBar = atabBar;
-    self->tabBarEnabled = atabBarEnabled;
-    self->fullscreen = afullscreen;
+    self.name = aname;
+    self.content = acontent;
+    self.stateBar = astateBar;
+    self.stateBarEnabled = astateBarEnabled;
+    self.tabBar = atabBar;
+    self.tabBarEnabled = atabBarEnabled;
+    self.fullscreen = afullscreen;
     
     return self;
+}
+
+- (void)dealloc {
+    [name release];
+    [content release];
+    [stateBar release];
+    [tabBar release];
+    [super dealloc];
 }
 
 @end
@@ -96,6 +117,38 @@
     [currentViewDescription release];
     [super dealloc];
 }
+
+
+#pragma mark - ViewController Functions
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [contentViewController viewWillAppear:animated];
+    [tabBarViewController viewWillAppear:animated];
+    [stateBarViewController viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [contentViewController viewDidAppear:animated];
+    [tabBarViewController viewDidAppear:animated];
+    [stateBarViewController viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [contentViewController viewWillDisappear:animated];
+    [tabBarViewController viewWillDisappear:animated];
+    [stateBarViewController viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [contentViewController viewDidDisappear:animated];
+    [tabBarViewController viewDidDisappear:animated];
+    [stateBarViewController viewDidDisappear:animated];
+}
+
 
 #pragma mark - 
 
@@ -149,28 +202,28 @@
         // Animate only with a previous screen
         if(oldViewDescription != nil && viewTransition != nil) {
             [contentView.layer addAnimation:viewTransition forKey:@"Transition"];
-            if((oldViewDescription->stateBarEnabled == true && currentViewDescription->stateBarEnabled == false) ||
-               (oldViewDescription->stateBarEnabled == false && currentViewDescription->stateBarEnabled == true)) {
+            if((oldViewDescription.stateBarEnabled == true && currentViewDescription.stateBarEnabled == false) ||
+               (oldViewDescription.stateBarEnabled == false && currentViewDescription.stateBarEnabled == true)) {
                 [stateBarView.layer addAnimation:viewTransition forKey:@"Transition"];
             }
-            if(oldViewDescription->tabBar != currentViewDescription->tabBar) {
+            if(oldViewDescription.tabBar != currentViewDescription.tabBar) {
                 [tabBarView.layer addAnimation:viewTransition forKey:@"Transition"];
             }
         }
         
-        if(oldViewDescription != nil && contentViewController != nil && oldViewDescription->content != currentViewDescription->content) {
+        if(oldViewDescription != nil && contentViewController != nil && oldViewDescription.content != currentViewDescription.content) {
             [UICompositeViewController removeSubView: contentViewController];
         }
-        if(oldViewDescription != nil && tabBarViewController != nil && oldViewDescription->tabBar != currentViewDescription->tabBar) {
+        if(oldViewDescription != nil && tabBarViewController != nil && oldViewDescription.tabBar != currentViewDescription.tabBar) {
             [UICompositeViewController removeSubView: tabBarViewController];
         }
-        if(oldViewDescription != nil && stateBarViewController != nil && oldViewDescription->stateBar != currentViewDescription->stateBar) {
+        if(oldViewDescription != nil && stateBarViewController != nil && oldViewDescription.stateBar != currentViewDescription.stateBar) {
             [UICompositeViewController removeSubView: stateBarViewController];
         }
 
-        stateBarViewController = [self getCachedController:description->stateBar];
-        contentViewController = [self getCachedController:description->content];
-        tabBarViewController = [self getCachedController:description->tabBar];
+        stateBarViewController = [self getCachedController:description.stateBar];
+        contentViewController = [self getCachedController:description.content];
+        tabBarViewController = [self getCachedController:description.tabBar];
     }
     
     if(currentViewDescription == nil) {
@@ -178,14 +231,14 @@
     }
     
     if(tabBar != nil) {
-        currentViewDescription->tabBarEnabled = [tabBar boolValue];
+        currentViewDescription.tabBarEnabled = [tabBar boolValue];
     }
     
     if(fullscreen != nil) {
-        currentViewDescription->fullscreen = [fullscreen boolValue];
-        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationSlide ];
+        currentViewDescription.fullscreen = [fullscreen boolValue];
+        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationSlide ];
     } else {
-        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription->fullscreen withAnimation:UIStatusBarAnimationNone];
+        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationNone];
     }
     
     // Start animation
@@ -198,14 +251,15 @@
     UIView *innerView = contentViewController.view;
     
     CGRect contentFrame = contentView.frame;
+    CGRect viewFrame = [self.view frame];
     
     // Resize StateBar
     CGRect stateBarFrame = stateBarView.frame;
-    int origin = 0;
-    if(currentViewDescription->fullscreen)
-        origin = -IPHONE_STATUSBAR_HEIGHT;
+    int origin = IPHONE_STATUSBAR_HEIGHT;
+    if(currentViewDescription.fullscreen)
+        origin = 0;
     
-    if(stateBarViewController != nil && currentViewDescription->stateBarEnabled) {
+    if(stateBarViewController != nil && currentViewDescription.stateBarEnabled) {
         contentFrame.origin.y = origin + stateBarFrame.size.height;
         stateBarFrame.origin.y = origin;
     } else {
@@ -215,9 +269,9 @@
     
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
-    if(tabBarViewController != nil && currentViewDescription->tabBarEnabled) {
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
-        tabFrame.origin.x = [[UIScreen mainScreen] bounds].size.width;
+    if(tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
+        tabFrame.origin.y = viewFrame.size.height;
+        tabFrame.origin.x = viewFrame.size.width;
         tabFrame.size.height = tabBarViewController.view.frame.size.height;
         tabFrame.size.width = tabBarViewController.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
@@ -230,17 +284,19 @@
             }
         }
     } else {
-        contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
+        contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+        tabFrame.origin.y = viewFrame.size.height;
     }
     
-    if(currentViewDescription->fullscreen)
-        contentFrame.size.height = [[UIScreen mainScreen] bounds].size.height + IPHONE_STATUSBAR_HEIGHT;
+    if(currentViewDescription.fullscreen)
+        contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
     
     // Resize innerView
     CGRect innerContentFrame = innerView.frame;
-    innerContentFrame.size = contentFrame.size;
-    
+    innerContentFrame.origin.x = 0;
+    innerContentFrame.origin.y = 0;
+    innerContentFrame.size.width = contentFrame.size.width;
+    innerContentFrame.size.height = contentFrame.size.height;
     
     // Set frames
     [contentView setFrame: contentFrame];
@@ -255,13 +311,13 @@
     
     // Change view
     if(description != nil) {
-        if(oldViewDescription == nil || oldViewDescription->content != currentViewDescription->content) {
+        if(oldViewDescription == nil || oldViewDescription.content != currentViewDescription.content) {
             [UICompositeViewController addSubView: contentViewController view:contentView];
         }
-        if(oldViewDescription == nil || oldViewDescription->tabBar != currentViewDescription->tabBar) {
+        if(oldViewDescription == nil || oldViewDescription.tabBar != currentViewDescription.tabBar) {
             [UICompositeViewController addSubView: tabBarViewController view:tabBarView];
         }
-        if(oldViewDescription == nil || oldViewDescription->stateBar != currentViewDescription->stateBar) {
+        if(oldViewDescription == nil || oldViewDescription.stateBar != currentViewDescription.stateBar) {
             [UICompositeViewController addSubView: stateBarViewController view:stateBarView];
         }
     }

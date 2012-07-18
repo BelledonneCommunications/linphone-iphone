@@ -26,6 +26,8 @@
 #import "IASKSettingsReader.h"
 #import "IASKSettingsStore.h"
 #import "IASKAppSettingsViewController.h"
+#import "FastAddressBook.h"
+#import "Utils.h"
 
 #include "linphonecore.h"
 
@@ -36,8 +38,6 @@ typedef enum _Connectivity {
 	wwan
 	,none
 } Connectivity;
-
-@class FastAddressBook;
 
 /* Application specific call context */
 typedef struct _CallContext {
@@ -52,8 +52,7 @@ struct NetworkReachabilityContext {
 
 typedef struct _LinphoneCallAppData {
     bool_t batteryWarningShown;
-    // transfer data
-    int transferButtonIndex;
+    UILocalNotification *notification;
 } LinphoneCallAppData;
 
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
@@ -62,7 +61,6 @@ typedef struct _LinphoneCallAppData {
     
 @private
 	NSTimer* mIterateTimer;
-	id<LogView> mLogView;	
 	bool isbackgroundModeEnabled;
     
 	Connectivity connectivity;
@@ -81,27 +79,24 @@ typedef struct _LinphoneCallAppData {
 + (LinphoneCore*) getLc;
 + (BOOL)isLcReady;
 + (BOOL)runningOnIpad;
-- (void)registerLogView:(id<LogView>) view;
-
++ (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
 + (BOOL)codecIsSupported:(NSString *) prefName;
-    
-
-- (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 - (void)startLibLinphone;
-- (BOOL)isNotIphone3G;
 - (void)destroyLibLinphone;
-  
 - (BOOL)enterBackgroundMode;
 - (void)becomeActive;
-- (void)kickOffNetworkConnection;
 
+- (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
+
 - (void)refreshRegisters;
 
 - (void)enableSpeaker:(BOOL)enable;
 - (BOOL)isSpeakerEnabled;
+
+- (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
 @property (readonly) FastAddressBook* fastAddressBook;

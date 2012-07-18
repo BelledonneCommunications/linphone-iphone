@@ -36,7 +36,7 @@
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIView" id="481442126">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">314</int>
+						<int key="NSvFlags">303</int>
 						<string key="NSFrame">{{0, 23}, {320, 380}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
@@ -51,22 +51,19 @@
 					</object>
 					<object class="IBUIView" id="256276698">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">274</int>
+						<int key="NSvFlags">303</int>
 						<string key="NSFrameSize">{320, 23}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="481442126"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MQA</bytes>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="572758541"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIView" id="548578981">
 						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">280</int>
+						<int key="NSvFlags">303</int>
 						<string key="NSFrame">{{0, 400}, {320, 60}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
@@ -175,10 +172,10 @@
 				<string key="-2.CustomClassName">UIResponder</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="14.CustomClassName">UIPassView</string>
+				<string key="14.CustomClassName">UITransparentView</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="16.CustomClassName">UIPassView</string>
+				<string key="16.CustomClassName">UITransparentView</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
@@ -217,11 +214,11 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">UIPassView</string>
+					<string key="className">UITransparentView</string>
 					<string key="superclassName">UIView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/UIPassView.h</string>
+						<string key="minorKey">./Classes/UITransparentView.h</string>
 					</object>
 				</object>
 			</array>

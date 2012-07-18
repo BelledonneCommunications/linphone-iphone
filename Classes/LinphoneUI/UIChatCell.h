@@ -23,7 +23,7 @@
 
 @interface UIChatCell : UITableViewCell {
     UIImageView *avatarImage;
-    UILabel *displayNameLabel;
+    UILabel *addressLabel;
     UILabel *chatContentLabel;
     UIButton *detailsButton;
     UIButton *deleteButton;
@@ -33,7 +33,7 @@
 
 @property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
-@property (nonatomic, retain) IBOutlet UILabel* displayNameLabel;
+@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
 @property (nonatomic, retain) IBOutlet UIButton *detailsButton;
 @property (nonatomic, retain) IBOutlet UIButton * deleteButton;

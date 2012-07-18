@@ -20,53 +20,47 @@
 #import <UIKit/UIKit.h>
 
 #import "LinphoneManager.h"
-#import "CallDelegate.h"
 #import "UICompositeViewController.h"
 #import "UIModalViewController.h"
 
-typedef enum _PhoneView {
-    PhoneView_Wizard,
-    PhoneView_FirstLogin,
-    PhoneView_Dialer,
-    PhoneView_History,
-    PhoneView_Settings,
-    /* MODIFICATION: Disable Chat
-    PhoneView_Chat,
-    PhoneView_ChatRoom,
-     */
-    PhoneView_Contacts,
-    PhoneView_ContactDetails,
-    PhoneView_InCall,
-    PhoneView_IncomingCall,
-    PhoneView_END
-} PhoneView;
+#import "FirstLoginViewController.h"
+#import "IncomingCallViewController.h"
+/* MODIFICATION: Disable Chat
+#import "ChatRoomViewController.h"
+#import "ChatViewController.h"
+*/
+#import "DialerViewController.h"
+#import "ContactsViewController.h"
+#import "ContactDetailsViewController.h"
+#import "HistoryViewController.h"
+#import "HistoryDetailsViewController.h"
+#import "InCallViewController.h"
+#import "SettingsViewController.h"
+#import "FirstLoginViewController.h"
+#import "WizardViewController.h"
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
     @private
     UICompositeViewController *mainViewController;
-    
-    NSMutableDictionary *viewDescriptions;
 
     UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
     
     int loadCount;
     
-    PhoneView currentView;
-    NSMutableArray* viewStack;
+    UICompositeViewDescription *currentView;
+    NSMutableArray *viewStack;
 }
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
-
-- (void)changeView:(PhoneView)view;
-- (void)changeView:(PhoneView)view push:(BOOL)push;
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict;
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push;
-- (void)popView;
-- (void)popView:(NSDictionary *)dict;
+@property (readonly) UICompositeViewDescription *currentView;
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
+- (UIViewController*)popCurrentView;
+- (void)popToView:(UICompositeViewDescription *)currentView;
+- (UICompositeViewDescription *)firstView;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
-- (PhoneView)currentView;
 
 + (PhoneMainView*) instance;
 

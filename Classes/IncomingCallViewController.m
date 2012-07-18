@@ -91,25 +91,30 @@
 - (void)update {
     [self view]; //Force view load
     
-    UIImage *image;
-    NSString* address;
+    UIImage *image = nil;
+    NSString* address = nil;
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
     if (addr != NULL) {
+        BOOL useLinphoneAddress = true;
         // contact name 
         const char* lAddress = linphone_address_as_string_uri_only(addr);
-        const char* lDisplayName = linphone_address_get_display_name(addr);
-        const char* lUserName = linphone_address_get_username(addr);
-        if (lDisplayName) 
-            address = [NSString stringWithUTF8String:lDisplayName];
-        else if(lUserName) 
-            address = [NSString stringWithUTF8String:lUserName];
         if(lAddress) {
-            NSString *address = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-            image = [FastAddressBook getContactImage:contact thumbnail:false];
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
         }
-    } else {
-        [addressLabel setText:@"Unknown"];
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName) 
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName) 
+                address = [NSString stringWithUTF8String:lUserName];
+        }
     }
     
     // Set Image

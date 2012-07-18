@@ -23,12 +23,11 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "Utils.h"
 
 @implementation ContactsTableViewController
 
 @synthesize sipFilter;
-@synthesize tempAddress;
-
 
 #pragma mark - Lifecycle Functions
 
@@ -59,7 +58,6 @@
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     [addressBookMap removeAllObjects];
-    [tempAddress release];
     [super dealloc];
 }
 
@@ -75,7 +73,7 @@
 #pragma mark - 
 
 - (void)reloadData {
-    NSLog(@"Load contact list");
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Load contact list"];
     @synchronized (addressBookMap) {
         
         // Reset Address book
@@ -151,7 +149,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self setTempAddress:nil];
 }
 
 
@@ -193,20 +190,14 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
     
     // Go to Contact details view
-    NSDictionary * dict;
-    if(tempAddress == nil) {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: lPerson, nil] autorelease]
-                 , @"setContact:",
-                 nil] autorelease];
-    } else {
-        dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                 [[[NSArray alloc] initWithObjects: lPerson, tempAddress, nil] autorelease]
-                 , @"editContact:address:",
-                 nil] autorelease];
-        [self setTempAddress:nil];
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
+    if(controller != nil) {
+        if([ContactSelection getAddAddress] == nil) {
+            [controller setContact:lPerson];
+        } else {
+            [controller editContact:lPerson address:[ContactSelection getAddAddress]];
+        }
     }
-    [[PhoneMainView instance] changeView:PhoneView_ContactDetails dict:dict push:TRUE];
 }
 
 @end

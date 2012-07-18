@@ -18,26 +18,10 @@
  */   
 
 #import <QuartzCore/QuartzCore.h>
+#import <AudioToolbox/AudioServices.h>
 
 #import "PhoneMainView.h"
-
-#import "FirstLoginViewController.h"
-#import "IncomingCallViewController.h"
-
-/* MODIFICATION: Disable Chat
-#import "ChatRoomViewController.h"
-#import "ChatViewController.h"
- */
-#import "DialerViewController.h"
-#import "ContactsViewController.h"
-#import "HistoryViewController.h"
-#import "InCallViewController.h"
-#import "SettingsViewController.h"
-#import "FirstLoginViewController.h"
-#import "WizardViewController.h"
-#import "ContactDetailsViewController.h"
-
-#import "AbstractCall.h"
+#import "Utils.h"
 #import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
@@ -45,19 +29,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
 @implementation PhoneMainView
 
 @synthesize mainViewController;
-
+@synthesize currentView;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initPhoneMainView {
     assert (!phoneMainViewInstance);
     phoneMainViewInstance = self;
-    currentView = -1;
+    currentView = nil;
     viewStack = [[NSMutableArray alloc] init];
     loadCount = 0; // For avoiding IOS 4 bug
-    
-    // Init view descriptions
-    viewDescriptions = [[NSMutableDictionary alloc] init];
 }
 
 - (id)init {
@@ -89,11 +70,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     [mainViewController release];
     
-    [viewDescriptions removeAllObjects];
-    [viewDescriptions release];
-    
     [viewStack release];
-    
+
     [super dealloc];
 }
 
@@ -106,25 +84,17 @@ static PhoneMainView* phoneMainViewInstance=nil;
         return;
     
     [super viewDidLoad];
-    [[self view] addSubview: mainViewController.view];
-    
-    // Init descriptions
-    /* MODIFICATION: Disable Chat
-    [viewDescriptions setObject:[ChatRoomViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_ChatRoom]];
-    [viewDescriptions setObject:[ChatViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Chat]];
-     */
-    [viewDescriptions setObject:[DialerViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
-    [viewDescriptions setObject:[ContactsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
-    [viewDescriptions setObject:[HistoryViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_History]];
-    [viewDescriptions setObject:[InCallViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_InCall]];
-    [viewDescriptions setObject:[SettingsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Settings]];
-    [viewDescriptions setObject:[FirstLoginViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
-    [viewDescriptions setObject:[WizardViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
-    [viewDescriptions setObject:[ContactDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_ContactDetails]];
+
+    [self.view addSubview: mainViewController.view];
+    [mainViewController.view setFrame:[self.view frame]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewWillAppear:animated];
+    }   
     
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
@@ -135,7 +105,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                              selector:@selector(registrationUpdate:) 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                object:nil];
-    
+    /* MODIFICATION disable chat
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(textReceived:) 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+     */
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
@@ -145,6 +120,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewWillDisappear:animated];
+    }
+    
     // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:@"LinphoneCallUpdate" 
@@ -152,9 +131,28 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:@"LinphoneRegistrationUpdate" 
                                                   object:nil];
+    /* MODIFICATION disable chat
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:@"LinphoneTextReceived" 
+                                               object:nil];
+     */
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewDidAppear:animated];
+    }   
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [mainViewController viewDidDisappear:animated];
+    }  
 }
 
 - (void)viewDidUnload {
@@ -166,6 +164,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 
 #pragma mark - Event Functions
+
+/* MODIFICATION disable chat
+- (void)textReceived:(NSNotification*)notif { 
+    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
+    if(chat != nil) {
+        [self displayMessage:chat];
+    }
+}
+*/
 
 - (void)registrationUpdate:(NSNotification*)notif { 
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
@@ -217,7 +224,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		case LinphoneCallConnected:
         case LinphoneCallUpdated:
         {
-            [self changeView:PhoneView_InCall];
+            [self changeCurrentView:[InCallViewController compositeViewDescription]];
             break;
         }
         case LinphoneCallUpdatedByRemote:
@@ -226,7 +233,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
             if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                [self changeView:PhoneView_InCall];
+                [self changeCurrentView:[InCallViewController compositeViewDescription]];
             }
             break;
         }
@@ -239,21 +246,19 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
-                NSDictionary *dict = [[[NSDictionary alloc] initWithObjectsAndKeys:
-                                        [[[NSArray alloc] initWithObjects: @"", nil] autorelease]
-                                        , @"setAddress:",
-                                        [[[NSArray alloc] initWithObjects: [NSNumber numberWithInt: FALSE], nil] autorelease]
-                                        , @"setTransferMode:",
-                                        nil] autorelease];
-                [self changeView:PhoneView_Dialer dict:dict];
+                DialerViewController *controller = DYNAMIC_CAST([self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+                if(controller != nil) {
+                    [controller setAddress:@""];
+                    [controller setTransferMode:FALSE];
+                }
             } else {
-                [self changeView:PhoneView_InCall];
+                [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			}
 			break;
         }
 		case LinphoneCallStreamsRunning:
         {
-            [self changeView:PhoneView_InCall];
+            [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			break;
         }
         default:
@@ -284,31 +289,30 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return trans;
 }
 
-+ (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
++ (CATransition*)getTransition:(UICompositeViewDescription *)old new:(UICompositeViewDescription *)new {
     bool left = false;
     
     /* MODIFICATION: Disable Chat
-    if(old == PhoneView_Chat) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_Dialer ||
-           new == PhoneView_Settings ||
-           new == PhoneView_History) {
+    if([old equal:[ChatViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[DialerViewController compositeViewDescription]] ||
+           [new equal:[SettingsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else */
-    if(old == PhoneView_Settings) {
-        if(new == PhoneView_Dialer ||
-           new == PhoneView_Contacts ||
-           new == PhoneView_History) {
+    } else */ if([old equal:[SettingsViewController compositeViewDescription]]) {
+        if([new equal:[DialerViewController compositeViewDescription]] ||
+           [new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else if(old == PhoneView_Dialer) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_History) {
+    } else if([old equal:[DialerViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else if(old == PhoneView_Contacts) {
-        if(new == PhoneView_History) {
+    } else if([old equal:[ContactsViewController compositeViewDescription]]) {
+        if([new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
     } 
@@ -332,62 +336,58 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setFullScreen:enabled];
 }
 
-- (void)changeView:(PhoneView)view {
-    [self changeView:view dict:nil push:FALSE];
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)view {
+    return [self changeCurrentView:view push:FALSE];
 }
 
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict {
-    [self changeView:view dict:dict push:FALSE];
-}
-
-- (void)changeView:(PhoneView)view push:(BOOL)push {
-    [self changeView:view dict:nil push:push];
-}
-
-- (void)changeView:(PhoneView)view dict:(NSDictionary *)dict push:(BOOL)push {
-    if(push && currentView != -1) {
-        [viewStack addObject:[NSNumber numberWithInt: currentView]];
-    } else {
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription*)view push:(BOOL)push {
+    if(!push) {
         [viewStack removeAllObjects];
     }
-    [self _changeView:view dict:dict transition:nil];
+    [viewStack addObject:view];
+    return [self _changeCurrentView:view transition:nil];
 }
 
-- (void)_changeView:(PhoneView)view dict:(NSDictionary *)dict transition:(CATransition*)transition {
-    UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
-    if(description == nil)
-        return;
+- (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition {
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", [view name]];
     
-    if(view != currentView) {
+    if(![view equal: currentView]) {
         if(transition == nil)
             transition = [PhoneMainView getTransition:currentView new:view];
         [mainViewController setViewTransition:transition];
-        [mainViewController changeView:description];
+        [mainViewController changeView:view];
         currentView = view;
     } 
     
-    // Call abstractCall
-    if(dict != nil)
-        [AbstractCall call:[mainViewController getCurrentViewController] dict:dict];
-    
-    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
+    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+    
+    return [mainViewController getCurrentViewController];
 }
 
-- (void)popView {
-    [self popView:nil];
-}
-
-- (void)popView:(NSDictionary *)dict {
-    if([viewStack count] > 0) {
-        PhoneView view = [[viewStack lastObject] intValue];
+- (void)popToView:(UICompositeViewDescription*)view {
+    while([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
         [viewStack removeLastObject];
-        [self _changeView:view dict:dict transition:[PhoneMainView getBackwardTransition]];
-    } 
+    }
+    [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
 }
 
-- (PhoneView)currentView {
-    return currentView;
+- (UICompositeViewDescription *)firstView {
+    UICompositeViewDescription *view = nil;
+    if([viewStack count]) {
+        view = [viewStack objectAtIndex:0];
+    }
+    return view;
+}
+         
+- (UIViewController*)popCurrentView {
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
+    if([viewStack count] > 0) {
+        [viewStack removeLastObject];
+        [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
+        return [mainViewController getCurrentViewController];
+    } 
+    return nil;
 }
 
 - (void)displayCallError:(LinphoneCall*) call message:(NSString*) message {
@@ -423,46 +423,104 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)dismissIncomingCall:(LinphoneCall*)call {
-	//cancel local notification, just in case
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]  
-		&& [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-		// cancel local notif if needed
-		[[UIApplication sharedApplication] cancelAllLocalNotifications];
-	}
-}
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
 
+    if(appData != nil && appData->notification != nil) {
+        // cancel local notif if needed
+        [[UIApplication sharedApplication] cancelLocalNotification:appData->notification];
+        [appData->notification release];
+    }
+}
 
 #pragma mark - ActionSheet Functions
 
-- (void)displayIncomingCall:(LinphoneCall*) call{
-
-    const char* userNameChars=linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* userName = userNameChars?[[[NSString alloc] initWithUTF8String:userNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
-    const char* displayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
-	NSString* displayName = [displayNameChars?[[NSString alloc] initWithUTF8String:displayNameChars]:@"" autorelease];
-    
-	//TODO
-    //[mMainScreenWithVideoPreview showPreview:NO]; 
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+/* MODIFICATION disable chat
+- (void)displayMessage:(ChatModel*)chat {
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        NSString* address = [chat remoteContact];
+        NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
+        ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+        if(contact) {
+            address = [FastAddressBook getContactDisplayName:contact];
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-		if (notif)
-		{
+		if (notif) {
 			notif.repeatInterval = 0;
-			notif.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil),[displayName length]>0?displayName:userName];
-			notif.alertAction = @"Answer";
-			notif.soundName = @"oldphone-mono-30s.caf";
-            NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
-			notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
+			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"%@ sent you a message",nil), address];
+			notif.alertAction = NSLocalizedString(@"Show", nil);
+			notif.soundName = UILocalNotificationDefaultSoundName;
+			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
 			
-			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		}
+	} else {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    }
+}
+ */
+
+- (void)displayIncomingCall:(LinphoneCall*) call{
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+        NSString* address = nil;
+        if(addr != NULL) {
+            BOOL useLinphoneAddress = true;
+            // contact name 
+            const char* lAddress = linphone_address_as_string_uri_only(addr);
+            if(lAddress) {
+                NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+                if(contact) {
+                    address = [FastAddressBook getContactDisplayName:contact];
+                    useLinphoneAddress = false;
+                }
+            }
+            if(useLinphoneAddress) {
+                const char* lDisplayName = linphone_address_get_display_name(addr);
+                const char* lUserName = linphone_address_get_username(addr);
+                if (lDisplayName) 
+                    address = [NSString stringWithUTF8String:lDisplayName];
+                else if(lUserName) 
+                    address = [NSString stringWithUTF8String:lUserName];
+            }
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
+		// Create a new notification
+		appData->notification = [[UILocalNotification alloc] init];
+		if (appData->notification) {
+			appData->notification.repeatInterval = 0;
+			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil), address];
+			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
+			appData->notification.soundName = @"oldphone-mono-30s.caf";
+			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
+			
+			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
 		}
 	} else {     
         IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
+        [controller setWantsFullScreenLayout:TRUE];
         [controller setCall:call];
         [controller setModalDelegate:self];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [controller viewWillAppear:NO];
+        }   
         [[self view] addModalView:[controller view]];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [controller viewDidAppear:NO];
+        }  
 	}
 }
 
@@ -473,7 +531,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
     if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
         float level = [UIDevice currentDevice].batteryLevel;
-        ms_message("Video call is running. Battery level: %.2f", level);
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Video call is running. Battery level: %.2f", level];
         if (level < 0.1 && !appData->batteryWarningShown) {
             // notify user
             CallDelegate* cd = [[CallDelegate alloc] init];

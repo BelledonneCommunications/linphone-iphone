@@ -11,6 +11,7 @@
 			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
+			<string>IBUIImageView</string>
 			<string>IBUIButton</string>
 			<string>IBUITableView</string>
 			<string>IBUIView</string>
@@ -41,6 +42,20 @@
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
+							<object class="IBUIImageView" id="463087888">
+								<reference key="NSNextResponder" ref="624008635"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrameSize">{320, 58}</string>
+								<reference key="NSSuperview" ref="624008635"/>
+								<reference key="NSWindow"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">contact_bar_background.png</string>
+								</object>
+							</object>
 							<object class="IBUIButton" id="40094652">
 								<reference key="NSNextResponder" ref="624008635"/>
 								<int key="NSvFlags">292</int>
@@ -384,6 +399,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 							<reference ref="100677920"/>
 							<reference ref="40094652"/>
 							<reference ref="827146159"/>
+							<reference ref="463087888"/>
 						</array>
 						<reference key="parent" ref="191373211"/>
 						<string key="objectName">toolBar</string>
@@ -419,6 +435,12 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<reference key="parent" ref="624008635"/>
 						<string key="objectName">cancelButton</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">52</int>
+						<reference key="object" ref="463087888"/>
+						<reference key="parent" ref="624008635"/>
+						<string key="objectName">barBackground</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -434,6 +456,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="47.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="47.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="52.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.CustomClassName">UIToggleButton</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -444,7 +467,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">51</int>
+			<int key="maxID">52</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -536,6 +559,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="contact_back_default.png">{320, 117}</string>
 			<string key="contact_back_over.png">{320, 117}</string>
+			<string key="contact_bar_background.png">{5, 117}</string>
 			<string key="contact_cancel_default.png">{320, 117}</string>
 			<string key="contact_cancel_over.png">{320, 117}</string>
 			<string key="contact_edit_default.png">{320, 117}</string>
