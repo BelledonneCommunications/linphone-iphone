@@ -26,6 +26,7 @@
     ABAddressBookRef addressBook;
 }
 
++ (BOOL)isSipURI:(NSString*)address;
 + (NSString*)getContactDisplayName:(ABRecordRef)contact;
 + (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
 - (ABRecordRef)getContact:(NSString*)address;

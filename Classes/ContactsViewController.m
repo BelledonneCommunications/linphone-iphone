@@ -23,6 +23,35 @@
 
 #import <AddressBook/ABPerson.h>
 
+@implementation ContactSelection
+
+static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
+static NSString* sAddAddress = nil;
+
++ (void)setSelectionMode:(ContactSelectionMode)selectionMode {
+    sSelectionMode = selectionMode;
+}
+
++ (ContactSelectionMode)getSelectionMode {
+    return sSelectionMode;
+}
+
++ (void)setAddAddress:(NSString*)address {
+    if(sAddAddress != nil) {
+        [sAddAddress release];
+        sAddAddress= nil;
+    }
+    if(address != nil) {
+        sAddAddress = [address retain];
+    }
+}
+
++ (NSString*)getAddAddress {
+    return sAddAddress;
+}
+
+@end
+
 @implementation ContactsViewController
 
 @synthesize tableController;
@@ -30,6 +59,8 @@
 
 @synthesize allButton;
 @synthesize linphoneButton;
+@synthesize backButton;
+@synthesize addButton;
 
 typedef enum _HistoryView {
     History_All,
@@ -50,22 +81,27 @@ typedef enum _HistoryView {
     
     [allButton release];
     [linphoneButton release];
+    [backButton release];
+    [addButton release];
     
     [super dealloc];
 }
 
-
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"ContactsViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Contacts" 
+                                                                content:@"ContactsViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -85,6 +121,7 @@ typedef enum _HistoryView {
     }   
     
     [self changeView:History_All];
+    [self update];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -116,10 +153,6 @@ typedef enum _HistoryView {
 
 #pragma mark -
 
-- (void)setAddress:(NSString*)address {
-    [tableController setTempAddress:address];
-}
-
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
         [tableController setSipFilter:FALSE];
@@ -136,6 +169,20 @@ typedef enum _HistoryView {
     }
 }
 
+- (void)update {
+    switch ([ContactSelection getSelectionMode]) {
+        case ContactSelectionModePhone:
+        case ContactSelectionModeMessage:
+            [addButton setHidden:TRUE];
+            [backButton setHidden:FALSE];
+            break;
+        default:
+            [addButton setHidden:FALSE];
+            [backButton setHidden:TRUE];
+            break;
+    }
+}
+
 
 #pragma mark - Action Functions
 
@@ -149,15 +196,18 @@ typedef enum _HistoryView {
 
 - (IBAction)onAddContactClick:(id)event {
     // Go to Contact details view
-    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
     if(controller != nil) {
-        if([tableController tempAddress] == nil) {
+        if([ContactSelection getAddAddress] == nil) {
             [controller newContact];
         } else {
-            [controller newContact:[tableController tempAddress]];
-            [tableController setTempAddress:nil];
+            [controller newContact:[ContactSelection getAddAddress]];
         }
     }
+}
+
+- (IBAction)onBackClick:(id)event {
+    [[PhoneMainView instance] popCurrentView];
 }
 
 @end

@@ -371,7 +371,7 @@
 - (IBAction)onOptionsTransferClick:(id)sender {
     [self hideOptions];
     // Go to dialer view   
-    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
         [controller setAddress:@""];
         [controller setTransferMode:TRUE];
@@ -381,7 +381,7 @@
 - (IBAction)onOptionsAddClick:(id)sender {
     [self hideOptions];
     // Go to dialer view   
-    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
         [controller setAddress:@""];
         [controller setTransferMode:FALSE];

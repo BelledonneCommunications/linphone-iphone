@@ -143,14 +143,14 @@ int __aeabi_idiv(int a, int b) {
 - (void)setupUI {
 	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
         // Change to fist login view
-        [[PhoneMainView instance] changeView: PhoneView_FirstLogin];
+        [[PhoneMainView instance] changeCurrentView: [FirstLoginViewController compositeViewDescription]];
     } else {
         // Change to default view
         const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
         if(list != NULL) {
-            [[PhoneMainView instance] changeView: PhoneView_Dialer];
+            [[PhoneMainView instance] changeCurrentView: [DialerViewController compositeViewDescription]];
         } else {
-            [[PhoneMainView instance] changeView: PhoneView_Wizard];
+            [[PhoneMainView instance] changeCurrentView: [WizardViewController compositeViewDescription]];
         }
     }
 	
@@ -220,7 +220,7 @@ int __aeabi_idiv(int a, int b) {
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view
-        ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomViewController);
+        ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
         if(controller != nil) {
             [controller setRemoteAddress:remoteContact];
         }

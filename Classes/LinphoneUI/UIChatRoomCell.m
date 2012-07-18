@@ -69,7 +69,7 @@ static UIFont *CELL_FONT = nil;
     if(chat != nil) {
         [chat release];
     }
-    chat = achat;
+    chat = [achat retain];
     [self update];
 }
 

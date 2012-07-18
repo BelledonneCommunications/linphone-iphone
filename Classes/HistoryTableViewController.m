@@ -159,7 +159,7 @@
     
     if(address != nil) {
         // Go to dialer view
-        DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+        DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
         if(controller != nil) {
             [controller call:address displayName:displayName];
         }
@@ -170,8 +170,8 @@
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
         LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
-        [callLogs removeObjectAtIndex:[indexPath row]];
         linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+        [callLogs removeObjectAtIndex:[indexPath row]];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
     }

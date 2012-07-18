@@ -31,6 +31,8 @@
 @synthesize remoteAddress;
 @synthesize addressLabel;
 @synthesize avatarImage;
+@synthesize headerView;
+@synthesize footerView;
 
 #pragma mark - Lifecycle Functions
 
@@ -51,21 +53,27 @@
     [remoteAddress release];
     [addressLabel release];
     [avatarImage release];
+    [headerView release];
+    [footerView release];
     [super dealloc];
 }
 
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"ChatRoomViewController";
-    description->tabBar = nil;
-    description->tabBarEnabled = false;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"ChatRoom" 
+                                                                content:@"ChatRoomViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:nil 
+                                                          tabBarEnabled:false 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -131,7 +139,10 @@
     }
     remoteAddress = [aRemoteAddress copy];
     [tableController setRemoteAddress: remoteAddress];
-    
+    [self update];
+}
+
+- (void)update {
     if(remoteAddress == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
         return;
@@ -140,7 +151,7 @@
     NSString *displayName = nil;
     UIImage *image = nil;
     NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:remoteAddress];
-    ABRecordRef acontact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+    ABRecordRef acontact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
     if(acontact != nil) {
         displayName = [FastAddressBook getContactDisplayName:acontact];
         image = [FastAddressBook getContactImage:acontact thumbnail:true];
@@ -220,7 +231,7 @@
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-    [[PhoneMainView instance] popView];
+    [[PhoneMainView instance] popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -251,15 +262,19 @@
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
+    
+    // Move view
     CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect frame = [[self view] frame];
-    /*
-    CGPoint pos = {0, 0};
-    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
-    frame.size.height = endFrame.origin.y - gPos.y;
-    */
     frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
     [[self view] setFrame:frame];
+    
+    // Resize table view
+    CGRect tableFrame = [tableController.view frame];
+    tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+    tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+    [tableController.view setFrame:tableFrame];
+    
     [UIView commitAnimations];
 }
 
@@ -271,13 +286,27 @@
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
+    
+    // Move view
     CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect frame = [[self view] frame];
-    /*CGPoint pos = {0, 0};
-    CGPoint gPos = [[self view] convertPoint:pos toView:nil];
-    frame.size.height = endFrame.origin.y - gPos.y;*/
     frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
     [[self view] setFrame:frame];
+    
+    // Resize table view
+    CGPoint pos = {0, 0};
+    CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];
+    CGRect tableFrame = [tableController.view frame];
+    tableFrame.origin.y = gPos.y;
+    tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+    [tableController.view setFrame:tableFrame];
+    
+    // Scroll
+    int lastSection = [tableController.tableView numberOfSections] -1;
+    int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+    [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] 
+                                     atScrollPosition:UITableViewScrollPositionBottom 
+                                             animated:TRUE];
     [UIView commitAnimations];
 }
 

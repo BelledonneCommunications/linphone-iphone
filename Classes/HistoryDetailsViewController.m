@@ -58,15 +58,19 @@
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"HistoryDetailsViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"HistoryDetails" 
+                                                                content:@"HistoryDetailsViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -245,12 +249,12 @@
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-    [[PhoneMainView instance] popView];
+    [[PhoneMainView instance] popCurrentView];
 }
 
 - (IBAction)onContactClick:(id)event {
     if(contact) {
-        ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+        ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
         if(controller != nil) {
             [controller setContact:contact];
         }
@@ -258,9 +262,10 @@
 }
 
 - (IBAction)onAddContactClick:(id)event {
-    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Contacts push:TRUE], ContactsViewController);
+    [ContactSelection setSelectionMode:ContactSelectionModeEdit];
+    [ContactSelection setAddAddress:[[addressButton titleLabel] text]];
+    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
     if(controller != nil) {
-        [controller setAddress:[[addressButton titleLabel] text]];
     }
 }
 
@@ -287,7 +292,7 @@
     }
     
     
-    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
+    DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
         if(displayName != nil) {
             [controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];

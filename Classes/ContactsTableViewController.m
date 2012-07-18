@@ -28,8 +28,6 @@
 @implementation ContactsTableViewController
 
 @synthesize sipFilter;
-@synthesize tempAddress;
-
 
 #pragma mark - Lifecycle Functions
 
@@ -60,7 +58,6 @@
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     [addressBookMap removeAllObjects];
-    [tempAddress release];
     [super dealloc];
 }
 
@@ -152,7 +149,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self setTempAddress:nil];
 }
 
 
@@ -194,13 +190,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
     
     // Go to Contact details view
-    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ContactDetails push:TRUE], ContactDetailsViewController);
+    ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
     if(controller != nil) {
-        if(tempAddress == nil) {
+        if([ContactSelection getAddAddress] == nil) {
             [controller setContact:lPerson];
         } else {
-            [controller editContact:lPerson address:tempAddress];
-            [self setTempAddress:nil];
+            [controller editContact:lPerson address:[ContactSelection getAddAddress]];
         }
     }
 }

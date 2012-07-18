@@ -67,7 +67,7 @@
     ABAddressBookRevert(addressBook);
     contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
     if(contact == NULL) {
-        [[PhoneMainView instance] popView];
+        [[PhoneMainView instance] popCurrentView];
         return;
     }
     [tableController setContact:contact];
@@ -82,7 +82,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)removeContact {
     if(contact == NULL) {
-        [[PhoneMainView instance] popView];
+        [[PhoneMainView instance] popCurrentView];
         return;
     }
     
@@ -112,7 +112,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)saveData {
     if(contact == NULL) {
-        [[PhoneMainView instance] popView];
+        [[PhoneMainView instance] popCurrentView];
         return;
     }
     
@@ -218,6 +218,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    if([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
+       [ContactSelection getSelectionMode] == ContactSelectionModeNone) {
+        [editButton setHidden:FALSE];
+    } else {
+        [editButton setHidden:TRUE];
+    }
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [tableController viewWillAppear:animated];
     }   
@@ -240,17 +246,23 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"ContactDetailsViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"ContactDetails" 
+                                                                content:@"ContactDetailsViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
+
+#pragma mark -
 
 - (void)enableEdit:(BOOL)animated {
     if(![tableController isEditing]) {
@@ -278,7 +290,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (IBAction)onBackClick:(id)event {
-    [[PhoneMainView instance] popView];
+    [[PhoneMainView instance] popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -293,7 +305,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 - (void)onRemove:(id)event {
     [self disableEdit:FALSE];
     [self removeContact];
-    [[PhoneMainView instance] popView];
+    [[PhoneMainView instance] popCurrentView];
 }
 
 @end

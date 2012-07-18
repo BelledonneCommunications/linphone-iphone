@@ -447,17 +447,25 @@
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
             CFStringRef valueRef = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
-            dest = [NSString stringWithString:(NSString*) valueRef];
+            dest = [FastAddressBook normalizeSipURI:[NSString stringWithString:(NSString*) valueRef]];
             CFRelease(lDict);
             CFRelease(lMap);
         }
         if(dest != nil) {
             NSString *displayName = [FastAddressBook getContactDisplayName:contact];
-            
-            // Go to dialer view
-            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Dialer], DialerViewController);
-            if(controller != nil) {
-                [controller call:dest displayName:displayName];
+            if([ContactSelection getSelectionMode] != ContactSelectionModeMessage) {
+                // Go to dialer view
+                DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+                if(controller != nil) {
+                    [controller call:dest displayName:displayName];
+                }
+            } else {
+                // Go to Chat room view
+                [[PhoneMainView instance] popToView:[ChatViewController compositeViewDescription]];
+                ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+                if(controller != nil) {
+                   [controller setRemoteAddress:dest];
+                }
             }
         }
     } else {

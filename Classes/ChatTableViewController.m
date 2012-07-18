@@ -91,7 +91,7 @@
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
     
     // Go to ChatRoom view
-    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom push:TRUE], ChatRoomViewController);
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
     if(controller != nil) {
         [controller setRemoteAddress:[chat remoteContact]];
     }
@@ -101,10 +101,11 @@
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
         ChatModel *chat = [data objectAtIndex:[indexPath row]];
-        [data removeObjectAtIndex:[indexPath row]];
         [ChatModel removeConversation:[chat remoteContact]];
+        [data removeObjectAtIndex:[indexPath row]];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
     }
 }
 

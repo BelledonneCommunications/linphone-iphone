@@ -81,15 +81,19 @@ const NSInteger SECURE_BUTTON_TAG=5;
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"InCallViewController";
-    description->tabBar = @"UICallBar";
-    description->tabBarEnabled = true;
-    description->stateBar = @"UIStateBar";
-    description->stateBarEnabled = true;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"InCall" 
+                                                                content:@"InCallViewController" 
+                                                               stateBar:@"UIStateBar" 
+                                                        stateBarEnabled:true 
+                                                                 tabBar:@"UICallBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -280,7 +284,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [videoCameraSwitch setAlpha:0.0];
     [UIView commitAnimations];
     
-    if([[PhoneMainView instance] currentView] == PhoneView_InCall && videoShown)
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown)
         [[PhoneMainView instance] showTabBar: false];
     
     if (hideControlsTimer) {

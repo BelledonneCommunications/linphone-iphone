@@ -96,15 +96,19 @@
 
 #pragma mark - UICompositeViewDelegate Functions
 
+static UICompositeViewDescription *compositeDescription = nil;
+
 + (UICompositeViewDescription *)compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"DialerViewController";
-    description->tabBar = @"UIMainBar";
-    description->tabBarEnabled = true;
-    description->stateBar = @"UIStateBar";
-    description->stateBarEnabled = true;
-    description->fullscreen = false;
-    return description;
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Dialer" 
+                                                                content:@"DialerViewController" 
+                                                               stateBar:@"UIStateBar" 
+                                                        stateBarEnabled:true 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -223,14 +227,16 @@
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick: (id) event {
-    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_Contacts push:TRUE], ContactsViewController);
+    [ContactSelection setSelectionMode:ContactSelectionModeEdit];
+    [ContactSelection setAddAddress:[addressField text]];
+    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
     if(controller != nil) {
-        [controller setAddress:[addressField text]];
+        
     }
 }
 
 - (IBAction)onBackClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_InCall];
+    [[PhoneMainView instance] changeCurrentView:[InCallViewController compositeViewDescription]];
 }
 
 - (IBAction)onAddressChange: (id)sender {

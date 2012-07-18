@@ -148,7 +148,7 @@
 
 - (IBAction)onDetailsClick: (id) event {
     // Go to Chat room view
-    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_ChatRoom  push:TRUE], ChatRoomViewController);
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]  push:TRUE], ChatRoomViewController);
     if(controller !=nil) {
         [controller setRemoteAddress:[chat remoteContact]];
     }

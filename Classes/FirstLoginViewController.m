@@ -52,17 +52,20 @@
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription *)compositeViewDescription {
-    UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"FirstLoginViewController";
-    description->tabBar = nil;
-    description->tabBarEnabled = false;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
-}
+static UICompositeViewDescription *compositeDescription = nil;
 
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"FirstLogin" 
+                                                                content:@"FirstLoginViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:nil 
+                                                          tabBarEnabled:false 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
+}
 
 #pragma mark - ViewController Functions
 
@@ -121,7 +124,7 @@
         {
             [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"]; 
             [self.waitView setHidden:true];
-            [[PhoneMainView instance] changeView:PhoneView_Dialer];
+            [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
             break;
         }
         case LinphoneRegistrationNone: 

@@ -37,45 +37,28 @@
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
 
-typedef enum _PhoneView {
-    PhoneView_Wizard,
-    PhoneView_FirstLogin,
-    PhoneView_Dialer,
-    PhoneView_History,
-    PhoneView_HistoryDetails,
-    PhoneView_Settings,
-    PhoneView_Chat,
-    PhoneView_ChatRoom,
-    PhoneView_Contacts,
-    PhoneView_ContactDetails,
-    PhoneView_InCall,
-    PhoneView_IncomingCall,
-    PhoneView_END
-} PhoneView;
-
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
     @private
     UICompositeViewController *mainViewController;
-    
-    NSMutableDictionary *viewDescriptions;
 
     UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
     
     int loadCount;
     
-    PhoneView currentView;
-    NSMutableArray* viewStack;
+    UICompositeViewDescription *currentView;
+    NSMutableArray *viewStack;
 }
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
-
-- (UIViewController*)changeView:(PhoneView)view;
-- (UIViewController*)changeView:(PhoneView)view push:(BOOL)push;
-- (UIViewController*)popView;
+@property (readonly) UICompositeViewDescription *currentView;
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
+- (UIViewController*)popCurrentView;
+- (void)popToView:(UICompositeViewDescription *)currentView;
+- (UICompositeViewDescription *)firstView;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
-- (PhoneView)currentView;
 
 + (PhoneMainView*) instance;
 

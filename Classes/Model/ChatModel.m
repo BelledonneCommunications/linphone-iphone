@@ -106,7 +106,7 @@
     ChatModel* line = nil;
     int err = sqlite3_step(sqlStatement);
     if (err == SQLITE_ROW) {
-        line = [[ChatModel alloc] initWithData:sqlStatement];
+        line = [[[ChatModel alloc] initWithData:sqlStatement] autorelease];
     } else if (err != SQLITE_DONE) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
         sqlite3_finalize(sqlStatement);
@@ -187,6 +187,7 @@
     while ((err = sqlite3_step(sqlStatement)) == SQLITE_ROW) {
         ChatModel *line = [[ChatModel alloc] initWithData:sqlStatement];
         [array addObject:line];
+        [line release];
     }
     
     if (err != SQLITE_DONE) {
@@ -219,6 +220,7 @@
     while ((err = sqlite3_step(sqlStatement)) == SQLITE_ROW) {
         ChatModel *line = [[ChatModel alloc] initWithData:sqlStatement];
         [array addObject:line];
+        [line release];
     }
     
     if (err != SQLITE_DONE) {

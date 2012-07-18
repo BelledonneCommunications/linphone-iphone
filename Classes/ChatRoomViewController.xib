@@ -131,7 +131,7 @@
 					</object>
 					<object class="IBUIView" id="414508017">
 						<reference key="NSNextResponder" ref="589117993"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIImageView" id="934483770">
 								<reference key="NSNextResponder" ref="414508017"/>
@@ -234,10 +234,11 @@
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIButton" id="487645621">
 								<reference key="NSNextResponder" ref="833509359"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">257</int>
 								<string key="NSFrame">{{250, 0}, {70, 59}}</string>
 								<reference key="NSSuperview" ref="833509359"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -267,7 +268,7 @@
 							</object>
 							<object class="IBUIImageView" id="946416684">
 								<reference key="NSNextResponder" ref="833509359"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">260</int>
 								<string key="NSFrameSize">{250, 59}</string>
 								<reference key="NSSuperview" ref="833509359"/>
 								<reference key="NSWindow"/>
@@ -282,7 +283,7 @@
 							</object>
 							<object class="IBUITextField" id="87421816">
 								<reference key="NSNextResponder" ref="833509359"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">260</int>
 								<string key="NSFrame">{{10, 10}, {230, 39}}</string>
 								<reference key="NSSuperview" ref="833509359"/>
 								<reference key="NSWindow"/>
@@ -404,6 +405,22 @@
 						<reference key="destination" ref="495119736"/>
 					</object>
 					<int key="connectionID">44</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">headerView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="414508017"/>
+					</object>
+					<int key="connectionID">45</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">footerView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="833509359"/>
+					</object>
+					<int key="connectionID">46</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -542,7 +559,7 @@
 							<reference ref="946416684"/>
 						</array>
 						<reference key="parent" ref="589117993"/>
-						<string key="objectName">footer</string>
+						<string key="objectName">footerView</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">15</int>
@@ -629,7 +646,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">44</int>
+			<int key="maxID">46</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -672,6 +689,8 @@
 						<string key="addressLabel">UILabel</string>
 						<string key="avatarImage">UIImageView</string>
 						<string key="editButton">UIToggleButton</string>
+						<string key="footerView">UIView</string>
+						<string key="headerView">UIView</string>
 						<string key="messageField">UITextField</string>
 						<string key="sendButton">UIButton</string>
 						<string key="tableController">ChatRoomTableViewController</string>
@@ -688,6 +707,14 @@
 						<object class="IBToOneOutletInfo" key="editButton">
 							<string key="name">editButton</string>
 							<string key="candidateClassName">UIToggleButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="footerView">
+							<string key="name">footerView</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="headerView">
+							<string key="name">headerView</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="messageField">
 							<string key="name">messageField</string>

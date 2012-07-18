@@ -70,7 +70,7 @@
 - (IBAction)onDetails:(id) event {
     if(callLog != NULL) {
         // Go to History details view
-        HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeView:PhoneView_HistoryDetails  push:TRUE], HistoryDetailsViewController);
+        HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]  push:TRUE], HistoryDetailsViewController);
         if(controller != nil) {
             [controller setCallLog:callLog];
         }

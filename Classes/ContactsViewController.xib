@@ -44,7 +44,7 @@
 							<object class="IBUIButton" id="257572356">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{106, 58}</string>
+								<string key="NSFrame">{{108, 0}, {106, 58}}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="596330568"/>
@@ -83,7 +83,7 @@
 							<object class="IBUIButton" id="596330568">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{106, 0}, {106, 58}}</string>
+								<string key="NSFrame">{{214, 0}, {106, 58}}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="600417980"/>
@@ -112,10 +112,10 @@
 							<object class="IBUIButton" id="600417980">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{212, 0}, {108, 58}}</string>
+								<string key="NSFrameSize">{108, 58}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="562388802"/>
+								<reference key="NSNextKeyView" ref="1037245389"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -133,6 +133,34 @@
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">contacts_add_default.png</string>
+								</object>
+								<reference key="IBUIFontDescription" ref="1011869415"/>
+								<reference key="IBUIFont" ref="895098900"/>
+							</object>
+							<object class="IBUIButton" id="1037245389">
+								<reference key="NSNextResponder" ref="95706395"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrameSize">{108, 58}</string>
+								<reference key="NSSuperview" ref="95706395"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="562388802"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+									<string key="IBUIAccessibilityLabel">Add contact</string>
+								</object>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<reference key="IBUINormalTitleShadowColor" ref="873246362"/>
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">contacts_back_over.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">contacts_back_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="1011869415"/>
 								<reference key="IBUIFont" ref="895098900"/>
@@ -247,6 +275,22 @@
 					<int key="connectionID">84</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">backButton</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="1037245389"/>
+					</object>
+					<int key="connectionID">90</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addButton</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="600417980"/>
+					</object>
+					<int key="connectionID">91</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">onAllClick:</string>
 						<reference key="source" ref="257572356"/>
@@ -297,6 +341,15 @@
 					</object>
 					<int key="connectionID">80</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">onBackClick:</string>
+						<reference key="source" ref="1037245389"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">89</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -330,9 +383,10 @@
 						<int key="objectID">3</int>
 						<reference key="object" ref="95706395"/>
 						<array class="NSMutableArray" key="children">
+							<reference ref="600417980"/>
+							<reference ref="1037245389"/>
 							<reference ref="257572356"/>
 							<reference ref="596330568"/>
-							<reference ref="600417980"/>
 						</array>
 						<reference key="parent" ref="812520855"/>
 						<string key="objectName">toolBar</string>
@@ -368,6 +422,12 @@
 						<reference key="parent" ref="0"/>
 						<string key="objectName">tableController</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">87</int>
+						<reference key="object" ref="1037245389"/>
+						<reference key="parent" ref="95706395"/>
+						<string key="objectName">backButton</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -386,12 +446,14 @@
 				<string key="69.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="76.CustomClassName">ContactsTableViewController</string>
 				<string key="76.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="87.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="0.0" key="87.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">86</int>
+			<int key="maxID">91</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -409,6 +471,7 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="onAddContactClick:">id</string>
 						<string key="onAllClick:">id</string>
+						<string key="onBackClick:">id</string>
 						<string key="onLinphoneClick:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -420,20 +483,34 @@
 							<string key="name">onAllClick:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="onBackClick:">
+							<string key="name">onBackClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="onLinphoneClick:">
 							<string key="name">onLinphoneClick:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="addButton">UIButton</string>
 						<string key="allButton">UIButton</string>
+						<string key="backButton">UIButton</string>
 						<string key="linphoneButton">UIButton</string>
 						<string key="tableController">ContactsTableViewController</string>
 						<string key="tableView">UITableView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="addButton">
+							<string key="name">addButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="allButton">
 							<string key="name">allButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="backButton">
+							<string key="name">backButton</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="linphoneButton">
@@ -469,6 +546,8 @@
 			<string key="contacts_add_over.png">{213, 117}</string>
 			<string key="contacts_all_default.png">{213, 117}</string>
 			<string key="contacts_all_selected.png">{213, 117}</string>
+			<string key="contacts_back_default.png">{213, 117}</string>
+			<string key="contacts_back_over.png">{213, 117}</string>
 			<string key="contacts_linphone_default.png">{213, 117}</string>
 			<string key="contacts_linphone_selected.png">{213, 117}</string>
 		</dictionary>

@@ -78,15 +78,19 @@ typedef enum _ViewElement {
 
 #pragma mark - UICompositeViewDelegate Functions
 
-+ (UICompositeViewDescription*) compositeViewDescription {
-UICompositeViewDescription *description = [UICompositeViewDescription alloc];
-    description->content = @"WizardViewController";
-    description->tabBar = nil;
-    description->tabBarEnabled = false;
-    description->stateBar = nil;
-    description->stateBarEnabled = false;
-    description->fullscreen = false;
-    return description;
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"Wizard" 
+                                                                content:@"WizardViewController" 
+                                                               stateBar:nil 
+                                                        stateBarEnabled:false 
+                                                                 tabBar:nil 
+                                                          tabBarEnabled:false 
+                                                             fullscreen:false];
+    }
+    return compositeDescription;
 }
 
 
@@ -185,7 +189,7 @@ UICompositeViewDescription *description = [UICompositeViewDescription alloc];
 }
 
 - (IBAction)onCancelClick:(id)sender {
-    [[PhoneMainView instance] changeView:PhoneView_Dialer];
+    [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {

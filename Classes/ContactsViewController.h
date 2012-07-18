@@ -20,8 +20,24 @@
 #import <UIKit/UIKit.h>
 
 #import "UICompositeViewController.h"
-
 #import "ContactsTableViewController.h"
+
+typedef enum _ContactSelectionMode {
+    ContactSelectionModeNone,
+    ContactSelectionModeEdit,
+    ContactSelectionModePhone,
+    ContactSelectionModeMessage
+} ContactSelectionMode;
+
+@interface ContactSelection : NSObject {
+}
+
++ (void)setSelectionMode:(ContactSelectionMode)selectionMode;
++ (ContactSelectionMode)getSelectionMode;
++ (void)setAddAddress:(NSString*)address;
++ (NSString*)getAddAddress;
+
+@end
 
 @interface ContactsViewController : UIViewController<UICompositeViewDelegate> {
     ContactsTableViewController *tableController;
@@ -29,17 +45,20 @@
     
     UIButton *allButton;
     UIButton *linphoneButton;
+    UIButton *backButton;
+    UIButton *addButton;
 }
 
 @property (nonatomic, retain) IBOutlet ContactsTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
+@property (nonatomic, retain) IBOutlet UIButton *backButton;
+@property (nonatomic, retain) IBOutlet UIButton *addButton;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
-
-- (void)setAddress:(NSString*)address;
+- (IBAction)onBackClick:(id)event;
 
 @end

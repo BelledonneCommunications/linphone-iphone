@@ -125,9 +125,9 @@
 }
 
 - (void)changeViewEvent:(NSNotification*)notif {  
-    NSNumber *viewNumber = [notif.userInfo objectForKey: @"view"];
-    if(viewNumber != nil)
-        [self updateView:[viewNumber intValue]];
+    //UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
+    //if(view != nil)
+    [self updateView:[[PhoneMainView instance] firstView]];
 }
 
 - (void)textReceived:(NSNotification*)notif {  
@@ -138,7 +138,7 @@
 #pragma mark - 
 
 - (void)update {
-    [self updateView:[[PhoneMainView instance] currentView]];
+    [self updateView:[[PhoneMainView instance] firstView]];
     if([LinphoneManager isLcReady]) {
         [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
     } else {
@@ -228,35 +228,35 @@
     [target.layer removeAnimationForKey:animationID];
 }
          
-- (void)updateView:(PhoneView) view {
+- (void)updateView:(UICompositeViewDescription*) view {
     // Reset missed call
-    if(view == PhoneView_History) {
+    if([view equal:[HistoryViewController compositeViewDescription]]) {
         linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
         [self updateMissedCall:0];
     }
     
     // Update buttons
-    if(view == PhoneView_History || view == PhoneView_HistoryDetails) {
+    if([view equal:[HistoryViewController compositeViewDescription]]) {
         historyButton.selected = TRUE;
     } else {
         historyButton.selected = FALSE;
     }
-    if(view == PhoneView_Contacts || view == PhoneView_ContactDetails) {
+    if([view equal:[ContactsViewController compositeViewDescription]]) {
         contactsButton.selected = TRUE;
     } else {
         contactsButton.selected = FALSE;
     }
-    if(view == PhoneView_Dialer) {
+    if([view equal:[DialerViewController compositeViewDescription]]) {
         dialerButton.selected = TRUE;
     } else {
         dialerButton.selected = FALSE;
     }
-    if(view == PhoneView_Settings) {
+    if([view equal:[SettingsViewController compositeViewDescription]]) {
         settingsButton.selected = TRUE;
     } else {
         settingsButton.selected = FALSE;
     }
-    if(view == PhoneView_Chat || view == PhoneView_ChatRoom) {
+    if([view equal:[ChatViewController compositeViewDescription]]) {
         chatButton.selected = TRUE;
     } else {
         chatButton.selected = FALSE;
@@ -267,24 +267,25 @@
 #pragma mark - Action Functions
 
 - (IBAction)onHistoryClick: (id) sender {
-    [[PhoneMainView instance] changeView:PhoneView_History];
+    [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
 }
 
 - (IBAction)onContactsClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Contacts];
+    [ContactSelection setSelectionMode:ContactSelectionModeNone];
+    [ContactSelection setAddAddress:nil];
+    [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
 
 - (IBAction)onDialerClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Dialer];
+    [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
 - (IBAction)onSettingsClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Settings];
+    [[PhoneMainView instance] changeCurrentView:[SettingsViewController compositeViewDescription]];
 }
 
 - (IBAction)onChatClick: (id) event {
-    [[PhoneMainView instance] changeView:PhoneView_Chat];
+    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 }
-
 
 @end

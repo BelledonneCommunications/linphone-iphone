@@ -39,7 +39,7 @@
     if (contact && ABPersonHasImageData(contact)) {
         CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, thumbnail? 
                                                             kABPersonImageFormatThumbnail: kABPersonImageFormatOriginalSize);
-        retImage = [[[UIImage alloc] initWithData:(NSData *)imgData] autorelease];
+        retImage = [UIImage imageWithData:(NSData *)imgData];
         CFRelease(imgData);    
     }
     return retImage;
@@ -49,6 +49,10 @@
     @synchronized (addressBookMap){
         return (ABRecordRef)[addressBookMap objectForKey:address];   
     } 
+}
+
++ (BOOL)isSipURI:(NSString*)address {
+    return [address hasPrefix:@"sip:"];
 }
 
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number {
@@ -63,7 +67,11 @@
 }
 
 + (NSString*)normalizeSipURI:(NSString*)address {
-    return address;
+    NSString* ret = address;
+    if(![address hasPrefix:@"sip:"]) {
+        ret = [@"sip:" stringByAppendingString:ret];
+    }
+    return ret;
 }
 
 + (NSString*)normalizePhoneNumber:(NSString*)address {

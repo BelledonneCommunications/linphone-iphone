@@ -29,19 +29,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
 @implementation PhoneMainView
 
 @synthesize mainViewController;
-
+@synthesize currentView;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initPhoneMainView {
     assert (!phoneMainViewInstance);
     phoneMainViewInstance = self;
-    currentView = -1;
+    currentView = nil;
     viewStack = [[NSMutableArray alloc] init];
     loadCount = 0; // For avoiding IOS 4 bug
-    
-    // Init view descriptions
-    viewDescriptions = [[NSMutableDictionary alloc] init];
 }
 
 - (id)init {
@@ -73,11 +70,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     [mainViewController release];
     
-    [viewDescriptions removeAllObjects];
-    [viewDescriptions release];
-    
     [viewStack release];
-    
+
     [super dealloc];
 }
 
@@ -93,19 +87,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     [self.view addSubview: mainViewController.view];
     [mainViewController.view setFrame:[self.view frame]];
-    
-    // Init descriptions
-    [viewDescriptions setObject:[ChatRoomViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_ChatRoom]];
-    [viewDescriptions setObject:[ChatViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Chat]];
-    [viewDescriptions setObject:[DialerViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Dialer]];
-    [viewDescriptions setObject:[ContactsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Contacts]];
-    [viewDescriptions setObject:[ContactDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_ContactDetails]];
-    [viewDescriptions setObject:[HistoryViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_History]];
-    [viewDescriptions setObject:[HistoryDetailsViewController compositeViewDescription] forKey:[NSNumber numberWithInt:PhoneView_HistoryDetails]];
-    [viewDescriptions setObject:[InCallViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_InCall]];
-    [viewDescriptions setObject:[SettingsViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Settings]];
-    [viewDescriptions setObject:[FirstLoginViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_FirstLogin]];
-    [viewDescriptions setObject:[WizardViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_Wizard]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -237,7 +218,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		case LinphoneCallConnected:
         case LinphoneCallUpdated:
         {
-            [self changeView:PhoneView_InCall];
+            [self changeCurrentView:[InCallViewController compositeViewDescription]];
             break;
         }
         case LinphoneCallUpdatedByRemote:
@@ -246,7 +227,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
             if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                [self changeView:PhoneView_InCall];
+                [self changeCurrentView:[InCallViewController compositeViewDescription]];
             }
             break;
         }
@@ -259,19 +240,19 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
-                DialerViewController *controller = DYNAMIC_CAST([self changeView:PhoneView_Dialer], DialerViewController);
+                DialerViewController *controller = DYNAMIC_CAST([self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
                 if(controller != nil) {
                     [controller setAddress:@""];
                     [controller setTransferMode:FALSE];
                 }
             } else {
-                [self changeView:PhoneView_InCall];
+                [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			}
 			break;
         }
 		case LinphoneCallStreamsRunning:
         {
-            [self changeView:PhoneView_InCall];
+            [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			break;
         }
         default:
@@ -302,29 +283,29 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return trans;
 }
 
-+ (CATransition*)getTransition:(PhoneView)old new:(PhoneView)new {
++ (CATransition*)getTransition:(UICompositeViewDescription *)old new:(UICompositeViewDescription *)new {
     bool left = false;
     
-    if(old == PhoneView_Chat || old == PhoneView_ChatRoom) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_Dialer ||
-           new == PhoneView_Settings ||
-           new == PhoneView_History) {
+    if([old equal:[ChatViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[DialerViewController compositeViewDescription]] ||
+           [new equal:[SettingsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else if(old == PhoneView_Settings) {
-        if(new == PhoneView_Dialer ||
-           new == PhoneView_Contacts ||
-           new == PhoneView_History) {
+    } else if([old equal:[SettingsViewController compositeViewDescription]]) {
+        if([new equal:[DialerViewController compositeViewDescription]] ||
+           [new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else if(old == PhoneView_Dialer) {
-        if(new == PhoneView_Contacts ||
-           new == PhoneView_History) {
+    } else if([old equal:[DialerViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController compositeViewDescription]] ||
+           [new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
-    } else if(old == PhoneView_Contacts || old == PhoneView_ContactDetails) {
-        if(new == PhoneView_History) {
+    } else if([old equal:[ContactsViewController compositeViewDescription]]) {
+        if([new equal:[HistoryViewController compositeViewDescription]]) {
             left = true;
         }
     } 
@@ -348,57 +329,58 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setFullScreen:enabled];
 }
 
-- (UIViewController*)changeView:(PhoneView)view {
-    return [self changeView:view push:FALSE];
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)view {
+    return [self changeCurrentView:view push:FALSE];
 }
 
-- (UIViewController*)changeView:(PhoneView)view push:(BOOL)push {
-    if(push && currentView != -1) {
-        [viewStack addObject:[NSNumber numberWithInt: currentView]];
-    } else {
+- (UIViewController*)changeCurrentView:(UICompositeViewDescription*)view push:(BOOL)push {
+    if(!push) {
         [viewStack removeAllObjects];
     }
-    return [self _changeView:view transition:nil];
+    [viewStack addObject:view];
+    return [self _changeCurrentView:view transition:nil];
 }
 
-- (UIViewController*)_changeView:(PhoneView)view transition:(CATransition*)transition {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", view];
-    UICompositeViewDescription* description = [viewDescriptions objectForKey:[NSNumber numberWithInt: view]];
-    if(description == nil)
-        return nil;
+- (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition {
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", [view name]];
     
-    if(view != currentView) {
+    if(![view equal: currentView]) {
         if(transition == nil)
             transition = [PhoneMainView getTransition:currentView new:view];
         [mainViewController setViewTransition:transition];
-        [mainViewController changeView:description];
+        [mainViewController changeView:view];
         currentView = view;
     } 
     
-    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject: [NSNumber numberWithInt:currentView] forKey:@"view"];
+    NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
     
     return [mainViewController getCurrentViewController];
 }
 
-- (UIViewController*)popView {
-    return [self popView:nil];
+- (void)popToView:(UICompositeViewDescription*)view {
+    while([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
+        [viewStack removeLastObject];
+    }
+    [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
 }
 
-- (UIViewController*)popView:(NSArray *)calls {
+- (UICompositeViewDescription *)firstView {
+    UICompositeViewDescription *view = nil;
+    if([viewStack count]) {
+        view = [viewStack objectAtIndex:0];
+    }
+    return view;
+}
+         
+- (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
     if([viewStack count] > 0) {
-        PhoneView view = [[viewStack lastObject] intValue];
         [viewStack removeLastObject];
-        [self _changeView:view transition:[PhoneMainView getBackwardTransition]];
-        
+        [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
         return [mainViewController getCurrentViewController];
     } 
     return nil;
-}
-
-- (PhoneView)currentView {
-    return currentView;
 }
 
 - (void)displayCallError:(LinphoneCall*) call message:(NSString*) message {
