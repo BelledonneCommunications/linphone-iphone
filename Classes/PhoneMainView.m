@@ -520,6 +520,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		}
 	} else {     
         IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
+        [controller setWantsFullScreenLayout:TRUE];
         [controller setCall:call];
         [controller setModalDelegate:self];
         [[self view] addModalView:[controller view]];
