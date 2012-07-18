@@ -74,14 +74,14 @@ typedef enum _HistoryView {
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:NO];
+        [tableController viewWillDisappear:animated];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:NO];
+        [tableController viewWillAppear:animated];
     }   
     
     [self changeView:History_All];
@@ -90,14 +90,14 @@ typedef enum _HistoryView {
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:NO];
+        [tableController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:NO];
+        [tableController viewDidDisappear:animated];
     }  
 }
 

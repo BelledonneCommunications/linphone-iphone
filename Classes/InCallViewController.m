@@ -113,7 +113,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
         hideControlsTimer = nil;
     }
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillDisappear:NO];
+        [callTableController viewWillDisappear:animated];
     }
     
     
@@ -126,7 +126,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewWillAppear:NO];
+        [callTableController viewWillAppear:animated];
     }   
     
     // Set observer
@@ -141,7 +141,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [self callUpdate:call state:state];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidAppear:NO];
+        [callTableController viewDidAppear:animated];
     }  
 }
 
@@ -153,7 +153,7 @@ const NSInteger SECURE_BUTTON_TAG=5;
     device.proximityMonitoringEnabled = NO;
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [callTableController viewDidDisappear:NO];
+        [callTableController viewDidDisappear:animated];
     }  
 }
 

@@ -76,28 +76,28 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillDisappear:NO];
+        [settingsController viewWillDisappear:animated];
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillAppear:NO];
+        [settingsController viewWillAppear:animated];
     }   
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidAppear:NO];
+        [settingsController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidDisappear:NO];
+        [settingsController viewDidDisappear:animated];
     }  
 }
 

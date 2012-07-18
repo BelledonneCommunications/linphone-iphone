@@ -112,7 +112,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewWillAppear:animated];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewWillAppear:NO];
+        [mainViewController viewWillAppear:animated];
     }   
     
     // Set observers
@@ -138,7 +138,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewWillDisappear:animated];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewWillDisappear:NO];
+        [mainViewController viewWillDisappear:animated];
     }
     
     // Remove observers
@@ -159,14 +159,14 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewDidAppear:NO];
+        [mainViewController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [mainViewController viewDidDisappear:NO];
+        [mainViewController viewDidDisappear:animated];
     }  
 }
 
@@ -523,7 +523,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
         [controller setWantsFullScreenLayout:TRUE];
         [controller setCall:call];
         [controller setModalDelegate:self];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [controller viewWillAppear:NO];
+        }   
         [[self view] addModalView:[controller view]];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [controller viewDidAppear:NO];
+        }  
 	}
 }
 

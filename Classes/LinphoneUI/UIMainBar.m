@@ -73,10 +73,6 @@
                                              selector:@selector(textReceived:) 
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(applicationWillResignActive:) 
-                                                 name:UIApplicationWillResignActiveNotification 
-                                               object:nil];
     [self update];
 }
 
@@ -92,18 +88,33 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneTextReceived" 
                                                   object:nil];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(applicationWillEnterForeground:) 
+                                                 name:UIApplicationWillEnterForegroundNotification 
+                                               object:nil];
+}
+
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:UIApplicationWillResignActiveNotification 
+                                                    name:UIApplicationWillEnterForegroundNotification 
                                                   object:nil];
 }
 
 
 #pragma mark - Event Functions
 
-- (void)applicationWillResignActive:(NSNotification*)notif { 
-    // Refresh notifications
-    [historyNotificationView setHidden:TRUE];
+- (void)applicationWillEnterForeground:(NSNotification*)notif { 
+    // Force the animations 
+    [[self.view layer] removeAllAnimations];
     [chatNotificationView setHidden:TRUE];
+    [historyNotificationView setHidden:TRUE];
     [self update];
 }
 

@@ -209,7 +209,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillDisappear:NO];
+        [tableController viewWillDisappear:animated];
     }
     [self disableEdit:FALSE];
     self->contact = NULL;
@@ -219,21 +219,21 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewWillAppear:NO];
+        [tableController viewWillAppear:animated];
     }   
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidAppear:NO];
+        [tableController viewDidAppear:animated];
     }   
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [tableController viewDidDisappear:NO];
+        [tableController viewDidDisappear:animated];
     }  
 }
 
