@@ -334,17 +334,19 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription*)view push:(BOOL)push {
+    BOOL force = push;
     if(!push) {
+        force = [viewStack count] > 1;
         [viewStack removeAllObjects];
     }
     [viewStack addObject:view];
-    return [self _changeCurrentView:view transition:nil];
+    return [self _changeCurrentView:view transition:nil force:force];
 }
 
-- (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition {
+- (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition force:(BOOL)force {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", [view name]];
     
-    if(![view equal: currentView]) {
+    if(force || ![view equal: currentView]) {
         if(transition == nil)
             transition = [PhoneMainView getTransition:currentView new:view];
         [mainViewController setViewTransition:transition];
@@ -362,7 +364,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     while([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
         [viewStack removeLastObject];
     }
-    [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
+    [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition] force:TRUE];
 }
 
 - (UICompositeViewDescription *)firstView {
@@ -377,7 +379,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
     if([viewStack count] > 0) {
         [viewStack removeLastObject];
-        [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition]];
+        [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition] force:TRUE];
         return [mainViewController getCurrentViewController];
     } 
     return nil;

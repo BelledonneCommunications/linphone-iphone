@@ -27,6 +27,7 @@
 
 static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
 static NSString* sAddAddress = nil;
+static BOOL sSipFilter = FALSE;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
     sSelectionMode = selectionMode;
@@ -48,6 +49,14 @@ static NSString* sAddAddress = nil;
 
 + (NSString*)getAddAddress {
     return sAddAddress;
+}
+
++ (void)setSipFilter:(BOOL)enable {
+    sSipFilter = enable;
+}
+
++ (BOOL)getSipFilter {
+    return sSipFilter;
 }
 
 @end
@@ -120,7 +129,6 @@ static UICompositeViewDescription *compositeDescription = nil;
         [tableController viewWillAppear:animated];
     }   
     
-    [self changeView:History_All];
     [self update];
 }
 
@@ -141,6 +149,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self changeView:History_All];
+    
     // Set selected+over background: IB lack !
     [linphoneButton setImage:[UIImage imageNamed:@"contacts_linphone_selected.png"] 
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
@@ -155,14 +165,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)changeView: (HistoryView) view {
     if(view == History_All) {
-        [tableController setSipFilter:FALSE];
+        [ContactSelection setSipFilter:FALSE];
+        [tableController loadData];
         allButton.selected = TRUE;
     } else {
         allButton.selected = FALSE;
     }
     
     if(view == History_Linphone) {
-        [tableController setSipFilter:TRUE];
+        [ContactSelection setSipFilter:TRUE];
+        [tableController loadData];
         linphoneButton.selected = TRUE;
     } else {
         linphoneButton.selected = FALSE;
@@ -181,6 +193,14 @@ static UICompositeViewDescription *compositeDescription = nil;
             [backButton setHidden:TRUE];
             break;
     }
+    if([ContactSelection getSipFilter]) {
+        allButton.selected = FALSE;
+        linphoneButton.selected = TRUE;
+    } else {
+        allButton.selected = TRUE;
+        linphoneButton.selected = FALSE;   
+    }
+    [tableController loadData];
 }
 
 

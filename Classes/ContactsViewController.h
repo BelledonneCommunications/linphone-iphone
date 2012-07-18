@@ -36,6 +36,8 @@ typedef enum _ContactSelectionMode {
 + (ContactSelectionMode)getSelectionMode;
 + (void)setAddAddress:(NSString*)address;
 + (NSString*)getAddAddress;
++ (void)setSipFilter:(BOOL)enable;
++ (BOOL)getSipFilter;
 
 @end
 

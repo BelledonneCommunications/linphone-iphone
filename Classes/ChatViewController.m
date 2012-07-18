@@ -102,6 +102,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddClick:(id)event {
     [ContactSelection setSelectionMode:ContactSelectionModeMessage];
+    [ContactSelection setAddAddress:nil];
+    [ContactSelection setSipFilter:TRUE];
     [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
 }
 
