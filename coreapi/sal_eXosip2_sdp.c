@@ -130,6 +130,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	int inet6;
 	char sessid[16];
 	char sessver[16];
+	const char *addr = desc->addr;
 	
 	snprintf(sessid,16,"%i",desc->session_id);
 	snprintf(sessver,16,"%i",desc->session_ver);
@@ -143,11 +144,17 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
+	if (desc->streams[0].ice_check_list != NULL) {
+		const IceCandidate *candidate = ice_check_list_default_local_candidate(desc->streams[0].ice_check_list);
+		if (candidate != NULL) {
+			addr=candidate->taddr.ip;
+		}
+	}
 	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-						osip_strdup (desc->addr), NULL, NULL);
+						osip_strdup (addr), NULL, NULL);
 	}
 	else
 	{
@@ -208,7 +215,7 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc)
 {
 	char buffer[1024];
-	IceCandidate *candidate;
+	const IceCandidate *candidate;
 	int i;
 
 	if (desc->ice_check_list != NULL) {
@@ -241,13 +248,19 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		mt=desc->typeother;
 		break;
 	}
-	if (desc->candidates[0].addr[0]!='\0'){
+	addr=desc->addr;
+	port=desc->port;
+	if (desc->ice_check_list != NULL) {
+		const IceCandidate *candidate = ice_check_list_default_local_candidate(desc->ice_check_list);
+		if (candidate != NULL) {
+			addr=candidate->taddr.ip;
+			port=candidate->taddr.port;
+		}
+	} else if (desc->candidates[0].addr[0]!='\0'){
 		addr=desc->candidates[0].addr;
 		port=desc->candidates[0].port;
-	}else{
-		addr=desc->addr;
-		port=desc->port;
 	}
+
 	/*only add a c= line within the stream description if address are differents*/
 	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
 		bool_t inet6;
