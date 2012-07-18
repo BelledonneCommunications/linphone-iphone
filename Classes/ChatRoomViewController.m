@@ -303,10 +303,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // Scroll
     int lastSection = [tableController.tableView numberOfSections] -1;
-    int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
-    [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] 
-                                     atScrollPosition:UITableViewScrollPositionBottom 
-                                             animated:TRUE];
+    if(lastSection >= 0) {
+        int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+        if(lastRow >=0) {
+            [tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] 
+                                             atScrollPosition:UITableViewScrollPositionBottom 
+                                                     animated:TRUE];
+        }
+    }
     [UIView commitAnimations];
 }
 

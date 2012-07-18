@@ -91,7 +91,11 @@
     }
     
     // Scroll to unread
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:animated];
+    if(index >= 0) {
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] 
+                              atScrollPosition:UITableViewScrollPositionMiddle 
+                                      animated:animated];
+    }
 }
 
 #pragma mark - Property Functions
