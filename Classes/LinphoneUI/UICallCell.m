@@ -84,6 +84,7 @@
     [stateImage release];
     [avatarImage release];
     [headerView release];
+    [data release];
     [super dealloc];
 }
 
@@ -92,9 +93,22 @@
     [super prepareForReuse];
     self->currentCall = FALSE;
     [headerBackgroundHighlightImage setAlpha:0.0f];
+    [data release];
+    data = nil;
 }
 
 #pragma mark - Properties Functions
+
+- (void)setData:(UICallCellData *)adata {
+    if(data !=nil) {
+        [data release];
+        data = nil;
+    }
+    if(adata !=nil) {
+        data = [adata retain];
+    }
+    [self update];
+}
 
 - (void)setCurrentCall:(BOOL) val {
     BOOL oldVal = currentCall;
@@ -107,6 +121,7 @@
         }
     }
 }
+
 
 #pragma mark - Static Functions
 
@@ -141,13 +156,8 @@
          
 #pragma mark - 
 
-- (void)update:(UICallCellData*) adata {
-    self->data = adata;
-    [self update];
-}
-
 - (void)update {
-    if(data == nil || data->call) {
+    if(data == nil || data->call == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
         return;
     }
