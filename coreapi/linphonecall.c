@@ -245,7 +245,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
-		if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce){
+		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce)){
 			md->streams[i].ice_check_list = ice_check_list_new();
 			ice_session_add_check_list(call->ice_session, md->streams[i].ice_check_list);
 		}
@@ -388,7 +388,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
-	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) call->ice_session=ice_session_new();
+	if (((SalOpBase *)op)->remote_media->streams[0].ice_check_list != NULL) call->ice_session=((SalOpBase *)op)->remote_media->streams[0].ice_check_list->session;
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	if (linphone_core_get_firewall_policy(call->core)==LinphonePolicyUseStun)

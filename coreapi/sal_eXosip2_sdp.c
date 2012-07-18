@@ -390,6 +390,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
 	const char *mtype,*proto,*port,*addr,*number;
 	const char *ice_ufrag, *ice_pwd;
+	IceSession *ice_session = NULL;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
@@ -512,8 +513,13 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				unsigned int port;
 				int nb;
 
+				/* Allocate the ICE session if it has not been done yet. */
+				if (ice_session == NULL) ice_session = ice_session_new();
 				/* Allocate the ICE check list if it has not been done yet. */
-				if (desc->streams[i].ice_check_list == NULL) desc->streams[i].ice_check_list = ice_check_list_new();
+				if (desc->streams[i].ice_check_list == NULL) {
+					desc->streams[i].ice_check_list = ice_check_list_new();
+					ice_session_add_check_list(ice_session, desc->streams[i].ice_check_list);
+				}
 				nb = sscanf(attr->a_att_value, "%s %u UDP %u %s %u typ %s",
 					foundation, &componentID, &priority, ip, &port, type);
 				if (nb == 6) {
@@ -539,9 +545,9 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			ice_pwd = attr->a_att_value;
 		}
 	}
-	if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
-		ms_error("ufrag: %s, pwd: %s", ice_ufrag, ice_pwd);
-		//ice_session_set_remote_credentials(session, ice_ufrag, ice_pwd);
+	if ((ice_session != NULL) && (ice_ufrag != NULL) && (ice_pwd != NULL)) {
+		ice_session_set_remote_credentials(ice_session, ice_ufrag, ice_pwd);
+		ice_dump_session(ice_session);
 	}
 	desc->nstreams=i;
 	return 0;
