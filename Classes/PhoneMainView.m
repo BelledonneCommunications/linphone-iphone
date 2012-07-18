@@ -90,7 +90,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
         return;
     
     [super viewDidLoad];
-    [[self view] addSubview: mainViewController.view];
+
+    [self.view addSubview: mainViewController.view];
+    [mainViewController.view setFrame:[self.view frame]];
     
     // Init descriptions
     [viewDescriptions setObject:[ChatRoomViewController compositeViewDescription] forKey:[NSNumber numberWithInt: PhoneView_ChatRoom]];

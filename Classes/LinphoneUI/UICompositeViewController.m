@@ -230,12 +230,13 @@
     UIView *innerView = contentViewController.view;
     
     CGRect contentFrame = contentView.frame;
+    CGRect viewFrame = [self.view frame];
     
     // Resize StateBar
     CGRect stateBarFrame = stateBarView.frame;
-    int origin = 0;
+    int origin = IPHONE_STATUSBAR_HEIGHT;
     if(currentViewDescription->fullscreen)
-        origin = -IPHONE_STATUSBAR_HEIGHT;
+        origin = 0;
     
     if(stateBarViewController != nil && currentViewDescription->stateBarEnabled) {
         contentFrame.origin.y = origin + stateBarFrame.size.height;
@@ -248,8 +249,8 @@
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
     if(tabBarViewController != nil && currentViewDescription->tabBarEnabled) {
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
-        tabFrame.origin.x = [[UIScreen mainScreen] bounds].size.width;
+        tabFrame.origin.y = viewFrame.size.height;
+        tabFrame.origin.x = viewFrame.size.width;
         tabFrame.size.height = tabBarViewController.view.frame.size.height;
         tabFrame.size.width = tabBarViewController.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
@@ -263,11 +264,11 @@
         }
     } else {
         contentFrame.size.height = tabFrame.origin.y + tabFrame.size.height;
-        tabFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - IPHONE_STATUSBAR_HEIGHT;
+        tabFrame.origin.y = viewFrame.size.height;
     }
     
     if(currentViewDescription->fullscreen)
-        contentFrame.size.height = [[UIScreen mainScreen] bounds].size.height + IPHONE_STATUSBAR_HEIGHT;
+        contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
     
     // Resize innerView
     CGRect innerContentFrame = innerView.frame;
