@@ -152,6 +152,9 @@ typedef struct SalMediaDescription{
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 } SalMediaDescription;
 
+#define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);

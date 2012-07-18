@@ -389,7 +389,10 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
 	const char *mtype,*proto,*port,*addr,*number;
+	const char *ice_ufrag, *ice_pwd;
 	sdp_bandwidth_t *sbw=NULL;
+	sdp_attribute_t *attr;
+	int media_attribute_nb;
 	
 	addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (addr)
@@ -433,7 +436,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}
-		stream->dir=_sdp_message_get_mline_dir(msg,i);		
+		stream->dir=_sdp_message_get_mline_dir(msg,i);
+		media_attribute_nb = 0;
 		/* for each payload type */
 		for (j=0;((number=sdp_message_m_payload_get (msg, i,j)) != NULL); j++){
 			const char *rtpmap,*fmtp;
@@ -442,9 +446,11 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			payload_type_set_number(pt,ptn);
 			/* get the rtpmap associated to this codec, if any */
 			rtpmap=sdp_message_a_attr_value_get_with_pt(msg, i,ptn,"rtpmap");
+			if (rtpmap != NULL) media_attribute_nb++;
 			if (payload_type_fill_from_rtpmap(pt,rtpmap)==0){
 				/* get the fmtp, if any */
 				fmtp=sdp_message_a_attr_value_get_with_pt(msg, i, ptn,"fmtp");
+				if (fmtp != NULL) media_attribute_nb++;
 				payload_type_set_send_fmtp(pt,fmtp);
 				stream->payloads=ms_list_append(stream->payloads,pt);
 				ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
@@ -455,7 +461,6 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		/* read crypto lines if any */
 		if (stream->proto == SalProtoRtpSavp) {
 			int k, valid_count = 0;
-			sdp_attribute_t *attr;
 				
 			memset(&stream->crypto, 0, sizeof(stream->crypto));
 			for (k=0;valid_count < SAL_CRYPTO_ALGO_MAX && (attr=sdp_message_attribute_get(msg,i,k))!=NULL;k++){
@@ -494,6 +499,49 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			}
 			ms_message("Found: %d valid crypto lines", valid_count);
 		}
+
+		/* Get ICE candidate attributes if any */
+		ice_ufrag = ice_pwd = NULL;
+		for (j = 0; (j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES) && ((attr = sdp_message_attribute_get(msg, i, media_attribute_nb + j)) != NULL); j++) {
+			if ((keywordcmp("candidate", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				char ip[64];
+				char foundation[32];
+				char type[6];
+				unsigned int priority;
+				unsigned int componentID;
+				unsigned int port;
+				int nb;
+
+				/* Allocate the ICE check list if it has not been done yet. */
+				if (desc->streams[i].ice_check_list == NULL) desc->streams[i].ice_check_list = ice_check_list_new();
+				nb = sscanf(attr->a_att_value, "%s %u UDP %u %s %u typ %s",
+					foundation, &componentID, &priority, ip, &port, type);
+				if (nb == 6) {
+					ice_add_remote_candidate(desc->streams[i].ice_check_list, type, ip, port, componentID, priority, foundation);
+				}
+			} else if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				ice_ufrag = attr->a_att_value;
+			} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				ice_pwd = attr->a_att_value;
+			}
+		}
+		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
+			ice_check_list_set_remote_credentials(desc->streams[i].ice_check_list, ice_ufrag, ice_pwd);
+		}
+		if (desc->streams[i].ice_check_list) ice_dump_candidates(desc->streams[i].ice_check_list);
+	}
+	/* Get ICE remote ufrag and remote pwd */
+	ice_ufrag = ice_pwd = NULL;
+	for (i = 0; (i < SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES) && ((attr = sdp_message_attribute_get(msg, -1, i)) != NULL); i++) {
+		if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+			ice_ufrag = attr->a_att_value;
+		} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+			ice_pwd = attr->a_att_value;
+		}
+	}
+	if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
+		ms_error("ufrag: %s, pwd: %s", ice_ufrag, ice_pwd);
+		//ice_session_set_remote_credentials(session, ice_ufrag, ice_pwd);
 	}
 	desc->nstreams=i;
 	return 0;
