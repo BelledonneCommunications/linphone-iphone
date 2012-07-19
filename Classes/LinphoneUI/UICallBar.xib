@@ -14,6 +14,7 @@
 			<string>IBUIButton</string>
 			<string>IBUIActivityIndicatorView</string>
 			<string>IBUIView</string>
+			<string>IBUIImageView</string>
 			<string>IBProxyObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
@@ -59,13 +60,28 @@
 						<reference key="NSNextResponder" ref="931774220"/>
 						<int key="NSvFlags">-2147483360</int>
 						<array class="NSMutableArray" key="NSSubviews">
+							<object class="IBUIImageView" id="1062143568">
+								<reference key="NSNextResponder" ref="556199520"/>
+								<int key="NSvFlags">274</int>
+								<string key="NSFrameSize">{281, 260}</string>
+								<reference key="NSSuperview" ref="556199520"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="612787992"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">dialer_alt_background.png</string>
+								</object>
+							</object>
 							<object class="IBUIButton" id="291142801">
 								<reference key="NSNextResponder" ref="556199520"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{-20, 10}, {107, 54}}</string>
 								<reference key="NSSuperview" ref="556199520"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="612787992"/>
+								<reference key="NSNextKeyView" ref="1062143568"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MC40MDAwMDAwMSAxIDEgMAA</bytes>
@@ -369,12 +385,9 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="291142801"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor">
+						<object class="NSColor" key="IBUIBackgroundColor" id="67221425">
 							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MSAwLjQAA</bytes>
-							<object class="NSColorSpace" key="NSCustomColorSpace">
-								<int key="NSID">2</int>
-							</object>
+							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -455,10 +468,7 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="322088049"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="67221425">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="67221425"/>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIView" id="143533231">
@@ -1154,6 +1164,7 @@
 							<reference ref="843780954"/>
 							<reference ref="612787992"/>
 							<reference ref="291142801"/>
+							<reference ref="1062143568"/>
 						</array>
 						<reference key="parent" ref="931774220"/>
 						<string key="objectName">pad</string>
@@ -1258,6 +1269,12 @@
 						<reference key="parent" ref="1070539677"/>
 						<string key="objectName">optionsTansferButton</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">99</int>
+						<reference key="object" ref="1062143568"/>
+						<reference key="parent" ref="556199520"/>
+						<string key="objectName">background</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1335,12 +1352,13 @@
 				<real value="3" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="90.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="3" key="90.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="99.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">98</int>
+			<int key="maxID">99</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1613,6 +1631,7 @@
 			<string key="conference_default.png">{209, 136}</string>
 			<string key="conference_over.png">{209, 136}</string>
 			<string key="dialer_alt_back_default.png">{209, 136}</string>
+			<string key="dialer_alt_background.png">{530, 526}</string>
 			<string key="dialer_alt_default.png">{209, 136}</string>
 			<string key="dialer_alt_over.png">{209, 136}</string>
 			<string key="hangup_default.png">{222, 136}</string>
