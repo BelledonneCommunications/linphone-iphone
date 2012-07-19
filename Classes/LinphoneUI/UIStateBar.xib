@@ -103,8 +103,19 @@
 						<string key="NSFrame">{{219, 3}, {27, 17}}</string>
 						<reference key="NSSuperview" ref="848661322"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
+						<reference key="NSNextKeyView" ref="522045680"/>
 						<string key="NSReuseIdentifierKey">_NS:567</string>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+					</object>
+					<object class="IBUIImageView" id="522045680">
+						<reference key="NSNextResponder" ref="848661322"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{254, 3}, {27, 17}}</string>
+						<reference key="NSSuperview" ref="848661322"/>
+						<reference key="NSWindow"/>
+						<string key="NSReuseIdentifierKey">_NS:567</string>
+						<int key="IBUIContentMode">1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -155,6 +166,14 @@
 					</object>
 					<int key="connectionID">16</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">callSecurityImage</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="522045680"/>
+					</object>
+					<int key="connectionID">18</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -183,6 +202,7 @@
 							<reference ref="200467549"/>
 							<reference ref="393098359"/>
 							<reference ref="327031870"/>
+							<reference ref="522045680"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -208,7 +228,13 @@
 						<int key="objectID">13</int>
 						<reference key="object" ref="327031870"/>
 						<reference key="parent" ref="848661322"/>
-						<string key="objectName">callQualityIndicatorImage</string>
+						<string key="objectName">callQualityImage</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">17</int>
+						<reference key="object" ref="522045680"/>
+						<reference key="parent" ref="848661322"/>
+						<string key="objectName">callSecurityImage</string>
 					</object>
 				</array>
 			</object>
@@ -219,6 +245,7 @@
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="13.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="17.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -227,7 +254,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">16</int>
+			<int key="maxID">18</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -236,12 +263,17 @@
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="callQualityImage">UIImageView</string>
+						<string key="callSecurityImage">UIImageView</string>
 						<string key="registrationStateImage">UIImageView</string>
 						<string key="registrationStateLabel">UILabel</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="callQualityImage">
 							<string key="name">callQualityImage</string>
+							<string key="candidateClassName">UIImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="callSecurityImage">
+							<string key="name">callSecurityImage</string>
 							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="registrationStateImage">

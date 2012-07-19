@@ -27,14 +27,21 @@
 @synthesize registrationStateImage;
 @synthesize registrationStateLabel;
 @synthesize callQualityImage;
+@synthesize callSecurityImage;
 
 NSTimer *callQualityTimer;
+NSTimer *callSecurityTimer;
 
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    return [super initWithNibName:@"UIStateBar" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"UIStateBar" bundle:[NSBundle mainBundle]];
+    if(self != nil) {
+        self->callSecurityImage = nil;
+        self->callQualityImage = nil;
+    }
+    return self;
 }
 
 - (void) dealloc {
@@ -57,6 +64,13 @@ NSTimer *callQualityTimer;
                                                       userInfo:nil 
                                                        repeats:YES];
     
+    // Set callQualityTimer
+	callSecurityTimer = [NSTimer scheduledTimerWithTimeInterval:1 
+                                                        target:self 
+                                                      selector:@selector(callSecurityUpdate) 
+                                                      userInfo:nil 
+                                                       repeats:YES];
+    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdate:) 
@@ -65,6 +79,7 @@ NSTimer *callQualityTimer;
     
     
     [callQualityImage setHidden: true];
+    [callSecurityImage setHidden: true];
     
     // Update to default state
     LinphoneProxyConfig* config = NULL;
@@ -81,7 +96,14 @@ NSTimer *callQualityTimer;
                                                     name:@"LinphoneRegistrationUpdate" 
                                                   object:nil];
     
-    [callQualityTimer invalidate];
+    if(callQualityTimer != nil) {
+        [callQualityTimer invalidate];
+        callQualityTimer = nil;
+    }
+    if(callQualityTimer != nil) {
+        [callSecurityTimer invalidate];
+        callSecurityTimer = nil;
+    }
 }
 
 
@@ -156,6 +178,44 @@ NSTimer *callQualityTimer;
 
 
 #pragma mark - 
+
+- (void)callSecurityUpdate {
+    BOOL pending = false;
+    BOOL security = true;
+    
+    if(![LinphoneManager isLcReady]) {
+        [callSecurityImage setHidden: true];
+        return;
+    }
+    const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+    if(list == NULL) {
+        [callSecurityImage setHidden: true];
+        return;
+    }
+    while(list != NULL) {
+        LinphoneCall *call = (LinphoneCall*) list->data;
+        LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+        if(enc == LinphoneMediaEncryptionNone)
+            security = false;
+        else if(enc == LinphoneMediaEncryptionZRTP) {
+            if(!linphone_call_get_authentication_token_verified(call)) {
+                pending = true;
+            }
+        }
+        list = list->next;
+    }
+    
+    if(security) {
+        if(pending) {
+            [callSecurityImage setImage:[UIImage imageNamed:@"security_pending.png"]];
+        } else {
+            [callSecurityImage setImage:[UIImage imageNamed:@"security_ok.png"]];
+        }
+    } else {
+        [callSecurityImage setImage:[UIImage imageNamed:@"security_ko.png"]];
+    }
+    [callSecurityImage setHidden: false];
+}
 
 - (void)callQualityUpdate { 
     UIImage *image = nil;

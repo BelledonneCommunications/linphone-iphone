@@ -23,10 +23,12 @@
     UIImageView*    registrationStateImage;
     UILabel*        registrationStateLabel;
     UIImageView*    callQualityImage;
+    UIImageView*    callSecurityImage;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* registrationStateImage;
 @property (nonatomic, retain) IBOutlet UILabel*     registrationStateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* callQualityImage;
+@property (nonatomic, retain) IBOutlet UIImageView* callSecurityImage;
 
 @end

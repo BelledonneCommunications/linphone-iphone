@@ -361,9 +361,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	linphone_core_enable_video(lc, enableVideo, enableVideo);
 
 	NSString *menc = [self stringForKey:@"media_encryption_preference"];
-	if (menc && [menc compare:@"SRTP"])
+	if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionSRTP);
-	else if (menc && [menc compare:@"ZRTP"])
+	else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionZRTP);
 	else linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
 	
