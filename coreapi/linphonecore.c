@@ -5104,3 +5104,10 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
+void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
+	if (lc->device_id) ms_free(lc->device_id);
+	lc->device_id=ms_strdup(device_id);
+}
+const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
+	return lc->device_id;
+}

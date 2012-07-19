@@ -521,7 +521,11 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			switch(call->reason){
 				case LinphoneReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
+<<<<<<< HEAD
 				break;
+=======
+					break;
+>>>>>>> add device identifier api
 				case LinphoneReasonNotAnswered:
 					call->log->status=LinphoneCallMissed;
 				break;
