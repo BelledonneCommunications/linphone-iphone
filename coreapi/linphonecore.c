@@ -532,10 +532,13 @@ static void sip_config_read(LinphoneCore *lc)
 	
 	if (tr.udp_port>0 && random_port){
 		tr.udp_port=random_port;
+		tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
 	}else if (tr.tcp_port>0 && random_port){
 		tr.tcp_port=random_port;
+		tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
 	}else if (tr.tls_port>0 && random_port){
 		tr.tls_port=random_port;
+		tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
 	} 
 
 #ifdef __linux
