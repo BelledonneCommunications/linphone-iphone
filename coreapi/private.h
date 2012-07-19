@@ -136,7 +136,6 @@ struct _LinphoneCall
 	bool_t was_automatically_paused;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
-	IceSession *ice_session;
 };
 
 

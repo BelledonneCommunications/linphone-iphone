@@ -136,7 +136,6 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
-	IceCheckList *ice_check_list;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -176,6 +175,7 @@ typedef struct SalOpBase{
 	char *remote_ua;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
+	IceSession *ice_session;
 	void *user_pointer;
 } SalOpBase;
 
@@ -320,6 +320,7 @@ void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);
+void sal_op_set_ice_session(SalOp *h, IceSession *ice_session);
 int sal_op_get_auth_requested(SalOp *h, const char **realm, const char **username);
 const char *sal_op_get_from(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
@@ -331,6 +332,7 @@ const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
+IceSession *sal_op_get_ice_session(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

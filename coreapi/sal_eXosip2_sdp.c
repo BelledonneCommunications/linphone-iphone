@@ -124,7 +124,7 @@ static int _sdp_message_get_mline_dir(sdp_message_t *sdp, int mline){
 	return SalStreamSendRecv;
 }
 
-static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
+static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc, const IceSession *ice_session)
 {
 	sdp_message_t *local;
 	int inet6;
@@ -144,8 +144,8 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
-	if (desc->streams[0].ice_check_list != NULL) {
-		const IceCandidate *candidate = ice_check_list_default_local_candidate(desc->streams[0].ice_check_list);
+	if ((ice_session != NULL) && (ice_session_check_list(ice_session, 0) != NULL)) {
+		const IceCandidate *candidate = ice_check_list_default_local_candidate(ice_session_check_list(ice_session, 0));
 		if (candidate != NULL) {
 			addr=candidate->taddr.ip;
 		}
@@ -165,11 +165,11 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
 			int_2char(desc->bandwidth));
-	if (desc->streams[0].ice_check_list != NULL) {
+	if ((ice_session != NULL) && (ice_session_check_list(ice_session, 0) != NULL)) {
 		char buffer[512];
-		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_pwd(desc->streams[0].ice_check_list->session));
+		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_pwd(ice_session));
 		sdp_message_a_attribute_add(local, -1, osip_strdup("ice-pwd"), osip_strdup(buffer));
-		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_ufrag(desc->streams[0].ice_check_list->session));
+		snprintf(buffer ,sizeof(buffer), "%s", ice_session_local_ufrag(ice_session));
 		sdp_message_a_attribute_add(local, -1, osip_strdup("ice-ufrag"), osip_strdup(buffer));
 	}
 
@@ -212,15 +212,15 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 	}
 }
 
-static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc)
+static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc, const IceCheckList *ice_cl)
 {
 	char buffer[1024];
 	const IceCandidate *candidate;
 	int i;
 
-	if (desc->ice_check_list != NULL) {
-		for (i = 0; i < ms_list_size(desc->ice_check_list->local_candidates); i++) {
-			candidate = ms_list_nth_data(desc->ice_check_list->local_candidates, i);
+	if (ice_cl != NULL) {
+		for (i = 0; i < ms_list_size(ice_cl->local_candidates); i++) {
+			candidate = ms_list_nth_data(ice_cl->local_candidates, i);
 			snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
 				candidate->foundation, candidate->componentID, candidate->priority, candidate->taddr.ip, candidate->taddr.port, ice_candidate_type(candidate));
 			sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
@@ -229,7 +229,7 @@ static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDe
 }
 
 
-static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc){
+static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc, const IceCheckList *ice_cl){
 	const char *mt=NULL;
 	const MSList *elem;
 	const char *addr;
@@ -250,8 +250,8 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	}
 	addr=desc->addr;
 	port=desc->port;
-	if (desc->ice_check_list != NULL) {
-		const IceCandidate *candidate = ice_check_list_default_local_candidate(desc->ice_check_list);
+	if (ice_cl != NULL) {
+		const IceCandidate *candidate = ice_check_list_default_local_candidate(ice_cl);
 		if (candidate != NULL) {
 			addr=candidate->taddr.ip;
 			port=candidate->taddr.port;
@@ -342,15 +342,18 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			break;
 	}
 	if (dir) sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
-	add_ice_candidates(msg, lineno, desc);
+	add_ice_candidates(msg, lineno, desc, ice_cl);
 }
 
 
-sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
+sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc, const IceSession *ice_session){
+	IceCheckList *ice_cl = NULL;
 	int i;
-	sdp_message_t *msg=create_generic_sdp(desc);
+	sdp_message_t *msg=create_generic_sdp(desc, ice_session);
 	for(i=0;i<desc->nstreams;++i){
-		add_line(msg,i,&desc->streams[i]);
+		if (ice_session != NULL) ice_cl = ice_session_check_list(ice_session, i);
+		else ice_cl = NULL;
+		add_line(msg,i,&desc->streams[i], ice_cl);
 	}
 	return msg;
 }
@@ -386,11 +389,10 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 	return 0;
 }
 
-int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
+int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceSession **ice_session){
 	int i,j;
 	const char *mtype,*proto,*port,*addr,*number;
 	const char *ice_ufrag, *ice_pwd;
-	IceSession *ice_session = NULL;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
@@ -515,16 +517,15 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				int nb;
 
 				/* Allocate the ICE session if it has not been done yet. */
-				if (ice_session == NULL) ice_session = ice_session_new();
+				if (*ice_session == NULL) *ice_session = ice_session_new();
 				/* Allocate the ICE check list if it has not been done yet. */
-				if (desc->streams[i].ice_check_list == NULL) {
-					desc->streams[i].ice_check_list = ice_check_list_new();
-					ice_session_add_check_list(ice_session, desc->streams[i].ice_check_list);
+				if (ice_session_check_list(*ice_session, i) == NULL) {
+					ice_session_add_check_list(*ice_session, ice_check_list_new());
 				}
 				nb = sscanf(attr->a_att_value, "%s %u UDP %u %s %u typ %s",
 					foundation, &componentID, &priority, ip, &port, type);
 				if (nb == 6) {
-					ice_add_remote_candidate(desc->streams[i].ice_check_list, type, ip, port, componentID, priority, foundation);
+					ice_add_remote_candidate(ice_session_check_list(*ice_session, i), type, ip, port, componentID, priority, foundation);
 				}
 			} else if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				ice_ufrag = attr->a_att_value;
@@ -532,10 +533,12 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				ice_pwd = attr->a_att_value;
 			}
 		}
-		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
-			ice_check_list_set_remote_credentials(desc->streams[i].ice_check_list, ice_ufrag, ice_pwd);
+		if ((*ice_session != NULL) && ice_session_check_list(*ice_session, i)) {
+			if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
+				ice_check_list_set_remote_credentials(ice_session_check_list(*ice_session, i), ice_ufrag, ice_pwd);
+			}
+			ice_dump_candidates(ice_session_check_list(*ice_session, i));
 		}
-		if (desc->streams[i].ice_check_list) ice_dump_candidates(desc->streams[i].ice_check_list);
 	}
 	/* Get ICE remote ufrag and remote pwd */
 	ice_ufrag = ice_pwd = NULL;
@@ -548,15 +551,15 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			ice_lite = TRUE;
 		}
 	}
-	if (ice_session != NULL) {
+	if (*ice_session != NULL) {
 		if (ice_lite == TRUE) {
-			ice_session_set_role(ice_session, IR_Controlling);
+			ice_session_set_role(*ice_session, IR_Controlling);
 		} else {
-			ice_session_set_role(ice_session, IR_Controlled);
+			ice_session_set_role(*ice_session, IR_Controlled);
 		}
 		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
-			ice_session_set_remote_credentials(ice_session, ice_ufrag, ice_pwd);
-			ice_dump_session(ice_session);
+			ice_session_set_remote_credentials(*ice_session, ice_ufrag, ice_pwd);
+			ice_dump_session(*ice_session);
 		}
 	}
 	desc->nstreams=i;

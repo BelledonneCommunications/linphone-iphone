@@ -201,7 +201,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	LinphoneAddress *addr=linphone_address_new(me);
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
-
+	IceSession *ice_session=sal_op_get_ice_session(call->op);
 
 	md->session_id=session_id;
 	md->session_ver=session_ver;
@@ -245,16 +245,9 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
-		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce)){
-			md->streams[i].ice_check_list = ice_check_list_new();
-			ice_session_add_check_list(call->ice_session, md->streams[i].ice_check_list);
+		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (ice_session != NULL)){
+			ice_session_add_check_list(ice_session, ice_check_list_new());
 		}
-		if ((call->dir == LinphoneCallIncoming) && (sal_call_get_remote_media_description(call->op)->streams[i].ice_check_list != NULL)) {
-			md->streams[i].ice_check_list = sal_call_get_remote_media_description(call->op)->streams[i].ice_check_list;
-		}
-	}
-	if ((call->dir == LinphoneCallIncoming) && (md->streams[0].ice_check_list != NULL)) {
-		call->ice_session=md->streams[0].ice_check_list->session;
 	}
 	
 	linphone_address_destroy(addr);
@@ -349,8 +342,8 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
-		call->ice_session=ice_session_new();
-		ice_session_set_role(call->ice_session, IR_Controlling);
+		sal_op_set_ice_session(call->op, ice_session_new());
+		ice_session_set_role(sal_op_get_ice_session(call->op), IR_Controlling);
 	}
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
@@ -554,10 +547,6 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
-	}
-	if (obj->ice_session!=NULL) {
-		ice_session_destroy(obj->ice_session);
-		obj->ice_session=NULL;
 	}
 	if (obj->resultdesc!=NULL) {
 		sal_media_description_unref(obj->resultdesc);
@@ -939,6 +928,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	SalMediaDescription *md=call->localdesc;
 	AudioStream *audiostream;
+	IceSession *ice_session = sal_op_get_ice_session(call->op);
 
 	call->audiostream=audiostream=audio_stream_new(md->streams[0].port,linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
@@ -971,10 +961,9 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->audio_port+1);
 		rtp_session_set_transports(audiostream->session,artp,artcp);
 	}
-	if (linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce){
-		rtp_session_set_pktinfo(audiostream->session,TRUE);
-		if (call->dir == LinphoneCallOutgoing) audiostream->ice_check_list = call->localdesc->streams[0].ice_check_list;
-		else audiostream->ice_check_list = sal_call_get_remote_media_description(call->op)->streams[0].ice_check_list;
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (ice_session != NULL)){
+		rtp_session_set_pktinfo(audiostream->session, TRUE);
+		audiostream->ice_check_list = ice_session_check_list(ice_session, 0);
 		ice_check_list_register_success_cb(audiostream->ice_check_list, audio_stream_set_remote_from_ice, audiostream);
 	}
 
@@ -997,10 +986,9 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
 			rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
 		}
-		if (linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce){
-			rtp_session_set_pktinfo(call->videostream->session,TRUE);
-			if (call->dir == LinphoneCallOutgoing) call->videostream->ice_check_list = call->localdesc->streams[1].ice_check_list;
-			else call->videostream->ice_check_list = sal_call_get_remote_media_description(call->op)->streams[1].ice_check_list;
+		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (ice_session != NULL)){
+			rtp_session_set_pktinfo(call->videostream->session, TRUE);
+			call->videostream->ice_check_list = ice_session_check_list(ice_session, 1);
 			ice_check_list_register_success_cb(call->videostream->ice_check_list, video_stream_set_remote_from_ice, call->videostream);
 		}
 		call->videostream_app_evq = ortp_ev_queue_new();
@@ -1452,6 +1440,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
 	 * further in the call, for example during pause,resume, conferencing reINVITEs*/
 	linphone_call_fix_call_parameters(call);
+	if (sal_op_get_ice_session(call->op) != NULL) ice_session_pair_candidates(sal_op_get_ice_session(call->op));
 
 	goto end;
 	end:
