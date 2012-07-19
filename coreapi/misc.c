@@ -600,14 +600,8 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	video_responses[0] = video_responses[1] = FALSE;
 	audio_ice_bases[0] = audio_ice_bases[1] = NULL;
 	video_ice_bases[0] = video_ice_bases[1] = NULL;
-	if (call->dir == LinphoneCallOutgoing) {
-		audio_check_list = call->localdesc->streams[0].ice_check_list;
-		video_check_list = call->localdesc->streams[1].ice_check_list;
-	} else {
-		SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-		audio_check_list = md->streams[0].ice_check_list;
-		video_check_list = md->streams[1].ice_check_list;
-	}
+	audio_check_list = call->localdesc->streams[0].ice_check_list;
+	video_check_list = call->localdesc->streams[1].ice_check_list;
 	audio_socks[0] = create_socket(call->audio_port);
 	if (audio_socks[0] == -1) return;
 	audio_socks[1] = create_socket(call->audio_port + 1);

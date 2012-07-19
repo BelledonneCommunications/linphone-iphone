@@ -223,6 +223,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
 			result->port = 0;
 	}
+	result->ice_check_list = remote_answer->ice_check_list;
 }
 
 
@@ -249,6 +250,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 			result->port = 0; 
 		
 	}
+	result->ice_check_list = local_cap->ice_check_list;
 }
 
 /**
@@ -309,6 +311,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			if (rs->type==SalOther){
 				strncpy(result->streams[i].typeother,rs->typeother,sizeof(rs->typeother)-1);
 			}
+			result->streams[i].ice_check_list = remote_offer->streams[i].ice_check_list;
 		}
 	}
 	result->nstreams=i;
