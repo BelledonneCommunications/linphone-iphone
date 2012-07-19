@@ -153,7 +153,7 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
-								<object class="NSColor" key="IBUIHighlightedTitleColor">
+								<object class="NSColor" key="IBUIHighlightedTitleColor" id="513616724">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
 								</object>
@@ -209,7 +209,7 @@
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<string key="IBUIText">Contact1</string>
-								<object class="NSColor" key="IBUITextColor" id="796303400">
+								<object class="NSColor" key="IBUITextColor">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
 								</object>
@@ -429,7 +429,7 @@
 						<double key="IBUIContentEdgeInsets.left">10</double>
 						<double key="IBUIContentEdgeInsets.right">10</double>
 						<string key="IBUINormalTitle">0102030405</string>
-						<reference key="IBUINormalTitleColor" ref="796303400"/>
+						<reference key="IBUINormalTitleColor" ref="513616724"/>
 						<reference key="IBUINormalTitleShadowColor" ref="30732699"/>
 						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 							<string key="NSClassName">NSImage</string>
