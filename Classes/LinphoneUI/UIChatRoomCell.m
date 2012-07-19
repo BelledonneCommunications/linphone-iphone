@@ -32,8 +32,11 @@
 @synthesize dateLabel;
 @synthesize chat;
 
-static const CGFloat CELL_MIN_HEIGHT = 65.0f;
-static const CGFloat CELL_MESSAGE_MAX_WIDTH = 280.0f;
+static const CGFloat CELL_MIN_HEIGHT = 40.0f;
+static const CGFloat CELL_MIN_WIDTH = 150.0f;
+static const CGFloat CELL_MAX_WIDTH = 320.0f;
+static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 33.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
 static UIFont *CELL_FONT = nil;
 
@@ -115,53 +118,52 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (void)resizeContent {
-    // Resize content
-    {
-        CGRect frame = [contentView frame];
-        frame.origin.x = 0.0f;
-        frame.origin.y = 0.0f;
-        frame.size = [self frame].size;
-    [   contentView setFrame:frame];
-    }
-    
     if(chat != nil) {
-        CGPoint center = [contentView center];
-        if(![[chat direction] intValue]) { // Inverted	
+        // Resize Content
+        CGRect contentFrame = [contentView frame];
+        contentFrame.size = [UIChatRoomCell viewSize:[chat message]];
+        if([[chat direction] intValue]) { // Inverted
+            contentFrame.origin.x = 0.0f;
+            contentFrame.origin.y = 0.0f;
+        } else {
+            contentFrame.origin.x = CELL_MAX_WIDTH - contentFrame.size.width;
+            contentFrame.origin.y = 0.0f;   
+        }
+        [contentView setFrame:contentFrame];
+        
+        CGRect messageFrame = [messageView frame];
+        messageFrame.origin.y = ([contentView frame].size.height - messageFrame.size.height)/2;
+        if([[chat direction] intValue]) { // Inverted	
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];
-            center.y += 6;
+            messageFrame.origin.y += 5;
         } else {
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_outgoing"]];
-            center.y -= 6;
+            messageFrame.origin.y -= 5;
         }
-        [messageView setCenter:center];
-    }
-    
-    // Resize messageView
-    {
-        CGRect frame = [messageView frame];
-        frame.size.height = [UIChatRoomCell messageHeight:[chat message]] + 10;
-        [messageView setFrame:frame];
+        [messageView setFrame:messageFrame];
     }
 }
 
-+ (CGFloat)messageHeight:(NSString*)message {
++ (CGSize)viewSize:(NSString*)message {
     if(CELL_FONT == nil) {
         CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
     }
     CGSize messageSize = [message sizeWithFont: CELL_FONT
-                           constrainedToSize: CGSizeMake(CELL_MESSAGE_MAX_WIDTH, 10000.0f) 
+                           constrainedToSize: CGSizeMake(CELL_MAX_WIDTH - CELL_MESSAGE_X_MARGIN, 10000.0f) 
                                lineBreakMode: UILineBreakModeTailTruncation]; 
-    return messageSize.height;
+    messageSize.height += CELL_MESSAGE_Y_MARGIN;
+    if(messageSize.height < CELL_MIN_HEIGHT)
+         messageSize.height = CELL_MIN_HEIGHT;
+    messageSize.width += CELL_MESSAGE_X_MARGIN;
+    if(messageSize.width < CELL_MIN_WIDTH)
+        messageSize.width = CELL_MIN_WIDTH;
+    return messageSize;
 }
 
 + (CGFloat)height:(ChatModel*)chat {
-    CGFloat height = [UIChatRoomCell messageHeight:[chat message]];
-    height += 40;
-    if(height < CELL_MIN_HEIGHT)
-        height = CELL_MIN_HEIGHT;
-    return height;
+    return [UIChatRoomCell viewSize:[chat message]].height;
 }
 
 

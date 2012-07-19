@@ -27,8 +27,6 @@
 
 @implementation ContactsTableViewController
 
-@synthesize sipFilter;
-
 #pragma mark - Lifecycle Functions
 
 - (void)initContactsTableViewController {
@@ -62,17 +60,9 @@
 }
 
 
-#pragma mark - Property Functions
-
-- (void)setSipFilter:(BOOL)asipFilter {
-    self->sipFilter = asipFilter;
-    [self reloadData];
-}
-
-
 #pragma mark - 
 
-- (void)reloadData {
+- (void)loadData {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Load contact list"];
     @synchronized (addressBookMap) {
         
@@ -82,7 +72,7 @@
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
             BOOL add = true;
-            if(sipFilter) {
+            if([ContactSelection getSipFilter]) {
                 add = false;
                 ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonInstantMessageProperty);
                 for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
@@ -91,6 +81,8 @@
                         if(CFStringCompare((CFStringRef)@"SIP", CFDictionaryGetValue(lDict, @"service"), kCFCompareCaseInsensitive) == 0) {     
                             add = true;
                         }
+                    } else {
+                        add = true;
                     }
                     CFRelease(lDict);
                 }
@@ -141,7 +133,7 @@
 static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactsTableViewController* controller = (ContactsTableViewController*)context;
     ABAddressBookRevert(addressBook);
-    [controller reloadData];
+    [controller loadData];
 }
 
 

@@ -211,9 +211,7 @@
             }
         }
         
-        if(oldViewDescription != nil && contentViewController != nil && oldViewDescription.content != currentViewDescription.content) {
-            [UICompositeViewController removeSubView: contentViewController];
-        }
+        [UICompositeViewController removeSubView: contentViewController];
         if(oldViewDescription != nil && tabBarViewController != nil && oldViewDescription.tabBar != currentViewDescription.tabBar) {
             [UICompositeViewController removeSubView: tabBarViewController];
         }
@@ -311,9 +309,7 @@
     
     // Change view
     if(description != nil) {
-        if(oldViewDescription == nil || oldViewDescription.content != currentViewDescription.content) {
-            [UICompositeViewController addSubView: contentViewController view:contentView];
-        }
+        [UICompositeViewController addSubView: contentViewController view:contentView];
         if(oldViewDescription == nil || oldViewDescription.tabBar != currentViewDescription.tabBar) {
             [UICompositeViewController addSubView: tabBarViewController view:tabBarView];
         }

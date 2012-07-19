@@ -69,8 +69,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                 content:@"ChatRoomViewController" 
                                                                stateBar:nil 
                                                         stateBarEnabled:false 
-                                                                 tabBar:nil 
-                                                          tabBarEnabled:false 
+                                                                 tabBar:@"UIMainBar" 
+                                                          tabBarEnabled:true 
                                                              fullscreen:false];
     }
     return compositeDescription;
@@ -255,7 +255,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Keyboard Event Functions
 
 - (void)keyboardWillHide:(NSNotification *)notif {
-    CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    //CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView beginAnimations:@"resize" context:nil];
@@ -264,9 +265,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
     // Move view
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect frame = [[self view] frame];
-    frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
+    frame.origin.y = 0;
     [[self view] setFrame:frame];
     
     // Resize table view
@@ -279,7 +279,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notif {
-    CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView beginAnimations:@"resize" context:nil];
@@ -288,9 +289,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
     // Move view
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect frame = [[self view] frame];
-    frame.origin.y += endFrame.origin.y - beginFrame.origin.y;
+    frame.origin.y = [self.view convertPoint:endFrame.origin fromView:nil].y - frame.size.height;
     [[self view] setFrame:frame];
     
     // Resize table view

@@ -78,11 +78,11 @@
 								</object>
 								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">history_back_over.png</string>
+									<string key="NSResourceName">history_details_back_over.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">history_back_default.png</string>
+									<string key="NSResourceName">history_details_back_default.png</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="74407898">
 									<int key="type">2</int>
@@ -113,11 +113,11 @@
 								<reference key="IBUINormalTitleShadowColor" ref="30732699"/>
 								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">history_add_over.png</string>
+									<string key="NSResourceName">history_details_add_over.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">history_add_default.png</string>
+									<string key="NSResourceName">history_details_add_default.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="74407898"/>
 								<reference key="IBUIFont" ref="255564883"/>
@@ -417,6 +417,7 @@
 						<string key="NSFrame">{{33, 273}, {255, 50}}</string>
 						<reference key="NSSuperview" ref="581237105"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -633,7 +634,7 @@
 						<int key="objectID">8</int>
 						<reference key="object" ref="778261436"/>
 						<reference key="parent" ref="136975389"/>
-						<string key="objectName">barBackground</string>
+						<string key="objectName">background</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">9</int>
@@ -753,7 +754,7 @@
 						<int key="objectID">50</int>
 						<reference key="object" ref="121359009"/>
 						<reference key="parent" ref="136975389"/>
-						<string key="objectName">backButton</string>
+						<string key="objectName">addButton</string>
 					</object>
 				</array>
 			</object>
@@ -780,11 +781,11 @@
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="50.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="50.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="50.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -896,10 +897,10 @@
 			<string key="button_background_default.png">{550, 101}</string>
 			<string key="button_background_over.png">{550, 101}</string>
 			<string key="contact_bar_background.png">{5, 117}</string>
-			<string key="history_add_default.png">{320, 117}</string>
-			<string key="history_add_over.png">{320, 117}</string>
-			<string key="history_back_default.png">{320, 117}</string>
-			<string key="history_back_over.png">{320, 117}</string>
+			<string key="history_details_add_default.png">{320, 117}</string>
+			<string key="history_details_add_over.png">{320, 117}</string>
+			<string key="history_details_back_default.png">{320, 117}</string>
+			<string key="history_details_back_over.png">{320, 117}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

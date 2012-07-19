@@ -282,6 +282,7 @@
 - (IBAction)onContactsClick: (id) event {
     [ContactSelection setSelectionMode:ContactSelectionModeNone];
     [ContactSelection setAddAddress:nil];
+    [ContactSelection setSipFilter:FALSE];
     [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
 
