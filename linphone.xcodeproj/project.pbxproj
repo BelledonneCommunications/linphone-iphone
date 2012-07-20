@@ -794,7 +794,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* castel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = castel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		220FAC79107654FC0068D98F /* eX_call.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_call.h; sourceTree = "<group>"; };
 		220FAC7A107654FC0068D98F /* eX_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_message.h; sourceTree = "<group>"; };
@@ -1649,7 +1649,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* linphone.app */,
+				1D6058910D05DD3D006BFB54 /* castel.app */,
 				22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */,
 			);
 			name = Products;
@@ -2502,7 +2502,7 @@
 			);
 			name = linphone;
 			productName = linphone;
-			productReference = 1D6058910D05DD3D006BFB54 /* linphone.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* castel.app */;
 			productType = "com.apple.product-type.application";
 		};
 		22D8F11D147548E2008C97DB /* linphone-no-gpl-thirdparties */ = {
@@ -3327,7 +3327,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
 				);
-				PRODUCT_NAME = linphone;
+				PRODUCT_NAME = castel;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -3400,7 +3400,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
 				);
-				PRODUCT_NAME = linphone;
+				PRODUCT_NAME = castel;
 				PROVISIONING_PROFILE = "FF266D15-2709-4CF8-8B8E-C919C6A9F57B";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
@@ -3683,7 +3683,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
 				);
-				PRODUCT_NAME = linphone;
+				PRODUCT_NAME = castel;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
@@ -3756,7 +3756,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
 				);
-				PRODUCT_NAME = linphone;
+				PRODUCT_NAME = castel;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
