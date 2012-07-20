@@ -261,17 +261,6 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		port=desc->candidates[0].port;
 	}
 
-	/*only add a c= line within the stream description if address are differents*/
-	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
-		bool_t inet6;
-		if (strchr(addr,':')!=NULL){
-			inet6=TRUE;
-		}else inet6=FALSE;
-		sdp_message_c_connection_add (msg, lineno,
-			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-			      osip_strdup (addr), NULL, NULL);
-	}
-	
 	if (desc->proto == SalProtoRtpSavp) {
 		int i;
 		
@@ -312,6 +301,18 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 					 osip_strdup ("RTP/AVP"));
 		
 	}
+
+	/*only add a c= line within the stream description if address are differents*/
+	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
+		bool_t inet6;
+		if (strchr(addr,':')!=NULL){
+			inet6=TRUE;
+		}else inet6=FALSE;
+		sdp_message_c_connection_add (msg, lineno,
+			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
+			      osip_strdup (addr), NULL, NULL);
+	}
+
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
 				     int_2char(desc->bandwidth));
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
