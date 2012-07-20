@@ -197,7 +197,7 @@
     UICompositeViewDescription *oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
 
     if(description != nil) {
-        currentViewDescription = description;
+        currentViewDescription = [description copy];
         
         // Animate only with a previous screen
         if(oldViewDescription != nil && viewTransition != nil) {
@@ -229,12 +229,20 @@
     }
     
     if(tabBar != nil) {
-        currentViewDescription.tabBarEnabled = [tabBar boolValue];
+        if(currentViewDescription.tabBarEnabled != [tabBar boolValue]) {
+            currentViewDescription.tabBarEnabled = [tabBar boolValue];
+        } else {
+            tabBar = nil; // No change = No Update
+        }
     }
     
     if(fullscreen != nil) {
-        currentViewDescription.fullscreen = [fullscreen boolValue];
-        [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationSlide ];
+        if(currentViewDescription.fullscreen != [fullscreen boolValue]) {
+            currentViewDescription.fullscreen = [fullscreen boolValue];
+            [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationSlide];
+        } else {
+            fullscreen = nil; // No change = No Update
+        }
     } else {
         [[UIApplication sharedApplication] setStatusBarHidden:currentViewDescription.fullscreen withAnimation:UIStatusBarAnimationNone];
     }

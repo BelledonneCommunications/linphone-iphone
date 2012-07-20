@@ -269,9 +269,21 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
         linphone_call_set_user_pointer(call, data);
     }
     
+    // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
             [self enableSpeaker:FALSE];
+    }
+    
+    // Enable speaker when video
+    if(state == LinphoneCallIncomingReceived ||
+       state == LinphoneCallOutgoingInit ||
+       state == LinphoneCallConnected ||
+       state == LinphoneCallStreamsRunning ||
+       state == LinphoneCallUpdated) {
+        if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            [self enableSpeaker:TRUE];
+        }
     }
     
     // Post event

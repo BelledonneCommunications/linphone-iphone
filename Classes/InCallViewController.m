@@ -142,7 +142,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
-    [self callUpdate:call state:state];
+    [self callUpdate:call state:state animated:FALSE];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [callTableController viewDidAppear:animated];
@@ -184,7 +184,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - 
 
-- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState) state {
+- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
     // Update table
     [callTableView reloadData];  
     
@@ -214,9 +214,9 @@ static UICompositeViewDescription *compositeDescription = nil;
         {
 			//check video
 			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[self displayVideoCall];
+				[self displayVideoCall:animated];
 			} else {
-                [self displayTableCall];
+                [self displayTableCall:animated];
             }
 			break;
         }
@@ -232,7 +232,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 linphone_core_defer_call_update([LinphoneManager getLc], call);
                 [self displayAskToEnableVideoCall:call];
             } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-                [self displayTableCall];
+                [self displayTableCall:animated];
             }
             break;
         }
@@ -240,13 +240,13 @@ static UICompositeViewDescription *compositeDescription = nil;
         case LinphoneCallPaused:
         case LinphoneCallPausedByRemote:
         {
-            [self displayTableCall];
+            [self displayTableCall:animated];
             break;
         }
         case LinphoneCallEnd:
         case LinphoneCallError:
         {
-            if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 1) {
+            if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 2) {
                 [callTableController maximizeAll];
             }
             break;
@@ -329,7 +329,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoView setAlpha: 1.0];
     [videoView setHidden: FALSE];
     
-    if ([LinphoneManager instance].frontCamId !=nil ) {
+    if ([LinphoneManager instance].frontCamId !=nil) {
         // only show camera switch button if we have more than 1 camera
         [videoCameraSwitch setHidden:FALSE];
     }
@@ -379,12 +379,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[PhoneMainView instance] fullScreen:false];
 }
 
-- (void)displayVideoCall { 
-    [self enableVideoDisplay: TRUE];
+- (void)displayVideoCall:(BOOL)animated { 
+    [self enableVideoDisplay:animated];
 }
 
-- (void)displayTableCall {
-    [self disableVideoDisplay: TRUE];
+- (void)displayTableCall:(BOOL)animated {
+    [self disableVideoDisplay:animated];
 }
 
 
@@ -405,7 +405,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 - (void)callUpdateEvent: (NSNotification*) notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    [self callUpdate:call state:state];
+    [self callUpdate:call state:state animated:TRUE];
 }
 
 
