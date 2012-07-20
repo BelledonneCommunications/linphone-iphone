@@ -1705,7 +1705,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					if (lc->vtable.call_stats_updated)
 						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 				} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
-					linphone_core_update_call(lc, call, &call->current_params);
+					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
+						linphone_core_update_call(lc, call, &call->current_params);
+					}
 				}
 				ortp_event_destroy(ev);
 			}
@@ -1743,7 +1745,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					if (lc->vtable.call_stats_updated)
 						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 				} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
-					linphone_core_update_call(lc, call, &call->current_params);
+					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
+						linphone_core_update_call(lc, call, &call->current_params);
+					}
 				}
 				ortp_event_destroy(ev);
 			}
