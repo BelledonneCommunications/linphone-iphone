@@ -15,6 +15,24 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Automatically accept video</string>
+			<key>Key</key>
+			<string>accept_video_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show self view</string>
+			<key>Key</key>
+			<string>self_video_preference</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Codecs</string>
 			<key>Type</key>

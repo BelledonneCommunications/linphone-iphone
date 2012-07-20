@@ -100,14 +100,14 @@ struct codec_name_pref_table codec_pref_table[]={
 	return Nil;
 }
 
-+ (BOOL)codecIsSupported:(NSString *) prefName{
-	int i;
-	for(i=0;codec_pref_table[i].name!=NULL;++i){
-		if ([prefName compare:codec_pref_table[i].prefname]==0){
-			return linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name, codec_pref_table[i].rate)!=NULL;
++ (NSSet *)unsupportedCodecs {
+    NSMutableSet *set = [NSMutableSet set];
+	for(int i=0;codec_pref_table[i].name!=NULL;++i) {
+        if(linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name, codec_pref_table[i].rate) == NULL) {
+            [set addObject:codec_pref_table[i].prefname];
 		}
 	}
-	return TRUE;
+	return set;
 }
 
 + (BOOL)runningOnIpad {
@@ -151,6 +151,7 @@ struct codec_name_pref_table codec_pref_table[]={
         fastAddressBook = [[FastAddressBook alloc] init];
         database = NULL;
         theLinphoneManager = self;
+        settingsStore = nil;
 		self.defaultExpires = 600;
         [self openDatabase];
     }
@@ -530,7 +531,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-	
+    
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
 	const char* lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -633,6 +634,10 @@ static LinphoneCoreVTable linphonec_vtable = {
             CFRelease(proxyReachability);
         proxyReachability=nil;
         
+    }
+    
+    if(settingsStore != nil) {
+        [settingsStore release];
     }
     
 }

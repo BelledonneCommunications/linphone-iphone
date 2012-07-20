@@ -237,4 +237,35 @@
     return UITextAutocorrectionTypeDefault;
 }
 
+- (UIImage *)cellImage
+{
+    return [UIImage imageNamed:[_specifierDict objectForKey:kIASKCellImage]];
+}
+
+- (UIImage *)highlightedCellImage
+{
+    return [UIImage imageNamed:[[_specifierDict objectForKey:kIASKCellImage ] stringByAppendingString:@"Highlighted"]];
+}
+
+- (BOOL)adjustsFontSizeToFitWidth {
+	NSNumber *boxedResult = [_specifierDict objectForKey:kIASKAdjustsFontSizeToFitWidth];
+	return !boxedResult || [boxedResult boolValue];
+}
+
+- (UITextAlignment)textAlignment
+{
+    if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
+        return UITextAlignmentLeft;
+    } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentCenter]) {
+        return UITextAlignmentCenter;
+    } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentRight]) {
+        return UITextAlignmentRight;
+    }
+    if ([self.type isEqualToString:kIASKButtonSpecifier] && !self.cellImage) {
+		return UITextAlignmentCenter;
+	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier]) {
+		return UITextAlignmentRight;
+	}
+	return UITextAlignmentLeft;
+}
 @end

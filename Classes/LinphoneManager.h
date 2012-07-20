@@ -81,7 +81,7 @@ typedef struct _LinphoneCallAppData {
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
-+ (BOOL)codecIsSupported:(NSString *) prefName;
++ (NSSet *)unsupportedCodecs;
 
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;

@@ -32,6 +32,13 @@
 }
 
 
+- (void)dealloc {
+    // Remove all observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -67,9 +74,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
     
     settingsController.delegate = self;
-    settingsController.settingsReaderDelegate = self;
-    settingsController.settingsStore=[[LinphoneManager instance] settingsStore];
     settingsController.showCreditsFooter = FALSE;
+    settingsController.hiddenKeys = [self findHiddenKeys];
+    settingsController.settingsStore = [[LinphoneManager instance] settingsStore];
     
     navigationController.view.frame = self.view.frame;
     [SettingsViewController removeBackground:navigationController.view];
@@ -82,6 +89,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [settingsController viewWillDisappear:animated];
     }
+    [settingsController dismiss:self];
+    // Set observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                 name:kIASKAppSettingChanged 
+                                               object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -89,6 +101,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [settingsController viewWillAppear:animated];
     }   
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(appSettingChanged:) 
+                                                 name:kIASKAppSettingChanged
+                                               object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -106,48 +123,63 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
-#pragma mark - IASKSettingsReaderFilterDelegate Functions
+#pragma mark - Event Functions
 
-- (NSDictionary*)filterPreferenceSpecifier:(NSDictionary *)specifier {
-    if (![LinphoneManager isLcReady]) {
-        // LinphoneCore not ready: do not filter
-        return specifier;
-    }
-    NSString* identifier = [specifier objectForKey:@"Identifier"];
-    if (identifier == nil) {
-        identifier = [specifier objectForKey:@"Key"];
-    }
-    if (!identifier) {
-        // child pane maybe
-        NSString* title = [specifier objectForKey:@"Title"];
-        if ([title isEqualToString:@"Video"]) {
-            if (!linphone_core_video_supported([LinphoneManager getLc]))
-                return nil;
+- (void)appSettingChanged:(NSNotification*) notif {
+    if([@"enable_video_preference" compare: notif.object] == NSOrderedSame) {
+        BOOL enable = [[notif.userInfo objectForKey:@"enable_video_preference"] boolValue];
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+        if(!enable) {
+            [hiddenKeys addObject:@"video_menu"];
+        } else {
+            [hiddenKeys removeObject:@"video_menu"];
         }
-        return specifier;
-    }
-    // NSLog(@"Specifier received: %@", identifier);
-	if ([identifier isEqualToString:@"silk_24k_preference"]) {
-		if (![LinphoneManager isNotIphone3G])
-			return nil;
-	}
-    if ([identifier isEqualToString:@"backgroundmode_preference"]) {
-        UIDevice* device = [UIDevice currentDevice];
-        if ([device respondsToSelector:@selector(isMultitaskingSupported)]) {
-            if ([device isMultitaskingSupported]) {
-                return specifier;
-            }
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+    }else if([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
+        BOOL enable = [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+        if(enable) {
+            [hiddenKeys addObject:@"port_preference"];
+        } else {
+            [hiddenKeys removeObject:@"port_preference"];
         }
-        // hide setting if bg mode not supported
-        return nil;
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
     }
-    if ([identifier isEqualToString:@"enable_first_login_view_preference"]) {
-        // hide first login view preference
-        return nil;
+}
+
+
+#pragma mark - 
+
+- (NSSet*)findHiddenKeys {
+    if(![LinphoneManager isLcReady]) {
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't filter settings: Linphone core not read"];
     }
-	if (![LinphoneManager codecIsSupported:identifier])
-		return Nil;
-    return specifier;
+    NSMutableSet *hiddenKeys = [NSMutableSet set];
+    
+    if (!linphone_core_video_supported([LinphoneManager getLc]))
+        [hiddenKeys addObject:@"video_menu"];
+    
+    if (![LinphoneManager isNotIphone3G])
+        [hiddenKeys addObject:@"silk_24k_preference"];
+    
+    UIDevice* device = [UIDevice currentDevice];
+    if (![device respondsToSelector:@selector(isMultitaskingSupported)] || ![device isMultitaskingSupported]) {
+        [hiddenKeys addObject:@"backgroundmode_preference"];
+    }
+    
+    [hiddenKeys addObject:@"enable_first_login_view_preference"];
+    
+    if (!linphone_core_video_enabled([LinphoneManager getLc])) {
+        [hiddenKeys addObject:@"video_menu"];
+    }
+    
+    [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
+    
+    if([[[[LinphoneManager instance] settingsStore] objectForKey:@"random_port_preference"] boolValue]) {
+        [hiddenKeys addObject:@"port_preference"];
+    }
+
+    return hiddenKeys;
 }
 
 

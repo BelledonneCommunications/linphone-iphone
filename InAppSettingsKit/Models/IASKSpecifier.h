@@ -55,5 +55,8 @@
 - (SEL)viewControllerSelector;
 -(Class)buttonClass;
 -(SEL)buttonAction;
-	
+- (UIImage *)cellImage;
+- (UIImage *)highlightedCellImage;
+- (BOOL)adjustsFontSizeToFitWidth;
+- (UITextAlignment)textAlignment;
 @end

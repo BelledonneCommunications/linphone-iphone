@@ -326,8 +326,11 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView commitAnimations];
     }
     
-    [videoView setAlpha: 1.0];
-    [videoView setHidden: FALSE];
+    if([[[LinphoneManager instance] settingsStore] boolForKey:@"self_video_preference"]) {
+        [videoPreview setHidden:FALSE];
+    } else {
+        [videoPreview setHidden:TRUE];
+    }
     
     if ([LinphoneManager instance].frontCamId !=nil) {
         // only show camera switch button if we have more than 1 camera
@@ -343,7 +346,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
     // [self batteryLevelChanged:nil];
     
-    videoWaitingForFirstImage.hidden = NO;
+    [videoWaitingForFirstImage setHidden: NO];
     [videoWaitingForFirstImage startAnimating];
     
     LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);

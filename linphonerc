@@ -17,7 +17,6 @@ register_only_when_network_is_up=1
 auto_net_state_mon=0
 keepalive_period=30000
 
-
 [rtp]
 audio_rtp_port=7076
 video_rtp_port=9078
@@ -42,3 +41,4 @@ show_local=0
 enabled=1
 size=qvga
 display_filter_auto_rotate=1
+
