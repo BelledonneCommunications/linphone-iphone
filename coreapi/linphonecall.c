@@ -1471,7 +1471,6 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		if (call->endpoint){
 			linphone_call_remove_from_conf(call);
 		}
-		if (call->audiostream->ice_check_list) ice_check_list_destroy(call->audiostream->ice_check_list);
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 	}
@@ -1482,7 +1481,6 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		rtp_session_unregister_event_queue(call->videostream->session,call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
-		if (call->videostream->ice_check_list) ice_check_list_destroy(call->videostream->ice_check_list);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
