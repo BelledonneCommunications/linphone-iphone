@@ -396,6 +396,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
+	bool_t ice_session_just_created = FALSE;
 	bool_t ice_lite = FALSE;
 	
 	addr=sdp_message_c_addr_get (msg, -1, 0);
@@ -517,7 +518,10 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				int nb;
 
 				/* Allocate the ICE session if it has not been done yet. */
-				if (*ice_session == NULL) *ice_session = ice_session_new();
+				if (*ice_session == NULL) {
+					*ice_session = ice_session_new();
+					ice_session_just_created = TRUE;
+				}
 				/* Allocate the ICE check list if it has not been done yet. */
 				if (ice_session_check_list(*ice_session, i) == NULL) {
 					ice_session_add_check_list(*ice_session, ice_check_list_new());
@@ -552,10 +556,12 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 		}
 	}
 	if (*ice_session != NULL) {
-		if (ice_lite == TRUE) {
-			ice_session_set_role(*ice_session, IR_Controlling);
-		} else {
-			ice_session_set_role(*ice_session, IR_Controlled);
+		if (ice_session_just_created == TRUE) {
+			if (ice_lite == TRUE) {
+				ice_session_set_role(*ice_session, IR_Controlling);
+			} else {
+				ice_session_set_role(*ice_session, IR_Controlled);
+			}
 		}
 		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
 			ice_session_set_remote_credentials(*ice_session, ice_ufrag, ice_pwd);
