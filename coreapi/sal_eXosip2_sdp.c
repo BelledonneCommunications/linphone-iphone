@@ -544,6 +544,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			ice_dump_candidates(ice_session_check_list(*ice_session, i));
 		}
 	}
+	desc->nstreams=i;
+
 	/* Get ICE remote ufrag and remote pwd */
 	ice_ufrag = ice_pwd = NULL;
 	for (i = 0; (i < SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES) && ((attr = sdp_message_attribute_get(msg, -1, i)) != NULL); i++) {
@@ -568,6 +570,5 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			ice_dump_session(*ice_session);
 		}
 	}
-	desc->nstreams=i;
 	return 0;
 }
