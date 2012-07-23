@@ -31,14 +31,14 @@
 localizationTable=_localizationTable,
 bundlePath=_bundlePath,
 settingsBundle=_settingsBundle, 
-dataSource=_dataSource;
-
+dataSource=_dataSource,
+hiddenKeys = _hiddenKeys;
 
 - (id)init {
-	return [self initWithFile:@"Root" andDelegate:nil];
+	return [self initWithFile:@"Root"];
 }
 
-- (id)initWithFile:(NSString*)file andDelegate:(id<IASKSettingsReaderFilterDelegate>)delegate{
+- (id)initWithFile:(NSString*)file {
 	if ((self=[super init])) {
 
 
@@ -61,7 +61,7 @@ dataSource=_dataSource;
 				self.localizationTable = @"Root";
 			}
 		}
-		_delegate=delegate;
+
 		if (_settingsBundle) {
 			[self _reinterpretBundle:_settingsBundle];
 		}
@@ -76,9 +76,24 @@ dataSource=_dataSource;
 	[_settingsBundle release], _settingsBundle = nil;
 	[_dataSource release], _dataSource = nil;
 	[_bundle release], _bundle = nil;
+    [_hiddenKeys release], _hiddenKeys = nil;
 
 	[super dealloc];
 }
+
+
+- (void)setHiddenKeys:(NSSet *)anHiddenKeys {
+	if (_hiddenKeys != anHiddenKeys) {
+		id old = _hiddenKeys;
+		_hiddenKeys = [anHiddenKeys retain];
+		[old release];
+		
+		if (_settingsBundle) {
+			[self _reinterpretBundle:_settingsBundle];
+		}
+	}
+}
+
 
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
 	NSArray *preferenceSpecifiers	= [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
@@ -86,13 +101,9 @@ dataSource=_dataSource;
 	NSMutableArray *dataSource		= [[[NSMutableArray alloc] init] autorelease];
 	
 	for (NSDictionary *specifier in preferenceSpecifiers) {
-        if (_delegate != nil) {
-            specifier = [_delegate filterPreferenceSpecifier:specifier];
-            if (specifier == nil) {
-                // skip
-                continue;
-            }
-        }
+		if ([self.hiddenKeys containsObject:[specifier objectForKey:kIASKKey]]) {
+			continue;
+		}
 		if ([(NSString*)[specifier objectForKey:kIASKType] isEqualToString:kIASKPSGroupSpecifier]) {
 			NSMutableArray *newArray = [[NSMutableArray alloc] init];
 			
@@ -127,8 +138,7 @@ dataSource=_dataSource;
 
 - (NSInteger)numberOfRowsForSection:(NSInteger)section {
 	int headingCorrection = [self _sectionHasHeading:section] ? 1 : 0;
-	NSInteger ret= [(NSArray*)[[self dataSource] objectAtIndex:section] count] - headingCorrection;
-	return ret;
+	return [(NSArray*)[[self dataSource] objectAtIndex:section] count] - headingCorrection;
 }
 
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath {

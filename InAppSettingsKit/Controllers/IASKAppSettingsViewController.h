@@ -17,7 +17,6 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 
-#import "IASKSettingsReader.h"
 #import "IASKSettingsStore.h"
 #import "IASKViewController.h"
 
@@ -54,18 +53,18 @@
                           error:(NSError*)error;
 
 #pragma mark - respond to button taps
-- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForKey:(NSString*)key;
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForKey:(NSString*)key __attribute__((deprecated)); // use the method below with specifier instead
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier;
 - (void)settingsViewController:(IASKAppSettingsViewController*)sender tableView:(UITableView *)tableView didSelectCustomViewSpecifier:(IASKSpecifier*)specifier;
 @end
 
 
-@interface IASKAppSettingsViewController : UITableViewController <IASKViewController, UITextFieldDelegate, UINavigationControllerDelegate, MFMailComposeViewControllerDelegate> {
+@interface IASKAppSettingsViewController : UITableViewController <IASKViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate> {
 	id<IASKSettingsDelegate>  _delegate;
     
     NSMutableArray          *_viewList;
 	
 	IASKSettingsReader		*_settingsReader;
-	id<IASKSettingsReaderFilterDelegate> _settingsReaderDelegate;
     id<IASKSettingsStore>  _settingsStore;
 	NSString				*_file;
 	
@@ -73,15 +72,17 @@
     
     BOOL                    _showCreditsFooter;
     BOOL                    _showDoneButton;
+	
+    NSSet                   *_hiddenKeys;
 }
 
 @property (nonatomic, assign) IBOutlet id delegate;
 @property (nonatomic, copy) NSString *file;
-@property (nonatomic, assign) id<IASKSettingsReaderFilterDelegate> settingsReaderDelegate;
 @property (nonatomic, assign) BOOL showCreditsFooter;
 @property (nonatomic, assign) BOOL showDoneButton;
+@property (nonatomic, retain) NSSet *hiddenKeys;
 
 - (void)synchronizeSettings;
-- (IBAction)dismiss:(id)sender;
-
+- (void)dismiss:(id)sender;
+- (void)setHiddenKeys:(NSSet*)hiddenKeys animated:(BOOL)animated;
 @end

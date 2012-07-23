@@ -102,6 +102,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
+            [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
 				|| port!=NULL){
 				char tmp[256]={0};
@@ -117,14 +118,32 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			
 		}
 	}
+    {
+        LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+        if(parsed != NULL) {
+            [self setString: linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
+            [self setString: linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
+        }
+    }
 	{
 		LCSipTransports tp;
-		const char *tname="udp";
+		const char *tname = "udp";
+        int port = 5060;
 		linphone_core_get_sip_transports(lc, &tp);
-		if (tp.udp_port>0) tname="udp";
-		else if (tp.tcp_port>0) tname="tcp";
-		else if (tp.tls_port>0) tname="tls";
-		[self setString: tname forKey:@"transport_preference"];
+		if (tp.udp_port>0) {
+            tname = "udp";
+            port = tp.udp_port;
+        } else if (tp.tcp_port>0) {
+            tname = "tcp";
+            port = tp.tcp_port;
+        } else if (tp.tls_port>0) {
+            tname = "tls";
+            port = tp.tls_port;
+        }
+		[self setString:tname forKey:@"transport_preference"];
+        [self setInteger:port forKey:@"port_preference"];
+        
+        [self setInteger:lp_config_get_int(linphone_core_get_config(lc),"app","random_port_preference", 1) forKey:@"random_port_preference"];
 	}
 	{
 		LinphoneAuthInfo *ai;
@@ -163,10 +182,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","backgroundmode_preference", TRUE) forKey:@"backgroundmode_preference"];
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
-	BOOL start_at_boot;
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]==Nil)
-		start_at_boot=TRUE;
-	else start_at_boot=[[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
+	BOOL start_at_boot = TRUE;
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]!=Nil)
+        start_at_boot=[[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
 	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
 	
 	if (linphone_core_tunnel_available()){
@@ -180,8 +198,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		const LinphoneVideoPolicy *pol;
 		[self setBool: linphone_core_video_enabled(lc) forKey:@"enable_video_preference"];
 		pol=linphone_core_get_video_policy(lc);
-		[self setBool:(pol->automatically_accept && pol->automatically_initiate) forKey:@"start_video_preference"];
+		[self setBool:(pol->automatically_initiate) forKey:@"start_video_preference"];
+        [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
+        [self setBool:lp_config_get_int(linphone_core_get_config(lc),"app","self_video_preference", 1) forKey:@"self_video_preference"];
 	}
+    {
+        [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","sipinfo_dtmf_preference", 0) forKey:@"sipinfo_dtmf_preference"];
+        [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","rfc_dtmf_preference", 1) forKey:@"rfc_dtmf_preference"];
+    }
+    
 	if (lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference",0))
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	
@@ -226,7 +251,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     }
     
 	NSString* transport = [self stringForKey:@"transport_preference"];
-	
+	int port_preference = [self integerForKey:@"port_preference"];
+    BOOL random_port_preference = [self boolForKey:@"random_port_preference"];
+    if(random_port_preference) {
+        port_preference = (0xDFFF&random())+1024;
+    }
 	LCSipTransports transportValue={0};
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(lc, &transportValue)) {
@@ -234,15 +263,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		// Only one port can be set at one time, the others's value is 0
 		if ([transport isEqualToString:@"tcp"]) {
-			if (transportValue.tcp_port == 0) transportValue.tcp_port=transportValue.udp_port + transportValue.tls_port;
+			transportValue.tcp_port=port_preference;
 			transportValue.udp_port=0;
             transportValue.tls_port=0;
 		} else if ([transport isEqualToString:@"udp"]){
-			if (transportValue.udp_port == 0) transportValue.udp_port=transportValue.tcp_port + transportValue.tls_port;
+			transportValue.udp_port=port_preference;
 			transportValue.tcp_port=0;
             transportValue.tls_port=0;
 		} else if ([transport isEqualToString:@"tls"]){
-			if (transportValue.tls_port == 0) transportValue.tls_port=transportValue.udp_port + transportValue.tcp_port;
+			transportValue.tls_port=port_preference;
 			transportValue.tcp_port=0;
             transportValue.udp_port=0;
 		} else {
@@ -252,12 +281,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
 		}
 	}
+    lp_config_set_int(linphone_core_get_config(lc),"app","random_port_preference",random_port_preference);
 	
 	
 	//configure sip account
 	
 	//mandatory parameters
-	
 	NSString* username = [self stringForKey:@"username_preference"];
 	NSString* domain = [self stringForKey:@"domain_preference"];
 	NSString* accountPassword = [self stringForKey:@"password_preference"];
@@ -305,7 +334,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
 			linphone_proxy_config_expires(proxyCfg, 0);
 		} else {
-			linphone_proxy_config_expires(proxyCfg, lLinphoneMgr.defaultExpires);
+            int expire = [self integerForKey:@"expire_preference"];
+            if(expire < lLinphoneMgr.defaultExpires)
+                expire = lLinphoneMgr.defaultExpires;
+			linphone_proxy_config_expires(proxyCfg, expire);
 		}
 		
 		if (isOutboundProxy)
@@ -332,9 +364,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	account_changed=[self valueChangedForKey:@"username_preference"] 
 				|| [self valueChangedForKey:@"password_preference"] 
 				|| [self valueChangedForKey:@"domain_preference"] 
+                || [self valueChangedForKey:@"expire_preference"] 
 				|| [self valueChangedForKey:@"proxy_preference"]
 				|| [self valueChangedForKey:@"outbound_proxy_preference"]
 				|| [self valueChangedForKey:@"transport_preference"]
+                || [self valueChangedForKey:@"port_preference"]
+                || [self valueChangedForKey:@"random_port_preference"]
 				|| [self valueChangedForKey:@"prefix_preference"]
 				|| [self valueChangedForKey:@"substitute_+_by_00_preference"];
 	
@@ -357,6 +392,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
 	
+    linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
+    linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
+    
 	bool enableVideo = [self boolForKey:@"enable_video_preference"];
 	linphone_core_enable_video(lc, enableVideo, enableVideo);
 
@@ -377,9 +415,23 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     }
 	
     LinphoneVideoPolicy policy;
-    policy.automatically_accept = [self boolForKey:@"start_video_preference"];
+    policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
     policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(lc, &policy);
+    lp_config_set_int(linphone_core_get_config(lc),"app","self_video_preference", [self boolForKey:@"self_video_preference"]);
+    
+    
+    // Primary contact
+    NSString* displayname = [self stringForKey:@"primary_displayname_preference"];
+    NSString* username = [self stringForKey:@"primary_username_preference"];
+    LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+    if(parsed != NULL) {
+        linphone_address_set_display_name(parsed,[displayname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        linphone_address_set_username(parsed,[username cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        char *contact = linphone_address_as_string(parsed);
+        linphone_core_set_primary_contact(lc, contact);
+    }
+    
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
@@ -405,6 +457,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];
 	[[NSUserDefaults standardUserDefaults] setBool: start_at_boot forKey:@"start_at_boot_preference"];
 	
+    // Force synchronize
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
 	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
     return YES;

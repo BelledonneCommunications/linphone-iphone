@@ -22,7 +22,7 @@
 #import "UICompositeViewController.h"
 #import "IASKAppSettingsViewController.h"
 
-@interface SettingsViewController: UIViewController<IASKSettingsReaderFilterDelegate, IASKSettingsDelegate, UICompositeViewDelegate> {
+@interface SettingsViewController: UIViewController<IASKSettingsDelegate, UICompositeViewDelegate> {
     IASKAppSettingsViewController *settingsController;
     UINavigationController *navigationController;
 }

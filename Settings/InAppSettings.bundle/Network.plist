@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>wifi_only_preference</string>
+			<key>Title</key>
+			<string>Wifi only</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>stun_preference</string>
+			<key>Title</key>
+			<string>Stun server</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Random Port</string>
+			<key>Key</key>
+			<string>random_port_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>port_preference</string>
+			<key>Title</key>
+			<string>Port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>5060</integer>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>udp</string>
+			<key>Key</key>
+			<string>transport_preference</string>
+			<key>Title</key>
+			<string>Transport</string>
+			<key>Titles</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+				<string>tls</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>udp</string>
+				<string>tcp</string>
+				<string>tls</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>None</string>
+			<key>Key</key>
+			<string>media_encryption_preference</string>
+			<key>Title</key>
+			<string>Media Encryption</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>SRTP</string>
+				<string>ZRTP</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>None</string>
+				<string>SRTP</string>
+				<string>ZRTP</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

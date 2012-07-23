@@ -17,6 +17,8 @@
 #import <Foundation/Foundation.h>
 
 #define kIASKPreferenceSpecifiers             @"PreferenceSpecifiers"
+#define kIASKCellImage                        @"IASKCellImage"
+
 #define kIASKType                             @"Type"
 #define kIASKTitle                            @"Title"
 #define kIASKFooterText                       @"FooterText"
@@ -59,6 +61,11 @@
 #define kIASKAutoCorrYes                      @"Yes"
 #define kIASKMinimumValueImage                @"MinimumValueImage"
 #define kIASKMaximumValueImage                @"MaximumValueImage"
+#define kIASKAdjustsFontSizeToFitWidth        @"IASKAdjustsFontSizeToFitWidth"
+#define kIASKTextLabelAlignment               @"IASKTextAlignment"
+#define kIASKTextLabelAlignmentLeft           @"IASKUITextAlignmentLeft"
+#define kIASKTextLabelAlignmentCenter         @"IASKUITextAlignmentCenter"
+#define kIASKTextLabelAlignmentRight          @"IASKUITextAlignmentRight"
 
 #define kIASKPSGroupSpecifier                 @"PSGroupSpecifier"
 #define kIASKPSToggleSwitchSpecifier          @"PSToggleSwitchSpecifier"
@@ -88,6 +95,7 @@
 #define kIASKTableWidth                       320
 #define kIASKSpacing                          5
 #define kIASKMinLabelWidth                    97
+#define kIASKMaxLabelWidth                    240
 #define kIASKMinValueWidth                    35
 #define kIASKPaddingLeft                      9
 #define kIASKPaddingRight                     10
@@ -96,6 +104,8 @@
 
 #define kIASKLabelFontSize                    17
 #define kIASKgrayBlueColor                    [UIColor colorWithRed:0.318 green:0.4 blue:0.569 alpha:1.0]
+
+#define kIASKMinimumFontSize                  12.0f
 
 #ifndef kCFCoreFoundationVersionNumber_iPhoneOS_4_0
 #define kCFCoreFoundationVersionNumber_iPhoneOS_4_0 550.32
@@ -114,10 +124,6 @@ __VA_ARGS__ \
 
 @class IASKSpecifier;
 
-@protocol IASKSettingsReaderFilterDelegate <NSObject>
-- (NSDictionary*) filterPreferenceSpecifier:(NSDictionary*)specifier;
-@end
-
 @interface IASKSettingsReader : NSObject {
     NSString        *_path;
     NSString        *_localizationTable;
@@ -125,10 +131,10 @@ __VA_ARGS__ \
     NSDictionary    *_settingsBundle;
     NSArray         *_dataSource;
     NSBundle        *_bundle;
-    id<IASKSettingsReaderFilterDelegate> _delegate;
+    NSSet           *_hiddenKeys;
 }
 
-- (id)initWithFile:(NSString*)file andDelegate:(id<IASKSettingsReaderFilterDelegate>)delegate;
+- (id)initWithFile:(NSString*)file;
 - (NSInteger)numberOfSections;
 - (NSInteger)numberOfRowsForSection:(NSInteger)section;
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath;
@@ -145,5 +151,6 @@ __VA_ARGS__ \
 @property (nonatomic, retain) NSString      *bundlePath;
 @property (nonatomic, retain) NSDictionary  *settingsBundle;
 @property (nonatomic, retain) NSArray       *dataSource;
+@property (nonatomic, retain) NSSet         *hiddenKeys;
 
 @end

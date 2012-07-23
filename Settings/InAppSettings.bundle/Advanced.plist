@@ -5,20 +5,6 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
-			<key>Key</key>
-			<string>stun_preference</string>
-			<key>Title</key>
-			<string>Stun server</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-		</dict>
-		<dict>
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
@@ -27,88 +13,6 @@
 			<string>Debug</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>Key</key>
-			<string>prefix_preference</string>
-			<key>KeyboardType</key>
-			<string>NumberPad</string>
-			<key>Title</key>
-			<string>Prefix</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>substitute_+_by_00_preference</string>
-			<key>Title</key>
-			<string>Substitue + by 00</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>wifi_only_preference</string>
-			<key>Title</key>
-			<string>Wifi only</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string>udp</string>
-			<key>Key</key>
-			<string>transport_preference</string>
-			<key>Title</key>
-			<string>Transport</string>
-			<key>Titles</key>
-			<array>
-				<string>udp</string>
-				<string>tcp</string>
-				<string>tls</string>
-			</array>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Values</key>
-			<array>
-				<string>udp</string>
-				<string>tcp</string>
-				<string>tls</string>
-			</array>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string>None</string>
-			<key>Key</key>
-			<string>media_encryption_preference</string>
-			<key>Title</key>
-			<string>Media Encryption</string>
-			<key>Titles</key>
-			<array>
-				<string>None</string>
-				<string>SRTP</string>
-				<string>ZRTP</string>
-			</array>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Values</key>
-			<array>
-				<string>None</string>
-				<string>SRTP</string>
-				<string>ZRTP</string>
-			</array>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -131,15 +35,75 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-                        <key>DefaultValue</key>
-                        <true/>
-                        <key>Key</key>
-                        <string>enable_first_login_view_preference</string>
-                        <key>Title</key>
-                        <string>First login view</string>
-                        <key>Type</key>
-                        <string>PSToggleSwitchSpecifier</string>
-                </dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>enable_first_login_view_preference</string>
+			<key>Title</key>
+			<string>First login view</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>expire_preference</string>
+			<key>Title</key>
+			<string>Expire</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>600</integer>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Primary account</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IsSecure</key>
+			<false/>
+			<key>Key</key>
+			<string>primary_displayname_preference</string>
+			<key>New item</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>Title</key>
+			<string>Display name</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IsSecure</key>
+			<false/>
+			<key>Key</key>
+			<string>primary_username_preference</string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>Title</key>
+			<string>Username</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
 	</array>
 </dict>
 </plist>
