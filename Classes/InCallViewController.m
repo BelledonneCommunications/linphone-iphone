@@ -342,8 +342,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 #endif
 
-- (void)enableVideoDisplay:(BOOL)animation  {
-    if(videoShown)
+- (void)enableVideoDisplay:(BOOL)animation {
+    if(videoShown && animation)
         return;
     
     videoShown = true;
@@ -392,7 +392,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)disableVideoDisplay:(BOOL)animation {
-    if(!videoShown)
+    if(!videoShown && animation)
         return;
     
     videoShown = false;

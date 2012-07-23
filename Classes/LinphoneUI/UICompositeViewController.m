@@ -294,9 +294,10 @@
 - (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar fullscreen:(NSNumber*)fullscreen {   
     
     // Copy view description
-    UICompositeViewDescription *oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
+    UICompositeViewDescription *oldViewDescription = nil;
 
     if(description != nil) {
+        oldViewDescription = currentViewDescription;
         currentViewDescription = [description copy];
         
         // Animate only with a previous screen
@@ -331,6 +332,8 @@
             [[UIDevice currentDevice] performSelector:NSSelectorFromString(@"setOrientation:") withObject:(id)correctOrientation];
         }
         [self applySubLayoutsForInterfaceOrientation:correctOrientation];
+    } else {
+       oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
     }
     
     if(currentViewDescription == nil) {

@@ -224,7 +224,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 }
 
 - (BOOL)valueChangedForKey:(NSString*)key {
-	return [ [changedDict valueForKey:key] boolValue];
+	return [[changedDict valueForKey:key] boolValue];
 }
 
 - (void)synchronizeAccount {

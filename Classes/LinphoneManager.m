@@ -219,11 +219,12 @@ struct codec_name_pref_table codec_pref_table[]={
 
 //generic log handler for debug version
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
-	NSString* format = [NSString stringWithUTF8String:fmt];
+	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
 	NSLogv(format, args);
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
 	//[[LinphoneManager instance] addLog:formatedString];
 	[formatedString release];
+    [format release];
 }
 
 //Error/warning log handler 
