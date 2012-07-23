@@ -209,12 +209,16 @@ static UICompositeViewDescription *compositeDescription = nil;
     LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
     ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(from != NULL && chat != NULL) {
-        if([[NSString stringWithUTF8String:linphone_address_as_string_uri_only(from)] 
-            caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
-            [chat setRead:[NSNumber numberWithInt:1]];
-            [chat update];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
-            [tableController addChatEntry:chat];
+        char *fromStr = linphone_address_as_string_uri_only(from);
+        if(fromStr != NULL) {
+            if([[NSString stringWithUTF8String:fromStr] 
+                caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
+                [chat setRead:[NSNumber numberWithInt:1]];
+                [chat update];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+                [tableController addChatEntry:chat];
+            }
+            ms_free(fromStr);
         }
     } else {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Invalid textReceivedEvent"];

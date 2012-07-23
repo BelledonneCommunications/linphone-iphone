@@ -483,7 +483,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if(addr != NULL) {
             BOOL useLinphoneAddress = true;
             // contact name 
-            const char* lAddress = linphone_address_as_string_uri_only(addr);
+            char* lAddress = linphone_address_as_string_uri_only(addr);
             if(lAddress) {
                 NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
                 ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
@@ -491,6 +491,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                     address = [FastAddressBook getContactDisplayName:contact];
                     useLinphoneAddress = false;
                 }
+                ms_free(lAddress);
             }
             if(useLinphoneAddress) {
                 const char* lDisplayName = linphone_address_get_display_name(addr);

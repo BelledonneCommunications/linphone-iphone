@@ -330,14 +330,20 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 - (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
     
+    char *fromStr = linphone_address_as_string_uri_only(from);
+    if(fromStr == NULL)
+        return;
+    
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
-    [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(from)]];
+    [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
+    
+    ms_free(fromStr);
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
