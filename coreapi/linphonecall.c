@@ -1438,7 +1438,9 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
 	 * further in the call, for example during pause,resume, conferencing reINVITEs*/
 	linphone_call_fix_call_parameters(call);
-	if (sal_op_get_ice_session(call->op) != NULL) ice_session_pair_candidates(sal_op_get_ice_session(call->op));
+	if ((sal_op_get_ice_session(call->op) != NULL) && (ice_session_state(sal_op_get_ice_session(call->op)) != IS_Completed)) {
+		ice_session_pair_candidates(sal_op_get_ice_session(call->op));
+	}
 
 	goto end;
 	end:
