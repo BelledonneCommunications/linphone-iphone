@@ -145,15 +145,11 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc, const 
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
 	if ((ice_session != NULL) && (ice_session_check_list(ice_session, 0) != NULL)) {
-		const IceCandidate *candidate = NULL;
 		if (ice_session_state(ice_session) == IS_Completed) {
-			candidate = ice_check_list_nominated_valid_local_candidate(ice_session_check_list(ice_session, 0));
+			ice_check_list_nominated_valid_local_candidate(ice_session_check_list(ice_session, 0), &addr, NULL, NULL, NULL);
 		}
 		else {
-			candidate = ice_check_list_default_local_candidate(ice_session_check_list(ice_session, 0));
-		}
-		if (candidate != NULL) {
-			addr=candidate->taddr.ip;
+			ice_check_list_default_local_candidate(ice_session_check_list(ice_session, 0), &addr, NULL, NULL, NULL);
 		}
 	}
 	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
@@ -248,9 +244,11 @@ static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDe
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc, const IceCheckList *ice_cl){
 	const char *mt=NULL;
 	const MSList *elem;
-	const char *addr;
+	const char *rtp_addr;
+	const char *rtcp_addr;
 	const char *dir="sendrecv";
-	int port;
+	int rtp_port;
+	int rtcp_port;
 	bool_t strip_well_known_rtpmaps;
 	
 	switch (desc->type) {
@@ -264,29 +262,25 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		mt=desc->typeother;
 		break;
 	}
-	addr=desc->addr;
-	port=desc->port;
+	rtp_addr=rtcp_addr=desc->addr;
+	rtp_port=desc->port;
+	rtcp_port=desc->port+1;
 	if (ice_cl != NULL) {
-		const IceCandidate *candidate = NULL;
 		if (ice_check_list_state(ice_cl) == ICL_Completed) {
-			candidate = ice_check_list_nominated_valid_local_candidate(ice_cl);
+			ice_check_list_nominated_valid_local_candidate(ice_cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
 		} else {
-			candidate = ice_check_list_default_local_candidate(ice_cl);
-		}
-		if (candidate != NULL) {
-			addr=candidate->taddr.ip;
-			port=candidate->taddr.port;
+			ice_check_list_default_local_candidate(ice_cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
 		}
 	} else if (desc->candidates[0].addr[0]!='\0'){
-		addr=desc->candidates[0].addr;
-		port=desc->candidates[0].port;
+		rtp_addr=desc->candidates[0].addr;
+		rtp_port=desc->candidates[0].port;
 	}
 
 	if (desc->proto == SalProtoRtpSavp) {
 		int i;
 		
 		sdp_message_m_media_add (msg, osip_strdup (mt),
-					 int_2char (port), NULL,
+					 int_2char (rtp_port), NULL,
 					 osip_strdup ("RTP/SAVP"));
        
 		/* add crypto lines */
@@ -318,20 +312,20 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		
 	} else {
 		sdp_message_m_media_add (msg, osip_strdup (mt),
-					 int_2char (port), NULL,
+					 int_2char (rtp_port), NULL,
 					 osip_strdup ("RTP/AVP"));
 		
 	}
 
 	/*only add a c= line within the stream description if address are differents*/
-	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
+	if (strcmp(rtp_addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
 		bool_t inet6;
-		if (strchr(addr,':')!=NULL){
+		if (strchr(rtp_addr,':')!=NULL){
 			inet6=TRUE;
 		}else inet6=FALSE;
 		sdp_message_c_connection_add (msg, lineno,
 			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-			      osip_strdup (addr), NULL, NULL);
+			      osip_strdup (rtp_addr), NULL, NULL);
 	}
 
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
@@ -364,8 +358,17 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			break;
 	}
 	if (dir) sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
-	if (ice_check_list_state(ice_cl) == ICL_Running) {
-		add_ice_candidates(msg, lineno, desc, ice_cl);
+	if (ice_cl != NULL) {
+		if (strcmp(rtp_addr, rtcp_addr) != 0) {
+			char buffer[1024];
+			snprintf(buffer, sizeof(buffer), "%u IN IP4 %s", rtcp_port, rtcp_addr);
+			sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), osip_strdup(buffer));
+		} else {
+			sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), int_2char(rtcp_port));
+		}
+		if (ice_check_list_state(ice_cl) == ICL_Running) {
+			add_ice_candidates(msg, lineno, desc, ice_cl);
+		}
 	}
 }
 
