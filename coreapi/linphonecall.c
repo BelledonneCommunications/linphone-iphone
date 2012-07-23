@@ -1247,6 +1247,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				call->audio_profile,
 				stream->rtp_addr[0]!='\0' ? stream->rtp_addr : call->resultdesc->addr,
 				stream->rtp_port,
+				stream->rtcp_addr[0]!='\0' ? stream->rtcp_addr : call->resultdesc->addr,
 				linphone_core_rtcp_enabled(lc) ? (stream->rtcp_port) : 0,
 				used_pt,
 				jitt_comp,
@@ -1316,7 +1317,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 	}
 	
 	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->rtp_port!=0) {
-		const char *addr=vstream->rtp_addr[0]!='\0' ? vstream->rtp_addr : call->resultdesc->addr;
+		const char *rtp_addr=vstream->rtp_addr[0]!='\0' ? vstream->rtp_addr : call->resultdesc->addr;
+		const char *rtcp_addr=vstream->rtcp_addr[0]!='\0' ? vstream->rtcp_addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
 			call->current_params.video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
@@ -1362,8 +1364,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
 				video_stream_start(call->videostream,
-					call->video_profile, addr, vstream->rtp_port,
-					linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
+					call->video_profile, rtp_addr, vstream->rtp_port,
+					rtcp_addr, linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
 					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
 				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
 			}

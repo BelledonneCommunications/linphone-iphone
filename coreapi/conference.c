@@ -114,6 +114,7 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	audio_stream_start_full(st, conf->local_dummy_profile,
 				"127.0.0.1",
 				65000,
+				"127.0.0.1",
 				65001,
 				0,
 				40,
