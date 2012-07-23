@@ -203,25 +203,25 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 static void initiate_outgoing(const SalStreamDescription *local_offer,
     					const SalStreamDescription *remote_answer,
     					SalStreamDescription *result){
-	if (remote_answer->port!=0)
+	if (remote_answer->rtp_port!=0)
 		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	result->proto=remote_answer->proto;
 	result->type=local_offer->type;
 	result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
-		strcpy(result->addr,remote_answer->addr);
-		result->port=remote_answer->port;
+		strcpy(result->rtp_addr,remote_answer->rtp_addr);
+		result->rtp_port=remote_answer->rtp_port;
 		result->bandwidth=remote_answer->bandwidth;
 		result->ptime=remote_answer->ptime;
 	}else{
-		result->port=0;
+		result->rtp_port=0;
 	}
 	if (result->proto == SalProtoRtpSavp) {
 		/* verify crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_offer->crypto, remote_answer->crypto, &result->crypto[0], &result->crypto_local_tag, FALSE))
-			result->port = 0;
+			result->rtp_port = 0;
 	}
 }
 
@@ -233,20 +233,20 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
-	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->port!=0 || remote_offer->port==SalStreamSendOnly)){
-		strcpy(result->addr,local_cap->addr);
+	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->rtp_port!=0 || remote_offer->rtp_port==SalStreamSendOnly)){
+		strcpy(result->rtp_addr,local_cap->rtp_addr);
 		memcpy(result->candidates,local_cap->candidates,sizeof(result->candidates));
-		result->port=local_cap->port;
+		result->rtp_port=local_cap->rtp_port;
 		result->bandwidth=local_cap->bandwidth;
-		result->ptime=local_cap->ptime;	
+		result->ptime=local_cap->ptime;
 	}else{
-		result->port=0;
+		result->rtp_port=0;
 	}
 	if (result->proto == SalProtoRtpSavp) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
 		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
-			result->port = 0; 
+			result->rtp_port = 0;
 		
 	}
 }
@@ -303,7 +303,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		else {
 			/* create an inactive stream for the answer, as there where no matching stream a local capability */
 			result->streams[i].dir=SalStreamInactive;
-			result->streams[i].port=0;
+			result->streams[i].rtp_port=0;
 			result->streams[i].type=rs->type;
 			result->streams[i].proto=rs->proto;
 			if (rs->type==SalOther){

@@ -211,8 +211,8 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	md->bandwidth=linphone_core_get_download_bandwidth(lc);
 
 	/*set audio capabilities */
-	strncpy(md->streams[0].addr,call->localip,sizeof(md->streams[0].addr));
-	md->streams[0].port=call->audio_port;
+	strncpy(md->streams[0].rtp_addr,call->localip,sizeof(md->streams[0].rtp_addr));
+	md->streams[0].rtp_port=call->audio_port;
 	md->streams[0].proto=(call->params.media_encryption == LinphoneMediaEncryptionSRTP) ? 
 		SalProtoRtpSavp : SalProtoRtpAvp;
 	md->streams[0].type=SalAudio;
@@ -226,7 +226,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 
 	if (call->params.has_video){
 		md->nstreams++;
-		md->streams[1].port=call->video_port;
+		md->streams[1].rtp_port=call->video_port;
 		md->streams[1].proto=md->streams[0].proto;
 		md->streams[1].type=SalVideo;
 		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL);
@@ -607,7 +607,7 @@ const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *
 }
 
 static bool_t is_video_active(const SalStreamDescription *sd){
-	return sd->port!=0 && sd->dir!=SalStreamInactive;
+	return sd->rtp_port!=0 && sd->dir!=SalStreamInactive;
 }
 
 /**
@@ -930,7 +930,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	AudioStream *audiostream;
 	IceSession *ice_session = sal_op_get_ice_session(call->op);
 
-	call->audiostream=audiostream=audio_stream_new(md->streams[0].port,linphone_core_ipv6_enabled(lc));
+	call->audiostream=audiostream=audio_stream_new(md->streams[0].rtp_port,linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
 		if (strcasecmp(type,"mic")==0)
@@ -971,9 +971,9 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 
 #ifdef VIDEO_ENABLED
 
-	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].port>0){
+	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].rtp_port>0){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
-		call->videostream=video_stream_new(md->streams[1].port,linphone_core_ipv6_enabled(lc));
+		call->videostream=video_stream_new(md->streams[1].rtp_port,linphone_core_ipv6_enabled(lc));
 		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
 		if (video_recv_buf_size>0) rtp_session_set_recv_buf_size(call->videostream->session,video_recv_buf_size);
           
@@ -1189,7 +1189,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 		stream=sal_media_description_find_stream(call->resultdesc,
 	    					SalProtoRtpAvp,SalAudio);
 
-	if (stream && stream->dir!=SalStreamInactive && stream->port!=0){
+	if (stream && stream->dir!=SalStreamInactive && stream->rtp_port!=0){
 		MSSndCard *playcard=lc->sound_conf.lsd_card ?
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 		MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -1208,7 +1208,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}
 			/*Replace soundcard filters by inactive file players or recorders
 			 when placed in recvonly or sendonly mode*/
-			if (stream->port==0 || stream->dir==SalStreamRecvOnly){
+			if (stream->rtp_port==0 || stream->dir==SalStreamRecvOnly){
 				captcard=NULL;
 				playfile=NULL;
 			}else if (stream->dir==SalStreamSendOnly){
@@ -1242,9 +1242,9 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
-				stream->addr[0]!='\0' ? stream->addr : call->resultdesc->addr,
-				stream->port,
-				linphone_core_rtcp_enabled(lc) ? (stream->port+1) : 0,
+				stream->rtp_addr[0]!='\0' ? stream->rtp_addr : call->resultdesc->addr,
+				stream->rtp_port,
+				linphone_core_rtcp_enabled(lc) ? (stream->rtp_port+1) : 0,
 				used_pt,
 				jitt_comp,
 				playfile,
@@ -1312,8 +1312,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		lc->previewstream=NULL;
 	}
 	
-	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->port!=0) {
-		const char *addr=vstream->addr[0]!='\0' ? vstream->addr : call->resultdesc->addr;
+	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->rtp_port!=0) {
+		const char *addr=vstream->rtp_addr[0]!='\0' ? vstream->rtp_addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
 			call->current_params.video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
@@ -1359,8 +1359,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
 				video_stream_start(call->videostream,
-					call->video_profile, addr, vstream->port,
-					linphone_core_rtcp_enabled(lc) ? (vstream->port+1) : 0,
+					call->video_profile, addr, vstream->rtp_port,
+					linphone_core_rtcp_enabled(lc) ? (vstream->rtp_port+1) : 0,
 					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
 				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
 			}

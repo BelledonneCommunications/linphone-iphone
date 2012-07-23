@@ -126,8 +126,10 @@ typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
 	char typeother[32];
-	char addr[64];
-	int port;
+	char rtp_addr[64];
+	char rtcp_addr[64];
+	int rtp_port;
+	int rtcp_port;
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;

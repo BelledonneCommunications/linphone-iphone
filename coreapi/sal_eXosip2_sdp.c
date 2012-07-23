@@ -130,7 +130,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc, const 
 	int inet6;
 	char sessid[16];
 	char sessver[16];
-	const char *addr = desc->addr;
+	const char *rtp_addr = desc->addr;
 	
 	snprintf(sessid,16,"%i",desc->session_id);
 	snprintf(sessver,16,"%i",desc->session_ver);
@@ -146,17 +146,17 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc, const 
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
 	if ((ice_session != NULL) && (ice_session_check_list(ice_session, 0) != NULL)) {
 		if (ice_session_state(ice_session) == IS_Completed) {
-			ice_check_list_nominated_valid_local_candidate(ice_session_check_list(ice_session, 0), &addr, NULL, NULL, NULL);
+			ice_check_list_nominated_valid_local_candidate(ice_session_check_list(ice_session, 0), &rtp_addr, NULL, NULL, NULL);
 		}
 		else {
-			ice_check_list_default_local_candidate(ice_session_check_list(ice_session, 0), &addr, NULL, NULL, NULL);
+			ice_check_list_default_local_candidate(ice_session_check_list(ice_session, 0), &rtp_addr, NULL, NULL, NULL);
 		}
 	}
 	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-						osip_strdup (addr), NULL, NULL);
+						osip_strdup (rtp_addr), NULL, NULL);
 	}
 	else
 	{
@@ -262,9 +262,9 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		mt=desc->typeother;
 		break;
 	}
-	rtp_addr=rtcp_addr=desc->addr;
-	rtp_port=desc->port;
-	rtcp_port=desc->port+1;
+	rtp_addr=rtcp_addr=desc->rtp_addr;
+	rtp_port=desc->rtp_port;
+	rtcp_port=desc->rtcp_port;
 	if (ice_cl != NULL) {
 		if (ice_check_list_state(ice_cl) == ICL_Completed) {
 			ice_check_list_nominated_valid_local_candidate(ice_cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
@@ -418,21 +418,21 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceSession **ice_session){
 	int i,j;
-	const char *mtype,*proto,*port,*addr,*number;
+	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
 	const char *ice_ufrag, *ice_pwd;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
 	bool_t ice_session_just_created = FALSE;
 	bool_t ice_lite = FALSE;
-	
-	addr=sdp_message_c_addr_get (msg, -1, 0);
-	if (addr)
-		strncpy(desc->addr,addr,sizeof(desc->addr));
+
+	rtp_addr=sdp_message_c_addr_get (msg, -1, 0);
+	if (rtp_addr)
+		strncpy(desc->addr,rtp_addr,sizeof(desc->addr));
 	for(j=0;(sbw=sdp_message_bandwidth_get(msg,-1,j))!=NULL;++j){
 		if (strcasecmp(sbw->b_bwtype,"AS")==0) desc->bandwidth=atoi(sbw->b_bandwidth);
 	}
-	
+
 	/* for each m= line */
 	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
 	{
@@ -441,7 +441,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 		memset(stream,0,sizeof(*stream));
 		mtype = sdp_message_m_media_get(msg, i);
 		proto = sdp_message_m_proto_get (msg, i);
-		port = sdp_message_m_port_get(msg, i);
+		rtp_port = sdp_message_m_port_get(msg, i);
 		stream->proto=SalProtoUnknown;
 		if (proto){
 			if (strcasecmp(proto,"RTP/AVP")==0)
@@ -450,11 +450,11 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				stream->proto=SalProtoRtpSavp;
 			}
 		}
-		addr = sdp_message_c_addr_get (msg, i, 0);
-		if (addr != NULL)
-			strncpy(stream->addr,addr,sizeof(stream->addr));
-		if (port)
-			stream->port=atoi(port);
+		rtp_addr = sdp_message_c_addr_get (msg, i, 0);
+		if (rtp_addr != NULL)
+			strncpy(stream->rtp_addr,rtp_addr,sizeof(stream->rtp_addr));
+		if (rtp_port)
+			stream->rtp_port=atoi(rtp_port);
 		
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
@@ -489,7 +489,24 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 					pt->send_fmtp ? pt->send_fmtp : "");
 			}
 		}
-		
+
+		/* Get media specific RTCP attribute */
+		stream->rtcp_port = stream->rtp_port + 1;
+		snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), stream->rtp_addr);
+		for (j = 0; ((attr = sdp_message_attribute_get(msg, i, j)) != NULL); j++) {
+			if ((keywordcmp("rtcp", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				char tmp[256];
+				int nb = sscanf(attr->a_att_value, "%d IN IP4 %s", &stream->rtcp_port, tmp);
+				if (nb == 1) {
+					/* SDP rtcp attribute only contains the port */
+				} else if (nb == 2) {
+					strncpy(stream->rtcp_addr, tmp, sizeof(stream->rtcp_addr));
+				} else {
+					ms_warning("sdp has a strange a= line (%s) nb=%i", attr->a_att_value, nb);
+				}
+			}
+		}
+
 		/* read crypto lines if any */
 		if (stream->proto == SalProtoRtpSavp) {
 			int k, valid_count = 0;
