@@ -219,11 +219,11 @@ enum TableSection {
     [cell setConferenceCell:inConference];
     [cell update];
     
-    if (linphone_core_get_calls_nb(lc) > 1 || linphone_core_get_conference_size(lc) > 0) {
+    /*if (linphone_core_get_calls_nb(lc) > 1 || linphone_core_get_conference_size(lc) > 0) {
         tableView.scrollEnabled = true;
     } else {
         tableView.scrollEnabled = false;
-    }
+    }*/
     return cell;
 } 
 

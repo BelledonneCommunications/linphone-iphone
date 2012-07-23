@@ -25,8 +25,9 @@
 #import "UIVideoButton.h"
 #import "UIHangUpButton.h"
 #import "UIDigitButton.h"
+#import "TPMultiLayoutViewController.h"
 
-@interface UICallBar: UIViewController {
+@interface UICallBar: TPMultiLayoutViewController {
     UIPauseButton*      pauseButton;
     UIButton*           conferenceButton;
     UIVideoButton*      videoButton;

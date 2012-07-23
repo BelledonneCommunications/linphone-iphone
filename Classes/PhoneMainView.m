@@ -86,7 +86,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewDidLoad];
 
     [self.view addSubview: mainViewController.view];
-    [mainViewController.view setFrame:[self.view frame]];
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
+        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self willRotateToInterfaceOrientation:interfaceOrientation duration:0.2f];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -156,6 +160,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     // Avoid IOS 4 bug
     self->loadCount--;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 
@@ -426,6 +439,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
         [appData->notification release];
     }
 }
+
 
 #pragma mark - ActionSheet Functions
 

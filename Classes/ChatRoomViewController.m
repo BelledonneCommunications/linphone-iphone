@@ -71,7 +71,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:false 
                                                                  tabBar:@"UIMainBar" 
                                                           tabBarEnabled:true 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:false
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }

@@ -21,6 +21,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "LinphoneManager.h"
+#import "TPMultiLayoutViewController.h"
 
 @interface UICompositeViewDescription: NSObject{
     NSString *name;
@@ -30,6 +31,8 @@
     NSString *tabBar;
     BOOL tabBarEnabled;
     BOOL fullscreen;
+    BOOL landscapeMode;
+    BOOL portraitMode;
 }
 
 @property (retain) NSString *name;
@@ -39,6 +42,8 @@
 @property (retain) NSString *tabBar;
 @property (assign) BOOL tabBarEnabled;
 @property (assign) BOOL fullscreen;
+@property (assign) BOOL landscapeMode;
+@property (assign) BOOL portraitMode;
 
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription*) description;
@@ -46,7 +51,9 @@
                         stateBarEnabled:(BOOL) stateBarEnabled 
                                  tabBar:(NSString*)tabBar
                           tabBarEnabled:(BOOL) tabBarEnabled
-                             fullscreen:(BOOL) fullscreen;
+                             fullscreen:(BOOL) fullscreen
+                          landscapeMode:(BOOL) landscapeMode
+                           portraitMode:(BOOL) portraitMode;
 
 @end
 
@@ -56,7 +63,7 @@
 
 @end
 
-@interface UICompositeViewController : UIViewController {
+@interface UICompositeViewController : TPMultiLayoutViewController {
     @private
     UIView *stateBarView;
     UIViewController *stateBarViewController;
@@ -69,6 +76,7 @@
     
     UICompositeViewDescription *currentViewDescription;
     CATransition *viewTransition;
+    UIDeviceOrientation currentOrientation;
 }
 
 @property (retain) CATransition *viewTransition;
@@ -77,10 +85,9 @@
 @property (nonatomic, retain) IBOutlet UIView* contentView;
 @property (nonatomic, retain) IBOutlet UIView* tabBarView;
 
-- (void) changeView:(UICompositeViewDescription *)description;
-- (void) setFullScreen:(BOOL) enabled;
-- (void) setToolBarHidden:(BOOL) hidden;
-
-- (UIViewController *) getCurrentViewController;
+- (void)changeView:(UICompositeViewDescription *)description;
+- (void)setFullScreen:(BOOL) enabled;
+- (void)setToolBarHidden:(BOOL) hidden;
+- (UIViewController *)getCurrentViewController;
 
 @end
