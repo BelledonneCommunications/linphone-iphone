@@ -211,7 +211,9 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 
 	if (result->payloads && !only_telephone_event(result->payloads)){
 		strcpy(result->rtp_addr,remote_answer->rtp_addr);
+		strcpy(result->rtcp_addr,remote_answer->rtcp_addr);
 		result->rtp_port=remote_answer->rtp_port;
+		result->rtcp_port=remote_answer->rtcp_port;
 		result->bandwidth=remote_answer->bandwidth;
 		result->ptime=remote_answer->ptime;
 	}else{
@@ -235,8 +237,10 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
 	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->rtp_port!=0 || remote_offer->rtp_port==SalStreamSendOnly)){
 		strcpy(result->rtp_addr,local_cap->rtp_addr);
+		strcpy(result->rtcp_addr,local_cap->rtcp_addr);
 		memcpy(result->candidates,local_cap->candidates,sizeof(result->candidates));
 		result->rtp_port=local_cap->rtp_port;
+		result->rtcp_port=local_cap->rtcp_port;
 		result->bandwidth=local_cap->bandwidth;
 		result->ptime=local_cap->ptime;
 	}else{

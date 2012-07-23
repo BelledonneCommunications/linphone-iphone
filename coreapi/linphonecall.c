@@ -212,7 +212,9 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 
 	/*set audio capabilities */
 	strncpy(md->streams[0].rtp_addr,call->localip,sizeof(md->streams[0].rtp_addr));
+	strncpy(md->streams[0].rtcp_addr,call->localip,sizeof(md->streams[0].rtcp_addr));
 	md->streams[0].rtp_port=call->audio_port;
+	md->streams[0].rtcp_port=call->audio_port+1;
 	md->streams[0].proto=(call->params.media_encryption == LinphoneMediaEncryptionSRTP) ? 
 		SalProtoRtpSavp : SalProtoRtpAvp;
 	md->streams[0].type=SalAudio;
@@ -227,6 +229,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	if (call->params.has_video){
 		md->nstreams++;
 		md->streams[1].rtp_port=call->video_port;
+		md->streams[1].rtcp_port=call->video_port+1;
 		md->streams[1].proto=md->streams[0].proto;
 		md->streams[1].type=SalVideo;
 		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL);
@@ -930,7 +933,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	AudioStream *audiostream;
 	IceSession *ice_session = sal_op_get_ice_session(call->op);
 
-	call->audiostream=audiostream=audio_stream_new(md->streams[0].rtp_port,linphone_core_ipv6_enabled(lc));
+	call->audiostream=audiostream=audio_stream_new(md->streams[0].rtp_port,md->streams[0].rtcp_port,linphone_core_ipv6_enabled(lc));
 	if (linphone_core_echo_limiter_enabled(lc)){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
 		if (strcasecmp(type,"mic")==0)
@@ -973,7 +976,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].rtp_port>0){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
-		call->videostream=video_stream_new(md->streams[1].rtp_port,linphone_core_ipv6_enabled(lc));
+		call->videostream=video_stream_new(md->streams[1].rtp_port,md->streams[1].rtcp_port,linphone_core_ipv6_enabled(lc));
 		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
 		if (video_recv_buf_size>0) rtp_session_set_recv_buf_size(call->videostream->session,video_recv_buf_size);
           
@@ -1244,7 +1247,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				call->audio_profile,
 				stream->rtp_addr[0]!='\0' ? stream->rtp_addr : call->resultdesc->addr,
 				stream->rtp_port,
-				linphone_core_rtcp_enabled(lc) ? (stream->rtp_port+1) : 0,
+				linphone_core_rtcp_enabled(lc) ? (stream->rtcp_port) : 0,
 				used_pt,
 				jitt_comp,
 				playfile,
@@ -1360,7 +1363,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
 				video_stream_start(call->videostream,
 					call->video_profile, addr, vstream->rtp_port,
-					linphone_core_rtcp_enabled(lc) ? (vstream->rtp_port+1) : 0,
+					linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
 					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
 				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
 			}

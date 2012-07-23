@@ -535,9 +535,11 @@ static void sdp_process(SalOp *h){
 		for(i=0;i<h->result->nstreams;++i){
 			if (h->result->streams[i].rtp_port>0){
 				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
 				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
 				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
 				
 				if (h->result->streams[i].proto == SalProtoRtpSavp) {
 					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0]; 

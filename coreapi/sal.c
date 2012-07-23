@@ -182,6 +182,8 @@ bool_t sal_stream_description_equals(const SalStreamDescription *sd1, const SalS
 	if (sd1->type!=sd2->type) return FALSE;
 	if (strcmp(sd1->rtp_addr,sd2->rtp_addr)!=0) return FALSE;
 	if (sd1->rtp_port!=sd2->rtp_port) return FALSE;
+	if (strcmp(sd1->rtcp_addr,sd2->rtcp_addr)!=0) return FALSE;
+	if (sd1->rtcp_port!=sd2->rtcp_port) return FALSE;
 	if (!payload_list_equals(sd1->payloads,sd2->payloads)) return FALSE;
 	if (sd1->bandwidth!=sd2->bandwidth) return FALSE;
 	if (sd1->ptime!=sd2->ptime) return FALSE;
