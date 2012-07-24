@@ -186,10 +186,6 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)startApplication {
-    /* explicitely instanciate LinphoneManager */
-    LinphoneManager* lm = [[LinphoneManager alloc] init];
-    assert(lm == [LinphoneManager instance]);
-
 	[[LinphoneManager instance]	startLibLinphone];
     
     [self setupUI];

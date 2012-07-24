@@ -139,6 +139,10 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 + (LinphoneManager*)instance {
+    if(theLinphoneManager == nil) {
+        theLinphoneManager = [LinphoneManager alloc];
+        [theLinphoneManager init];
+    }
 	return theLinphoneManager;
 }
 
@@ -146,11 +150,9 @@ struct codec_name_pref_table codec_pref_table[]={
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    assert (!theLinphoneManager);
     if ((self = [super init])) {
         fastAddressBook = [[FastAddressBook alloc] init];
         database = NULL;
-        theLinphoneManager = self;
         settingsStore = nil;
 		self.defaultExpires = 600;
         [self openDatabase];
@@ -161,6 +163,7 @@ struct codec_name_pref_table codec_pref_table[]={
 - (void)dealloc {
     [fastAddressBook release];
     [self closeDatabase];
+    [settingsStore release];
     
     [super dealloc];
 }
@@ -642,11 +645,6 @@ static LinphoneCoreVTable linphonec_vtable = {
         proxyReachability=nil;
         
     }
-    
-    if(settingsStore != nil) {
-        [settingsStore release];
-    }
-    
 }
 
 - (BOOL)enterBackgroundMode {

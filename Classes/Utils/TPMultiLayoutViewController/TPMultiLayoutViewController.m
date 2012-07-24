@@ -55,16 +55,12 @@
     [super dealloc];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    return TRUE;
-}
-
--(void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated {
     // Display correct layout for orientation
-    if ( (UIInterfaceOrientationIsPortrait(self.interfaceOrientation) && !viewIsCurrentlyPortrait) ||
+    /*if ( (UIInterfaceOrientationIsPortrait(self.interfaceOrientation) && !viewIsCurrentlyPortrait) ||
          (UIInterfaceOrientationIsLandscape(self.interfaceOrientation) && viewIsCurrentlyPortrait) ) {
         [self applyLayoutForInterfaceOrientation:self.interfaceOrientation];
-    }
+    }*/
     [super viewWillAppear:animated];
 }
 
@@ -77,6 +73,7 @@
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     if ( (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) && !viewIsCurrentlyPortrait) ||
          (UIInterfaceOrientationIsLandscape(toInterfaceOrientation) && viewIsCurrentlyPortrait) ) {
         [self applyLayoutForInterfaceOrientation:toInterfaceOrientation];

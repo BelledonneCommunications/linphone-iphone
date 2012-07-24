@@ -171,6 +171,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
+
 
 #pragma mark - Event Functions
 
