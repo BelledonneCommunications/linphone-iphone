@@ -564,22 +564,25 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 
 void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
+	typedef struct _st_gathering {
+		ortp_socket_t sock;
+		bool_t response;
+		IceCandidate *base;
+		struct timeval transmission_time;
+	} gathering_t;
+
 	char local_addr[64];
 	char addr[64];
 	int port;
 	int id;
-	ortp_socket_t audio_socks[2];
-	ortp_socket_t video_socks[2];
-	bool_t audio_responses[2];
-	bool_t video_responses[2];
-	IceCandidate *audio_ice_bases[2];
-	IceCandidate *video_ice_bases[2];
+	gathering_t audio_gatherings[2];
+	gathering_t video_gatherings[2];
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
 	IceSession *ice_session = sal_op_get_ice_session(call->op);
 	struct sockaddr_storage ss;
 	socklen_t ss_len;
-	struct timeval init, cur;
+	struct timeval init, cur, diff;
 	double elapsed;
 	int loops = 0;
 	const char *server = linphone_core_get_stun_server(lc);
@@ -601,42 +604,57 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	if (lc->vtable.display_status != NULL)
 		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
 
-	audio_responses[0] = audio_responses[1] = FALSE;
-	video_responses[0] = video_responses[1] = FALSE;
-	audio_ice_bases[0] = audio_ice_bases[1] = NULL;
-	video_ice_bases[0] = video_ice_bases[1] = NULL;
-	audio_socks[0] = create_socket(call->audio_port);
-	if (audio_socks[0] == -1) return;
-	audio_socks[1] = create_socket(call->audio_port + 1);
-	if (audio_socks[1] == -1) return;
+	audio_gatherings[0].response = audio_gatherings[1].response = FALSE;
+	video_gatherings[0].response = video_gatherings[1].response = FALSE;
+	audio_gatherings[0].base = audio_gatherings[1].base = NULL;
+	video_gatherings[0].base = video_gatherings[1].base = NULL;
+	audio_gatherings[0].sock = create_socket(call->audio_port);
+	if (audio_gatherings[0].sock == -1) return;
+	audio_gatherings[1].sock = create_socket(call->audio_port + 1);
+	if (audio_gatherings[1].sock == -1) return;
 	if (call->params.has_video) {
-		video_socks[0] = create_socket(call->video_port);
-		if (video_socks[0] == -1) return;
-		video_socks[1] = create_socket(call->video_port + 1);
-		if (video_socks[1] == -1) return;
+		video_gatherings[0].sock = create_socket(call->video_port);
+		if (video_gatherings[0].sock == -1) return;
+		video_gatherings[1].sock = create_socket(call->video_port + 1);
+		if (video_gatherings[1].sock == -1) return;
 	} else {
-		video_socks[0] = video_socks[1] = -1;
+		video_gatherings[0].sock = video_gatherings[1].sock = -1;
 	}
 	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
 		ms_error("Fail to get local ip");
 		return;
 	}
-	audio_ice_bases[0] = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
-	audio_ice_bases[1] = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	audio_gatherings[0].base = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
+	audio_gatherings[1].base = ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
 	if (call->params.has_video && (video_check_list != NULL)) {
-		video_ice_bases[0] = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
-		video_ice_bases[1] = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		video_gatherings[0].base = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
+		video_gatherings[1].base = ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 	}
 
 	gettimeofday(&init, NULL);
+	audio_gatherings[0].transmission_time = cur = init;
+	diff.tv_sec = 0, diff.tv_usec = 20000;
+	timeradd(&audio_gatherings[0].transmission_time, &diff, &audio_gatherings[1].transmission_time);
+	timeradd(&audio_gatherings[1].transmission_time, &diff, &video_gatherings[0].transmission_time);
+	timeradd(&video_gatherings[0].transmission_time, &diff, &video_gatherings[1].transmission_time);
+	diff.tv_sec = 0, diff.tv_usec = 100000;
 	do {
-		if (loops % 20 == 0) {
-			ms_message("Sending stun requests...");
-			if (audio_responses[0] == FALSE) sendStunRequest(audio_socks[0], (struct sockaddr*)&ss, ss_len, 1, FALSE);
-			if (audio_responses[1] == FALSE) sendStunRequest(audio_socks[1], (struct sockaddr*)&ss, ss_len, 1, FALSE);
-			if (call->params.has_video) {
-				if (video_responses[0] == FALSE) sendStunRequest(video_socks[0], (struct sockaddr*)&ss, ss_len, 2, FALSE);
-				if (video_responses[1] == FALSE) sendStunRequest(video_socks[1], (struct sockaddr*)&ss, ss_len, 2, FALSE);
+		if ((audio_gatherings[0].response == FALSE) && timercmp(&cur, &audio_gatherings[0].transmission_time, >=)) {
+			timeradd(&audio_gatherings[0].transmission_time, &diff, &audio_gatherings[0].transmission_time);
+			sendStunRequest(audio_gatherings[0].sock, (struct sockaddr*)&ss, ss_len, 1, FALSE);
+		}
+		if ((audio_gatherings[1].response == FALSE) && timercmp(&cur, &audio_gatherings[1].transmission_time, >=)) {
+			timeradd(&audio_gatherings[1].transmission_time, &diff, &audio_gatherings[1].transmission_time);
+			sendStunRequest(audio_gatherings[1].sock, (struct sockaddr*)&ss, ss_len, 1, FALSE);
+		}
+		if (call->params.has_video) {
+			if ((video_gatherings[0].response == FALSE) && timercmp(&cur, &video_gatherings[0].transmission_time, >=)) {
+				timeradd(&video_gatherings[0].transmission_time, &diff, &video_gatherings[0].transmission_time);
+				sendStunRequest(video_gatherings[0].sock, (struct sockaddr*)&ss, ss_len, 2, FALSE);
+			}
+			if ((video_gatherings[1].response == FALSE) && timercmp(&cur, &video_gatherings[1].transmission_time, >=)) {
+				timeradd(&video_gatherings[1].transmission_time, &diff, &video_gatherings[1].transmission_time);
+				sendStunRequest(video_gatherings[1].sock, (struct sockaddr*)&ss, ss_len, 2, FALSE);
 			}
 		}
 #ifdef WIN32
@@ -645,22 +663,22 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		usleep(10000);
 #endif
 
-		if (recvStunResponse(audio_socks[0], addr, &port, &id) > 0) {
-			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 1, audio_ice_bases[0]);
-			audio_responses[0] = TRUE;
+		if (recvStunResponse(audio_gatherings[0].sock, addr, &port, &id) > 0) {
+			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 1, audio_gatherings[0].base);
+			audio_gatherings[0].response = TRUE;
 		}
-		if (recvStunResponse(audio_socks[1], addr, &port, &id) > 0) {
-			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 2, audio_ice_bases[1]);
-			audio_responses[1] = TRUE;
+		if (recvStunResponse(audio_gatherings[1].sock, addr, &port, &id) > 0) {
+			ice_add_local_candidate(audio_check_list, "srflx", addr, port, 2, audio_gatherings[1].base);
+			audio_gatherings[1].response = TRUE;
 		}
 		if (call->params.has_video && (video_check_list != NULL)) {
-			if (recvStunResponse(video_socks[0], addr, &port, &id) > 0) {
-				ice_add_local_candidate(video_check_list, "srflx", addr, port, 1, video_ice_bases[0]);
-				video_responses[0] = TRUE;
+			if (recvStunResponse(video_gatherings[0].sock, addr, &port, &id) > 0) {
+				ice_add_local_candidate(video_check_list, "srflx", addr, port, 1, video_gatherings[0].base);
+				video_gatherings[0].response = TRUE;
 			}
-			if (recvStunResponse(video_socks[1], addr, &port, &id) > 0) {
-				ice_add_local_candidate(video_check_list, "srflx", addr, port, 2, video_ice_bases[1]);
-				video_responses[1] = TRUE;
+			if (recvStunResponse(video_gatherings[1].sock, addr, &port, &id) > 0) {
+				ice_add_local_candidate(video_check_list, "srflx", addr, port, 2, video_gatherings[1].base);
+				video_gatherings[1].response = TRUE;
 			}
 		}
 
@@ -671,19 +689,19 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 			break;
 		}
 		loops++;
-	} while (!((audio_responses[0] == TRUE) && (audio_responses[1] == TRUE)
-		&& (!call->params.has_video || ((video_responses[0] == TRUE) && (video_responses[1] == TRUE)))));
+	} while (!((audio_gatherings[0].response == TRUE) && (audio_gatherings[1].response == TRUE)
+		&& (!call->params.has_video || ((video_gatherings[0].response == TRUE) && (video_gatherings[1].response == TRUE)))));
 
 	ice_session_compute_candidates_foundations(ice_session);
 	ice_session_eliminate_redundant_candidates(ice_session);
 	ice_session_choose_default_candidates(ice_session);
 
-	close_socket(audio_socks[0]);
-	close_socket(audio_socks[1]);
+	close_socket(audio_gatherings[0].sock);
+	close_socket(audio_gatherings[1].sock);
 	ice_dump_candidates(audio_check_list);
 	if (call->params.has_video && (video_check_list != NULL)) {
-		if (video_socks[0] != -1) close_socket(video_socks[0]);
-		if (video_socks[1] != -1) close_socket(video_socks[1]);
+		if (video_gatherings[0].sock != -1) close_socket(video_gatherings[0].sock);
+		if (video_gatherings[1].sock != -1) close_socket(video_gatherings[1].sock);
 		ice_dump_candidates(video_check_list);
 	}
 }
