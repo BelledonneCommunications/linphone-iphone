@@ -75,6 +75,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
     settingsController.showCreditsFooter = FALSE;
     settingsController.hiddenKeys = [self findHiddenKeys];

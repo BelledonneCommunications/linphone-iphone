@@ -26,6 +26,7 @@
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     UIWindow *window;
     CTCallCenter* callCenter;
+    BOOL started;
 }
 
 - (void)loadDefaultSettings:(NSDictionary *) appDefaults;
@@ -35,6 +36,7 @@
 - (void)startApplication;
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (assign) BOOL started;
 
 @end
 

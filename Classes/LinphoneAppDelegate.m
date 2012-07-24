@@ -41,6 +41,26 @@ int __aeabi_idiv(int a, int b) {
 @implementation LinphoneAppDelegate
 
 @synthesize window;
+@synthesize started;
+
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    self = [super init];
+    if(self != nil) {
+        self->started = FALSE;
+    }
+    return self;
+}
+
+- (void)dealloc {
+	[window release];
+	[super dealloc];
+}
+
+
+#pragma mark - 
 
 - (void)handleGSMCallInteration: (id) cCenter {
     CTCallCenter* ct = (CTCallCenter*) cCenter;
@@ -97,9 +117,9 @@ int __aeabi_idiv(int a, int b) {
         && ![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"]) {
 		// autoboot disabled, doing nothing
         return;
-    } else if ([LinphoneManager instance] == nil) {
-        [self startApplication];
     }
+    
+    [self startApplication];
     
 	[[LinphoneManager instance] becomeActive];
     
@@ -186,6 +206,11 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)startApplication {
+    if(started) 
+        return;
+    
+    started = TRUE;
+    
 	[[LinphoneManager instance]	startLibLinphone];
     
     [self setupUI];
@@ -197,11 +222,6 @@ int __aeabi_idiv(int a, int b) {
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-}
-
-- (void)dealloc {
-	[window release];
-	[super dealloc];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {

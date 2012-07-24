@@ -188,6 +188,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
     [chat setRemoteContact:remoteAddress];
+    [chat setLocalContact:@""];
     [chat setMessage:message];
     [chat setDirection:[NSNumber numberWithInt:0]];
     [chat setTime:[NSDate date]];

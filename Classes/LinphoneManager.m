@@ -339,6 +339,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
+    [chat setLocalContact:@""];
     [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
