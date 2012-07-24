@@ -675,6 +675,7 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		&& (!call->params.has_video || ((video_responses[0] == TRUE) && (video_responses[1] == TRUE)))));
 
 	ice_session_compute_candidates_foundations(ice_session);
+	ice_session_eliminate_redundant_candidates(ice_session);
 	ice_session_choose_default_candidates(ice_session);
 
 	close_socket(audio_socks[0]);
