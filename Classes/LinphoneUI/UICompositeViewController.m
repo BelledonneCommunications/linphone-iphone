@@ -182,7 +182,6 @@
     [contentViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
     [tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
     [stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
-    [self update:nil tabBar:nil fullscreen:nil];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -191,6 +190,7 @@
     [contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
     [tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
     [stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
+    [self update:nil tabBar:nil fullscreen:nil];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -278,18 +278,22 @@
     
     orientation = self.interfaceOrientation;
     [super willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [super willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
     [super didRotateFromInterfaceOrientation:orientation];
     
     orientation = contentViewController.interfaceOrientation;
     [contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
     [contentViewController didRotateFromInterfaceOrientation:orientation];
 
     orientation = tabBarViewController.interfaceOrientation;
     [tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-    [contentViewController didRotateFromInterfaceOrientation:orientation];
+    [tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+    [tabBarViewController didRotateFromInterfaceOrientation:orientation];
     
     orientation = stateBarViewController.interfaceOrientation;
     [stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
     [stateBarViewController didRotateFromInterfaceOrientation:orientation];
 }
 
