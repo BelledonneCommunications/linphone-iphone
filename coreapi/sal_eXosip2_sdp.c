@@ -224,18 +224,35 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 	}
 }
 
-static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc, const IceCheckList *ice_cl)
+static void add_candidate_attribute(sdp_message_t *msg, int lineno, const IceCandidate *candidate)
 {
 	char buffer[1024];
+
+	snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
+		candidate->foundation, candidate->componentID, candidate->priority, candidate->taddr.ip, candidate->taddr.port, ice_candidate_type(candidate));
+	sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
+}
+
+static void add_ice_candidates(sdp_message_t *msg, int lineno, const IceCheckList *ice_cl, const char *rtp_addr, int rtp_port, const char *rtcp_addr, int rtcp_port)
+{
 	const IceCandidate *candidate;
 	int i;
 
-	if (ice_cl != NULL) {
-		for (i = 0; i < ms_list_size(ice_cl->local_candidates); i++) {
-			candidate = ms_list_nth_data(ice_cl->local_candidates, i);
-			snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
-				candidate->foundation, candidate->componentID, candidate->priority, candidate->taddr.ip, candidate->taddr.port, ice_candidate_type(candidate));
-			sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
+	for (i = 0; i < ms_list_size(ice_cl->local_candidates); i++) {
+		candidate = ms_list_nth_data(ice_cl->local_candidates, i);
+		switch (ice_check_list_state(ice_cl)) {
+			case ICL_Running:
+				add_candidate_attribute(msg, lineno, candidate);
+				break;
+			case ICL_Completed:
+				/* Only include the candidates matching the default destination for each component of the stream as specified in RFC5245 section 9.1.2.2. */
+				if (((candidate->taddr.port == rtp_port) && (strlen(candidate->taddr.ip) == strlen(rtp_addr)) && (strcmp(candidate->taddr.ip, rtp_addr) == 0))
+					|| ((candidate->taddr.port == rtcp_port) && (strlen(candidate->taddr.ip) == strlen(rtcp_addr)) && (strcmp(candidate->taddr.ip, rtcp_addr) == 0))) {
+					add_candidate_attribute(msg, lineno, candidate);
+				}
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -366,9 +383,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		} else {
 			sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), int_2char(rtcp_port));
 		}
-		if (ice_check_list_state(ice_cl) == ICL_Running) {
-			add_ice_candidates(msg, lineno, desc, ice_cl);
-		}
+		add_ice_candidates(msg, lineno, ice_cl, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
 	}
 }
 
