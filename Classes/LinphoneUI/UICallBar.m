@@ -480,14 +480,22 @@
     [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
     [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
     if([view isKindOfClass:[UIButton class]]) {
-        UIButton *button = (UIButton *)view;
-        [attributes setObject:[button imageForState:UIControlStateNormal]forKey:@"image-normal"];
-        [attributes setObject:[button imageForState:UIControlStateHighlighted]forKey:@"image-highlighted"];
-        [attributes setObject:[button imageForState:UIControlStateDisabled]forKey:@"image-disabled"];
-        [attributes setObject:[button imageForState:UIControlStateSelected]forKey:@"image-selected"];
-        [attributes setObject:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted]forKey:@"image-disabled-highlighted"];
-        [attributes setObject:[button imageForState:UIControlStateSelected | UIControlStateHighlighted]forKey:@"image-selected-highlighted"];
-        [attributes setObject:[button imageForState:UIControlStateSelected | UIControlStateDisabled]forKey:@"image-selected-disabled"];
+        UIButton *button = (UIButton *)view;    
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected] key:@"image-selected"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
+        
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected] key:@"background-selected"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"background-disabled-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"background-selected-highlighted"];
+        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateDisabled] key:@"background-selected-disabled"];
     }
     [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
 
@@ -499,15 +507,36 @@
     view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;
-        [button setImage:[attributes objectForKey:@"image-normal"] forState:UIControlStateNormal];
-        [button setImage:[attributes objectForKey:@"image-highlighted"] forState:UIControlStateHighlighted];
-        [button setImage:[attributes objectForKey:@"image-disabled"] forState:UIControlStateDisabled];
-        [button setImage:[attributes objectForKey:@"image-selected"] forState:UIControlStateSelected];
-        [button setImage:[attributes objectForKey:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
-        [button setImage:[attributes objectForKey:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
-        [button setImage:[attributes objectForKey:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-normal"] forState:UIControlStateNormal];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-highlighted"] forState:UIControlStateHighlighted];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-disabled"] forState:UIControlStateDisabled];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected"] forState:UIControlStateSelected];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+        
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected"] forState:UIControlStateSelected];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
     }
     view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
+}
+
++ (void)addDictEntry:(NSMutableDictionary*)dict item:(id)item key:(id)key {
+    if(item != nil && key != nil) {
+        [dict setObject:item forKey:key];
+    }
+}
+
++ (id)getDictEntry:(NSDictionary*)dict key:(id)key {
+    if(key != nil) {
+        return [dict objectForKey:key];
+    }
+    return nil;
 }
 
 @end
