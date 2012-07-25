@@ -241,7 +241,7 @@ public:
 			return;
 		}
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
-		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,env->NewStringUTF(message));
+		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,message ? env->NewStringUTF(message) : NULL);
 	}
 	static void displayMessageCb(LinphoneCore *lc, const char *message) {
 
