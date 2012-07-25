@@ -1444,7 +1444,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	 * further in the call, for example during pause,resume, conferencing reINVITEs*/
 	linphone_call_fix_call_parameters(call);
 	if ((sal_op_get_ice_session(call->op) != NULL) && (ice_session_state(sal_op_get_ice_session(call->op)) != IS_Completed)) {
-		ice_session_pair_candidates(sal_op_get_ice_session(call->op));
+		ice_session_start_connectivity_checks(sal_op_get_ice_session(call->op));
 	}
 
 	goto end;
