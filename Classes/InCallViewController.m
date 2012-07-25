@@ -91,7 +91,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:true 
                                                                  tabBar:@"UICallBar" 
                                                           tabBarEnabled:true 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:true
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }
@@ -125,6 +127,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:UIDeviceOrientationDidChangeNotification 
+                                                  object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -139,10 +145,16 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(orientationChanged:) 
+                                                 name:UIDeviceOrientationDidChangeNotification 
+                                               object:nil];
+    
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];
+    [self orientationUpdate];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [callTableController viewDidAppear:animated];
@@ -183,6 +195,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark - 
+
+- (void)orientationUpdate {
+    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    int newRotation = 0;
+    switch (orientation) {
+        case UIInterfaceOrientationLandscapeRight:
+            newRotation = 270;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            newRotation = 90;
+            break;
+        default:
+            newRotation = 0;
+    }
+    if (oldLinphoneOrientation != newRotation) {
+        linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            //Orientation has changed, must call update call
+            linphone_core_update_call([LinphoneManager getLc], call, NULL);
+        }
+    }
+}
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
     // Update table
@@ -312,8 +348,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 #endif
 
-- (void)enableVideoDisplay:(BOOL)animation  {
-    if(videoShown)
+- (void)enableVideoDisplay:(BOOL)animation {
+    if(videoShown && animation)
         return;
     
     videoShown = true;
@@ -366,7 +402,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)disableVideoDisplay:(BOOL)animation {
-    if(!videoShown)
+    if(!videoShown && animation)
         return;
     
     videoShown = false;
@@ -415,6 +451,10 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 
 
 #pragma mark - Event Functions
+
+- (void)orientationChanged:(NSNotification*) notif {   
+    [self orientationUpdate];
+}
 
 - (void)callUpdateEvent: (NSNotification*) notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];

@@ -18,8 +18,9 @@
  */     
 
 #import <UIKit/UIKit.h>
+#import "TPMultiLayoutViewController.h"
 
-@interface UIStateBar : UIViewController {
+@interface UIStateBar : TPMultiLayoutViewController {
     UIImageView*    registrationStateImage;
     UILabel*        registrationStateLabel;
     UIImageView*    callQualityImage;

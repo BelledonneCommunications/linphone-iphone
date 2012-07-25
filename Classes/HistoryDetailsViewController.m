@@ -68,7 +68,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:false 
                                                                  tabBar:@"UIMainBar" 
                                                           tabBarEnabled:true 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:false
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }
@@ -155,7 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(addr != NULL) {
         BOOL useLinphoneAddress = true;
         // contact name 
-        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress) {
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
             contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
@@ -164,6 +166,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 address = [FastAddressBook getContactDisplayName:contact];
                 useLinphoneAddress = false;
             }
+            ms_free(lAddress);
         }
         if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
@@ -232,10 +235,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     if (addr != NULL) {
         // contact name 
-        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress != NULL) {
             [addressButton setTitle:[NSString stringWithUTF8String:lAddress] forState:UIControlStateNormal];
             [addressButton setHidden:FALSE];
+            ms_free(lAddress);
         } else {
            [addressButton setHidden:TRUE]; 
         }
@@ -278,7 +282,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		addr = callLog->to;
 	}
     
-    const char* lAddress = linphone_address_as_string_uri_only(addr);
+    char* lAddress = linphone_address_as_string_uri_only(addr);
+    if(lAddress == NULL) 
+        return;
     
     NSString *displayName = nil;
     if(contact != nil) {
@@ -301,6 +307,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             [controller call:[NSString stringWithUTF8String:lAddress]];
         }
     }
+    ms_free(lAddress);
 }
 
 @end

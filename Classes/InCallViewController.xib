@@ -12,11 +12,11 @@
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<string>IBUITableViewController</string>
 			<string>IBUITableView</string>
+			<string>IBUIButton</string>
 			<string>IBUIActivityIndicatorView</string>
 			<string>IBUIView</string>
-			<string>IBUIButton</string>
+			<string>IBUITableViewController</string>
 			<string>IBProxyObject</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -44,13 +44,13 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUIView" id="1009068048">
 						<reference key="NSNextResponder" ref="858247959"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">274</int>
 						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIView" id="1017044170">
 								<reference key="NSNextResponder" ref="1009068048"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{320, 460}</string>
+								<int key="NSvFlags">274</int>
+								<string key="NSFrame">{{1000, 1000}, {320, 460}}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="69034748"/>
@@ -63,18 +63,18 @@
 							</object>
 							<object class="IBUIView" id="673568144">
 								<reference key="NSNextResponder" ref="1009068048"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{240, 354}, {80, 106}}</string>
+								<int key="NSvFlags">265</int>
+								<string key="NSFrame">{{1214, 1354}, {106, 106}}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="972197710"/>
+								<reference key="NSNextKeyView" ref="662692377"/>
 								<reference key="IBUIBackgroundColor" ref="95762599"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 							</object>
 							<object class="IBUIActivityIndicatorView" id="69034748">
 								<reference key="NSNextResponder" ref="1009068048"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{141, 212}, {37, 37}}</string>
+								<int key="NSvFlags">301</int>
+								<string key="NSFrame">{{1137, 1214}, {37, 37}}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="673568144"/>
@@ -86,7 +86,7 @@
 								<int key="IBUIStyle">0</int>
 							</object>
 						</object>
-						<string key="NSFrameSize">{320, 460}</string>
+						<string key="NSFrame">{{-1000, -1000}, {2320, 2460}}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1017044170"/>
@@ -103,6 +103,7 @@
 						<string key="NSFrame">{{0, -10}, {320, 480}}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="972197710"/>
 						<string key="NSReuseIdentifierKey">_NS:418</string>
 						<reference key="IBUIBackgroundColor" ref="95762599"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -133,6 +134,7 @@
 						<string key="NSFrameSize">{85, 33}</string>
 						<reference key="NSSuperview" ref="858247959"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -166,7 +168,7 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="662692377"/>
+				<reference key="NSNextKeyView" ref="1009068048"/>
 				<reference key="IBUIBackgroundColor" ref="95762599"/>
 				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -226,14 +228,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">callTableView</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="662692377"/>
-					</object>
-					<int key="connectionID">109</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">videoCameraSwitch</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="972197710"/>
@@ -247,6 +241,14 @@
 						<reference key="destination" ref="52918460"/>
 					</object>
 					<int key="connectionID">167</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">callTableView</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="662692377"/>
+					</object>
+					<int key="connectionID">109</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -348,12 +350,6 @@
 						<string key="objectName">preview</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">106</int>
-						<reference key="object" ref="662692377"/>
-						<reference key="parent" ref="858247959"/>
-						<string key="objectName">callTableView</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">160</int>
 						<reference key="object" ref="972197710"/>
 						<reference key="parent" ref="858247959"/>
@@ -367,6 +363,12 @@
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">callTableController</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">106</int>
+						<reference key="object" ref="662692377"/>
+						<reference key="parent" ref="858247959"/>
+						<string key="objectName">callTableView</string>
 					</object>
 				</object>
 			</object>

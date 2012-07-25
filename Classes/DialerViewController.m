@@ -106,7 +106,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:true 
                                                                  tabBar:@"UIMainBar" 
                                                           tabBarEnabled:true 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:false
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }
@@ -123,9 +125,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
     // Update on show
-    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
-    [self callUpdate:call state:state];
+    if([LinphoneManager isLcReady]) {
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+        [self callUpdate:call state:state];
+    }
 } 
 
 - (void)viewWillDisappear:(BOOL)animated {

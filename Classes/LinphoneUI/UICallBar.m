@@ -141,35 +141,70 @@
     // Set selected+disabled background: IB lack !
     [videoButton setImage:[UIImage imageNamed:@"video_on_disabled.png"] 
                            forState:(UIControlStateDisabled | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[videoButton tag]] 
+                 setImage:[UIImage imageNamed:@"video_on_disabled_landscape.png"] 
+                           forState:(UIControlStateDisabled | UIControlStateSelected)];
+    
     // Set selected+over background: IB lack !
     [videoButton setImage:[UIImage imageNamed:@"video_on_over.png"] 
                            forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[videoButton tag]] 
+                 setImage:[UIImage imageNamed:@"video_on_over_landscape.png"] 
+                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
     
     // Set selected+disabled background: IB lack !
     [speakerButton setImage:[UIImage imageNamed:@"speaker_on_disabled.png"] 
-                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+                   forState:(UIControlStateDisabled | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[speakerButton tag]] 
+                   setImage:[UIImage imageNamed:@"speaker_on_disabled_landscape.png"] 
+                   forState:(UIControlStateDisabled | UIControlStateSelected)];
+    
     // Set selected+over background: IB lack !
     [speakerButton setImage:[UIImage imageNamed:@"speaker_on_over.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[speakerButton tag]] 
+                   setImage:[UIImage imageNamed:@"sspeaker_on_over_landscape.png"] 
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
     
     // Set selected+disabled background: IB lack !
     [microButton setImage:[UIImage imageNamed:@"micro_on_disabled.png"] 
-                   forState:(UIControlStateDisabled | UIControlStateSelected)];
+                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[microButton tag]] 
+                 setImage:[UIImage imageNamed:@"micro_on_disabled_landscape.png"] 
+                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+    
     // Set selected+over background: IB lack !
     [microButton setImage:[UIImage imageNamed:@"micro_on_over.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[microButton tag]] 
+                 setImage:[UIImage imageNamed:@"micro_on_over_landscape.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
     
     // Set selected+over background: IB lack !
     [pauseButton setImage:[UIImage imageNamed:@"pause_on_over.png"] 
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[pauseButton tag]] 
+                 setImage:[UIImage imageNamed:@"pause_on_over_landscape.png"] 
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
     
     // Set selected+over background: IB lack !
     [optionsButton setImage:[UIImage imageNamed:@"options_over.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[optionsButton tag]] 
+                   setImage:[UIImage imageNamed:@"options_over_landscape.png"] 
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
     
     // Set selected+over background: IB lack !
     [dialerButton setImage:[UIImage imageNamed:@"dialer_alt_back_over.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [(UIButton*) [landscapeView viewWithTag:[dialerButton tag]] 
+                  setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
+                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
      // Set label multilines: IB lack !
     [option1Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
@@ -182,6 +217,9 @@
     // Set label multilines: IB lack !
     [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
     [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
+    [optionsView setHidden:TRUE];
+    [padView setHidden:TRUE];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -431,6 +469,45 @@
 
 - (IBAction)onConferenceClick:(id)sender {
     linphone_core_add_all_to_conference([LinphoneManager getLc]);
+}
+
+
+#pragma mark - TPMultiLayoutViewController Functions
+
+- (NSDictionary*)attributesForView:(UIView*)view {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+
+    [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
+    [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [attributes setObject:[button imageForState:UIControlStateNormal]forKey:@"image-normal"];
+        [attributes setObject:[button imageForState:UIControlStateHighlighted]forKey:@"image-highlighted"];
+        [attributes setObject:[button imageForState:UIControlStateDisabled]forKey:@"image-disabled"];
+        [attributes setObject:[button imageForState:UIControlStateSelected]forKey:@"image-selected"];
+        [attributes setObject:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted]forKey:@"image-disabled-highlighted"];
+        [attributes setObject:[button imageForState:UIControlStateSelected | UIControlStateHighlighted]forKey:@"image-selected-highlighted"];
+        [attributes setObject:[button imageForState:UIControlStateSelected | UIControlStateDisabled]forKey:@"image-selected-disabled"];
+    }
+    [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
+
+    return attributes;
+}
+
+- (void)applyAttributes:(NSDictionary*)attributes toView:(UIView*)view {
+    view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
+    view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [button setImage:[attributes objectForKey:@"image-normal"] forState:UIControlStateNormal];
+        [button setImage:[attributes objectForKey:@"image-highlighted"] forState:UIControlStateHighlighted];
+        [button setImage:[attributes objectForKey:@"image-disabled"] forState:UIControlStateDisabled];
+        [button setImage:[attributes objectForKey:@"image-selected"] forState:UIControlStateSelected];
+        [button setImage:[attributes objectForKey:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setImage:[attributes objectForKey:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setImage:[attributes objectForKey:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    }
+    view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
 }
 
 @end

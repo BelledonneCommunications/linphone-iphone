@@ -139,6 +139,10 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 + (LinphoneManager*)instance {
+    if(theLinphoneManager == nil) {
+        theLinphoneManager = [LinphoneManager alloc];
+        [theLinphoneManager init];
+    }
 	return theLinphoneManager;
 }
 
@@ -146,11 +150,9 @@ struct codec_name_pref_table codec_pref_table[]={
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    assert (!theLinphoneManager);
     if ((self = [super init])) {
         fastAddressBook = [[FastAddressBook alloc] init];
         database = NULL;
-        theLinphoneManager = self;
         settingsStore = nil;
 		self.defaultExpires = 600;
         [self openDatabase];
@@ -161,6 +163,7 @@ struct codec_name_pref_table codec_pref_table[]={
 - (void)dealloc {
     [fastAddressBook release];
     [self closeDatabase];
+    [settingsStore release];
     
     [super dealloc];
 }
@@ -219,11 +222,12 @@ struct codec_name_pref_table codec_pref_table[]={
 
 //generic log handler for debug version
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
-	NSString* format = [NSString stringWithUTF8String:fmt];
+	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
 	NSLogv(format, args);
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
 	//[[LinphoneManager instance] addLog:formatedString];
 	[formatedString release];
+    [format release];
 }
 
 //Error/warning log handler 
@@ -329,14 +333,21 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 - (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
     
+    char *fromStr = linphone_address_as_string_uri_only(from);
+    if(fromStr == NULL)
+        return;
+    
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
-    [chat setRemoteContact:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(from)]];
+    [chat setLocalContact:@""];
+    [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
     [chat setMessage:[NSString stringWithUTF8String:message]];
     [chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
+    
+    ms_free(fromStr);
     
     // Post event
     NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
@@ -635,11 +646,6 @@ static LinphoneCoreVTable linphonec_vtable = {
         proxyReachability=nil;
         
     }
-    
-    if(settingsStore != nil) {
-        [settingsStore release];
-    }
-    
 }
 
 - (BOOL)enterBackgroundMode {

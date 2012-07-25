@@ -51,7 +51,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:false 
                                                                  tabBar: @"UIMainBar" 
                                                           tabBarEnabled:true 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:false
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }
@@ -73,6 +75,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
     settingsController.showCreditsFooter = FALSE;
     settingsController.hiddenKeys = [self findHiddenKeys];

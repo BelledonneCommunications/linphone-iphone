@@ -86,7 +86,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewDidLoad];
 
     [self.view addSubview: mainViewController.view];
-    [mainViewController.view setFrame:[self.view frame]];
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
+        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self willRotateToInterfaceOrientation:interfaceOrientation duration:0.2f];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -160,6 +164,25 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     // Avoid IOS 4 bug
     self->loadCount--;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 
@@ -434,6 +457,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
+
 #pragma mark - ActionSheet Functions
 
 /* MODIFICATION disable chat
@@ -478,7 +502,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if(addr != NULL) {
             BOOL useLinphoneAddress = true;
             // contact name 
-            const char* lAddress = linphone_address_as_string_uri_only(addr);
+            char* lAddress = linphone_address_as_string_uri_only(addr);
             if(lAddress) {
                 NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
                 ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
@@ -486,6 +510,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                     address = [FastAddressBook getContactDisplayName:contact];
                     useLinphoneAddress = false;
                 }
+                ms_free(lAddress);
             }
             if(useLinphoneAddress) {
                 const char* lDisplayName = linphone_address_get_display_name(addr);

@@ -62,7 +62,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                         stateBarEnabled:false 
                                                                  tabBar:nil 
                                                           tabBarEnabled:false 
-                                                             fullscreen:false];
+                                                             fullscreen:false
+                                                          landscapeMode:false
+                                                           portraitMode:true];
     }
     return compositeDescription;
 }

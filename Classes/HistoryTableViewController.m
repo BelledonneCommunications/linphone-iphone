@@ -137,7 +137,7 @@
     if(addr != NULL) {
         BOOL useLinphoneAddress = true;
         // contact name 
-        const char* lAddress = linphone_address_as_string_uri_only(addr);
+        char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress) {
             address = [NSString stringWithUTF8String:lAddress];
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
@@ -146,6 +146,7 @@
                 displayName = [FastAddressBook getContactDisplayName:contact];
                 useLinphoneAddress = false;
             }
+            ms_free(lAddress);
         }
         if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
