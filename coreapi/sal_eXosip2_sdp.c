@@ -269,6 +269,32 @@ static void add_ice_candidates(sdp_message_t *msg, int lineno, const IceCheckLis
 	}
 }
 
+static void add_ice_remote_candidates(sdp_message_t *msg, int lineno, const IceCheckList *ice_cl)
+{
+	char buffer[1024];
+	const char *rtp_addr = NULL;
+	const char *rtcp_addr = NULL;
+	int rtp_port;
+	int rtcp_port;
+	int nb;
+
+	if ((ice_session_role(ice_cl->session) == IR_Controlling) && (ice_check_list_state(ice_cl) == ICL_Completed)) {
+		ice_check_list_nominated_valid_remote_candidate(ice_cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+		nb = snprintf(buffer, sizeof(buffer), "1 %s %d", rtp_addr, rtp_port);
+		if (nb < 0) {
+			ms_error("Cannot add ICE remote-candidates attribute!");
+			return;
+		}
+		if (rtcp_addr != NULL) {
+			nb = snprintf(buffer + nb, sizeof(buffer) - nb, " 2 %s %d", rtcp_addr, rtcp_port);
+			if (nb < 0) {
+				ms_error("Cannot add ICE remote-candidates attribute!");
+				return;
+			}
+		}
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("remote-candidates"), osip_strdup(buffer));
+	}
+}
 
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc, const IceCheckList *ice_cl){
 	const char *mt=NULL;
@@ -396,6 +422,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), int_2char(rtcp_port));
 		}
 		add_ice_candidates(msg, lineno, ice_cl, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+		add_ice_remote_candidates(msg, lineno, ice_cl);
 	}
 }
 
