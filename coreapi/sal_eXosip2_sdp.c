@@ -227,9 +227,21 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 static void add_candidate_attribute(sdp_message_t *msg, int lineno, const IceCandidate *candidate)
 {
 	char buffer[1024];
+	int nb;
 
-	snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
+	nb = snprintf(buffer, sizeof(buffer), "%s %d UDP %d %s %d typ %s",
 		candidate->foundation, candidate->componentID, candidate->priority, candidate->taddr.ip, candidate->taddr.port, ice_candidate_type(candidate));
+	if (nb < 0) {
+		ms_error("Cannot add ICE candidate attribute!");
+		return;
+	}
+	if (candidate->type != ICT_HostCandidate) {
+		nb = snprintf(buffer + nb, sizeof(buffer) - nb, " raddr %s rport %d", candidate->base->taddr.ip, candidate->base->taddr.port);
+		if (nb < 0) {
+			ms_error("Cannot add ICE candidate attribute!");
+			return;
+		}
+	}
 	sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
 }
 
