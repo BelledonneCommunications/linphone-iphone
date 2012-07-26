@@ -103,7 +103,7 @@
 	LinphoneAddress* addr; 
 	UIImage *image;
 	if (callLog->dir == LinphoneCallIncoming) {
-        if (callLog->status == LinphoneCallSuccess) {
+        if (callLog->status != LinphoneCallMissed) {
             image = [UIImage imageNamed:@"call_status_incoming.png"];
         } else {
             image = [UIImage imageNamed:@"call_status_missed.png"];
