@@ -489,9 +489,10 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-             switch(call->reason){
+			switch(call->reason){
 				case LinphoneReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
+				break;
 				case LinphoneReasonNotAnswered:
 					call->log->status=LinphoneCallMissed;
 				break;
