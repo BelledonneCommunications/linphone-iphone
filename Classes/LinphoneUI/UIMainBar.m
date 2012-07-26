@@ -76,10 +76,12 @@
                                              selector:@selector(callUpdate:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
+    /* MODIFICATION Remove chat
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceived:) 
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
+     */
     [self update];
 }
 
@@ -92,9 +94,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneCallUpdate" 
                                                   object:nil];
+    /* MODIFICATION Remove chat
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneTextReceived" 
                                                   object:nil];
+     */
 }
 
 - (void)viewDidLoad {
@@ -137,10 +141,11 @@
     [self updateView:[[PhoneMainView instance] firstView]];
 }
 
+/* MODIFICATION Remove chat
 - (void)textReceived:(NSNotification*)notif {  
     [self updateUnreadMessage:[ChatModel unreadMessages]];
 }
-
+ */
 
 #pragma mark - 
 
@@ -151,10 +156,13 @@
     } else {
         [self updateMissedCall:0];
     }
+    /* MODIFICATION Remove chat
     [self updateUnreadMessage:[ChatModel unreadMessages]];
+     */
 }
 
 - (void)updateUnreadMessage:(int)unreadMessage{
+    /* MODIFICATION Remove chat
     if (unreadMessage > 0) {
         if([chatNotificationView isHidden]) {
             [chatNotificationView setHidden:FALSE];
@@ -171,6 +179,7 @@
             }];
         }
     }
+     */
 }
 
 - (void)updateMissedCall:(int)missedCall{

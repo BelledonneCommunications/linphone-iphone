@@ -229,10 +229,17 @@
                                              selector:@selector(callUpdateEvent:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(castelCommandsEvent:)
+                                                 name:@"LinphoneCastelCommands"
+                                               object:nil];
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
+    
+    [self castelCommandsUpdate:[[LinphoneManager instance] castelCommands]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -241,7 +248,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:@"LinphoneCallUpdate" 
                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"LinphoneCastelCommands"
+                                                  object:nil];
 }
+
 
 #pragma mark - Event Functions
 
@@ -251,8 +262,36 @@
     [self callUpdate:call state:state];
 }
 
+- (void)castelCommandsEvent:(NSNotification*)notif {
+    [self castelCommandsUpdate:[notif userInfo]];
+}
 
-#pragma mark - 
+
+#pragma mark -
+
+- (void)castelCommandsUpdate:(NSDictionary*)castelCommands {
+    [option1Button setHidden:TRUE];
+    [option2Button setHidden:TRUE];
+    [option3Button setHidden:TRUE];
+    if(castelCommands != nil) {
+        NSArray *array = [castelCommands allKeys];
+        if([array count] >= 1) {
+            NSString *label = [array objectAtIndex:0];
+            [option1Button setHidden:FALSE];
+            [option1Button setTitle:label forState:UIControlStateNormal];
+        }
+        if([array count] >= 2) {
+            NSString *label = [array objectAtIndex:1];
+            [option2Button setHidden:FALSE];
+            [option2Button setTitle:label forState:UIControlStateNormal];
+        }
+        if([array count] >= 3) {
+            NSString *label = [array objectAtIndex:2];
+            [option3Button setHidden:FALSE];
+            [option3Button setTitle:label forState:UIControlStateNormal];
+        }
+    }
+}
 
 - (void)callUpdate:(LinphoneCall*)call state:(LinphoneCallState)state {  
     if(![LinphoneManager isLcReady]) {

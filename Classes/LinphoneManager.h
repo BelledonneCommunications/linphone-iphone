@@ -71,6 +71,7 @@ typedef struct _LinphoneCallAppData {
     
     id<IASKSettingsStore> settingsStore;
     sqlite3 *database;
+    NSDictionary *castelCommands;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -105,6 +106,7 @@ typedef struct _LinphoneCallAppData {
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
+@property (readonly) NSDictionary* castelCommands;
 
 @end
 

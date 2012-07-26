@@ -31,6 +31,9 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "ChatModel.h"
 
+#import "GDataXMLNode.h"
+#import "OrderedDictionary.h"
+
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
 #include "private.h"
@@ -67,6 +70,7 @@ extern  void libmsbcg729_init();
 @synthesize settingsStore;
 @synthesize database;
 @synthesize fastAddressBook;
+@synthesize castelCommands;
 
 struct codec_name_pref_table{
     const char *name;
@@ -164,6 +168,7 @@ struct codec_name_pref_table codec_pref_table[]={
     [fastAddressBook release];
     [self closeDatabase];
     [settingsStore release];
+    [castelCommands release];
     
     [super dealloc];
 }
@@ -333,6 +338,37 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 - (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
     
+    if(message != NULL) {
+        NSError *error;
+        GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithXMLString:[NSString stringWithUTF8String:message] options:0 error:&error];
+        if (doc == nil) {
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't parse XML: %@", [error localizedDescription]];
+            return;
+        }
+        NSArray *commands = [doc nodesForXPath:@"//VDUCMediaConfig/MediaConfig/CommandCode" error:nil];
+        if(castelCommands != nil) {
+            [castelCommands release];
+            castelCommands = nil;
+        }
+        if(commands != nil && [commands count]) {
+            OrderedDictionary *tempDict = [OrderedDictionary dictionaryWithCapacity:[commands count]];
+            castelCommands = tempDict;
+            for(GDataXMLElement *element in commands) {
+                GDataXMLNode *code = [element attributeForName:@"Code"];
+                if(code != nil) {
+                    NSArray *labelArray = [element elementsForName:@"Label"];
+                    if(labelArray != nil && [labelArray count] == 1) {
+                        GDataXMLNode *label = [labelArray objectAtIndex:0];
+                        [tempDict setObject:[code stringValue] forKey:[label stringValue]];
+                    }
+                }
+            }
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCastelCommands" object:self userInfo:castelCommands]; 
+        }
+    }
+    
+    /*
+    MODIFICATION: Remove Chat
     char *fromStr = linphone_address_as_string_uri_only(from);
     if(fromStr == NULL)
         return;
@@ -358,6 +394,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
                            nil] autorelease];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self userInfo:dict]; 
     [chat release];
+     */
 }
 
 static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {

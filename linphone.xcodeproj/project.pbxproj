@@ -198,8 +198,6 @@
 		D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
 		D32B6E2C15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
-		D32B6E3815A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
-		D32B6E3915A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32D5AA715ADE5D9008593F3 /* button_alert_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */; };
@@ -1399,6 +1397,7 @@
 		D3A8BB7815A6CC3200F96BE5 /* setup_back_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup_back_disabled.png; path = Resources/setup_back_disabled.png; sourceTree = "<group>"; };
 		D3A8BB7915A6CC3200F96BE5 /* setup_cancel_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup_cancel_disabled.png; path = Resources/setup_cancel_disabled.png; sourceTree = "<group>"; };
 		D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup_start_disabled.png; path = Resources/setup_start_disabled.png; sourceTree = "<group>"; };
+		D3B829FC15C148C90036C93E /* castel.xsd */ = {isa = PBXFileReference; lastKnownFileType = text; path = castel.xsd; sourceTree = "<group>"; };
 		D3B9A3DA15A58C440096EA4E /* chat_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_field.png; path = Resources/chat_field.png; sourceTree = "<group>"; };
 		D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_default.png; path = Resources/chat_ok_default.png; sourceTree = "<group>"; };
 		D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_over.png; path = Resources/chat_ok_over.png; sourceTree = "<group>"; };
@@ -2141,6 +2140,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				D3B829FC15C148C90036C93E /* castel.xsd */,
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -3416,7 +3416,6 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */,
-				D32B6E3815A5C2430033019F /* ChatModel.m in Sources */,
 				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
@@ -3500,7 +3499,6 @@
 				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */,
-				D32B6E3915A5C2430033019F /* ChatModel.m in Sources */,
 				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
