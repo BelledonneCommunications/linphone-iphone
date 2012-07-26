@@ -396,13 +396,17 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=call->params.has_video;
 	switch (linphone_core_get_firewall_policy(call->core)) {
-		case LinphonePolicyUseStun:
-			linphone_core_run_stun_tests(call->core,call);
-			break;
 		case LinphonePolicyUseIce:
 			linphone_core_gather_ice_candidates(call->core, call);
 			break;
+		case LinphonePolicyUseStun:
+			linphone_core_run_stun_tests(call->core,call);
+			/* No break to also destroy ice session in this case. */
 		default:
+			if (sal_op_get_ice_session(call->op) != NULL) {
+				ice_session_destroy(sal_op_get_ice_session(call->op));
+				sal_op_set_ice_session(call->op, NULL);
+			}
 			break;
 	}
 	discover_mtu(lc,linphone_address_get_domain(from));

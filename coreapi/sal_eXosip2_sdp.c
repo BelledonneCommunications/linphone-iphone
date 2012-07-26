@@ -689,6 +689,11 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			ice_session_set_remote_credentials(*ice_session, ice_ufrag, ice_pwd);
 			ice_dump_session(*ice_session);
 		}
+		if ((ice_session_just_created == FALSE) && ((ice_ufrag == NULL) || (ice_pwd == NULL))) {
+			/* We started with ICE activated but the peer apparently do not support ICE, so stop using it. */
+			ice_session_destroy(*ice_session);
+			*ice_session = NULL;
+		}
 	}
 	return 0;
 }
