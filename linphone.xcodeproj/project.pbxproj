@@ -282,6 +282,8 @@
 		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history_default.png */; };
 		D347347F1580E5F8003C7B8C /* history_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history_selected.png */; };
+		D34BD61015C136D70070C209 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D34BD60F15C136D70070C209 /* GDataXMLNode.m */; };
+		D34BD61115C136D70070C209 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D34BD60F15C136D70070C209 /* GDataXMLNode.m */; };
 		D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
 		D34F6F9F1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
 		D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D350F20C15A43BB100149E54 /* WizardViewController.m */; };
@@ -1233,6 +1235,8 @@
 		D34734791580DDF1003C7B8C /* PhoneMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		D347347C1580E5F8003C7B8C /* history_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_default.png; path = Resources/history_default.png; sourceTree = "<group>"; };
 		D347347D1580E5F8003C7B8C /* history_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_selected.png; path = Resources/history_selected.png; sourceTree = "<group>"; };
+		D34BD60E15C136D70070C209 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GDataXMLNode.h; path = Utils/GDataXML/GDataXMLNode.h; sourceTree = "<group>"; };
+		D34BD60F15C136D70070C209 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GDataXMLNode.m; path = Utils/GDataXML/GDataXMLNode.m; sourceTree = "<group>"; };
 		D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = InAppSettings.bundle; sourceTree = "<group>"; };
 		D350F20B15A43BB100149E54 /* WizardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WizardViewController.h; sourceTree = "<group>"; };
 		D350F20C15A43BB100149E54 /* WizardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardViewController.m; sourceTree = "<group>"; };
@@ -2488,6 +2492,7 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D34BD60D15C136770070C209 /* GDataXML */,
 				D38935F715A6D06800A3A3AA /* CPAnimation */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
@@ -2509,6 +2514,15 @@
 				D32B6E3715A5C2430033019F /* ChatModel.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		D34BD60D15C136770070C209 /* GDataXML */ = {
+			isa = PBXGroup;
+			children = (
+				D34BD60E15C136D70070C209 /* GDataXMLNode.h */,
+				D34BD60F15C136D70070C209 /* GDataXMLNode.m */,
+			);
+			name = GDataXML;
 			sourceTree = "<group>";
 		};
 		D37DC6C31594AE5600B2A5EB /* InAppSettingsKit */ = {
@@ -3396,6 +3410,7 @@
 				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				D35860D615B549B500513429 /* Utils.m in Sources */,
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
+				D34BD61015C136D70070C209 /* GDataXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3479,6 +3494,7 @@
 				D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				D35860D715B549B500513429 /* Utils.m in Sources */,
 				D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
+				D34BD61115C136D70070C209 /* GDataXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3535,7 +3551,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					"NinePatch//**",
+					"NinePatch/**",
+					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3549,6 +3566,7 @@
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
+					"-lxml2",
 				);
 				PRODUCT_NAME = castel;
 				SDKROOT = iphoneos;
@@ -3608,7 +3626,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					"NinePatch//**",
+					"NinePatch/**",
+					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3622,6 +3641,7 @@
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
+					"-lxml2",
 				);
 				PRODUCT_NAME = castel;
 				PROVISIONING_PROFILE = "FF266D15-2709-4CF8-8B8E-C919C6A9F57B";
@@ -3891,7 +3911,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					"NinePatch//**",
+					"NinePatch/**",
+					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3905,6 +3926,7 @@
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
+					"-lxml2",
 				);
 				PRODUCT_NAME = castel;
 				PROVISIONING_PROFILE = "";
@@ -3964,7 +3986,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					"NinePatch//**",
+					"NinePatch/**",
+					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3978,6 +4001,7 @@
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
 					"-Objc",
+					"-lxml2",
 				);
 				PRODUCT_NAME = castel;
 				SDKROOT = iphoneos;
