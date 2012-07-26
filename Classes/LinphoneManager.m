@@ -351,7 +351,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
             castelCommands = nil;
         }
         if(commands != nil && [commands count]) {
-            OrderedDictionary *tempDict = [OrderedDictionary dictionaryWithCapacity:[commands count]];
+            OrderedDictionary *tempDict = [[OrderedDictionary alloc ] initWithCapacity:[commands count]];
             castelCommands = tempDict;
             for(GDataXMLElement *element in commands) {
                 GDataXMLNode *code = [element attributeForName:@"Code"];

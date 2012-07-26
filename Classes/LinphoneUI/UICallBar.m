@@ -423,7 +423,7 @@
     }
 }
 
-- (void)hideOptions{
+- (void)hideOptions {
     [optionsButton setOff];
     if(![optionsView isHidden]) {
         CGRect frame = [optionsView frame];
@@ -451,6 +451,12 @@
     }
 }
 
+- (void)sendCastelCommand:(NSString *)command {
+    static const NSString *CASTEL_COMMAND_PREFIX = @"MediaCommand";
+    if(command && [command hasPrefix:@"MediaCommand"] && [command length] > [CASTEL_COMMAND_PREFIX length]) {
+        linphone_core_send_dtmf([LinphoneManager getLc], [command characterAtIndex:[CASTEL_COMMAND_PREFIX length]]);
+    }
+}
 
 #pragma mark - Action Functions
 
@@ -493,15 +499,27 @@
 }
 
 - (IBAction)onOption1Click:(id)sender {
-    
+    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
+    if(dict) {
+        NSString *command = [dict objectForKey:[option1Button titleForState:UIControlStateNormal]];
+        [self sendCastelCommand:command];
+    }
 }
 
 - (IBAction)onOption2Click:(id)sender {
-
+    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
+    if(dict) {
+        NSString *command = [dict objectForKey:[option2Button titleForState:UIControlStateNormal]];
+        [self sendCastelCommand:command];
+    }
 }
 
 - (IBAction)onOption3Click:(id)sender {
-    
+    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
+    if(dict) {
+        NSString *command = [dict objectForKey:[option3Button titleForState:UIControlStateNormal]];
+        [self sendCastelCommand:command];
+    }
 }
 
 - (IBAction)onConferenceClick:(id)sender {
