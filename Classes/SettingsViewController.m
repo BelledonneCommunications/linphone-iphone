@@ -19,6 +19,105 @@
 
 #import "SettingsViewController.h"
 #import "LinphoneManager.h"
+#import "UILinphone.h"
+
+static void removeTableBackground(UIView* view) {
+    if([view isKindOfClass:[UITableView class]]) {
+        [view setBackgroundColor:[UIColor clearColor]];
+    }
+    for(UIView *subview in [view subviews]) {
+        removeTableBackground(subview);
+    }
+}
+
+@interface UINavigationBarEx: UINavigationBar {
+    
+}
+@end
+
+@implementation UINavigationBarEx
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUINavigationBarEx {
+    [self setTintColor:LINPHONE_MAIN_COLOR];
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    UIImage *img = [UIImage imageNamed:@"settings_bar_background.png"];
+    [img drawInRect:rect];
+}
+
+@end
+
+@interface UINavigationControllerEx : UINavigationController
+
+@end
+
+@implementation UINavigationControllerEx
+
+- (id)initWithRootViewController:(UIViewController *)rootViewController {
+    removeTableBackground(rootViewController.view);
+    return [super initWithRootViewController:rootViewController];
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    removeTableBackground(viewController.view);
+    
+    UILabel *labelTitleView = [[UILabel alloc] init];
+    labelTitleView.backgroundColor = [UIColor clearColor];
+    labelTitleView.textColor = [UIColor colorWithRed:0x41/255.0f green:0x48/255.0f blue:0x4f/255.0f alpha:1.0];
+    labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    labelTitleView.font = [UIFont boldSystemFontOfSize:20];
+    labelTitleView.shadowOffset = CGSizeMake(0,1);
+    labelTitleView.textAlignment = UITextAlignmentCenter;
+    labelTitleView.text = viewController.navigationItem.title;
+    [labelTitleView sizeToFit];
+    viewController.navigationItem.titleView = labelTitleView;
+    
+    [super pushViewController:viewController animated:animated];
+}
+
+- (void)setViewControllers:(NSArray *)viewControllers {
+    for(UIViewController *controller in viewControllers) {
+        removeTableBackground(controller.view);
+    }
+    [super setViewControllers:viewControllers];
+}
+
+- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated {
+    for(UIViewController *controller in viewControllers) {
+        removeTableBackground(controller.view);
+    }
+    [super setViewControllers:viewControllers animated:animated];
+}
+
+@end
 
 @implementation SettingsViewController
 
@@ -59,17 +158,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
-#pragma mark - 
-
-+ (void)removeBackground:(UIView*)view {
-    if([view isKindOfClass:[UITableView class]]) {
-          [view setBackgroundColor:[UIColor clearColor]];  
-    }
-    for(UIView *subview in [view subviews]) {
-        [SettingsViewController removeBackground:subview];
-    }
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -82,8 +170,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     settingsController.settingsStore = [[LinphoneManager instance] settingsStore];
     
     navigationController.view.frame = self.view.frame;
-    [SettingsViewController removeBackground:navigationController.view];
-    [SettingsViewController removeBackground:settingsController.view];
+    removeTableBackground(navigationController.view);
+    [navigationController pushViewController:settingsController animated:FALSE];
     [self.view addSubview: navigationController.view];
 }
 
