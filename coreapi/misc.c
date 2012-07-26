@@ -692,17 +692,25 @@ void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	} while (!((audio_gatherings[0].response == TRUE) && (audio_gatherings[1].response == TRUE)
 		&& (!call->params.has_video || ((video_gatherings[0].response == TRUE) && (video_gatherings[1].response == TRUE)))));
 
-	ice_session_compute_candidates_foundations(ice_session);
-	ice_session_eliminate_redundant_candidates(ice_session);
-	ice_session_choose_default_candidates(ice_session);
+	if ((audio_gatherings[0].response == FALSE) || (audio_gatherings[1].response == FALSE)
+		|| (call->params.has_video && ((video_gatherings[0].response == FALSE) || (video_gatherings[1].response == FALSE)))) {
+		/* Failed some STUN checks, deactivate ICE. */
+		ice_session_destroy(ice_session);
+		ice_session = NULL;
+		sal_op_set_ice_session(call->op, ice_session);
+	} else {
+		ice_session_compute_candidates_foundations(ice_session);
+		ice_session_eliminate_redundant_candidates(ice_session);
+		ice_session_choose_default_candidates(ice_session);
+	}
 
 	close_socket(audio_gatherings[0].sock);
 	close_socket(audio_gatherings[1].sock);
-	ice_dump_candidates(audio_check_list);
+	if (ice_session != NULL) ice_dump_candidates(audio_check_list);
 	if (call->params.has_video && (video_check_list != NULL)) {
 		if (video_gatherings[0].sock != -1) close_socket(video_gatherings[0].sock);
 		if (video_gatherings[1].sock != -1) close_socket(video_gatherings[1].sock);
-		ice_dump_candidates(video_check_list);
+		if (ice_session != NULL) ice_dump_candidates(video_check_list);
 	}
 }
 

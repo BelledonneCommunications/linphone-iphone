@@ -373,7 +373,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	}
 
 	/*only add a c= line within the stream description if address are differents*/
-	if (strcmp(rtp_addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
+	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
 		bool_t inet6;
 		if (strchr(rtp_addr,':')!=NULL){
 			inet6=TRUE;
