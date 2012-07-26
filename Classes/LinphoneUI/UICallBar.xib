@@ -1662,9 +1662,9 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">option2Button</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="447196686"/>
+						<reference key="destination" ref="976589610"/>
 					</object>
-					<int key="connectionID">150</int>
+					<int key="connectionID">140</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
