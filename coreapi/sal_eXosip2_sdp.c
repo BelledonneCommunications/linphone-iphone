@@ -473,7 +473,7 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceSession **ice_session){
 	int i,j;
 	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
-	const char *ice_ufrag, *ice_pwd;
+	const char *ice_ufrag, *ice_pwd, *ice_remote_candidates=NULL;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int media_attribute_nb;
@@ -629,6 +629,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				if (nb == 6) {
 					ice_add_remote_candidate(ice_session_check_list(*ice_session, i), type, ip, port, componentID, priority, foundation);
 				}
+			} else if ((keywordcmp("remote-candidates", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				ice_remote_candidates = attr->a_att_value;
 			} else if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				ice_ufrag = attr->a_att_value;
 			} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
@@ -636,6 +638,26 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			}
 		}
 		if ((*ice_session != NULL) && ice_session_check_list(*ice_session, i)) {
+			if (ice_remote_candidates != NULL) {
+				char ip[64];
+				unsigned int port;
+				unsigned int componentID;
+				int offset;
+
+				while (3 == sscanf(ice_remote_candidates, "%u %s %u%n", &componentID, ip, &port, &offset)) {
+					if (componentID == 1) {
+						if ((stream->rtp_addr == NULL) || (stream->rtp_addr[0] == '\0')) rtp_addr = desc->addr;
+						else rtp_addr = stream->rtp_addr;
+						ice_add_losing_pair(ice_session_check_list(*ice_session, i), componentID, ip, port, rtp_addr, stream->rtp_port);
+					} else if (componentID == 2) {
+						if ((stream->rtcp_addr == NULL) || (stream->rtcp_addr[0] == '\0')) rtp_addr = desc->addr;
+						else rtp_addr = stream->rtcp_addr;
+						ice_add_losing_pair(ice_session_check_list(*ice_session, i), componentID, ip, port, rtp_addr, stream->rtcp_port);
+					}
+					ice_remote_candidates += offset;
+					if (ice_remote_candidates[offset] == ' ') ice_remote_candidates += 1;
+				}
+			}
 			if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
 				ice_check_list_set_remote_credentials(ice_session_check_list(*ice_session, i), ice_ufrag, ice_pwd);
 			}
