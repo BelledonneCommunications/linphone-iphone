@@ -170,15 +170,15 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc, const 
 	if ((ice_session != NULL) && (ice_session_check_list(ice_session, 0) != NULL)) {
 		char buffer[512];
 		switch (ice_session_state(ice_session)) {
+			case IS_Completed:
+				sdp_message_a_attribute_add(local, -1, osip_strdup("nortpproxy"), osip_strdup("yes"));
+				/* No break to also include the ice-ufrag and ice-pwd attributes when ICE session is completed. */
 			case IS_Running:
 			case IS_Stopped:
 				snprintf(buffer, sizeof(buffer), "%s", ice_session_local_pwd(ice_session));
 				sdp_message_a_attribute_add(local, -1, osip_strdup("ice-pwd"), osip_strdup(buffer));
 				snprintf(buffer, sizeof(buffer), "%s", ice_session_local_ufrag(ice_session));
 				sdp_message_a_attribute_add(local, -1, osip_strdup("ice-ufrag"), osip_strdup(buffer));
-				break;
-			case IS_Completed:
-				sdp_message_a_attribute_add(local, -1, osip_strdup("nortpproxy"), osip_strdup("yes"));
 				break;
 			default:
 				break;
