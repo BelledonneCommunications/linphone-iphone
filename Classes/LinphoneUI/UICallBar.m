@@ -217,9 +217,6 @@
     // Set label multilines: IB lack !
     [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
     [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
-    
-    [optionsView setHidden:TRUE];
-    [padView setHidden:TRUE];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -238,8 +235,9 @@
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
-    
     [self castelCommandsUpdate:[[LinphoneManager instance] castelCommands]];
+    [optionsView setHidden:TRUE];
+    [padView setHidden:TRUE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
