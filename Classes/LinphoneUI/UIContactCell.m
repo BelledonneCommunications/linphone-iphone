@@ -101,11 +101,11 @@
         CFRelease(lFirstName);
     
     // Avatar
-    UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
+    /*UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
     if(image == nil) {
         image = [UIImage imageNamed:@"avatar_unknown_small.png"];
     }
-    [avatarImage setImage:image];
+    [avatarImage setImage:image];*/
     
     //
     // Adapt size
