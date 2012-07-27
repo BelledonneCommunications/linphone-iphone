@@ -19,6 +19,237 @@
 
 #import "SettingsViewController.h"
 #import "LinphoneManager.h"
+#import "UILinphone.h"
+#import "UACellBackgroundView.h"
+
+#import "DCRoundSwitch.h"
+
+#import "IASKSpecifierValuesViewController.h"
+#import "IASKPSTextFieldSpecifierViewCell.h"
+#import "IASKSpecifier.h"
+#import "IASKTextField.h"
+
+
+#pragma mark - IASKSwitchEx Class
+
+@interface IASKSwitchEx : DCRoundSwitch {
+    NSString *_key;
+}
+
+@property (nonatomic, retain) NSString *key;
+
+@end
+
+@implementation IASKSwitchEx
+
+@synthesize key=_key;
+
+- (void)dealloc {
+    [_key release], _key = nil;
+	
+    [super dealloc];
+}
+
+@end
+
+
+#pragma mark - IASKSpecifierValuesViewControllerEx Class
+
+// Patch IASKSpecifierValuesViewController
+@interface IASKSpecifierValuesViewControllerEx: IASKSpecifierValuesViewController
+
+@end
+
+@implementation IASKSpecifierValuesViewControllerEx
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    // Background View
+    UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+    cell.selectedBackgroundView = selectedBackgroundView;
+    [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
+    return cell;
+}
+
+@end
+
+
+#pragma mark - IASKAppSettingsViewControllerEx Class
+
+@interface IASKAppSettingsViewController(PrivateInterface)
+- (UITableViewCell*)newCellForIdentifier:(NSString*)identifier;
+@end;
+
+@interface IASKAppSettingsViewControllerEx : IASKAppSettingsViewController
+
+@end
+
+@implementation IASKAppSettingsViewControllerEx
+
+- (UITableViewCell*)newCellForIdentifier:(NSString*)identifier {
+	UITableViewCell *cell = nil;
+	if ([identifier isEqualToString:kIASKPSToggleSwitchSpecifier]) {
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kIASKPSToggleSwitchSpecifier];
+		cell.accessoryView = [[[IASKSwitchEx alloc] initWithFrame:CGRectMake(0, 0, 79, 27)] autorelease];
+		[((IASKSwitchEx*)cell.accessoryView) addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
+        [((IASKSwitchEx*)cell.accessoryView) setOnTintColor:LINPHONE_MAIN_COLOR];
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	} else {
+        cell = [super newCellForIdentifier:identifier];
+    }
+    return cell;
+}
+
+- (void)initIASKAppSettingsViewControllerEx {
+    // Force kIASKSpecifierValuesViewControllerIndex
+    static int kIASKSpecifierValuesViewControllerIndex = 0;
+    _viewList = [[NSMutableArray alloc] init];
+    [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKSpecifierValuesView", @"ViewName",nil]];
+    [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKAppSettingsView", @"ViewName",nil]];
+    
+    NSMutableDictionary *newItemDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    [newItemDict addEntriesFromDictionary: [_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex]];	// copy the title and explain strings
+    
+    IASKSpecifierValuesViewController *targetViewController = [[IASKSpecifierValuesViewControllerEx alloc] init];
+    // add the new view controller to the dictionary and then to the 'viewList' array
+    [newItemDict setObject:targetViewController forKey:@"viewController"];
+    [_viewList replaceObjectAtIndex:kIASKSpecifierValuesViewControllerIndex withObject:newItemDict];
+    [targetViewController release];
+}
+
+- (id)initWithStyle:(UITableViewStyle)style {
+    self = [super initWithStyle:style];
+    if(self != nil) {
+        [self initIASKAppSettingsViewControllerEx];
+    }
+    return self;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    if([cell isKindOfClass:[IASKPSTextFieldSpecifierViewCell class]]) {
+        UITextField *field = ((IASKPSTextFieldSpecifierViewCell*)cell).textField;
+        [field setTextColor:[LINPHONE_MAIN_COLOR darkerColor]];
+    }
+    
+    cell.detailTextLabel.textColor = [LINPHONE_MAIN_COLOR darkerColor];
+    
+    // Background View
+    UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+    cell.selectedBackgroundView = selectedBackgroundView;
+    [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
+    return cell;
+}
+
+@end
+
+
+#pragma mark - UINavigationBarEx Class
+
+@interface UINavigationBarEx: UINavigationBar {
+    
+}
+@end
+
+@implementation UINavigationBarEx
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUINavigationBarEx {
+    [self setTintColor:LINPHONE_MAIN_COLOR];
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self initUINavigationBarEx];
+    }
+    return self;
+}
+
+- (void)drawRect:(CGRect)rect {
+    UIImage *img = [UIImage imageNamed:@"settings_bar_background.png"];
+    [img drawInRect:rect];
+}
+
+@end
+
+
+#pragma mark - UINavigationControllerEx Class
+
+@interface UINavigationControllerEx : UINavigationController
+
+@end
+
+@implementation UINavigationControllerEx
+
++ (void)removeTableBackground:(UIView*)view {
+    if([view isKindOfClass:[UITableView class]]) {
+        [view setBackgroundColor:[UIColor clearColor]];
+    }
+    for(UIView *subview in [view subviews]) {
+        [UINavigationControllerEx removeTableBackground:subview];
+    }
+}
+
+- (id)initWithRootViewController:(UIViewController *)rootViewController {
+    [UINavigationControllerEx removeTableBackground:rootViewController.view];
+    return [super initWithRootViewController:rootViewController];
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [UINavigationControllerEx removeTableBackground:viewController.view];
+    
+    [viewController viewWillAppear:FALSE]; // Force load: Load Title
+    UILabel *labelTitleView = [[UILabel alloc] init];
+    labelTitleView.backgroundColor = [UIColor clearColor];
+    labelTitleView.textColor = [UIColor colorWithRed:0x41/255.0f green:0x48/255.0f blue:0x4f/255.0f alpha:1.0];
+    labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    labelTitleView.font = [UIFont boldSystemFontOfSize:20];
+    labelTitleView.shadowOffset = CGSizeMake(0,1);
+    labelTitleView.textAlignment = UITextAlignmentCenter;
+    labelTitleView.text = viewController.title;
+    [labelTitleView sizeToFit];
+    viewController.navigationItem.titleView = labelTitleView;
+    
+    [super pushViewController:viewController animated:animated];
+}
+
+- (void)setViewControllers:(NSArray *)viewControllers {
+    for(UIViewController *controller in viewControllers) {
+        [UINavigationControllerEx removeTableBackground:controller.view];
+    }
+    [super setViewControllers:viewControllers];
+}
+
+- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated {
+    for(UIViewController *controller in viewControllers) {
+        [UINavigationControllerEx removeTableBackground:controller.view];
+    }
+    [super setViewControllers:viewControllers animated:animated];
+}
+
+@end
+
 
 @implementation SettingsViewController
 
@@ -59,17 +290,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
-#pragma mark - 
-
-+ (void)removeBackground:(UIView*)view {
-    if([view isKindOfClass:[UITableView class]]) {
-          [view setBackgroundColor:[UIColor clearColor]];  
-    }
-    for(UIView *subview in [view subviews]) {
-        [SettingsViewController removeBackground:subview];
-    }
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -82,8 +302,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     settingsController.settingsStore = [[LinphoneManager instance] settingsStore];
     
     navigationController.view.frame = self.view.frame;
-    [SettingsViewController removeBackground:navigationController.view];
-    [SettingsViewController removeBackground:settingsController.view];
+    [navigationController pushViewController:settingsController animated:FALSE];
     [self.view addSubview: navigationController.view];
 }
 
