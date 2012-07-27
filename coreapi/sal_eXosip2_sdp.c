@@ -652,6 +652,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				ice_ufrag = attr->a_att_value;
 			} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				ice_pwd = attr->a_att_value;
+			} else if (keywordcmp("ice-mismatch", attr->a_att_field) == 0) {
+				ice_check_list_set_state(ice_session_check_list(*ice_session, i), ICL_Failed);
 			}
 		}
 		if ((*ice_session != NULL) && ice_session_check_list(*ice_session, i)) {
