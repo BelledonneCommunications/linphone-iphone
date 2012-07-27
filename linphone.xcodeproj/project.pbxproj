@@ -220,7 +220,6 @@
 		D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D347347E1580E5F8003C7B8C /* history_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347C1580E5F8003C7B8C /* history_default.png */; };
 		D347347F1580E5F8003C7B8C /* history_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D347347D1580E5F8003C7B8C /* history_selected.png */; };
-		D34BD61415C13A540070C209 /* libNinePatch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D389363215A6D3C500A3A3AA /* libNinePatch.a */; };
 		D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		D34BD61915C13D0B0070C209 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
@@ -662,7 +661,6 @@
 		D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362315A6D19800A3A3AA /* CPAnimationSequence.m */; };
 		D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
 		D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
-		D389363515A6D40000A3A3AA /* libNinePatch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D389363215A6D3C500A3A3AA /* libNinePatch.a */; };
 		D389363915A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */; };
 		D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */; };
 		D38D14AF15A30B3D008497E8 /* cell_call_first_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */; };
@@ -871,23 +869,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D34BD61215C139D90070C209 /* PBXContainerItemProxy */ = {
+		D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = NinePatch;
-		};
-		D389363115A6D3C500A3A3AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */;
+			containerPortal = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = NinePatch;
 		};
-		D389363315A6D3EB00A3A3AA /* PBXContainerItemProxy */ = {
+		D3B90E1A15C2CBC800F64F8C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */;
+			containerPortal = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = NinePatch;
+		};
+		D3B90E1C15C2CBCD00F64F8C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = NinePatch;
@@ -1423,7 +1421,6 @@
 		D389362315A6D19800A3A3AA /* CPAnimationSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationSequence.m; path = Utils/CPAnimation/CPAnimationSequence.m; sourceTree = "<group>"; };
 		D389362415A6D19800A3A3AA /* CPAnimationStep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPAnimationStep.h; path = Utils/CPAnimation/CPAnimationStep.h; sourceTree = "<group>"; };
 		D389362515A6D19800A3A3AA /* CPAnimationStep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationStep.m; path = Utils/CPAnimation/CPAnimationStep.m; sourceTree = "<group>"; };
-		D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NinePatch.xcodeproj; path = NinePatch/NinePatch.xcodeproj; sourceTree = "<group>"; };
 		D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_incoming.9.png; path = Resources/chat_bubble_incoming.9.png; sourceTree = "<group>"; };
 		D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_outgoing.9.png; path = Resources/chat_bubble_outgoing.9.png; sourceTree = "<group>"; };
 		D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_first_highlight.png; path = Resources/cell_call_first_highlight.png; sourceTree = "<group>"; };
@@ -1441,6 +1438,7 @@
 		D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setup_start_disabled.png; path = Resources/setup_start_disabled.png; sourceTree = "<group>"; };
 		D3B82A0015C18A710036C93E /* history_details_bar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_details_bar_background.png; path = Resources/history_details_bar_background.png; sourceTree = "<group>"; };
 		D3B82A0115C18A710036C93E /* settings_bar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = settings_bar_background.png; path = Resources/settings_bar_background.png; sourceTree = "<group>"; };
+		D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NinePatch.xcodeproj; path = Utils/NinePatch/NinePatch.xcodeproj; sourceTree = "<group>"; };
 		D3B9A3DA15A58C440096EA4E /* chat_field.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_field.png; path = Resources/chat_field.png; sourceTree = "<group>"; };
 		D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_default.png; path = Resources/chat_ok_default.png; sourceTree = "<group>"; };
 		D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_ok_over.png; path = Resources/chat_ok_over.png; sourceTree = "<group>"; };
@@ -1649,7 +1647,6 @@
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				D389363515A6D40000A3A3AA /* libNinePatch.a in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
 				D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */,
 				344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */,
@@ -1705,7 +1702,6 @@
 				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
 				22D8F173147548E2008C97DB /* SystemConfiguration.framework in Frameworks */,
 				22D8F166147548E2008C97DB /* UIKit.framework in Frameworks */,
-				D34BD61415C13A540070C209 /* libNinePatch.a in Frameworks */,
 				22D8F178147548E2008C97DB /* libresolv.dylib in Frameworks */,
 				D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */,
 				22D8F164147548E2008C97DB /* libcrypto.a in Frameworks */,
@@ -2224,7 +2220,6 @@
 				22744043106F33FC006EC466 /* Security.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
 				22F51EF5107FA66500F98953 /* untitled.plist */,
-				D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				220FAC77107654FC0068D98F /* include */,
@@ -2540,6 +2535,7 @@
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
 				D3807FC715C2894A005BE9BC /* InAppSettingsKit */,
+				D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */,
 				D326483615887D5200930C67 /* OrderedDictionary.h */,
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
 				D3F9A9DD15AF0FFE0045320F /* TPKeyboardAvoiding */,
@@ -2648,20 +2644,20 @@
 			name = CPAnimation;
 			sourceTree = "<group>";
 		};
-		D389362B15A6D3C500A3A3AA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D389363215A6D3C500A3A3AA /* libNinePatch.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		D398D3031594B0FB00FD553C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		D3B90E1215C2CB5700F64F8C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D3B90E1915C2CB5800F64F8C /* libNinePatch.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */ = {
@@ -2708,7 +2704,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D389363415A6D3EB00A3A3AA /* PBXTargetDependency */,
+				D3B90E1B15C2CBC800F64F8C /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -2727,7 +2723,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D34BD61315C139D90070C209 /* PBXTargetDependency */,
+				D3B90E1D15C2CBCD00F64F8C /* PBXTargetDependency */,
 			);
 			name = "linphone-no-gpl-thirdparties";
 			productName = linphone;
@@ -2757,8 +2753,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = D389362B15A6D3C500A3A3AA /* Products */;
-					ProjectRef = D389362A15A6D3C500A3A3AA /* NinePatch.xcodeproj */;
+					ProductGroup = D3B90E1215C2CB5700F64F8C /* Products */;
+					ProjectRef = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -2770,11 +2766,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		D389363215A6D3C500A3A3AA /* libNinePatch.a */ = {
+		D3B90E1915C2CB5800F64F8C /* libNinePatch.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libNinePatch.a;
-			remoteRef = D389363115A6D3C500A3A3AA /* PBXContainerItemProxy */;
+			remoteRef = D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3588,15 +3584,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D34BD61315C139D90070C209 /* PBXTargetDependency */ = {
+		D3B90E1B15C2CBC800F64F8C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = NinePatch;
-			targetProxy = D34BD61215C139D90070C209 /* PBXContainerItemProxy */;
+			targetProxy = D3B90E1A15C2CBC800F64F8C /* PBXContainerItemProxy */;
 		};
-		D389363415A6D3EB00A3A3AA /* PBXTargetDependency */ = {
+		D3B90E1D15C2CBCD00F64F8C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = NinePatch;
-			targetProxy = D389363315A6D3EB00A3A3AA /* PBXContainerItemProxy */;
+			targetProxy = D3B90E1C15C2CBCD00F64F8C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3643,7 +3639,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3715,7 +3711,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3768,7 +3764,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3821,7 +3817,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3875,7 +3871,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -3929,7 +3925,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4001,7 +3997,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4074,7 +4070,7 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					NinePatch,
+					classes/Utils/NinePatch/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
