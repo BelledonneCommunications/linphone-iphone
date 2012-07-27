@@ -26,7 +26,7 @@
 
 - (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am;
 
-- (UIColor *)multColor:(float)mult;
+- (UIColor *)lumColor:(float)mult;
 
 - (UIColor *)lighterColor;
 
