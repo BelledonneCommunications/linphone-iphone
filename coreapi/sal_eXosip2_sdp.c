@@ -250,6 +250,10 @@ static void add_ice_candidates(sdp_message_t *msg, int lineno, const IceCheckLis
 	const IceCandidate *candidate;
 	int i;
 
+	if ((ice_check_list_state(ice_cl) == ICL_Failed) && ice_check_list_is_mismatch(ice_cl)) {
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-mismatch"), NULL);
+		return;
+	}
 	for (i = 0; i < ms_list_size(ice_cl->local_candidates); i++) {
 		candidate = ms_list_nth_data(ice_cl->local_candidates, i);
 		switch (ice_check_list_state(ice_cl)) {
@@ -697,6 +701,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			} else {
 				ice_session_set_role(*ice_session, IR_Controlled);
 			}
+			ice_session_check_mismatch(*ice_session);
 		}
 		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
 			ice_session_set_remote_credentials(*ice_session, ice_ufrag, ice_pwd);
