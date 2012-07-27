@@ -18,35 +18,75 @@
  */
 
 #import "UILinphone.h"
+#import "ColorSpaceUtilities.h"
+#import "Utils.h"
 
 @implementation UIColor (LightAndDark)
 
-- (UIColor *)multColor:(float)mult {
-    float h, s, b, a;
-    if ([self getHue:&h saturation:&s brightness:&b alpha:&a])
-        return [UIColor colorWithHue:h
-                          saturation:s
-                          brightness:MIN(MAX(b * mult, 0.0), 1.0)
-                               alpha:a];
-    return nil;
+- (UIColor *)lumColor:(float)mult {
+    float hsbH, hsbS, hsbB;
+    float rgbaR, rgbaG, rgbaB, rgbaA;
+    
+    // Get RGB
+    CGColorRef cgColor = [self CGColor];
+    CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
+    if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
+        return self;
+    } else {
+        const float *colors = CGColorGetComponents(cgColor);
+        rgbaR = colors[0];
+        rgbaG = colors[1];
+        rgbaB = colors[2];
+        rgbaA = CGColorGetAlpha(cgColor);
+    }
+    
+    RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
+    
+    hsbB = MIN(MAX(hsbB * mult, 0.0), 1.0);
+    
+    HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
+    
+    return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
 - (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am {
-    float h, s, b, a;
-    if ([self getHue:&h saturation:&s brightness:&b alpha:&a])
-        return [UIColor colorWithHue:MIN(MAX(h + hm, 0.0), 1.0)
-                          saturation:MIN(MAX(s + sm, 0.0), 1.0)
-                          brightness:MIN(MAX(b + bm, 0.0), 1.0)
-                               alpha:MIN(MAX(a + am, 0.0), 1.0)];
-    return nil;
+    float hsbH, hsbS, hsbB;
+    float rgbaR, rgbaG, rgbaB, rgbaA;
+    
+    
+    // Get RGB
+    CGColorRef cgColor = [self CGColor];
+    CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
+    if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't convert not RGB color"];
+        return self;
+    } else {
+        const float *colors = CGColorGetComponents(cgColor);
+        rgbaR = colors[0];
+        rgbaG = colors[1];
+        rgbaB = colors[2];
+        rgbaA = CGColorGetAlpha(cgColor);
+    }
+    
+    RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
+    
+    hsbH = MIN(MAX(hsbH + hm, 0.0), 1.0);
+    hsbS = MIN(MAX(hsbS + sm, 0.0), 1.0);
+    hsbB = MIN(MAX(hsbB + bm, 0.0), 1.0);
+    rgbaA = MIN(MAX(rgbaA + am, 0.0), 1.0);
+    
+    HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
+    
+    return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
 - (UIColor *)lighterColor {
-    return [self multColor:1.3];
+    return [self lumColor:1.3];
 }
 
 - (UIColor *)darkerColor {
-    return [self multColor:0.75];
+    return [self lumColor:0.75];
 }
 
 @end

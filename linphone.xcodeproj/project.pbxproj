@@ -644,6 +644,8 @@
 		D380800315C2894A005BE9BC /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FE715C2894A005BE9BC /* IASKTextField.m */; };
 		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380800615C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
+		D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
+		D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
 		D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EB1580FE3A00FA0D23 /* contacts_default.png */; };
 		D38327F41580FE3A00FA0D23 /* contacts_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts_selected.png */; };
 		D38327F51580FE3A00FA0D23 /* dialer_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327ED1580FE3A00FA0D23 /* dialer_default.png */; };
@@ -1403,6 +1405,8 @@
 		D3807FE615C2894A005BE9BC /* IASKTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKTextField.h; sourceTree = "<group>"; };
 		D3807FE715C2894A005BE9BC /* IASKTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKTextField.m; sourceTree = "<group>"; };
 		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
+		D380801115C29984005BE9BC /* ColorSpaceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorSpaceUtilities.h; path = Utils/ColorSpaceUtilities.h; sourceTree = "<group>"; };
+		D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorSpaceUtilites.m; path = Utils/ColorSpaceUtilites.m; sourceTree = "<group>"; };
 		D38327EB1580FE3A00FA0D23 /* contacts_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_default.png; path = Resources/contacts_default.png; sourceTree = "<group>"; };
 		D38327EC1580FE3A00FA0D23 /* contacts_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_selected.png; path = Resources/contacts_selected.png; sourceTree = "<group>"; };
 		D38327ED1580FE3A00FA0D23 /* dialer_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialer_default.png; path = Resources/dialer_default.png; sourceTree = "<group>"; };
@@ -2529,6 +2533,8 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
+				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
 				D38935F715A6D06800A3A3AA /* CPAnimation */,
 				D3807FB615C28940005BE9BC /* DCRoundSwitch */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
@@ -3480,6 +3486,7 @@
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
+				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3574,6 +3581,7 @@
 				D380800115C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				D380800315C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
+				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
