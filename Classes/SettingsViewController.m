@@ -95,10 +95,41 @@
 		[((IASKSwitchEx*)cell.accessoryView) addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
         [((IASKSwitchEx*)cell.accessoryView) setOnTintColor:LINPHONE_MAIN_COLOR];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
+        cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
 	} else {
         cell = [super newCellForIdentifier:identifier];
     }
     return cell;
+}
+
+- (void)toggledValue:(id)sender {
+    IASKSwitchEx *toggle    = [[(IASKSwitchEx*)sender retain] autorelease];
+    IASKSpecifier *spec   = [_settingsReader specifierForKey:[toggle key]];
+    
+    if ([toggle isOn]) {
+        if ([spec trueValue] != nil) {
+            [self.settingsStore setObject:[spec trueValue] forKey:[toggle key]];
+        }
+        else {
+            [self.settingsStore setBool:YES forKey:[toggle key]];
+        }
+    }
+    else {
+        if ([spec falseValue] != nil) {
+            [self.settingsStore setObject:[spec falseValue] forKey:[toggle key]];
+        }
+        else {
+            [self.settingsStore setBool:NO forKey:[toggle key]];
+        }
+    }
+    // Start notification after animation of DCRoundSwitch
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
+                                                            object:[toggle key]
+                                                          userInfo:[NSDictionary dictionaryWithObject:[self.settingsStore objectForKey:[toggle key]]
+                                                                                               forKey:[toggle key]]];
+    });
 }
 
 - (void)initIASKAppSettingsViewControllerEx {
