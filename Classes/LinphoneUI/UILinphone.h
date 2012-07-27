@@ -17,12 +17,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
 
-#ifndef UILINPHONE_H
-#define UILINPHONE_H
-
+#import <UIKit/UIColor.h>
 
 #define LINPHONE_MAIN_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
 #define LINPHONE_TABLE_CELL_BACKGROUND_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
 
+@interface UIColor (LightAndDark)
 
-#endif
+- (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am;
+
+- (UIColor *)multColor:(float)mult;
+
+- (UIColor *)lighterColor;
+
+- (UIColor *)darkerColor;
+
+@end
