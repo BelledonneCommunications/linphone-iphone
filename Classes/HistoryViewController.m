@@ -48,7 +48,6 @@ typedef enum _HistoryView {
     [allButton release];
     [missedButton release];
     [editButton release];
-    
     [super dealloc];
 }
 

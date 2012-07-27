@@ -179,7 +179,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     id data = [avatarMap objectForKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
     if(data == nil) {
         image = [FastAddressBook getContactImage:contact thumbnail:true];
-        [avatarMap setObject:image forKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
+        if(image != nil) {
+            [avatarMap setObject:image forKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
+        } else {
+            [avatarMap setObject:[NSNull null] forKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
+        }
     } else if(data != [NSNull null]) {
         image = data;
     }
