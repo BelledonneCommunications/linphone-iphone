@@ -627,7 +627,20 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				nb = sscanf(attr->a_att_value, "%s %u UDP %u %s %u typ %s",
 					foundation, &componentID, &priority, ip, &port, type);
 				if (nb == 6) {
-					ice_add_remote_candidate(ice_session_check_list(*ice_session, i), type, ip, port, componentID, priority, foundation);
+					char *default_ip = desc->addr;
+					unsigned int default_port = stream->rtp_port;
+					bool_t is_default_candidate = FALSE;
+					if (componentID == 1) {
+						if ((stream->rtp_addr == NULL) || (stream->rtp_addr[0] == '\0')) default_ip = desc->addr;
+						else default_ip = stream->rtp_addr;
+						default_port = stream->rtp_port;
+					} else if (componentID == 2) {
+						if ((stream->rtcp_addr == NULL) || (stream->rtcp_addr[0] == '\0')) default_ip = desc->addr;
+						else default_ip = stream->rtcp_addr;
+						default_port = stream->rtcp_port;
+					}
+					if ((port == default_port) && (strlen(ip) == strlen(default_ip)) && (strcmp(ip, default_ip) == 0)) is_default_candidate = TRUE;
+					ice_add_remote_candidate(ice_session_check_list(*ice_session, i), type, ip, port, componentID, priority, foundation, is_default_candidate);
 				}
 			} else if ((keywordcmp("remote-candidates", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				ice_remote_candidates = attr->a_att_value;
