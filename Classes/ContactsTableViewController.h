@@ -24,6 +24,7 @@
 
 @interface ContactsTableViewController : UITableViewController {
     OrderedDictionary* addressBookMap;
+    NSMutableDictionary* avatarMap;
     
     ABAddressBookRef addressBook;
 }

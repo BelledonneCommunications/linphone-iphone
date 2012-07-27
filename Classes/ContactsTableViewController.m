@@ -31,6 +31,7 @@
 
 - (void)initContactsTableViewController {
     addressBookMap  = [[OrderedDictionary alloc] init];
+    avatarMap = [[NSMutableDictionary alloc] init];
     
     addressBook = ABAddressBookCreate();
     ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
@@ -56,6 +57,9 @@
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
     [addressBookMap removeAllObjects];
+    [addressBookMap release];
+    [avatarMap removeAllObjects];
+    [avatarMap release];
     [super dealloc];
 }
 
@@ -68,6 +72,7 @@
         
         // Reset Address book
         [addressBookMap removeAllObjects];
+        [avatarMap removeAllObjects];
         
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
@@ -78,7 +83,7 @@
                 for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
                     CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                     if(CFDictionaryContainsKey(lDict, @"service")) {
-                        if(CFStringCompare((CFStringRef)@"SIP", CFDictionaryGetValue(lDict, @"service"), kCFCompareCaseInsensitive) == 0) {     
+                        if(CFStringCompare((CFStringRef)@"SIP", CFDictionaryGetValue(lDict, @"service"), kCFCompareCaseInsensitive) == 0) {
                             add = true;
                         }
                     } else {
@@ -126,7 +131,7 @@
             }
         }
         CFRelease(lContacts);
-    } 
+    }
     [self.tableView reloadData];
 }
 
@@ -135,7 +140,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     ABAddressBookRevert(addressBook);
     [controller loadData];
 }
-
 
 #pragma mark - ViewController Functions
 
@@ -169,6 +173,21 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     
     NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
     ABRecordRef contact = [subDic objectForKey:key];
+    
+    // Cached avatar
+    UIImage *image = nil;
+    id data = [avatarMap objectForKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
+    if(data == nil) {
+        image = [FastAddressBook getContactImage:contact thumbnail:true];
+        [avatarMap setObject:image forKey:[NSNumber numberWithInt: ABRecordGetRecordID(contact)]];
+    } else if(data != [NSNull null]) {
+        image = data;
+    }
+    if(image == nil) {
+        image = [UIImage imageNamed:@"avatar_unknown_small.png"];
+    }
+    [[cell avatarImage] setImage:image];
+    
     [cell setContact: contact];
     return cell;
 }
