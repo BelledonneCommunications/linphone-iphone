@@ -201,16 +201,15 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(currentViewDescription != nil) {
+    if(currentViewDescription != nil && [[LinphoneManager instance].settingsStore boolForKey:@"landscape_preference"]) {
         if (UIInterfaceOrientationIsPortrait(interfaceOrientation) && [currentViewDescription portraitMode]) {
             return YES;
         }
         if (UIInterfaceOrientationIsLandscape(interfaceOrientation) && [currentViewDescription landscapeMode]) {
             return YES;
         }
-        return NO;
     }
-    return YES;
+    return NO;
 }
 
 
@@ -254,7 +253,7 @@
 }
 
 - (UIInterfaceOrientation)getCorrectInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(currentViewDescription != nil) {
+    if(currentViewDescription != nil && [[LinphoneManager instance].settingsStore boolForKey:@"landscape_preference"]) {
         if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
             if ([currentViewDescription portraitMode]) {
                 return interfaceOrientation;

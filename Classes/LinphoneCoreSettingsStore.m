@@ -176,6 +176,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
+    [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","landscape_preference", 1) forKey:@"landscape_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
@@ -447,6 +448,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", firstloginview);
+    
+    BOOL landscape = [self boolForKey:@"landscape_preference"];
+    lp_config_set_int(linphone_core_get_config(lc),"app","landscape_preference", landscape);
     
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference", debugmode);

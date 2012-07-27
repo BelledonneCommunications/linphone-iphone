@@ -16,6 +16,16 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>landscape_preference</string>
+			<key>Title</key>
+			<string>Landscape</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
 			<string>start_at_boot_preference</string>
