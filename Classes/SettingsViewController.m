@@ -383,6 +383,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     NSMutableSet *hiddenKeys = [NSMutableSet set];
     
+    [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
+    [hiddenKeys addObject:@"about_button"]; // Hide for the moment
+    
     if (!linphone_core_video_supported([LinphoneManager getLc]))
         [hiddenKeys addObject:@"video_menu"];
     
