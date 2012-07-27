@@ -71,7 +71,7 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 			expires=0;
 		}
 
-		op->base.root->callbacks.register_success(op,expires_header&&expires>=0);
+		op->base.root->callbacks.register_success(op,expires>0);
 		/*always cancel pending refresh if any*/
 		if (op->registration_refresh_timer>0) {
 			belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
@@ -106,8 +106,8 @@ static void send_register_request_with_expires(SalOp* op, belle_sip_request_t* r
 
 	if (!expires_header && expires>=0) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
-		belle_sip_header_expires_set_expires(expires_header,expires);
 	}
+	if (expires_header) belle_sip_header_expires_set_expires(expires_header,expires);
 	sal_op_send_request(op,request);
 }
 

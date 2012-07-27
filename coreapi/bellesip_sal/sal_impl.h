@@ -32,8 +32,19 @@ struct Sal{
 	belle_sip_header_user_agent_t* user_agent;
 	void *up; /*user pointer*/
 	int session_expires;
+	bool_t one_matching_codec;
 };
 
+typedef enum SalOpSate {
+	SalOpStateEarly=0
+	,SalOpStateActive
+	,SalOpStateTerminated
+}SalOpSate_t;
+
+typedef enum SalOpDir {
+	SalOpDirIncoming=0
+	,SalOpDirOutgoing
+}SalOpDir_t;
 
 struct SalOp{
 	SalOpBase base;
@@ -48,6 +59,11 @@ struct SalOp{
 	belle_sip_header_address_t *replaces;
 	belle_sip_header_address_t *referred_by;
 	bool_t auto_answer_asked;
+	SalMediaDescription *result;
+	belle_sdp_session_description_t *sdp_answer;
+	bool_t supports_session_timers;
+	SalOpSate_t state;
+	SalOpDir_t dir;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
@@ -60,4 +76,6 @@ void sal_op_call_fill_cbs(SalOp*op);
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 void sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
+void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
+
 #endif /* SAL_IMPL_H_ */

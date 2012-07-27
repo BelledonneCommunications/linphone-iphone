@@ -34,28 +34,14 @@ static void sal_add_pending_auth(Sal *sal, SalOp *op){
 	sal->pending_auths=ms_list_remove(sal->pending_auths,op);
 }
 
-static void process_authentication(SalOp *op, belle_sip_message_t *response) {
-	/*only process a single header for now*/
-	belle_sip_header_www_authenticate_t* authenticate;
-	belle_sip_header_address_t* from = BELLE_SIP_HEADER_ADDRESS(belle_sip_message_get_header(response,BELLE_SIP_FROM));
-	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(from);
-	authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(response,BELLE_SIP_WWW_AUTHENTICATE));
-	if (!authenticate) {
-		/*search for proxy authenticate*/
-		authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(response,BELLE_SIP_PROXY_AUTHENTICATE));
-
-	}
-	op->auth_info.realm=(char*)belle_sip_header_www_authenticate_get_realm(authenticate);
-	op->auth_info.username=(char*)belle_sip_uri_get_user(uri);
-	if (authenticate) {
-		if (op->base.root->callbacks.auth_requested(op,&op->auth_info)) {
-			sal_op_authenticate(op,&op->auth_info);
-		} else {
-			ms_message("No auth info found for [%s] at [%s]",op->auth_info.username,op->auth_info.realm);
-			sal_add_pending_auth(op->base.root,op);
-		}
-	} else {
-		ms_error(" missing authenticate header");
+void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
+	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_AUTHORIZATION);
+	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_PROXY_AUTHORIZATION);
+	if (belle_sip_provider_add_authorization(op->base.root->prov,op->request,response)) {
+		sal_op_resend_request(op,op->request);
+	}else {
+		ms_message("No auth info found for [%s]",sal_op_get_from(op));
+		sal_add_pending_auth(op->base.root,op);
 	}
 
 }
@@ -66,7 +52,7 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 	ms_error("process_io_error not implemented yet");
 }
 static void process_request_event(void *sal, const belle_sip_request_event_t *event) {
-	SalOp* op;
+	SalOp* op=NULL;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
 	belle_sip_header_address_t* origin_address;
@@ -78,9 +64,11 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
 	} else if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
 		op=sal_op_new((Sal*)sal);
+		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
 	} else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
+		return;
 	}
 
 	if (!op->base.from_address)  {
@@ -120,7 +108,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
-	belle_sip_header_address_t* contact_address;
+	belle_sip_header_address_t* contact_address=NULL;
 	belle_sip_header_via_t* via_header;
 	belle_sip_uri_t* contact_uri;
 	unsigned int contact_port;
@@ -132,11 +120,31 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_response_t* old_response=NULL;;
 	int response_code = belle_sip_response_get_status_code(response);
 
+	if (!op->base.remote_ua) {
+		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
+	}
+
 	if (op->callbacks.process_response_event) {
 		/*Fix contact if needed*/
 		via_header= (belle_sip_header_via_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_VIA);
 		received = belle_sip_header_via_get_received(via_header);
 		rport = belle_sip_header_via_get_rport(via_header);
+		if (!sal_op_get_contact(op)) {
+			/*hmm update contact from via*/
+			contact_address=belle_sip_header_address_new();
+			contact_uri=belle_sip_uri_create(NULL,belle_sip_header_via_get_host(via_header));
+			belle_sip_header_address_set_uri(contact_address,contact_uri);
+
+			if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
+				belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
+			}
+			if (belle_sip_header_via_get_listening_port(via_header)
+				!= belle_sip_listening_point_get_well_known_port(belle_sip_header_via_get_transport(via_header))) {
+				belle_sip_uri_set_port(contact_uri,belle_sip_header_via_get_listening_port(via_header) );
+			}
+			contact_updated=TRUE;
+		}
+
 		if (received!=NULL || rport>0) {
 			if (sal_op_get_contact(op)){
 				contact_address = BELLE_SIP_HEADER_ADDRESS(sal_address_clone(sal_op_get_contact_address(op)));
@@ -152,16 +160,30 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					belle_sip_uri_set_port(contact_uri,rport);
 					contact_updated=TRUE;
 				}
-				if (contact_updated) {
-					new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
-					ms_message("Updating contact from [%s] to [%s] for [%p]",sal_op_get_contact(op),new_contact,op);
-					sal_op_set_contact(op,new_contact);
-					belle_sip_free(new_contact);
-				}
-				belle_sip_object_unref(contact_address);
-			}
 
+				/*try to fix transport if needed (very unlikely)*/
+				if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
+					if (!belle_sip_uri_get_transport_param(contact_uri)
+						||strcasecmp(belle_sip_uri_get_transport_param(contact_uri),belle_sip_header_via_get_transport(via_header))!=0) {
+						belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
+						contact_updated=TRUE;
+					}
+				} else {
+					if (belle_sip_uri_get_transport_param(contact_uri)) {
+						contact_updated=TRUE;
+						belle_sip_uri_set_transport_param(contact_uri,NULL);
+					}
+				}
+			}
 		}
+		if (contact_updated) {
+				new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
+				ms_message("Updating contact from [%s] to [%s] for [%p]",sal_op_get_contact(op),new_contact,op);
+				sal_op_set_contact(op,new_contact);
+				belle_sip_free(new_contact);
+			}
+		if (contact_address)belle_sip_object_unref(contact_address);
+
 		/*update request/response
 		 * maybe only the transaction should be kept*/
 		old_request=op->request;
@@ -182,8 +204,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		}
 		case 401:
 		case 407:{
-
-			process_authentication(op,BELLE_SIP_MESSAGE(response));
+			sal_process_authentication(op,response);
 			return;
 		}
 		}
@@ -211,7 +232,17 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		ms_error("Unhandled transaction terminated [%p]",event);
 	}
 }
-
+static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
+	SalAuthInfo auth_info;
+	memset(&auth_info,0,sizeof(SalAuthInfo));
+	auth_info.username=(char*)belle_sip_auth_event_get_username(auth_event);
+	auth_info.realm=(char*)belle_sip_auth_event_get_realm(auth_event);
+	((Sal*)sal)->callbacks.auth_requested(sal,&auth_info);
+	belle_sip_auth_event_set_passwd(auth_event,(const char*)auth_info.password);
+	belle_sip_auth_event_set_ha1(auth_event,(const char*)auth_info.ha1);
+	belle_sip_auth_event_set_userid(auth_event,(const char*)auth_info.userid);
+	return;
+}
 Sal * sal_init(){
 	char stack_string[64];
 	Sal * sal=ms_new0(Sal,1);
@@ -228,6 +259,7 @@ Sal * sal_init(){
 	sal->listener_callbacks.process_response_event=process_response_event;
 	sal->listener_callbacks.process_timeout=process_timeout;
 	sal->listener_callbacks.process_transaction_terminated=process_transaction_terminated;
+	sal->listener_callbacks.process_auth_requested=process_auth_requested;
 	belle_sip_provider_add_sip_listener(sal->prov,belle_sip_listener_create_from_callbacks(&sal->listener_callbacks,sal));
 	return sal;
 }
@@ -351,8 +383,7 @@ void sal_reuse_authorization(Sal *ctx, bool_t enabled){
 	return ;
 }
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
-	ms_error("sal_use_one_matching_codec_policy not implemented yet");
-	return ;
+	ctx->one_matching_codec=one_matching_codec;
 }
 void sal_use_rport(Sal *ctx, bool_t use_rports){
 	ms_error("sal_use_rport not implemented yet");

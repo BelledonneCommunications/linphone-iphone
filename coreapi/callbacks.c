@@ -795,8 +795,7 @@ static void ping_reply(SalOp *op){
 	}
 }
 
-static bool_t fill_auth_info(SalOp*op, SalAuthInfo* sai) {
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
 	if (ai) {
 		sai->userid=ai->userid?ai->userid:ai->username;
@@ -808,14 +807,14 @@ static bool_t fill_auth_info(SalOp*op, SalAuthInfo* sai) {
 		return FALSE;
 	}
 }
-static bool_t auth_requested(SalOp*op, SalAuthInfo* sai) {
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	if (fill_auth_info(op,sai)) {
+static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	if (fill_auth_info(lc,sai)) {
 		return TRUE;
 	} else {
 		if (lc->vtable.auth_info_requested) {
 			lc->vtable.auth_info_requested(lc,sai->realm,sai->username);
-			if (fill_auth_info(op,sai)) {
+			if (fill_auth_info(lc,sai)) {
 				return TRUE;
 			}
 		}

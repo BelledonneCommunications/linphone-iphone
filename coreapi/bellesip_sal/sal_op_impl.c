@@ -35,47 +35,8 @@ void sal_op_release(SalOp *op){
 	return ;
 }
 void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
-	belle_sip_header_www_authenticate_t* authenticate;
-	belle_sip_header_authorization_t* authorization;
-	const char* ha1;
-	char computed_ha1[33];
-
-	if (info->ha1) {
-		ha1=info->ha1;
-	} else {
-		if(belle_sip_auth_helper_compute_ha1(info->userid,info->realm,info->password, computed_ha1)) {
-			goto error;
-		} else
-			ha1=computed_ha1;
-	}
-	if (!op->response) {
-		ms_error("try to authenticate an unchallenged op [%p]",op);
-		goto error;
-	}
-	authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(BELLE_SIP_MESSAGE(op->response),BELLE_SIP_WWW_AUTHENTICATE));
-	if (authenticate) {
-		authorization = belle_sip_auth_helper_create_authorization(authenticate);
-	} else {
-		/*proxy inerite from www*/
-		authenticate = BELLE_SIP_HEADER_WWW_AUTHENTICATE(belle_sip_message_get_header(BELLE_SIP_MESSAGE(op->response),BELLE_SIP_PROXY_AUTHENTICATE));
-		authorization = BELLE_SIP_HEADER_AUTHORIZATION(belle_sip_auth_helper_create_proxy_authorization(BELLE_SIP_HEADER_PROXY_AUTHENTICATE(authenticate)));
-	}
-	belle_sip_header_authorization_set_uri(authorization,belle_sip_request_get_uri(op->request));
-	belle_sip_header_authorization_set_username(authorization,info->userid);
-
-	if (belle_sip_auth_helper_fill_authorization(authorization
-												,belle_sip_request_get_method(op->request)
-												,ha1)) {
-		belle_sip_object_unref(authorization);
-		goto error;
-	}
-	belle_sip_message_set_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_HEADER(authorization));
-	sal_op_resend_request(op,op->request);
-	return;
-
-error:
-	ms_error("cannot generate authorization for [%s] at [%s]",info->userid,info->realm);
-
+	/*for sure auth info will be accesible from the provider*/
+	sal_process_authentication(op, NULL);
 	return ;
 }
 
@@ -174,7 +135,7 @@ int sal_ping(SalOp *op, const char *from, const char *to){
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
 	belle_sip_header_user_agent_t* user_agent=belle_sip_message_get_header_by_type(message,belle_sip_header_user_agent_t);
 	char user_agent_string[256];
-	if(belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
+	if(user_agent && belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
 		op->base.remote_ua=ms_strdup(user_agent_string);
 	}
 }
@@ -188,12 +149,26 @@ void sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
-	if (sal_op_get_route_address(op)) {
-		route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+	if (!op->dialog || belle_sip_dialog_get_state(op->dialog)!=BELLE_SIP_DIALOG_CONFIRMED) {
+		/*don't put route header if dialog is in confirmed state*/
+		if (sal_op_get_route_address(op)) {
+			route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+		}
 	}
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
+	/*in case DIALOG is in state NULL create a new dialog*/
+	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_NULL) {
+		belle_sip_dialog_delete(op->dialog);
+		op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
+		belle_sip_dialog_set_application_data(op->dialog,op);
+	} else
+	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
+		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
+		/*hmm just in case we already have authentication param in cache*/
+		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL);
+	}
 	belle_sip_client_transaction_send_request(client_transaction);
 
 }

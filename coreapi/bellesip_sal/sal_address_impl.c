@@ -107,9 +107,7 @@ void sal_address_set_port_int(SalAddress *addr, int port){
 }
 void sal_address_clean(SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
-	belle_sip_header_address_set_displayname(header_addr,NULL);
-	belle_sip_object_unref(belle_sip_header_address_get_uri(header_addr));
-	belle_sip_header_address_set_uri(header_addr,belle_sip_uri_new());
+	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(header_addr));
 	return ;
 }
 char *sal_address_as_string(const SalAddress *addr){

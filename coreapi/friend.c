@@ -198,8 +198,10 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}else{
 			ms_warning("Fail to interpret friend uri %s",uri);
 		}
-	}else *result=linphone_address_as_string(fr);
-	linphone_address_destroy(fr);
+	}else {
+		*result=linphone_address_as_string(fr);
+		linphone_address_destroy(fr);
+	}
 }
 
 int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){

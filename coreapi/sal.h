@@ -236,7 +236,7 @@ typedef void (*SalOnCallTerminated)(SalOp *op, const char *from);
 typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, const char *details, int code);
 typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
-typedef bool_t (*SalOnAuthRequested)(SalOp *salop,SalAuthInfo* info);
+typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
 typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
