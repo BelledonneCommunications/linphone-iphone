@@ -35,7 +35,7 @@
 
 @synthesize addressField;
 @synthesize addContactButton;
-@synthesize cancelButton;
+@synthesize backButton;
 @synthesize addCallButton;
 @synthesize transferButton;
 @synthesize callButton;
@@ -67,7 +67,7 @@
 - (void)dealloc {
 	[addressField release];
     [addContactButton release];
-    [cancelButton release];
+    [backButton release];
     [eraseButton release];
 	[callButton release];
     [addCallButton release];
@@ -107,7 +107,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                  tabBar:@"UIMainBar" 
                                                           tabBarEnabled:true 
                                                              fullscreen:false
-                                                          landscapeMode:false
+                                                          landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
     }
     return compositeDescription;
@@ -181,12 +181,12 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [transferButton setHidden:true];
             }
             [callButton setHidden:true];
-            [cancelButton setHidden:false]; 
+            [backButton setHidden:false]; 
             [addContactButton setHidden:true];
         } else {
             [addCallButton setHidden:true];
             [callButton setHidden:false];
-            [cancelButton setHidden:true];
+            [backButton setHidden:true];
             [addContactButton setHidden:false];
             [transferButton setHidden:true];
         }

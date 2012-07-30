@@ -33,6 +33,7 @@
 @synthesize avatarImage;
 @synthesize headerView;
 @synthesize footerView;
+@synthesize fieldBackgroundImage;
 
 #pragma mark - Lifecycle Functions
 
@@ -55,6 +56,7 @@
     [avatarImage release];
     [headerView release];
     [footerView release];
+    [fieldBackgroundImage release];
     [super dealloc];
 }
 
@@ -109,6 +111,9 @@ static UICompositeViewDescription *compositeDescription = nil;
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
+    
+    [fieldBackgroundImage setImage:[TUNinePatchCache imageOfSize:[fieldBackgroundImage bounds].size
+                                               forNinePatchNamed:@"chat_field"]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

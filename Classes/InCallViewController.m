@@ -28,6 +28,7 @@
 #import "UICallCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "UILinphone.h"
 
 #include "linphonecore.h"
 #include "private.h"
@@ -191,10 +192,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     videoGroup.alpha = 0;
     
     [videoCameraSwitch setPreview:videoPreview];
+    
+    removeTableBackground([callTableController view]);
 }
 
 
-#pragma mark - 
+#pragma mark -
 
 - (void)orientationUpdate {
     int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);

@@ -227,7 +227,6 @@
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {
-        [controller view]; // Load the view
         if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
             [controller viewWillAppear:NO];
         }
@@ -257,6 +256,7 @@
         if(controller == nil) {
             controller = [[NSClassFromString(name) alloc] init];
             [viewControllerCache setValue:controller forKey:name];
+            [controller view]; // Load the view
         }
     }
     return controller;
@@ -433,9 +433,13 @@
     [contentView setFrame: contentFrame];
     [contentViewController.view setFrame: [contentView bounds]];
     [tabBarView setFrame: tabFrame];
-    [tabBarViewController.view setFrame:[tabBarView bounds]];
+    CGRect frame = [tabBarViewController.view frame];
+    frame.size.width = [tabBarView bounds].size.width;
+    [tabBarViewController.view setFrame:frame];
     [stateBarView setFrame: stateBarFrame];
-    [stateBarViewController.view setFrame:[stateBarView bounds]];
+    frame = [stateBarViewController.view frame];
+    frame.size.width = [stateBarView bounds].size.width;
+    [stateBarViewController.view setFrame:frame];
     
     // Commit animation
     if(tabBar != nil || fullscreen != nil) {

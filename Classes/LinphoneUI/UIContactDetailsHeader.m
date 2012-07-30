@@ -21,6 +21,7 @@
 #import "Utils.h"
 #import "UIEditableTableViewCell.h"
 #import "FastAddressBook.h"
+#import "UILinphone.h"
 
 @implementation UIContactDetailsHeader
 
@@ -60,7 +61,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    removeTableBackground(tableView); // Can't do it in Xib: issue with ios4
 }
 
 

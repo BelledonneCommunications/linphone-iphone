@@ -167,11 +167,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self.view setFrame:[[UIScreen mainScreen] bounds]]; // Force resize to screen size
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }

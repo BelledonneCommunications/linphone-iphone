@@ -273,21 +273,9 @@
     return [self initWithRootViewController:rootViewController];
 }
 
-+ (void)removeTableBackground:(UIView*)view {
-    if([view isKindOfClass:[UITableView class]]) {
-        [view setBackgroundColor:[UIColor clearColor]];
-    }
-    if([view isKindOfClass:[UIImageView class]] && [[view superview] isKindOfClass:[UITableView class]]) {
-        [(UIImageView*)view setImage:nil];
-    }
-    for(UIView *subview in [view subviews]) {
-        [UINavigationControllerEx removeTableBackground:subview];
-    }
-}
-
 + (void)removeBackground:(UIView*)view {
     [view setBackgroundColor:[UIColor clearColor]];
-    [UINavigationControllerEx removeTableBackground:view];
+    removeTableBackground(view);
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {

@@ -44,12 +44,13 @@
 						<reference key="NSNextResponder" ref="589117993"/>
 						<int key="NSvFlags">290</int>
 						<array class="NSMutableArray" key="NSSubviews">
-							<object class="IBUIImageView" id="135780894">
+							<object class="IBUIImageView" id="393955689">
 								<reference key="NSNextResponder" ref="333187864"/>
 								<int key="NSvFlags">290</int>
 								<string key="NSFrameSize">{320, 58}</string>
 								<reference key="NSSuperview" ref="333187864"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="544154475"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -132,7 +133,7 @@
 						<string key="NSFrameSize">{320, 58}</string>
 						<reference key="NSSuperview" ref="589117993"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="544154475"/>
+						<reference key="NSNextKeyView" ref="393955689"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -438,6 +439,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">fieldBackgroundImage</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="946416684"/>
+					</object>
+					<int key="connectionID">48</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dataSource</string>
 						<reference key="source" ref="879615756"/>
 						<reference key="destination" ref="926385140"/>
@@ -541,7 +550,7 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="544154475"/>
 							<reference ref="602867427"/>
-							<reference ref="135780894"/>
+							<reference ref="393955689"/>
 						</array>
 						<reference key="parent" ref="589117993"/>
 						<string key="objectName">toolsView</string>
@@ -592,7 +601,7 @@
 						<int key="objectID">21</int>
 						<reference key="object" ref="946416684"/>
 						<reference key="parent" ref="833509359"/>
-						<string key="objectName">fieldBackground</string>
+						<string key="objectName">fieldBackgroundImage</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">29</int>
@@ -631,7 +640,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">47</int>
-						<reference key="object" ref="135780894"/>
+						<reference key="object" ref="393955689"/>
 						<reference key="parent" ref="333187864"/>
 						<string key="objectName">background</string>
 					</object>
@@ -667,7 +676,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">47</int>
+			<int key="maxID">48</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -710,6 +719,7 @@
 						<string key="addressLabel">UILabel</string>
 						<string key="avatarImage">UIImageView</string>
 						<string key="editButton">UIToggleButton</string>
+						<string key="fieldBackgroundImage">UIImageView</string>
 						<string key="footerView">UIView</string>
 						<string key="headerView">UIView</string>
 						<string key="messageField">UITextField</string>
@@ -728,6 +738,10 @@
 						<object class="IBToOneOutletInfo" key="editButton">
 							<string key="name">editButton</string>
 							<string key="candidateClassName">UIToggleButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="fieldBackgroundImage">
+							<string key="name">fieldBackgroundImage</string>
+							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="footerView">
 							<string key="name">footerView</string>

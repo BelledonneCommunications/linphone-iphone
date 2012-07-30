@@ -289,4 +289,71 @@
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 }
 
+#pragma mark - TPMultiLayoutViewController Functions
+
+- (NSDictionary*)attributesForView:(UIView*)view {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    
+    [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
+    [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected] key:@"image-selected"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
+        
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected] key:@"background-selected"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"background-disabled-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"background-selected-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateDisabled] key:@"background-selected-disabled"];
+    }
+    [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
+    
+    return attributes;
+}
+
+- (void)applyAttributes:(NSDictionary*)attributes toView:(UIView*)view {
+    view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
+    view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-normal"] forState:UIControlStateNormal];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-highlighted"] forState:UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-disabled"] forState:UIControlStateDisabled];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected"] forState:UIControlStateSelected];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+        
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected"] forState:UIControlStateSelected];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    }
+    view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
+}
+
++ (void)addDictEntry:(NSMutableDictionary*)dict item:(id)item key:(id)key {
+    if(item != nil && key != nil) {
+        [dict setObject:item forKey:key];
+    }
+}
+
++ (id)getDictEntry:(NSDictionary*)dict key:(id)key {
+    if(key != nil) {
+        return [dict objectForKey:key];
+    }
+    return nil;
+}
+
 @end

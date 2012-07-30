@@ -102,8 +102,6 @@
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
     
     [zeroButton setDigit:'0'];
@@ -198,6 +196,8 @@
     [(UIButton*) [landscapeView viewWithTag:[dialerButton tag]] 
                   setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
