@@ -145,6 +145,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [remoteAddress release];
     }
     remoteAddress = [aRemoteAddress copy];
+    [messageField setText:@""];
     [tableController setRemoteAddress: remoteAddress];
     [self update];
 }
