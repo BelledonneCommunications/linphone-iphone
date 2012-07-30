@@ -62,6 +62,34 @@
 
 @implementation IASKSpecifierValuesViewControllerEx
 
+- (void)initIASKSpecifierValuesViewControllerEx {
+    [self.view setBackgroundColor:[UIColor clearColor]];
+}
+
+- (id)init {
+    self = [super init];
+    if(self != nil) {
+        [self initIASKSpecifierValuesViewControllerEx];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self != nil) {
+        [self initIASKSpecifierValuesViewControllerEx];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if(self != nil) {
+        [self initIASKSpecifierValuesViewControllerEx];
+    }
+    return self;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     
@@ -133,6 +161,8 @@
 }
 
 - (void)initIASKAppSettingsViewControllerEx {
+    [self.view setBackgroundColor:[UIColor clearColor]];
+    
     // Force kIASKSpecifierValuesViewControllerIndex
     static int kIASKSpecifierValuesViewControllerIndex = 0;
     _viewList = [[NSMutableArray alloc] init];
@@ -223,7 +253,7 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-    UIImage *img = [UIImage imageNamed:@"settings_bar_background.png"];
+    UIImage *img = [UIImage imageNamed:@"toolsbar_background.png"];
     [img drawInRect:rect];
 }
 
@@ -238,22 +268,30 @@
 
 @implementation UINavigationControllerEx
 
+- (id)initWithRootViewController:(UIViewController *)rootViewController {
+    [UINavigationControllerEx removeBackground:rootViewController.view];
+    return [self initWithRootViewController:rootViewController];
+}
+
 + (void)removeTableBackground:(UIView*)view {
     if([view isKindOfClass:[UITableView class]]) {
         [view setBackgroundColor:[UIColor clearColor]];
+    }
+    if([view isKindOfClass:[UIImageView class]] && [[view superview] isKindOfClass:[UITableView class]]) {
+        [(UIImageView*)view setImage:nil];
     }
     for(UIView *subview in [view subviews]) {
         [UINavigationControllerEx removeTableBackground:subview];
     }
 }
 
-- (id)initWithRootViewController:(UIViewController *)rootViewController {
-    [UINavigationControllerEx removeTableBackground:rootViewController.view];
-    return [super initWithRootViewController:rootViewController];
++ (void)removeBackground:(UIView*)view {
+    [view setBackgroundColor:[UIColor clearColor]];
+    [UINavigationControllerEx removeTableBackground:view];
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [UINavigationControllerEx removeTableBackground:viewController.view];
+    [UINavigationControllerEx removeBackground:viewController.view];
     
     [viewController viewWillAppear:FALSE]; // Force load: Load Title
     UILabel *labelTitleView = [[UILabel alloc] init];
@@ -272,14 +310,14 @@
 
 - (void)setViewControllers:(NSArray *)viewControllers {
     for(UIViewController *controller in viewControllers) {
-        [UINavigationControllerEx removeTableBackground:controller.view];
+        [UINavigationControllerEx removeBackground:controller.view];
     }
     [super setViewControllers:viewControllers];
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated {
     for(UIViewController *controller in viewControllers) {
-        [UINavigationControllerEx removeTableBackground:controller.view];
+        [UINavigationControllerEx removeBackground:controller.view];
     }
     [super setViewControllers:viewControllers animated:animated];
 }
@@ -336,6 +374,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     settingsController.showCreditsFooter = FALSE;
     settingsController.hiddenKeys = [self findHiddenKeys];
     settingsController.settingsStore = [[LinphoneManager instance] settingsStore];
+    
+    [navigationController.view setBackgroundColor:[UIColor clearColor]];
     
     navigationController.view.frame = self.view.frame;
     [navigationController pushViewController:settingsController animated:FALSE];

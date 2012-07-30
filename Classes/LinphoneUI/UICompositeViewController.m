@@ -133,6 +133,16 @@
 
 #pragma mark - ViewController Functions
 
+- (void)viewDidLoad {
+    /* Force landscape view to match portrait view */
+    CGRect frame = [portraitView frame];
+    int height = frame.size.width;
+    frame.size.width = frame.size.height;
+    frame.size.height = height;
+    [landscapeView setFrame:frame];
+    [super viewDidLoad];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [contentViewController viewWillAppear:animated];
@@ -378,8 +388,6 @@
         [UIView setAnimationBeginsFromCurrentState:TRUE];
     }
     
-    UIView *innerView = contentViewController.view;
-    
     CGRect contentFrame = contentView.frame;
     CGRect viewFrame = [self.view frame];
     
@@ -421,18 +429,13 @@
     if(currentViewDescription.fullscreen)
         contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
     
-    // Resize innerView
-    CGRect innerContentFrame = innerView.frame;
-    innerContentFrame.origin.x = 0;
-    innerContentFrame.origin.y = 0;
-    innerContentFrame.size.width = contentFrame.size.width;
-    innerContentFrame.size.height = contentFrame.size.height;
-    
     // Set frames
     [contentView setFrame: contentFrame];
-    [innerView setFrame: innerContentFrame];
+    [contentViewController.view setFrame: [contentView bounds]];
     [tabBarView setFrame: tabFrame];
+    [tabBarViewController.view setFrame:[tabBarView bounds]];
     [stateBarView setFrame: stateBarFrame];
+    [stateBarViewController.view setFrame:[stateBarView bounds]];
     
     // Commit animation
     if(tabBar != nil || fullscreen != nil) {

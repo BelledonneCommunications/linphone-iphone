@@ -41,7 +41,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
-+ (CGFloat)height:(ChatModel*)chat;
++ (CGFloat)height:(ChatModel*)chat width:(int)width;
 
 
 - (IBAction)onDeleteClick:(id)event;

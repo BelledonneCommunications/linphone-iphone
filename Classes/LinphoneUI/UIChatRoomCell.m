@@ -121,12 +121,12 @@ static UIFont *CELL_FONT = nil;
     if(chat != nil) {
         // Resize Content
         CGRect contentFrame = [contentView frame];
-        contentFrame.size = [UIChatRoomCell viewSize:[chat message]];
+        contentFrame.size = [UIChatRoomCell viewSize:[chat message] width:[self frame].size.width];
         if([[chat direction] intValue]) { // Inverted
             contentFrame.origin.x = 0.0f;
             contentFrame.origin.y = 0.0f;
         } else {
-            contentFrame.origin.x = CELL_MAX_WIDTH - contentFrame.size.width;
+            contentFrame.origin.x = [self frame].size.width - contentFrame.size.width;
             contentFrame.origin.y = 0.0f;   
         }
         [contentView setFrame:contentFrame];
@@ -146,12 +146,12 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
-+ (CGSize)viewSize:(NSString*)message {
++ (CGSize)viewSize:(NSString*)message width:(int)width {
     if(CELL_FONT == nil) {
         CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
     }
     CGSize messageSize = [message sizeWithFont: CELL_FONT
-                           constrainedToSize: CGSizeMake(CELL_MAX_WIDTH - CELL_MESSAGE_X_MARGIN, 10000.0f) 
+                           constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f) 
                                lineBreakMode: UILineBreakModeTailTruncation]; 
     messageSize.height += CELL_MESSAGE_Y_MARGIN;
     if(messageSize.height < CELL_MIN_HEIGHT)
@@ -162,8 +162,8 @@ static UIFont *CELL_FONT = nil;
     return messageSize;
 }
 
-+ (CGFloat)height:(ChatModel*)chat {
-    return [UIChatRoomCell viewSize:[chat message]].height;
++ (CGFloat)height:(ChatModel*)chat width:(int)width {
+    return [UIChatRoomCell viewSize:[chat message] width:width].height;
 }
 
 

@@ -150,7 +150,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     ChatModel *chat = [data objectAtIndex:[indexPath row]];
-    return [UIChatRoomCell height:chat];
+    return [UIChatRoomCell height:chat width:[self.view frame].size.width];
 }
 
 @end
