@@ -119,11 +119,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 	}
     {
-        LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+        LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
         if(parsed != NULL) {
             [self setString: linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
             [self setString: linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
         }
+        linphone_address_destroy(parsed);
     }
 	{
 		LCSipTransports tp;
@@ -320,11 +321,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
-		if (from !=0){
+		if (from != 0){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
 			linphone_core_add_auth_info(lc,info);
+            linphone_address_destroy(from);
 		}
-		linphone_address_destroy(from);
 		
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
@@ -425,12 +426,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];
     NSString* username = [self stringForKey:@"primary_username_preference"];
-    LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+    LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
     if(parsed != NULL) {
         linphone_address_set_display_name(parsed,[displayname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         linphone_address_set_username(parsed,[username cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         char *contact = linphone_address_as_string(parsed);
         linphone_core_set_primary_contact(lc, contact);
+        ms_free(contact);
+        linphone_address_destroy(parsed);
     }
     
     

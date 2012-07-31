@@ -198,7 +198,7 @@
                     [self startBounceAnimation:@"Bounce" target:historyNotificationView];
                 }];
             } else {
-                [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+                [self startBounceAnimation:@"Bounce" target:historyNotificationView];
             }
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];

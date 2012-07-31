@@ -21,7 +21,6 @@
 
 #import "LinphoneManager.h"
 #import "UICompositeViewController.h"
-#import "UIModalViewController.h"
 
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
@@ -36,8 +35,9 @@
 #import "SettingsViewController.h"
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
+#import "IncomingCallViewController.h"
 
-@interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
+@interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
     @private
     UICompositeViewController *mainViewController;
 

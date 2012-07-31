@@ -20,7 +20,6 @@
 #import "ContactDetailsTableViewController.h"
 #import "PhoneMainView.h"
 #import "UIEditableTableViewCell.h"
-#import "UIView+ModalStack.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
 #import "OrderedDictionary.h"
@@ -61,7 +60,6 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initContactDetailsTableViewController {
-
     dataCache = [[NSMutableArray alloc] init];
     labelArray = [[NSMutableArray alloc] initWithObjects:
                   @"Linphone",
@@ -70,6 +68,7 @@
                   [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel], nil];
     headerController = [[UIContactDetailsHeader alloc] init];
     footerController = [[UIContactDetailsFooter alloc] init];
+    editingIndexPath = nil;
 }
 
 - (id)init {
@@ -88,7 +87,13 @@
     return self;
 }	
 
-- (void)dealloc {   
+- (void)dealloc {
+    if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
+        CFRelease(contact);
+    }
+    if(editingIndexPath != nil) {
+        [editingIndexPath release];
+    }
     [labelArray release];
     [dataCache release];
     [headerController release];
@@ -105,27 +110,8 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if(contactDetailsLabelViewController != nil) {
-        [[[self view] superview] removeModalView:[contactDetailsLabelViewController view]];
-        [editingIndexPath release];
-        editingIndexPath = nil;
-        [contactDetailsLabelViewController release];
-        contactDetailsLabelViewController = nil;
-    }
-}
-
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
-        CFRelease(contact);
-    }
-    contact = nil;
 }
 
 
@@ -344,6 +330,9 @@
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
+    if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
+        CFRelease(contact);
+    }
     self->contact = acontact;
     [self loadData];
 }
@@ -490,13 +479,16 @@
             CFRelease(lMap);
         }
         if(key != nil) {
-            contactDetailsLabelViewController = [[ContactDetailsLabelViewController alloc] initWithNibName:@"ContactDetailsLabelViewController" 
-                                                                                                    bundle:[NSBundle mainBundle]];
-            [contactDetailsLabelViewController setSelectedData:key];
-            [contactDetailsLabelViewController setDataList:[self getLocalizedLabels]];
-            [contactDetailsLabelViewController setModalDelegate:self];
+            if(editingIndexPath != nil) {
+                [editingIndexPath release];
+            }
             editingIndexPath = [indexPath copy];
-            [[[self view] superview] addModalView:[contactDetailsLabelViewController view]];
+            ContactDetailsLabelViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsLabelViewController compositeViewDescription] push:TRUE], ContactDetailsLabelViewController);
+            if(controller != nil) {
+                [controller setDataList:[self getLocalizedLabels]];
+                [controller setSelectedData:key];
+                [controller setDelegate:self];
+            }
         }
     }
 }
@@ -604,11 +596,9 @@
 }
 
 
-#pragma mark - UIModalViewDeletage Functions
+#pragma mark - ContactDetailsLabelDelegate Functions
 
-- (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value {
-    [[[self view]superview] removeModalView:[contactDetailsLabelViewController view]];
-    contactDetailsLabelViewController = nil;
+- (void)changeContactDetailsLabel:(NSString *)value {
     if(value != nil) {
         NSMutableArray *sectionDict = [dataCache objectAtIndex:[editingIndexPath section]];
         Entry *entry = [sectionDict objectAtIndex:[editingIndexPath row]];
@@ -617,7 +607,7 @@
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
+            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
             CFRelease(lMap);
         } else if([editingIndexPath section] == 1) {
@@ -625,7 +615,7 @@
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)((NSString*)value), index);
+            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
             CFRelease(lMap);
         }

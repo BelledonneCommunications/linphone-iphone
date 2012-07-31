@@ -22,7 +22,6 @@
 
 #import "PhoneMainView.h"
 #import "Utils.h"
-#import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
 
@@ -231,6 +230,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     NSString *message = [notif.userInfo objectForKey: @"message"];
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
+    
+    // Don't handle call state during incoming call view
+    if([[self currentView] equal:[IncomingCallViewController compositeViewDescription]] && state != LinphoneCallError && state != LinphoneCallEnd) {
+        return;
+    }
     
 	switch (state) {					
 		case LinphoneCallIncomingReceived: 
@@ -529,18 +533,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
 		}
-	} else {     
-        IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
-        [controller setWantsFullScreenLayout:TRUE];
-        [controller setCall:call];
-        [controller setModalDelegate:self];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillAppear:NO];
-        }   
-        [[self view] addModalView:[controller view]];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidAppear:NO];
-        }  
+	} else {
+       IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+        if(controller != nil) {
+            [controller setCall:call];
+            [controller setDelegate:self];
+        }
 	}
 }
 
@@ -599,11 +597,17 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 
-#pragma mark - Modal Functions
+#pragma mark - IncomingCallDelegate Functions
 
-- (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value {
-    [controller setModalDelegate:nil];
-    [[self view] removeModalView:[controller view]];
+- (void)incomingCallAborted:(LinphoneCall*)call {
+}
+
+- (void)incomingCallAccepted:(LinphoneCall*)call {
+    linphone_core_accept_call([LinphoneManager getLc], call);
+}
+
+- (void)incomingCallDeclined:(LinphoneCall*)call {
+    linphone_core_terminate_call([LinphoneManager getLc], call);
 }
 
 @end

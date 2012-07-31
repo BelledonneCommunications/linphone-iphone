@@ -18,18 +18,25 @@
  */        
 
 #import <UIKit/UIKit.h>
+#import "UICompositeViewController.h"
 
-#import "UIModalViewController.h"
+@protocol ContactDetailsLabelViewDelegate <NSObject>
 
-@interface ContactDetailsLabelViewController : UIModalViewController<UITableViewDelegate, UITableViewDataSource> {
+- (void)changeContactDetailsLabel:(NSString*)label;
+
+@end
+
+@interface ContactDetailsLabelViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UICompositeViewDelegate> {
     NSDictionary *dataList;
     UITableView *tableView;
     NSString *selectedData;
+    id<ContactDetailsLabelViewDelegate> delegate;
 }
 
 @property (nonatomic, copy) NSString *selectedData;
 @property (nonatomic, retain) NSDictionary *dataList;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
+@property (nonatomic, retain) id<ContactDetailsLabelViewDelegate> delegate;
 
 - (IBAction)onBackClick:(id)event;
 

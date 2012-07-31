@@ -19,26 +19,29 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIModalViewController.h"
-
+#import "UICompositeViewController.h"
 #include "linphonecore.h"
 
-typedef enum _IncomingCallStates {
-    IncomingCall_Accepted,
-    IncomingCall_Decline,
-    IncomingCall_Aborted
-} IncomingCallStats;
+@protocol IncomingCallViewDelegate <NSObject>
 
-@interface IncomingCallViewController : UIModalViewController {
+- (void)incomingCallAccepted:(LinphoneCall*)call;
+- (void)incomingCallDeclined:(LinphoneCall*)call;
+- (void)incomingCallAborted:(LinphoneCall*)call;
+
+@end
+
+@interface IncomingCallViewController : UIViewController <UICompositeViewDelegate> {
 @private
     UILabel* addressLabel;
     UIImageView* avatarImage;
     LinphoneCall *call;
+    id<IncomingCallViewDelegate> delegate;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
 @property (nonatomic, assign) LinphoneCall* call;
+@property (nonatomic, retain) id<IncomingCallViewDelegate> delegate;
 
 - (IBAction)onAcceptClick:(id) event;
 - (IBAction)onDeclineClick:(id) event;

@@ -670,8 +670,6 @@
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378906715AC373B00BD776C /* ContactDetailsLabelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */; };
-		D378907515AC448A00BD776C /* UIView+ModalStack.m in Sources */ = {isa = PBXBuildFile; fileRef = D378907415AC448A00BD776C /* UIView+ModalStack.m */; };
-		D378907615AC448A00BD776C /* UIView+ModalStack.m in Sources */ = {isa = PBXBuildFile; fileRef = D378907415AC448A00BD776C /* UIView+ModalStack.m */; };
 		D37B96B715A1A6F20005CCD2 /* call_state_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */; };
 		D37B96B915A1A6F20005CCD2 /* call_state_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */; };
 		D37C638E15AAD251009D0BAC /* contact_number_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37C638C15AAD251009D0BAC /* contact_number_over.png */; };
@@ -1061,8 +1059,6 @@
 		D3F26BF915986DAD005F9CAB /* history_ok_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BF615986DAD005F9CAB /* history_ok_over.png */; };
 		D3F26BFC15987083005F9CAB /* header_incoming.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F26BFB15987083005F9CAB /* header_incoming.png */; };
 		D3F34F301599B008005BE94F /* avatar_shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F34F2F1599B008005BE94F /* avatar_shadow.png */; };
-		D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
-		D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F34F341599C354005BE94F /* UIModalViewController.m */; };
 		D3F795D615A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
 		D3F795D715A582810077328B /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
 		D3F795D815A582810077328B /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F795D515A582800077328B /* ChatRoomViewController.xib */; };
@@ -1653,8 +1649,6 @@
 		D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsLabelViewController.h; sourceTree = "<group>"; };
 		D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsLabelViewController.m; sourceTree = "<group>"; };
 		D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailsLabelViewController.xib; sourceTree = "<group>"; };
-		D378907415AC448A00BD776C /* UIView+ModalStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+ModalStack.m"; sourceTree = "<group>"; };
-		D378907715AC44A300BD776C /* UIView+ModalStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+ModalStack.h"; sourceTree = "<group>"; };
 		D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_default.png; path = Resources/call_state_delete_default.png; sourceTree = "<group>"; };
 		D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_over.png; path = Resources/call_state_delete_over.png; sourceTree = "<group>"; };
 		D37C638C15AAD251009D0BAC /* contact_number_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_number_over.png; path = Resources/contact_number_over.png; sourceTree = "<group>"; };
@@ -1952,8 +1946,6 @@
 		D3F26BF615986DAD005F9CAB /* history_ok_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_ok_over.png; path = Resources/history_ok_over.png; sourceTree = "<group>"; };
 		D3F26BFB15987083005F9CAB /* header_incoming.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = header_incoming.png; path = Resources/header_incoming.png; sourceTree = "<group>"; };
 		D3F34F2F1599B008005BE94F /* avatar_shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = avatar_shadow.png; path = Resources/avatar_shadow.png; sourceTree = "<group>"; };
-		D3F34F331599C354005BE94F /* UIModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIModalViewController.h; sourceTree = "<group>"; };
-		D3F34F341599C354005BE94F /* UIModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIModalViewController.m; sourceTree = "<group>"; };
 		D3F795D315A582800077328B /* ChatRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomViewController.h; sourceTree = "<group>"; };
 		D3F795D415A582800077328B /* ChatRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatRoomViewController.m; sourceTree = "<group>"; };
 		D3F795D515A582800077328B /* ChatRoomViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatRoomViewController.xib; sourceTree = "<group>"; };
@@ -2462,8 +2454,6 @@
 				D3A74E5B15C6922A001500B9 /* UIMainBar~ipad.xib */,
 				2214EBF112F86360002A5394 /* UIMicroButton.h */,
 				2214EBF212F86360002A5394 /* UIMicroButton.m */,
-				D3F34F331599C354005BE94F /* UIModalViewController.h */,
-				D3F34F341599C354005BE94F /* UIModalViewController.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
@@ -2479,8 +2469,6 @@
 				D32460E5159D9AAD00BA7F3A /* UITransparentView.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
-				D378907715AC44A300BD776C /* UIView+ModalStack.h */,
-				D378907415AC448A00BD776C /* UIView+ModalStack.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -4223,7 +4211,6 @@
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeViewController.m in Sources */,
-				D3F34F351599C354005BE94F /* UIModalViewController.m in Sources */,
 				D31AAF5E159B3919002C6B02 /* InCallTableViewController.m in Sources */,
 				D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */,
 				D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
@@ -4241,7 +4228,6 @@
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
 				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
-				D378907515AC448A00BD776C /* UIView+ModalStack.m in Sources */,
 				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 				D3F9A9E215AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */,
@@ -4318,7 +4304,6 @@
 				D3EA5412159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BF215986B73005F9CAB /* IncomingCallViewController.m in Sources */,
 				D31B4B22159876C0002E6C72 /* UICompositeViewController.m in Sources */,
-				D3F34F361599C354005BE94F /* UIModalViewController.m in Sources */,
 				D31AAF5F159B3919002C6B02 /* InCallTableViewController.m in Sources */,
 				D3211BB1159C4EF10098460B /* UIConferenceHeader.m in Sources */,
 				D32460E7159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
@@ -4336,7 +4321,6 @@
 				D37C639C15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
 				D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
-				D378907615AC448A00BD776C /* UIView+ModalStack.m in Sources */,
 				D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 				C90FAA7A15AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 				D3F9A9E315AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */,

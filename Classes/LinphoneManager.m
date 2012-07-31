@@ -837,8 +837,9 @@ static LinphoneCoreVTable linphonec_vtable = {
         if(transfer) {
             linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
         } else {
-            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress,lcallParams);
+            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
         }
+        linphone_address_destroy(linphoneAddress);
 	}
 	linphone_call_params_destroy(lcallParams);
 }
