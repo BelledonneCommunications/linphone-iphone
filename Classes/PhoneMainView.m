@@ -85,11 +85,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewDidLoad];
 
     [self.view addSubview: mainViewController.view];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
-        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        [self willRotateToInterfaceOrientation:interfaceOrientation duration:0.2f];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,11 +157,14 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    if(mainViewController != nil) {
+        return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    } else {
+        return YES;
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
@@ -178,6 +176,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    NSLog(@"%d", fromInterfaceOrientation);
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     [mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }

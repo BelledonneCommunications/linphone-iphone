@@ -161,6 +161,7 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)setupUI {
+
 	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
         // Change to fist login view
         [[PhoneMainView instance] changeCurrentView: [FirstLoginViewController compositeViewDescription]];
@@ -173,7 +174,6 @@ int __aeabi_idiv(int a, int b) {
             [[PhoneMainView instance] changeCurrentView: [WizardViewController compositeViewDescription]];
         }
     }
-	
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
 

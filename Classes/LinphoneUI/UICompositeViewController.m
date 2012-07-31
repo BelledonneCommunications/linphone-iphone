@@ -148,12 +148,13 @@
     [contentViewController viewWillAppear:animated];
     [tabBarViewController viewWillAppear:animated];
     [stateBarViewController viewWillAppear:animated];
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(orientationChanged:) 
-                                                 name:UIDeviceOrientationDidChangeNotification 
+                                                 name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    //currentOrientation = [UIDevice currentDevice].orientation;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -168,8 +169,8 @@
     [contentViewController viewWillDisappear:animated];
     [tabBarViewController viewWillDisappear:animated];
     [stateBarViewController viewWillDisappear:animated];
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceOrientationDidChangeNotification 
                                                object:nil];
@@ -211,15 +212,19 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(currentViewDescription != nil && [[LinphoneManager instance].settingsStore boolForKey:@"landscape_preference"]) {
-        if (UIInterfaceOrientationIsPortrait(interfaceOrientation) && [currentViewDescription portraitMode]) {
+    if(currentViewDescription != nil) {
+        NSString* rotationPreference = [[LinphoneManager instance].settingsStore objectForKey:@"rotation_preference"];
+        if (UIInterfaceOrientationIsPortrait(interfaceOrientation) && [currentViewDescription portraitMode] &&
+            ([rotationPreference isEqualToString:@"auto"] || [rotationPreference isEqualToString:@"portrait"])) {
             return YES;
         }
-        if (UIInterfaceOrientationIsLandscape(interfaceOrientation) && [currentViewDescription landscapeMode]) {
+        if (UIInterfaceOrientationIsLandscape(interfaceOrientation) && [currentViewDescription landscapeMode] &&
+            ([rotationPreference isEqualToString:@"auto"] || [rotationPreference isEqualToString:@"landscape"])) {
             return YES;
         }
+        return NO;
     }
-    return NO;
+    return YES;
 }
 
 
@@ -263,17 +268,63 @@
 }
 
 - (UIInterfaceOrientation)getCorrectInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(currentViewDescription != nil && [[LinphoneManager instance].settingsStore boolForKey:@"landscape_preference"]) {
-        if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-            if ([currentViewDescription portraitMode]) {
-                return interfaceOrientation;
+    if(currentViewDescription != nil) {
+        NSString* rotationPreference = [[LinphoneManager instance].settingsStore objectForKey:@"rotation_preference"];
+        if([rotationPreference isEqualToString:@"auto"]) {
+            if(currentOrientation == UIDeviceOrientationUnknown) {
+                return [UIApplication sharedApplication].statusBarOrientation;
+            }
+            if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+                if ([currentViewDescription portraitMode]) {
+                    return interfaceOrientation;
+                } else {
+                    return UIInterfaceOrientationLandscapeLeft;
+                }
+            }
+            if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+                if ([currentViewDescription landscapeMode]) {
+                    return interfaceOrientation;
+                } else {
+                    return UIInterfaceOrientationPortrait;
+                }
+            }
+        } else if([rotationPreference isEqualToString:@"portrait"]) {
+            if ([currentViewDescription landscapeMode]) {
+                if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+                    if(currentOrientation == UIDeviceOrientationUnknown) {
+                        return [UIApplication sharedApplication].statusBarOrientation;
+                    }
+                    return interfaceOrientation;
+                } else {
+                    if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+                        if(currentOrientation == UIDeviceOrientationUnknown) {
+                            return [UIApplication sharedApplication].statusBarOrientation;
+                        }
+                        return [UIApplication sharedApplication].statusBarOrientation;
+                    } else {
+                        return UIInterfaceOrientationPortrait;
+                    }
+                }
             } else {
                 return UIInterfaceOrientationLandscapeLeft;
             }
-        }
-        if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+        } else if([rotationPreference isEqualToString:@"landscape"]) {
             if ([currentViewDescription landscapeMode]) {
-                return interfaceOrientation;
+                if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+                    if(currentOrientation == UIDeviceOrientationUnknown) {
+                        return [UIApplication sharedApplication].statusBarOrientation;
+                    }
+                    return interfaceOrientation;
+                } else {
+                    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                        if(currentOrientation == UIDeviceOrientationUnknown) {
+                            return [UIApplication sharedApplication].statusBarOrientation;
+                        }
+                        return [UIApplication sharedApplication].statusBarOrientation;
+                    } else {
+                        return UIInterfaceOrientationLandscapeLeft;
+                    }
+                }
             } else {
                 return UIInterfaceOrientationPortrait;
             }

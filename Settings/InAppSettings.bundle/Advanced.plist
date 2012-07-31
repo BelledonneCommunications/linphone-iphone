@@ -16,13 +16,25 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<string>auto</string>
 			<key>Key</key>
-			<string>landscape_preference</string>
+			<string>rotation_preference</string>
 			<key>Title</key>
-			<string>Landscape</string>
+			<string>Rotation</string>
+			<key>Titles</key>
+			<array>
+				<string>Automatic</string>
+				<string>Portrait</string>
+				<string>Landscape</string>
+			</array>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>auto</string>
+				<string>portrait</string>
+				<string>landscape</string>
+			</array>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
