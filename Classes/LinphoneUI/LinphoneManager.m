@@ -40,8 +40,8 @@ extern void libmsamr_init();
 #ifdef HAVE_X264
 extern void libmsx264_init();
 #endif
-#define FRONT_CAM_NAME "AV Capture: Front Camera"
-#define BACK_CAM_NAME "AV Capture: Back Camera"
+#define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
+#define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
 #define DEFAULT_EXPIRES 600
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
