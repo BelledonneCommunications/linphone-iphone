@@ -350,15 +350,8 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	}
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
-	switch (linphone_core_get_firewall_policy(call->core)) {
-		case LinphonePolicyUseStun:
-			linphone_core_run_stun_tests(call->core,call);
-			break;
-		case LinphonePolicyUseIce:
-			linphone_core_gather_ice_candidates(call->core,call);
-			break;
-		default:
-			break;
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
+		linphone_core_run_stun_tests(call->core,call);
 	}
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
@@ -971,6 +964,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (ice_session != NULL)){
 		rtp_session_set_pktinfo(audiostream->session, TRUE);
 		audiostream->ice_check_list = ice_session_check_list(ice_session, 0);
+		ice_check_list_set_rtp_session(audiostream->ice_check_list, audiostream->session);
 	}
 
 	call->audiostream_app_evq = ortp_ev_queue_new();
@@ -995,6 +989,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (ice_session != NULL)){
 			rtp_session_set_pktinfo(call->videostream->session, TRUE);
 			call->videostream->ice_check_list = ice_session_check_list(ice_session, 1);
+			ice_check_list_set_rtp_session(call->videostream->ice_check_list, call->videostream->session);
 		}
 		call->videostream_app_evq = ortp_ev_queue_new();
 		rtp_session_register_event_queue(call->videostream->session,call->videostream_app_evq);
@@ -1457,6 +1452,13 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		linphone_address_destroy(me);
 }
 
+void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call){
+	audio_stream_start_ice_gathering(call->audiostream);
+	if (call->videostream) {
+		video_stream_start_ice_gathering(call->videostream);
+	}
+}
+
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
 	log->quality=audio_stream_get_average_quality_rating(st);
@@ -1719,6 +1721,15 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
 						linphone_core_update_call(lc, call, &call->current_params);
 					}
+				} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
+					if (call->state==LinphoneCallOutgoingInit) {
+						linphone_call_stop_media_streams(call);
+						if (evd->info.ice_processing_successful==FALSE) {
+							ice_session_destroy(sal_op_get_ice_session(call->op));
+							sal_op_set_ice_session(call->op, NULL);
+						}
+						linphone_core_start_invite(call->core,call,NULL);
+					}
 				}
 				ortp_event_destroy(ev);
 			}
@@ -1758,6 +1769,15 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
 						linphone_core_update_call(lc, call, &call->current_params);
+					}
+				} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
+					if (call->state==LinphoneCallOutgoingInit) {
+						linphone_call_stop_media_streams(call);
+						if (evd->info.ice_processing_successful==FALSE) {
+							ice_session_destroy(sal_op_get_ice_session(call->op));
+							sal_op_set_ice_session(call->op, NULL);
+						}
+						linphone_core_start_invite(call->core,call,NULL);
 					}
 				}
 				ortp_event_destroy(ev);

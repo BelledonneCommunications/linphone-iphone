@@ -219,7 +219,7 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFri
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
-void linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -245,6 +245,7 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
+void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
