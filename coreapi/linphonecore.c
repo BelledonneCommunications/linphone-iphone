@@ -2373,6 +2373,78 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
+	char *barmesg;
+	char *tmp;
+	LinphoneAddress *from_parsed;
+	SalMediaDescription *md;
+	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
+	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
+
+	/* Regenerate final media description to include all ICE candidates. */
+	md=sal_call_get_final_media_description(call->op);
+
+	if (md && sal_media_description_empty(md)){
+		sal_call_decline(call->op,SalReasonMedia,NULL);
+		linphone_call_unref(call);
+		return;
+	}
+
+	from_parsed=linphone_address_new(sal_op_get_from(call->op));
+	linphone_address_clean(from_parsed);
+	tmp=linphone_address_as_string(from_parsed);
+	linphone_address_destroy(from_parsed);
+	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
+	    (sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
+	if (lc->vtable.show) lc->vtable.show(lc);
+	if (lc->vtable.display_status)
+	    lc->vtable.display_status(lc,barmesg);
+
+	/* play the ring if this is the only call*/
+	if (ms_list_size(lc->calls)==1){
+		lc->current_call=call;
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
+		if (lc->sound_conf.ring_sndcard!=NULL){
+			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
+				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+				ms_message("Starting local ring...");
+				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
+			}
+			else
+			{
+				ms_message("the local ring is already started");
+			}
+		}
+	}else{
+		/* else play a tone within the context of the current call */
+		call->ringing_beep=TRUE;
+		linphone_core_play_tone(lc);
+	}
+
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+
+	if (call->state==LinphoneCallIncomingReceived){
+		sal_call_notify_ringing(call->op,propose_early_media || ringback_tone!=NULL);
+
+		if (propose_early_media || ringback_tone!=NULL){
+			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+			md=sal_call_get_final_media_description(call->op);
+			linphone_core_update_streams(lc,call,md);
+		}
+		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+			linphone_core_accept_call(lc,call);
+		}
+	}
+	linphone_call_unref(call);
+
+	ms_free(barmesg);
+	ms_free(tmp);
+}
+
 /**
  * @ingroup call_control
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.

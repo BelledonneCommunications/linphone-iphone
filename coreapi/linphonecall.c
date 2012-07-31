@@ -390,7 +390,14 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->camera_active=call->params.has_video;
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
-			linphone_core_gather_ice_candidates(call->core, call);
+			linphone_call_init_media_streams(call);
+			linphone_call_start_media_streams_for_ice_gathering(call);
+			if (linphone_core_gather_ice_candidates(call->core,call)<0) {
+				/* Ice candidates gathering failed, proceed with the call anyway. */
+				ice_session_destroy(sal_op_get_ice_session(call->op));
+				sal_op_set_ice_session(call->op, NULL);
+				linphone_call_stop_media_streams(call);
+			}
 			break;
 		case LinphonePolicyUseStun:
 			linphone_core_run_stun_tests(call->core,call);
@@ -1469,6 +1476,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		rtp_session_unregister_event_queue(call->audiostream->session,call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
+		call->audiostream_app_evq=NULL;
 
 		if (call->audiostream->ec){
 			const char *state_str=NULL;
@@ -1690,98 +1698,110 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	}
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL) {
+		OrtpEvent *ev;
+
 		// Beware that the application queue should not depend on treatments fron the
 		// mediastreamer queue.
 		video_stream_iterate(call->videostream);
 
-		if (call->videostream_app_evq){
-			OrtpEvent *ev;
-			while (NULL != (ev=ortp_ev_queue_get(call->videostream_app_evq))){
-				OrtpEventType evt=ortp_event_get_type(ev);
-				OrtpEventData *evd=ortp_event_get_data(ev);
-				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-					linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-				} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-					call->stats[LINPHONE_CALL_STATS_VIDEO].round_trip_delay = rtp_session_get_round_trip_propagation(call->videostream->session);
-					if(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp != NULL)
-						freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
-					call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
-					evd->packet = NULL;
-					if (lc->vtable.call_stats_updated)
-						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-				} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-					memcpy(&call->stats[LINPHONE_CALL_STATS_VIDEO].jitter_stats, rtp_session_get_jitter_stats(call->videostream->session), sizeof(jitter_stats_t));
-					if(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp != NULL)
-						freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
-					call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
-					evd->packet = NULL;
-					if (lc->vtable.call_stats_updated)
-						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-				} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
-					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
-						linphone_core_update_call(lc, call, &call->current_params);
-					}
-				} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
-					if (call->state==LinphoneCallOutgoingInit) {
-						linphone_call_stop_media_streams(call);
-						if (evd->info.ice_processing_successful==FALSE) {
-							ice_session_destroy(sal_op_get_ice_session(call->op));
-							sal_op_set_ice_session(call->op, NULL);
-						}
-						linphone_core_start_invite(call->core,call,NULL);
-					}
+		while (call->videostream_app_evq && (NULL != (ev=ortp_ev_queue_get(call->videostream_app_evq)))){
+			OrtpEventType evt=ortp_event_get_type(ev);
+			OrtpEventData *evd=ortp_event_get_data(ev);
+			if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+				linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+				call->stats[LINPHONE_CALL_STATS_VIDEO].round_trip_delay = rtp_session_get_round_trip_propagation(call->videostream->session);
+				if(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp != NULL)
+					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
+				call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
+				evd->packet = NULL;
+				if (lc->vtable.call_stats_updated)
+					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+				memcpy(&call->stats[LINPHONE_CALL_STATS_VIDEO].jitter_stats, rtp_session_get_jitter_stats(call->videostream->session), sizeof(jitter_stats_t));
+				if(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp != NULL)
+					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
+				call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
+				evd->packet = NULL;
+				if (lc->vtable.call_stats_updated)
+					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+			} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
+				if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
+					linphone_core_update_call(lc, call, &call->current_params);
 				}
-				ortp_event_destroy(ev);
+			} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
+				IceSession *ice_session = sal_op_get_ice_session(call->op);
+				linphone_call_stop_media_streams(call);
+				if (evd->info.ice_processing_successful==TRUE) {
+					ice_session_compute_candidates_foundations(ice_session);
+					ice_session_eliminate_redundant_candidates(ice_session);
+					ice_session_choose_default_candidates(ice_session);
+				} else {
+					ice_session_destroy(ice_session);
+					sal_op_set_ice_session(call->op, NULL);
+				}
+				if (call->state==LinphoneCallOutgoingInit) {
+					linphone_core_start_invite(call->core,call,NULL);
+				} else {
+					linphone_core_notify_incoming_call(call->core,call);
+				}
 			}
+			ortp_event_destroy(ev);
 		}
 	}
 #endif
 	if (call->audiostream!=NULL) {
+		OrtpEvent *ev;
+
 		// Beware that the application queue should not depend on treatments fron the
 		// mediastreamer queue.
 		audio_stream_iterate(call->audiostream);
 
-		if (call->audiostream_app_evq){
-			OrtpEvent *ev;
-			while (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq))){
-				OrtpEventType evt=ortp_event_get_type(ev);
-				OrtpEventData *evd=ortp_event_get_data(ev);
-				if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-					linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-				} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
-					linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
-				} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-					call->stats[LINPHONE_CALL_STATS_AUDIO].round_trip_delay = rtp_session_get_round_trip_propagation(call->audiostream->session);
-					if(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp != NULL)
-						freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
-					call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
-					evd->packet = NULL;
-					if (lc->vtable.call_stats_updated)
-						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-				} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-					memcpy(&call->stats[LINPHONE_CALL_STATS_AUDIO].jitter_stats, rtp_session_get_jitter_stats(call->audiostream->session), sizeof(jitter_stats_t));
-					if(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp != NULL)
-						freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
-					call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
-					evd->packet = NULL;
-					if (lc->vtable.call_stats_updated)
-						lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-				} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
-					if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
-						linphone_core_update_call(lc, call, &call->current_params);
-					}
-				} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
-					if (call->state==LinphoneCallOutgoingInit) {
-						linphone_call_stop_media_streams(call);
-						if (evd->info.ice_processing_successful==FALSE) {
-							ice_session_destroy(sal_op_get_ice_session(call->op));
-							sal_op_set_ice_session(call->op, NULL);
-						}
-						linphone_core_start_invite(call->core,call,NULL);
-					}
+		while (call->audiostream_app_evq && (NULL != (ev=ortp_ev_queue_get(call->audiostream_app_evq)))){
+			OrtpEventType evt=ortp_event_get_type(ev);
+			OrtpEventData *evd=ortp_event_get_data(ev);
+			if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
+				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
+			} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
+				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
+			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+				call->stats[LINPHONE_CALL_STATS_AUDIO].round_trip_delay = rtp_session_get_round_trip_propagation(call->audiostream->session);
+				if(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp != NULL)
+					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
+				call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
+				evd->packet = NULL;
+				if (lc->vtable.call_stats_updated)
+					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+				memcpy(&call->stats[LINPHONE_CALL_STATS_AUDIO].jitter_stats, rtp_session_get_jitter_stats(call->audiostream->session), sizeof(jitter_stats_t));
+				if(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp != NULL)
+					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
+				call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
+				evd->packet = NULL;
+				if (lc->vtable.call_stats_updated)
+					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+			} else if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
+				if (ice_session_role(sal_op_get_ice_session(call->op)) == IR_Controlling) {
+					linphone_core_update_call(lc, call, &call->current_params);
 				}
-				ortp_event_destroy(ev);
+			} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
+				IceSession *ice_session = sal_op_get_ice_session(call->op);
+				linphone_call_stop_media_streams(call);
+				if (evd->info.ice_processing_successful==TRUE) {
+					ice_session_compute_candidates_foundations(ice_session);
+					ice_session_eliminate_redundant_candidates(ice_session);
+					ice_session_choose_default_candidates(ice_session);
+				} else {
+					ice_session_destroy(sal_op_get_ice_session(call->op));
+					sal_op_set_ice_session(call->op, NULL);
+				}
+				if (call->state==LinphoneCallOutgoingInit) {
+					linphone_core_start_invite(call->core,call,NULL);
+				} else {
+					linphone_core_notify_incoming_call(call->core,call);
+				}
 			}
+			ortp_event_destroy(ev);
 		}
 	}
 	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed && call->audiostream!=NULL && disconnect_timeout>0 )

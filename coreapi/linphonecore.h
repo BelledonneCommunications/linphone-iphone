@@ -783,6 +783,8 @@ int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call,
 
 bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
+void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
+
 bool_t linphone_core_in_call(const LinphoneCore *lc);
 
 LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
