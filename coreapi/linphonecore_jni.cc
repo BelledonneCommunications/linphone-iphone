@@ -598,6 +598,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isNetworkStateReachable(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return linphone_core_is_network_reachabled((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
