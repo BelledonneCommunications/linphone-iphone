@@ -21,6 +21,8 @@
 #import "ColorSpaceUtilities.h"
 #import "Utils.h"
 
+#import <UIKit/UIView.h>
+
 @implementation UIColor (LightAndDark)
 
 - (UIColor *)lumColor:(float)mult {

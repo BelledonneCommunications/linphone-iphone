@@ -1116,10 +1116,6 @@
 		D3F83F8F15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D3F83F9215824D3600336684 /* LinphoneApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F9115824D3500336684 /* LinphoneApp.xib */; };
 		D3F9A9DB15AEEB940045320F /* history_notification.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9DA15AEEB940045320F /* history_notification.png */; };
-		D3F9A9E215AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9DF15AF100D0045320F /* TPKeyboardAvoidingScrollView.m */; };
-		D3F9A9E315AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9DF15AF100D0045320F /* TPKeyboardAvoidingScrollView.m */; };
-		D3F9A9E415AF100D0045320F /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9E115AF100D0045320F /* TPKeyboardAvoidingTableView.m */; };
-		D3F9A9E515AF100D0045320F /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9E115AF100D0045320F /* TPKeyboardAvoidingTableView.m */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
@@ -2003,10 +1999,6 @@
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
 		D3F83F9115824D3500336684 /* LinphoneApp.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LinphoneApp.xib; sourceTree = "<group>"; };
 		D3F9A9DA15AEEB940045320F /* history_notification.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_notification.png; path = Resources/history_notification.png; sourceTree = "<group>"; };
-		D3F9A9DE15AF100D0045320F /* TPKeyboardAvoidingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TPKeyboardAvoidingScrollView.h; path = Utils/TPKeyboardAvoiding/TPKeyboardAvoidingScrollView.h; sourceTree = "<group>"; };
-		D3F9A9DF15AF100D0045320F /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TPKeyboardAvoidingScrollView.m; path = Utils/TPKeyboardAvoiding/TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
-		D3F9A9E015AF100D0045320F /* TPKeyboardAvoidingTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TPKeyboardAvoidingTableView.h; path = Utils/TPKeyboardAvoiding/TPKeyboardAvoidingTableView.h; sourceTree = "<group>"; };
-		D3F9A9E115AF100D0045320F /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TPKeyboardAvoidingTableView.m; path = Utils/TPKeyboardAvoiding/TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3050,7 +3042,6 @@
 				D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */,
 				D326483615887D5200930C67 /* OrderedDictionary.h */,
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
-				D3F9A9DD15AF0FFE0045320F /* TPKeyboardAvoiding */,
 				D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */,
 				D3F9A9EB15AF27620045320F /* UACellBackgroundView */,
 				C9B3A6FD15B485DB006F52EE /* Utils.h */,
@@ -3179,17 +3170,6 @@
 				D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */,
 			);
 			name = TPMultiLayoutViewController;
-			sourceTree = "<group>";
-		};
-		D3F9A9DD15AF0FFE0045320F /* TPKeyboardAvoiding */ = {
-			isa = PBXGroup;
-			children = (
-				D3F9A9DE15AF100D0045320F /* TPKeyboardAvoidingScrollView.h */,
-				D3F9A9DF15AF100D0045320F /* TPKeyboardAvoidingScrollView.m */,
-				D3F9A9E015AF100D0045320F /* TPKeyboardAvoidingTableView.h */,
-				D3F9A9E115AF100D0045320F /* TPKeyboardAvoidingTableView.m */,
-			);
-			name = TPKeyboardAvoiding;
 			sourceTree = "<group>";
 		};
 		D3F9A9EB15AF27620045320F /* UACellBackgroundView */ = {
@@ -4230,8 +4210,6 @@
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
-				D3F9A9E215AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */,
-				D3F9A9E415AF100D0045320F /* TPKeyboardAvoidingTableView.m in Sources */,
 				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				D35860D615B549B500513429 /* Utils.m in Sources */,
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
@@ -4323,8 +4301,6 @@
 				D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D3E8F68715ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 				C90FAA7A15AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
-				D3F9A9E315AF100D0045320F /* TPKeyboardAvoidingScrollView.m in Sources */,
-				D3F9A9E515AF100D0045320F /* TPKeyboardAvoidingTableView.m in Sources */,
 				D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				D35860D715B549B500513429 /* Utils.m in Sources */,
 				D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,

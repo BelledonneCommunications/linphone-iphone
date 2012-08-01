@@ -20,6 +20,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
 
+#import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
 
@@ -29,6 +30,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 @synthesize mainViewController;
 @synthesize currentView;
+
+// TO READ
+// If a Controller set wantFullScreenLayout then DON'T set the autoresize!
+// So DON'T set autoresize for PhoneMainView
 
 #pragma mark - Lifecycle Functions
 
@@ -164,19 +169,59 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
+/* 
+    Will simulate a device rotation
+ */
++ (void)forceOrientation:(UIInterfaceOrientation)orientation {
+    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        UIView *view = window;
+        UIViewController *controller = nil;
+        CGRect frame = [view frame];
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            controller = window.rootViewController;
+            view = controller.view;
+        }
+        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
+        [controller willRotateToInterfaceOrientation:orientation duration:0.3];
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+                [view setTransform: CGAffineTransformMakeRotation(0)];
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+                break;
+            default:
+                break;
+        }
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            [view setFrame:frame];
+        }
+        [controller willAnimateRotationToInterfaceOrientation:orientation duration:0.3];
+        [UIView commitAnimations];
+        [controller didRotateFromInterfaceOrientation:oldOrientation];
+    }
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:TRUE];
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self.view setFrame:[[UIScreen mainScreen] bounds]]; // Force resize to screen size
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    NSLog(@"%d", fromInterfaceOrientation);
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     [mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }

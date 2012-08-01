@@ -534,6 +534,7 @@
     }
     
     [headerController setEditing:editing animated:animated];
+    [footerController setEditing:editing animated:animated];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {

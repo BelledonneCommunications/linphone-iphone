@@ -19,6 +19,8 @@
 
 #import "UICompositeViewController.h"
 
+#import "PhoneMainView.h"
+
 @implementation UICompositeViewDescription
 
 @synthesize name;
@@ -90,7 +92,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initUICompositeViewController {
-    self->viewControllerCache = [[NSMutableDictionary alloc] init]; 
+    self->viewControllerCache = [[NSMutableDictionary alloc] init];
     self->currentOrientation = UIDeviceOrientationUnknown;
 }
 
@@ -148,13 +150,8 @@
     [contentViewController viewWillAppear:animated];
     [tabBarViewController viewWillAppear:animated];
     [stateBarViewController viewWillAppear:animated];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(orientationChanged:) 
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    //currentOrientation = [UIDevice currentDevice].orientation;
+    currentOrientation = [[UIDevice currentDevice] orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -171,9 +168,6 @@
     [stateBarViewController viewWillDisappear:animated];
     
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:UIDeviceOrientationDidChangeNotification 
-                                               object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -183,24 +177,19 @@
     [stateBarViewController viewDidDisappear:animated];
 }
 
-- (void)orientationChanged:(NSNotification *)notification {
-    currentOrientation = [[UIDevice currentDevice] orientation];
-}
-
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    UIDeviceOrientation correctOrientation = [self getCorrectInterfaceOrientation:toInterfaceOrientation];
-    [super willRotateToInterfaceOrientation:correctOrientation duration:duration];
-    [contentViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
-    [tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
-    [stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:duration];
+    currentOrientation = [self getCorrectInterfaceOrientation:toInterfaceOrientation];
+    [super willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [contentViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [tabBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [stateBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    UIDeviceOrientation correctOrientation = [self getCorrectInterfaceOrientation:toInterfaceOrientation];
-    [super willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
-    [contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
-    [tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
-    [stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:duration];
+    [super willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [contentViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [tabBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [stateBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
     [self update:nil tabBar:nil fullscreen:nil];
 }
 
@@ -267,39 +256,36 @@
     return controller;
 }
 
-- (UIInterfaceOrientation)getCorrectInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (UIInterfaceOrientation)getCorrectInterfaceOrientation:(UIDeviceOrientation)deviceOrientation {
     if(currentViewDescription != nil) {
         NSString* rotationPreference = [[LinphoneManager instance].settingsStore objectForKey:@"rotation_preference"];
         if([rotationPreference isEqualToString:@"auto"]) {
-            if(currentOrientation == UIDeviceOrientationUnknown) {
+            if(deviceOrientation == UIDeviceOrientationUnknown) {
                 return [UIApplication sharedApplication].statusBarOrientation;
             }
-            if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+            if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
                 if ([currentViewDescription portraitMode]) {
-                    return interfaceOrientation;
+                    return deviceOrientation;
                 } else {
                     return UIInterfaceOrientationLandscapeLeft;
                 }
             }
-            if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+            if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
                 if ([currentViewDescription landscapeMode]) {
-                    return interfaceOrientation;
+                    return deviceOrientation;
                 } else {
                     return UIInterfaceOrientationPortrait;
                 }
             }
         } else if([rotationPreference isEqualToString:@"portrait"]) {
             if ([currentViewDescription landscapeMode]) {
-                if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-                    if(currentOrientation == UIDeviceOrientationUnknown) {
+                if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
+                    if(deviceOrientation == UIDeviceOrientationUnknown) {
                         return [UIApplication sharedApplication].statusBarOrientation;
                     }
-                    return interfaceOrientation;
+                    return deviceOrientation;
                 } else {
                     if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
-                        if(currentOrientation == UIDeviceOrientationUnknown) {
-                            return [UIApplication sharedApplication].statusBarOrientation;
-                        }
                         return [UIApplication sharedApplication].statusBarOrientation;
                     } else {
                         return UIInterfaceOrientationPortrait;
@@ -310,16 +296,13 @@
             }
         } else if([rotationPreference isEqualToString:@"landscape"]) {
             if ([currentViewDescription landscapeMode]) {
-                if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-                    if(currentOrientation == UIDeviceOrientationUnknown) {
+                if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
+                    if(deviceOrientation == UIDeviceOrientationUnknown) {
                         return [UIApplication sharedApplication].statusBarOrientation;
                     }
-                    return interfaceOrientation;
+                    return deviceOrientation;
                 } else {
                     if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-                        if(currentOrientation == UIDeviceOrientationUnknown) {
-                            return [UIApplication sharedApplication].statusBarOrientation;
-                        }
                         return [UIApplication sharedApplication].statusBarOrientation;
                     } else {
                         return UIInterfaceOrientationLandscapeLeft;
@@ -393,17 +376,11 @@
         tabBarViewController = [self getCachedController:description.tabBar];
         
         // Update rotation
-        UIDeviceOrientation correctOrientation = [self getCorrectInterfaceOrientation:currentOrientation];
-        if([UIApplication sharedApplication].statusBarOrientation != correctOrientation) {
-            [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                            name:UIDeviceOrientationDidChangeNotification 
-                                                          object:nil];
-            [[UIDevice currentDevice] performSelector:NSSelectorFromString(@"setOrientation:") withObject:(id)correctOrientation];
-            [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                     selector:@selector(orientationChanged:) 
-                                                         name:UIDeviceOrientationDidChangeNotification 
-                                                       object:nil];
+        UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+        if(currentOrientation != correctOrientation) {
+            [PhoneMainView forceOrientation:correctOrientation];
         }
+        currentOrientation = correctOrientation;
         [self updateInterfaceOrientation:correctOrientation];
     } else {
        oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;

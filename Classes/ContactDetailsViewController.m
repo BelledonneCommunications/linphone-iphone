@@ -57,6 +57,7 @@
 #pragma mark - 
 
 - (void)resetData {
+    [self disableEdit:FALSE];
     if(contact == NULL) {
         ABAddressBookRevert(addressBook);
         return;
@@ -190,7 +191,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [self resetData];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
-    [self disableEdit:FALSE];
 }
 
 

@@ -37,6 +37,21 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
+					<object class="IBUIView" id="103487099">
+						<reference key="NSNextResponder" ref="215340891"/>
+						<int key="NSvFlags">290</int>
+						<string key="NSFrame">{{0, 77}, {768, 2000}}</string>
+						<reference key="NSSuperview" ref="215340891"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="877138605"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xNDkwMTk2MDc4IDAuMTY0NzA1ODgyNCAwLjE4MDM5MjE1NjkAA</bytes>
+						</object>
+						<int key="IBUITag">28</int>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+					</object>
 					<object class="IBUIView" id="783828575">
 						<reference key="NSNextResponder" ref="215340891"/>
 						<int key="NSvFlags">-2147483356</int>
@@ -171,7 +186,7 @@
 						<string key="NSFrame">{{175, 0}, {175, 77}}</string>
 						<reference key="NSSuperview" ref="215340891"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="877138605"/>
+						<reference key="NSNextKeyView" ref="103487099"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">3</int>
@@ -364,6 +379,21 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
+					<object class="IBUIView" id="849328902">
+						<reference key="NSNextResponder" ref="774649127"/>
+						<int key="NSvFlags">290</int>
+						<string key="NSFrame">{{0, 86}, {1024, 2000}}</string>
+						<reference key="NSSuperview" ref="774649127"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="174827909"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xNDkwMTk2MDc4IDAuMTY0NzA1ODgyNCAwLjE4MDM5MjE1NjkAA</bytes>
+						</object>
+						<int key="IBUITag">28</int>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+					</object>
 					<object class="IBUIView" id="91594118">
 						<reference key="NSNextResponder" ref="774649127"/>
 						<int key="NSvFlags">-2147483356</int>
@@ -472,7 +502,7 @@
 						<string key="NSFrame">{{240, 0}, {240, 86}}</string>
 						<reference key="NSSuperview" ref="774649127"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="174827909"/>
+						<reference key="NSNextKeyView" ref="849328902"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">3</int>
@@ -828,6 +858,7 @@
 							<reference ref="1012118169"/>
 							<reference ref="582329659"/>
 							<reference ref="686020189"/>
+							<reference ref="103487099"/>
 						</array>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Portrait View</string>
@@ -925,6 +956,7 @@
 							<reference ref="13787191"/>
 							<reference ref="129284976"/>
 							<reference ref="948217795"/>
+							<reference ref="849328902"/>
 						</array>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Landscape View</string>
@@ -1010,6 +1042,18 @@
 						<reference key="parent" ref="774649127"/>
 						<string key="objectName">dialer</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">61</int>
+						<reference key="object" ref="103487099"/>
+						<reference key="parent" ref="215340891"/>
+						<string key="objectName">background</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">62</int>
+						<reference key="object" ref="849328902"/>
+						<reference key="parent" ref="774649127"/>
+						<string key="objectName">background</string>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1049,6 +1093,8 @@
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="5.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="61.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="62.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1060,7 +1106,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">60</int>
+			<int key="maxID">62</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1088,7 +1134,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">UIMainBar</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">TPMultiLayoutViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="onChatClick:">id</string>
 						<string key="onContactsClick:">id</string>

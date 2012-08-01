@@ -302,33 +302,37 @@ static UICompositeViewDescription *compositeDescription = nil;
         hideControlsTimer = nil;
     }
     
-    // show controls    
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
-    [[PhoneMainView instance] showTabBar: true];
-    [videoCameraSwitch setAlpha:1.0];
-    [UIView commitAnimations];
-    
-    // hide controls in 5 sec
-    hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 
-                                                         target:self 
-                                                       selector:@selector(hideControls:) 
-                                                       userInfo:nil 
-                                                        repeats:NO];
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
+        // show controls
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        [[PhoneMainView instance] showTabBar: true];
+        [videoCameraSwitch setAlpha:1.0];
+        [UIView commitAnimations];
+        
+        // hide controls in 5 sec
+        hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                                             target:self
+                                                           selector:@selector(hideControls:)
+                                                           userInfo:nil
+                                                            repeats:NO];
+    }
 }
 
 - (void)hideControls:(id)sender {
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
-    [videoCameraSwitch setAlpha:0.0];
-    [UIView commitAnimations];
-    
-    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown)
-        [[PhoneMainView instance] showTabBar: false];
-    
     if (hideControlsTimer) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
+    }
+    
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        [videoCameraSwitch setAlpha:0.0];
+        [UIView commitAnimations];
+        
+        
+        [[PhoneMainView instance] showTabBar: false];
     }
 }
 

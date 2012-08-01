@@ -35,6 +35,7 @@
 @synthesize footerView;
 @synthesize fieldBackgroundImage;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -300,19 +301,33 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationDuration:duration];
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
+
+    if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        int width = endFrame.size.height;
+        endFrame.size.height = endFrame.size.width;
+        endFrame.size.width = width;
+    }
     
     // Move view
-    CGRect frame = [[self view] frame];
-    frame.origin.y = [self.view convertPoint:endFrame.origin fromView:nil].y - frame.size.height;
-    [[self view] setFrame:frame];
+    {
+        CGRect frame = [[self view] frame];
+        CGRect rect = [PhoneMainView instance].view.bounds;
+        CGPoint pos = {frame.size.width, frame.size.height};
+        CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+        frame.origin.y = (rect.size.height - gPos.y - endFrame.size.height);
+        if(frame.origin.y > 0) frame.origin.y = 0;
+        [[self view] setFrame:frame];
+    }
     
     // Resize table view
-    CGPoint pos = {0, 0};
-    CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];
-    CGRect tableFrame = [tableController.view frame];
-    tableFrame.origin.y = gPos.y;
-    tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
-    [tableController.view setFrame:tableFrame];
+    {
+        CGPoint pos = {0, 0};
+        CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];
+        CGRect tableFrame = [tableController.view frame];
+        tableFrame.origin.y = gPos.y;
+        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        [tableController.view setFrame:tableFrame];
+    }
     
     // Scroll
     int lastSection = [tableController.tableView numberOfSections] -1;

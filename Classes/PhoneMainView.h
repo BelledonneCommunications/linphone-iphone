@@ -59,6 +59,7 @@
 - (UICompositeViewDescription *)firstView;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
++ (void)forceOrientation:(UIInterfaceOrientation)orientation;
 
 + (PhoneMainView*) instance;
 

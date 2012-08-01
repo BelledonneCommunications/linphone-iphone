@@ -82,12 +82,16 @@
                 ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonInstantMessageProperty);
                 for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
                     CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
-                    if(CFDictionaryContainsKey(lDict, @"service")) {
-                        if(CFStringCompare((CFStringRef)@"SIP", CFDictionaryGetValue(lDict, @"service"), kCFCompareCaseInsensitive) == 0) {
+                    if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+                        CFStringRef serviceKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey);
+                        if(CFStringCompare((CFStringRef)@"SIP", serviceKey, kCFCompareCaseInsensitive) == 0) {
                             add = true;
                         }
                     } else {
-                        add = true;
+                        NSString* usernameKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+                        if([usernameKey hasPrefix:@"sip:"]) {
+                            add = true;
+                        }
                     }
                     CFRelease(lDict);
                 }
