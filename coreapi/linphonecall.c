@@ -394,8 +394,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			linphone_call_start_media_streams_for_ice_gathering(call);
 			if (linphone_core_gather_ice_candidates(call->core,call)<0) {
 				/* Ice candidates gathering failed, proceed with the call anyway. */
-				ice_session_destroy(sal_op_get_ice_session(call->op));
-				sal_op_set_ice_session(call->op, NULL);
+				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
 			break;
@@ -404,8 +403,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			/* No break to also destroy ice session in this case. */
 		default:
 			if (sal_op_get_ice_session(call->op) != NULL) {
-				ice_session_destroy(sal_op_get_ice_session(call->op));
-				sal_op_set_ice_session(call->op, NULL);
+				linphone_call_delete_ice_session(call);
 			}
 			break;
 	}
@@ -1466,6 +1464,16 @@ void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call){
 	}
 }
 
+void linphone_call_delete_ice_session(LinphoneCall *call){
+	IceSession *ice_session = sal_op_get_ice_session(call->op);
+	if (ice_session != NULL) {
+		ice_session_destroy(ice_session);
+		sal_op_set_ice_session(call->op, NULL);
+		if (call->audiostream != NULL) call->audiostream->ice_check_list = NULL;
+		if (call->videostream != NULL) call->videostream->ice_check_list = NULL;
+	}
+}
+
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
 	log->quality=audio_stream_get_average_quality_rating(st);
@@ -1473,6 +1481,7 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 
 void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audiostream!=NULL) {
+		call->audiostream->ice_check_list = NULL;
 		rtp_session_unregister_event_queue(call->audiostream->session,call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
@@ -1497,9 +1506,11 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
+		call->videostream->ice_check_list = NULL;
 		rtp_session_unregister_event_queue(call->videostream->session,call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
+		call->videostream_app_evq=NULL;
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
@@ -1737,8 +1748,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					ice_session_eliminate_redundant_candidates(ice_session);
 					ice_session_choose_default_candidates(ice_session);
 				} else {
-					ice_session_destroy(ice_session);
-					sal_op_set_ice_session(call->op, NULL);
+					linphone_call_delete_ice_session(call);
 				}
 				if (call->state==LinphoneCallOutgoingInit) {
 					linphone_core_start_invite(call->core,call,NULL);
@@ -1792,8 +1802,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					ice_session_eliminate_redundant_candidates(ice_session);
 					ice_session_choose_default_candidates(ice_session);
 				} else {
-					ice_session_destroy(sal_op_get_ice_session(call->op));
-					sal_op_set_ice_session(call->op, NULL);
+					linphone_call_delete_ice_session(call);
 				}
 				if (call->state==LinphoneCallOutgoingInit) {
 					linphone_core_start_invite(call->core,call,NULL);

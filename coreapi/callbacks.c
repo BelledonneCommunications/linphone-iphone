@@ -187,7 +187,7 @@ static void call_received(SalOp *h){
 	linphone_core_add_call(lc,call);
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 
-	if (linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) {
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && sal_op_get_ice_session(call->op)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");
 		return;
@@ -254,13 +254,20 @@ static void call_ringing(SalOp *h){
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	IceSession *ice_session=sal_op_get_ice_session(op);
 	SalMediaDescription *md;
 	
 	if (call==NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
-	
+
+	if (ice_session == NULL) {
+		/* Ensure the ICE check list pointers for the call streams are resetted to prevent crashes */
+		if (call->audiostream != NULL) call->audiostream->ice_check_list = NULL;
+		if (call->videostream != NULL) call->videostream->ice_check_list = NULL;
+	}
+
 	md=sal_call_get_final_media_description(op);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||

@@ -1854,8 +1854,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (sal_op_get_ice_session(call->op) != NULL) {
 				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
-				ice_session_destroy(sal_op_get_ice_session(call->op));
-				sal_op_set_ice_session(call->op, NULL);
+				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
 			linphone_core_start_invite(lc,call,NULL);
@@ -2294,8 +2293,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		call->start_time=time(NULL);
 		if (linphone_core_gather_ice_candidates(lc,call)<0) {
 			/* Ice candidates gathering failed, proceed with the call anyway. */
-			ice_session_destroy(sal_op_get_ice_session(call->op));
-			sal_op_set_ice_session(call->op, NULL);
+			linphone_call_delete_ice_session(call);
 			linphone_call_stop_media_streams(call);
 		} else {
 			if (real_url!=NULL) ms_free(real_url);
