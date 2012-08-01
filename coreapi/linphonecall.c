@@ -552,17 +552,26 @@ void linphone_call_enable_video(LinphoneCall *call, bool_t enabled)
 {
 	LinphoneCore *lc=linphone_call_get_core(call);
 	LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+	IceSession *ice_session=sal_op_get_ice_session(call->op);
 
 	linphone_call_params_enable_video(params, enabled);
-	if ((enabled == TRUE) && (sal_op_get_ice_session(call->op))) {
-		/* Defer call update until the ICE candidates gathering process has finished. */
-		ms_message("Defer call update to gather ICE candidates");
-		call->params = *params;
-		update_local_media_description(lc, call);
-		linphone_call_init_video_stream(call);
-		video_stream_start_ice_gathering(call->videostream);
-		linphone_core_gather_ice_candidates(lc, call);
+	if (enabled == TRUE) {
+		if (ice_session != NULL) {
+			/* Defer call update until the ICE candidates gathering process has finished. */
+			ms_message("Defer call update to gather ICE candidates");
+			call->params = *params;
+			update_local_media_description(lc, call);
+			linphone_call_init_video_stream(call);
+			video_stream_start_ice_gathering(call->videostream);
+			linphone_core_gather_ice_candidates(lc, call);
+		} else {
+			linphone_core_update_call(lc, call, params);
+		}
 	} else {
+		if (ice_session != NULL) {
+			ice_session_remove_check_list(ice_session, call->videostream->ice_check_list);
+			call->videostream->ice_check_list = NULL;
+		}
 		linphone_core_update_call(lc, call, params);
 	}
 	linphone_call_params_destroy(params);
