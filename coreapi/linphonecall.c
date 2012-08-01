@@ -248,7 +248,8 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
-		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (ice_session != NULL)){
+		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce)
+			&& (ice_session != NULL) && (ice_session_check_list(ice_session, i) == NULL)) {
 			ice_session_add_check_list(ice_session, ice_check_list_new());
 		}
 	}
