@@ -390,6 +390,15 @@ void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
 **/
 bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
+/**
+ * Enable or disable video for this call.
+ * @param call
+ * @param enabled
+ *
+ * @ingroup media_parameters
+ */
+void linphone_call_enable_video(LinphoneCall *call, bool_t enabled);
+
 /*keep this in sync with mediastreamer2/msvolume.h*/
 
 /**

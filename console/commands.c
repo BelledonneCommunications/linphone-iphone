@@ -2503,10 +2503,7 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 			linphone_call_enable_camera(call,activated);
 			if ((activated && !linphone_call_params_video_enabled (cp))){
 				/*update the call to add the video stream*/
-				LinphoneCallParams *ncp=linphone_call_params_copy(cp);
-				linphone_call_params_enable_video(ncp,TRUE);
-				linphone_core_update_call(lc,call,ncp);
-				linphone_call_params_destroy (ncp);
+				linphone_call_enable_video(call,TRUE);
 				linphonec_out("Trying to bring up video stream...\n");
 			}
 		}
