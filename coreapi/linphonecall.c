@@ -1711,6 +1711,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	if (call->videostream!=NULL) {
 		OrtpEvent *ev;
 
+		/* Ensure there is no dangling ICE check list. */
+		if (sal_op_get_ice_session(call->op) == NULL) call->videostream->ice_check_list = NULL;
+
 		// Beware that the application queue should not depend on treatments fron the
 		// mediastreamer queue.
 		video_stream_iterate(call->videostream);
@@ -1762,6 +1765,9 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 #endif
 	if (call->audiostream!=NULL) {
 		OrtpEvent *ev;
+
+		/* Ensure there is no dangling ICE check list. */
+		if (sal_op_get_ice_session(call->op) == NULL) call->audiostream->ice_check_list = NULL;
 
 		// Beware that the application queue should not depend on treatments fron the
 		// mediastreamer queue.
