@@ -680,6 +680,10 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 			if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
 				ice_check_list_set_remote_credentials(ice_session_check_list(*ice_session, i), ice_ufrag, ice_pwd);
 			}
+			if (stream->rtp_port == 0) {
+				/* This stream has been deactivated by the peer, delete the check list. */
+				ice_session_remove_check_list(*ice_session, ice_session_check_list(*ice_session, i));
+			}
 			ice_dump_candidates(ice_session_check_list(*ice_session, i));
 		}
 	}
@@ -697,6 +701,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 		}
 	}
 	if (*ice_session != NULL) {
+		int nb_check_lists;
 		if (ice_session_just_created == TRUE) {
 			if (ice_lite == TRUE) {
 				ice_session_set_role(*ice_session, IR_Controlling);
@@ -704,6 +709,9 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc, IceS
 				ice_session_set_role(*ice_session, IR_Controlled);
 			}
 			ice_session_check_mismatch(*ice_session);
+		}
+		while ((nb_check_lists = ice_session_nb_check_lists(*ice_session)) > desc->nstreams) {
+			ice_session_remove_check_list(*ice_session, ice_session_check_list(*ice_session, nb_check_lists - 1));
 		}
 		if ((ice_ufrag != NULL) && (ice_pwd != NULL)) {
 			ice_session_set_remote_credentials(*ice_session, ice_ufrag, ice_pwd);
