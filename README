@@ -8,9 +8,11 @@ BUILD PREQUISITES
 Linphone for iPhone depends on liblinphone sdk. This SDK is generated from makefiles and shell scripts.
 You must first install both xcode with iPhone OS SDK and MacPorts (www.macports.org) for these scripts to work.
 
+Make sure that /opt/local/bin (macport tools) arrives first in your PATH env variable, so that the macport tools are taken in place of the versions brought by Apple in /usr/bin. Otherwise the build will fail with obscure errors.
+
 Once xccode and macports are installed, open a terminal and install the required build-time tools with:
 
-	$ sudo port install nawk coreutils automake autoconf libtool intltool wget pkgconfig cmake yasm doxygen
+	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen
 
 
 Install gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
