@@ -572,7 +572,7 @@ void linphone_call_enable_video(LinphoneCall *call, bool_t enabled)
 			}
 		}
 	} else {
-		if (ice_session != NULL) {
+		if ((ice_session != NULL) && (call->videostream != NULL)) {
 			ice_session_remove_check_list(ice_session, call->videostream->ice_check_list);
 			call->videostream->ice_check_list = NULL;
 		}
