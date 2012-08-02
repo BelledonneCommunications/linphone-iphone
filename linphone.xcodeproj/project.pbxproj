@@ -1123,6 +1123,41 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D3554ECE15CA79AA00478841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = XMLRPC;
+		};
+		D3554ED015CA79AA00478841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 903B0DB612F7574800BD6E09;
+			remoteInfo = libXMLRPC;
+		};
+		D3554ED215CA79AA00478841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0799AF030F6721FF00B71B22;
+			remoteInfo = XMLRPCUnitTests;
+		};
+		D3554ED415CA79B900478841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 903B0DB512F7574800BD6E09;
+			remoteInfo = libXMLRPC;
+		};
+		D3554ED615CA79C000478841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 903B0DB512F7574800BD6E09;
+			remoteInfo = libXMLRPC;
+		};
 		D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
@@ -1608,6 +1643,7 @@
 		D354981E1587716B000081D8 /* UIStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStateBar.h; sourceTree = "<group>"; };
 		D354981F1587716B000081D8 /* UIStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStateBar.m; sourceTree = "<group>"; };
 		D35498201587716B000081D8 /* UIStateBar.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStateBar.xib; sourceTree = "<group>"; };
+		D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XMLRPC.xcodeproj; path = Utils/XMLRPC/XMLRPC.xcodeproj; sourceTree = "<group>"; };
 		D35860D515B549B500513429 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
 		D35E757515931E5D0066B1C1 /* switch_camera_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = switch_camera_default.png; path = Resources/switch_camera_default.png; sourceTree = "<group>"; };
 		D35E757615931E5D0066B1C1 /* switch_camera_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = switch_camera_over.png; path = Resources/switch_camera_over.png; sourceTree = "<group>"; };
@@ -3046,6 +3082,7 @@
 				D3F9A9EB15AF27620045320F /* UACellBackgroundView */,
 				C9B3A6FD15B485DB006F52EE /* Utils.h */,
 				D35860D515B549B500513429 /* Utils.m */,
+				D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -3057,6 +3094,16 @@
 				D32B6E3715A5C2430033019F /* ChatModel.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		D3554EC615CA79A900478841 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D3554ECF15CA79AA00478841 /* XMLRPC.framework */,
+				D3554ED115CA79AA00478841 /* libXMLRPC.a */,
+				D3554ED315CA79AA00478841 /* XMLRPCUnitTests.octest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		D3807FB615C28940005BE9BC /* DCRoundSwitch */ = {
@@ -3196,6 +3243,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D3554ED515CA79B900478841 /* PBXTargetDependency */,
 				D3B90E1B15C2CBC800F64F8C /* PBXTargetDependency */,
 			);
 			name = linphone;
@@ -3215,6 +3263,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D3554ED715CA79C000478841 /* PBXTargetDependency */,
 				D3B90E1D15C2CBCD00F64F8C /* PBXTargetDependency */,
 			);
 			name = "linphone-no-gpl-thirdparties";
@@ -3248,6 +3297,10 @@
 					ProductGroup = D3B90E1215C2CB5700F64F8C /* Products */;
 					ProjectRef = D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */;
 				},
+				{
+					ProductGroup = D3554EC615CA79A900478841 /* Products */;
+					ProjectRef = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -3258,6 +3311,27 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		D3554ECF15CA79AA00478841 /* XMLRPC.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = XMLRPC.framework;
+			remoteRef = D3554ECE15CA79AA00478841 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D3554ED115CA79AA00478841 /* libXMLRPC.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libXMLRPC.a;
+			remoteRef = D3554ED015CA79AA00478841 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D3554ED315CA79AA00478841 /* XMLRPCUnitTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = XMLRPCUnitTests.octest;
+			remoteRef = D3554ED215CA79AA00478841 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D3B90E1915C2CB5800F64F8C /* libNinePatch.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -4330,6 +4404,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D3554ED515CA79B900478841 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libXMLRPC;
+			targetProxy = D3554ED415CA79B900478841 /* PBXContainerItemProxy */;
+		};
+		D3554ED715CA79C000478841 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libXMLRPC;
+			targetProxy = D3554ED615CA79C000478841 /* PBXContainerItemProxy */;
+		};
 		D3B90E1B15C2CBC800F64F8C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = NinePatch;
@@ -4386,6 +4470,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4398,6 +4483,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = linphone;
@@ -4458,6 +4545,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4470,6 +4558,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = linphone;
@@ -4511,6 +4601,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4523,6 +4614,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
@@ -4564,6 +4657,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4576,6 +4670,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
@@ -4618,6 +4714,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4630,6 +4727,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
@@ -4672,6 +4771,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4684,6 +4784,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
@@ -4744,6 +4846,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4756,6 +4859,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = linphone;
@@ -4817,6 +4922,7 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 					classes/Utils/NinePatch/,
+					classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
@@ -4829,6 +4935,8 @@
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
+					"-force_load",
+					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
 					"-Objc",
 				);
 				PRODUCT_NAME = linphone;

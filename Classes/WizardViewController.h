@@ -18,17 +18,22 @@
  */ 
 
 #import <UIKit/UIKit.h>
-
+#import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
 
-@interface WizardViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
-    UIView *contentView;
+@interface WizardViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate> {
+    UIScrollView *contentView;
     
     UIView *welcomeView;
     UIView *choiceView;
     UIView *createAccountView;
     UIView *connectAccountView;
     UIView *externalAccountView;
+    UIView *validateAccountView;
+    
+    UIView *waitView;
+    UIView *currentView;
+    UITextField *activeTextField;
     
     UIButton *backButton;
     UIButton *startButton;
@@ -43,6 +48,9 @@
 @property (nonatomic, retain) IBOutlet UIView *createAccountView;
 @property (nonatomic, retain) IBOutlet UIView *connectAccountView;
 @property (nonatomic, retain) IBOutlet UIView *externalAccountView;
+@property (nonatomic, retain) IBOutlet UIView *validateAccountView;
+
+@property (nonatomic, retain) IBOutlet UIView *waitView;
 
 @property (nonatomic, retain) IBOutlet UIButton *backButton;
 @property (nonatomic, retain) IBOutlet UIButton *startButton;
@@ -54,5 +62,10 @@
 - (IBAction)onCreateAccountClick:(id)sender;
 - (IBAction)onConnectAccountClick:(id)sender;
 - (IBAction)onExternalAccountClick:(id)sender;
+- (IBAction)onCheckValidationClick:(id)sender;
+
+- (IBAction)onSignInClick:(id)sender;
+- (IBAction)onSignInExternalClick:(id)sender;
+- (IBAction)onRegisterClick:(id)sender;
 
 @end

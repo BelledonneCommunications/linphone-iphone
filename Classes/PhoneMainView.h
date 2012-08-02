@@ -60,7 +60,7 @@
 - (void)showStateBar:(BOOL)show;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
-+ (void)forceOrientation:(UIInterfaceOrientation)orientation;
++ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
 
 + (PhoneMainView*) instance;
 

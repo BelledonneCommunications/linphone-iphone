@@ -172,7 +172,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 /* 
     Will simulate a device rotation
  */
-+ (void)forceOrientation:(UIInterfaceOrientation)orientation {
++ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
         UIView *view = window;
         UIViewController *controller = nil;
@@ -182,9 +182,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
             view = controller.view;
         }
         UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
-        [controller willRotateToInterfaceOrientation:orientation duration:0.3];
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.3];
+        
+        NSTimeInterval animationDuration = 0.0;
+        if(animated) {
+            animationDuration = 0.3f;
+        }
+        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView beginAnimations:nil context:nil];
+            [UIView setAnimationDuration:animationDuration];
+        }
         switch (orientation) {
             case UIInterfaceOrientationPortrait:
                 [view setTransform: CGAffineTransformMakeRotation(0)];
@@ -204,8 +211,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if([window isKindOfClass:[UILinphoneWindow class]]) {
             [view setFrame:frame];
         }
-        [controller willAnimateRotationToInterfaceOrientation:orientation duration:0.3];
-        [UIView commitAnimations];
+        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView commitAnimations];
+        }
         [controller didRotateFromInterfaceOrientation:oldOrientation];
     }
     [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:TRUE];

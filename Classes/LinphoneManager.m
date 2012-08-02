@@ -138,6 +138,14 @@ struct codec_name_pref_table codec_pref_table[]={
     return result;
 }
 
++ (NSString *)getUserAgent {
+    return [NSString stringWithFormat:@"LinphoneIphone/%@ (Linphone/%s; Apple %@/%@)",
+            [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey],
+            linphone_core_get_version(),
+            [UIDevice currentDevice].systemName,
+            [UIDevice currentDevice].systemVersion];
+}
+
 + (LinphoneManager*)instance {
     if(theLinphoneManager == nil) {
         theLinphoneManager = [LinphoneManager alloc];

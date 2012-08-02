@@ -122,22 +122,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
     switch (state) {
-        case LinphoneRegistrationOk: 
-        {
+        case LinphoneRegistrationOk: {
             [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"]; 
-            [self.waitView setHidden:true];
+            [waitView setHidden:true];
             [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
             break;
         }
         case LinphoneRegistrationNone: 
-        case LinphoneRegistrationCleared:
-        {
-            [self.waitView setHidden:true];	
+        case LinphoneRegistrationCleared: {
+            [waitView setHidden:true];	
             break;
         }
-        case LinphoneRegistrationFailed: 
-        {
-            [self.waitView setHidden:true];
+        case LinphoneRegistrationFailed: {
+            [waitView setHidden:true];
             //default behavior if no registration delegates
             
             /*UIAlertView* error = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@", usernameField.text]
@@ -153,7 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             break;
         }
         case LinphoneRegistrationProgress: {
-            [self.waitView setHidden:false];
+            [waitView setHidden:false];
             break;
         }
         default: break;
