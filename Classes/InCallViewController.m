@@ -35,6 +35,17 @@
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
+@implementation UIPreviewView
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self.layer setFrame:self.frame];
+    for(CALayer *layer in self.layer.sublayers) {
+         [layer setFrame:self.bounds];
+    }
+}
+
+@end
 
 @implementation InCallViewController
 
@@ -101,6 +112,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark - ViewController Functions
+
+// Resize preview view keep same ratio
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    CGRect frame = [videoPreview frame];
+    frame.origin.x += frame.size.width;
+    frame.origin.y += frame.size.height;
+    
+    CGRect selfFrame = [self.view frame];
+    int size = 100.0f/460.0f * MAX(selfFrame.size.width, selfFrame.size.height);
+    frame.origin.x -= size;
+    frame.origin.y -= size;
+    frame.size.height = size;
+    frame.size.width = size;
+    [videoPreview setFrame:frame];
+}
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -204,14 +231,20 @@ static UICompositeViewDescription *compositeDescription = nil;
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
     int newRotation = 0;
     switch (orientation) {
-        case UIInterfaceOrientationLandscapeRight:
-            newRotation = 270;
+        case UIDeviceOrientationPortrait:
+            newRotation = 0;
             break;
-        case UIInterfaceOrientationLandscapeLeft:
+        case UIDeviceOrientationPortraitUpsideDown:
+            newRotation = 180;
+            break;
+        case UIDeviceOrientationLandscapeRight:
             newRotation = 90;
             break;
+        case UIDeviceOrientationLandscapeLeft:
+            newRotation = 270;
+            break;
         default:
-            newRotation = 0;
+            newRotation = oldLinphoneOrientation;
     }
     if (oldLinphoneOrientation != newRotation) {
         linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
@@ -307,6 +340,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
         [[PhoneMainView instance] showTabBar: true];
+        [[PhoneMainView instance] showStateBar: true];
         [videoCameraSwitch setAlpha:1.0];
         [UIView commitAnimations];
         
@@ -333,6 +367,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         
         
         [[PhoneMainView instance] showTabBar: false];
+        [[PhoneMainView instance] showStateBar: false];
     }
 }
 
@@ -383,6 +418,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [[PhoneMainView instance] fullScreen: true];
     [[PhoneMainView instance] showTabBar: false];
+    [[PhoneMainView instance] showStateBar: false];
     
 #ifdef TEST_VIDEO_VIEW_CHANGE
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_debugChangeVideoView) userInfo:nil repeats:YES];

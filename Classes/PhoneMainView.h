@@ -57,6 +57,7 @@
 - (UIViewController*)popCurrentView;
 - (void)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;
+- (void)showStateBar:(BOOL)show;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
 + (void)forceOrientation:(UIInterfaceOrientation)orientation;

@@ -190,7 +190,7 @@
     [contentViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
     [tabBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
     [stateBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
-    [self update:nil tabBar:nil fullscreen:nil];
+    [self update:nil tabBar:nil stateBar:nil fullscreen:nil];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -342,7 +342,7 @@
 
 #define IPHONE_STATUSBAR_HEIGHT 20
 
-- (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar fullscreen:(NSNumber*)fullscreen {   
+- (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar  stateBar:(NSNumber*)stateBar fullscreen:(NSNumber*)fullscreen {
     
     // Copy view description
     UICompositeViewDescription *oldViewDescription = nil;
@@ -398,6 +398,14 @@
         }
     }
     
+    if(stateBar != nil) {
+        if(currentViewDescription.stateBarEnabled != [stateBar boolValue]) {
+            currentViewDescription.stateBarEnabled = [stateBar boolValue];
+        } else {
+            stateBar = nil; // No change = No Update
+        }
+    }
+    
     if(fullscreen != nil) {
         if(currentViewDescription.fullscreen != [fullscreen boolValue]) {
             currentViewDescription.fullscreen = [fullscreen boolValue];
@@ -410,7 +418,7 @@
     }
     
     // Start animation
-    if(tabBar != nil || fullscreen != nil) {
+    if(tabBar != nil || stateBar != nil || fullscreen != nil) {
         [UIView beginAnimations:@"resize" context:nil];
         [UIView setAnimationDuration:0.35];
         [UIView setAnimationBeginsFromCurrentState:TRUE];
@@ -454,8 +462,10 @@
         tabFrame.origin.y = viewFrame.size.height;
     }
     
-    if(currentViewDescription.fullscreen)
+    if(currentViewDescription.fullscreen) {
+        contentFrame.origin.y = origin;
         contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+    }
     
     // Set frames
     [contentView setFrame: contentFrame];
@@ -470,7 +480,7 @@
     [stateBarViewController.view setFrame:frame];
     
     // Commit animation
-    if(tabBar != nil || fullscreen != nil) {
+    if(tabBar != nil || stateBar != nil || fullscreen != nil) {
         [UIView commitAnimations];
     }
     
@@ -493,15 +503,19 @@
 
 - (void) changeView:(UICompositeViewDescription *)description {
     [self view]; // Force view load
-    [self update:description tabBar:nil fullscreen:nil];
+    [self update:description tabBar:nil stateBar:nil fullscreen:nil];
 }
 
 - (void) setFullScreen:(BOOL) enabled {
-    [self update:nil tabBar:nil fullscreen:[NSNumber numberWithBool:enabled]];
+    [self update:nil tabBar:nil stateBar:nil fullscreen:[NSNumber numberWithBool:enabled]];
 }
 
 - (void) setToolBarHidden:(BOOL) hidden {
-    [self update:nil tabBar:[NSNumber numberWithBool:!hidden] fullscreen:nil];
+    [self update:nil tabBar:[NSNumber numberWithBool:!hidden] stateBar:nil fullscreen:nil];
+}
+
+- (void) setStateBarHidden:(BOOL) hidden {
+    [self update:nil tabBar: nil stateBar:[NSNumber numberWithBool:!hidden] fullscreen:nil];
 }
 
 - (UIViewController *) getCurrentViewController {

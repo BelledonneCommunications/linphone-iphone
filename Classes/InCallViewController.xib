@@ -67,7 +67,7 @@
 								<string key="NSFrameSize">{320, 460}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="673568144"/>
+								<reference key="NSNextKeyView" ref="69034748"/>
 								<string key="NSReuseIdentifierKey">_NS:196</string>
 								<object class="NSColor" key="IBUIBackgroundColor" id="95762599">
 									<int key="NSColorSpace">3</int>
@@ -77,12 +77,13 @@
 							</object>
 							<object class="IBUIView" id="673568144">
 								<reference key="NSNextResponder" ref="1009068048"/>
-								<int key="NSvFlags">283</int>
-								<string key="NSFrame">{{214, 354}, {106, 106}}</string>
+								<int key="NSvFlags">265</int>
+								<string key="NSFrame">{{220, 360}, {100, 100}}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="69034748"/>
+								<reference key="NSNextKeyView" ref="972197710"/>
 								<reference key="IBUIBackgroundColor" ref="95762599"/>
+								<int key="IBUIContentMode">1</int>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 							</object>
 							<object class="IBUIActivityIndicatorView" id="69034748">
@@ -91,7 +92,7 @@
 								<string key="NSFrame">{{141, 212}, {37, 37}}</string>
 								<reference key="NSSuperview" ref="1009068048"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="972197710"/>
+								<reference key="NSNextKeyView" ref="673568144"/>
 								<string key="NSReuseIdentifierKey">_NS:1030</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -399,6 +400,7 @@
 					<string>-2.IBPluginDependency</string>
 					<string>106.IBPluginDependency</string>
 					<string>126.IBPluginDependency</string>
+					<string>127.CustomClassName</string>
 					<string>127.IBPluginDependency</string>
 					<string>132.IBPluginDependency</string>
 					<string>144.IBPluginDependency</string>
@@ -418,6 +420,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UIPreviewView</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -554,6 +557,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UICamSwitch.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIPreviewView</string>
+					<string key="superclassName">UIView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIPreviewView.h</string>
 					</object>
 				</object>
 			</object>

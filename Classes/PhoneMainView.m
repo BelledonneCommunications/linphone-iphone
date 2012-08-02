@@ -398,6 +398,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setToolBarHidden:!show];
 }
 
+- (void) showStateBar:(BOOL) show {
+    [mainViewController setStateBarHidden:!show];
+}
+
 - (void)fullScreen:(BOOL) enabled {
     [mainViewController setFullScreen:enabled];
 }
