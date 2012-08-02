@@ -784,4 +784,8 @@ public interface LinphoneCore {
 	 */
 	public void refreshRegisters();
 
+	/**
+	 * return the version code of linphone core
+	 */
+	public String getVersion();
 }

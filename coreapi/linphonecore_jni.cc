@@ -1769,3 +1769,8 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {
 	ms_set_cpu_count(count);
 }
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
+	return jvalue;
+}
