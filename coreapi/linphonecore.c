@@ -2538,7 +2538,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		return -1;
 	}
 	if (params==NULL){
-		call->params.has_video=lc->video_policy.automatically_accept;
+		call->params.has_video=lc->video_policy.automatically_accept || call->current_params.has_video;
 	}else
 		call->params=*params;
 
