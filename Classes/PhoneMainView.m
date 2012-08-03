@@ -114,7 +114,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
-                                                 name:UIDeviceBatteryLevelDidChangeNotification 
+                                                 name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
 }
 
@@ -242,6 +242,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(chat != nil) {
         [self displayMessage:chat];
+        [self updateApplicationBadgeNumber];
     }
 }
 
@@ -340,10 +341,22 @@ static PhoneMainView* phoneMainViewInstance=nil;
         default:
             break;
 	}
+    [self updateApplicationBadgeNumber];
 }
 
 
 #pragma mark - 
+
+- (void)startUp {
+    [self updateApplicationBadgeNumber]; // Update Badge at startup
+}
+
+- (void)updateApplicationBadgeNumber {
+    int count = 0;
+    count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
+    count += [ChatModel unreadMessages];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+}
 
 + (CATransition*)getBackwardTransition {
     CATransition* trans = [CATransition animation];

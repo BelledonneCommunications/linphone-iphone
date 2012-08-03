@@ -258,13 +258,7 @@
     [target.layer removeAnimationForKey:animationID];
 }
          
-- (void)updateView:(UICompositeViewDescription*) view {
-    // Reset missed call
-    if([view equal:[HistoryViewController compositeViewDescription]]) {
-        linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
-        [self updateMissedCall:0 appear:FALSE];
-    }
-    
+- (void)updateView:(UICompositeViewDescription*) view {  
     // Update buttons
     if([view equal:[HistoryViewController compositeViewDescription]]) {
         historyButton.selected = TRUE;

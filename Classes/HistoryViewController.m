@@ -81,6 +81,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [editButton setOff];
     [self changeView: History_All];
 	[self.tableView reloadData];
+    
+    // Reset missed call
+    linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
+    // Fake event
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self];
 }
 
 - (void)viewDidLoad {
