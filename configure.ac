@@ -1,8 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl Keep this line, it is parsed by Android Makefile
-LINPHONE_VERSION=3.5.2
 
-AC_INIT([linphone],[$LINPHONE_VERSION],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.5.2],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
