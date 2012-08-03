@@ -502,8 +502,8 @@ static void set_sdp(osip_message_t *sip,sdp_message_t *msg){
 	osip_free(sdp);
 }
 
-static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *desc, const IceSession *ice_session){
-	sdp_message_t *msg=media_description_to_sdp(desc, ice_session);
+static void set_sdp_from_desc(osip_message_t *sip, const SalMediaDescription *desc){
+	sdp_message_t *msg=media_description_to_sdp(desc);
 	if (msg==NULL) {
 		ms_error("Fail to print sdp message !");
 		return;
@@ -526,7 +526,7 @@ static void sdp_process(SalOp *h){
 			sdp_message_free(h->sdp_answer);
 		}
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
-		h->sdp_answer=media_description_to_sdp(h->result, sal_op_get_ice_session(h));
+		h->sdp_answer=media_description_to_sdp(h->result);
 		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
 		 It should contains media parameters constraint from the remote offer, not our response*/
 		strcpy(h->result->addr,h->base.remote_media->addr);
@@ -600,7 +600,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	}
 	if (h->base.local_media){
 		h->sdp_offering=TRUE;
-		set_sdp_from_desc(invite,h->base.local_media,sal_op_get_ice_session(h));
+		set_sdp_from_desc(invite,h->base.local_media);
 	}else h->sdp_offering=FALSE;
 	if (h->replaces){
 		osip_message_set_header(invite,"Replaces",h->replaces);
@@ -668,7 +668,7 @@ int sal_call_accept(SalOp * h){
 	if (h->base.local_media){
 		/*this is the case where we received an invite without SDP*/
 		if (h->sdp_offering) {
-			set_sdp_from_desc(msg,h->base.local_media,sal_op_get_ice_session(h));
+			set_sdp_from_desc(msg,h->base.local_media);
 		}else{
 			if (h->sdp_answer==NULL) sdp_process(h);
 			if (h->sdp_answer){
@@ -990,7 +990,6 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	osip_call_info_t *call_info;
 	char *tmp;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
-	IceSession *ice_session;
 
 	set_network_origin(op,ev->request);
 	set_remote_ua(op,ev->request);
@@ -999,9 +998,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
-		ice_session=sal_op_get_ice_session(op);
-		sdp_to_media_description(sdp,op->base.remote_media,&ice_session);
-		sal_op_set_ice_session(op,ice_session);
+		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
 	}else op->sdp_offering=TRUE;
 
@@ -1037,7 +1034,6 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	sdp_message_t *sdp;
-	IceSession *ice_session;
 
 	if (op==NULL) {
 		ms_warning("Reinvite for non-existing operation !");
@@ -1057,9 +1053,7 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 	if (sdp){
 		op->sdp_offering=FALSE;
 		op->base.remote_media=sal_media_description_new();
-		ice_session=sal_op_get_ice_session(op);
-		sdp_to_media_description(sdp,op->base.remote_media,&ice_session);
-		sal_op_set_ice_session(op,ice_session);
+		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
 		
 	}else {
@@ -1071,7 +1065,6 @@ static void handle_reinvite(Sal *sal,  eXosip_event_t *ev){
 static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	sdp_message_t *sdp;
-	IceSession *ice_session;
 
 	if (op==NULL) {
 		ms_warning("ack for non-existing call !");
@@ -1088,9 +1081,7 @@ static void handle_ack(Sal *sal,  eXosip_event_t *ev){
 			if (op->base.remote_media)
 				sal_media_description_unref(op->base.remote_media);
 			op->base.remote_media=sal_media_description_new();
-			ice_session=sal_op_get_ice_session(op);
-			sdp_to_media_description(sdp,op->base.remote_media,&ice_session);
-			sal_op_set_ice_session(op,ice_session);
+			sdp_to_media_description(sdp,op->base.remote_media);
 			sdp_process(op);
 			sdp_message_free(sdp);
 		}
@@ -1150,16 +1141,13 @@ static int call_proceeding(Sal *sal, eXosip_event_t *ev){
 static void call_ringing(Sal *sal, eXosip_event_t *ev){
 	sdp_message_t *sdp;
 	SalOp *op=find_op(sal,ev);
-	IceSession *ice_session;
 	if (call_proceeding(sal, ev)==-1) return;
 
 	set_remote_ua(op,ev->response);
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
-		ice_session=sal_op_get_ice_session(op);
-		sdp_to_media_description(sdp,op->base.remote_media,&ice_session);
-		sal_op_set_ice_session(op,ice_session);
+		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
 		if (op->base.local_media) sdp_process(op);
 	}
@@ -1171,7 +1159,6 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	osip_message_t *msg=NULL;
 	SalOp *op=find_op(sal,ev);
 	const char *contact;
-	IceSession *ice_session;
 	
 	if (op==NULL || op->terminated==TRUE) {
 		ms_warning("This call has been already terminated.");
@@ -1187,9 +1174,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
 		op->base.remote_media=sal_media_description_new();
-		ice_session=sal_op_get_ice_session(op);
-		sdp_to_media_description(sdp,op->base.remote_media,&ice_session);
-		sal_op_set_ice_session(op,ice_session);
+		sdp_to_media_description(sdp,op->base.remote_media);
 		sdp_message_free(sdp);
 		if (op->base.local_media) sdp_process(op);
 	}
@@ -2427,7 +2412,7 @@ int sal_call_update(SalOp *h, const char *subject){
 	}
 	if (h->base.local_media){
 		h->sdp_offering=TRUE;
-		set_sdp_from_desc(reinvite,h->base.local_media,sal_op_get_ice_session(h));
+		set_sdp_from_desc(reinvite,h->base.local_media);
 	}else h->sdp_offering=FALSE;
 	eXosip_lock();
 	err = eXosip_call_send_request(h->did, reinvite);

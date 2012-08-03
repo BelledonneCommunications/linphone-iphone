@@ -234,10 +234,6 @@ void sal_op_set_user_pointer(SalOp *op, void *up){
 	((SalOpBase*)op)->user_pointer=up;
 }
 
-void sal_op_set_ice_session(SalOp *op, IceSession *ice_session){
-	((SalOpBase*)op)->ice_session=ice_session;
-}
-
 Sal *sal_op_get_sal(const SalOp *op){
 	return ((SalOpBase*)op)->root;
 }
@@ -264,10 +260,6 @@ const char *sal_op_get_remote_ua(const SalOp *op){
 
 void *sal_op_get_user_pointer(const SalOp *op){
 	return ((SalOpBase*)op)->user_pointer;
-}
-
-IceSession *sal_op_get_ice_session(const SalOp *op){
-	return ((SalOpBase*)op)->ice_session;
 }
 
 const char *sal_op_get_proxy(const SalOp *op){
@@ -318,8 +310,6 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
-	if (b->ice_session)
-		ice_session_destroy(b->ice_session);
 	ms_free(op);
 }
 

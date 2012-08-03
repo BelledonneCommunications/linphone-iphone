@@ -569,12 +569,11 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	socklen_t ss_len;
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
-	IceSession *ice_session = sal_op_get_ice_session(call->op);
 	const char *server = linphone_core_get_stun_server(lc);
 
-	if ((server == NULL) || (ice_session == NULL)) return -1;
-	audio_check_list = ice_session_check_list(ice_session, 0);
-	video_check_list = ice_session_check_list(ice_session, 1);
+	if ((server == NULL) || (call->ice_session == NULL)) return -1;
+	audio_check_list = ice_session_check_list(call->ice_session, 0);
+	video_check_list = ice_session_check_list(call->ice_session, 1);
 	if (audio_check_list == NULL) return -1;
 
 	if (lc->sip_conf.ipv6_enabled){
@@ -602,7 +601,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	}
 
 	/* Gather local srflx candidates. */
-	ice_session_gather_candidates(ice_session, ss, ss_len);
+	ice_session_gather_candidates(call->ice_session, ss, ss_len);
 	return 0;
 }
 

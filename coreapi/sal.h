@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define sal_h
 
 #include "mediastreamer2/mscommon.h"
-#include "mediastreamer2/ice.h"
 #include "ortp/ortp_srtp.h"
 
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
@@ -113,6 +112,33 @@ typedef struct SalEndpointCandidate{
 
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN 32
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN 6
+
+typedef struct SalIceCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char raddr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char foundation[SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN];
+	char type[SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN];
+	unsigned int componentID;
+	unsigned int priority;
+	int port;
+	int rport;
+} SalIceCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+
+typedef struct SalIceRemoteCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	int port;
+} SalIceRemoteCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES 2
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
+
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
 	enum ortp_srtp_crypto_suite_t algo;
@@ -138,6 +164,11 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
+	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
+	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_mismatch;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -151,10 +182,13 @@ typedef struct SalMediaDescription{
 	unsigned int session_ver;
 	unsigned int session_id;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_lite;
+	bool_t ice_completed;
 } SalMediaDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
-#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
 
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
@@ -177,7 +211,6 @@ typedef struct SalOpBase{
 	char *remote_ua;
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
-	IceSession *ice_session;
 	void *user_pointer;
 } SalOpBase;
 
@@ -322,7 +355,6 @@ void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);
-void sal_op_set_ice_session(SalOp *h, IceSession *ice_session);
 int sal_op_get_auth_requested(SalOp *h, const char **realm, const char **username);
 const char *sal_op_get_from(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
@@ -334,7 +366,6 @@ const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
-IceSession *sal_op_get_ice_session(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

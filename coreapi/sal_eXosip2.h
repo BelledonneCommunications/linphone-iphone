@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
-sdp_message_t *media_description_to_sdp(const SalMediaDescription *sal, const IceSession *ice_session);
-int sdp_to_media_description(sdp_message_t *sdp, SalMediaDescription *desc, IceSession **ice_session);
+sdp_message_t *media_description_to_sdp(const SalMediaDescription *sal);
+int sdp_to_media_description(sdp_message_t *sdp, SalMediaDescription *desc);
 
 struct Sal{
 	SalCallbacks callbacks;

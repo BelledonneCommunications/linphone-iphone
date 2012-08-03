@@ -1852,7 +1852,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		linphone_call_background_tasks(call,one_second_elapsed);
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
-			if (sal_op_get_ice_session(call->op) != NULL) {
+			if (call->ice_session != NULL) {
 				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
