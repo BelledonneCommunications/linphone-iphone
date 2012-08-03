@@ -35,18 +35,6 @@
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
-@implementation UIPreviewView
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self.layer setFrame:self.frame];
-    for(CALayer *layer in self.layer.sublayers) {
-         [layer setFrame:self.bounds];
-    }
-}
-
-@end
-
 @implementation InCallViewController
 
 @synthesize callTableController;
@@ -112,22 +100,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark - ViewController Functions
-
-// Resize preview view keep same ratio
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    CGRect frame = [videoPreview frame];
-    frame.origin.x += frame.size.width;
-    frame.origin.y += frame.size.height;
-    
-    CGRect selfFrame = [self.view frame];
-    int size = 100.0f/460.0f * MAX(selfFrame.size.width, selfFrame.size.height);
-    frame.origin.x -= size;
-    frame.origin.y -= size;
-    frame.size.height = size;
-    frame.size.width = size;
-    [videoPreview setFrame:frame];
-}
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -223,6 +195,27 @@ static UICompositeViewDescription *compositeDescription = nil;
     removeTableBackground([callTableController view]);
 }
 
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    CGRect frame = [videoPreview frame];
+    switch (toInterfaceOrientation) {
+        case UIInterfaceOrientationPortrait:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(0)];
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            break;
+        default:
+            break;
+    }
+    [videoPreview setFrame:frame];
+}
 
 #pragma mark -
 

@@ -28,10 +28,6 @@
 
 @class VideoViewController;
 
-@interface UIPreviewView : UIView
-
-@end
-
 @interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate, UICompositeViewDelegate> {
     
     InCallTableViewController* callTableController;

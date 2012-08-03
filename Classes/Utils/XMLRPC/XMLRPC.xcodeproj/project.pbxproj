@@ -659,6 +659,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Development;
 		};
@@ -669,6 +670,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Release;
 		};
@@ -688,7 +690,7 @@
 				PRODUCT_NAME = XMLRPC;
 				PUBLIC_HEADERS_FOLDER_PATH = /headers/;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Development;
 		};
@@ -707,7 +709,7 @@
 				PRODUCT_NAME = XMLRPC;
 				PUBLIC_HEADERS_FOLDER_PATH = /headers/;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = "armv6 armv7";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -719,6 +721,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Debug;
 		};
@@ -748,7 +751,7 @@
 				PRODUCT_NAME = XMLRPC;
 				PUBLIC_HEADERS_FOLDER_PATH = /headers/;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Debug;
 		};
@@ -773,6 +776,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Distribution;
 		};
@@ -801,7 +805,7 @@
 				PRODUCT_NAME = XMLRPC;
 				PUBLIC_HEADERS_FOLDER_PATH = /headers/;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = "armv6 armv7";
 				ZERO_LINK = NO;
 			};
 			name = Distribution;
@@ -827,6 +831,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7";
 			};
 			name = DistributionAdhoc;
 		};
@@ -855,7 +860,7 @@
 				PRODUCT_NAME = XMLRPC;
 				PUBLIC_HEADERS_FOLDER_PATH = /headers/;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv6";
+				VALID_ARCHS = "armv6 armv7";
 				ZERO_LINK = NO;
 			};
 			name = DistributionAdhoc;

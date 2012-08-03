@@ -116,15 +116,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self resetWizard];
 }
 
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [self clearProxyConfig];
-    [self changeView:welcomeView back:FALSE animation:FALSE];
-    [waitView setHidden:TRUE];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationUpdateEvent:)
@@ -158,6 +155,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark -
+
+- (void)resetWizard {
+    [self clearProxyConfig];
+    [self changeView:welcomeView back:FALSE animation:FALSE];
+    [waitView setHidden:TRUE];
+}
 
 + (UIView*)findTextField:(ViewElement)tag view:(UIView*)view {
     for(UIView *child in [view subviews]) {
