@@ -260,18 +260,9 @@
             [conferenceButton setHidden:true];
         }
     }
-    
-    // Disable menu when no call & no conference
-    if(linphone_core_get_current_call(lc) == NULL && linphone_core_is_in_conference(lc) == FALSE) {
-        [self hidePad];
-        [self hideOptions];
-        [optionsButton setEnabled:FALSE];
-    } else {
-        [optionsButton setEnabled:TRUE];
-    }
 
     // Disable transfert in conference
-    if(linphone_core_is_in_conference(lc)) {
+    if(linphone_core_get_current_call(lc) == NULL) {
         [optionsTransferButton setEnabled:FALSE];
     } else {
         [optionsTransferButton setEnabled:TRUE];
