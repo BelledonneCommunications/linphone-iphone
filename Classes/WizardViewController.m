@@ -156,8 +156,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
++ (void)cleanTextField:(UIView*)view {
+    if([view isKindOfClass:[UITextField class]]) {
+        [(UITextField*)view setText:@""];
+    } else {
+        for(UIView *subview in view.subviews) {
+            [WizardViewController cleanTextField:subview];
+        }
+    }
+}
+
 - (void)resetWizard {
     [self clearProxyConfig];
+    [WizardViewController cleanTextField:welcomeView];
+    [WizardViewController cleanTextField:choiceView];
+    [WizardViewController cleanTextField:createAccountView];
+    [WizardViewController cleanTextField:connectAccountView];
+    [WizardViewController cleanTextField:externalAccountView];
+    [WizardViewController cleanTextField:validateAccountView];
     [self changeView:welcomeView back:FALSE animation:FALSE];
     [waitView setHidden:TRUE];
 }
