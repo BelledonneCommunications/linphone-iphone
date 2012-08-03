@@ -2123,6 +2123,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
+		if (call->ice_session != NULL)
+			linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	real_url=linphone_address_as_string(call->log->to);
@@ -2379,9 +2381,9 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
 	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 
-	/* Regenerate final media description to include all ICE candidates. */
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	md=sal_call_get_final_media_description(call->op);
-
 	if (md && sal_media_description_empty(md)){
 		sal_call_decline(call->op,SalReasonMedia,NULL);
 		linphone_call_unref(call);
@@ -2464,7 +2466,9 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		call->params=*params;
 		call->camera_active=call->params.has_video;
 		update_local_media_description(lc,call);
-		
+		if (call->ice_session != NULL)
+			linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+
 		if (params->in_conference){
 			subject="Conference";
 		}else{
@@ -2548,6 +2552,10 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	call->camera_active=call->params.has_video;
 	update_local_media_description(lc,call);
+	if (call->ice_session != NULL) {
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+	}
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);

@@ -261,10 +261,9 @@ static void call_accepted(SalOp *op){
 		return ;
 	}
 
-	if (call->ice_session == NULL) {
-		/* Ensure the ICE check list pointers for the call streams are resetted to prevent crashes */
-		if (call->audiostream != NULL) call->audiostream->ice_check_list = NULL;
-		if (call->videostream != NULL) call->videostream->ice_check_list = NULL;
+	/* Handle remote ICE attributes if any. */
+	if (call->ice_session != NULL) {
+		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
 	}
 
 	md=sal_call_get_final_media_description(op);

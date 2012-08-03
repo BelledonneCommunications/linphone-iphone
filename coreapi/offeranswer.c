@@ -253,6 +253,11 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 			result->rtp_port = 0;
 		
 	}
+	strcpy(result->ice_pwd, local_cap->ice_pwd);
+	strcpy(result->ice_ufrag, local_cap->ice_ufrag);
+	result->ice_mismatch = local_cap->ice_mismatch;
+	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
+	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
 }
 
 /**
@@ -321,5 +326,9 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	result->bandwidth=local_capabilities->bandwidth;
 	result->session_ver=local_capabilities->session_ver;
 	result->session_id=local_capabilities->session_id;
+	strcpy(result->ice_pwd, local_capabilities->ice_pwd);
+	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
+	result->ice_lite = local_capabilities->ice_lite;
+	result->ice_completed = local_capabilities->ice_lite;
 	return 0;
 }

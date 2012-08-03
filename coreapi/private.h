@@ -221,6 +221,8 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
+void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);

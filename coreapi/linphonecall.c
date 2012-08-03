@@ -247,8 +247,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
-		if ((call->dir == LinphoneCallOutgoing) && (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce)
-			&& (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, i) == NULL)) {
+		if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, i) == NULL)) {
 			ice_session_add_check_list(call->ice_session, ice_check_list_new());
 		}
 	}
@@ -390,6 +389,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->camera_active=call->params.has_video;
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
+			call->ice_session = ice_session_new();
+			ice_session_set_role(call->ice_session, IR_Controlled);
+			linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
 			linphone_call_init_media_streams(call);
 			linphone_call_start_media_streams_for_ice_gathering(call);
 			if (linphone_core_gather_ice_candidates(call->core,call)<0) {
@@ -402,7 +404,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
 		default:
-			linphone_call_delete_ice_session(call);
 			break;
 	}
 	discover_mtu(lc,linphone_address_get_domain(from));

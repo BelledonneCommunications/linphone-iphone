@@ -605,6 +605,128 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	return 0;
 }
 
+void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
+{
+	IceSessionState session_state = ice_session_state(session);
+	int i, j;
+
+	if (session_state == IS_Completed) desc->ice_completed = TRUE;
+	else desc->ice_completed = FALSE;
+	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
+	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
+	for (i = 0; i < desc->nstreams; i++) {
+		SalStreamDescription *stream = &desc->streams[i];
+		IceCheckList *cl = ice_session_check_list(session, i);
+		if (cl == NULL) continue;
+		if ((strlen(ice_check_list_local_pwd(cl)) != strlen(desc->ice_pwd)) || (strcmp(ice_check_list_local_pwd(cl), desc->ice_pwd)))
+			strncpy(stream->ice_pwd, ice_check_list_local_pwd(cl), sizeof(stream->ice_pwd));
+		else
+			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
+		if ((strlen(ice_check_list_local_ufrag(cl)) != strlen(desc->ice_ufrag)) || (strcmp(ice_check_list_local_ufrag(cl), desc->ice_ufrag)))
+			strncpy(stream->ice_ufrag, ice_check_list_local_ufrag(cl), sizeof(stream->ice_ufrag));
+		else
+			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
+		if ((cl->state == ICL_Running) || (cl->state == ICL_Completed)) {
+			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
+			for (j = 0; j < ms_list_size(cl->local_candidates); j++) {
+				SalIceCandidate *sal_candidate = &stream->ice_candidates[j];
+				IceCandidate *ice_candidate = ms_list_nth_data(cl->local_candidates, j);
+				const char *default_addr = NULL;
+				int default_port = 0;
+				if (ice_candidate->componentID == 1) {
+					default_addr = stream->rtp_addr;
+					default_port = stream->rtp_port;
+				} else if (ice_candidate->componentID == 2) {
+					default_addr = stream->rtcp_addr;
+					default_port = stream->rtcp_port;
+				} else continue;
+				if (default_addr[0] == '\0') default_addr = desc->addr;
+				/* Only include the candidates matching the default destination for each component of the stream if the state is Completed as specified in RFC5245 section 9.1.2.2. */
+				if ((cl->state == ICL_Completed)
+					&& !((ice_candidate->taddr.port == default_port) && (strlen(ice_candidate->taddr.ip) == strlen(default_addr)) && (strcmp(ice_candidate->taddr.ip, default_addr) == 0)))
+					continue;
+				strncpy(sal_candidate->foundation, ice_candidate->foundation, sizeof(sal_candidate->foundation));
+				sal_candidate->componentID = ice_candidate->componentID;
+				sal_candidate->priority = ice_candidate->priority;
+				strncpy(sal_candidate->type, ice_candidate_type(ice_candidate), sizeof(sal_candidate->type));
+				strncpy(sal_candidate->addr, ice_candidate->taddr.ip, sizeof(sal_candidate->addr));
+				sal_candidate->port = ice_candidate->taddr.port;
+				if ((ice_candidate->base != NULL) && (ice_candidate->base != ice_candidate)) {
+					strncpy(sal_candidate->raddr, ice_candidate->base->taddr.ip, sizeof(sal_candidate->raddr));
+					sal_candidate->rport = ice_candidate->base->taddr.port;
+				}
+			}
+		}
+		if ((cl->state == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
+			const char *rtp_addr, *rtcp_addr;
+			int rtp_port, rtcp_port;
+			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
+			ice_check_list_nominated_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+			strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
+			stream->ice_remote_candidates[0].port = rtp_port;
+			strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
+			stream->ice_remote_candidates[1].port = rtcp_port;
+		}
+	}
+}
+
+void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
+{
+	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
+		int i, j;
+		ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+		for (i = 0; i < md->nstreams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl == NULL) {
+				cl = ice_check_list_new();
+				ice_session_add_check_list(call->ice_session, cl);
+				switch (stream->type) {
+					case SalAudio:
+						if (call->audiostream != NULL) call->audiostream->ice_check_list = cl;
+						break;
+					case SalVideo:
+						if (call->videostream != NULL) call->videostream->ice_check_list = cl;
+						break;
+					default:
+						break;
+				}
+			}
+			if (stream->ice_mismatch == TRUE) {
+				ice_check_list_set_state(cl, ICL_Failed);
+			} else {
+				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
+					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+					const SalIceCandidate *candidate = &stream->ice_candidates[j];
+					bool_t default_candidate = FALSE;
+					const char *addr = NULL;
+					int port = 0;
+					if (candidate->addr[0] == '\0') break;
+					if (candidate->componentID == 1) {
+						addr = stream->rtp_addr;
+						port = stream->rtp_port;
+					}
+					else if (candidate->componentID == 2) {
+						addr = stream->rtcp_addr;
+						port = stream->rtcp_port;
+					}
+					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
+						default_candidate = TRUE;
+					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
+						candidate->priority, candidate->foundation, default_candidate);
+				}
+			}
+		}
+		for (i = ice_session_nb_check_lists(call->ice_session); i > md->nstreams; i--) {
+			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
+		}
+	}
+	if ((ice_session_state(call->ice_session) == IS_Failed) || (ice_session_nb_check_lists(call->ice_session) == 0)) {
+		linphone_call_delete_ice_session(call);
+	}
+}
+
 LinphoneCall * is_a_linphone_call(void *user_pointer){
 	LinphoneCall *call=(LinphoneCall*)user_pointer;
 	if (call==NULL) return NULL;
