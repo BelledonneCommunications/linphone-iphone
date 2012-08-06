@@ -37,6 +37,7 @@
     UIImageView *avatarImage;
     UIView *headerView;
     UIView *footerView;
+    UIImageView *fieldBackgroundImage;
 }
 
 
@@ -48,6 +49,7 @@
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UIView *headerView;
 @property (nonatomic, retain) IBOutlet UIView *footerView;
+@property (nonatomic, retain) IBOutlet UIImageView *fieldBackgroundImage;
 @property (nonatomic, copy) NSString *remoteAddress;
 
 - (IBAction)onBackClick:(id)event;

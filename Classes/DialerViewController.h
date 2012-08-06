@@ -31,7 +31,7 @@
 	//Buttons
 	UITextField*    addressField;
     UIButton*       addContactButton;
-    UIButton*       cancelButton;
+    UIButton*       backButton;
 	UIEraseButton*  eraseButton;
 	UICallButton*   callButton;
     UICallButton*   addCallButton;
@@ -65,7 +65,7 @@
 @property (nonatomic, retain) IBOutlet UICallButton* callButton;
 @property (nonatomic, retain) IBOutlet UICallButton* addCallButton;
 @property (nonatomic, retain) IBOutlet UITransferButton* transferButton;
-@property (nonatomic, retain) IBOutlet UIButton* cancelButton;
+@property (nonatomic, retain) IBOutlet UIButton* backButton;
 @property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
 
 @property (nonatomic, retain) IBOutlet UIButton* oneButton;

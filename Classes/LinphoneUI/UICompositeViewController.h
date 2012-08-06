@@ -87,6 +87,7 @@
 
 - (void)changeView:(UICompositeViewDescription *)description;
 - (void)setFullScreen:(BOOL) enabled;
+- (void)setStateBarHidden:(BOOL) hidden;
 - (void)setToolBarHidden:(BOOL) hidden;
 - (UIViewController *)getCurrentViewController;
 

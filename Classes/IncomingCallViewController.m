@@ -20,13 +20,14 @@
 #import "IncomingCallViewController.h"
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
+#import "PhoneMainView.h"
 
 @implementation IncomingCallViewController
 
 @synthesize addressLabel;
 @synthesize avatarImage;
 @synthesize call;
-
+@synthesize delegate;
 
 #pragma mark - Lifecycle Functions
 
@@ -37,6 +38,9 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [avatarImage release];
+    [addressLabel release];
+    [delegate release];
     [super dealloc];
 }
 
@@ -50,7 +54,6 @@
                                              selector:@selector(callUpdateEvent:) 
                                                  name:@"LinphoneCallUpdate" 
                                                object:nil];
-    [self callUpdate:call state:linphone_call_get_state(call)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -61,6 +64,25 @@
                                                object:nil];
 }
 
+
+#pragma mark - UICompositeViewDelegate Functions
+
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"IncomingCall"
+                                                                content:@"IncomingCallViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar:nil
+                                                          tabBarEnabled:false
+                                                             fullscreen:false
+                                                          landscapeMode:true
+                                                           portraitMode:true];
+    }
+    return compositeDescription;
+}
 
 
 #pragma mark - Event Functions
@@ -76,16 +98,16 @@
 
 - (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {  
     if(call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
-        [self dismiss: [NSNumber numberWithInt: IncomingCall_Aborted]];
+        [delegate incomingCallAborted:call];
+        [self dismiss];
     }
 }
 
 
-#pragma mark - Property Functions
-
-- (void)setCall:(LinphoneCall*)acall {
-    call = acall;
-    [self update];
+- (void)dismiss {
+    if([[[PhoneMainView instance] currentView] equal:[IncomingCallViewController compositeViewDescription]]) {
+        [[PhoneMainView instance] popCurrentView];
+    }
 }
 
 - (void)update {
@@ -131,21 +153,26 @@
     [addressLabel setText:address];
 }
 
-- (LinphoneCall*) getCall {
-    return call;
+
+#pragma mark - Property Functions
+
+- (void)setCall:(LinphoneCall*)acall {
+    call = acall;
+    [self update];
+    [self callUpdate:call state:linphone_call_get_state(call)];
 }
 
 
 #pragma mark - Action Functions
 
 - (IBAction)onAcceptClick:(id)event {
-    linphone_core_accept_call([LinphoneManager getLc], call);
-    [self dismiss: [NSNumber numberWithInt:IncomingCall_Accepted]];
+    [self dismiss];
+    [delegate incomingCallAccepted:call];
 }
 
 - (IBAction)onDeclineClick:(id)event {
-    linphone_core_terminate_call([LinphoneManager getLc], call);
-    [self dismiss: [NSNumber numberWithInt:IncomingCall_Decline]];
+    [self dismiss];
+    [delegate incomingCallDeclined:call];
 }
 
 @end

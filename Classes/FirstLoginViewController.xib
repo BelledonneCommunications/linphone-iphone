@@ -3,20 +3,20 @@
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
 		<string key="IBDocument.SystemVersion">11E53</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
 		<string key="IBDocument.AppKitVersion">1138.47</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1181</string>
+			<string key="NS.object.0">1498</string>
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<string>IBUIButton</string>
-			<string>IBUIActivityIndicatorView</string>
-			<string>IBUIView</string>
-			<string>IBUITextField</string>
 			<string>IBProxyObject</string>
+			<string>IBUIActivityIndicatorView</string>
+			<string>IBUIButton</string>
+			<string>IBUITextField</string>
+			<string>IBUIView</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -87,6 +87,7 @@
 						<string key="NSFrame">{{60, 420}, {200, 37}}</string>
 						<reference key="NSSuperview" ref="988679043"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -139,9 +140,9 @@
 							<int key="IBUIAutocorrectionType">1</int>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
-						<object class="NSCustomResource" key="IBUIBackground" id="239774967">
+						<object class="NSCustomResource" key="IBUIBackground" id="974713049">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">setup_label.png</string>
+							<string key="NSResourceName">field_background.png</string>
 						</object>
 						<object class="IBUIFontDescription" key="IBUIFontDescription" id="936896947">
 							<int key="type">1</int>
@@ -180,7 +181,7 @@
 							<bool key="IBUISecureTextEntry">YES</bool>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
-						<reference key="IBUIBackground" ref="239774967"/>
+						<reference key="IBUIBackground" ref="974713049"/>
 						<reference key="IBUIFontDescription" ref="936896947"/>
 						<reference key="IBUIFont" ref="948350256"/>
 					</object>
@@ -195,6 +196,7 @@
 								<string key="NSFrame">{{142, 211}, {37, 37}}</string>
 								<reference key="NSSuperview" ref="210410556"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="300056741"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -220,7 +222,7 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
+				<reference key="NSNextKeyView" ref="210410556"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -559,7 +561,7 @@
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>button_background_default.png</string>
 				<string>button_background_over.png</string>
-				<string>setup_label.png</string>
+				<string>field_background.png</string>
 			</object>
 			<object class="NSArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
@@ -568,6 +570,6 @@
 				<string>{542, 88}</string>
 			</object>
 		</object>
-		<string key="IBCocoaTouchPluginVersion">1181</string>
+		<string key="IBCocoaTouchPluginVersion">1498</string>
 	</data>
 </archive>

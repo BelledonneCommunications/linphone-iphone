@@ -20,9 +20,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
 
+#import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
-#import "UIView+ModalStack.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
 
@@ -30,6 +30,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 @synthesize mainViewController;
 @synthesize currentView;
+
+// TO READ
+// If a Controller set wantFullScreenLayout then DON'T set the autoresize!
+// So DON'T set autoresize for PhoneMainView
 
 #pragma mark - Lifecycle Functions
 
@@ -86,11 +90,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewDidLoad];
 
     [self.view addSubview: mainViewController.view];
-    
-    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
-        UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-        [self willRotateToInterfaceOrientation:interfaceOrientation duration:0.2f];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -117,7 +116,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
      */
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
-                                                 name:UIDeviceBatteryLevelDidChangeNotification 
+                                                 name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
 }
 
@@ -167,7 +166,62 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    if(mainViewController != nil) {
+        return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    } else {
+        return YES;
+    }
+}
+
+/* 
+    Will simulate a device rotation
+ */
++ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
+    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        UIView *view = window;
+        UIViewController *controller = nil;
+        CGRect frame = [view frame];
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            controller = window.rootViewController;
+            view = controller.view;
+        }
+        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
+        
+        NSTimeInterval animationDuration = 0.0;
+        if(animated) {
+            animationDuration = 0.3f;
+        }
+        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView beginAnimations:nil context:nil];
+            [UIView setAnimationDuration:animationDuration];
+        }
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+                [view setTransform: CGAffineTransformMakeRotation(0)];
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+                break;
+            default:
+                break;
+        }
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            [view setFrame:frame];
+        }
+        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView commitAnimations];
+        }
+        [controller didRotateFromInterfaceOrientation:oldOrientation];
+    }
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:TRUE];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -193,6 +247,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(chat != nil) {
         [self displayMessage:chat];
+        [self updateApplicationBadgeNumber];
     }
 }
 */
@@ -235,6 +290,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     NSString *message = [notif.userInfo objectForKey: @"message"];
     
     bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
+    
+    // Don't handle call state during incoming call view
+    if([[self currentView] equal:[IncomingCallViewController compositeViewDescription]] && state != LinphoneCallError && state != LinphoneCallEnd) {
+        return;
+    }
     
 	switch (state) {					
 		case LinphoneCallIncomingReceived: 
@@ -287,10 +347,24 @@ static PhoneMainView* phoneMainViewInstance=nil;
         default:
             break;
 	}
+    [self updateApplicationBadgeNumber];
 }
 
 
 #pragma mark - 
+
+- (void)startUp {
+    [self updateApplicationBadgeNumber]; // Update Badge at startup
+}
+
+- (void)updateApplicationBadgeNumber {
+    int count = 0;
+    count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
+    /* MODIFICATION: Disable Chat
+    count += [ChatModel unreadMessages];
+     */
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+}
 
 + (CATransition*)getBackwardTransition {
     CATransition* trans = [CATransition animation];
@@ -353,6 +427,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void) showTabBar:(BOOL) show {
     [mainViewController setToolBarHidden:!show];
+}
+
+- (void) showStateBar:(BOOL) show {
+    [mainViewController setStateBarHidden:!show];
 }
 
 - (void)fullScreen:(BOOL) enabled {
@@ -536,18 +614,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
 		}
-	} else {     
-        IncomingCallViewController *controller = [[IncomingCallViewController alloc] init];
-        [controller setWantsFullScreenLayout:TRUE];
-        [controller setCall:call];
-        [controller setModalDelegate:self];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewWillAppear:NO];
-        }   
-        [[self view] addModalView:[controller view]];
-        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-            [controller viewDidAppear:NO];
-        }  
+	} else {
+       IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+        if(controller != nil) {
+            [controller setCall:call];
+            [controller setDelegate:self];
+        }
 	}
 }
 
@@ -606,11 +678,17 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 
-#pragma mark - Modal Functions
+#pragma mark - IncomingCallDelegate Functions
 
-- (void)modalViewDismiss:(UIModalViewController*)controller value:(id)value {
-    [controller setModalDelegate:nil];
-    [[self view] removeModalView:[controller view]];
+- (void)incomingCallAborted:(LinphoneCall*)call {
+}
+
+- (void)incomingCallAccepted:(LinphoneCall*)call {
+    linphone_core_accept_call([LinphoneManager getLc], call);
+}
+
+- (void)incomingCallDeclined:(LinphoneCall*)call {
+    linphone_core_terminate_call([LinphoneManager getLc], call);
 }
 
 @end

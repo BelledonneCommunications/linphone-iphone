@@ -119,11 +119,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 	}
     {
-        LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+        LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
         if(parsed != NULL) {
             [self setString: linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
             [self setString: linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
         }
+        linphone_address_destroy(parsed);
     }
 	{
 		LCSipTransports tp;
@@ -176,7 +177,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
-    [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","landscape_preference", 1) forKey:@"landscape_preference"];
+    [self setString: lp_config_get_string(linphone_core_get_config(lc),"app","rotation_preference", "auto") forKey:@"rotation_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
@@ -320,11 +321,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
-		if (from !=0){
+		if (from != 0){
 			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
 			linphone_core_add_auth_info(lc,info);
+            linphone_address_destroy(from);
 		}
-		linphone_address_destroy(from);
 		
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
@@ -425,12 +426,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];
     NSString* username = [self stringForKey:@"primary_username_preference"];
-    LinphoneAddress *parsed=linphone_core_get_primary_contact_parsed(lc);
+    LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
     if(parsed != NULL) {
         linphone_address_set_display_name(parsed,[displayname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         linphone_address_set_username(parsed,[username cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         char *contact = linphone_address_as_string(parsed);
         linphone_core_set_primary_contact(lc, contact);
+        ms_free(contact);
+        linphone_address_destroy(parsed);
     }
     
     
@@ -449,8 +452,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", firstloginview);
     
-    BOOL landscape = [self boolForKey:@"landscape_preference"];
-    lp_config_set_int(linphone_core_get_config(lc),"app","landscape_preference", landscape);
+    NSString *landscape = [self stringForKey:@"rotation_preference"];
+    lp_config_set_string(linphone_core_get_config(lc),"app","rotation_preference", [landscape UTF8String]);
     
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference", debugmode);

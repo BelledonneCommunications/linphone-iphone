@@ -21,12 +21,26 @@
 
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
+#import "PhoneMainView.h"
 
 @implementation ContactDetailsLabelViewController
 
 @synthesize dataList;
 @synthesize tableView;
 @synthesize selectedData;
+@synthesize delegate;
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)dealloc {
+    [selectedData release];
+    [dataList release];
+    [tableView release];
+    [delegate release];
+    
+    [super dealloc];
+}
 
 
 #pragma mark - ViewController Functions
@@ -36,6 +50,34 @@
     [tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
+
+#pragma mark - UICompositeViewDelegate Functions
+
+static UICompositeViewDescription *compositeDescription = nil;
+
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"ContactDetailsLabel"
+                                                                content:@"ContactDetailsLabelViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar:@"UIMainBar"
+                                                          tabBarEnabled:true
+                                                             fullscreen:false
+                                                          landscapeMode:true
+                                                           portraitMode:true];
+    }
+    return compositeDescription;
+}
+
+
+#pragma mark -
+
+- (void)dismiss {
+    if([[[PhoneMainView instance] currentView] equal:[ContactDetailsLabelViewController compositeViewDescription]]) {
+        [[PhoneMainView instance] popCurrentView];
+    }
+}
 
 #pragma mark - Property Functions
 
@@ -55,6 +97,7 @@
     selectedData = [[NSString alloc] initWithString:aselectedData];
     [tableView reloadData];
 }
+
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -90,7 +133,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath { 
     NSString* key = [[dataList allKeys] objectAtIndex:[indexPath row]];
     [self setSelectedData:key];
-    [self dismiss:key];
+    [delegate changeContactDetailsLabel:key];
+    [self dismiss];
 }
 
 

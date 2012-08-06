@@ -50,8 +50,8 @@ extern void libmsamr_init();
 #ifdef HAVE_X264
 extern void libmsx264_init();
 #endif
-#define FRONT_CAM_NAME "AV Capture: Front Camera"
-#define BACK_CAM_NAME "AV Capture: Back Camera"
+#define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
+#define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
 
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
@@ -140,6 +140,14 @@ struct codec_name_pref_table codec_pref_table[]={
 		done=TRUE;
 	}
     return result;
+}
+
++ (NSString *)getUserAgent {
+    return [NSString stringWithFormat:@"LinphoneIphone/%@ (Linphone/%s; Apple %@/%@)",
+            [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey],
+            linphone_core_get_version(),
+            [UIDevice currentDevice].systemName,
+            [UIDevice currentDevice].systemVersion];
 }
 
 + (LinphoneManager*)instance {
@@ -874,8 +882,9 @@ static LinphoneCoreVTable linphonec_vtable = {
         if(transfer) {
             linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
         } else {
-            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress,lcallParams);
+            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
         }
+        linphone_address_destroy(linphoneAddress);
 	}
 	linphone_call_params_destroy(lcallParams);
 }

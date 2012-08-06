@@ -23,6 +23,10 @@
 
 #import "LinphoneCoreSettingsStore.h"
 
+@interface UILinphoneWindow : UIWindow
+
+@end
+
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     UIWindow *window;
     CTCallCenter* callCenter;

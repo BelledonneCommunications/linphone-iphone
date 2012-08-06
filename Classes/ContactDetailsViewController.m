@@ -57,6 +57,7 @@
 #pragma mark - 
 
 - (void)resetData {
+    [self disableEdit:FALSE];
     if(contact == NULL) {
         ABAddressBookRevert(addressBook);
         return;
@@ -141,6 +142,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)newContact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
+    self->contact = NULL;
+    [self resetData];
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -149,6 +152,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)newContact:(NSString*)address {
     [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
+    self->contact = NULL;
+    [self resetData];
     self->contact = ABPersonCreate();
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -158,6 +163,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)editContact:(ABRecordRef)acontact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
+    self->contact = NULL;
+    [self resetData];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [self enableEdit:FALSE];
@@ -166,6 +173,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
+    self->contact = NULL;
+    [self resetData];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
     [tableController addSipField:address];
@@ -178,9 +187,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)setContact:(ABRecordRef)acontact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Set contact %p", acontact];
+    self->contact = NULL;
+    [self resetData];
     self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:self->contact];
-    [self disableEdit:FALSE];
 }
 
 
@@ -211,9 +221,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [tableController viewWillDisappear:animated];
     }
-    [self disableEdit:FALSE];
-    self->contact = NULL;
-    [self resetData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -257,7 +264,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                  tabBar:@"UIMainBar" 
                                                           tabBarEnabled:true 
                                                              fullscreen:false
-                                                          landscapeMode:false
+                                                          landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
     }
     return compositeDescription;

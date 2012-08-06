@@ -28,6 +28,7 @@
 #import "UICallCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "UILinphone.h"
 
 #include "linphonecore.h"
 #include "private.h"
@@ -191,24 +192,53 @@ static UICompositeViewDescription *compositeDescription = nil;
     videoGroup.alpha = 0;
     
     [videoCameraSwitch setPreview:videoPreview];
+    
+    removeTableBackground([callTableController view]);
 }
 
 
-#pragma mark - 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    CGRect frame = [videoPreview frame];
+    switch (toInterfaceOrientation) {
+        case UIInterfaceOrientationPortrait:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(0)];
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            break;
+        default:
+            break;
+    }
+    [videoPreview setFrame:frame];
+}
+
+#pragma mark -
 
 - (void)orientationUpdate {
     int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
     int newRotation = 0;
     switch (orientation) {
-        case UIInterfaceOrientationLandscapeRight:
-            newRotation = 270;
+        case UIDeviceOrientationPortrait:
+            newRotation = 0;
             break;
-        case UIInterfaceOrientationLandscapeLeft:
+        case UIDeviceOrientationPortraitUpsideDown:
+            newRotation = 180;
+            break;
+        case UIDeviceOrientationLandscapeRight:
             newRotation = 90;
             break;
+        case UIDeviceOrientationLandscapeLeft:
+            newRotation = 270;
+            break;
         default:
-            newRotation = 0;
+            newRotation = oldLinphoneOrientation;
     }
     if (oldLinphoneOrientation != newRotation) {
         linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
@@ -299,39 +329,45 @@ static UICompositeViewDescription *compositeDescription = nil;
         hideControlsTimer = nil;
     }
     
-    // show controls    
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
-    [[PhoneMainView instance] showTabBar: true];
-    /* MODIFICATION show video in background */
-    [callTableView setAlpha:1.0];
-    /* */
-    [videoCameraSwitch setAlpha:1.0];
-    [UIView commitAnimations];
-    
-    // hide controls in 5 sec
-    hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 
-                                                         target:self 
-                                                       selector:@selector(hideControls:) 
-                                                       userInfo:nil 
-                                                        repeats:NO];
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
+        // show controls
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        [[PhoneMainView instance] showTabBar: true];
+        [[PhoneMainView instance] showStateBar: true];
+        /* MODIFICATION show video in background */
+        [callTableView setAlpha:1.0];
+        /* */
+        [videoCameraSwitch setAlpha:1.0];
+        [UIView commitAnimations];
+        
+        // hide controls in 5 sec
+        hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                                             target:self
+                                                           selector:@selector(hideControls:)
+                                                           userInfo:nil
+                                                            repeats:NO];
+    }
 }
 
 - (void)hideControls:(id)sender {
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.3];
-    [videoCameraSwitch setAlpha:0.0];
-    [UIView commitAnimations];
-    
-    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
-        [[PhoneMainView instance] showTabBar: false];
-        /* MODIFICATION show video in background */
-        [callTableView setAlpha:0.0];
-        /* */
-    }
     if (hideControlsTimer) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
+    }
+    
+    if([[[PhoneMainView instance] currentView] equal:[InCallViewController compositeViewDescription]] && videoShown) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.3];
+        [videoCameraSwitch setAlpha:0.0];
+        /* MODIFICATION show video in background */
+        [callTableView setAlpha:0.0];
+        /* */
+        [UIView commitAnimations];
+        
+        
+        [[PhoneMainView instance] showTabBar: false];
+        [[PhoneMainView instance] showStateBar: false];
     }
 }
 
@@ -365,6 +401,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [callTableView setAlpha:0.0];
     
     /* MODIFICATION show video in background */
+    UIEdgeInsets insets = {23, 0, 0, 0};
+    [callTableView setContentInset:insets];
     [callTableController minimizeAll];
     /* */
     
@@ -386,6 +424,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [[PhoneMainView instance] fullScreen: true];
     [[PhoneMainView instance] showTabBar: false];
+    [[PhoneMainView instance] showStateBar: false];
     
 #ifdef TEST_VIDEO_VIEW_CHANGE
     [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(_debugChangeVideoView) userInfo:nil repeats:YES];
@@ -414,7 +453,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
 
+    UIEdgeInsets insets = {0, 0, 0, 0};
+    [callTableView setContentInset:insets];
     [callTableView setAlpha:1.0];
+    
     [videoCameraSwitch setHidden:TRUE];
     
     if(animation) {

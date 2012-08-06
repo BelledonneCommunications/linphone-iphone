@@ -24,11 +24,10 @@
 #import "UIContactDetailsHeader.h"
 #import "UIContactDetailsFooter.h"
 
-@interface ContactDetailsTableViewController : UITableViewController<UIModalViewDelegate, UITextFieldDelegate> {
+@interface ContactDetailsTableViewController : UITableViewController<ContactDetailsLabelViewDelegate, UITextFieldDelegate> {
 @private
     ABRecordRef contact;
     NSMutableArray *dataCache;
-    ContactDetailsLabelViewController *contactDetailsLabelViewController;
     NSMutableArray *labelArray;
     NSIndexPath *editingIndexPath;
 @public

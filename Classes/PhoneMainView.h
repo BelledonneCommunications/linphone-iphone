@@ -21,7 +21,6 @@
 
 #import "LinphoneManager.h"
 #import "UICompositeViewController.h"
-#import "UIModalViewController.h"
 
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
@@ -38,8 +37,9 @@
 #import "SettingsViewController.h"
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
+#import "IncomingCallViewController.h"
 
-@interface PhoneMainView : UIViewController<CallActionSheetDelegate,UIModalViewDelegate> {
+@interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
     @private
     UICompositeViewController *mainViewController;
 
@@ -59,8 +59,12 @@
 - (UIViewController*)popCurrentView;
 - (void)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;
+- (void)showStateBar:(BOOL)show;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
+- (void)startUp;
+
++ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
 
 + (PhoneMainView*) instance;
 

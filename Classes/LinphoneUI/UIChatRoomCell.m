@@ -117,41 +117,12 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
-- (void)resizeContent {
-    if(chat != nil) {
-        // Resize Content
-        CGRect contentFrame = [contentView frame];
-        contentFrame.size = [UIChatRoomCell viewSize:[chat message]];
-        if([[chat direction] intValue]) { // Inverted
-            contentFrame.origin.x = 0.0f;
-            contentFrame.origin.y = 0.0f;
-        } else {
-            contentFrame.origin.x = CELL_MAX_WIDTH - contentFrame.size.width;
-            contentFrame.origin.y = 0.0f;   
-        }
-        [contentView setFrame:contentFrame];
-        
-        CGRect messageFrame = [messageView frame];
-        messageFrame.origin.y = ([contentView frame].size.height - messageFrame.size.height)/2;
-        if([[chat direction] intValue]) { // Inverted	
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_incoming"]];
-            messageFrame.origin.y += 5;
-        } else {
-            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
-                                                  forNinePatchNamed:@"chat_bubble_outgoing"]];
-            messageFrame.origin.y -= 5;
-        }
-        [messageView setFrame:messageFrame];
-    }
-}
-
-+ (CGSize)viewSize:(NSString*)message {
++ (CGSize)viewSize:(NSString*)message width:(int)width {
     if(CELL_FONT == nil) {
         CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
     }
     CGSize messageSize = [message sizeWithFont: CELL_FONT
-                           constrainedToSize: CGSizeMake(CELL_MAX_WIDTH - CELL_MESSAGE_X_MARGIN, 10000.0f) 
+                           constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f) 
                                lineBreakMode: UILineBreakModeTailTruncation]; 
     messageSize.height += CELL_MESSAGE_Y_MARGIN;
     if(messageSize.height < CELL_MIN_HEIGHT)
@@ -162,8 +133,8 @@ static UIFont *CELL_FONT = nil;
     return messageSize;
 }
 
-+ (CGFloat)height:(ChatModel*)chat {
-    return [UIChatRoomCell viewSize:[chat message]].height;
++ (CGFloat)height:(ChatModel*)chat width:(int)width {
+    return [UIChatRoomCell viewSize:[chat message] width:width].height;
 }
 
 
@@ -171,7 +142,32 @@ static UIFont *CELL_FONT = nil;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self resizeContent];
+    if(chat != nil) {
+        // Resize Content
+        CGRect contentFrame = [contentView frame];
+        contentFrame.size = [UIChatRoomCell viewSize:[chat message] width:[self frame].size.width];
+        if([[chat direction] intValue]) { // Inverted
+            contentFrame.origin.x = 0.0f;
+            contentFrame.origin.y = 0.0f;
+        } else {
+            contentFrame.origin.x = [self frame].size.width - contentFrame.size.width;
+            contentFrame.origin.y = 0.0f;
+        }
+        [contentView setFrame:contentFrame];
+
+        CGRect messageFrame = [messageView frame];
+        messageFrame.origin.y = ([contentView frame].size.height - messageFrame.size.height)/2;
+        if([[chat direction] intValue]) { // Inverted
+            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
+                                                  forNinePatchNamed:@"chat_bubble_incoming"]];
+            messageFrame.origin.y += 5;
+        } else {
+            [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
+                                                  forNinePatchNamed:@"chat_bubble_outgoing"]];
+            messageFrame.origin.y -= 5;
+        }
+        [messageView setFrame:messageFrame];
+    }
 }
 
 

@@ -33,3 +33,5 @@
 - (UIColor *)darkerColor;
 
 @end
+
+void removeTableBackground(UIView* view);

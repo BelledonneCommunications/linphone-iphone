@@ -82,7 +82,7 @@
                                                  name:@"LinphoneTextReceived" 
                                                object:nil];
      */
-    [self update];
+    [self update:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -118,21 +118,36 @@
                                                   object:nil];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    // Force the animations
+    [[self.view layer] removeAllAnimations];
+    [historyNotificationView.layer setTransform:CATransform3DIdentity];
+    [chatNotificationView.layer setTransform:CATransform3DIdentity];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [chatNotificationView setHidden:TRUE];
+    [historyNotificationView setHidden:TRUE];
+    [self update:FALSE];
+}
+
 
 #pragma mark - Event Functions
 
 - (void)applicationWillEnterForeground:(NSNotification*)notif { 
     // Force the animations 
     [[self.view layer] removeAllAnimations];
+    [historyNotificationView.layer setTransform:CATransform3DIdentity];
+    [chatNotificationView.layer setTransform:CATransform3DIdentity];
     [chatNotificationView setHidden:TRUE];
     [historyNotificationView setHidden:TRUE];
-    [self update];
+    [self update:FALSE];
 }
 
-- (void)callUpdate:(NSNotification*)notif {  
+- (void)callUpdate:(NSNotification*)notif {
     //LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     //LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-    [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+    [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:TRUE];
 }
 
 - (void)changeViewEvent:(NSNotification*)notif {  
@@ -143,97 +158,112 @@
 
 /* MODIFICATION Remove chat
 - (void)textReceived:(NSNotification*)notif {  
-    [self updateUnreadMessage:[ChatModel unreadMessages]];
+    [self updateUnreadMessage:[ChatModel unreadMessages] appear:TRUE];
 }
  */
 
 #pragma mark - 
 
-- (void)update {
+- (void)update:(BOOL)appear{
     [self updateView:[[PhoneMainView instance] firstView]];
     if([LinphoneManager isLcReady]) {
-        [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc])];
+        [self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
     } else {
-        [self updateMissedCall:0];
+        [self updateMissedCall:0 appear:TRUE];
     }
     /* MODIFICATION Remove chat
-    [self updateUnreadMessage:[ChatModel unreadMessages]];
+    [self updateUnreadMessage:[ChatModel unreadMessages] appear:appear];
      */
 }
 
-- (void)updateUnreadMessage:(int)unreadMessage{
-    /* MODIFICATION Remove chat
+- (void)updateUnreadMessage:(int)unreadMessage appear:(BOOL)appear{
+    /*
     if (unreadMessage > 0) {
         if([chatNotificationView isHidden]) {
             [chatNotificationView setHidden:FALSE];
-            [self appearAnimation:@"Appear" target:chatNotificationView completion:^(BOOL finished){
+            if(appear) {
+                [self appearAnimation:@"Appear" target:chatNotificationView completion:^(BOOL finished){
+                    [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+                }];
+            } else {
                 [self startBounceAnimation:@"Bounce" target:chatNotificationView];
-            }];
+            }
         }
         [chatNotificationLabel setText:[NSString stringWithFormat:@"%i", unreadMessage]];
     } else {
         if(![chatNotificationView isHidden]) {
             [self stopBounceAnimation:@"Bounce" target:chatNotificationView];
-            [self disappearAnimation:@"Disappear" target:chatNotificationView completion:^(BOOL finished){
+            if(appear) {
+                [self disappearAnimation:@"Disappear" target:chatNotificationView completion:^(BOOL finished){
+                    [chatNotificationView setHidden:TRUE];
+                }];
+            } else {
                 [chatNotificationView setHidden:TRUE];
-            }];
+            }
         }
     }
      */
 }
 
-- (void)updateMissedCall:(int)missedCall{
+- (void)updateMissedCall:(int)missedCall appear:(BOOL)appear{
     if (missedCall > 0) {
         if([historyNotificationView isHidden]) {
             [historyNotificationView setHidden:FALSE];
-            [self appearAnimation:@"Appear" target:historyNotificationView completion:^(BOOL finished){
+            if(appear) {
+                [self appearAnimation:@"Appear" target:historyNotificationView completion:^(BOOL finished){
+                    [self startBounceAnimation:@"Bounce" target:historyNotificationView];
+                }];
+            } else {
                 [self startBounceAnimation:@"Bounce" target:historyNotificationView];
-            }];
+            }
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
     } else {
         if(![historyNotificationView isHidden]) {
             [self stopBounceAnimation:@"Bounce" target:historyNotificationView];
-            [self disappearAnimation:@"Disappear" target:historyNotificationView completion:^(BOOL finished){
-                                 [historyNotificationView setHidden:TRUE];
-                             }
-             ];
+            if(appear) {
+                [self disappearAnimation:@"Disappear" target:historyNotificationView completion:^(BOOL finished){
+                    
+                }];
+            } else {
+                [historyNotificationView setHidden:TRUE];
+            }
         }
     }
 }
 
 - (void)appearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
-    target.transform = CGAffineTransformMakeScale(0.01f, 0.01f);
+    target.layer.transform = CATransform3DMakeScale(0.01f, 0.01f, 1.0f);
     [UIView animateWithDuration:0.4 
                           delay:0 
                         options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-                         target.transform = CGAffineTransformIdentity;
+                         target.layer.transform = CATransform3DIdentity;
                      }
                      completion:completion];
 }
 
 - (void)disappearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
-    CGAffineTransform startCGA = [target transform];
+    CATransform3D startCGA = target.layer.transform;
     [UIView animateWithDuration:0.4 
                           delay:0 
                         options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-                         target.transform = CGAffineTransformConcat(startCGA, CGAffineTransformMakeScale(0.01f, 0.01f));
+                         target.layer.transform = CATransform3DConcat(startCGA, CATransform3DMakeScale(0.01f, 0.01f, 1.0f));
                      }
                      completion:completion];
 }
 
 - (void)startBounceAnimation:(NSString *)animationID target:(UIView *)target { 
-    CGAffineTransform startCGA = [target transform];
+    CATransform3D startCGA = target.layer.transform;
     [UIView animateWithDuration: 0.3
                           delay: 0
                         options: UIViewAnimationOptionRepeat | 
-     UIViewAnimationOptionAutoreverse | 
+     UIViewAnimationOptionAutoreverse |
      UIViewAnimationOptionAllowUserInteraction | 
      UIViewAnimationOptionCurveEaseIn
                      animations:^{
-                         [target setTransform: CGAffineTransformConcat(startCGA, CGAffineTransformMakeTranslation(0, 8))];
+                         target.layer.transform = CATransform3DConcat(startCGA, CATransform3DMakeTranslation(0, 8, 0));
                      }
                      completion:^(BOOL finished){
                      }];
@@ -244,13 +274,7 @@
     [target.layer removeAnimationForKey:animationID];
 }
          
-- (void)updateView:(UICompositeViewDescription*) view {
-    // Reset missed call
-    if([view equal:[HistoryViewController compositeViewDescription]]) {
-        linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
-        [self updateMissedCall:0];
-    }
-    
+- (void)updateView:(UICompositeViewDescription*) view {  
     // Update buttons
     if([view equal:[HistoryViewController compositeViewDescription]]) {
         historyButton.selected = TRUE;
@@ -277,8 +301,17 @@
     if([view equal:[ChatViewController compositeViewDescription]]) {
         chatButton.selected = TRUE;
     } else {
+        chatButton.selected = FALSE;
+    }
+     */
+
+    /*
+    if([view equal:[ChatViewController compositeViewDescription]]) {
+        moreButton.selected = TRUE;
+    } else {
         moreButton.selected = FALSE;
-    }*/
+    }
+     */
 }
 
 
@@ -311,6 +344,74 @@
 
 - (IBAction)onMoreClick: (id) event {
     //[[PhoneMainView instance] changeView:PhoneView_Chat];
+}
+
+
+#pragma mark - TPMultiLayoutViewController Functions
+
+- (NSDictionary*)attributesForView:(UIView*)view {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    
+    [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
+    [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected] key:@"image-selected"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
+        
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected] key:@"background-selected"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"background-disabled-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"background-selected-highlighted"];
+        [UIMainBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateDisabled] key:@"background-selected-disabled"];
+    }
+    [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
+    
+    return attributes;
+}
+
+- (void)applyAttributes:(NSDictionary*)attributes toView:(UIView*)view {
+    view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
+    view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-normal"] forState:UIControlStateNormal];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-highlighted"] forState:UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-disabled"] forState:UIControlStateDisabled];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected"] forState:UIControlStateSelected];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setImage:[UIMainBar getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+        
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected"] forState:UIControlStateSelected];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+        [button setBackgroundImage:[UIMainBar getDictEntry:attributes key:@"background-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    }
+    view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
+}
+
++ (void)addDictEntry:(NSMutableDictionary*)dict item:(id)item key:(id)key {
+    if(item != nil && key != nil) {
+        [dict setObject:item forKey:key];
+    }
+}
+
++ (id)getDictEntry:(NSDictionary*)dict key:(id)key {
+    if(key != nil) {
+        return [dict objectForKey:key];
+    }
+    return nil;
 }
 
 @end

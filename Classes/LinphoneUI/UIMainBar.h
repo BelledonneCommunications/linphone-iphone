@@ -18,8 +18,9 @@
  */  
 
 #import <UIKit/UIKit.h>
+#import "TPMultiLayoutViewController.h"
 
-@interface UIMainBar : UIViewController {
+@interface UIMainBar : TPMultiLayoutViewController {
     UIButton *historyButton;
     UIButton *contactsButton;
     UIButton *dialerButton;

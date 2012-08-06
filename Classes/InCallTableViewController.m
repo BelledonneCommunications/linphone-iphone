@@ -273,11 +273,11 @@ enum TableSection {
             return [[UIView alloc] initWithFrame:CGRectZero];
         }
     }
-    return [[UIView alloc] initWithFrame:CGRectZero];
+    return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {    
-    return [[UIView alloc] initWithFrame:CGRectZero];
+    return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 

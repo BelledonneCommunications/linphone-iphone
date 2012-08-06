@@ -109,8 +109,6 @@
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
     [pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
     
     [zeroButton setDigit:'0'];
@@ -118,7 +116,7 @@
 	[oneButton    setDigit:'1'];
     [oneButton setDtmf:true];
 	[twoButton    setDigit:'2'];
-    [twoButton  setDtmf:true];
+    [twoButton setDtmf:true];
 	[threeButton  setDigit:'3'];
     [threeButton setDtmf:true];
 	[fourButton   setDigit:'4'];
@@ -192,11 +190,13 @@
     
     
     // Set selected+over background: IB lack !
+    /* MODIFICATION no options
     [optionsButton setImage:[UIImage imageNamed:@"options_over.png"] 
                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
     [(UIButton*) [landscapeView viewWithTag:[optionsButton tag]] 
                    setImage:[UIImage imageNamed:@"options_over_landscape.png"] 
                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+     */
     
     
     // Set selected+over background: IB lack !
@@ -206,17 +206,7 @@
                   setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
-     // Set label multilines: IB lack !
-    [option1Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
-    [option1Button.titleLabel setTextAlignment:UITextAlignmentCenter];
-    
-    // Set label multilines: IB lack !
-    [option2Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
-    [option2Button.titleLabel setTextAlignment:UITextAlignmentCenter];
-    
-    // Set label multilines: IB lack !
-    [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
-    [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -317,18 +307,9 @@
             [conferenceButton setHidden:true];
         }
     }
-    
-    // Disable menu when no call & no conference
-    if(linphone_core_get_current_call(lc) == NULL && linphone_core_is_in_conference(lc) == FALSE) {
-        [self hidePad];
-        [self hideOptions];
-        [optionsButton setEnabled:FALSE];
-    } else {
-        [optionsButton setEnabled:TRUE];
-    }
 
     // Disable transfert in conference
-    if(linphone_core_is_in_conference(lc)) {
+    if(linphone_core_get_current_call(lc) == NULL) {
         [optionsTransferButton setEnabled:FALSE];
     } else {
         [optionsTransferButton setEnabled:TRUE];
@@ -423,7 +404,7 @@
     }
 }
 
-- (void)hideOptions {
+- (void)hideOptions{
     [optionsButton setOff];
     if(![optionsView isHidden]) {
         CGRect frame = [optionsView frame];
@@ -457,6 +438,7 @@
         linphone_core_send_dtmf([LinphoneManager getLc], [command characterAtIndex:[CASTEL_COMMAND_PREFIX length]]);
     }
 }
+
 
 #pragma mark - Action Functions
 
