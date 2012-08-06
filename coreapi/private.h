@@ -270,6 +270,7 @@ struct _LinphoneProxyConfig
 	char *reg_identity;
 	char *reg_route;
 	char *realm;
+	char *contact_params;
 	int expires;
 	int reg_time;
 	SalOp *op;
