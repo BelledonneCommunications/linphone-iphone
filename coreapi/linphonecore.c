@@ -2553,8 +2553,8 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	call->camera_active=call->params.has_video;
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);

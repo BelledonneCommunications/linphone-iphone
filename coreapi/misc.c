@@ -608,6 +608,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
 {
 	IceSessionState session_state = ice_session_state(session);
+	int nb_candidates;
 	int i, j;
 
 	if (session_state == IS_Completed) desc->ice_completed = TRUE;
@@ -617,6 +618,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 	for (i = 0; i < desc->nstreams; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
+		nb_candidates = 0;
 		if (cl == NULL) continue;
 		if ((strlen(ice_check_list_local_pwd(cl)) != strlen(desc->ice_pwd)) || (strcmp(ice_check_list_local_pwd(cl), desc->ice_pwd)))
 			strncpy(stream->ice_pwd, ice_check_list_local_pwd(cl), sizeof(stream->ice_pwd));
@@ -629,7 +631,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		if ((cl->state == ICL_Running) || (cl->state == ICL_Completed)) {
 			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
 			for (j = 0; j < ms_list_size(cl->local_candidates); j++) {
-				SalIceCandidate *sal_candidate = &stream->ice_candidates[j];
+				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
 				IceCandidate *ice_candidate = ms_list_nth_data(cl->local_candidates, j);
 				const char *default_addr = NULL;
 				int default_port = 0;
@@ -655,6 +657,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 					strncpy(sal_candidate->raddr, ice_candidate->base->taddr.ip, sizeof(sal_candidate->raddr));
 					sal_candidate->rport = ice_candidate->base->taddr.port;
 				}
+				nb_candidates++;
 			}
 		}
 		if ((cl->state == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
@@ -706,15 +709,31 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 					if (candidate->componentID == 1) {
 						addr = stream->rtp_addr;
 						port = stream->rtp_port;
-					}
-					else if (candidate->componentID == 2) {
+					} else if (candidate->componentID == 2) {
 						addr = stream->rtcp_addr;
 						port = stream->rtcp_port;
-					}
+					} else continue;
 					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
 						default_candidate = TRUE;
 					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
 						candidate->priority, candidate->foundation, default_candidate);
+				}
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+					const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
+					const char *addr = NULL;
+					int port = 0;
+					int componentID = j + 1;
+					if (candidate->addr[0] == '\0') break;
+					ms_error("handle remote-candidates attribute");
+					if (componentID == 1) {
+						addr = stream->rtp_addr;
+						port = stream->rtp_port;
+					} else if (componentID == 2) {
+						addr = stream->rtcp_addr;
+						port = stream->rtcp_port;
+					} else continue;
+					if (addr[0] == '\0') addr = md->addr;
+					ice_add_losing_pair(ice_session_check_list(call->ice_session, i), j + 1, candidate->addr, candidate->port, addr, port);
 				}
 			}
 		}

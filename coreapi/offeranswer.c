@@ -329,6 +329,6 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_pwd, local_capabilities->ice_pwd);
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
-	result->ice_completed = local_capabilities->ice_lite;
+	result->ice_completed = local_capabilities->ice_completed;
 	return 0;
 }
