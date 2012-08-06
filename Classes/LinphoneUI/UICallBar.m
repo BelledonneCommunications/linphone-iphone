@@ -211,8 +211,8 @@
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
-    [optionsView setHidden:TRUE];
-    [padView setHidden:TRUE];
+    [self hideOptions];
+    [self hidePad];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
