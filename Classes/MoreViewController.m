@@ -24,107 +24,54 @@
 
 @implementation MoreViewController
 
-@synthesize web;
-@synthesize credit;
-@synthesize console;
-@synthesize creditText;
-@synthesize weburi;
+@synthesize linkButton;
+@synthesize nameLabel;
+@synthesize versionLabel;
 
 
 #pragma mark - Lifecycle Functions
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-	[creditText setText: [NSString stringWithFormat:creditText.text,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
-	consoleViewController = [[ConsoleViewController alloc] initWithNibName:@"ConsoleViewController" bundle:[NSBundle mainBundle]];
-	//[[LinphoneManager instance] registerLogView:consoleViewController];
-	isDebug =  lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","debugenable_preference",0);  
-
-}
-
 - (void)dealloc {
-    [credit release];
-	[creditText release];
-    
-	[web release];
-	[weburi release];
-	[console release];
-    
-	[consoleViewController release];
+    [linkButton release];
+    [nameLabel release];
+    [versionLabel release];
     [super dealloc];
 }
 
 
-#pragma mark - 
+#pragma mark - ViewController Functions
 
--(void) enableLogView {
-	isLogViewEnabled = true;
+- (void)viewDidLoad {
+   [versionLabel  setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey]];
+   [nameLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 }
 
 
-#pragma mark - UITableViewDelegate Functions
+#pragma mark - UICompositeViewDelegate Functions
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
-}
+static UICompositeViewDescription *compositeDescription = nil;
 
-
-#pragma mark - UITableViewDataSource Functions
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0) {
-		return 230;
-	} else {
-		return 44;
-	}
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == 0) {
-		return 1;
-	} else {
-		if (isDebug) {
-			return 2;
-		} else {
-			return 1;
-		}
-	}
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-		return credit;
-	} else {
-		switch (indexPath.row) {
-			case 0: return web;
-			case 1: return console;
-		}
-	}
-	return nil;
-}
-
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-	
-	[self tableView:tableView didSelectRowAtIndexPath:indexPath];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-
-	[tableView deselectRowAtIndexPath:indexPath animated:NO];
-	
-    switch (indexPath.row) {
-		case 0:  {
-			NSURL *url = [NSURL URLWithString:weburi.text];
-			[[UIApplication sharedApplication] openURL:url];
-			break;
-		};
-		case 1:  {
-			[self.navigationController pushViewController:consoleViewController animated:true];
-			break;
-		}
++ (UICompositeViewDescription *)compositeViewDescription {
+    if(compositeDescription == nil) {
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"More"
+                                                                content:@"MoreViewController"
+                                                               stateBar:nil
+                                                        stateBarEnabled:false
+                                                                 tabBar: @"UIMainBar"
+                                                          tabBarEnabled:true
+                                                             fullscreen:false
+                                                          landscapeMode:[LinphoneManager runningOnIpad]
+                                                           portraitMode:true];
     }
-	
+    return compositeDescription;
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)onLinkClick:(id) event {
+    NSURL *url = [NSURL URLWithString:[linkButton titleForState:UIControlStateNormal]];
+    [[UIApplication sharedApplication] openURL:url];
 }
 
 @end

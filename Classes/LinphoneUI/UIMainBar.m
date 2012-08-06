@@ -305,13 +305,12 @@
     }
      */
 
-    /*
-    if([view equal:[ChatViewController compositeViewDescription]]) {
+    
+    if([view equal:[MoreViewController compositeViewDescription]]) {
         moreButton.selected = TRUE;
     } else {
         moreButton.selected = FALSE;
     }
-     */
 }
 
 
@@ -343,7 +342,7 @@
 */
 
 - (IBAction)onMoreClick: (id) event {
-    //[[PhoneMainView instance] changeView:PhoneView_Chat];
+    [[PhoneMainView instance] changeCurrentView:[MoreViewController compositeViewDescription]];
 }
 
 

@@ -1193,7 +1193,7 @@
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* castel-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "castel-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsViewController.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsViewController.m; sourceTree = "<group>"; };
 		C90FAA7815AF54E6002091CB /* HistoryDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryDetailsViewController.xib; sourceTree = "<group>"; };
@@ -2568,7 +2568,7 @@
 				D3432A70158A45AF001C6B0B /* led_disconnected.png */,
 				D3432A5D158A4446001C6B0B /* led_error.png */,
 				D3432A6F158A45AF001C6B0B /* led_inprogress.png */,
-				8D1107310486CEB800E47090 /* linphone-Info.plist */,
+				8D1107310486CEB800E47090 /* castel-Info.plist */,
 				2274550710700509006EC466 /* linphonerc */,
 				341FCA8D149798210084BC26 /* linphonerc-ipad */,
 				D3EA5416159858A80037DC6B /* list_delete_default.png */,
@@ -3914,7 +3914,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -3990,7 +3990,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4040,7 +4040,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4090,7 +4090,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4141,7 +4141,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4192,7 +4192,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4266,7 +4266,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -4341,7 +4341,7 @@
 					classes/Utils/XMLRPC/,
 					/usr/include/libxml2,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
+				INFOPLIST_FILE = "castel-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",

@@ -206,6 +206,18 @@
                   setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
+    // Set label multilines: IB lack !
+    [option1Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option1Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
+    // Set label multilines: IB lack !
+    [option2Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option2Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
+    // Set label multilines: IB lack !
+    [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
+    [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
+    
     [super viewDidLoad];
 }
 

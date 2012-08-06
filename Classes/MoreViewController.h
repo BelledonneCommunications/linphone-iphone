@@ -19,26 +19,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UICompositeViewController.h"
+
 @class ConsoleViewController;
-@interface MoreViewController : UITableViewController {
-
-	bool isLogViewEnabled;
-	
-	UITableViewCell *credit;
-	UITextView *creditText;
-
-	UITableViewCell *web;
-	UILabel *weburi;
-	UITableViewCell *console;
-
-	ConsoleViewController *consoleViewController;
-	bool isDebug;
+@interface MoreViewController : UIViewController<UICompositeViewDelegate> {
+    @private
+    UIButton *linkButton;
+    UILabel *nameLabel;
+    UILabel *versionLabel;
 }
 
-@property (nonatomic, retain) IBOutlet UITableViewCell* web;
-@property (nonatomic, retain) IBOutlet UITableViewCell* credit;
-@property (nonatomic, retain) IBOutlet UITableViewCell* console;
-@property (nonatomic, retain) IBOutlet UITextView *creditText;
-@property (nonatomic, retain) IBOutlet UILabel *weburi;
+@property (nonatomic, retain) IBOutlet UIButton *linkButton;
+@property (nonatomic, retain) IBOutlet UILabel *nameLabel;
+@property (nonatomic, retain) IBOutlet UILabel *versionLabel;
+
+- (IBAction)onLinkClick:(id) event;
 
 @end

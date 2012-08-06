@@ -28,6 +28,9 @@
 #import "ChatRoomViewController.h"
 #import "ChatViewController.h"
 */
+/* MODIFICATION: Add more*/
+#import "MoreViewController.h"
+/**/
 #import "DialerViewController.h"
 #import "ContactsViewController.h"
 #import "ContactDetailsViewController.h"

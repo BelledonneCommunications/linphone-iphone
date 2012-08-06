@@ -401,8 +401,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [callTableView setAlpha:0.0];
     
     /* MODIFICATION show video in background */
-    UIEdgeInsets insets = {23, 0, 0, 0};
+    UIEdgeInsets insets = {33, 0, 25, 0};
     [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
     [callTableController minimizeAll];
     /* */
     
@@ -453,8 +454,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoGroup setAlpha:0.0];
     [[PhoneMainView instance] showTabBar: true];
 
-    UIEdgeInsets insets = {0, 0, 0, 0};
+    UIEdgeInsets insets = {10, 0, 25, 0};
     [callTableView setContentInset:insets];
+    [callTableView setScrollIndicatorInsets:insets];
     [callTableView setAlpha:1.0];
     
     [videoCameraSwitch setHidden:TRUE];
