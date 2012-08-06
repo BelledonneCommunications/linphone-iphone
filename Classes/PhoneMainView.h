@@ -39,7 +39,9 @@
 #import "InCallViewController.h"
 #import "SettingsViewController.h"
 #import "FirstLoginViewController.h"
+/* MODIFICATION: Disable wizard
 #import "WizardViewController.h"
+*/
 #import "IncomingCallViewController.h"
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {

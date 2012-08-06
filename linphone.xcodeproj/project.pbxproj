@@ -499,7 +499,6 @@
 		D34BD73015C13DD40070C209 /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
 		D34BD73115C13DD40070C209 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D34734791580DDF1003C7B8C /* PhoneMainView.xib */; };
 		D34BD73215C13DD40070C209 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D32942A31594C94200556A1C /* SettingsViewController.xib */; };
-		D34BD73315C13DD40070C209 /* WizardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D350F20D15A43BB100149E54 /* WizardViewController.xib */; };
 		D34BD73415C13DF40070C209 /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D326483D1588950F00930C67 /* UICallBar.xib */; };
 		D34BD73515C13DF40070C209 /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D36C43C9158F2EE50048BA40 /* UICallCell.xib */; };
 		D34BD73815C13DF40070C209 /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D31B4B20159876C0002E6C72 /* UICompositeViewController.xib */; };
@@ -514,9 +513,6 @@
 		D34BD74115C13E250070C209 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		D34BD74315C13ED70070C209 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* DialerViewController.xib */; };
 		D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
-		D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D350F20C15A43BB100149E54 /* WizardViewController.m */; };
-		D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D350F20C15A43BB100149E54 /* WizardViewController.m */; };
-		D350F21015A43BB100149E54 /* WizardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D350F20D15A43BB100149E54 /* WizardViewController.xib */; };
 		D350F21C15A43D3400149E54 /* setup_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21315A43D3400149E54 /* setup_back_default.png */; };
 		D350F21E15A43D3400149E54 /* setup_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21415A43D3400149E54 /* setup_back_over.png */; };
 		D350F22015A43D3400149E54 /* setup_cancel_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21515A43D3400149E54 /* setup_cancel_default.png */; };
@@ -3243,7 +3239,6 @@
 				D3196D3615A321E3007FEEBA /* options_add_over.png in Resources */,
 				D3196D3815A321E3007FEEBA /* options_transfer_default.png in Resources */,
 				D3196D3A15A321E3007FEEBA /* options_transfer_over.png in Resources */,
-				D350F21015A43BB100149E54 /* WizardViewController.xib in Resources */,
 				D350F21C15A43D3400149E54 /* setup_back_default.png in Resources */,
 				D350F21E15A43D3400149E54 /* setup_back_over.png in Resources */,
 				D350F22015A43D3400149E54 /* setup_cancel_default.png in Resources */,
@@ -3411,7 +3406,6 @@
 				D34BD73015C13DD40070C209 /* MoreViewController.xib in Resources */,
 				D34BD73115C13DD40070C209 /* PhoneMainView.xib in Resources */,
 				D34BD73215C13DD40070C209 /* SettingsViewController.xib in Resources */,
-				D34BD73315C13DD40070C209 /* WizardViewController.xib in Resources */,
 				D34BD62815C13DB60070C209 /* back_over.png in Resources */,
 				D34BD62915C13DB60070C209 /* background.png in Resources */,
 				D34BD62A15C13DB60070C209 /* backspace_default.png in Resources */,
@@ -3725,7 +3719,6 @@
 				D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
-				D350F20E15A43BB100149E54 /* WizardViewController.m in Sources */,
 				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
@@ -3810,7 +3803,6 @@
 				D32460E7159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
 				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
-				D350F20F15A43BB100149E54 /* WizardViewController.m in Sources */,
 				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
 				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
@@ -3931,7 +3923,6 @@
 					"-lxml2",
 				);
 				PRODUCT_NAME = castel;
-				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -3952,7 +3943,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "B8ED8915-B69D-40DA-9B89-1700C44B156B";
+				PROVISIONING_PROFILE = "414BD289-B3E7-4226-8896-90501CC2A11F";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
