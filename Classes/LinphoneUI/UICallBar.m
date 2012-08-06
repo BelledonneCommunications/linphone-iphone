@@ -238,8 +238,8 @@
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
     [self castelCommandsUpdate:[[LinphoneManager instance] castelCommands]];
-    [optionsView setHidden:TRUE];
-    [padView setHidden:TRUE];
+    [self hideOptions];
+    [self hidePad];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
