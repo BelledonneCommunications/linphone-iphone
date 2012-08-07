@@ -607,12 +607,19 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
 {
+	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
 	int i, j;
 
-	if (session_state == IS_Completed) desc->ice_completed = TRUE;
-	else desc->ice_completed = FALSE;
+	if (session_state == IS_Completed) {
+		desc->ice_completed = TRUE;
+		ice_check_list_nominated_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+	}
+	else {
+		desc->ice_completed = FALSE;
+	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
 	for (i = 0; i < desc->nstreams; i++) {
@@ -620,6 +627,14 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
 		if (cl == NULL) continue;
+		if (cl->state == ICL_Completed) {
+			stream->ice_completed = TRUE;
+			ice_check_list_nominated_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+			strncpy(stream->rtp_addr, rtp_addr, sizeof(stream->rtp_addr));
+			strncpy(stream->rtcp_addr, rtcp_addr, sizeof(stream->rtcp_addr));
+		} else {
+			stream->ice_completed = FALSE;
+		}
 		if ((strlen(ice_check_list_local_pwd(cl)) != strlen(desc->ice_pwd)) || (strcmp(ice_check_list_local_pwd(cl), desc->ice_pwd)))
 			strncpy(stream->ice_pwd, ice_check_list_local_pwd(cl), sizeof(stream->ice_pwd));
 		else
@@ -661,7 +676,6 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 			}
 		}
 		if ((cl->state == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
-			const char *rtp_addr, *rtcp_addr;
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
 			ice_check_list_nominated_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);

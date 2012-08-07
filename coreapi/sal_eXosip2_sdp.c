@@ -377,6 +377,9 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			}
 		}
 	}
+	if (desc->ice_completed == TRUE) {
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("nortpproxy"), osip_strdup("yes"));
+	}
 	if (desc->ice_mismatch == TRUE) {
 		sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-mismatch"), NULL);
 	} else {

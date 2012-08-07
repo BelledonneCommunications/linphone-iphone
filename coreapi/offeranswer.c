@@ -256,6 +256,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	strcpy(result->ice_pwd, local_cap->ice_pwd);
 	strcpy(result->ice_ufrag, local_cap->ice_ufrag);
 	result->ice_mismatch = local_cap->ice_mismatch;
+	result->ice_completed = local_cap->ice_completed;
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
 }
