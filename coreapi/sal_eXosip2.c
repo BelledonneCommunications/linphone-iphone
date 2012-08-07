@@ -2406,6 +2406,10 @@ int sal_call_update(SalOp *h, const char *subject){
 	eXosip_unlock();
 	osip_message_set_subject(reinvite,subject);
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.contact){
+		_osip_list_set_empty(&reinvite->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(reinvite,h->base.contact);
+	}
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(reinvite, "Session-expires", "200");
 		osip_message_set_supported(reinvite, "timer");
