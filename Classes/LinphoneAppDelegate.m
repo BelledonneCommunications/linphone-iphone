@@ -25,7 +25,6 @@
 #import "CoreTelephony/CTCall.h"
 
 #import "ConsoleViewController.h"
-#import "MoreViewController.h"
 #import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"
@@ -118,7 +117,8 @@ int __aeabi_idiv(int a, int b) {
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && ![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"]) {
+        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
+            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
 		// autoboot disabled, doing nothing
         return;
     }
@@ -199,7 +199,8 @@ int __aeabi_idiv(int a, int b) {
     
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && ![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"]) {
+        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
+            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
 		// autoboot disabled, doing nothing
 	} else {
         [self startApplication];
@@ -228,6 +229,10 @@ int __aeabi_idiv(int a, int b) {
 - (void)applicationWillTerminate:(UIApplication *)application {
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    //NSLog(@"%@", userInfo);
+}
+
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     if([notification.userInfo objectForKey:@"call"] != nil) {
         LinphoneCall* call;
@@ -245,6 +250,20 @@ int __aeabi_idiv(int a, int b) {
             [controller setRemoteAddress:remoteContact];
         }
     }
+}
+
+
+#pragma mark - PushNotification Functions
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Token %@", deviceToken];
+    //NSLog(@"%@", deviceToken);
+    [[LinphoneManager instance] setPushNotificationToken:deviceToken];
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Error %@", error];
+    [[LinphoneManager instance] setPushNotificationToken:nil];
 }
 
 @end

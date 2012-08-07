@@ -40,9 +40,9 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>start_at_boot_preference</string>
+			<string>backgroundmode_preference</string>
 			<key>Title</key>
-			<string>Start at boot</string>
+			<string>Background mode</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -50,9 +50,9 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>backgroundmode_preference</string>
+			<string>start_at_boot_preference</string>
 			<key>Title</key>
-			<string>Background mode</string>
+			<string>Start at boot</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

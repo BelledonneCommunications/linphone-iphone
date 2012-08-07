@@ -68,7 +68,7 @@
 
 + (NSString*)normalizeSipURI:(NSString*)address {
     NSString* ret = address;
-    if(![address hasPrefix:@"sip:"]) {
+    if([address rangeOfString:@"@"].location != NSNotFound && ![address hasPrefix:@"sip:"]) {
         ret = [@"sip:" stringByAppendingString:ret];
     }
     return ret;

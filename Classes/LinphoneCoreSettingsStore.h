@@ -27,6 +27,7 @@
 	NSDictionary *changedDict;
 }
 
--(void) transformLinphoneCoreToKeys;
+- (void)synchronizeAccount;
+- (void)transformLinphoneCoreToKeys;
 
 @end

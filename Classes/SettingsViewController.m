@@ -421,13 +421,22 @@ static UICompositeViewDescription *compositeDescription = nil;
             [hiddenKeys removeObject:@"video_menu"];
         }
         [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
-    }else if([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
+    } else if ([@"random_port_preference" compare: notif.object] == NSOrderedSame) {
         BOOL enable = [[notif.userInfo objectForKey:@"random_port_preference"] boolValue];
         NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
         if(enable) {
             [hiddenKeys addObject:@"port_preference"];
         } else {
             [hiddenKeys removeObject:@"port_preference"];
+        }
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+    } else if ([@"backgroundmode_preference" compare: notif.object] == NSOrderedSame) {
+        BOOL enable = [[notif.userInfo objectForKey:@"backgroundmode_preference"] boolValue];
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+        if(!enable) {
+            [hiddenKeys addObject:@"start_at_boot_preference"];
+        } else {
+            [hiddenKeys removeObject:@"start_at_boot_preference"];
         }
         [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
     }
@@ -454,6 +463,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     UIDevice* device = [UIDevice currentDevice];
     if (![device respondsToSelector:@selector(isMultitaskingSupported)] || ![device isMultitaskingSupported]) {
         [hiddenKeys addObject:@"backgroundmode_preference"];
+        [hiddenKeys addObject:@"start_at_boot_preference"];
+    } else {
+         if(![[[[LinphoneManager instance] settingsStore] objectForKey:@"backgroundmode_preference"] boolValue]) {
+             [hiddenKeys addObject:@"start_at_boot_preference"];
+         }
     }
     
     [hiddenKeys addObject:@"enable_first_login_view_preference"];

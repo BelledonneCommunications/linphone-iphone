@@ -67,6 +67,7 @@ extern  void libmsbcg729_init();
 @synthesize settingsStore;
 @synthesize database;
 @synthesize fastAddressBook;
+@synthesize pushNotificationToken;
 
 struct codec_name_pref_table{
     const char *name;
@@ -706,15 +707,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)becomeActive {
-    if (theLinphoneCore == nil) {
-		//back from standby and background mode is disabled
-		[self startLibLinphone];
-	} else {
-        [self refreshRegisters];
-    }
+    [self refreshRegisters];
+    
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
-    
 }
 
 - (void)beginInterruption {
@@ -767,16 +763,17 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (BOOL)isSpeakerEnabled {
+    bool enabled = false;
     CFStringRef lNewRoute = CFSTR("Unknown");
     UInt32 lNewRouteSize = sizeof(lNewRoute);
     OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
     if (!lStatus && lNewRouteSize > 0) {
         NSString *route = (NSString *) lNewRoute;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        return [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
-    } else {
-        return false;
+        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        CFRelease(lNewRoute);
     }
+    return enabled;
 }
 
 
@@ -850,6 +847,26 @@ static LinphoneCoreVTable linphonec_vtable = {
         linphone_address_destroy(linphoneAddress);
 	}
 	linphone_call_params_destroy(lcallParams);
+}
+
+
+#pragma mark - Property Functions
+
+- (void)setPushNotificationToken:(NSData *)apushNotificationToken {
+    if(apushNotificationToken == pushNotificationToken) {
+        return;
+    }
+    if(pushNotificationToken != nil) {
+        [pushNotificationToken release];
+        pushNotificationToken = nil;
+    }
+    
+    if(apushNotificationToken != nil) {
+        pushNotificationToken = [apushNotificationToken retain];
+    }
+    if([LinphoneManager isLcReady]) {
+        [(LinphoneCoreSettingsStore*)settingsStore synchronizeAccount];
+    }
 }
 
 @end

@@ -106,6 +106,7 @@ typedef struct _LinphoneCallAppData {
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
+@property (nonatomic, retain) NSData *pushNotificationToken;
 
 @end
 
