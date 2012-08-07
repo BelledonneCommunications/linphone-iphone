@@ -151,7 +151,6 @@
     [tabBarViewController viewWillAppear:animated];
     [stateBarViewController viewWillAppear:animated];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    currentOrientation = [[UIDevice currentDevice] orientation];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
