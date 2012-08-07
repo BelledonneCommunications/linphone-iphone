@@ -68,7 +68,11 @@
 
 + (NSString*)normalizeSipURI:(NSString*)address {
     NSString* ret = address;
-    if([address rangeOfString:@"@"].location != NSNotFound && ![address hasPrefix:@"sip:"]) {
+    if([address rangeOfString:@"@"].location != NSNotFound) {
+        if([address rangeOfString:@"sip:" options:NSCaseInsensitiveSearch].location == 0) {
+            // have to be sure that start with sip: in lower case
+            ret = [ret substringFromIndex:4];
+        }
         ret = [@"sip:" stringByAppendingString:ret];
     }
     return ret;
