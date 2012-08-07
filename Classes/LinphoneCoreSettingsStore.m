@@ -182,12 +182,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","backgroundmode_preference", TRUE) forKey:@"backgroundmode_preference"];
+    
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = TRUE;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]!=Nil)
-        start_at_boot=[[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
+        start_at_boot = [[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
 	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
+	BOOL background_mode = TRUE;
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"backgroundmode_preference"]!=Nil)
+        background_mode =[[NSUserDefaults standardUserDefaults]  boolForKey:@"backgroundmode_preference"];
+	[self setBool: background_mode forKey:@"backgroundmode_preference"];
 	
 	if (linphone_core_tunnel_available()){
 		/*FIXME: enhance linphonecore API to handle tunnel more easily in applications */
@@ -349,7 +353,19 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
 		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
-		
+        
+        //Add custom parameter
+        NSData *tokenData = [[LinphoneManager instance] pushNotificationToken];
+        if(tokenData != nil) {
+            const unsigned char *tokenBuffer = [tokenData bytes];
+            NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
+            for(int i = 0; i < [tokenData length]; ++i) {
+                [tokenString appendFormat:@"%02X", (unsigned int)tokenBuffer[i]];
+            }
+            linphone_proxy_config_set_contact_parameters(proxyCfg, [[NSString stringWithFormat:@"APN=%@", tokenString] UTF8String]);
+        }
+        
+        
 		linphone_core_add_proxy_config(lc,proxyCfg);
 		//set to default proxy
 		linphone_core_set_default_proxy(lc,proxyCfg);
@@ -463,7 +479,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];
 	[[NSUserDefaults standardUserDefaults] setBool: start_at_boot forKey:@"start_at_boot_preference"];
-	
+	BOOL background_mode = [self boolForKey:@"backgroundmode_preference"];
+	[[NSUserDefaults standardUserDefaults] setBool: background_mode forKey:@"backgroundmode_preference"];
+    
     // Force synchronize
     [[NSUserDefaults standardUserDefaults] synchronize];
     

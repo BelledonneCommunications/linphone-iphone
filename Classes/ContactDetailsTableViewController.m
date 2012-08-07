@@ -62,7 +62,11 @@
 - (void)initContactDetailsTableViewController {
     dataCache = [[NSMutableArray alloc] init];
     labelArray = [[NSMutableArray alloc] initWithObjects:
+                  /* MODIFICATION use sip label
                   @"Linphone",
+                   */
+                  @"SIP",
+                  /**/
                   [NSString stringWithString:(NSString*)kABPersonPhoneMobileLabel], 
                   [NSString stringWithString:(NSString*)kABPersonPhoneIPhoneLabel],
                   [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel], nil];
@@ -664,7 +668,11 @@
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-            CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
+            /* MODIFICATION prefix with sip: 
+             CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
+             */
+            CFTypeRef values[] = { [FastAddressBook normalizeSipURI:value], CONTACT_SIP_FIELD };
+            /**/
             CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
             CFRelease(lDict);
