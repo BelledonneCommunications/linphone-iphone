@@ -93,7 +93,7 @@
 
 - (void)initUICompositeViewController {
     self->viewControllerCache = [[NSMutableDictionary alloc] init];
-    self->currentOrientation = UIDeviceOrientationUnknown;
+    currentOrientation = UIDeviceOrientationUnknown;
 }
 
 - (id)init{
@@ -218,6 +218,10 @@
 
 
 #pragma mark - 
+
+- (UIInterfaceOrientation)currentOrientation {
+    return currentOrientation;
+}
 
 + (void)addSubView:(UIViewController*)controller view:(UIView*)view {
     if(controller != nil) {
@@ -379,9 +383,10 @@
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
             [PhoneMainView forceOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+            currentOrientation = correctOrientation;
+        } else {
+            [self updateInterfaceOrientation:correctOrientation];
         }
-        currentOrientation = correctOrientation;
-        [self updateInterfaceOrientation:correctOrientation];
     } else {
        oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;
     }
