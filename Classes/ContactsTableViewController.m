@@ -154,6 +154,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 #pragma mark - UITableViewDataSource Functions
 
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return [addressBookMap allKeys];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return [addressBookMap count];
 }
