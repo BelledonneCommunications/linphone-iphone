@@ -559,7 +559,7 @@ void linphone_call_enable_video(LinphoneCall *call, bool_t enabled)
 			call->params = *params;
 			update_local_media_description(lc, call);
 			linphone_call_init_video_stream(call);
-			video_stream_start_ice_gathering(call->videostream);
+			video_stream_prepare_video(call->videostream);
 			linphone_core_gather_ice_candidates(lc, call);
 		} else {
 			if (linphone_call_get_state(call) == LinphoneCallUpdatedByRemote) {
@@ -1504,9 +1504,9 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 }
 
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call){
-	audio_stream_start_ice_gathering(call->audiostream);
+	audio_stream_prepare_sound(call->audiostream, NULL, NULL);
 	if (call->videostream) {
-		video_stream_start_ice_gathering(call->videostream);
+		video_stream_prepare_video(call->videostream);
 	}
 }
 
