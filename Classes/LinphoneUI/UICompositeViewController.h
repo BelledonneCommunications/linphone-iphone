@@ -76,7 +76,7 @@
     
     UICompositeViewDescription *currentViewDescription;
     CATransition *viewTransition;
-    UIDeviceOrientation currentOrientation;
+    UIInterfaceOrientation currentOrientation;
 }
 
 @property (retain) CATransition *viewTransition;
@@ -90,5 +90,6 @@
 - (void)setStateBarHidden:(BOOL) hidden;
 - (void)setToolBarHidden:(BOOL) hidden;
 - (UIViewController *)getCurrentViewController;
+- (UIInterfaceOrientation)currentOrientation;
 
 @end

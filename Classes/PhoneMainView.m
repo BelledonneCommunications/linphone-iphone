@@ -239,6 +239,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
+- (UIInterfaceOrientation)interfaceOrientation {
+    return [mainViewController currentOrientation];
+}
+
 
 #pragma mark - Event Functions
 
