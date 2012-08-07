@@ -227,6 +227,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     return YES;
 }
 
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
+    [textField setText:[FastAddressBook normalizeSipURI:[textField text]]];
+    return YES;
+}
 
 #pragma mark - Action Functions
 

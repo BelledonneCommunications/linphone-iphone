@@ -663,16 +663,16 @@
             ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
             CFRelease(lMap);
         } else if([path section] == 1) {
+            /* MODIFICATION prefix with sip: */
+            value = [FastAddressBook normalizeSipURI:value];
+            [textField setText:value];
+            /**/
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-            /* MODIFICATION prefix with sip: 
              CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
-             */
-            CFTypeRef values[] = { [FastAddressBook normalizeSipURI:value], CONTACT_SIP_FIELD };
-            /**/
             CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
             CFRelease(lDict);
