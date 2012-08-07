@@ -1736,8 +1736,17 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	OrtpEventData *evd=ortp_event_get_data(ev);
 
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
-		if (ice_session_role(call->ice_session) == IR_Controlling) {
-			linphone_core_update_call(call->core, call, &call->current_params);
+		switch (ice_session_state(call->ice_session)) {
+			case IS_Completed:
+				if (ice_session_role(call->ice_session) == IR_Controlling) {
+					linphone_core_update_call(call->core, call, &call->current_params);
+				}
+				break;
+			case IS_Failed:
+				linphone_call_delete_ice_session(call);
+				break;
+			default:
+				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
 		LinphoneCallParams *params;
