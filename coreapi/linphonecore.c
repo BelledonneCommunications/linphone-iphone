@@ -2554,6 +2554,10 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+		if (ice_session_nb_losing_pairs(call->ice_session) > 0) {
+			/* Defer the sending of the answer until there are no losing pairs left. */
+			return 0;
+		}
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
 	sal_call_set_local_media_description(call->op,call->localdesc);

@@ -1785,6 +1785,15 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				}
 				break;
 		}
+	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
+		SalMediaDescription *md;
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+		sal_call_set_local_media_description(call->op,call->localdesc);
+		sal_call_accept(call->op);
+		md=sal_call_get_final_media_description(call->op);
+		if (md && !sal_media_description_empty(md))
+			linphone_core_update_streams (call->core,call,md);
+		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}
 }
 
@@ -1841,7 +1850,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				evd->packet = NULL;
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)) {
+			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) || (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED)) {
 				handle_ice_events(call, ev);
 			}
 			ortp_event_destroy(ev);
@@ -1881,7 +1890,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				evd->packet = NULL;
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)) {
+			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) || (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED)) {
 				handle_ice_events(call, ev);
 			}
 			ortp_event_destroy(ev);
