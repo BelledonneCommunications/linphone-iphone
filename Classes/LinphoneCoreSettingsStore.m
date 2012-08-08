@@ -362,7 +362,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             for(int i = 0; i < [tokenData length]; ++i) {
                 [tokenString appendFormat:@"%02X", (unsigned int)tokenBuffer[i]];
             }
-            linphone_proxy_config_set_contact_parameters(proxyCfg, [[NSString stringWithFormat:@"APN=%@", tokenString] UTF8String]);
+            NSString *params = [NSString stringWithFormat:@"APN-TOK=%@;APN-MSG=IC_MSG;APN-SND=oldphone-mono-30s.caf", tokenString];
+            linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
         }
         
         
