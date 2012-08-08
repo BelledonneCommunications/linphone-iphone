@@ -170,6 +170,9 @@
     UIEditableTableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {  
         cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
+        [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
+        [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+        [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
     }
    
     ABPropertyID property = [[propertyList objectAtIndex:[indexPath row]] intValue];
