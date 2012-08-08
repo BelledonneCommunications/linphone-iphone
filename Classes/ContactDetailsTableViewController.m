@@ -408,10 +408,10 @@
     [cell.detailTextField setText:value];
     if ([indexPath section] == 0) {
         [cell.detailTextField setKeyboardType:UIKeyboardTypePhonePad];
-        [cell.detailTextField setPlaceholder:@"Phone number"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Phone number", nil)];
     } else {
         [cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
-        [cell.detailTextField setPlaceholder:@"SIP address"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"SIP address", nil)];
     }
     return cell;
 }
@@ -567,9 +567,9 @@
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if(section == 0) {
-        return nil;
+        return NSLocalizedString(@"Phone number", nil);
     } else {
-        return @"SIP";
+        return NSLocalizedString(@"SIP", nil);
     }
 }
 

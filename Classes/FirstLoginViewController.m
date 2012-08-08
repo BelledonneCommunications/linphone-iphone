@@ -135,15 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         case LinphoneRegistrationFailed: {
             [waitView setHidden:true];
-            //default behavior if no registration delegates
             
-            /*UIAlertView* error = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Registration failure for user %@", usernameField.text]
-            												message:[notif.userInfo objectForKey: @"message"]
-            											   delegate:nil 
-            									  cancelButtonTitle:@"Continue" 
-            									  otherButtonTitles:nil,nil];
-            [error show];
-            [error release];*/
             //erase uername passwd
 			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"username_preference"];
 			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"password_preference"];

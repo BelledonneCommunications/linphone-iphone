@@ -177,9 +177,9 @@
    
     ABPropertyID property = [[propertyList objectAtIndex:[indexPath row]] intValue];
     if(property == kABPersonFirstNameProperty) {
-        [cell.detailTextField setPlaceholder:@"First name"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"First name", nil)];
     } else if (property == kABPersonLastNameProperty) {
-        [cell.detailTextField setPlaceholder:@"Last name"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Last name", nil)];
     }
     [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
     if(contact) {
