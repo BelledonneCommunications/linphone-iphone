@@ -1739,6 +1739,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
 				if (ice_session_role(call->ice_session) == IR_Controlling) {
+					ice_session_select_candidates(call->ice_session);
 					linphone_core_update_call(call->core, call, &call->current_params);
 				}
 				break;

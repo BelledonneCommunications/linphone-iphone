@@ -614,7 +614,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 
 	if (session_state == IS_Completed) {
 		desc->ice_completed = TRUE;
-		ice_check_list_nominated_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
 		strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
 	}
 	else {
@@ -629,7 +629,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		if (cl == NULL) continue;
 		if (cl->state == ICL_Completed) {
 			stream->ice_completed = TRUE;
-			ice_check_list_nominated_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+			ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
 			strncpy(stream->rtp_addr, rtp_addr, sizeof(stream->rtp_addr));
 			strncpy(stream->rtcp_addr, rtcp_addr, sizeof(stream->rtcp_addr));
 		} else {
@@ -678,7 +678,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		if ((cl->state == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
-			ice_check_list_nominated_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
 			strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
 			stream->ice_remote_candidates[0].port = rtp_port;
 			strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
