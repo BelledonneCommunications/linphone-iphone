@@ -691,7 +691,27 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 {
 	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
 		int i, j;
-		ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+
+		/* Check for ICE restart and set remote credentials. */
+		if ((ice_session_remote_ufrag(call->ice_session) == NULL) && (ice_session_remote_pwd(call->ice_session) == NULL)) {
+			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+		} else if (ice_session_remote_credentials_changed(call->ice_session, md->ice_ufrag, md->ice_pwd)) {
+			ice_session_restart(call->ice_session);
+			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+		}
+		for (i = 0; i < md->nstreams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
+					ice_session_restart(call->ice_session);
+					ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+					break;
+				}
+			}
+		}
+
+		/* Create ICE check lists if needed and parse ICE attributes. */
 		for (i = 0; i < md->nstreams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
