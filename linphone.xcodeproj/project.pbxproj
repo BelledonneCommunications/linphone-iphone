@@ -509,17 +509,6 @@
 		D34BD6F315C13DB70070C209 /* settings_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EF1580FE3A00FA0D23 /* settings_default.png */; };
 		D34BD6F415C13DB70070C209 /* settings_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FE158100E400FA0D23 /* settings_over.png */; };
 		D34BD6F515C13DB70070C209 /* settings_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327F01580FE3A00FA0D23 /* settings_selected.png */; };
-		D34BD6F615C13DB70070C209 /* setup_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21315A43D3400149E54 /* setup_back_default.png */; };
-		D34BD6F715C13DB70070C209 /* setup_back_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7815A6CC3200F96BE5 /* setup_back_disabled.png */; };
-		D34BD6F815C13DB70070C209 /* setup_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21415A43D3400149E54 /* setup_back_over.png */; };
-		D34BD6F915C13DB70070C209 /* setup_cancel_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21515A43D3400149E54 /* setup_cancel_default.png */; };
-		D34BD6FA15C13DB70070C209 /* setup_cancel_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7915A6CC3200F96BE5 /* setup_cancel_disabled.png */; };
-		D34BD6FB15C13DB70070C209 /* setup_cancel_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21615A43D3400149E54 /* setup_cancel_over.png */; };
-		D34BD6FC15C13DB70070C209 /* setup_start_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21815A43D3400149E54 /* setup_start_default.png */; };
-		D34BD6FD15C13DB70070C209 /* setup_start_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */; };
-		D34BD6FE15C13DB70070C209 /* setup_start_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21915A43D3400149E54 /* setup_start_over.png */; };
-		D34BD6FF15C13DB70070C209 /* setup_title_assistant.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21A15A43D3400149E54 /* setup_title_assistant.png */; };
-		D34BD70015C13DB70070C209 /* setup_welcome_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21B15A43D3400149E54 /* setup_welcome_logo.png */; };
 		D34BD70115C13DB70070C209 /* speaker_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83EFC158205A100336684 /* speaker_off_default.png */; };
 		D34BD70215C13DB70070C209 /* speaker_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = D3C31A2315BD8DED008ED271 /* speaker_off_default_landscape.png */; };
 		D34BD70315C13DB70070C209 /* speaker_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D365AA7915A2DE7500CAFE3F /* speaker_off_disabled.png */; };
@@ -581,15 +570,7 @@
 		D34BD74115C13E250070C209 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		D34BD74315C13ED70070C209 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F2508D107141E100AC9B3F /* DialerViewController.xib */; };
 		D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */; };
-		D350F21C15A43D3400149E54 /* setup_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21315A43D3400149E54 /* setup_back_default.png */; };
-		D350F21E15A43D3400149E54 /* setup_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21415A43D3400149E54 /* setup_back_over.png */; };
-		D350F22015A43D3400149E54 /* setup_cancel_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21515A43D3400149E54 /* setup_cancel_default.png */; };
-		D350F22215A43D3400149E54 /* setup_cancel_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21615A43D3400149E54 /* setup_cancel_over.png */; };
 		D350F22415A43D3400149E54 /* field_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21715A43D3400149E54 /* field_background.png */; };
-		D350F22615A43D3400149E54 /* setup_start_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21815A43D3400149E54 /* setup_start_default.png */; };
-		D350F22815A43D3400149E54 /* setup_start_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21915A43D3400149E54 /* setup_start_over.png */; };
-		D350F22A15A43D3400149E54 /* setup_title_assistant.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21A15A43D3400149E54 /* setup_title_assistant.png */; };
-		D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21B15A43D3400149E54 /* setup_welcome_logo.png */; };
 		D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F515A47E9E007E7E81 /* button_background_default.png */; };
 		D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F615A47E9E007E7E81 /* button_background_over.png */; };
 		D35497FE15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
@@ -876,9 +857,6 @@
 		D3A74F5915C69392001500B9 /* video_on_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74EB115C69392001500B9 /* video_on_over~ipad.png */; };
 		D3A74F6115C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F6015C6B03B001500B9 /* DialerViewController~ipad.xib */; };
 		D3A74F6215C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F6015C6B03B001500B9 /* DialerViewController~ipad.xib */; };
-		D3A8BB7F15A6CC3200F96BE5 /* setup_back_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7815A6CC3200F96BE5 /* setup_back_disabled.png */; };
-		D3A8BB8115A6CC3200F96BE5 /* setup_cancel_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7915A6CC3200F96BE5 /* setup_cancel_disabled.png */; };
-		D3A8BB8315A6CC3200F96BE5 /* setup_start_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A8BB7A15A6CC3200F96BE5 /* setup_start_disabled.png */; };
 		D3ACB09715C6D0F700E15894 /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3ACB09615C6D0F700E15894 /* UICallBar~ipad.xib */; };
 		D3ACB09815C6D0F700E15894 /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3ACB09615C6D0F700E15894 /* UICallBar~ipad.xib */; };
 		D3ACB09B15C6D59500E15894 /* dialer_alt_back_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ACB09915C6D59500E15894 /* dialer_alt_back_default~ipad.png */; };
@@ -3443,21 +3421,10 @@
 				D3196D3615A321E3007FEEBA /* options_add_over.png in Resources */,
 				D3196D3815A321E3007FEEBA /* options_transfer_default.png in Resources */,
 				D3196D3A15A321E3007FEEBA /* options_transfer_over.png in Resources */,
-				D350F21C15A43D3400149E54 /* setup_back_default.png in Resources */,
-				D350F21E15A43D3400149E54 /* setup_back_over.png in Resources */,
-				D350F22015A43D3400149E54 /* setup_cancel_default.png in Resources */,
-				D350F22215A43D3400149E54 /* setup_cancel_over.png in Resources */,
 				D350F22415A43D3400149E54 /* field_background.png in Resources */,
-				D350F22615A43D3400149E54 /* setup_start_default.png in Resources */,
-				D350F22815A43D3400149E54 /* setup_start_over.png in Resources */,
-				D350F22A15A43D3400149E54 /* setup_title_assistant.png in Resources */,
-				D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */,
 				D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */,
 				D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */,
 				D32B6E2C15A5C0800033019F /* database.sqlite in Resources */,
-				D3A8BB7F15A6CC3200F96BE5 /* setup_back_disabled.png in Resources */,
-				D3A8BB8115A6CC3200F96BE5 /* setup_cancel_disabled.png in Resources */,
-				D3A8BB8315A6CC3200F96BE5 /* setup_start_disabled.png in Resources */,
 				D3D14E7C15A711700074A527 /* avatar_shadow_small.png in Resources */,
 				D3128FE315AABC7E00A2147A /* ContactDetailsViewController.xib in Resources */,
 				D3128FEF15AABE4E00A2147A /* contact_back_default.png in Resources */,
@@ -3898,17 +3865,6 @@
 				D34BD6F315C13DB70070C209 /* settings_default.png in Resources */,
 				D34BD6F415C13DB70070C209 /* settings_over.png in Resources */,
 				D34BD6F515C13DB70070C209 /* settings_selected.png in Resources */,
-				D34BD6F615C13DB70070C209 /* setup_back_default.png in Resources */,
-				D34BD6F715C13DB70070C209 /* setup_back_disabled.png in Resources */,
-				D34BD6F815C13DB70070C209 /* setup_back_over.png in Resources */,
-				D34BD6F915C13DB70070C209 /* setup_cancel_default.png in Resources */,
-				D34BD6FA15C13DB70070C209 /* setup_cancel_disabled.png in Resources */,
-				D34BD6FB15C13DB70070C209 /* setup_cancel_over.png in Resources */,
-				D34BD6FC15C13DB70070C209 /* setup_start_default.png in Resources */,
-				D34BD6FD15C13DB70070C209 /* setup_start_disabled.png in Resources */,
-				D34BD6FE15C13DB70070C209 /* setup_start_over.png in Resources */,
-				D34BD6FF15C13DB70070C209 /* setup_title_assistant.png in Resources */,
-				D34BD70015C13DB70070C209 /* setup_welcome_logo.png in Resources */,
 				D34BD70115C13DB70070C209 /* speaker_off_default.png in Resources */,
 				D34BD70215C13DB70070C209 /* speaker_off_default_landscape.png in Resources */,
 				D34BD70315C13DB70070C209 /* speaker_off_disabled.png in Resources */,

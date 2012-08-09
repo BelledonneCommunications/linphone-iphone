@@ -61,7 +61,11 @@ enum _ContactSections {
     ContactSections_MAX
 };
 
+/* MODIFICATION Toggle SIP/Number
 static const int contactSections[ContactSections_MAX] = {ContactSections_Number, ContactSections_Sip};
+ */
+static const int contactSections[ContactSections_MAX] = {ContactSections_Sip, ContactSections_Number};
+/**/
 
 @synthesize contact;
 

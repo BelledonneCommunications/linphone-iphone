@@ -33,12 +33,6 @@
     BOOL started;
 }
 
-- (void)loadDefaultSettings:(NSDictionary *) appDefaults;
-- (void)setupUI;
-- (void)setupGSMInteraction;
-
-- (void)startApplication;
-
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (assign) BOOL started;
 

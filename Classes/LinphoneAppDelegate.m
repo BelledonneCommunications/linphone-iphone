@@ -100,11 +100,7 @@ int __aeabi_idiv(int a, int b) {
         linphone_call_enable_camera(call, false);
     }
     
-}
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-	if ([[LinphoneManager instance] settingsStore]!=Nil)
-		[[[LinphoneManager instance] settingsStore] synchronize];
-    if (![[LinphoneManager instance] enterBackgroundMode]) {
+    if (![[LinphoneManager instance] resignActive]) {
         // destroying eventHandler if app cannot go in background.
         // Otherwise if a GSM call happen and Linphone is resumed,
         // the handler will be called before LinphoneCore is built.
@@ -113,29 +109,14 @@ int __aeabi_idiv(int a, int b) {
         [callCenter release];
         callCenter = nil;
     }
-}
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
-            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
-		// autoboot disabled, doing nothing
-        return;
-    }
     
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {   
     [self startApplication];
     
 	[[LinphoneManager instance] becomeActive];
     
-    if (callCenter == nil) {
-        callCenter = [[CTCallCenter alloc] init];
-        callCenter.callEventHandler = ^(CTCall* call) {
-            // post on main thread
-            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-                                   withObject:callCenter
-                                waitUntilDone:YES];
-        };
-    }
     // check call state at startup
     [self handleGSMCallInteration:callCenter];
     
@@ -156,31 +137,6 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
-- (void)loadDefaultSettings:(NSDictionary *) appDefaults {
-    for(NSString* key in appDefaults){
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Overload %@ to in app settings.", key];
-        [[[LinphoneManager instance] settingsStore] setObject:[appDefaults objectForKey:key] forKey:key];
-    }
-    [[[LinphoneManager instance] settingsStore] synchronize];
-}
-
-- (void)setupUI {
-    [[PhoneMainView instance] startUp];
-	if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
-        // Change to fist login view
-        [[PhoneMainView instance] changeCurrentView: [FirstLoginViewController compositeViewDescription]];
-    } else {
-        // Change to default view
-        /* MODIFICATION: Disable Wizard
-        const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
-        if(list != NULL) {*/
-            [[PhoneMainView instance] changeCurrentView: [DialerViewController compositeViewDescription]];
-        /*} else {
-            [[PhoneMainView instance] changeCurrentView: [WizardViewController compositeViewDescription]];
-        }*/
-    }
-	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
-}
 
 - (void)setupGSMInteraction {
     if (callCenter == nil) {
@@ -194,36 +150,34 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: nil];
-		// Put your default NSUserDefaults settings in the dictionary above.
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
         && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
             ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
-		// autoboot disabled, doing nothing
-	} else {
-        [self startApplication];
-        [self loadDefaultSettings: appDefaults];
-    }
-
+            // autoboot disabled, doing nothing
+            return YES;
+        }
+    
+    [self startApplication];
+    
     return YES;
 }
 
 - (void)startApplication {
-    if(started) 
-        return;
-    
-    started = TRUE;
-    
-	[[LinphoneManager instance]	startLibLinphone];
-    
-    [self setupUI];
-    
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-    
+    // Restart Linphone Core if needed
+    if(![LinphoneManager isLcReady]) {
+        [[LinphoneManager instance]	startLibLinphone];
+    }
     [self setupGSMInteraction];
+    
+    // Only execute one time at application start
+    if(!started) {
+        started = TRUE;
+        [[PhoneMainView instance] startUp];
+    }
 }
 
 
@@ -231,7 +185,7 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    //NSLog(@"%@", userInfo);
+    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
@@ -243,7 +197,8 @@ int __aeabi_idiv(int a, int b) {
             return;
         }
         linphone_core_accept_call([LinphoneManager getLc], call);
-    } /* else if([notification.userInfo objectForKey:@"chat"] != nil) {
+    } /* MODIFICATION: Remove chat
+		 else if([notification.userInfo objectForKey:@"chat"] != nil) {
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
@@ -258,7 +213,6 @@ int __aeabi_idiv(int a, int b) {
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Token %@", deviceToken];
-    //NSLog(@"%@", deviceToken);
     [[LinphoneManager instance] setPushNotificationToken:deviceToken];
 }
 

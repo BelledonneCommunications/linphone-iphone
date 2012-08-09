@@ -356,13 +356,17 @@
         
         // Animate only with a previous screen
         if(oldViewDescription != nil && viewTransition != nil) {
-            [contentView.layer addAnimation:viewTransition forKey:@"Transition"];
-            if((oldViewDescription.stateBarEnabled == true && currentViewDescription.stateBarEnabled == false) ||
-               (oldViewDescription.stateBarEnabled == false && currentViewDescription.stateBarEnabled == true)) {
-                [stateBarView.layer addAnimation:viewTransition forKey:@"Transition"];
+            [contentView.layer removeAnimationForKey:@"transition"];
+            [contentView.layer addAnimation:viewTransition forKey:@"transition"];
+            if(oldViewDescription.stateBar != currentViewDescription.stateBar ||
+               [stateBarView.layer animationForKey:@"transition"] != nil) {
+                [stateBarView.layer removeAnimationForKey:@"transition"];
+                [stateBarView.layer addAnimation:viewTransition forKey:@"transition"];
             }
-            if(oldViewDescription.tabBar != currentViewDescription.tabBar) {
-                [tabBarView.layer addAnimation:viewTransition forKey:@"Transition"];
+            if(oldViewDescription.tabBar != currentViewDescription.tabBar ||
+               [tabBarView.layer animationForKey:@"transition"] != nil) {
+                [tabBarView.layer removeAnimationForKey:@"transition"];
+                [tabBarView.layer addAnimation:viewTransition forKey:@"transition"];
             }
         }
         

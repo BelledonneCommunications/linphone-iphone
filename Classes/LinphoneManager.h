@@ -87,7 +87,7 @@ typedef struct _LinphoneCallAppData {
 
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
-- (BOOL)enterBackgroundMode;
+- (BOOL)resignActive;
 - (void)becomeActive;
 
 - (void)kickOffNetworkConnection;

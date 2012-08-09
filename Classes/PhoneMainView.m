@@ -118,6 +118,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                              selector:@selector(batteryLevelChanged:) 
                                                  name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
+	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -142,6 +143,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
+	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -357,7 +359,21 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 #pragma mark - 
 
-- (void)startUp {
+- (void)startUp {   
+    if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
+        // Change to fist login view
+        [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
+    } else {
+        // Change to default view
+        /* MODIFICATION disable wizard
+        const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+        if(list != NULL) {*/
+            [self changeCurrentView: [DialerViewController compositeViewDescription]];
+        /*} else {
+            [self changeCurrentView: [WizardViewController compositeViewDescription]];
+        }*/
+    }
+    
     [self updateApplicationBadgeNumber]; // Update Badge at startup
 }
 
@@ -429,15 +445,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return phoneMainViewInstance;
 }
 
-- (void) showTabBar:(BOOL) show {
+- (void) showTabBar:(BOOL)show {
     [mainViewController setToolBarHidden:!show];
 }
 
-- (void) showStateBar:(BOOL) show {
+- (void) showStateBar:(BOOL)show {
     [mainViewController setStateBarHidden:!show];
 }
 
-- (void)fullScreen:(BOOL) enabled {
+- (void)fullScreen:(BOOL)enabled {
     [mainViewController setFullScreen:enabled];
 }
 

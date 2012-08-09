@@ -208,19 +208,19 @@
         if([chatNotificationView isHidden]) {
             [chatNotificationView setHidden:FALSE];
             if(appear) {
-                [self appearAnimation:@"Appear" target:chatNotificationView completion:^(BOOL finished){
-                    [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+                [self appearAnimation:@"appear" target:chatNotificationView completion:^(BOOL finished){
+                    [self startBounceAnimation:@"bounce" target:chatNotificationView];
                 }];
             } else {
-                [self startBounceAnimation:@"Bounce" target:chatNotificationView];
+                [self startBounceAnimation:@"bounce" target:chatNotificationView];
             }
         }
         [chatNotificationLabel setText:[NSString stringWithFormat:@"%i", unreadMessage]];
     } else {
         if(![chatNotificationView isHidden]) {
-            [self stopBounceAnimation:@"Bounce" target:chatNotificationView];
+            [self stopBounceAnimation:@"bounce" target:chatNotificationView];
             if(appear) {
-                [self disappearAnimation:@"Disappear" target:chatNotificationView completion:^(BOOL finished){
+                [self disappearAnimation:@"disappear" target:chatNotificationView completion:^(BOOL finished){
                     [chatNotificationView setHidden:TRUE];
                 }];
             } else {
@@ -236,19 +236,19 @@
         if([historyNotificationView isHidden]) {
             [historyNotificationView setHidden:FALSE];
             if(appear) {
-                [self appearAnimation:@"Appear" target:historyNotificationView completion:^(BOOL finished){
-                    [self startBounceAnimation:@"Bounce" target:historyNotificationView];
+                [self appearAnimation:@"appear" target:historyNotificationView completion:^(BOOL finished){
+                    [self startBounceAnimation:@"bounce" target:historyNotificationView];
                 }];
             } else {
-                [self startBounceAnimation:@"Bounce" target:historyNotificationView];
+                [self startBounceAnimation:@"bounce" target:historyNotificationView];
             }
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
     } else {
         if(![historyNotificationView isHidden]) {
-            [self stopBounceAnimation:@"Bounce" target:historyNotificationView];
+            [self stopBounceAnimation:@"bounce" target:historyNotificationView];
             if(appear) {
-                [self disappearAnimation:@"Disappear" target:historyNotificationView completion:^(BOOL finished){
+                [self disappearAnimation:@"disappear" target:historyNotificationView completion:^(BOOL finished){
                     
                 }];
             } else {

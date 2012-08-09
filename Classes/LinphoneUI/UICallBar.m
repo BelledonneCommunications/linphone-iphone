@@ -218,6 +218,8 @@
     [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
     [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
     
+    [optionsView setHidden:TRUE];
+    [padView setHidden:TRUE];
     [super viewDidLoad];
 }
 
