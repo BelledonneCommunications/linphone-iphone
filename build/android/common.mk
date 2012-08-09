@@ -51,7 +51,7 @@ MY_LOG_DOMAIN = \"Linphone\"
 endif
 
 ifndef LINPHONE_VERSION
-LINPHONE_VERSION = \"Devel\"
+LINPHONE_VERSION = "Devel"
 endif
 
 LOCAL_CFLAGS += \
