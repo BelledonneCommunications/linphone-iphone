@@ -933,6 +933,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
 
+	audio_stream_set_features(audiostream,linphone_core_get_audio_features(lc));
+
 	if (lc->rtptf){
 		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->audio_port);
 		RtpTransport *artcp=lc->rtptf->audio_rtcp_func(lc->rtptf->audio_rtcp_func_data, call->audio_port+1);

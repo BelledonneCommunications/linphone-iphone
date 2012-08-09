@@ -567,6 +567,7 @@ void linphone_call_remove_from_conf(LinphoneCall *call);
 void linphone_core_conference_check_uninit(LinphoneCore *lc);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
+unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
 
 void __linphone_core_invalidate_registers(LinphoneCore* lc);
 void _linphone_core_codec_config_write(LinphoneCore *lc);
