@@ -290,8 +290,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
-        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
+        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
             [self enableSpeaker:FALSE];
+            /* MODIFICATION: Remove castel commands when no more calls */
+            if(castelCommands != nil) {
+                [castelCommands release];
+                castelCommands = nil;
+            }
+            /**/
+        }
     }
     
     // Enable speaker when video
@@ -346,8 +353,8 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 #pragma mark - Text Received Functions
 
 - (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
-    
-    if(message != NULL) {
+    // Ignore if not in call
+    if(message != NULL && linphone_core_get_calls_nb([LinphoneManager getLc]) > 0) {
         NSError *error;
         GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithXMLString:[NSString stringWithUTF8String:message] options:0 error:&error];
         if (doc == nil) {
