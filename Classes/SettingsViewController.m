@@ -19,6 +19,7 @@
 
 #import "SettingsViewController.h"
 #import "LinphoneManager.h"
+#import "PhoneMainView.h"
 #import "UILinphone.h"
 #import "UACellBackgroundView.h"
 
@@ -455,6 +456,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
 #ifndef DEBUG
     [hiddenKeys addObject:@"release_button"];
+    [hiddenKeys addObject:@"clear_cache_button"];
 #endif
     
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
@@ -505,6 +507,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[UIApplication sharedApplication].keyWindow setRootViewController:nil];
         [[LinphoneManager instance]	destroyLibLinphone];
         [LinphoneManager instanceRelease];
+    } else  if([key isEqual:@"clear_cache_button"]) {
+        [[PhoneMainView instance].mainViewController clearCache];
     }
 #endif
 }

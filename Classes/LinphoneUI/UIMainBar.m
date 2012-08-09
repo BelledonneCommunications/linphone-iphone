@@ -310,26 +310,26 @@
 
 #pragma mark - Action Functions
 
-- (IBAction)onHistoryClick: (id) sender {
+- (IBAction)onHistoryClick:(id)event {
     [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
 }
 
-- (IBAction)onContactsClick: (id) event {
+- (IBAction)onContactsClick:(id)event {
     [ContactSelection setSelectionMode:ContactSelectionModeNone];
     [ContactSelection setAddAddress:nil];
     [ContactSelection setSipFilter:FALSE];
     [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
 
-- (IBAction)onDialerClick: (id) event {
+- (IBAction)onDialerClick:(id)event {
     [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
-- (IBAction)onSettingsClick: (id) event {
+- (IBAction)onSettingsClick:(id)event {
     [[PhoneMainView instance] changeCurrentView:[SettingsViewController compositeViewDescription]];
 }
 
-- (IBAction)onChatClick: (id) event {
+- (IBAction)onChatClick:(id)event {
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 }
 
