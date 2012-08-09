@@ -33,7 +33,6 @@
     BOOL started;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (assign) BOOL started;
 
 @end

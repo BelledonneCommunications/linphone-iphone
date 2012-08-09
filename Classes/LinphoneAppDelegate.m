@@ -43,7 +43,6 @@ int __aeabi_idiv(int a, int b) {
 
 @implementation LinphoneAppDelegate
 
-@synthesize window;
 @synthesize started;
 
 
@@ -58,7 +57,6 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)dealloc {
-	[window release];
 	[super dealloc];
 }
 
@@ -85,6 +83,7 @@ int __aeabi_idiv(int a, int b) {
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
+    if(![LinphoneManager isLcReady]) return;
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
     if (call == NULL)

@@ -126,7 +126,8 @@
     [contentView release];
     [stateBarView release];
     [tabBarView release];
-    [viewControllerCache removeAllObjects];
+    [viewControllerCache release];
+    [viewTransition release];
     [currentViewDescription release];
     
     [super dealloc];
@@ -251,7 +252,7 @@
     if(name != nil) {
         controller = [viewControllerCache objectForKey:name];
         if(controller == nil) {
-            controller = [[NSClassFromString(name) alloc] init];
+            controller = [[[NSClassFromString(name) alloc] init] autorelease];
             [viewControllerCache setValue:controller forKey:name];
             [controller view]; // Load the view
         }

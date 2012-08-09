@@ -161,7 +161,7 @@ NSTimer *callSecurityTimer;
             break;
         case LinphoneRegistrationNone:
             registrationStateImage.hidden = NO;
-            image =[UIImage imageNamed:@"led_disconnected.png"];
+            image = [UIImage imageNamed:@"led_disconnected.png"];
             break;
         case LinphoneRegistrationProgress:
             registrationStateImage.hidden = NO;

@@ -54,6 +54,12 @@
     return self;
 }	
 
+- (void)dealloc {
+	[self removeTarget:self action:@selector(___touchDown:) forControlEvents:UIControlEventTouchDown];
+    [self removeTarget:self action:@selector(___touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
+    [super dealloc];
+}
+
 - (void)___touchDown:(id) sender {
     [self performSelector:@selector(doLongTouch) withObject:nil afterDelay:0.5];
 }

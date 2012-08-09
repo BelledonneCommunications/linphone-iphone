@@ -348,6 +348,8 @@
 - (void)dealloc {
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [settingsController release];
+    [navigationController release];
     
     [super dealloc];
 }
@@ -499,6 +501,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
 #ifdef DEBUG
     if([key isEqual:@"release_button"]) {
+        [[UIApplication sharedApplication].keyWindow.rootViewController  release];
+        [[UIApplication sharedApplication].keyWindow setRootViewController:nil];
+        [[LinphoneManager instance]	destroyLibLinphone];
+        [LinphoneManager instanceRelease];
     }
 #endif
 }
