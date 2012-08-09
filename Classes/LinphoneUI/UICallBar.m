@@ -197,6 +197,8 @@
                   setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
+    [optionsView setHidden:TRUE];
+    [padView setHidden:TRUE];
     [super viewDidLoad];
 }
 

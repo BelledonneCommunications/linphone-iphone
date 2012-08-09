@@ -636,7 +636,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
-		[self enterBackgroundMode];
+		[self resignActive];
 	}	
 }
 
@@ -655,6 +655,12 @@ static LinphoneCoreVTable linphonec_vtable = {
         proxyReachability=nil;
         
     }
+}
+
+- (BOOL)resignActive {
+    if ([[LinphoneManager instance] settingsStore] != Nil)
+		[[[LinphoneManager instance] settingsStore] synchronize];
+    return [self enterBackgroundMode];
 }
 
 - (BOOL)enterBackgroundMode {
