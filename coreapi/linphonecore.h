@@ -155,14 +155,22 @@ typedef struct _LinphoneCallLog{
 	float quality;
     int video_enabled;
 	struct _LinphoneCore *lc;
+	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
 } LinphoneCallLog;
 
+
+/**
+ * Enum describing type of media encryption types.
+**/
 enum LinphoneMediaEncryption {
 	LinphoneMediaEncryptionNone,
 	LinphoneMediaEncryptionSRTP,
 	LinphoneMediaEncryptionZRTP
 };
 
+/**
+ * Enum describing type of media encryption types.
+**/
 typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
@@ -174,13 +182,13 @@ const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
+struct _LinphoneCallParams;
 
 /**
  * The LinphoneCallParams is an object containing various call related parameters.
  * It can be used to retrieve parameters from a currently running call or modify the call's characteristics
  * dynamically.
 **/
-struct _LinphoneCallParams;
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
 const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
@@ -209,12 +217,17 @@ enum _LinphoneReason{
 	LinphoneReasonNotAnswered
 };
 
+/**
+ * Enum describing failure reasons.
+ * @ingroup initializing
+**/
 typedef enum _LinphoneReason LinphoneReason;
 
 const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
  * Structure describing policy regarding video streams establishments.
+ * @ingroup media_parameters
 **/
 struct _LinphoneVideoPolicy{
 	bool_t automatically_initiate; /**<Whether video shall be automatically proposed for outgoing calls.*/ 
@@ -222,28 +235,61 @@ struct _LinphoneVideoPolicy{
 	bool_t unused[2];
 };
 
+/**
+ * Structure describing policy regarding video streams establishments.
+ * @ingroup media_parameters
+**/
 typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 
 /**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
 **/
 struct _LinphoneCall;
 /**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
 **/
 typedef struct _LinphoneCall LinphoneCall;
 
 
+/**
+ * @addtogroup call_misc
+ * @{
+**/
+
 #define LINPHONE_CALL_STATS_AUDIO 0
 #define LINPHONE_CALL_STATS_VIDEO 1
 
-typedef struct _LinphoneCallStats {
-	int		type;
-	jitter_stats_t	jitter_stats;
-	mblk_t*		received_rtcp;
-	mblk_t*		sent_rtcp;
-	float		round_trip_delay;
-} LinphoneCallStats;
+/**
+ * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
+ *
+ * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
+ * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
+ *
+ * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
+**/
+typedef struct _LinphoneCallStats LinphoneCallStats;
+
+/**
+ * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
+ *
+ * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
+ * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
+ *
+ * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
+**/
+struct _LinphoneCallStats {
+	int		type; /**< Can be either LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO*/
+	jitter_stats_t	jitter_stats; /**<jitter buffer statistics, see oRTP documentation for details */
+	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
+	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+};
+
+/**
+ * @}
+**/
 
 const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call);
 const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call);
@@ -345,7 +391,12 @@ void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
 bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
 /*keep this in sync with mediastreamer2/msvolume.h*/
-#define LINPHONE_VOLUME_DB_LOWEST (-120) /**< Lowest measured that can be returned.*/
+
+/**
+ * Lowest volume measurement that can be returned by linphone_call_get_play_volume() or linphone_call_get_record_volume(), corresponding to pure silence.
+ * @ingroup call_misc
+**/
+#define LINPHONE_VOLUME_DB_LOWEST (-120)
 
 /**
  * @addtogroup proxies
@@ -423,6 +474,8 @@ const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
 int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
 bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
+const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
+void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
@@ -644,7 +697,7 @@ typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
 typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
 typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
-/** Callback prototype */
+/** Callback prototype for receiving quality statistics for calls*/
 typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /**
@@ -666,12 +719,12 @@ typedef struct _LinphoneVTable{
 	LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
-	CallStatsUpdated call_stats_updated; /**<Notifies on change in the stats of call */
-	DisplayStatusCb display_status; /**< Callback that notifies various events with human readable text.*/
-	DisplayMessageCb display_message;/**< Callback to display a message to the user */
-	DisplayMessageCb display_warning;/** Callback to display a warning to the user */
-	DisplayUrlCb display_url;
-	ShowInterfaceCb show; /**< Notifies the application that it should show up*/
+	CallStatsUpdated call_stats_updated; /**<Notifies on refreshing of call's statistics. */
+	DisplayStatusCb display_status; /**< DEPRECATED Callback that notifies various events with human readable text.*/
+	DisplayMessageCb display_message;/**< DEPRECATED Callback to display a message to the user */
+	DisplayMessageCb display_warning;/**< DEPRECATED Callback to display a warning to the user */
+	DisplayUrlCb display_url; /**< DEPRECATED */
+	ShowInterfaceCb show; /**< DEPRECATED Notifies the application that it should show up*/
 } LinphoneCoreVTable;
 
 /**
@@ -972,7 +1025,7 @@ const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 void linphone_core_clear_call_logs(LinphoneCore *lc);
 int linphone_core_get_missed_calls_count(LinphoneCore *lc);
 void linphone_core_reset_missed_calls_count(LinphoneCore *lc);
-void linphone_core_remove_call_log(LinphoneCore *lc, void *data);
+void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
 
 /* video support */
 bool_t linphone_core_video_supported(LinphoneCore *lc);
@@ -1159,7 +1212,7 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 * get tunnel instance if available
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
-    
+
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
 #ifdef __cplusplus

@@ -180,6 +180,9 @@ public interface LinphoneCore {
 			this.tcp = t.tcp;
 			this.tls = t.tls;
 		}
+		public String toString() {
+			return "udp["+udp+"] tcp["+tcp+"] tls["+tls+"]";
+		}
 	}
 	/**
 	 * Media (RTP) encryption enum-like.
@@ -743,6 +746,7 @@ public interface LinphoneCore {
 	void tunnelEnable(boolean enable);
 	void tunnelAutoDetect();
 	void tunnelCleanServers();
+	void tunnelSetHttpProxy(String proxy_host, int port, String username, String password);
 	/**
 	 * @param host tunnel server ip address
 	 * @param port tunnel server tls port, recommended value is 443
@@ -775,4 +779,13 @@ public interface LinphoneCore {
 	 * Set missed calls count to zero
 	 */
 	public void resetMissedCallsCount();
+	/**
+	 * re-initiates registration if network is up.
+	 */
+	public void refreshRegisters();
+
+	/**
+	 * return the version code of linphone core
+	 */
+	public String getVersion();
 }

@@ -346,7 +346,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			linphonec_out("Resuming call %i with %s.\n", id, from);
 		break;
 		case LinphoneCallStreamsRunning:
-			linphonec_out("Media streams established with %s for call %i.\n", from,id);
+			linphonec_out("Media streams established with %s for call %i (%s).\n", from,id,( linphone_call_params_video_enabled( linphone_call_get_current_params(call)) ? "video":"audio"));
 		break;
 		case LinphoneCallPausing:
 			linphonec_out("Pausing call %i with %s.\n", id, from);

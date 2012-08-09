@@ -241,7 +241,7 @@ public:
 			return;
 		}
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
-		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,env->NewStringUTF(message));
+		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,message ? env->NewStringUTF(message) : NULL);
 	}
 	static void displayMessageCb(LinphoneCore *lc, const char *message) {
 
@@ -492,6 +492,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_clearAuthInfos(JNIEnv* 
 	linphone_core_clear_all_auth_info((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_refreshRegisters(JNIEnv* env, jobject thiz,jlong lc) {
+	linphone_core_refresh_registers((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAuthInfo(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
@@ -594,6 +598,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isNetworkStateReachable(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return linphone_core_is_network_reachabled((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
@@ -657,7 +667,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_resetMissedCallsCount(JN
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeCallLog(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc, jlong log) {
-	linphone_core_remove_call_log((LinphoneCore*)lc, (void*) log);
+	linphone_core_remove_call_log((LinphoneCore*)lc, (LinphoneCallLog*) log);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearCallLogs(JNIEnv*  env
@@ -1199,6 +1209,19 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCallLog(	JNIEnv*  en
 	return (jlong)linphone_call_get_call_log((LinphoneCall*)ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_takeSnapshot(	JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jstring path) {
+	const char* filePath = path != NULL ? env->GetStringUTFChars(path, NULL) : NULL;
+	linphone_call_take_video_snapshot((LinphoneCall*)ptr, filePath);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_zoomVideo(		JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jfloat zoomFactor, jfloat cx, jfloat cy) {
+	linphone_call_zoom_video((LinphoneCall*)ptr, zoomFactor, &cx, &cy);
+}
+
 extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isIncoming(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -1685,33 +1708,42 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMaxCalls(JNIEnv *env,
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror(JNIEnv *env,jobject thiz,jlong pCore,
 		jstring jHost, jint port, jint mirror, jint delay) {
-#ifdef TUNNEL_ENABLED
-	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
+	if (!tunnel) return;
 	const char* cHost=env->GetStringUTFChars(jHost, NULL);
 	linphone_tunnel_add_server_and_mirror(tunnel, cHost, port, mirror, delay);
 	env->ReleaseStringUTFChars(jHost, cHost);
-#endif
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetHttpProxy(JNIEnv *env,jobject thiz,jlong pCore,
+		jstring jHost, jint port, jstring username, jstring password) {
+
+	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
+	if (!tunnel) return;
+	const char* cHost=(jHost!=NULL) ? env->GetStringUTFChars(jHost, NULL) : NULL;
+	const char* cUsername= (username!=NULL) ? env->GetStringUTFChars(username, NULL) : NULL;
+	const char* cPassword= (password!=NULL) ? env->GetStringUTFChars(password, NULL) : NULL;
+	linphone_tunnel_set_http_proxy(tunnel,cHost, port,cUsername,cPassword);
+	if (cHost) env->ReleaseStringUTFChars(jHost, cHost);
+	if (cUsername) env->ReleaseStringUTFChars(username, cUsername);
+	if (cPassword) env->ReleaseStringUTFChars(password, cPassword);
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAutoDetect(JNIEnv *env,jobject thiz,jlong pCore) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_auto_detect(tunnel);
-#endif
+
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelCleanServers(JNIEnv *env,jobject thiz,jlong pCore) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_clean_servers(tunnel);
-#endif
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env,jobject thiz,jlong pCore, jboolean enable) {
-#ifdef TUNNEL_ENABLED
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_enable(tunnel, enable);
-#endif
 }
 
 
@@ -1736,4 +1768,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {
 	ms_set_cpu_count(count);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
+	return jvalue;
 }

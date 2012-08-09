@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define _GNU_SOURCE
+
 #include "linphonecore.h"
 #include "sipsetup.h"
 #include "lpconfig.h"
@@ -85,23 +87,24 @@ static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct t
 #endif /*_WIN32_WCE*/
 }
 
-static void set_call_log_date(LinphoneCallLog *cl, const struct tm *loctime){
-	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",loctime);
+static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
+	struct tm loctime;
+#ifdef WIN32
+#if !defined(_WIN32_WCE)
+	loctime=*localtime(&start_time);
+	/*FIXME*/
+#endif /*_WIN32_WCE*/
+#else
+	localtime_r(&start_time,&loctime);
+#endif
+	my_strftime(cl->start_date,sizeof(cl->start_date),"%c",&loctime);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	LinphoneCallLog *cl=ms_new0(LinphoneCallLog,1);
-	struct tm loctime;
 	cl->dir=call->dir;
-#ifdef WIN32
-#if !defined(_WIN32_WCE)
-	loctime=*localtime(&call->start_time);
-	/*FIXME*/
-#endif /*_WIN32_WCE*/
-#else
-	localtime_r(&call->start_time,&loctime);
-#endif
-	set_call_log_date(cl,&loctime);
+	cl->start_date_time=call->start_time;
+	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 	cl->to=to;
     cl->status=LinphoneCallAborted; /*default status*/
@@ -120,6 +123,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	for(i=0,elem=lc->call_logs;elem!=NULL;elem=elem->next,++i){
 		LinphoneCallLog *cl=(LinphoneCallLog*)elem->data;
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
+		lp_config_clean_section(cfg,logsection);
 		lp_config_set_int(cfg,logsection,"dir",cl->dir);
 		lp_config_set_int(cfg,logsection,"status",cl->status);
 		tmp=linphone_address_as_string(cl->from);
@@ -128,11 +132,13 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		tmp=linphone_address_as_string(cl->to);
 		lp_config_set_string(cfg,logsection,"to",tmp);
 		ms_free(tmp);
-		lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
+		if (cl->start_date_time)
+			lp_config_set_int64(cfg,logsection,"start_date_time",(int64_t)cl->start_date_time);
+		else lp_config_set_string(cfg,logsection,"start_date",cl->start_date);
 		lp_config_set_int(cfg,logsection,"duration",cl->duration);
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
-        lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
+		lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -140,10 +146,21 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	}
 }
 
+static time_t string_to_time(const char *date){
+#ifndef WIN32
+	struct tm tmtime={0};
+	strptime(date,"%c",&tmtime);
+	return mktime(&tmtime);
+#else
+	return 0;
+#endif
+}
+
 static void call_logs_read_from_config_file(LinphoneCore *lc){
 	char logsection[32];
 	int i;
 	const char *tmp;
+	uint64_t sec;
 	LpConfig *cfg=lc->config;
 	for(i=0;;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -155,13 +172,23 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->from=linphone_address_new(tmp);
 			tmp=lp_config_get_string(cfg,logsection,"to",NULL);
 			if (tmp) cl->to=linphone_address_new(tmp);
-			tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
-			if (tmp) strncpy(cl->start_date,tmp,sizeof(cl->start_date));
+			sec=lp_config_get_int64(cfg,logsection,"start_date_time",0);
+			if (sec) {
+				/*new call log format with date expressed in seconds */
+				cl->start_date_time=(time_t)sec;
+				set_call_log_date(cl,cl->start_date_time);
+			}else{
+				tmp=lp_config_get_string(cfg,logsection,"start_date",NULL);
+				if (tmp) {
+					strncpy(cl->start_date,tmp,sizeof(cl->start_date));
+					cl->start_date_time=string_to_time(cl->start_date);
+				}
+			}
 			cl->duration=lp_config_get_int(cfg,logsection,"duration",0);
 			tmp=lp_config_get_string(cfg,logsection,"refkey",NULL);
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
-            cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
+			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
@@ -458,6 +485,9 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_playback_gain_db (lc,gain);
 
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
+
+	/*just parse requested stream feature once at start to print out eventual errors*/
+	linphone_core_get_audio_features(lc);
 }
 
 static void sip_config_read(LinphoneCore *lc)
@@ -505,10 +535,13 @@ static void sip_config_read(LinphoneCore *lc)
 	
 	if (tr.udp_port>0 && random_port){
 		tr.udp_port=random_port;
+		tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
 	}else if (tr.tcp_port>0 && random_port){
 		tr.tcp_port=random_port;
+		tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
 	}else if (tr.tls_port>0 && random_port){
 		tr.tls_port=random_port;
+		tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
 	} 
 
 #ifdef __linux
@@ -543,7 +576,7 @@ static void sip_config_read(LinphoneCore *lc)
 	linphone_core_set_guess_hostname(lc,tmp);
 
 
-	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",15);
+	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
 
 	/* get proxies config */
@@ -1828,6 +1861,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
+				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
 				call->log->status=LinphoneCallMissed;
 				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
@@ -3473,7 +3507,6 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
  * @ingroup call_logs
 **/
 const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
-	lc->missed_calls=0;
 	return lc->call_logs;
 }
 
@@ -3489,17 +3522,31 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	call_logs_write_to_config_file(lc);
 }
 
+/**
+ * Returns number of missed calls.
+ * Once checked, this counter can be reset with linphone_core_reset_missed_calls_count().
+**/
 int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
 	return lc->missed_calls;
 }
 
+/**
+ * Resets the counter of missed calls.
+**/
 void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 	lc->missed_calls=0;
 }
 
-void linphone_core_remove_call_log(LinphoneCore *lc, void *data) {
-	lc->call_logs = ms_list_remove(lc->call_logs, data);
+/**
+ * Remove a specific call log from call history list.
+ * This function destroys the call log object. It must not be accessed anymore by the application after calling this function.
+ * @param lc the linphone core object
+ * @param a LinphoneCallLog object.
+**/
+void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
+	lc->call_logs = ms_list_remove(lc->call_logs, cl);
 	call_logs_write_to_config_file(lc);
+	linphone_call_log_destroy(cl);
 }
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
@@ -3572,6 +3619,7 @@ bool_t linphone_core_video_enabled(LinphoneCore *lc){
  * This policy defines whether:
  * - video shall be initiated by default for outgoing calls
  * - video shall be accepter by default for incoming calls
+ * @ingroup media_parameters
 **/
 void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy){
 	lc->video_policy=*policy;
@@ -3584,6 +3632,7 @@ void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy 
 /**
  * Get the default policy for video.
  * See linphone_core_set_video_policy() for more details.
+ * @ingroup media_parameters
 **/
 const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
 	return &lc->video_policy;

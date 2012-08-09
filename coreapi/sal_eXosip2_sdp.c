@@ -116,7 +116,7 @@ static int _sdp_message_get_mline_dir(sdp_message_t *sdp, int mline){
 		}else if (keywordcmp("sendonly",attr->a_att_field)==0){
 			return SalStreamSendOnly;
 		}else if (keywordcmp("recvonly",attr->a_att_field)==0){
-			return SalStreamSendOnly;
+			return SalStreamRecvOnly;
 		}else if (keywordcmp("inactive",attr->a_att_field)==0){
 			return SalStreamInactive;
 		}

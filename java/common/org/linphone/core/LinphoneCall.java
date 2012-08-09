@@ -244,4 +244,14 @@ public interface LinphoneCall {
 	boolean isInConference();
 	
 	float getPlayVolume();
+	
+	/**
+	 * Take a photo of currently received video and write it into a jpeg file.
+	 */
+	void takeSnapshot(String path);
+	
+	/**
+	 * Scale the video by factor, and center it using cx,cy point
+	 */
+	void zoomVideo(float factor, float cx, float cy);
 }

@@ -68,14 +68,6 @@ LinphoneCore *linphone_call_get_core(const LinphoneCall *call){
 	return call->core;
 }
 
-const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call) {
-	return &call->stats[LINPHONE_CALL_STATS_AUDIO];
-}
-
-const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call) {
-	return &call->stats[LINPHONE_CALL_STATS_VIDEO];
-}
-
 const char* linphone_call_get_authentication_token(LinphoneCall *call){
 	return call->auth_token;
 }
@@ -497,9 +489,10 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-             switch(call->reason){
+			switch(call->reason){
 				case LinphoneReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
+				break;
 				case LinphoneReasonNotAnswered:
 					call->log->status=LinphoneCallMissed;
 				break;
@@ -939,6 +932,8 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 		int enabled=lp_config_get_int(lc->config,"sound","noisegate",0);
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
+
+	audio_stream_set_features(audiostream,linphone_core_get_audio_features(lc));
 
 	if (lc->rtptf){
 		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->audio_port);
@@ -1518,7 +1513,7 @@ bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call){
 **/
 
 /**
- * Returns the measured sound volume played locally (received from remote)
+ * Returns the measured sound volume played locally (received from remote).
  * It is expressed in dbm0.
 **/
 float linphone_call_get_play_volume(LinphoneCall *call){
@@ -1533,7 +1528,7 @@ float linphone_call_get_play_volume(LinphoneCall *call){
 }
 
 /**
- * Returns the measured sound volume recorded locally (sent to remote)
+ * Returns the measured sound volume recorded locally (sent to remote).
  * It is expressed in dbm0.
 **/
 float linphone_call_get_record_volume(LinphoneCall *call){
@@ -1582,6 +1577,21 @@ float linphone_call_get_average_quality(LinphoneCall *call){
 	}
 	return -1;
 }
+
+/**
+ * Access last known statistics for audio stream, for a given call.
+**/
+const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call) {
+	return &call->stats[LINPHONE_CALL_STATS_AUDIO];
+}
+
+/**
+ * Access last known statistics for video stream, for a given call.
+**/
+const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call) {
+	return &call->stats[LINPHONE_CALL_STATS_VIDEO];
+}
+
 
 /**
  * @}
