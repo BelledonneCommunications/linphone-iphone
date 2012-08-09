@@ -281,7 +281,7 @@
                 }
             }
         } else if([rotationPreference isEqualToString:@"portrait"]) {
-            if ([currentViewDescription landscapeMode]) {
+            if ([currentViewDescription portraitMode]) {
                 if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
                     if(deviceOrientation == UIDeviceOrientationUnknown) {
                         return [UIApplication sharedApplication].statusBarOrientation;
