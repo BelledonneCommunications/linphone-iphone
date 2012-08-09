@@ -2105,6 +2105,27 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	return NULL;
 }
 
+int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
+	bool_t ice_ready = FALSE;
+	bool_t ping_ready = FALSE;
+
+	if (call->ice_session != NULL) {
+		if (ice_session_candidates_gathered(call->ice_session)) ice_ready = TRUE;
+	} else {
+		ice_ready = TRUE;
+	}
+	if (call->ping_op != NULL) {
+		if (call->ping_replied == TRUE) ping_ready = TRUE;
+	} else {
+		ping_ready = TRUE;
+	}
+
+	if ((ice_ready == TRUE) && (ping_ready == TRUE)) {
+		return linphone_core_start_invite(lc, call, dest_proxy);
+	}
+	return 0;
+}
+
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
 	int err;
 	char *contact;
@@ -2247,6 +2268,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	char *real_url=NULL;
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
+	bool_t use_ice = FALSE;
 
 	linphone_core_preempt_sound_resources(lc);
 	
@@ -2298,18 +2320,19 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			linphone_call_delete_ice_session(call);
 			linphone_call_stop_media_streams(call);
 		} else {
-			if (real_url!=NULL) ms_free(real_url);
-			return call;
+			use_ice = TRUE;
 		}
 	}
-	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
-		linphone_core_start_invite(lc,call,dest_proxy);
-	}else{
+
+	if (dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
 		/*defer the start of the call after the OPTIONS ping*/
+		call->ping_replied=FALSE;
 		call->ping_op=sal_op_new(lc->sal);
 		sal_ping(call->ping_op,from,real_url);
 		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
+	}else{
+		if (use_ice==FALSE) linphone_core_start_invite(lc,call,dest_proxy);
 	}
 
 	if (real_url!=NULL) ms_free(real_url);

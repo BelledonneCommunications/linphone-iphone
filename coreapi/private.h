@@ -134,6 +134,7 @@ struct _LinphoneCall
 	bool_t auth_token_verified;
 	bool_t defer_update;
 	bool_t was_automatically_paused;
+	bool_t ping_replied;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
 	IceSession *ice_session;
@@ -260,6 +261,7 @@ void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
+int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);

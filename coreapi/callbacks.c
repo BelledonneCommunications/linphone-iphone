@@ -755,7 +755,8 @@ static void ping_reply(SalOp *op){
 	ms_message("ping reply !");
 	if (call){
 		if (call->state==LinphoneCallOutgoingInit){
-			linphone_core_start_invite(call->core,call,NULL);
+			call->ping_replied=TRUE;
+			linphone_core_proceed_with_invite_if_ready(call->core,call,NULL);
 		}
 	}
 	else

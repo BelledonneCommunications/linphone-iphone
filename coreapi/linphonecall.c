@@ -1732,7 +1732,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				break;
 			case LinphoneCallOutgoingInit:
 				linphone_call_stop_media_streams(call);
-				linphone_core_start_invite(call->core, call, NULL);
+				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
 			default:
 				linphone_call_stop_media_streams(call);
