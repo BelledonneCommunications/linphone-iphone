@@ -171,12 +171,14 @@ int __aeabi_idiv(int a, int b) {
     if(![LinphoneManager isLcReady]) {
         [[LinphoneManager instance]	startLibLinphone];
     }
-    [self setupGSMInteraction];
-    
-    // Only execute one time at application start
-    if(!started) {
-        started = TRUE;
-        [[PhoneMainView instance] startUp];
+    if([LinphoneManager isLcReady]) {
+        [self setupGSMInteraction];
+        
+        // Only execute one time at application start
+        if(!started) {
+            started = TRUE;
+            [[PhoneMainView instance] startUp];
+        }
     }
 }
 
