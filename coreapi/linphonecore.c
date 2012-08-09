@@ -2593,7 +2593,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
-		if (!ice_session_candidates_gathered(call->ice_session)) {
+		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
 				linphone_call_init_video_stream(call);
 				video_stream_prepare_video(call->videostream);

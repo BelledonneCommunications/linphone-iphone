@@ -392,12 +392,14 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			call->ice_session = ice_session_new();
 			ice_session_set_role(call->ice_session, IR_Controlled);
 			linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
-			linphone_call_init_media_streams(call);
-			linphone_call_start_media_streams_for_ice_gathering(call);
-			if (linphone_core_gather_ice_candidates(call->core,call)<0) {
-				/* Ice candidates gathering failed, proceed with the call anyway. */
-				linphone_call_delete_ice_session(call);
-				linphone_call_stop_media_streams(call);
+			if (call->ice_session != NULL) {
+				linphone_call_init_media_streams(call);
+				linphone_call_start_media_streams_for_ice_gathering(call);
+				if (linphone_core_gather_ice_candidates(call->core,call)<0) {
+					/* Ice candidates gathering failed, proceed with the call anyway. */
+					linphone_call_delete_ice_session(call);
+					linphone_call_stop_media_streams(call);
+				}
 			}
 			break;
 		case LinphonePolicyUseStun:
