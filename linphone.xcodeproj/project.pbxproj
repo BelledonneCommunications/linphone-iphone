@@ -291,6 +291,10 @@
 		D339890715C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D339890415C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png */; };
 		D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */; };
 		D339890915C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */; };
+		D33CF34A15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */; };
+		D33CF34B15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */; };
+		D33CF34C15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */; };
+		D33CF34D15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */; };
 		D3432A62158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
 		D3432A64158A4446001C6B0B /* led_error.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5D158A4446001C6B0B /* led_error.png */; };
 		D3432A66158A4446001C6B0B /* call_quality_indicator_0.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5E158A4446001C6B0B /* call_quality_indicator_0.png */; };
@@ -918,8 +922,8 @@
 		D3A74F5915C69392001500B9 /* video_on_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74EB115C69392001500B9 /* video_on_over~ipad.png */; };
 		D3A74F5B15C6AA0B001500B9 /* chat_field.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5A15C6AA0B001500B9 /* chat_field.9.png */; };
 		D3A74F5C15C6AA0B001500B9 /* chat_field.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5A15C6AA0B001500B9 /* chat_field.9.png */; };
-		D3A74F5E15C6ADA9001500B9 /* chat_field.9@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5D15C6ADA9001500B9 /* chat_field.9@x2.png */; };
-		D3A74F5F15C6ADA9001500B9 /* chat_field.9@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5D15C6ADA9001500B9 /* chat_field.9@x2.png */; };
+		D3A74F5E15C6ADA9001500B9 /* chat_field.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5D15C6ADA9001500B9 /* chat_field.9@2x.png */; };
+		D3A74F5F15C6ADA9001500B9 /* chat_field.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F5D15C6ADA9001500B9 /* chat_field.9@2x.png */; };
 		D3A74F6115C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F6015C6B03B001500B9 /* DialerViewController~ipad.xib */; };
 		D3A74F6215C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A74F6015C6B03B001500B9 /* DialerViewController~ipad.xib */; };
 		D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatRoomCell.m */; };
@@ -1584,6 +1588,8 @@
 		D33988B315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video_on_over_landscape~ipad.png"; path = "Resources/video_on_over_landscape~ipad.png"; sourceTree = "<group>"; };
 		D339890415C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer_alt_back_default_landscape~ipad.png"; path = "Resources/dialer_alt_back_default_landscape~ipad.png"; sourceTree = "<group>"; };
 		D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer_alt_back_over_landscape~ipad.png"; path = "Resources/dialer_alt_back_over_landscape~ipad.png"; sourceTree = "<group>"; };
+		D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_57@2x.png"; path = "Resources/linphone_icon_57@2x.png"; sourceTree = "<group>"; };
+		D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_72@2x.png"; path = "Resources/linphone_icon_72@2x.png"; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* led_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_connected.png; path = Resources/led_connected.png; sourceTree = "<group>"; };
 		D3432A5D158A4446001C6B0B /* led_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_error.png; path = Resources/led_error.png; sourceTree = "<group>"; };
 		D3432A5E158A4446001C6B0B /* call_quality_indicator_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_quality_indicator_0.png; path = Resources/call_quality_indicator_0.png; sourceTree = "<group>"; };
@@ -1826,7 +1832,7 @@
 		D3A74EB015C69392001500B9 /* video_on_disabled~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video_on_disabled~ipad.png"; path = "Resources/video_on_disabled~ipad.png"; sourceTree = "<group>"; };
 		D3A74EB115C69392001500B9 /* video_on_over~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "video_on_over~ipad.png"; path = "Resources/video_on_over~ipad.png"; sourceTree = "<group>"; };
 		D3A74F5A15C6AA0B001500B9 /* chat_field.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_field.9.png; path = Resources/chat_field.9.png; sourceTree = "<group>"; };
-		D3A74F5D15C6ADA9001500B9 /* chat_field.9@x2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "chat_field.9@x2.png"; path = "Resources/chat_field.9@x2.png"; sourceTree = "<group>"; };
+		D3A74F5D15C6ADA9001500B9 /* chat_field.9@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "chat_field.9@2x.png"; path = "Resources/chat_field.9@2x.png"; sourceTree = "<group>"; };
 		D3A74F6015C6B03B001500B9 /* DialerViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "DialerViewController~ipad.xib"; sourceTree = "<group>"; };
 		D3A8BB6E15A6C7D500F96BE5 /* UIChatRoomCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatRoomCell.h; sourceTree = "<group>"; };
 		D3A8BB6F15A6C7D500F96BE5 /* UIChatRoomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatRoomCell.m; sourceTree = "<group>"; };
@@ -2715,7 +2721,7 @@
 				D3EA53FF159852080037DC6B /* chat_edit_default.png */,
 				D3EA5400159852080037DC6B /* chat_edit_over.png */,
 				D3A74F5A15C6AA0B001500B9 /* chat_field.9.png */,
-				D3A74F5D15C6ADA9001500B9 /* chat_field.9@x2.png */,
+				D3A74F5D15C6ADA9001500B9 /* chat_field.9@2x.png */,
 				D3B9A3DA15A58C440096EA4E /* chat_field.png */,
 				D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */,
 				D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */,
@@ -2829,7 +2835,9 @@
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
 				22058C70116E305000B08DDD /* linphone_icon_57.png */,
+				D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */,
 				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
+				D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */,
 				2274550710700509006EC466 /* linphonerc */,
 				341FCA8D149798210084BC26 /* linphonerc-ipad */,
 				D3EA5416159858A80037DC6B /* list_delete_default.png */,
@@ -3216,6 +3224,7 @@
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "linphone" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
+				D33CF34715D3985000CD4B85 /* ShellScript */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				2247673A129C3B9C002B94B4 /* CopyFiles */,
@@ -3236,6 +3245,7 @@
 			buildConfigurationList = 22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-no-gpl-thirdparties" */;
 			buildPhases = (
 				22D8F11E147548E2008C97DB /* Resources */,
+				D33CF35115D3AC9800CD4B85 /* ShellScript */,
 				22D8F143147548E2008C97DB /* Sources */,
 				22D8F15A147548E2008C97DB /* Frameworks */,
 				22D8F181147548E2008C97DB /* CopyFiles */,
@@ -3693,7 +3703,7 @@
 				D3A74F5615C69392001500B9 /* video_on_disabled~ipad.png in Resources */,
 				D3A74F5815C69392001500B9 /* video_on_over~ipad.png in Resources */,
 				D3A74F5B15C6AA0B001500B9 /* chat_field.9.png in Resources */,
-				D3A74F5E15C6ADA9001500B9 /* chat_field.9@x2.png in Resources */,
+				D3A74F5E15C6ADA9001500B9 /* chat_field.9@2x.png in Resources */,
 				D3A74F6115C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */,
 				D3BDB9B915C6B5B1007BEAC1 /* transfer_call_disabled~ipad.png in Resources */,
 				D3ACB09715C6D0F700E15894 /* UICallBar~ipad.xib in Resources */,
@@ -3741,6 +3751,8 @@
 				D339890215C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890615C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
+				D33CF34A15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */,
+				D33CF34C15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4129,7 +4141,7 @@
 				D3A74F5715C69392001500B9 /* video_on_disabled~ipad.png in Resources */,
 				D3A74F5915C69392001500B9 /* video_on_over~ipad.png in Resources */,
 				D3A74F5C15C6AA0B001500B9 /* chat_field.9.png in Resources */,
-				D3A74F5F15C6ADA9001500B9 /* chat_field.9@x2.png in Resources */,
+				D3A74F5F15C6ADA9001500B9 /* chat_field.9@2x.png in Resources */,
 				D3A74F6215C6B03C001500B9 /* DialerViewController~ipad.xib in Resources */,
 				D3BDB9BA15C6B5B1007BEAC1 /* transfer_call_disabled~ipad.png in Resources */,
 				D3ACB09815C6D0F700E15894 /* UICallBar~ipad.xib in Resources */,
@@ -4177,10 +4189,41 @@
 				D339890315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890715C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890915C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
+				D33CF34B15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */,
+				D33CF34D15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D33CF34715D3985000CD4B85 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\ncommand -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n    fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+		};
+		D33CF35115D3AC9800CD4B85 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\n    command -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n        fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
@@ -4406,6 +4449,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -4478,6 +4522,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -4739,6 +4784,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -4811,6 +4857,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;

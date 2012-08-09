@@ -8,13 +8,26 @@
 	<string>Linphone</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>linphone_icon_57.png</string>
 		<string>linphone_icon_72.png</string>
+		<string>linphone_icon_57@2x.png</string>
+		<string>linphone_icon_72@2x.png</string>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>linphone_icon_57.png</string>
+				<string>linphone_icon_72.png</string>
+				<string>linphone_icon_57@2x.png</string>
+				<string>linphone_icon_72@2x.png</string>
+			</array>
+		</dict>
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -25,8 +38,6 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>3.5.2</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.3</string>
 	<key>NSMainNibFile</key>
