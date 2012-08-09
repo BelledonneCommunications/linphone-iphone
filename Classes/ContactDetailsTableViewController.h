@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
+#import "ContactDetailsDelegate.h"
 #import "ContactDetailsLabelViewController.h"
 #import "UIContactDetailsHeader.h"
 #import "UIContactDetailsFooter.h"
@@ -30,13 +31,17 @@
     NSMutableArray *dataCache;
     NSMutableArray *labelArray;
     NSIndexPath *editingIndexPath;
-@public
     UIContactDetailsHeader *headerController;
     UIContactDetailsFooter *footerController;
+    id<ContactDetailsDelegate> contactDetailsDelegate;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;
+@property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+@property (nonatomic, retain) IBOutlet UIContactDetailsHeader *headerController;
+@property (nonatomic, retain) IBOutlet UIContactDetailsFooter *footerController;
 
+- (BOOL)isValid;
 - (void)addSipField:(NSString*)address;
 
 @end

@@ -111,7 +111,7 @@
                 } else {
                     
                 }
-                if(name != nil) {
+                if(name != nil && [name length] > 0) {
                     // Put in correct subDic
                     NSString *firstChar = [[name substringToIndex:1] uppercaseString];
                     if([firstChar characterAtIndex:0] < 'A' || [firstChar characterAtIndex:0] > 'Z') {

@@ -176,6 +176,14 @@
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
+		<dict>
+			<key>Key</key>
+			<string>Release_button</string>
+			<key>Title</key>
+			<string>Release</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

@@ -150,6 +150,8 @@
 		D306BC1315CFF79E00FDB80F /* more_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D306BC0A15CFF79E00FDB80F /* more_over.png */; };
 		D306BC1415CFF79E00FDB80F /* more_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D306BC0B15CFF79E00FDB80F /* more_selected.png */; };
 		D306BC1515CFF79E00FDB80F /* more_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D306BC0B15CFF79E00FDB80F /* more_selected.png */; };
+		D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */; };
+		D30BBD1915D402A7000F93DD /* contact_ok_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */; };
 		D3119E7215B6A4710005D4A4 /* contacts_back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3119E7015B6A4710005D4A4 /* contacts_back_default.png */; };
 		D3119E7415B6A4710005D4A4 /* contacts_back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3119E7115B6A4710005D4A4 /* contacts_back_over.png */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsViewController.m */; };
@@ -1386,6 +1388,8 @@
 		D306BC0915CFF79E00FDB80F /* more_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_default.png; path = Resources/more_default.png; sourceTree = "<group>"; };
 		D306BC0A15CFF79E00FDB80F /* more_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_over.png; path = Resources/more_over.png; sourceTree = "<group>"; };
 		D306BC0B15CFF79E00FDB80F /* more_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = more_selected.png; path = Resources/more_selected.png; sourceTree = "<group>"; };
+		D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsDelegate.h; sourceTree = "<group>"; };
+		D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_ok_disabled.png; path = Resources/contact_ok_disabled.png; sourceTree = "<group>"; };
 		D3119E7015B6A4710005D4A4 /* contacts_back_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_back_default.png; path = Resources/contacts_back_default.png; sourceTree = "<group>"; };
 		D3119E7115B6A4710005D4A4 /* contacts_back_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_back_over.png; path = Resources/contacts_back_over.png; sourceTree = "<group>"; };
 		D3128FDE15AABC7E00A2147A /* ContactDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsViewController.h; sourceTree = "<group>"; };
@@ -2060,6 +2064,7 @@
 				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
 				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
 				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
+				D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */,
 				D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */,
 				D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */,
 				D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */,
@@ -2668,6 +2673,7 @@
 				D37C638D15AAD251009D0BAC /* contact_number.png */,
 				D37C638C15AAD251009D0BAC /* contact_number_over.png */,
 				D3C6526915AC228A0092A874 /* contact_ok_default.png */,
+				D30BBD1715D402A7000F93DD /* contact_ok_disabled.png */,
 				D3C6526A15AC228A0092A874 /* contact_ok_over.png */,
 				D354980E15875608000081D8 /* contacts_add_default.png */,
 				D354980F15875608000081D8 /* contacts_add_over.png */,
@@ -3632,6 +3638,7 @@
 				D339890215C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890615C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
+				D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D306BC0C15CFF79E00FDB80F /* castel_icon_57.png in Resources */,
 				D306BC0E15CFF79E00FDB80F /* castel_icon_72.png in Resources */,
 				D306BC1015CFF79E00FDB80F /* more_default.png in Resources */,
@@ -4028,6 +4035,7 @@
 				D339890315C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890715C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890915C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
+				D30BBD1915D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D306BC0D15CFF79E00FDB80F /* castel_icon_57.png in Resources */,
 				D306BC0F15CFF79E00FDB80F /* castel_icon_72.png in Resources */,
 				D306BC1115CFF79E00FDB80F /* more_default.png in Resources */,
@@ -4292,6 +4300,7 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
@@ -4418,6 +4427,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					IN_LINPHONE,
 					VIDEO_ENABLED,
+					DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,

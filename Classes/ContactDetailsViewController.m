@@ -198,22 +198,18 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)viewDidLoad{
     [super viewDidLoad];
+    
     // Set selected+over background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"contact_ok_over.png"] 
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
-    // Force view load
-    [tableController->footerController view];
-    [tableController->footerController->removeButton addTarget:self 
-                                                        action:@selector(onRemove:) 
-                                              forControlEvents:UIControlEventTouchUpInside];
+    // Set selected+disabled background: IB lack !
+    [editButton setImage:[UIImage imageNamed:@"contact_ok_disabled.png"]
+                forState:(UIControlStateDisabled | UIControlStateSelected)];
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    [tableController->footerController->removeButton removeTarget:self 
-                                                           action:@selector(onRemove:) 
-                                                 forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -291,6 +287,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [backButton setHidden:FALSE];
 }
 
+
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
@@ -304,8 +301,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditClick:(id)event {
     if([tableController isEditing]) {
-        [self disableEdit:TRUE];
-        [self saveData];
+        if([tableController isValid]) {
+            [self disableEdit:TRUE];
+            [self saveData];
+        }
     } else {
         [self enableEdit:TRUE];
     }
@@ -315,6 +314,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self disableEdit:FALSE];
     [self removeContact];
     [[PhoneMainView instance] popCurrentView];
+}
+
+- (void)onModification:(id)event {
+    if(![tableController isEditing] || [tableController isValid]) {
+        [editButton setEnabled:TRUE];
+    } else {
+        [editButton setEnabled:FALSE];
+    }
 }
 
 @end
