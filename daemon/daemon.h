@@ -32,6 +32,7 @@
 #endif
 #endif
 
+
 class Daemon;
 
 class DaemonCommand {
