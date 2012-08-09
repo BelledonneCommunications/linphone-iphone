@@ -55,6 +55,14 @@
 
 @implementation ContactDetailsTableViewController
 
+enum _ContactSections {
+    ContactSections_Number = 0,
+    ContactSections_Sip,
+    ContactSections_MAX
+};
+
+static const int contactSections[ContactSections_MAX] = {ContactSections_Number, ContactSections_Sip};
+
 @synthesize contact;
 
 #pragma mark - Lifecycle Functions
@@ -133,6 +141,16 @@
     return NO;
 }
 
+
+- (NSMutableArray*)getSectionData:(int)section {
+    if(contactSections[section] == ContactSections_Number) {
+        return [dataCache objectAtIndex:0];
+    } else if(contactSections[section] == ContactSections_Sip) {
+        return [dataCache objectAtIndex:1];
+    }
+    return nil;
+}
+
 + (NSString*)localizeLabel:(NSString*)str {
     CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel((CFStringRef) str);
     NSString * retStr = [NSString stringWithString:(NSString*) lLocalizedLabel];
@@ -207,11 +225,11 @@
 }
 
 - (void)addEntry:(UITableView*)tableview section:(NSInteger)section animated:(BOOL)animated value:(NSString *)value{
-    NSMutableArray *sectionArray = [dataCache objectAtIndex:section];
+    NSMutableArray *sectionArray = [self getSectionData:section];
     NSUInteger count = [sectionArray count];
     NSError* error = NULL;
     bool added = TRUE;
-    if(section == 0) {
+    if(contactSections[section] == ContactSections_Number) {
         ABMultiValueIdentifier identifier;
         ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         ABMutableMultiValueRef lMap;
@@ -235,7 +253,7 @@
             [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
         }
         CFRelease(lMap);
-    } else if(section == 1) {
+    } else if(contactSections[section] == ContactSections_Sip) {
         ABMultiValueIdentifier identifier;
         ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
         ABMutableMultiValueRef lMap;
@@ -275,11 +293,11 @@
 }
 
 - (void)removeEmptyEntry:(UITableView*)tableview section:(NSInteger)section animated:(BOOL)animated {
-    NSMutableArray *sectionDict = [dataCache objectAtIndex: section];
+    NSMutableArray *sectionDict = [self getSectionData:section];
     int row = [sectionDict count] - 1;
     if(row >= 0) {
         Entry *entry = [sectionDict objectAtIndex:row];
-        if(section == 0) {
+        if(contactSections[section] == ContactSections_Number) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
@@ -288,7 +306,7 @@
             }
             CFRelease(valueRef);
             CFRelease(lMap);
-        } else if(section == 1) {
+        } else if(contactSections[section] == ContactSections_Sip) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
@@ -303,9 +321,9 @@
 }
 
 - (void)removeEntry:(UITableView*)tableview path:(NSIndexPath*)indexPath animated:(BOOL)animated {
-    NSMutableArray *sectionArray = [dataCache objectAtIndex:[indexPath section]];
+    NSMutableArray *sectionArray = [self getSectionData:[indexPath section]];
     Entry *entry = [sectionArray objectAtIndex:[indexPath row]];
-    if([indexPath section] == 0) {
+    if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
         CFRelease(lcMap);
@@ -313,7 +331,7 @@
         ABMultiValueRemoveValueAndLabelAtIndex(lMap, index);
         ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
         CFRelease(lMap);
-    } else if([indexPath section] == 1) {
+    } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
         ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
         ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
         CFRelease(lcMap);
@@ -342,18 +360,20 @@
 }
 
 - (void)addSipField:(NSString*)address {
-    [self addEntry:[self tableView] section:1 animated:FALSE value:address];
+    int i = 0;
+    while(i < ContactSections_MAX && contactSections[i] != ContactSections_Sip) ++i;
+    [self addEntry:[self tableView] section:i animated:FALSE value:address];
 }
 
 
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [dataCache count];
+    return ContactSections_MAX;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[dataCache objectAtIndex:section] count];
+    return [[self getSectionData:section] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -371,13 +391,13 @@
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
     
-    NSMutableArray *sectionDict = [dataCache objectAtIndex:[indexPath section]];
+    NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
     Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
     
     NSString *value = @"";
     NSString *label = @"";
     
-    if([indexPath section] == 0) {
+    if(contactSections[[indexPath section]] == ContactSections_Number) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
         int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
         CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
@@ -391,7 +411,7 @@
             CFRelease(valueRef);
         }
         CFRelease(lMap);
-    } else if([indexPath section] == 1) {
+    } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
         int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
         CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
@@ -410,23 +430,23 @@
     [cell.textLabel setText:label];
     [cell.detailTextLabel setText:value];
     [cell.detailTextField setText:value];
-    if ([indexPath section] == 0) {
+    if (contactSections[[indexPath section]] == ContactSections_Number) {
         [cell.detailTextField setKeyboardType:UIKeyboardTypePhonePad];
-        [cell.detailTextField setPlaceholder:@"Phone number"];
-    } else {
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Phone number", nil)];
+    } else if(contactSections[[indexPath section]] == ContactSections_Sip){
         [cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
-        [cell.detailTextField setPlaceholder:@"SIP address"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"SIP address", nil)];
     }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    NSMutableArray *sectionDict = [dataCache objectAtIndex:[indexPath section]];
+    NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
     Entry *entry  = [sectionDict objectAtIndex:[indexPath row]];
     if (![self isEditing]) {
         NSString *dest;
-        if([indexPath section] == 0) {
+        if(contactSections[[indexPath section]] == ContactSections_Number) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
@@ -435,7 +455,7 @@
                 CFRelease(valueRef);
             }
             CFRelease(lMap);
-        } else if([indexPath section] == 1) {
+        } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
@@ -467,7 +487,7 @@
         }
     } else {
         NSString *key = nil;
-        if([indexPath section] == 0) {
+        if(contactSections[[indexPath section]] == ContactSections_Number) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
@@ -476,7 +496,7 @@
                 CFRelease(labelRef);
             }
             CFRelease(lMap);
-        } else if([indexPath section] == 1) {
+        } else if(contactSections[[indexPath section]] == ContactSections_Sip) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
@@ -546,7 +566,7 @@
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-    int last_index = [[dataCache objectAtIndex:[indexPath section]] count] - 1;
+    int last_index = [[self getSectionData:[indexPath section]] count] - 1;
 	if (indexPath.row == last_index) {
 		return UITableViewCellEditingStyleInsert;
 	}
@@ -565,7 +585,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {   
-    if(section != 0) {
+    if(section == (ContactSections_MAX - 1)) {
         UIView *footerView = [footerController view];
         return footerView;
     } else {
@@ -574,11 +594,12 @@
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if(section == 0) {
-        return nil;
-    } else {
-        return @"SIP";
+    if(contactSections[section] == ContactSections_Number) {
+        return NSLocalizedString(@"Phone numbers", nil);
+    } else if(contactSections[section] == ContactSections_Sip) {
+        return NSLocalizedString(@"SIP", nil);
     }
+    return nil;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
@@ -590,7 +611,7 @@
         return [UIContactDetailsHeader height:[self isEditing]];
     } else {
         // Hide section if nothing in it
-        if([[dataCache objectAtIndex:section] count] > 0)
+        if([[self getSectionData:section] count] > 0)
             return 22;
         else 
             return 0.000001f; // Hack UITableView = 0
@@ -601,7 +622,7 @@
     if(section != 0) {
          return [UIContactDetailsFooter height:[self isEditing]];
     }
-    return 0.000001f; // Hack UITableView = 0
+    return 10.0f;
 }
 
 
@@ -609,9 +630,9 @@
 
 - (void)changeContactDetailsLabel:(NSString *)value {
     if(value != nil) {
-        NSMutableArray *sectionDict = [dataCache objectAtIndex:[editingIndexPath section]];
+        NSMutableArray *sectionDict = [self getSectionData:[editingIndexPath section]];
         Entry *entry = [sectionDict objectAtIndex:[editingIndexPath row]];
-        if([editingIndexPath section] == 0) {
+        if(contactSections[[editingIndexPath section]] == ContactSections_Number) {
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
@@ -619,7 +640,7 @@
             ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
             CFRelease(lMap);
-        } else if([editingIndexPath section] == 1) {
+        } else if(contactSections[[editingIndexPath section]] == ContactSections_Sip) {
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
@@ -651,10 +672,10 @@
     if(view != nil) {
         UIEditableTableViewCell *cell = (UIEditableTableViewCell*)view;
         NSIndexPath *path = [self.tableView indexPathForCell:cell];
-        NSMutableArray *sectionDict = [dataCache objectAtIndex:[path section]];
+        NSMutableArray *sectionDict = [self getSectionData:[path section]];
         Entry *entry = [sectionDict objectAtIndex:[path row]];
         NSString *value = [textField text];
-        if([path section] == 0) {
+        if(contactSections[[path section]] == ContactSections_Number) {
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
@@ -662,17 +683,13 @@
             ABMultiValueReplaceValueAtIndex(lMap, (CFStringRef)value, index);
             ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
             CFRelease(lMap);
-        } else if([path section] == 1) {
-            /* MODIFICATION prefix with sip: */
-            value = [FastAddressBook normalizeSipURI:value];
-            [textField setText:value];
-            /**/
+        } else if(contactSections[[path section]] == ContactSections_Sip) {
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-             CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
+            CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
             CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
             CFRelease(lDict);

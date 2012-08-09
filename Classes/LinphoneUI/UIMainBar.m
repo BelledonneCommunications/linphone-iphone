@@ -102,12 +102,38 @@
 }
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(applicationWillEnterForeground:) 
                                                  name:UIApplicationWillEnterForegroundNotification 
                                                object:nil];
+    
+    // Set selected+over background: IB lack !
+    [historyButton setImage:[UIImage imageNamed:@"history_selected.png"]
+                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [contactsButton setImage:[UIImage imageNamed:@"contacts_selected.png"]
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [dialerButton setImage:[UIImage imageNamed:@"dialer_selected.png"]
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over background: IB lack !
+    [settingsButton setImage:[UIImage imageNamed:@"settings_selected.png"]
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+/* MODIFICATION Remove chat
+    // Set selected+over background: IB lack !
+    [chatButton setImage:[UIImage imageNamed:@"chat_selected.png"]
+                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+*/
+/* MODIFICATION Remove chat*/
+    // Set selected+over background: IB lack !
+    [moreButton setImage:[UIImage imageNamed:@"more_selected.png"]
+                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+/**/
+    [super viewDidLoad]; // Have to be after due to TPMultiLayoutViewController
 }
 
 - (void)viewDidUnload {

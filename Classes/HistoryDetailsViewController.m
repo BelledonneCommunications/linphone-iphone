@@ -186,7 +186,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // Set Address
     if(address == nil) {
-        address = @"Unknown";
+        address = NSLocalizedString(@"Unknown", nil);
     }
     [addressLabel setText:address];
     
@@ -200,21 +200,21 @@ static UICompositeViewDescription *compositeDescription = nil;
     // State
     NSMutableString *state = [NSMutableString string];
 	if (callLog->dir == LinphoneCallIncoming) {
-		[state setString:@"Incoming call"];
+		[state setString:NSLocalizedString(@"Incoming call", nil)];
 	} else {
-		[state setString:@"Outgoing call"];
+		[state setString:NSLocalizedString(@"Outgoing call", nil)];
 	}
     switch (callLog->status) {
         case LinphoneCallSuccess:
             break;
         case LinphoneCallAborted:
-            [state appendString:@" (Aborted)"];
+            [state appendString:NSLocalizedString(@" (Aborted)", nil)];
             break;
         case LinphoneCallMissed:
-            [state appendString:@" (Missed)"];
+            [state appendString:NSLocalizedString(@" (Missed)", nil)];
             break;
-        case LinphoneCallDeclined :
-            [state appendString:@" (Declined)"];
+        case LinphoneCallDeclined:
+            [state appendString:NSLocalizedString(@" (Declined)", nil)];
             break;
     }
     [typeLabel setText:state];

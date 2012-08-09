@@ -170,13 +170,16 @@
     UIEditableTableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {  
         cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
+        [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
+        [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+        [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
     }
    
     ABPropertyID property = [[propertyList objectAtIndex:[indexPath row]] intValue];
     if(property == kABPersonFirstNameProperty) {
-        [cell.detailTextField setPlaceholder:@"First name"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"First name", nil)];
     } else if (property == kABPersonLastNameProperty) {
-        [cell.detailTextField setPlaceholder:@"Last name"];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Last name", nil)];
     }
     [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
     if(contact) {

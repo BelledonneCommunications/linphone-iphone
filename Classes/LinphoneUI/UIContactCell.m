@@ -79,7 +79,7 @@
     CFStringRef lFirstName = ABRecordCopyValue(contact, kABPersonFirstNameProperty);
     CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
     CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);
-    CFStringRef lLocalizedLastName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
+    CFStringRef lLocalizedLastName = (lLastName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
     
     if(lLocalizedFirstName != nil)
         [firstNameLabel setText: (NSString *)lLocalizedFirstName];
@@ -99,33 +99,34 @@
         CFRelease(lLocalizedFirstName);
     if(lFirstName != nil)
         CFRelease(lFirstName);
-    
-    // Avatar
-    /*UIImage *image = [FastAddressBook getContactImage:contact thumbnail:true];
-    if(image == nil) {
-        image = [UIImage imageNamed:@"avatar_unknown_small.png"];
-    }
-    [avatarImage setImage:image];*/
-    
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
     //
     // Adapt size
     //
     CGRect firstNameFrame = [firstNameLabel frame];
     CGRect lastNameFrame = [lastNameLabel frame];
     
-    lastNameFrame.origin.x -= firstNameFrame.size.width;
-    
     // Compute firstName size
-    CGSize contraints;
-    contraints.height = [firstNameLabel frame].size.height;
-    contraints.width = ([lastNameLabel frame].size.width + [lastNameLabel frame].origin.x) - [firstNameLabel frame].origin.x;
-    CGSize firstNameSize = [[firstNameLabel text] sizeWithFont:[firstNameLabel font] constrainedToSize: contraints];
+    CGSize firstNameSize = [[firstNameLabel text] sizeWithFont:[firstNameLabel font]];
+    CGSize lastNameSize = [[lastNameLabel text] sizeWithFont:[firstNameLabel font]];
+    float sum = firstNameSize.width + 5 + lastNameSize.width;
+    float limit = self.bounds.size.width - 5 - firstNameFrame.origin.x;
+    if(sum >limit) {
+        firstNameSize.width *= limit/sum;
+        lastNameSize.width *= limit/sum;
+    }
+    
     firstNameFrame.size.width = firstNameSize.width;
+    lastNameFrame.size.width = lastNameSize.width;
     
     // Compute lastName size & position
-    lastNameFrame.origin.x += firstNameFrame.size.width;
-    lastNameFrame.size.width = (contraints.width + [firstNameLabel frame].origin.x) - lastNameFrame.origin.x;
-    
+    lastNameFrame.origin.x = firstNameFrame.origin.x + firstNameFrame.size.width;
+    if(firstNameFrame.size.width)
+        lastNameFrame.origin.x += 5;
+
     [firstNameLabel setFrame: firstNameFrame];
     [lastNameLabel setFrame: lastNameFrame];
 }

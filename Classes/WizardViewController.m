@@ -313,7 +313,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
     switch (state) {
         case LinphoneRegistrationOk: {
-            [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"];
             [waitView setHidden:true];
             [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
             break;
@@ -407,20 +406,21 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSMutableString *errors = [NSMutableString string];
     
     if ([username length] < LINPHONE_WIZARD_MIN_USERNAME_LENGTH) {
-        [errors appendString:[NSString stringWithFormat:@"The username is too short (minimum %d characters).\n", LINPHONE_WIZARD_MIN_USERNAME_LENGTH]];
+        
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), LINPHONE_WIZARD_MIN_USERNAME_LENGTH]];
     }
     
     if ([password length] < LINPHONE_WIZARD_MIN_PASSWORD_LENGTH) {
-        [errors appendString:[NSString stringWithFormat:@"The password is too short (minimum %d characters).\n", LINPHONE_WIZARD_MIN_PASSWORD_LENGTH]];
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), LINPHONE_WIZARD_MIN_PASSWORD_LENGTH]];
     }
     
     if (![password2 isEqualToString:password]) {
-        [errors appendString:@"The passwords are different.\n"];
+        [errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
     }
     
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
     if(![emailTest evaluateWithObject:email]) {
-        [errors appendString:@"The email is invalid.\n"];
+        [errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
     }
     
     if([errors length]) {
@@ -507,7 +507,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC %@: %@", [request method], [response body]];
     [waitView setHidden:true];
     if ([response isFault]) {
-        NSString *errorString = [NSString stringWithFormat:@"Can't create account: Communication issue (%@)", [response faultString]];
+        NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Can't create account: Communication issue (%@)", nil), [response faultString]];
         UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
                                                             message:errorString
                                                            delegate:nil
@@ -519,7 +519,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         if([[request method] isEqualToString:@"check_account"]) {
             if([response object] == [NSNumber numberWithInt:1]) {
                 UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue",nil)
-                                                                message:@"Username already exists"
+                                                                message:NSLocalizedString(@"Username already exists", nil)
                                                                delegate:nil
                                                       cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                       otherButtonTitles:nil,nil];
@@ -540,7 +540,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [self findTextField:ViewElement_Password].text = password;
             } else {
                 UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account creation issue",nil)
-                                                                    message:@"Can't create the account. Please try again."
+                                                                    message:NSLocalizedString(@"Can't create the account. Please try again.", nil)
                                                                    delegate:nil
                                                           cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                           otherButtonTitles:nil,nil];
@@ -554,7 +554,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [self addProxyConfig:username password:password domain:LINPHONE_WIZARD_DOMAIN];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
-                                                                     message:@"Your account is not validate yet."
+                                                                     message:NSLocalizedString(@"Your account is not validate yet.", nil)
                                                                     delegate:nil
                                                            cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                                            otherButtonTitles:nil,nil];
@@ -566,11 +566,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)request: (XMLRPCRequest *)request didFailWithError: (NSError *)error {
-    NSString *errorString = [NSString stringWithFormat:@"Can't create account: Communication issue (%@)", [error localizedDescription]];
-    UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
+    NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Can't create account: Communication issue (%@)", nil), [error localizedDescription]];
+    UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
                                                     message:errorString
                                                    delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                          cancelButtonTitle:NSLocalizedString(@"Continue", nil)
                                           otherButtonTitles:nil,nil];
     [errorView show];
     [errorView release];
