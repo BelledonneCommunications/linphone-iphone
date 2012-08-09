@@ -2445,6 +2445,24 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	ms_free(tmp);
 }
 
+int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
+	const char *subject;
+	call->camera_active=call->params.has_video;
+	update_local_media_description(lc,call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+
+	if (call->params.in_conference){
+		subject="Conference";
+	}else{
+		subject="Media change";
+	}
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	sal_call_set_local_media_description (call->op,call->localdesc);
+	return sal_call_update(call->op,subject);
+}
+
 /**
  * @ingroup call_control
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
@@ -2462,22 +2480,25 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
-		const char *subject;
-		call->params=*params;
-		call->camera_active=call->params.has_video;
-		update_local_media_description(lc,call);
-		if (call->ice_session != NULL)
-			linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-
-		if (params->in_conference){
-			subject="Conference";
-		}else{
-			subject="Media change";
+		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
+			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
+			call->videostream->ice_check_list = NULL;
 		}
-		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc,_("Modifying call parameters..."));
-		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op,subject);
+		if ((call->ice_session != NULL) && ((ice_session_state(call->ice_session) != IS_Completed) || (call->params.has_video != params->has_video))) {
+			/* Defer call update until the ICE candidates gathering process has finished. */
+			ms_message("Defer call update to gather ICE candidates");
+			call->params = *params;
+			update_local_media_description(lc, call);
+			if (call->params.has_video) {
+				linphone_call_init_video_stream(call);
+				video_stream_prepare_video(call->videostream);
+				if (linphone_core_gather_ice_candidates(lc,call)<0) {
+					/* Ice candidates gathering failed, proceed with the call anyway. */
+					linphone_call_delete_ice_session(call);
+				} else return err;
+			}
+		}
+		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
@@ -2515,6 +2536,24 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	return -1;
 }
 
+int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call){
+	SalMediaDescription *md;
+	if (call->ice_session != NULL) {
+		if (ice_session_nb_losing_pairs(call->ice_session) > 0) {
+			/* Defer the sending of the answer until there are no losing pairs left. */
+			return 0;
+		}
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+	}
+	sal_call_set_local_media_description(call->op,call->localdesc);
+	sal_call_accept(call->op);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && !sal_media_description_empty(md))
+		linphone_core_update_streams (lc,call,md);
+	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	return 0;
+}
+
 /**
  * @ingroup call_control
  * Accept call modifications initiated by other end.
@@ -2535,7 +2574,7 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
  * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	SalMediaDescription *md;
+	bool_t old_has_video = call->params.has_video;
 	if (call->state!=LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
@@ -2554,18 +2593,18 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
-		if (ice_session_nb_losing_pairs(call->ice_session) > 0) {
-			/* Defer the sending of the answer until there are no losing pairs left. */
-			return 0;
+		if (!ice_session_candidates_gathered(call->ice_session)) {
+			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
+				linphone_call_init_video_stream(call);
+				video_stream_prepare_video(call->videostream);
+				if (linphone_core_gather_ice_candidates(lc,call)<0) {
+					/* Ice candidates gathering failed, proceed with the call anyway. */
+					linphone_call_delete_ice_session(call);
+				} else return 0;
+			}
 		}
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
-	sal_call_set_local_media_description(call->op,call->localdesc);
-	sal_call_accept(call->op);
-	md=sal_call_get_final_media_description(call->op);
-	if (md && !sal_media_description_empty(md))
-		linphone_core_update_streams (lc,call,md);
-	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	linphone_core_start_accept_call_update(lc, call);
 	return 0;
 }
 

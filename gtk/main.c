@@ -1080,7 +1080,11 @@ static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 
 static void on_call_updated_response(GtkWidget *dialog, gint responseid, LinphoneCall *call){
 	if (linphone_call_get_state(call)==LinphoneCallUpdatedByRemote){
-		linphone_call_enable_video(call, responseid==GTK_RESPONSE_YES);
+		LinphoneCore *lc=linphone_call_get_core(call);
+		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		linphone_call_params_enable_video(params,responseid==GTK_RESPONSE_YES);
+		linphone_core_accept_call_update(lc,call,params);
+		linphone_call_params_destroy(params);
 	}
 	linphone_call_unref(call);
 	g_source_remove_by_user_data(dialog);

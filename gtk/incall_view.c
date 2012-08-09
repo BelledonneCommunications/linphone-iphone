@@ -221,8 +221,12 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 
 static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
 	gboolean adding=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button),"adding_video"));
+	LinphoneCore *lc=linphone_call_get_core(call);
+	LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
 	gtk_widget_set_sensitive(button,FALSE);
-	linphone_call_enable_video(call,adding);
+	linphone_call_params_enable_video(params,adding);
+	linphone_core_update_call(lc,call,params);
+	linphone_call_params_destroy(params);
 }
 
 void linphone_gtk_update_video_button(LinphoneCall *call){

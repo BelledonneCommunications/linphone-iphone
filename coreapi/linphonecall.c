@@ -546,42 +546,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 	}
 }
 
-void linphone_call_enable_video(LinphoneCall *call, bool_t enabled)
-{
-	LinphoneCore *lc=linphone_call_get_core(call);
-	LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
-
-	linphone_call_params_enable_video(params, enabled);
-	if (enabled == TRUE) {
-		if (call->ice_session != NULL) {
-			/* Defer call update until the ICE candidates gathering process has finished. */
-			ms_message("Defer call update to gather ICE candidates");
-			call->params = *params;
-			update_local_media_description(lc, call);
-			linphone_call_init_video_stream(call);
-			video_stream_prepare_video(call->videostream);
-			linphone_core_gather_ice_candidates(lc, call);
-		} else {
-			if (linphone_call_get_state(call) == LinphoneCallUpdatedByRemote) {
-				linphone_core_accept_call_update(lc, call, params);
-			} else {
-				linphone_core_update_call(lc, call, params);
-			}
-		}
-	} else {
-		if ((call->ice_session != NULL) && (call->videostream != NULL)) {
-			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
-			call->videostream->ice_check_list = NULL;
-		}
-		if (linphone_call_get_state(call) == LinphoneCallUpdatedByRemote) {
-			linphone_core_accept_call_update(lc, call, params);
-		} else {
-			linphone_core_update_call(lc, call, params);
-		}
-	}
-	linphone_call_params_destroy(params);
-}
-
 static void linphone_call_destroy(LinphoneCall *obj)
 {
 	if (obj->op!=NULL) {
@@ -1750,50 +1714,31 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
-		LinphoneCallParams *params;
+		if (evd->info.ice_processing_successful==TRUE) {
+			ice_session_compute_candidates_foundations(call->ice_session);
+			ice_session_eliminate_redundant_candidates(call->ice_session);
+			ice_session_choose_default_candidates(call->ice_session);
+		} else {
+			linphone_call_delete_ice_session(call);
+		}
 		switch (call->state) {
 			case LinphoneCallStreamsRunning:
+				linphone_core_start_update_call(call->core, call);
+				break;
 			case LinphoneCallUpdatedByRemote:
-				if (evd->info.ice_processing_successful==TRUE) {
-					ice_session_compute_candidates_foundations(call->ice_session);
-					ice_session_eliminate_redundant_candidates(call->ice_session);
-					ice_session_choose_default_candidates(call->ice_session);
-				}
-				params = linphone_call_params_copy(linphone_call_get_current_params(call));
-				linphone_call_params_enable_video(params, TRUE);
-				if (call->state == LinphoneCallStreamsRunning) {
-					linphone_core_update_call(call->core, call, params);
-				} else {	/* LinphoneCallUpdatedByRemote */
-					linphone_core_accept_call_update(call->core, call, params);
-				}
-				linphone_call_params_destroy(params);
+				linphone_core_start_accept_call_update(call->core, call);
 				break;
 			case LinphoneCallOutgoingInit:
+				linphone_call_stop_media_streams(call);
+				linphone_core_start_invite(call->core, call, NULL);
+				break;
 			default:
 				linphone_call_stop_media_streams(call);
-				if (evd->info.ice_processing_successful==TRUE) {
-					ice_session_compute_candidates_foundations(call->ice_session);
-					ice_session_eliminate_redundant_candidates(call->ice_session);
-					ice_session_choose_default_candidates(call->ice_session);
-				} else {
-					linphone_call_delete_ice_session(call);
-				}
-				if (call->state==LinphoneCallOutgoingInit) {
-					linphone_core_start_invite(call->core,call,NULL);
-				} else {
-					linphone_core_notify_incoming_call(call->core,call);
-				}
+				linphone_core_notify_incoming_call(call->core, call);
 				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
-		SalMediaDescription *md;
-		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-		sal_call_set_local_media_description(call->op,call->localdesc);
-		sal_call_accept(call->op);
-		md=sal_call_get_final_media_description(call->op);
-		if (md && !sal_media_description_empty(md))
-			linphone_core_update_streams (call->core,call,md);
-		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+		linphone_core_start_accept_call_update(call->core, call);
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
 		ice_session_restart(call->ice_session);
 		ice_session_set_role(call->ice_session, IR_Controlling);
