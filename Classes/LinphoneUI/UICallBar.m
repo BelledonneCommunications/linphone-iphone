@@ -218,8 +218,6 @@
     [option3Button.titleLabel setLineBreakMode:UILineBreakModeWordWrap];
     [option3Button.titleLabel setTextAlignment:UITextAlignmentCenter];
     
-    [optionsView setHidden:TRUE];
-    [padView setHidden:TRUE];
     [super viewDidLoad];
 }
 
@@ -240,8 +238,8 @@
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
     [self castelCommandsUpdate:[[LinphoneManager instance] castelCommands]];
-    [self hideOptions];
-    [self hidePad];
+    [self hideOptions:FALSE];
+    [self hidePad:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -334,8 +332,8 @@
         LinphoneCallError:
         LinphoneCallIncoming:
         LinphoneCallOutgoing:
-            [self hidePad];
-            [self hideOptions];
+            [self hidePad:TRUE];
+            [self hideOptions:TRUE];
         default:
             break;
     }
@@ -344,112 +342,121 @@
 
 #pragma mark -  
 
-- (void)showPad{
+- (void)showPad:(BOOL)animated {
     [dialerButton setOn];
     if([padView isHidden]) {
-        CGRect frame = [padView frame];
-        int original_y = frame.origin.y;
-        frame.origin.y = [[self view] frame].size.height;
-        [padView setFrame:frame];
-        [padView setHidden:FALSE];
-        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                     [[CPAnimationStep after:0.0 
-                                                         for:0.5
-                                                     options:UIViewAnimationOptionCurveEaseOut
-                                                     animate:^{ 
+        if(animated) {
             CGRect frame = [padView frame];
-            frame.origin.y = original_y;
-            [padView setFrame:frame]; 
-        }] autorelease],
-                                     nil
-                                     ] autorelease];
-        [move run];
+            int original_y = frame.origin.y;
+            frame.origin.y = [[self view] frame].size.height;
+            [padView setFrame:frame];
+            [padView setHidden:FALSE];
+            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                          [[CPAnimationStep after:0.0
+                                                              for:0.5
+                                                          options:UIViewAnimationOptionCurveEaseOut
+                                                          animate:^{
+                                                              CGRect frame = [padView frame];
+                                                              frame.origin.y = original_y;
+                                                              [padView setFrame:frame];
+                                                          }] autorelease],
+                                          nil
+                                          ] autorelease];
+            [move run];
+        } else {
+            [padView setHidden:FALSE];
+        }
     }
 }
 
-- (void)hidePad{
+- (void)hidePad:(BOOL)animated {
     [dialerButton setOff];
     if(![padView isHidden]) {
-        CGRect frame = [padView frame];
-        int original_y = frame.origin.y;
-    
-        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                      [[CPAnimationStep after:0.0 
-                                                          for:0.5
-                                                      options:UIViewAnimationOptionCurveEaseIn
-                                                      animate:^{ 
+        if(animated) {
             CGRect frame = [padView frame];
-            frame.origin.y = [[self view] frame].size.height;
-            [padView setFrame:frame]; 
-        }] autorelease],
-                                     [[CPAnimationStep after:0.0 
-                                                     animate:^{ 
-            CGRect frame = [padView frame];
-            frame.origin.y = original_y;
+            int original_y = frame.origin.y;
+            
+            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                          [[CPAnimationStep after:0.0
+                                                              for:0.5
+                                                          options:UIViewAnimationOptionCurveEaseIn
+                                                          animate:^{
+                                                              CGRect frame = [padView frame];
+                                                              frame.origin.y = [[self view] frame].size.height;
+                                                              [padView setFrame:frame];
+                                                          }] autorelease],
+                                          [[CPAnimationStep after:0.0
+                                                          animate:^{
+                                                              CGRect frame = [padView frame];
+                                                              frame.origin.y = original_y;
+                                                              [padView setHidden:TRUE];
+                                                              [padView setFrame:frame]; 
+                                                          }] autorelease], 
+                                          nil
+                                          ] autorelease];
+            [move run];
+        } else {
             [padView setHidden:TRUE];
-            [padView setFrame:frame]; 
-        }] autorelease], 
-                                     nil
-                                     ] autorelease];
-    [move run];
+        }
     }
 }
 
-- (void)showOptions{
+- (void)showOptions:(BOOL)animated {
     [optionsButton setOn];
     if([optionsView isHidden]) {
-        CGRect frame = [optionsView frame];
-        int original_y = frame.origin.y;
-        frame.origin.y = [[self view] frame].size.height;
-        [optionsView setFrame:frame];
-        [optionsView setHidden:FALSE];
-        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                      [[CPAnimationStep after:0.0
-                                                          for:0.5 
-                                                      options:UIViewAnimationOptionCurveEaseOut
-                                                      animate:^{ 
+        if(animated) {
             CGRect frame = [optionsView frame];
-            frame.origin.y = original_y;
-            [optionsView setFrame:frame]; 
-        }] autorelease],
-                                      nil
-                                      ] autorelease];
-        [move run];
+            int original_y = frame.origin.y;
+            frame.origin.y = [[self view] frame].size.height;
+            [optionsView setFrame:frame];
+            [optionsView setHidden:FALSE];
+            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                          [[CPAnimationStep after:0.0
+                                                              for:0.5
+                                                          options:UIViewAnimationOptionCurveEaseOut
+                                                          animate:^{
+                                                              CGRect frame = [optionsView frame];
+                                                              frame.origin.y = original_y;
+                                                              [optionsView setFrame:frame];
+                                                          }] autorelease],
+                                          nil
+                                          ] autorelease];
+            [move run];
+        } else {
+            [optionsView setHidden:FALSE];
+        }
     }
 }
 
-- (void)hideOptions{
+- (void)hideOptions:(BOOL)animated {
     [optionsButton setOff];
     if(![optionsView isHidden]) {
-        CGRect frame = [optionsView frame];
-        int original_y = frame.origin.y;
-        
-        CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                      [[CPAnimationStep after:0.0
-                                                          for:0.5
-                                                      options:UIViewAnimationOptionCurveEaseIn
-                                                      animate:^{ 
+        if(animated) {
             CGRect frame = [optionsView frame];
-            frame.origin.y = [[self view] frame].size.height;
-            [optionsView setFrame:frame]; 
-        }] autorelease],
-                                      [[CPAnimationStep after:0.0 
-                                                      animate:^{ 
-            CGRect frame = [optionsView frame];
-            frame.origin.y = original_y;
+            int original_y = frame.origin.y;
+            
+            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
+                                          [[CPAnimationStep after:0.0
+                                                              for:0.5
+                                                          options:UIViewAnimationOptionCurveEaseIn
+                                                          animate:^{
+                                                              CGRect frame = [optionsView frame];
+                                                              frame.origin.y = [[self view] frame].size.height;
+                                                              [optionsView setFrame:frame];
+                                                          }] autorelease],
+                                          [[CPAnimationStep after:0.0
+                                                          animate:^{ 
+                                                              CGRect frame = [optionsView frame];
+                                                              frame.origin.y = original_y;
+                                                              [optionsView setHidden:TRUE];
+                                                              [optionsView setFrame:frame]; 
+                                                          }] autorelease], 
+                                          nil
+                                          ] autorelease];
+            [move run];
+        } else {
             [optionsView setHidden:TRUE];
-            [optionsView setFrame:frame]; 
-        }] autorelease], 
-                                      nil
-                                      ] autorelease];
-        [move run];
-    }
-}
-
-- (void)sendCastelCommand:(NSString *)command {
-    static const NSString *CASTEL_COMMAND_PREFIX = @"MediaCommand";
-    if(command && [command hasPrefix:@"MediaCommand"] && [command length] > [CASTEL_COMMAND_PREFIX length]) {
-        linphone_core_send_dtmf([LinphoneManager getLc], [command characterAtIndex:[CASTEL_COMMAND_PREFIX length]]);
+        }
     }
 }
 
@@ -458,14 +465,14 @@
 
 - (IBAction)onPadClick:(id)sender {
     if([padView isHidden]) {
-        [self showPad];
+        [self showPad:TRUE];
     } else {
-        [self hidePad];
+        [self hidePad:TRUE];
     }
 }
 
 - (IBAction)onOptionsTransferClick:(id)sender {
-    [self hideOptions];
+    [self hideOptions:TRUE];
     /* MODIFICATION: Disable tansfer
     // Go to dialer view   
     DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
@@ -477,7 +484,7 @@
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
-    [self hideOptions];
+    [self hideOptions:TRUE];
     // Go to dialer view   
     DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
     if(controller != nil) {
@@ -488,33 +495,9 @@
 
 - (IBAction)onOptionsClick:(id)sender {
     if([optionsView isHidden]) {
-        [self showOptions];
+        [self showOptions:TRUE];
     } else {
-        [self hideOptions];
-    }
-}
-
-- (IBAction)onOption1Click:(id)sender {
-    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
-    if(dict) {
-        NSString *command = [dict objectForKey:[option1Button titleForState:UIControlStateNormal]];
-        [self sendCastelCommand:command];
-    }
-}
-
-- (IBAction)onOption2Click:(id)sender {
-    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
-    if(dict) {
-        NSString *command = [dict objectForKey:[option2Button titleForState:UIControlStateNormal]];
-        [self sendCastelCommand:command];
-    }
-}
-
-- (IBAction)onOption3Click:(id)sender {
-    NSDictionary *dict = [[LinphoneManager instance] castelCommands];
-    if(dict) {
-        NSString *command = [dict objectForKey:[option3Button titleForState:UIControlStateNormal]];
-        [self sendCastelCommand:command];
+        [self hideOptions:TRUE];
     }
 }
 
