@@ -643,6 +643,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 			strncpy(stream->ice_ufrag, ice_check_list_local_ufrag(cl), sizeof(stream->ice_ufrag));
 		else
 			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
+		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
 		if ((cl->state == ICL_Running) || (cl->state == ICL_Completed)) {
 			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
 			for (j = 0; j < ms_list_size(cl->local_candidates); j++) {
@@ -685,6 +686,18 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 			stream->ice_remote_candidates[1].port = rtcp_port;
 		}
 	}
+}
+
+static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port)
+{
+	if (componentID == 1) {
+		*addr = stream->rtp_addr;
+		*port = stream->rtp_port;
+	} else if (componentID == 2) {
+		*addr = stream->rtcp_addr;
+		*port = stream->rtcp_port;
+	} else return;
+	if ((*addr)[0] == '\0') *addr = md->addr;
 }
 
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
@@ -740,13 +753,8 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 					const char *addr = NULL;
 					int port = 0;
 					if (candidate->addr[0] == '\0') break;
-					if (candidate->componentID == 1) {
-						addr = stream->rtp_addr;
-						port = stream->rtp_port;
-					} else if (candidate->componentID == 2) {
-						addr = stream->rtcp_addr;
-						port = stream->rtcp_port;
-					} else continue;
+					if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
+					get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
 					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
 						default_candidate = TRUE;
 					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
@@ -758,15 +766,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 					int port = 0;
 					int componentID = j + 1;
 					if (candidate->addr[0] == '\0') break;
-					ms_error("handle remote-candidates attribute");
-					if (componentID == 1) {
-						addr = stream->rtp_addr;
-						port = stream->rtp_port;
-					} else if (componentID == 2) {
-						addr = stream->rtcp_addr;
-						port = stream->rtcp_port;
-					} else continue;
-					if (addr[0] == '\0') addr = md->addr;
+					get_default_addr_and_port(componentID, md, stream, &addr, &port);
 					ice_add_losing_pair(ice_session_check_list(call->ice_session, i), j + 1, candidate->addr, candidate->port, addr, port);
 				}
 			}
@@ -774,6 +774,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		for (i = ice_session_nb_check_lists(call->ice_session); i > md->nstreams; i--) {
 			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
 		}
+		ice_session_check_mismatch(call->ice_session);
 	}
 	if ((ice_session_state(call->ice_session) == IS_Failed) || (ice_session_nb_check_lists(call->ice_session) == 0)) {
 		linphone_call_delete_ice_session(call);
