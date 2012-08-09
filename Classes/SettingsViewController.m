@@ -187,11 +187,6 @@
     return self;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES]; // Fix IOS4 issue
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     
@@ -280,8 +275,11 @@
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [UINavigationControllerEx removeBackground:viewController.view];
-    
-    [viewController viewWillAppear:FALSE]; // Force load: Load Title
+    UIViewController *oldTopViewController = self.topViewController;
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [oldTopViewController viewWillDisappear:animated];
+    }
+    [viewController viewWillAppear:animated]; // Force view
     UILabel *labelTitleView = [[UILabel alloc] init];
     labelTitleView.backgroundColor = [UIColor clearColor];
     labelTitleView.textColor = [UIColor colorWithRed:0x41/255.0f green:0x48/255.0f blue:0x4f/255.0f alpha:1.0];
@@ -294,6 +292,28 @@
     viewController.navigationItem.titleView = labelTitleView;
     
     [super pushViewController:viewController animated:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [self.topViewController viewDidAppear:animated];
+        [oldTopViewController viewDidDisappear:animated];
+    }
+}
+
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [self.topViewController viewWillDisappear:animated];
+        UIViewController *nextView = nil;
+        int count = [self.viewControllers count];
+        if(count > 1) {
+            nextView = [self.viewControllers objectAtIndex:count - 2];
+        }
+        [nextView viewWillAppear:animated];
+    }
+    UIViewController * ret = [super popViewControllerAnimated:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [ret viewDidDisappear:animated];
+        [self.topViewController viewDidAppear:animated];
+    }
+    return ret;
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers {
@@ -372,9 +392,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillDisappear:animated];
-    }
     [settingsController dismiss:self];
     // Set observer
     [[NSNotificationCenter defaultCenter] removeObserver:self 
@@ -384,28 +401,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewWillAppear:animated];
-    }   
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(appSettingChanged:) 
                                                  name:kIASKAppSettingChanged
                                                object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidAppear:animated];
-    }   
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [settingsController viewDidDisappear:animated];
-    }  
 }
 
 
@@ -495,4 +495,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
 }
 
+- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
+    NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
+#ifdef DEBUG
+    if([key isEqual:@"release_button"]) {
+    }
+#endif
+}
 @end

@@ -178,7 +178,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>Release_button</string>
+			<string>release_button</string>
 			<key>Title</key>
 			<string>Release</string>
 			<key>Type</key>
