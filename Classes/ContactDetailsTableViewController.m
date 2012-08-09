@@ -63,6 +63,9 @@ enum _ContactSections {
 
 static const int contactSections[ContactSections_MAX] = {ContactSections_Number, ContactSections_Sip};
 
+@synthesize footerController;
+@synthesize headerController;
+@synthesize contactDetailsDelegate;
 @synthesize contact;
 
 #pragma mark - Lifecycle Functions
@@ -74,8 +77,6 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
                   [NSString stringWithString:(NSString*)kABPersonPhoneMobileLabel], 
                   [NSString stringWithString:(NSString*)kABPersonPhoneIPhoneLabel],
                   [NSString stringWithString:(NSString*)kABPersonPhoneMainLabel], nil];
-    headerController = [[UIContactDetailsHeader alloc] init];
-    footerController = [[UIContactDetailsFooter alloc] init];
     editingIndexPath = nil;
 }
 
@@ -104,8 +105,6 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
     }
     [labelArray release];
     [dataCache release];
-    [headerController release];
-    [UIContactDetailsFooter release];
     
     [super dealloc];
 }
@@ -124,6 +123,15 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 
 
 #pragma mark -
+
+- (BOOL)isValid {
+    return [headerController isValid];
+}
+
+- (void)updateModification {
+    [contactDetailsDelegate onModification:nil];
+}
+
 
 + (BOOL)findAndResignFirstResponder:(UIView*)view {
     if (view.isFirstResponder) {
@@ -212,7 +220,10 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
         }
         [dataCache addObject:subArray];
     }
-    
+
+    if(contactDetailsDelegate != nil) {
+        [contactDetailsDelegate onModification:nil];
+    }
     [self.tableView reloadData];
 }
 
@@ -286,6 +297,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
         }
         [tableview insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:count inSection:section]] withRowAnimation:UITableViewRowAnimationFade];
     }
+    if(contactDetailsDelegate != nil) {
+        [contactDetailsDelegate onModification:nil];
+    }
 }
 
 - (void)removeEmptyEntry:(UITableView*)tableview section:(NSInteger)section animated:(BOOL)animated {
@@ -313,6 +327,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
             CFRelease(lDict);
             CFRelease(lMap);
         }
+    }
+    if(contactDetailsDelegate != nil) {
+        [contactDetailsDelegate onModification:nil];
     }
 }
 
@@ -652,6 +669,13 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if(contactDetailsDelegate != nil) {
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+    }
+    return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];    
     return YES;
@@ -691,6 +715,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
         [cell.detailTextLabel setText:value];
     } else {
         [LinphoneLogger logc:LinphoneLoggerError format:"Not valid UIEditableTableViewCell"];
+    }
+    if(contactDetailsDelegate != nil) {
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
     }
     return TRUE;
 }

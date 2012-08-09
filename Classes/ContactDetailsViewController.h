@@ -21,10 +21,10 @@
 #import <AddressBook/AddressBook.h>
 
 #import "UICompositeViewController.h"
-#import "ContactDetailsTableViewController.h"
 #import "UIToggleButton.h"
+#import "ContactDetailsTableViewController.h"
 
-@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate> {
+@interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate, ContactDetailsDelegate> {
     ContactDetailsTableViewController *tableController;
     ABRecordRef contact;
     UIToggleButton *editButton;

@@ -31,15 +31,36 @@
 @synthesize normalView;
 @synthesize editView;
 @synthesize tableView;
+@synthesize contactDetailsDelegate;
 
 #pragma mark - Lifecycle Functions
 
+- (void)initUIContactDetailsHeader {
+    propertyList = [[NSArray alloc] initWithObjects:
+                    [NSNumber numberWithInt:kABPersonFirstNameProperty],
+                    [NSNumber numberWithInt:kABPersonLastNameProperty], nil];
+}
+
 - (id)init {
-    self = [super initWithNibName:@"UIContactDetailsHeader" bundle:[NSBundle mainBundle]];
+    self = [super init];
     if(self != nil) {
-        self->propertyList = [[NSArray alloc] initWithObjects:
-                        [NSNumber numberWithInt:kABPersonFirstNameProperty], 
-                        [NSNumber numberWithInt:kABPersonLastNameProperty], nil];
+        [self initUIContactDetailsHeader];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self != nil) {
+        [self initUIContactDetailsHeader];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if(self != nil) {
+        [self initUIContactDetailsHeader];
     }
     return self;
 }
@@ -73,7 +94,16 @@
 }
 
 
-#pragma mark - 
+#pragma mark -
+
+- (BOOL)isValid {
+    for (int i = 0; i < [propertyList count]; ++i) {
+        UIEditableTableViewCell *cell = (UIEditableTableViewCell *)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        if([cell.detailTextField.text length] > 0)
+            return true;
+    }
+    return false;
+}
 
 - (void)update {
     if(contact == NULL) {
@@ -154,6 +184,9 @@
     return editing;
 }
 
+- (void)updateModification {
+    [contactDetailsDelegate onModification:nil];
+}
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -213,6 +246,13 @@
     return YES;
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if(contactDetailsDelegate != nil) {
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+    }
+    return YES;
+}
+
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     UIView *view = [textField superview]; 
     // Find TableViewCell
@@ -229,6 +269,9 @@
         } 
     } else {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Not valid UIEditableTableViewCell"];
+    }
+    if(contactDetailsDelegate != nil) {
+        [self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
     }
     return TRUE;
 }

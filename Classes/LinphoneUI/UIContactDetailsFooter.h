@@ -19,12 +19,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ContactDetailsDelegate.h"
+
 @interface UIContactDetailsFooter : UIViewController {
-    @public
+@private
     UIButton *removeButton;
+    id<ContactDetailsDelegate> contactDetailsDelegate;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton *removeButton;
+@property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+
+- (IBAction)onRemoveClick:(id)event;
 
 + (CGFloat)height:(BOOL)editing;
 

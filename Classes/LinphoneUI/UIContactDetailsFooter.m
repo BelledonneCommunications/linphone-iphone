@@ -22,18 +22,51 @@
 @implementation UIContactDetailsFooter
 
 @synthesize removeButton;
+@synthesize contactDetailsDelegate;
 
 
 #pragma mark - Lifecycle Functions
 
+- (void)initUIContactDetailsFooter {
+}
+
 - (id)init {
-    return self = [super initWithNibName:@"UIContactDetailsFooter" bundle:[NSBundle mainBundle]];
+    self = [super init];
+    if(self != nil) {
+        [self initUIContactDetailsFooter];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self != nil) {
+        [self initUIContactDetailsFooter];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if(self != nil) {
+        [self initUIContactDetailsFooter];
+    }
+    return self;
 }
 
 - (void)dealloc {
     [removeButton release];
     
     [super dealloc];
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)onRemoveClick:(id)event {
+    if(contactDetailsDelegate != nil) {
+        [contactDetailsDelegate onRemove:event];
+    }
 }
 
 

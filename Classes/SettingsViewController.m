@@ -451,6 +451,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     NSMutableSet *hiddenKeys = [NSMutableSet set];
     
+#ifndef DEBUG
+    [hiddenKeys addObject:@"release_button"];
+#endif
+    
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
     [hiddenKeys addObject:@"about_button"]; // Hide for the moment
     
