@@ -485,6 +485,9 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_playback_gain_db (lc,gain);
 
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
+
+	/*just parse requested stream feature once at start to print out eventual errors*/
+	linphone_core_get_audio_features(lc);
 }
 
 static void sip_config_read(LinphoneCore *lc)

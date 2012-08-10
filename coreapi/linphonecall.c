@@ -518,9 +518,10 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			call->state=cstate;
 		}
 		if (cstate==LinphoneCallEnd || cstate==LinphoneCallError){
-             switch(call->reason){
+			switch(call->reason){
 				case LinphoneReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
+				break;
 				case LinphoneReasonNotAnswered:
 					call->log->status=LinphoneCallMissed;
 				break;
@@ -963,6 +964,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		int enabled=lp_config_get_int(lc->config,"sound","noisegate",0);
 		audio_stream_enable_noise_gate(audiostream,enabled);
 	}
+
+	audio_stream_set_features(audiostream,linphone_core_get_audio_features(lc));
 
 	if (lc->rtptf){
 		RtpTransport *artp=lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->audio_port);

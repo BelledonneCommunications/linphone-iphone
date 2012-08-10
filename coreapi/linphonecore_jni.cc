@@ -241,7 +241,7 @@ public:
 			return;
 		}
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
-		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,env->NewStringUTF(message));
+		env->CallVoidMethod(lcData->listener,lcData->displayStatusId,lcData->core,message ? env->NewStringUTF(message) : NULL);
 	}
 	static void displayMessageCb(LinphoneCore *lc, const char *message) {
 
@@ -596,6 +596,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setNetworkStateReachable
 		,jlong lc
 		,jboolean isReachable) {
 		linphone_core_set_network_reachable((LinphoneCore*)lc,isReachable);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isNetworkStateReachable(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		return linphone_core_is_network_reachabled((LinphoneCore*)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
@@ -1762,4 +1768,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {
 	ms_set_cpu_count(count);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
+	return jvalue;
 }

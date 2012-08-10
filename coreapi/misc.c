@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "private.h"
+#include "lpconfig.h"
 #include "mediastreamer2/mediastream.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -793,6 +794,37 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer){
 	return cfg->magic==linphone_proxy_config_magic ? cfg : NULL;
 }
 
+unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
+	unsigned int ret=0;
+	const char *features=lp_config_get_string(lc->config,"sound","features",NULL);
+	if (features){
+		char tmp[256]={0};
+		char name[256];
+		char *p,*n;
+		strncpy(tmp,features,sizeof(tmp)-1);
+		for(p=tmp;*p!='\0';p++){
+			if (*p==' ') continue;
+			n=strchr(p,'|');
+			if (n) *n='\0';
+			sscanf(p,"%s",name);
+			ms_message("Found audio feature %s",name);
+			if (strcasecmp(name,"PLC")==0) ret|=AUDIO_STREAM_FEATURE_PLC;
+			else if (strcasecmp(name,"EC")==0) ret|=AUDIO_STREAM_FEATURE_EC;
+			else if (strcasecmp(name,"EQUALIZER")==0) ret|=AUDIO_STREAM_FEATURE_EQUALIZER;
+			else if (strcasecmp(name,"VOL_SND")==0) ret|=AUDIO_STREAM_FEATURE_VOL_SND;
+			else if (strcasecmp(name,"VOL_RCV")==0) ret|=AUDIO_STREAM_FEATURE_VOL_RCV;
+			else if (strcasecmp(name,"DTMF")==0) ret|=AUDIO_STREAM_FEATURE_DTMF;
+			else if (strcasecmp(name,"DTMF_ECHO")==0) ret|=AUDIO_STREAM_FEATURE_DTMF_ECHO;
+			else if (strcasecmp(name,"ALL")==0) ret|=AUDIO_STREAM_FEATURE_ALL;
+			else if (strcasecmp(name,"NONE")==0) ret=0;
+			else ms_error("Unsupported audio feature %s requested in config file.",name);
+			if (!n) break;
+			p=n;
+		}
+	}else ret=AUDIO_STREAM_FEATURE_ALL;
+	return ret;
+}
+
 
 #ifdef HAVE_GETIFADDRS
 
@@ -913,7 +945,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 
 #ifndef WIN32
 #include <resolv.h>
-
 
 
 

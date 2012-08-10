@@ -256,9 +256,10 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 	if (proxy==NULL) return NULL;
 	host=linphone_address_get_domain (proxy);
 	if (host!=NULL){
-		LinphoneAddress *contact;
 		char localip[LINPHONE_IPADDR_SIZE];
+		char *tmp;
 		LCSipTransports tr;
+		LinphoneAddress *contact;
 		
 		linphone_core_get_local_ip(obj->lc,host,localip);
 		contact=linphone_address_new(obj->reg_identity);
@@ -274,8 +275,12 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 				sal_address_set_param(contact,"transport","tls");
 			}
 		}
-		ret=linphone_address_as_string(contact);
+		tmp=linphone_address_as_string_uri_only(contact);
+		if (obj->contact_params)
+			ret=ms_strdup_printf("<%s;%s>",tmp,obj->contact_params);
+		else ret=ms_strdup_printf("<%s>",tmp);
 		linphone_address_destroy(contact);
+		ms_free(tmp);
 	}
 	linphone_address_destroy (proxy);
 	return ret;
@@ -509,6 +514,31 @@ int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj){
 **/
 bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj){
 	return obj->reg_sendregister;
+}
+
+/**
+ * Set optional contact parameters that will be added to the contact information sent in the registration.
+ * @param obj the proxy config object
+ * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
+ *
+ * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
+ * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
+**/
+void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params){
+	if (obj->contact_params) {
+		ms_free(obj->contact_params);
+		obj->contact_params=NULL;
+	}
+	if (contact_params){
+		obj->contact_params=ms_strdup(contact_params);
+	}
+}
+
+/**
+ * Returns previously set contact parameters.
+**/
+const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj){
+	return obj->contact_params;
 }
 
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj){
