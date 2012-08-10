@@ -156,6 +156,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[nineButton    setDigit:'9'];
 	[starButton    setDigit:'*'];
 	[sharpButton   setDigit:'#'];
+    
+    [addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
 }
 
 #pragma mark - Event Functions
