@@ -841,7 +841,7 @@
 								<string key="NSFrame">{{-5, 0}, {485, 320}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="996491821"/>
+								<reference key="NSNextKeyView" ref="9290103"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<int key="IBUITag">2</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -896,7 +896,7 @@
 								<string key="NSFrame">{{284, 10}, {107, 54}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="923486394"/>
+								<reference key="NSNextKeyView" ref="345299878"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">5</int>
@@ -953,7 +953,7 @@
 								<string key="NSFrame">{{284, 72}, {107, 54}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="625010060"/>
+								<reference key="NSNextKeyView" ref="464953771"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">8</int>
@@ -1067,7 +1067,7 @@
 								<string key="NSFrame">{{284, 196}, {107, 54}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
+								<reference key="NSNextKeyView" ref="950460796"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">14</int>
@@ -1083,10 +1083,10 @@
 							<object class="IBUIButton" id="9290103">
 								<reference key="NSNextResponder" ref="408941248"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{40, 50}, {68, 48}}</string>
+								<string key="NSFrame">{{15, 50}, {68, 48}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="345299878"/>
+								<reference key="NSNextKeyView" ref="996491821"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">100</int>
@@ -1104,10 +1104,10 @@
 							<object class="IBUIButton" id="345299878">
 								<reference key="NSNextResponder" ref="408941248"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{40, 106}, {68, 48}}</string>
+								<string key="NSFrame">{{15, 106}, {68, 48}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="464953771"/>
+								<reference key="NSNextKeyView" ref="923486394"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">101</int>
@@ -1125,9 +1125,10 @@
 							<object class="IBUIButton" id="464953771">
 								<reference key="NSNextResponder" ref="408941248"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{40, 162}, {68, 48}}</string>
+								<string key="NSFrame">{{15, 162}, {68, 48}}</string>
 								<reference key="NSSuperview" ref="408941248"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="625010060"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">102</int>
