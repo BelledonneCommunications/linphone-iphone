@@ -164,11 +164,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    if(mainViewController != nil) {
-        return [mainViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-    } else {
+    if(interfaceOrientation == self.interfaceOrientation)
         return YES;
-    }
+    return NO;
 }
 
 /* 
@@ -219,7 +217,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
         }
         [controller didRotateFromInterfaceOrientation:oldOrientation];
     }
-    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:TRUE];
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {

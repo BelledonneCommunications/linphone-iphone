@@ -75,7 +75,7 @@
     }
 	if (addressField && (!dtmf || !linphone_core_in_call([LinphoneManager getLc]))) {
 		NSString* newAddress = [NSString stringWithFormat:@"%@%c",addressField.text, digit];
-		[addressField setText:newAddress];	
+		[addressField setText:newAddress];
 		linphone_core_play_dtmf([LinphoneManager getLc], digit, -1);
 	} else {
 		linphone_core_send_dtmf([LinphoneManager getLc], digit);
@@ -101,7 +101,6 @@
     if (digit == '0') {
         NSString* newAddress = [[addressField.text substringToIndex: [addressField.text length]-1]  stringByAppendingString:@"+"];
         [addressField setText:newAddress];
-        [addressField sendActionsForControlEvents:UIControlEventEditingChanged];
     }
 }
 
