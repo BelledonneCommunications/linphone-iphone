@@ -1471,9 +1471,11 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call){
 	audio_stream_prepare_sound(call->audiostream, NULL, NULL);
+#ifdef VIDEO_ENABLED
 	if (call->videostream) {
 		video_stream_prepare_video(call->videostream);
 	}
+#endif
 }
 
 void linphone_call_delete_ice_session(LinphoneCall *call){

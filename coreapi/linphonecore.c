@@ -2503,6 +2503,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
+#ifdef VIDEO_ENABLED
 		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
 			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
 			call->videostream->ice_check_list = NULL;
@@ -2521,6 +2522,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 				} else return err;
 			}
 		}
+#endif
 		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
@@ -2616,6 +2618,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+#ifdef VIDEO_ENABLED
 		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
 				linphone_call_init_video_stream(call);
@@ -2626,6 +2629,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 				} else return 0;
 			}
 		}
+#endif
 	}
 	linphone_core_start_accept_call_update(lc, call);
 	return 0;
