@@ -56,12 +56,13 @@
 @implementation ContactDetailsTableViewController
 
 enum _ContactSections {
-    ContactSections_Number = 0,
+    ContactSections_None = 0,
+    ContactSections_Number,
     ContactSections_Sip,
     ContactSections_MAX
 };
 
-static const int contactSections[ContactSections_MAX] = {ContactSections_Number, ContactSections_Sip};
+static const int contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number, ContactSections_Sip};
 
 @synthesize footerController;
 @synthesize headerController;
@@ -370,6 +371,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
     }
     self->contact = acontact;
     [self loadData];
+    [headerController setContact:contact];
 }
 
 - (void)addSipField:(NSString*)address {
@@ -551,18 +553,23 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
     if(!editing) {
         [ContactDetailsTableViewController findAndResignFirstResponder:[self tableView]];
     }
-    
-    [super setEditing:editing animated:animated];
+
+    [headerController setEditing:editing animated:animated];
+    [footerController setEditing:editing animated:animated];
     
     if(animated) {
         [self.tableView beginUpdates];
     }
     if(editing) {
-        for (int section = 0; section <[self numberOfSectionsInTableView:[self tableView]]; ++section) {
+        for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
+            if(contactSections[section] == ContactSections_Number ||
+               contactSections[section] == ContactSections_Sip)
             [self addEntry:self.tableView section:section animated:animated];
         }
     } else {
-        for (int section = 0; section <[self numberOfSectionsInTableView:[self tableView]]; ++section) {
+        for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
+            if(contactSections[section] == ContactSections_Number ||
+               contactSections[section] == ContactSections_Sip)
             [self removeEmptyEntry:self.tableView section:section animated:animated];
         }
     }
@@ -570,8 +577,10 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
         [self.tableView endUpdates];
     }
     
-    [headerController setEditing:editing animated:animated];
-    [footerController setEditing:editing animated:animated];
+    [super setEditing:editing animated:animated];
+    if(contactDetailsDelegate != nil) {
+        [contactDetailsDelegate onModification:nil];
+    }
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -583,11 +592,8 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {   
-    if(section == 0) {
-        UIView *headerView = [headerController view];
-        [headerController setContact:contact];
-        [headerController setEditing:[self isEditing] animated:FALSE];
-        return headerView;
+    if(section == ContactSections_None) {
+        return [headerController view];
     } else {
         return nil;
     }
@@ -595,8 +601,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {   
     if(section == (ContactSections_MAX - 1)) {
-        UIView *footerView = [footerController view];
-        return footerView;
+        return [footerController view];
     } else {
         return nil;
     }
@@ -606,7 +611,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
     if(contactSections[section] == ContactSections_Number) {
         return NSLocalizedString(@"Phone numbers", nil);
     } else if(contactSections[section] == ContactSections_Sip) {
-        return NSLocalizedString(@"SIP", nil);
+        return NSLocalizedString(@"SIP addresses", nil);
     }
     return nil;
 }
@@ -616,8 +621,8 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section { 
-    if(section == 0) {
-        return [UIContactDetailsHeader height:[self isEditing]];
+    if(section == ContactSections_None) {
+        return [UIContactDetailsHeader height:[headerController isEditing]];
     } else {
         // Hide section if nothing in it
         if([[self getSectionData:section] count] > 0)
@@ -628,8 +633,10 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_Number,
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section { 
-    if(section != 0) {
-         return [UIContactDetailsFooter height:[self isEditing]];
+    if(section == (ContactSections_MAX - 1)) {
+         return [UIContactDetailsFooter height:[footerController isEditing]];
+    } else if(section == ContactSections_None) {
+        return 0.000001f; // Hack UITableView = 0
     }
     return 10.0f;
 }

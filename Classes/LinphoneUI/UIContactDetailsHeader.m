@@ -39,6 +39,7 @@
     propertyList = [[NSArray alloc] initWithObjects:
                     [NSNumber numberWithInt:kABPersonFirstNameProperty],
                     [NSNumber numberWithInt:kABPersonLastNameProperty], nil];
+    editing = FALSE;
 }
 
 - (id)init {
@@ -83,6 +84,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     removeTableBackground(tableView); // Can't do it in Xib: issue with ios4
+    [normalView setAlpha:1.0f];
+    [editView setAlpha:0.0f];
+    [tableView setEditing:TRUE animated:false];
 }
 
 
@@ -159,16 +163,11 @@
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.3];
     }
-    [tableView setEditing:editing animated:animated];
     if(editing) {
-        CGRect frame = [editView frame];
-        frame.size.height = [UIContactDetailsHeader height:editing];
-        [editView setFrame:frame];
+        [editView setAlpha:1.0f];
         [normalView setAlpha:0.0f];
     } else {
-        CGRect frame = [editView frame];
-        frame.size.height = 0;
-        [editView setFrame:frame];
+        [editView setAlpha:0.0f];
         [normalView setAlpha:1.0f]; 
     }
     if(animated) {
