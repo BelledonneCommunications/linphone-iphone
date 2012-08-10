@@ -220,6 +220,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    //[textField performSelector:@selector() withObject:nil afterDelay:0];
+    return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == addressField) {
         [addressField resignFirstResponder];

@@ -159,6 +159,14 @@ struct codec_name_pref_table codec_pref_table[]={
 	return theLinphoneManager;
 }
 
+#ifdef DEBUG
++ (void)instanceRelease {
+    if(theLinphoneManager != nil) {
+        [theLinphoneManager release];
+        theLinphoneManager = nil;
+    }
+}
+#endif
 
 #pragma mark - Lifecycle Functions
 
@@ -420,18 +428,17 @@ static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *ro
 
 #pragma mark - Network Functions
 
-- (void)kickOffNetworkConnection {
++ (void)kickOffNetworkConnection {
 	/*start a new thread to avoid blocking the main ui in case of peer host failure*/
-	[NSThread detachNewThreadSelector:@selector(runNetworkConnection) toTarget:self withObject:nil];
-}
-
-- (void)runNetworkConnection {
-	CFWriteStreamRef writeStream;
-	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
-	CFWriteStreamOpen (writeStream);
-	const char* buff="hello";
-	CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
-	CFWriteStreamClose (writeStream);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        CFWriteStreamRef writeStream;
+        CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
+        CFWriteStreamOpen (writeStream);
+        const char* buff="hello";
+        CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+        CFWriteStreamClose (writeStream);
+        CFRelease(writeStream);
+    });
 }	
 
 static void showNetworkFlags(SCNetworkReachabilityFlags flags){
@@ -468,7 +475,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		if ((flags == 0) || (flags & networkDownFlags)) {
 			linphone_core_set_network_reachable([LinphoneManager getLc],false);
 			lLinphoneMgr.connectivity = none;
-			[[LinphoneManager instance] kickOffNetworkConnection];
+			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
 			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","wifi_only_preference",FALSE);
@@ -689,6 +696,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
+    if (settingsStore != nil) {
+        [settingsStore release];
+        settingsStore = nil;
+    }
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
@@ -732,7 +743,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 																   return;
 															   }
 															   //kick up network cnx, just in case
-															   [self kickOffNetworkConnection];
+															   [LinphoneManager kickOffNetworkConnection];
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }

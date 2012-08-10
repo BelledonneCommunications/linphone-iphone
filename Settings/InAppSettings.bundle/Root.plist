@@ -184,6 +184,14 @@
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
+		<dict>
+			<key>Key</key>
+			<string>clear_cache_button</string>
+			<key>Title</key>
+			<string>Clear cache</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

@@ -172,6 +172,7 @@ void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void
 - (void)dealloc {
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
+    [addressBookMap release];
     [super dealloc];
 }
 

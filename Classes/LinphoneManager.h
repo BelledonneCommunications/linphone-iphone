@@ -76,7 +76,10 @@ typedef struct _LinphoneCallAppData {
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
-+ (LinphoneManager*) instance;
++ (LinphoneManager*)instance;
+#ifdef DEBUG
++ (void)instanceRelease;
+#endif
 + (LinphoneCore*) getLc;
 + (BOOL)isLcReady;
 + (BOOL)runningOnIpad;
@@ -90,7 +93,7 @@ typedef struct _LinphoneCallAppData {
 - (BOOL)resignActive;
 - (void)becomeActive;
 
-- (void)kickOffNetworkConnection;
++ (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
 
 - (void)refreshRegisters;

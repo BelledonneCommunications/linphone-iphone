@@ -175,7 +175,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
     [singleFingerTap setNumberOfTapsRequired:1];
     [singleFingerTap setCancelsTouchesInView: FALSE];
-    [[[UIApplication sharedApplication].delegate window] addGestureRecognizer:singleFingerTap];
+    [[PhoneMainView instance].view addGestureRecognizer:singleFingerTap];
     [singleFingerTap release];
     
     videoZoomHandler = [[VideoZoomHandler alloc] init];
@@ -535,7 +535,7 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
                                            otherButtonTitles:nil];
     
     visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    [visibleActionSheet showInView:[[UIApplication sharedApplication].delegate window]];
+    [visibleActionSheet showInView:[PhoneMainView instance].view];
     
     /* start cancel timer */
     cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];

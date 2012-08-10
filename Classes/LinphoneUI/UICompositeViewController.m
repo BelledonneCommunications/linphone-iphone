@@ -79,12 +79,22 @@
 }
 
 @end
+@interface UICompositeViewController ()
+
+@property (nonatomic, retain) UIViewController *stateBarViewController;
+@property (nonatomic, retain) UIViewController *tabBarViewController;
+@property (nonatomic, retain) UIViewController *contentViewController;
+
+@end
 
 @implementation UICompositeViewController
 
 @synthesize stateBarView;
 @synthesize contentView;
 @synthesize tabBarView;
+@synthesize tabBarViewController = _tabBarViewController;
+@synthesize stateBarViewController = _stateBarViewController;
+@synthesize contentViewController = _contentViewController;
 
 @synthesize viewTransition;
 
@@ -123,13 +133,33 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [self.stateBarViewController release];
+    [self.tabBarViewController release];
+    [self.contentViewController release];
+    
     [contentView release];
     [stateBarView release];
     [tabBarView release];
-    [viewControllerCache removeAllObjects];
+    [viewControllerCache release];
+    [viewTransition release];
     [currentViewDescription release];
     
     [super dealloc];
+}
+
+
+#pragma mark - Property Functions
+
+- (UIViewController*)stateBarViewController {
+    return _stateBarViewController;
+}
+
+- (UIViewController*)contentViewController {
+    return _contentViewController;
+}
+
+- (UIViewController*)tabBarViewController {
+    return _tabBarViewController;
 }
 
 
@@ -147,56 +177,56 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [contentViewController viewWillAppear:animated];
-    [tabBarViewController viewWillAppear:animated];
-    [stateBarViewController viewWillAppear:animated];
+    [self.contentViewController viewWillAppear:animated];
+    [self.tabBarViewController viewWillAppear:animated];
+    [self.stateBarViewController viewWillAppear:animated];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [contentViewController viewDidAppear:animated];
-    [tabBarViewController viewDidAppear:animated];
-    [stateBarViewController viewDidAppear:animated];
+    [self.contentViewController viewDidAppear:animated];
+    [self.tabBarViewController viewDidAppear:animated];
+    [self.stateBarViewController viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [contentViewController viewWillDisappear:animated];
-    [tabBarViewController viewWillDisappear:animated];
-    [stateBarViewController viewWillDisappear:animated];
+    [self.contentViewController viewWillDisappear:animated];
+    [self.tabBarViewController viewWillDisappear:animated];
+    [self.stateBarViewController viewWillDisappear:animated];
     
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [contentViewController viewDidDisappear:animated];
-    [tabBarViewController viewDidDisappear:animated];
-    [stateBarViewController viewDidDisappear:animated];
+    [self.contentViewController viewDidDisappear:animated];
+    [self.tabBarViewController viewDidDisappear:animated];
+    [self.stateBarViewController viewDidDisappear:animated];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     currentOrientation = [self getCorrectInterfaceOrientation:toInterfaceOrientation];
     [super willRotateToInterfaceOrientation:currentOrientation duration:duration];
-    [contentViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
-    [tabBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
-    [stateBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [self.contentViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [self.tabBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
+    [self.stateBarViewController willRotateToInterfaceOrientation:currentOrientation duration:duration];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
-    [contentViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
-    [tabBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
-    [stateBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [self.contentViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [self.tabBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
+    [self.stateBarViewController willAnimateRotationToInterfaceOrientation:currentOrientation duration:duration];
     [self update:nil tabBar:nil stateBar:nil fullscreen:nil];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    [contentViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    [tabBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    [stateBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self.contentViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self.tabBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self.stateBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -217,6 +247,10 @@
 
 
 #pragma mark - 
+
+- (void)clearCache {
+    [viewControllerCache removeAllObjects];
+}
 
 - (UIInterfaceOrientation)currentOrientation {
     return currentOrientation;
@@ -251,7 +285,7 @@
     if(name != nil) {
         controller = [viewControllerCache objectForKey:name];
         if(controller == nil) {
-            controller = [[NSClassFromString(name) alloc] init];
+            controller = [[[NSClassFromString(name) alloc] init] autorelease];
             [viewControllerCache setValue:controller forKey:name];
             [controller view]; // Load the view
         }
@@ -327,26 +361,29 @@
     [super willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
     [super didRotateFromInterfaceOrientation:orientation];
     
-    orientation = contentViewController.interfaceOrientation;
-    [contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-    [contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-    [contentViewController didRotateFromInterfaceOrientation:orientation];
+    orientation = self.contentViewController.interfaceOrientation;
+    [self.contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+    [self.contentViewController didRotateFromInterfaceOrientation:orientation];
 
-    orientation = tabBarViewController.interfaceOrientation;
-    [tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-    [tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-    [tabBarViewController didRotateFromInterfaceOrientation:orientation];
+    orientation = self.tabBarViewController.interfaceOrientation;
+    [self.tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+    [self.tabBarViewController didRotateFromInterfaceOrientation:orientation];
     
-    orientation = stateBarViewController.interfaceOrientation;
-    [stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-    [stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-    [stateBarViewController didRotateFromInterfaceOrientation:orientation];
+    orientation = self.stateBarViewController.interfaceOrientation;
+    [self.stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+    [self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+    [self.stateBarViewController didRotateFromInterfaceOrientation:orientation];
 }
 
 #define IPHONE_STATUSBAR_HEIGHT 20
 
 - (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar  stateBar:(NSNumber*)stateBar fullscreen:(NSNumber*)fullscreen {
     
+    UIViewController *oldContentViewController = self.contentViewController;
+    UIViewController *oldStateBarViewController = self.stateBarViewController;
+    UIViewController *oldTabBarViewController = self.tabBarViewController;
     // Copy view description
     UICompositeViewDescription *oldViewDescription = nil;
 
@@ -369,18 +406,22 @@
                 [tabBarView.layer addAnimation:viewTransition forKey:@"transition"];
             }
         }
-        
-        [UICompositeViewController removeSubView: contentViewController];
-        if(oldViewDescription != nil && tabBarViewController != nil && oldViewDescription.tabBar != currentViewDescription.tabBar) {
-            [UICompositeViewController removeSubView: tabBarViewController];
-        }
-        if(oldViewDescription != nil && stateBarViewController != nil && oldViewDescription.stateBar != currentViewDescription.stateBar) {
-            [UICompositeViewController removeSubView: stateBarViewController];
-        }
 
-        stateBarViewController = [self getCachedController:description.stateBar];
-        contentViewController = [self getCachedController:description.content];
-        tabBarViewController = [self getCachedController:description.tabBar];
+        UIViewController *newContentViewController  = [self getCachedController:description.content];
+        UIViewController *newStateBarViewController = [self getCachedController:description.stateBar];
+        UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
+        
+        [UICompositeViewController removeSubView: oldContentViewController];
+        if(oldTabBarViewController != nil && oldTabBarViewController != newTabBarViewController) {
+            [UICompositeViewController removeSubView:oldTabBarViewController];
+        }
+        if(oldStateBarViewController != nil && oldStateBarViewController != newStateBarViewController) {
+            [UICompositeViewController removeSubView:oldStateBarViewController];
+        }
+        
+        self.stateBarViewController = newStateBarViewController;
+        self.contentViewController = newContentViewController;
+        self.tabBarViewController = newTabBarViewController;
         
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
@@ -441,7 +482,7 @@
     if(currentViewDescription.fullscreen)
         origin = 0;
     
-    if(stateBarViewController != nil && currentViewDescription.stateBarEnabled) {
+    if(self.stateBarViewController != nil && currentViewDescription.stateBarEnabled) {
         contentFrame.origin.y = origin + stateBarFrame.size.height;
         stateBarFrame.origin.y = origin;
     } else {
@@ -451,15 +492,15 @@
     
     // Resize TabBar
     CGRect tabFrame = tabBarView.frame;
-    if(tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
+    if(self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
         tabFrame.origin.y = viewFrame.size.height;
         tabFrame.origin.x = viewFrame.size.width;
-        tabFrame.size.height = tabBarViewController.view.frame.size.height;
-        tabFrame.size.width = tabBarViewController.view.frame.size.width;
+        tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
+        tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
-        for (UIView *view in tabBarViewController.view.subviews) {
+        for (UIView *view in self.tabBarViewController.view.subviews) {
             if(view.tag == -1) {
                 contentFrame.size.height += view.frame.origin.y;
                 break;
@@ -477,15 +518,15 @@
     
     // Set frames
     [contentView setFrame: contentFrame];
-    [contentViewController.view setFrame: [contentView bounds]];
+    [self.contentViewController.view setFrame: [contentView bounds]];
     [tabBarView setFrame: tabFrame];
-    CGRect frame = [tabBarViewController.view frame];
+    CGRect frame = [self.tabBarViewController.view frame];
     frame.size.width = [tabBarView bounds].size.width;
-    [tabBarViewController.view setFrame:frame];
+    [self.tabBarViewController.view setFrame:frame];
     [stateBarView setFrame: stateBarFrame];
-    frame = [stateBarViewController.view frame];
+    frame = [self.stateBarViewController.view frame];
     frame.size.width = [stateBarView bounds].size.width;
-    [stateBarViewController.view setFrame:frame];
+    [self.stateBarViewController.view setFrame:frame];
     
     // Commit animation
     if(tabBar != nil || stateBar != nil || fullscreen != nil) {
@@ -494,12 +535,12 @@
     
     // Change view
     if(description != nil) {
-        [UICompositeViewController addSubView: contentViewController view:contentView];
-        if(oldViewDescription == nil || oldViewDescription.tabBar != currentViewDescription.tabBar) {
-            [UICompositeViewController addSubView: tabBarViewController view:tabBarView];
+        [UICompositeViewController addSubView: self.contentViewController view:contentView];
+        if(oldTabBarViewController == nil || oldTabBarViewController != self.tabBarViewController) {
+            [UICompositeViewController addSubView: self.tabBarViewController view:tabBarView];
         }
-        if(oldViewDescription == nil || oldViewDescription.stateBar != currentViewDescription.stateBar) {
-            [UICompositeViewController addSubView: stateBarViewController view:stateBarView];
+        if(oldStateBarViewController == nil || oldStateBarViewController != self.stateBarViewController) {
+            [UICompositeViewController addSubView: self.stateBarViewController view:stateBarView];
         }
     }
     
@@ -527,7 +568,7 @@
 }
 
 - (UIViewController *) getCurrentViewController {
-    return contentViewController;
+    return [[self.contentViewController retain] autorelease];
 }
 
 @end

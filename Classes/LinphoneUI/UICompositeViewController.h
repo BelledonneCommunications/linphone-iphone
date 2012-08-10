@@ -66,11 +66,8 @@
 @interface UICompositeViewController : TPMultiLayoutViewController {
     @private
     UIView *stateBarView;
-    UIViewController *stateBarViewController;
     UIView *contentView;
-    UIViewController *contentViewController;
     UIView *tabBarView;
-    UIViewController *tabBarViewController;
     
     NSMutableDictionary *viewControllerCache;
     
@@ -91,5 +88,8 @@
 - (void)setToolBarHidden:(BOOL) hidden;
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;
+#ifdef DEBUG
+- (void)clearCache;
+#endif
 
 @end

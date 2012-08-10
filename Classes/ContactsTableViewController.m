@@ -56,9 +56,7 @@
 - (void)dealloc {
     ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
     CFRelease(addressBook);
-    [addressBookMap removeAllObjects];
     [addressBookMap release];
-    [avatarMap removeAllObjects];
     [avatarMap release];
     [super dealloc];
 }
@@ -72,7 +70,6 @@
         
         // Reset Address book
         [addressBookMap removeAllObjects];
-        [avatarMap removeAllObjects];
         
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
@@ -142,6 +139,7 @@
 static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
     ContactsTableViewController* controller = (ContactsTableViewController*)context;
     ABAddressBookRevert(addressBook);
+    [controller->avatarMap removeAllObjects];
     [controller loadData];
 }
 
