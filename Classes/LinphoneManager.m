@@ -169,6 +169,22 @@ struct codec_name_pref_table codec_pref_table[]={
 - (id)init {
     if ((self = [super init])) {
         fastAddressBook = [[FastAddressBook alloc] init];
+        
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
+            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.callSound);
+            if(status != 0){
+                [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
+            }
+        }
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
+            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.messageSound);
+            if(status != 0){
+                [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
+            }
+        }
+        
         database = NULL;
         settingsStore = nil;
 		self.defaultExpires = 600;
@@ -178,6 +194,9 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 - (void)dealloc {
+    AudioServicesDisposeSystemSoundID(sounds.callSound);
+    AudioServicesDisposeSystemSoundID(sounds.messageSound);
+    
     [fastAddressBook release];
     [self closeDatabase];
     [settingsStore release];
@@ -561,11 +580,11 @@ static LinphoneCoreVTable linphonec_vtable = {
     
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char* lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[myBundle pathForResource:@"ring"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing );
 	const char* lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-    const char* lPlay = [[myBundle pathForResource:@"toy-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    const char* lPlay = [[myBundle pathForResource:@"hold"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);

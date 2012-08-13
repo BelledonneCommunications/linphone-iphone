@@ -589,13 +589,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			notif.repeatInterval = 0;
 			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"%@ sent you a message",nil), address];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = UILocalNotificationDefaultSoundName;
+			notif.soundName = @"msg.caf";
 			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
 			
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
 	} else {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+        AudioServicesPlaySystemSound([LinphoneManager instance]->sounds.messageSound);
     }
 }
 
@@ -638,10 +638,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			appData->notification.repeatInterval = 0;
 			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil), address];
 			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
-			appData->notification.soundName = @"oldphone-mono-30s.caf";
+			appData->notification.soundName = @"ring.caf";
 			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
 			
-			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
+			[[UIApplication sharedApplication] presentLocalNotificationNow:appData->notification];
 		}
 	} else {
        IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);

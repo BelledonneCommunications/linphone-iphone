@@ -20,6 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <sqlite3.h>
 
 #import "LogView.h"
@@ -74,6 +75,10 @@ typedef struct _LinphoneCallAppData {
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
+    struct _Sounds {
+        SystemSoundID callSound;
+        SystemSoundID messageSound;
+    } sounds;
 }
 + (LinphoneManager*)instance;
 #ifdef DEBUG
