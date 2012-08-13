@@ -21,9 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "offeranswer.h"
 
 static bool_t only_telephone_event(const MSList *l){
-	PayloadType *p=(PayloadType*)l->data;
-	if (strcasecmp(p->mime_type,"telephone-event")!=0){
-		return FALSE;
+	for(;l!=NULL;l=l->next){
+		PayloadType *p=(PayloadType*)l->data;
+		if (strcasecmp(p->mime_type,"telephone-event")!=0){
+			return FALSE;
+		}
 	}
 	return TRUE;
 }
