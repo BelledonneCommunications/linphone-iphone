@@ -99,25 +99,33 @@
     
     // Message
     [chatContentLabel setText:[chat message]];
-    
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
     //
     // Adapt size
     //
     CGRect displayNameFrame = [addressLabel frame];
     CGRect chatContentFrame = [chatContentLabel frame];
     
-    chatContentFrame.origin.x -= displayNameFrame.size.width;
-    
     // Compute firstName size
-    CGSize contraints;
-    contraints.height = [addressLabel frame].size.height;
-    contraints.width = ([chatContentLabel frame].size.width + [chatContentLabel frame].origin.x) - [addressLabel frame].origin.x;
-    CGSize firstNameSize = [[addressLabel text] sizeWithFont:[addressLabel font] constrainedToSize: contraints];
-    displayNameFrame.size.width = firstNameSize.width;
+    CGSize displayNameSize = [[addressLabel text] sizeWithFont:[addressLabel font]];
+    CGSize chatContentSize = [[chatContentLabel text] sizeWithFont:[chatContentLabel font]];
+    float sum = displayNameSize.width + 5 + chatContentSize.width;
+    float limit = self.bounds.size.width - 5 - displayNameFrame.origin.x;
+    if(sum >limit) {
+        displayNameSize.width *= limit/sum;
+        chatContentSize.width *= limit/sum;
+    }
+    
+    displayNameFrame.size.width = displayNameSize.width;
+    chatContentFrame.size.width = chatContentSize.width;
     
     // Compute lastName size & position
-    chatContentFrame.origin.x += displayNameFrame.size.width;
-    chatContentFrame.size.width = (contraints.width + [addressLabel frame].origin.x) - chatContentFrame.origin.x;
+    chatContentFrame.origin.x = displayNameFrame.origin.x + displayNameFrame.size.width;
+    if(displayNameFrame.size.width)
+        chatContentFrame.origin.x += 5;
     
     [addressLabel setFrame: displayNameFrame];
     [chatContentLabel setFrame: chatContentFrame];

@@ -251,7 +251,7 @@
     // Update rotation
     UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
     if(currentOrientation != correctOrientation) {
-        [PhoneMainView forceOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+        [PhoneMainView setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
     }
 }
 
@@ -439,7 +439,7 @@
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
-            [PhoneMainView forceOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+            [PhoneMainView setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
         } else {
             [self updateInterfaceOrientation:correctOrientation];
         }

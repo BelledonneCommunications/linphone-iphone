@@ -169,11 +169,27 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return NO;
 }
 
++ (UIView*)findFirstResponder:(UIView*)view {
+    if (view.isFirstResponder) {
+        return view;
+    }
+    for (UIView *subView in view.subviews) {
+        UIView *ret = [PhoneMainView findFirstResponder:subView];
+        if (ret != nil)
+            return ret;
+    }
+    return nil;
+}
+
 /* 
     Will simulate a device rotation
  */
-+ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
++ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
+    UIView *firstResponder = nil;
     for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"]) {
+            continue;
+        }
         UIView *view = window;
         UIViewController *controller = nil;
         CGRect frame = [view frame];
@@ -216,8 +232,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [UIView commitAnimations];
         }
         [controller didRotateFromInterfaceOrientation:oldOrientation];
+        if(firstResponder == nil) {
+            firstResponder = [PhoneMainView findFirstResponder:view];
+        }
     }
     [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
+    if(firstResponder) {
+        [firstResponder resignFirstResponder];
+     [firstResponder becomeFirstResponder];
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -246,8 +269,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(chat != nil) {
         [self displayMessage:chat];
-        [self updateApplicationBadgeNumber];
     }
+    [self updateApplicationBadgeNumber];
 }
 
 - (void)registrationUpdate:(NSNotification*)notif { 

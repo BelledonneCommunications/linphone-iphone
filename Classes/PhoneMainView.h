@@ -62,7 +62,7 @@
 - (void)fullScreen:(BOOL)enabled;
 - (void)startUp;
 
-+ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
++ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
 
 + (PhoneMainView*) instance;
 
