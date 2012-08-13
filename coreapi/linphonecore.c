@@ -2897,6 +2897,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	update_local_media_description(lc,call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -2974,6 +2976,8 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
 	update_local_media_description(lc,the_call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";

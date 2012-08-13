@@ -359,6 +359,11 @@ static void call_ack(SalOp *op){
 
 static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 	SalMediaDescription *md;
+	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
+	if ((rmd!=NULL) && (call->ice_session!=NULL)) {
+		linphone_core_update_ice_from_remote_media_description(call,rmd);
+		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
+	}
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md))

@@ -703,14 +703,33 @@ static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescri
 
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
+	bool_t ice_restarted = FALSE;
+
 	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
 		int i, j;
 
 		/* Check for ICE restart and set remote credentials. */
+		if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
+			ice_session_restart(call->ice_session);
+			ice_restarted = TRUE;
+		} else {
+			for (i = 0; i < md->nstreams; i++) {
+				const SalStreamDescription *stream = &md->streams[i];
+				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
+					ice_session_restart(call->ice_session);
+					ice_restarted = TRUE;
+					break;
+				}
+			}
+		}
 		if ((ice_session_remote_ufrag(call->ice_session) == NULL) && (ice_session_remote_pwd(call->ice_session) == NULL)) {
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		} else if (ice_session_remote_credentials_changed(call->ice_session, md->ice_ufrag, md->ice_pwd)) {
-			ice_session_restart(call->ice_session);
+			if (ice_restarted == FALSE) {
+				ice_session_restart(call->ice_session);
+				ice_restarted = TRUE;
+			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
 		for (i = 0; i < md->nstreams; i++) {
@@ -718,7 +737,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
-					ice_session_restart(call->ice_session);
+					if (ice_restarted == FALSE) {
+						ice_session_restart(call->ice_session);
+						ice_restarted = TRUE;
+					}
 					ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 					break;
 				}
@@ -761,14 +783,16 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
 						candidate->priority, candidate->foundation, default_candidate);
 				}
-				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
-					const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
-					const char *addr = NULL;
-					int port = 0;
-					int componentID = j + 1;
-					if (candidate->addr[0] == '\0') break;
-					get_default_addr_and_port(componentID, md, stream, &addr, &port);
-					ice_add_losing_pair(ice_session_check_list(call->ice_session, i), j + 1, candidate->addr, candidate->port, addr, port);
+				if (ice_restarted == FALSE) {
+					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+						const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
+						const char *addr = NULL;
+						int port = 0;
+						int componentID = j + 1;
+						if (candidate->addr[0] == '\0') break;
+						get_default_addr_and_port(componentID, md, stream, &addr, &port);
+						ice_add_losing_pair(ice_session_check_list(call->ice_session, i), j + 1, candidate->addr, candidate->port, addr, port);
+					}
 				}
 			}
 		}
