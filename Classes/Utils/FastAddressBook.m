@@ -142,7 +142,7 @@
                         CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                         BOOL add = false;
                         if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-                            if(CFStringCompare((CFStringRef)CONTACT_SIP_FIELD, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
+                            if(CFStringCompare((CFStringRef)kContactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
                                 add = true;
                             }
                         } else {
@@ -161,7 +161,7 @@
         }
         CFRelease(lContacts);
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneAddressBookUpdate" object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:self];
 }
 
 void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {

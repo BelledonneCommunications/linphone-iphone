@@ -35,9 +35,16 @@
 #include "lpconfig.h"
 #include "private.h"
 
-static LinphoneCore* theLinphoneCore=nil;
-static LinphoneManager* theLinphoneManager=nil;
-const NSString *CONTACT_SIP_FIELD = @"SIP";
+static LinphoneCore* theLinphoneCore = nil;
+static LinphoneManager* theLinphoneManager = nil;
+
+NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
+NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
+NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
+NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
+NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
+NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
+NSString *const kContactSipField = @"SIP";
 
 extern void libmsilbc_init();
 #ifdef HAVE_AMR
@@ -68,6 +75,7 @@ extern  void libmsbcg729_init();
 @synthesize database;
 @synthesize fastAddressBook;
 @synthesize pushNotificationToken;
+@synthesize sounds;
 
 struct codec_name_pref_table{
     const char *name;
@@ -172,19 +180,21 @@ struct codec_name_pref_table codec_pref_table[]={
         
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
-            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.callSound);
+            sounds.call = 0;
+            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
             if(status != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
             }
         }
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
-            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.messageSound);
+            sounds.message = 0;
+            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.message);
             if(status != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
             }
         }
-        
+        inhibitedEvent = [[NSMutableArray alloc] init];
         database = NULL;
         settingsStore = nil;
 		self.defaultExpires = 600;
@@ -194,9 +204,14 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 - (void)dealloc {
-    AudioServicesDisposeSystemSoundID(sounds.callSound);
-    AudioServicesDisposeSystemSoundID(sounds.messageSound);
+    if(sounds.call) {
+        AudioServicesDisposeSystemSoundID(sounds.call);
+    }
+    if(sounds.message) {
+        AudioServicesDisposeSystemSoundID(sounds.message);
+    }
     
+    [inhibitedEvent release];
     [fastAddressBook release];
     [self closeDatabase];
     [settingsStore release];
@@ -903,6 +918,19 @@ static LinphoneCoreVTable linphonec_vtable = {
     if([LinphoneManager isLcReady]) {
         [(LinphoneCoreSettingsStore*)settingsStore synchronizeAccount];
     }
+}
+
+- (void)addInhibitedEvent:(NSString*)event {
+    [inhibitedEvent addObject:event];
+}
+
+- (BOOL)removeInhibitedEvent:(NSString*)event {
+    NSUInteger index = [inhibitedEvent indexOfObject:kLinphoneTextReceivedSound];
+    if(index != NSNotFound) {
+        [inhibitedEvent removeObjectAtIndex:index];
+        return TRUE;
+    }
+    return FALSE;
 }
 
 @end

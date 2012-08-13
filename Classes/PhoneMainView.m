@@ -102,15 +102,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdate:) 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceived:) 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(batteryLevelChanged:) 
@@ -128,13 +128,13 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
@@ -494,7 +494,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     } 
     
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
     
     return [mainViewController getCurrentViewController];
 }
@@ -595,7 +595,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
 	} else {
-        AudioServicesPlaySystemSound([LinphoneManager instance]->sounds.messageSound);
+        if(![[LinphoneManager instance] removeInhibitedEvent:kLinphoneTextReceivedSound]) {
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
+        }
     }
 }
 

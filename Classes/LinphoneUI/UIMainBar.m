@@ -63,15 +63,15 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(changeViewEvent:) 
-                                                 name:@"LinphoneMainViewChange" 
+                                                 name:kLinphoneMainViewChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceived:) 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
     [self update:FALSE];
 }
@@ -80,13 +80,13 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneMainViewChange" 
+                                                    name:kLinphoneMainViewChange
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneCallUpdate" 
+                                                    name:kLinphoneCallUpdate
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneTextReceived" 
+                                                    name:kLinphoneTextReceived
                                                   object:nil];
 }
 

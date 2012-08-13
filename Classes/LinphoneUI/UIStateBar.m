@@ -74,7 +74,7 @@ NSTimer *callSecurityTimer;
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdate:) 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     
     
@@ -93,7 +93,7 @@ NSTimer *callSecurityTimer;
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self  
-                                                    name:@"LinphoneRegistrationUpdate" 
+                                                    name:kLinphoneRegistrationUpdate
                                                   object:nil];
     
     if(callQualityTimer != nil) {

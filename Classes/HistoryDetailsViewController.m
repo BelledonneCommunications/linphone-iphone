@@ -99,7 +99,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(update:) 
-                                                 name:@"LinphoneAddressBookUpdate" 
+                                                 name:kLinphoneAddressBookUpdate
                                                object:nil];
     [self update];
 }
@@ -108,7 +108,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneAddressBookUpdate" 
+                                                    name:kLinphoneAddressBookUpdate
                                                   object:nil];
 }
 

@@ -204,7 +204,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
                 CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                 BOOL add = false;
                 if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-                    if(CFStringCompare((CFStringRef)CONTACT_SIP_FIELD, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
+                    if(CFStringCompare((CFStringRef)kContactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
                         add = true;
                     }
                 } else {
@@ -272,7 +272,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             lMap = ABMultiValueCreateMutable(kABDictionaryPropertyType);
         }
         CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey };
-        CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
+        CFTypeRef values[] = { [value copy], kContactSipField };
         CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, NULL, NULL);
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
         if(!ABMultiValueAddValueAndLabel(lMap, lDict, label, &identifier)) {
@@ -712,7 +712,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-            CFTypeRef values[] = { [value copy], CONTACT_SIP_FIELD };
+            CFTypeRef values[] = { [value copy], kContactSipField };
             CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
             CFRelease(lDict);

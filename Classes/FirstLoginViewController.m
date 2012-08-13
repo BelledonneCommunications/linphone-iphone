@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */          
 
-
+#import "LinphoneManager.h"
 #import "FirstLoginViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
@@ -76,7 +76,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdateEvent:) 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     
 	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
@@ -97,7 +97,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneRegistrationUpdate" 
+                                                    name:kLinphoneRegistrationUpdate
                                                   object:nil];
 }
 

@@ -105,7 +105,7 @@
         [data removeObjectAtIndex:[indexPath row]];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
     }
 }
 

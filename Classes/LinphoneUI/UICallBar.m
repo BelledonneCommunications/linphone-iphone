@@ -205,7 +205,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdateEvent:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
@@ -219,7 +219,7 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneCallUpdate" 
+                                                    name:kLinphoneCallUpdate
                                                   object:nil];
 }
 
