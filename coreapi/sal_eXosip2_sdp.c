@@ -144,7 +144,8 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
-	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
+	/* Do not set the c= line to 0.0.0.0 if there is an ICE session. */
+	if((desc->ice_ufrag[0] != '\0') || !sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
