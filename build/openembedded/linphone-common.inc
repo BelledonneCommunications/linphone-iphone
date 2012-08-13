@@ -23,7 +23,7 @@ PROVIDES_gtk = "linphone linphonec liblinphone libmediastreamer libortp"
 
 inherit autotools pkgconfig gettext
 
-export PKG_CONFIG=${STAGING_BINDIR_NATIVE}/pkg-config
+#export PKG_CONFIG=${STAGING_BINDIR_NATIVE}/pkg-config
 
 LINPHONE_OE_ENABLE_TESTS = "--disable-tests"
 LINPHONE_OE_ENABLE_VIDEO = "--disable-video"

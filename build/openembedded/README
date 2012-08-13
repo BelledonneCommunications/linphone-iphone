@@ -12,15 +12,12 @@ Instructions for compilation from sources: (requires 10 Go of free space)
   For example, to build Angstrom follow the guide at http://www.angstrom-distribution.org/building-angstrom
   For IGEPv2 use environment variable MACHINE=igep0020
 
-- Add recipes to the pool with an higher priority).
-  See http://bitbake.berlios.de/manual/ch04s02.html#id870544 Example 4.8. Using “bbfile collections”
-  Example:
-  BBFILES = "/Data/work/angstrom/angstrom-setup-scripts/sources/openembedded/recipes/*/*.bb /home/guillaume/dev/linphone-daemon/build/openembedded/*.bb"
-  BBFILE_COLLECTIONS = "upstream local"
-  BBFILE_PATTERN_upstream = "^/Data/"
-  BBFILE_PATTERN_local = "^/home/"
-  BBFILE_PRIORITY_upstream = "5"
-  BBFILE_PRIORITY_local = "10"
+- Add linphone recipes to the pool with an higher priority:
+  Edit conf/bblayers.conf to set EXTRA_LAYERS to the source repository of linphone:
+     # Add your overlay location to EXTRALAYERS
+     # Make sure to have a conf/layers.conf in there
+     EXTRALAYERS ?= "/home/smorlat/sources/git/linphone-daemon/build/openembedded"
+
 
 - Prepare compilation
   Source appropriate environment with "~/.oe/enviro*"  
