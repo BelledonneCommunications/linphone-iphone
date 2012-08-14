@@ -401,7 +401,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password with your SIP domain</string>
+						<string key="IBUIText">Enter you username and password with your email address</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>

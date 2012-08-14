@@ -503,7 +503,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - XMLRPCConnectionDelegate Functions
 
-- (void)request: (XMLRPCRequest *)request didReceiveResponse: (XMLRPCResponse *)response {
+- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC %@: %@", [request method], [response body]];
     [waitView setHidden:true];
     if ([response isFault]) {
@@ -515,7 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                   otherButtonTitles:nil,nil];
         [errorView show];
         [errorView release];
-    } else {
+    } else if([response object] != nil) { //Don't handle if not object: HTTP/Communication Error
         if([[request method] isEqualToString:@"check_account"]) {
             if([response object] == [NSNumber numberWithInt:1]) {
                 UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue",nil)
@@ -565,7 +565,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)request: (XMLRPCRequest *)request didFailWithError: (NSError *)error {
+- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
     NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Can't create account: Communication issue (%@)", nil), [error localizedDescription]];
     UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
                                                     message:errorString
@@ -577,15 +577,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     [waitView setHidden:true];
 }
 
-- (BOOL)request: (XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace: (NSURLProtectionSpace *)protectionSpace {
+- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
     return FALSE;
 }
 
-- (void)request: (XMLRPCRequest *)request didReceiveAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge {
+- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
 }
 
-- (void)request: (XMLRPCRequest *)request didCancelAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge {
+- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
 }
 
