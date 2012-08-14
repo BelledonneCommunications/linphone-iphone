@@ -187,10 +187,12 @@ int __aeabi_idiv(int a, int b) {
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     [self startApplication];
     if([LinphoneManager isLcReady]) {
-        // Go to ChatRoom view
-        DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription] push:TRUE], DialerViewController);
-        if(controller != nil) {
-            [controller setAddress:[url absoluteString]];
+        if([[url scheme] isEqualToString:@"sip"]) {
+            // Go to ChatRoom view
+            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription] push:TRUE], DialerViewController);
+            if(controller != nil) {
+                [controller setAddress:[url absoluteString]];
+            }
         }
     }
 	return YES;
