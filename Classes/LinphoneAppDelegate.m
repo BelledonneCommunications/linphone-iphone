@@ -184,6 +184,18 @@ int __aeabi_idiv(int a, int b) {
 - (void)applicationWillTerminate:(UIApplication *)application {
 }
 
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    [self startApplication];
+    if([LinphoneManager isLcReady]) {
+        // Go to ChatRoom view
+        DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription] push:TRUE], DialerViewController);
+        if(controller != nil) {
+            [controller setAddress:[url absoluteString]];
+        }
+    }
+	return YES;
+}
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
