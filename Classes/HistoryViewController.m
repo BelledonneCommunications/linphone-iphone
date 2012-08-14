@@ -85,7 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Reset missed call
     linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
     // Fake event
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self];
 }
 
 - (void)viewDidLoad {

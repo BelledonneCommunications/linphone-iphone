@@ -125,7 +125,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationUpdateEvent:)
-                                                 name:@"LinphoneRegistrationUpdate"
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -141,7 +141,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                 name:@"LinphoneRegistrationUpdate"
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     
     

@@ -187,6 +187,19 @@ int __aeabi_idiv(int a, int b) {
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
+    NSDictionary *aps = [userInfo objectForKey:@"aps"];
+    if(aps != nil) {
+        NSDictionary *alert = [aps objectForKey:@"alert"];
+        if(alert != nil) {
+            NSString *loc_key = [alert objectForKey:@"loc-key"];
+            if(loc_key != nil) {
+                if([loc_key isEqualToString:@"IM_MSG"]) {
+                    [[LinphoneManager instance] addInhibitedEvent:kLinphoneTextReceivedSound];
+                    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+                }
+            }
+        }
+    }
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {

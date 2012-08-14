@@ -111,7 +111,7 @@
     
     // Compute firstName size
     CGSize firstNameSize = [[firstNameLabel text] sizeWithFont:[firstNameLabel font]];
-    CGSize lastNameSize = [[lastNameLabel text] sizeWithFont:[firstNameLabel font]];
+    CGSize lastNameSize = [[lastNameLabel text] sizeWithFont:[lastNameLabel font]];
     float sum = firstNameSize.width + 5 + lastNameSize.width;
     float limit = self.bounds.size.width - 5 - firstNameFrame.origin.x;
     if(sum >limit) {

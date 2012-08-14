@@ -226,7 +226,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdateEvent:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -246,7 +246,7 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneCallUpdate" 
+                                                    name:kLinphoneCallUpdate
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:@"LinphoneCastelCommands"

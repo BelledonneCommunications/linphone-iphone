@@ -24,7 +24,7 @@
 
 @implementation UIChatRoomCell
 
-@synthesize contentView;
+@synthesize innerView;
 @synthesize messageView;
 @synthesize backgroundImage;
 @synthesize messageLabel;
@@ -47,14 +47,14 @@ static UIFont *CELL_FONT = nil;
         [[NSBundle mainBundle] loadNibNamed:@"UIChatRoomCell"
                                       owner:self
                                     options:nil];
-        [self addSubview:contentView];
+        [self addSubview:innerView];
     }
     return self;
 }
 
 - (void)dealloc {
     [backgroundImage release];
-    [contentView release];
+    [innerView release];
     [messageView release];
     [messageLabel release];
     [deleteButton release];
@@ -143,20 +143,20 @@ static UIFont *CELL_FONT = nil;
 - (void)layoutSubviews {
     [super layoutSubviews];
     if(chat != nil) {
-        // Resize Content
-        CGRect contentFrame = [contentView frame];
-        contentFrame.size = [UIChatRoomCell viewSize:[chat message] width:[self frame].size.width];
+        // Resize inner
+        CGRect innerFrame;
+        innerFrame.size = [UIChatRoomCell viewSize:[chat message] width:[self frame].size.width];
         if([[chat direction] intValue]) { // Inverted
-            contentFrame.origin.x = 0.0f;
-            contentFrame.origin.y = 0.0f;
+            innerFrame.origin.x = 0.0f;
+            innerFrame.origin.y = 0.0f;
         } else {
-            contentFrame.origin.x = [self frame].size.width - contentFrame.size.width;
-            contentFrame.origin.y = 0.0f;
+            innerFrame.origin.x = [self frame].size.width - innerFrame.size.width;
+            innerFrame.origin.y = 0.0f;
         }
-        [contentView setFrame:contentFrame];
+        [innerView setFrame:innerFrame];
 
         CGRect messageFrame = [messageView frame];
-        messageFrame.origin.y = ([contentView frame].size.height - messageFrame.size.height)/2;
+        messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
         if([[chat direction] intValue]) { // Inverted
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
                                                   forNinePatchNamed:@"chat_bubble_incoming"]];

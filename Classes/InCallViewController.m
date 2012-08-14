@@ -126,7 +126,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
 }
 
@@ -139,7 +139,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdateEvent:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     
     // Update on show

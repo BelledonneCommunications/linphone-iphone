@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
 
+#import "LinphoneManager.h"
 #import "ChatRoomTableViewController.h"
 #import "UIChatRoomCell.h"
 #import "Utils.h"
@@ -108,7 +109,7 @@
     self->remoteAddress = [aremoteAddress copy];
     [self loadData];
     [ChatModel readConversation:remoteAddress];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
 

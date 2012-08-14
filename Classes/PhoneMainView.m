@@ -102,16 +102,16 @@ static PhoneMainView* phoneMainViewInstance=nil;
     // Set observers
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(callUpdate:) 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(registrationUpdate:) 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                object:nil];
     /* MODIFICATION disable chat
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceived:) 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
      */
     [[NSNotificationCenter defaultCenter] addObserver:self 
@@ -130,14 +130,14 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     // Remove observers
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneCallUpdate" 
+                                                 name:kLinphoneCallUpdate
                                                object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneRegistrationUpdate" 
+                                                 name:kLinphoneRegistrationUpdate
                                                   object:nil];
     /* MODIFICATION disable chat
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
      */
     [[NSNotificationCenter defaultCenter] removeObserver:self 
@@ -173,11 +173,27 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return NO;
 }
 
++ (UIView*)findFirstResponder:(UIView*)view {
+    if (view.isFirstResponder) {
+        return view;
+    }
+    for (UIView *subView in view.subviews) {
+        UIView *ret = [PhoneMainView findFirstResponder:subView];
+        if (ret != nil)
+            return ret;
+    }
+    return nil;
+}
+
 /* 
     Will simulate a device rotation
  */
-+ (void)forceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
++ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
+    UIView *firstResponder = nil;
     for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"]) {
+            continue;
+        }
         UIView *view = window;
         UIViewController *controller = nil;
         CGRect frame = [view frame];
@@ -220,8 +236,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [UIView commitAnimations];
         }
         [controller didRotateFromInterfaceOrientation:oldOrientation];
+        if(firstResponder == nil) {
+            firstResponder = [PhoneMainView findFirstResponder:view];
+        }
     }
     [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
+    if(firstResponder) {
+        [firstResponder resignFirstResponder];
+     [firstResponder becomeFirstResponder];
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -251,8 +274,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(chat != nil) {
         [self displayMessage:chat];
-        [self updateApplicationBadgeNumber];
     }
+    [self updateApplicationBadgeNumber];
 }
 */
 
@@ -481,7 +504,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     } 
     
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneMainViewChange" object:self userInfo:mdict];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
     
     return [mainViewController getCurrentViewController];
 }
@@ -577,13 +600,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			notif.repeatInterval = 0;
 			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"%@ sent you a message",nil), address];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = UILocalNotificationDefaultSoundName;
+			notif.soundName = @"msg.caf";
 			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
 			
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
 	} else {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+        if(![[LinphoneManager instance] removeInhibitedEvent:kLinphoneTextReceivedSound]) {
+            AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
+        }
     }
 }
  */
@@ -627,10 +652,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			appData->notification.repeatInterval = 0;
 			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil), address];
 			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
-			appData->notification.soundName = @"oldphone-mono-30s.caf";
+			appData->notification.soundName = @"ring.caf";
 			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
 			
-			[[UIApplication sharedApplication]  presentLocalNotificationNow:appData->notification];
+			[[UIApplication sharedApplication] presentLocalNotificationNow:appData->notification];
 		}
 	} else {
        IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);

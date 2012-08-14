@@ -106,7 +106,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(textReceivedEvent:) 
-                                                 name:@"LinphoneTextReceived" 
+                                                 name:kLinphoneTextReceived
                                                object:nil];
     if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
@@ -130,7 +130,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                     name:UIKeyboardWillHideNotification 
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                    name:@"LinphoneTextReceived" 
+                                                    name:kLinphoneTextReceived
                                                     object:nil];
 }
 
@@ -223,7 +223,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
                 [chat setRead:[NSNumber numberWithInt:1]];
                 [chat update];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self]; 
+                [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
                 [tableController addChatEntry:chat];
             }
             ms_free(fromStr);

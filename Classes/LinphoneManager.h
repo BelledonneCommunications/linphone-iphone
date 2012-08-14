@@ -20,6 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <sqlite3.h>
 
 #import "LogView.h"
@@ -31,7 +32,14 @@
 
 #include "linphonecore.h"
 
-extern const NSString *CONTACT_SIP_FIELD;
+extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneTextReceivedSound;
+extern NSString *const kLinphoneCallUpdate;
+extern NSString *const kLinphoneRegistrationUpdate;
+extern NSString *const kLinphoneMainViewChange;
+extern NSString *const kLinphoneAddressBookUpdate;
+
+extern NSString *const kContactSipField;
 
 typedef enum _Connectivity {
 	wifi,
@@ -55,6 +63,11 @@ typedef struct _LinphoneCallAppData {
     UILocalNotification *notification;
 } LinphoneCallAppData;
 
+typedef struct _LinphoneManagerSounds {
+    SystemSoundID call;
+    SystemSoundID message;
+} LinphoneManagerSounds;
+
 @interface LinphoneManager : NSObject <AVAudioSessionDelegate> {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
@@ -69,9 +82,12 @@ typedef struct _LinphoneCallAppData {
     
     FastAddressBook* fastAddressBook;
     
+    LinphoneManagerSounds sounds;
+    NSMutableArray *inhibitedEvent;
     id<IASKSettingsStore> settingsStore;
     sqlite3 *database;
     NSDictionary *castelCommands;
+    
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -101,6 +117,9 @@ typedef struct _LinphoneCallAppData {
 - (void)enableSpeaker:(BOOL)enable;
 - (BOOL)isSpeakerEnabled;
 
+- (void)addInhibitedEvent:(NSString*)event;
+- (BOOL)removeInhibitedEvent:(NSString*)event;
+
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
@@ -111,6 +130,7 @@ typedef struct _LinphoneCallAppData {
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
 @property (nonatomic, retain) NSData *pushNotificationToken;
+@property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSDictionary* castelCommands;
 
 @end
