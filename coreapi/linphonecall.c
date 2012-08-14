@@ -974,6 +974,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	}
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		rtp_session_set_pktinfo(audiostream->session, TRUE);
+		rtp_session_set_symmetric_rtp(audiostream->session, FALSE);
 		audiostream->ice_check_list = ice_session_check_list(call->ice_session, 0);
 		ice_check_list_set_rtp_session(audiostream->ice_check_list, audiostream->session);
 	}
@@ -1003,6 +1004,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		}
 		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, 1))){
 			rtp_session_set_pktinfo(call->videostream->session, TRUE);
+			rtp_session_set_symmetric_rtp(call->videostream->session, FALSE);
 			call->videostream->ice_check_list = ice_session_check_list(call->ice_session, 1);
 			ice_check_list_set_rtp_session(call->videostream->ice_check_list, call->videostream->session);
 		}
