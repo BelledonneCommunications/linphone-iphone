@@ -743,10 +743,6 @@
 		D3832801158100E400FA0D23 /* history_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FD158100E400FA0D23 /* history_over.png */; };
 		D3832802158100E400FA0D23 /* settings_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FE158100E400FA0D23 /* settings_over.png */; };
 		D3832803158100E400FA0D23 /* chat_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FF158100E400FA0D23 /* chat_over.png */; };
-		D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362315A6D19800A3A3AA /* CPAnimationSequence.m */; };
-		D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362315A6D19800A3A3AA /* CPAnimationSequence.m */; };
-		D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
-		D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
 		D389363915A6D53200A3A3AA /* chat_bubble_incoming.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */; };
 		D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */; };
 		D38D14AF15A30B3D008497E8 /* cell_call_first_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */; };
@@ -1744,10 +1740,6 @@
 		D38327FD158100E400FA0D23 /* history_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_over.png; path = Resources/history_over.png; sourceTree = "<group>"; };
 		D38327FE158100E400FA0D23 /* settings_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = settings_over.png; path = Resources/settings_over.png; sourceTree = "<group>"; };
 		D38327FF158100E400FA0D23 /* chat_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_over.png; path = Resources/chat_over.png; sourceTree = "<group>"; };
-		D389362215A6D19800A3A3AA /* CPAnimationSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPAnimationSequence.h; path = Utils/CPAnimation/CPAnimationSequence.h; sourceTree = "<group>"; };
-		D389362315A6D19800A3A3AA /* CPAnimationSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationSequence.m; path = Utils/CPAnimation/CPAnimationSequence.m; sourceTree = "<group>"; };
-		D389362415A6D19800A3A3AA /* CPAnimationStep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPAnimationStep.h; path = Utils/CPAnimation/CPAnimationStep.h; sourceTree = "<group>"; };
-		D389362515A6D19800A3A3AA /* CPAnimationStep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationStep.m; path = Utils/CPAnimation/CPAnimationStep.m; sourceTree = "<group>"; };
 		D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_incoming.9.png; path = Resources/chat_bubble_incoming.9.png; sourceTree = "<group>"; };
 		D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_outgoing.9.png; path = Resources/chat_bubble_outgoing.9.png; sourceTree = "<group>"; };
 		D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_first_highlight.png; path = Resources/cell_call_first_highlight.png; sourceTree = "<group>"; };
@@ -3074,7 +3066,6 @@
 			children = (
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
-				D38935F715A6D06800A3A3AA /* CPAnimation */,
 				D3807FB615C28940005BE9BC /* DCRoundSwitch */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
@@ -3183,17 +3174,6 @@
 				D3807FE715C2894A005BE9BC /* IASKTextField.m */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		D38935F715A6D06800A3A3AA /* CPAnimation */ = {
-			isa = PBXGroup;
-			children = (
-				D389362215A6D19800A3A3AA /* CPAnimationSequence.h */,
-				D389362315A6D19800A3A3AA /* CPAnimationSequence.m */,
-				D389362415A6D19800A3A3AA /* CPAnimationStep.h */,
-				D389362515A6D19800A3A3AA /* CPAnimationStep.m */,
-			);
-			name = CPAnimation;
 			sourceTree = "<group>";
 		};
 		D398D3031594B0FB00FD553C /* Settings */ = {
@@ -4302,8 +4282,6 @@
 				D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
 				D32B6E3815A5C2430033019F /* ChatModel.m in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
-				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
-				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639515AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
@@ -4393,8 +4371,6 @@
 				D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */,
 				D32B6E3915A5C2430033019F /* ChatModel.m in Sources */,
 				D3A8BB7115A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
-				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
-				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639615AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639C15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
