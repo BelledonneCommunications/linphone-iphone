@@ -668,7 +668,8 @@ static LinphoneCoreVTable linphonec_vtable = {
     else
         ms_set_cpu_count(1);
     
-    settingsStore = [[LinphoneCoreSettingsStore alloc] init];
+	if (!settingsStore)
+		settingsStore = [[LinphoneCoreSettingsStore alloc] init];
     
     [LinphoneLogger logc:LinphoneLoggerWarning format:"Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
@@ -686,10 +687,12 @@ static LinphoneCoreVTable linphonec_vtable = {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
+#if 0
     if (settingsStore != nil) {
         [settingsStore release];
         settingsStore = nil;
     }
+#endif
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
@@ -705,18 +708,18 @@ static LinphoneCoreVTable linphonec_vtable = {
 - (BOOL)resignActive {
     if ([[LinphoneManager instance] settingsStore] != Nil)
 		[[[LinphoneManager instance] settingsStore] synchronize];
-    return [self enterBackgroundMode];
+	linphone_core_stop_dtmf_stream(theLinphoneCore);
+    return YES;
 }
 
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
-	linphone_core_stop_dtmf_stream(theLinphoneCore);
 	
-	if (proxyCfg && [settingsStore boolForKey:@"backgroundmode_preference"]) {
+	
+	if (proxyCfg && [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
 		//For registration register
 		linphone_core_refresh_registers(theLinphoneCore);
-		
 		
 		//wait for registration answer
 		int i=0;
