@@ -178,12 +178,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     [waitView setHidden:TRUE];
 }
 
-+ (UIView*)findTextField:(ViewElement)tag view:(UIView*)view {
++ (UIView*)findView:(ViewElement)tag view:(UIView*)view {
     for(UIView *child in [view subviews]) {
         if([child tag] == tag){
             return (UITextField*)child;
         } else {
-            UIView *o = [WizardViewController findTextField:tag view:child];
+            UIView *o = [WizardViewController findView:tag view:child];
             if(o)
                 return o;
         }
@@ -191,17 +191,17 @@ static UICompositeViewDescription *compositeDescription = nil;
     return nil;
 }
 
-- (UITextField*)findTextField:(ViewElement)tag {
-    UIView *view = [WizardViewController findTextField:tag view:contentView];
-    if([view isKindOfClass:[UITextField class]])
-        return (UITextField*)view;
++ (UITextField*)findTextField:(ViewElement)tag view:(UIView*)view {
+    UIView *aview = [WizardViewController findView:tag view:view];
+    if([aview isKindOfClass:[UITextField class]])
+        return (UITextField*)aview;
     return nil;
 }
 
-- (UILabel*)findLabel:(ViewElement)tag {
-    UIView *view = [WizardViewController findTextField:tag view:contentView];
-    if([view isKindOfClass:[UILabel class]])
-        return (UILabel*)view;
++ (UILabel*)findLabel:(ViewElement)tag view:(UIView*)view {
+    UIView *aview = [WizardViewController findView:tag view:view];
+    if([aview isKindOfClass:[UILabel class]])
+        return (UILabel*)aview;
     return nil;
 }
 
@@ -379,30 +379,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCheckValidationClick:(id)sender {
-    NSString *username = [self findTextField:ViewElement_Username].text;
+    NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
     [self checkAccountValidation:[NSString stringWithFormat:@"%@@%@", username, LINPHONE_WIZARD_DOMAIN]];
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
     [self.waitView setHidden:false];
-    NSString *username = [self findTextField:ViewElement_Username].text;
-    NSString *password = [self findTextField:ViewElement_Password].text;
-    NSString *domain = [self findTextField:ViewElement_Domain].text;
+    NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+    NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+    NSString *domain = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
     [self addProxyConfig:username password:password domain:domain];
 }
 
 - (IBAction)onSignInClick:(id)sender {
     [self.waitView setHidden:false];
-    NSString *username = [self findTextField:ViewElement_Username].text;
-    NSString *password = [self findTextField:ViewElement_Password].text;
+    NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+    NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     [self addProxyConfig:username password:password domain:LINPHONE_WIZARD_DOMAIN];
 }
 
 - (IBAction)onRegisterClick:(id)sender {
-    NSString *username = [self findTextField:ViewElement_Username].text;
-    NSString *password = [self findTextField:ViewElement_Password].text;
-    NSString *password2 = [self findTextField:ViewElement_Password2].text;
-    NSString *email = [self findTextField:ViewElement_Email].text;
+    NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+    NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
+    NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
+    NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
     NSMutableString *errors = [NSMutableString string];
     
     if ([username length] < LINPHONE_WIZARD_MIN_USERNAME_LENGTH) {
@@ -526,18 +526,18 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [errorView show];
                 [errorView release];
             } else {
-                NSString *username = [self findTextField:ViewElement_Username].text;
-                NSString *password = [self findTextField:ViewElement_Password].text;
-                NSString *email = [self findTextField:ViewElement_Email].text;
+                NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
+                NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
+                NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
                 [self createAccount:[NSString stringWithFormat:@"%@@%@", username, LINPHONE_WIZARD_DOMAIN] password:password email:email];
             }
         } else if([[request method] isEqualToString:@"create_account_with_useragent"]) {
             if([response object] == [NSNumber numberWithInt:0]) {
-                NSString *username = [self findTextField:ViewElement_Username].text;
-                NSString *password = [self findTextField:ViewElement_Password].text;
+                NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
+                NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
                 [self changeView:validateAccountView back:FALSE animation:TRUE];
-                [self findTextField:ViewElement_Username].text = username;
-                [self findTextField:ViewElement_Password].text = password;
+                [WizardViewController findTextField:ViewElement_Username view:contentView].text = username;
+                [WizardViewController findTextField:ViewElement_Password view:contentView].text = password;
             } else {
                 UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account creation issue",nil)
                                                                     message:NSLocalizedString(@"Can't create the account. Please try again.", nil)
@@ -549,8 +549,8 @@ static UICompositeViewDescription *compositeDescription = nil;
             }
         } else if([[request method] isEqualToString:@"check_account_validated"]) {
              if([response object] == [NSNumber numberWithInt:1]) {
-                 NSString *username = [self findTextField:ViewElement_Username].text;
-                 NSString *password = [self findTextField:ViewElement_Password].text;
+                 NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
+                 NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
                 [self addProxyConfig:username password:password domain:LINPHONE_WIZARD_DOMAIN];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
