@@ -193,10 +193,12 @@ int __aeabi_idiv(int a, int b) {
         if(alert != nil) {
             NSString *loc_key = [alert objectForKey:@"loc-key"];
             if(loc_key != nil) {
+                /* MODIFICATION disable chat
                 if([loc_key isEqualToString:@"IM_MSG"]) {
                     [[LinphoneManager instance] addInhibitedEvent:kLinphoneTextReceivedSound];
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
                 }
+                */
             }
         }
     }
