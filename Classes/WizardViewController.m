@@ -507,7 +507,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC %@: %@", [request method], [response body]];
     [waitView setHidden:true];
     if ([response isFault]) {
-        NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Can't create account: Communication issue (%@)", nil), [response faultString]];
+        NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
         UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue",nil)
                                                             message:errorString
                                                            delegate:nil
@@ -566,7 +566,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-    NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Can't create account: Communication issue (%@)", nil), [error localizedDescription]];
+    NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
     UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
                                                     message:errorString
                                                    delegate:nil
