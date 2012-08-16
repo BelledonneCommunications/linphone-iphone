@@ -647,7 +647,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
 		if ((cl->state == ICL_Running) || (cl->state == ICL_Completed)) {
 			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
-			for (j = 0; j < ms_list_size(cl->local_candidates); j++) {
+			for (j = 0; j < MIN(ms_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
 				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
 				IceCandidate *ice_candidate = ms_list_nth_data(cl->local_candidates, j);
 				const char *default_addr = NULL;
