@@ -354,8 +354,10 @@ static void entry_unmapped(GtkWidget *entry){
 }
 
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
-	GtkBuilder *builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
+	GtkBuilder *builder;
 	GObject *w;
+	if (window==NULL) return NULL;
+	builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
 	if (builder==NULL){
 		g_error("Fail to retrieve builder from window !");
 		return NULL;

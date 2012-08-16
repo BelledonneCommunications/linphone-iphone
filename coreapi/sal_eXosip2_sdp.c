@@ -130,6 +130,7 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	int inet6;
 	char sessid[16];
 	char sessver[16];
+	const char *rtp_addr = desc->addr;
 	
 	snprintf(sessid,16,"%i",desc->session_id);
 	snprintf(sessver,16,"%i",desc->session_ver);
@@ -143,11 +144,12 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 			  osip_strdup ("IN"), inet6 ? osip_strdup("IP6") : osip_strdup ("IP4"),
 			  osip_strdup (desc->addr));
 	sdp_message_s_name_set (local, osip_strdup ("Talk"));
-	if(!sal_media_description_has_dir (desc,SalStreamSendOnly))
+	/* Do not set the c= line to 0.0.0.0 if there is an ICE session. */
+	if((desc->ice_ufrag[0] != '\0') || !sal_media_description_has_dir (desc,SalStreamSendOnly))
 	{
 		sdp_message_c_connection_add (local, -1,
 				osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-						osip_strdup (desc->addr), NULL, NULL);
+						osip_strdup (rtp_addr), NULL, NULL);
 	}
 	else
 	{
@@ -158,6 +160,10 @@ static sdp_message_t *create_generic_sdp(const SalMediaDescription *desc)
 	sdp_message_t_time_descr_add (local, osip_strdup ("0"), osip_strdup ("0"));
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (local, -1, osip_strdup ("AS"),
 			int_2char(desc->bandwidth));
+	if (desc->ice_completed == TRUE) sdp_message_a_attribute_add(local, -1, osip_strdup("nortpproxy"), osip_strdup("yes"));
+	if (desc->ice_pwd[0] != '\0') sdp_message_a_attribute_add(local, -1, osip_strdup("ice-pwd"), osip_strdup(desc->ice_pwd));
+	if (desc->ice_ufrag[0] != '\0') sdp_message_a_attribute_add(local, -1, osip_strdup("ice-ufrag"), osip_strdup(desc->ice_ufrag));
+
 	return local;
 }
 
@@ -197,14 +203,66 @@ static void add_payload(sdp_message_t *msg, int line, const PayloadType *pt, boo
 	}
 }
 
+static void add_ice_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc)
+{
+	char buffer[1024];
+	const SalIceCandidate *candidate;
+	int nb;
+	int i;
+
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; i++) {
+		candidate = &desc->ice_candidates[i];
+		if ((candidate->addr[0] == '\0') || (candidate->port == 0)) break;
+		nb = snprintf(buffer, sizeof(buffer), "%s %u UDP %u %s %d typ %s",
+			candidate->foundation, candidate->componentID, candidate->priority, candidate->addr, candidate->port, candidate->type);
+		if (nb < 0) {
+			ms_error("Cannot add ICE candidate attribute!");
+			return;
+		}
+		if (candidate->raddr[0] != '\0') {
+			nb = snprintf(buffer + nb, sizeof(buffer) - nb, " raddr %s rport %d", candidate->raddr, candidate->rport);
+			if (nb < 0) {
+				ms_error("Cannot add ICE candidate attribute!");
+				return;
+			}
+		}
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("candidate"), osip_strdup(buffer));
+	}
+}
+
+static void add_ice_remote_candidates(sdp_message_t *msg, int lineno, const SalStreamDescription *desc)
+{
+	char buffer[1024];
+	char *ptr = buffer;
+	const SalIceRemoteCandidate *candidate;
+	int offset = 0;
+	int i;
+
+	buffer[0] = '\0';
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; i++) {
+		candidate = &desc->ice_remote_candidates[i];
+		if ((candidate->addr[0] != '\0') && (candidate->port != 0)) {
+			offset = snprintf(ptr, buffer + sizeof(buffer) - ptr, "%s%d %s %d", (i > 0) ? " " : "", i + 1, candidate->addr, candidate->port);
+			if (offset < 0) {
+				ms_error("Cannot add ICE remote-candidates attribute!");
+				return;
+			}
+			ptr += offset;
+		}
+	}
+	if (buffer[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("remote-candidates"), osip_strdup(buffer));
+}
 
 static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription *desc){
 	const char *mt=NULL;
 	const MSList *elem;
-	const char *addr;
+	const char *rtp_addr;
+	const char *rtcp_addr;
 	const char *dir="sendrecv";
-	int port;
+	int rtp_port;
+	int rtcp_port;
 	bool_t strip_well_known_rtpmaps;
+	bool_t different_rtp_and_rtcp_addr;
 	
 	switch (desc->type) {
 	case SalAudio:
@@ -217,29 +275,20 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		mt=desc->typeother;
 		break;
 	}
+	rtp_addr=desc->rtp_addr;
+	rtcp_addr=desc->rtcp_addr;
+	rtp_port=desc->rtp_port;
+	rtcp_port=desc->rtcp_port;
 	if (desc->candidates[0].addr[0]!='\0'){
-		addr=desc->candidates[0].addr;
-		port=desc->candidates[0].port;
-	}else{
-		addr=desc->addr;
-		port=desc->port;
+		rtp_addr=desc->candidates[0].addr;
+		rtp_port=desc->candidates[0].port;
 	}
-	/*only add a c= line within the stream description if address are differents*/
-	if (strcmp(addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
-		bool_t inet6;
-		if (strchr(addr,':')!=NULL){
-			inet6=TRUE;
-		}else inet6=FALSE;
-		sdp_message_c_connection_add (msg, lineno,
-			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
-			      osip_strdup (addr), NULL, NULL);
-	}
-	
+
 	if (desc->proto == SalProtoRtpSavp) {
 		int i;
 		
 		sdp_message_m_media_add (msg, osip_strdup (mt),
-					 int_2char (port), NULL,
+					 int_2char (rtp_port), NULL,
 					 osip_strdup ("RTP/SAVP"));
        
 		/* add crypto lines */
@@ -271,10 +320,22 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 		
 	} else {
 		sdp_message_m_media_add (msg, osip_strdup (mt),
-					 int_2char (port), NULL,
+					 int_2char (rtp_port), NULL,
 					 osip_strdup ("RTP/AVP"));
 		
 	}
+
+	/*only add a c= line within the stream description if address are differents*/
+	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,sdp_message_c_addr_get(msg, -1, 0))!=0){
+		bool_t inet6;
+		if (strchr(rtp_addr,':')!=NULL){
+			inet6=TRUE;
+		}else inet6=FALSE;
+		sdp_message_c_connection_add (msg, lineno,
+			      osip_strdup ("IN"), inet6 ? osip_strdup ("IP6") : osip_strdup ("IP4"),
+			      osip_strdup (rtp_addr), NULL, NULL);
+	}
+
 	if (desc->bandwidth>0) sdp_message_b_bandwidth_add (msg, lineno, osip_strdup ("AS"),
 				     int_2char(desc->bandwidth));
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
@@ -305,7 +366,31 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 			break;
 	}
 	if (dir) sdp_message_a_attribute_add (msg, lineno, osip_strdup (dir),NULL);
+	if (rtp_port != 0) {
+		different_rtp_and_rtcp_addr = (rtcp_addr[0] != '\0') && (strcmp(rtp_addr, rtcp_addr) != 0);
+		if ((rtcp_port != (rtp_port + 1)) || (different_rtp_and_rtcp_addr == TRUE)) {
+			if (different_rtp_and_rtcp_addr == TRUE) {
+				char buffer[1024];
+				snprintf(buffer, sizeof(buffer), "%u IN IP4 %s", rtcp_port, rtcp_addr);
+				sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), osip_strdup(buffer));
+			} else {
+				sdp_message_a_attribute_add(msg, lineno, osip_strdup("rtcp"), int_2char(rtcp_port));
+			}
+		}
+	}
+	if (desc->ice_completed == TRUE) {
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("nortpproxy"), osip_strdup("yes"));
+	}
+	if (desc->ice_mismatch == TRUE) {
+		sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-mismatch"), NULL);
+	} else {
+		if (desc->ice_pwd[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-pwd"), osip_strdup(desc->ice_pwd));
+		if (desc->ice_ufrag[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-ufrag"), osip_strdup(desc->ice_ufrag));
+		add_ice_candidates(msg, lineno, desc);
+		add_ice_remote_candidates(msg, lineno, desc);
+	}
 }
+
 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
@@ -349,25 +434,39 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
-	const char *mtype,*proto,*port,*addr,*number;
+	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
 	sdp_bandwidth_t *sbw=NULL;
-	
-	addr=sdp_message_c_addr_get (msg, -1, 0);
-	if (addr)
-		strncpy(desc->addr,addr,sizeof(desc->addr));
+	sdp_attribute_t *attr;
+	int nb_ice_candidates;
+
+	rtp_addr=sdp_message_c_addr_get (msg, -1, 0);
+	if (rtp_addr)
+		strncpy(desc->addr,rtp_addr,sizeof(desc->addr));
 	for(j=0;(sbw=sdp_message_bandwidth_get(msg,-1,j))!=NULL;++j){
 		if (strcasecmp(sbw->b_bwtype,"AS")==0) desc->bandwidth=atoi(sbw->b_bandwidth);
 	}
-	
+
+	/* Get ICE remote ufrag and remote pwd, and ice_lite flag */
+	for (i = 0; (i < SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES) && ((attr = sdp_message_attribute_get(msg, -1, i)) != NULL); i++) {
+		if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+			strncpy(desc->ice_ufrag, attr->a_att_value, sizeof(desc->ice_ufrag));
+		} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+			strncpy(desc->ice_pwd, attr->a_att_value, sizeof(desc->ice_pwd));
+		} else if (keywordcmp("ice-lite", attr->a_att_field) == 0) {
+			desc->ice_lite = TRUE;
+		}
+	}
+
 	/* for each m= line */
 	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
 	{
 		SalStreamDescription *stream=&desc->streams[i];
+		nb_ice_candidates = 0;
 		
 		memset(stream,0,sizeof(*stream));
 		mtype = sdp_message_m_media_get(msg, i);
 		proto = sdp_message_m_proto_get (msg, i);
-		port = sdp_message_m_port_get(msg, i);
+		rtp_port = sdp_message_m_port_get(msg, i);
 		stream->proto=SalProtoUnknown;
 		if (proto){
 			if (strcasecmp(proto,"RTP/AVP")==0)
@@ -376,11 +475,11 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				stream->proto=SalProtoRtpSavp;
 			}
 		}
-		addr = sdp_message_c_addr_get (msg, i, 0);
-		if (addr != NULL)
-			strncpy(stream->addr,addr,sizeof(stream->addr));
-		if (port)
-			stream->port=atoi(port);
+		rtp_addr = sdp_message_c_addr_get (msg, i, 0);
+		if (rtp_addr != NULL)
+			strncpy(stream->rtp_addr,rtp_addr,sizeof(stream->rtp_addr));
+		if (rtp_port)
+			stream->rtp_port=atoi(rtp_port);
 		
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
@@ -394,7 +493,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		for(j=0;(sbw=sdp_message_bandwidth_get(msg,i,j))!=NULL;++j){
 			if (strcasecmp(sbw->b_bwtype,"AS")==0) stream->bandwidth=atoi(sbw->b_bandwidth);
 		}
-		stream->dir=_sdp_message_get_mline_dir(msg,i);		
+		stream->dir=_sdp_message_get_mline_dir(msg,i);
 		/* for each payload type */
 		for (j=0;((number=sdp_message_m_payload_get (msg, i,j)) != NULL); j++){
 			const char *rtpmap,*fmtp;
@@ -412,11 +511,27 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 					pt->send_fmtp ? pt->send_fmtp : "");
 			}
 		}
-		
+
+		/* Get media specific RTCP attribute */
+		stream->rtcp_port = stream->rtp_port + 1;
+		snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), stream->rtp_addr);
+		for (j = 0; ((attr = sdp_message_attribute_get(msg, i, j)) != NULL); j++) {
+			if ((keywordcmp("rtcp", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				char tmp[256];
+				int nb = sscanf(attr->a_att_value, "%d IN IP4 %s", &stream->rtcp_port, tmp);
+				if (nb == 1) {
+					/* SDP rtcp attribute only contains the port */
+				} else if (nb == 2) {
+					strncpy(stream->rtcp_addr, tmp, sizeof(stream->rtcp_addr));
+				} else {
+					ms_warning("sdp has a strange a= line (%s) nb=%i", attr->a_att_value, nb);
+				}
+			}
+		}
+
 		/* read crypto lines if any */
 		if (stream->proto == SalProtoRtpSavp) {
 			int k, valid_count = 0;
-			sdp_attribute_t *attr;
 				
 			memset(&stream->crypto, 0, sizeof(stream->crypto));
 			for (k=0;valid_count < SAL_CRYPTO_ALGO_MAX && (attr=sdp_message_attribute_get(msg,i,k))!=NULL;k++){
@@ -454,6 +569,38 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 				}
 			}
 			ms_message("Found: %d valid crypto lines", valid_count);
+		}
+
+		/* Get ICE candidate attributes if any */
+		for (j = 0; (attr = sdp_message_attribute_get(msg, i, j)) != NULL; j++) {
+			if ((keywordcmp("candidate", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
+				int nb = sscanf(attr->a_att_value, "%s %u UDP %u %s %d typ %s raddr %s rport %d",
+					candidate->foundation, &candidate->componentID, &candidate->priority, candidate->addr, &candidate->port,
+					candidate->type, candidate->raddr, &candidate->rport);
+				if ((nb == 6) || (nb == 8)) nb_ice_candidates++;
+				else memset(candidate, 0, sizeof(*candidate));
+			} else if ((keywordcmp("remote-candidates", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				SalIceRemoteCandidate candidate;
+				unsigned int componentID;
+				int offset;
+				char *ptr = attr->a_att_value;
+				while (3 == sscanf(ptr, "%u %s %u%n", &componentID, candidate.addr, &candidate.port, &offset)) {
+					if ((componentID > 0) && (componentID <= SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES)) {
+						SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[componentID - 1];
+						strncpy(remote_candidate->addr, candidate.addr, sizeof(remote_candidate->addr));
+						remote_candidate->port = candidate.port;
+					}
+					ptr += offset;
+					if (ptr[offset] == ' ') ptr += 1;
+				}
+			} else if ((keywordcmp("ice-ufrag", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				strncpy(stream->ice_ufrag, attr->a_att_value, sizeof(stream->ice_ufrag));
+			} else if ((keywordcmp("ice-pwd", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
+				strncpy(stream->ice_pwd, attr->a_att_value, sizeof(stream->ice_pwd));
+			} else if (keywordcmp("ice-mismatch", attr->a_att_field) == 0) {
+				stream->ice_mismatch = TRUE;
+			}
 		}
 	}
 	desc->nstreams=i;

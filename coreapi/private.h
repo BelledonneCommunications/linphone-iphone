@@ -35,6 +35,7 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include "mediastreamer2/ice.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
 
@@ -133,8 +134,10 @@ struct _LinphoneCall
 	bool_t auth_token_verified;
 	bool_t defer_update;
 	bool_t was_automatically_paused;
+	bool_t ping_replied;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
+	IceSession *ice_session;
 };
 
 
@@ -218,6 +221,9 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFri
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
+void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -241,9 +247,13 @@ void linphone_core_play_tone(LinphoneCore *lc);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 
+void linphone_call_init_audio_stream(LinphoneCall *call);
+void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
+void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
+void linphone_call_delete_ice_session(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
@@ -251,8 +261,12 @@ void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
+int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
+int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
+int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);

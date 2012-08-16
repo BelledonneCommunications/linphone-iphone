@@ -742,7 +742,8 @@ typedef struct _LCCallbackObj
 typedef enum _LinphoneFirewallPolicy{
 	LinphonePolicyNoFirewall,
 	LinphonePolicyUseNatAddress,
-	LinphonePolicyUseStun
+	LinphonePolicyUseStun,
+	LinphonePolicyUseIce
 } LinphoneFirewallPolicy;
 
 typedef enum _LinphoneWaitingState{

@@ -109,7 +109,7 @@ MSFilter *set_MSFilter(EndPoint *endpoint, int type, FlowDirections *fdir){
 	switch(endpoint->protocol){
 		case MEDIA_RTP:
 			rtps = rtp_session_new(RTP_SESSION_RECVONLY);
-			rtp_session_set_local_addr(rtps,"0.0.0.0",8000);
+			rtp_session_set_local_addr(rtps,"0.0.0.0",8000,8001);
 			rtp_session_set_scheduling_mode(rtps,0);
 			rtp_session_set_blocking_mode(rtps,0);
 			
