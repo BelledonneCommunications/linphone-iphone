@@ -108,6 +108,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)destroyLibLinphone;
 - (BOOL)resignActive;
 - (void)becomeActive;
+- (BOOL)enterBackgroundMode;
 
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;

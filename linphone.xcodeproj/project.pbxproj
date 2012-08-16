@@ -542,6 +542,8 @@
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378906715AC373B00BD776C /* ContactDetailsLabelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */; };
+		D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */; };
+		D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */; };
 		D37B96B715A1A6F20005CCD2 /* call_state_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */; };
 		D37B96B915A1A6F20005CCD2 /* call_state_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */; };
 		D37C638E15AAD251009D0BAC /* contact_number_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37C638C15AAD251009D0BAC /* contact_number_over.png */; };
@@ -608,10 +610,6 @@
 		D3832800158100E400FA0D23 /* contacts_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FC158100E400FA0D23 /* contacts_over.png */; };
 		D3832801158100E400FA0D23 /* history_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FD158100E400FA0D23 /* history_over.png */; };
 		D3832802158100E400FA0D23 /* settings_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FE158100E400FA0D23 /* settings_over.png */; };
-		D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362315A6D19800A3A3AA /* CPAnimationSequence.m */; };
-		D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362315A6D19800A3A3AA /* CPAnimationSequence.m */; };
-		D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
-		D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */ = {isa = PBXBuildFile; fileRef = D389362515A6D19800A3A3AA /* CPAnimationStep.m */; };
 		D38D14AF15A30B3D008497E8 /* cell_call_first_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */; };
 		D38D14B115A30B3D008497E8 /* cell_call_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
@@ -1338,6 +1336,8 @@
 		D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsLabelViewController.h; sourceTree = "<group>"; };
 		D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsLabelViewController.m; sourceTree = "<group>"; };
 		D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactDetailsLabelViewController.xib; sourceTree = "<group>"; };
+		D378AB2815DCDB480098505D /* ContactDetailsImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsImagePickerController.h; sourceTree = "<group>"; };
+		D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsImagePickerController.m; sourceTree = "<group>"; };
 		D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_default.png; path = Resources/call_state_delete_default.png; sourceTree = "<group>"; };
 		D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_over.png; path = Resources/call_state_delete_over.png; sourceTree = "<group>"; };
 		D37C638C15AAD251009D0BAC /* contact_number_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_number_over.png; path = Resources/contact_number_over.png; sourceTree = "<group>"; };
@@ -1404,10 +1404,6 @@
 		D38327FD158100E400FA0D23 /* history_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_over.png; path = Resources/history_over.png; sourceTree = "<group>"; };
 		D38327FE158100E400FA0D23 /* settings_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = settings_over.png; path = Resources/settings_over.png; sourceTree = "<group>"; };
 		D38327FF158100E400FA0D23 /* chat_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_over.png; path = Resources/chat_over.png; sourceTree = "<group>"; };
-		D389362215A6D19800A3A3AA /* CPAnimationSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPAnimationSequence.h; path = Utils/CPAnimation/CPAnimationSequence.h; sourceTree = "<group>"; };
-		D389362315A6D19800A3A3AA /* CPAnimationSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationSequence.m; path = Utils/CPAnimation/CPAnimationSequence.m; sourceTree = "<group>"; };
-		D389362415A6D19800A3A3AA /* CPAnimationStep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CPAnimationStep.h; path = Utils/CPAnimation/CPAnimationStep.h; sourceTree = "<group>"; };
-		D389362515A6D19800A3A3AA /* CPAnimationStep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CPAnimationStep.m; path = Utils/CPAnimation/CPAnimationStep.m; sourceTree = "<group>"; };
 		D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_incoming.9.png; path = Resources/chat_bubble_incoming.9.png; sourceTree = "<group>"; };
 		D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_outgoing.9.png; path = Resources/chat_bubble_outgoing.9.png; sourceTree = "<group>"; };
 		D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_first_highlight.png; path = Resources/cell_call_first_highlight.png; sourceTree = "<group>"; };
@@ -1823,6 +1819,8 @@
 				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
 				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
 				D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */,
+				D378AB2815DCDB480098505D /* ContactDetailsImagePickerController.h */,
+				D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */,
 				D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */,
 				D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */,
 				D378906415AC373B00BD776C /* ContactDetailsLabelViewController.xib */,
@@ -2743,7 +2741,6 @@
 				D34BD60D15C136770070C209 /* GDataXML */,
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
-				D38935F715A6D06800A3A3AA /* CPAnimation */,
 				D3807FB615C28940005BE9BC /* DCRoundSwitch */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
@@ -2861,17 +2858,6 @@
 				D3807FE715C2894A005BE9BC /* IASKTextField.m */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		D38935F715A6D06800A3A3AA /* CPAnimation */ = {
-			isa = PBXGroup;
-			children = (
-				D389362215A6D19800A3A3AA /* CPAnimationSequence.h */,
-				D389362315A6D19800A3A3AA /* CPAnimationSequence.m */,
-				D389362415A6D19800A3A3AA /* CPAnimationStep.h */,
-				D389362515A6D19800A3A3AA /* CPAnimationStep.m */,
-			);
-			name = CPAnimation;
 			sourceTree = "<group>";
 		};
 		D398D3031594B0FB00FD553C /* Settings */ = {
@@ -3642,8 +3628,6 @@
 				D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
-				D389362615A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
-				D389362815A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639515AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
@@ -3674,6 +3658,7 @@
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
 				D306BC0515CFF2A000FDB80F /* GDataXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3726,8 +3711,6 @@
 				D32460E7159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
 				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
-				D389362715A6D19800A3A3AA /* CPAnimationSequence.m in Sources */,
-				D389362915A6D19800A3A3AA /* CPAnimationStep.m in Sources */,
 				D3128FE215AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639615AADDAF009D0BAC /* UIContactDetailsHeader.m in Sources */,
 				D37C639C15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
@@ -3758,6 +3741,7 @@
 				D380800315C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
 				D306BC0615CFF2A100FDB80F /* GDataXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

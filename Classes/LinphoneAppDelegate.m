@@ -82,22 +82,30 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application{
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
+	if(![LinphoneManager isLcReady]) return;
+	[[LinphoneManager instance] enterBackgroundMode];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application {
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationWillResignActive"];
     if(![LinphoneManager isLcReady]) return;
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    if (call == NULL)
-        return;
+	
+	
+    if (call){
+		/* save call context */
+		LinphoneManager* instance = [LinphoneManager instance];
+		instance->currentCallContextBeforeGoingBackground.call = call;
+		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
     
-    /* save call context */
-    LinphoneManager* instance = [LinphoneManager instance];
-    instance->currentCallContextBeforeGoingBackground.call = call;
-    instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
-    
-    const LinphoneCallParams* params = linphone_call_get_current_params(call);
-    if (linphone_call_params_video_enabled(params)) {
-        linphone_call_enable_camera(call, false);
-    }
+		const LinphoneCallParams* params = linphone_call_get_current_params(call);
+		if (linphone_call_params_video_enabled(params)) {
+			linphone_call_enable_camera(call, false);
+		}
+	}
     
     if (![[LinphoneManager instance] resignActive]) {
         // destroying eventHandler if app cannot go in background.
@@ -111,7 +119,8 @@ int __aeabi_idiv(int a, int b) {
     
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application {   
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
     [self startApplication];
     
 	[[LinphoneManager instance] becomeActive];
@@ -121,19 +130,19 @@ int __aeabi_idiv(int a, int b) {
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    if (call == NULL)
-        return;
     
-    LinphoneManager* instance = [LinphoneManager instance];
-    if (call == instance->currentCallContextBeforeGoingBackground.call) {
-        const LinphoneCallParams* params = linphone_call_get_current_params(call);
-        if (linphone_call_params_video_enabled(params)) {
-            linphone_call_enable_camera(
+	if (call){
+		LinphoneManager* instance = [LinphoneManager instance];
+		if (call == instance->currentCallContextBeforeGoingBackground.call) {
+			const LinphoneCallParams* params = linphone_call_get_current_params(call);
+			if (linphone_call_params_video_enabled(params)) {
+				linphone_call_enable_camera(
                                         call, 
                                         instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
-        }
-        instance->currentCallContextBeforeGoingBackground.call = 0;
-    }
+			}
+			instance->currentCallContextBeforeGoingBackground.call = 0;
+		}
+	}
 }
 
 
@@ -183,6 +192,20 @@ int __aeabi_idiv(int a, int b) {
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    [self startApplication];
+    if([LinphoneManager isLcReady]) {
+        if([[url scheme] isEqualToString:@"sip"]) {
+            // Go to ChatRoom view
+            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+            if(controller != nil) {
+                [controller setAddress:[url absoluteString]];
+            }
+        }
+    }
+	return YES;
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

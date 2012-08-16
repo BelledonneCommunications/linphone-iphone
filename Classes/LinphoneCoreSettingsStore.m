@@ -362,7 +362,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             for(int i = 0; i < [tokenData length]; ++i) {
                 [tokenString appendFormat:@"%02X", (unsigned int)tokenBuffer[i]];
             }
-            // NSLocalizedString(@"IC_MSG", nil); // Fake
+            // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
+            // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
             NSString *params = [NSString stringWithFormat:@"APN-TOK=%@;APN-MSG=IM_MSG;APN-CAL=IC_MSG;APN-CAL-SND=ring.caf;APN-MSG-SND=msg.caf", tokenString];
             linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
         }
@@ -376,9 +377,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 }
 
 - (BOOL)synchronize {
+	if (![LinphoneManager isLcReady]) return YES;
 	LinphoneCore *lc=[LinphoneManager getLc];
 	
-	if (lc==NULL) return YES;
 	BOOL account_changed;
 	
 	account_changed=[self valueChangedForKey:@"username_preference"] 

@@ -526,7 +526,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
          
 - (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
-    if([viewStack count] > 0) {
+    if([viewStack count] > 1) {
         [viewStack removeLastObject];
         [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition] force:TRUE];
         return [mainViewController getCurrentViewController];
@@ -598,7 +598,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
 			notif.repeatInterval = 0;
-			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"%@ sent you a message",nil), address];
+			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = @"msg.caf";
 			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
@@ -650,7 +650,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		appData->notification = [[UILocalNotification alloc] init];
 		if (appData->notification) {
 			appData->notification.repeatInterval = 0;
-			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@" %@ is calling you",nil), address];
+			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
 			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
 			appData->notification.soundName = @"ring.caf";
 			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];

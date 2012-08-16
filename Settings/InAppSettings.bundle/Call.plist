@@ -36,7 +36,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Enable RFC DTMF</string>
+			<string>Send inband DTMFs</string>
 			<key>Key</key>
 			<string>rfc_dtmf_preference</string>
 			<key>DefaultValue</key>
@@ -46,7 +46,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Enable SIPINFO DTMF</string>
+			<string>Send SIP INFO DTMFs</string>
 			<key>Key</key>
 			<string>sipinfo_dtmf_preference</string>
 			<key>DefaultValue</key>

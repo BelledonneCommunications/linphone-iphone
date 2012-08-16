@@ -20,9 +20,10 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
+#import "ContactDetailsImagePickerController.h"
 #import "ContactDetailsDelegate.h"
 
-@interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate> {
+@interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, ContactDetailsImagePickerDelegate> {
     UILabel *addressLabel;
     UIImageView *avatarImage;
     UIView *normalView;
@@ -45,7 +46,9 @@
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
 
-@property(nonatomic,getter=isEditing) BOOL editing; 
+@property(nonatomic,getter=isEditing) BOOL editing;
+
+- (IBAction)onAvatarClick:(id)event;
 
 + (CGFloat)height:(BOOL)editing;
 

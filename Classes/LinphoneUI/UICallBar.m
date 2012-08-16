@@ -20,9 +20,6 @@
 #import "UICallBar.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
-
-#import "CPAnimationSequence.h"
-#import "CPAnimationStep.h"
 #import "Utils.h"
 
 #include "linphonecore.h"
@@ -340,29 +337,55 @@
 }
 
 
-#pragma mark -  
+#pragma mark - 
+
+- (void)showAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
+    CGRect frame = [target frame];
+    int original_y = frame.origin.y;
+    frame.origin.y = [[self view] frame].size.height;
+    [target setFrame:frame];
+    [target setHidden:FALSE];
+    [UIView animateWithDuration:0.5
+                          delay:0.0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         CGRect frame = [target frame];
+                         frame.origin.y = original_y;
+                         [target setFrame:frame];
+                     }
+                     completion:^(BOOL finished){
+                         CGRect frame = [target frame];
+                         frame.origin.y = original_y;
+                         [target setFrame:frame];
+                         completion(finished);
+                     }];
+}
+
+- (void)hideAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
+    CGRect frame = [target frame];
+    int original_y = frame.origin.y;
+    [UIView animateWithDuration:0.5
+                          delay:0.0
+                        options:UIViewAnimationOptionCurveEaseIn
+                     animations:^{
+                         CGRect frame = [target frame];
+                         frame.origin.y = [[self view] frame].size.height;
+                         [target setFrame:frame];
+                     }
+                     completion:^(BOOL finished){
+                         CGRect frame = [target frame];
+                         frame.origin.y = original_y;
+                         [target setHidden:TRUE];
+                         [target setFrame:frame];
+                         completion(finished);
+                     }];
+}
 
 - (void)showPad:(BOOL)animated {
     [dialerButton setOn];
     if([padView isHidden]) {
         if(animated) {
-            CGRect frame = [padView frame];
-            int original_y = frame.origin.y;
-            frame.origin.y = [[self view] frame].size.height;
-            [padView setFrame:frame];
-            [padView setHidden:FALSE];
-            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                          [[CPAnimationStep after:0.0
-                                                              for:0.5
-                                                          options:UIViewAnimationOptionCurveEaseOut
-                                                          animate:^{
-                                                              CGRect frame = [padView frame];
-                                                              frame.origin.y = original_y;
-                                                              [padView setFrame:frame];
-                                                          }] autorelease],
-                                          nil
-                                          ] autorelease];
-            [move run];
+            [self showAnimation:@"show" target:padView completion:^(BOOL finished){}];
         } else {
             [padView setHidden:FALSE];
         }
@@ -373,28 +396,7 @@
     [dialerButton setOff];
     if(![padView isHidden]) {
         if(animated) {
-            CGRect frame = [padView frame];
-            int original_y = frame.origin.y;
-            
-            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                          [[CPAnimationStep after:0.0
-                                                              for:0.5
-                                                          options:UIViewAnimationOptionCurveEaseIn
-                                                          animate:^{
-                                                              CGRect frame = [padView frame];
-                                                              frame.origin.y = [[self view] frame].size.height;
-                                                              [padView setFrame:frame];
-                                                          }] autorelease],
-                                          [[CPAnimationStep after:0.0
-                                                          animate:^{
-                                                              CGRect frame = [padView frame];
-                                                              frame.origin.y = original_y;
-                                                              [padView setHidden:TRUE];
-                                                              [padView setFrame:frame]; 
-                                                          }] autorelease], 
-                                          nil
-                                          ] autorelease];
-            [move run];
+            [self hideAnimation:@"hide" target:padView completion:^(BOOL finished){}];
         } else {
             [padView setHidden:TRUE];
         }
@@ -405,23 +407,7 @@
     [optionsButton setOn];
     if([optionsView isHidden]) {
         if(animated) {
-            CGRect frame = [optionsView frame];
-            int original_y = frame.origin.y;
-            frame.origin.y = [[self view] frame].size.height;
-            [optionsView setFrame:frame];
-            [optionsView setHidden:FALSE];
-            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                          [[CPAnimationStep after:0.0
-                                                              for:0.5
-                                                          options:UIViewAnimationOptionCurveEaseOut
-                                                          animate:^{
-                                                              CGRect frame = [optionsView frame];
-                                                              frame.origin.y = original_y;
-                                                              [optionsView setFrame:frame];
-                                                          }] autorelease],
-                                          nil
-                                          ] autorelease];
-            [move run];
+            [self showAnimation:@"show" target:optionsView completion:^(BOOL finished){}];
         } else {
             [optionsView setHidden:FALSE];
         }
@@ -432,28 +418,7 @@
     [optionsButton setOff];
     if(![optionsView isHidden]) {
         if(animated) {
-            CGRect frame = [optionsView frame];
-            int original_y = frame.origin.y;
-            
-            CPAnimationSequence* move = [[CPAnimationSequence sequenceWithSteps:
-                                          [[CPAnimationStep after:0.0
-                                                              for:0.5
-                                                          options:UIViewAnimationOptionCurveEaseIn
-                                                          animate:^{
-                                                              CGRect frame = [optionsView frame];
-                                                              frame.origin.y = [[self view] frame].size.height;
-                                                              [optionsView setFrame:frame];
-                                                          }] autorelease],
-                                          [[CPAnimationStep after:0.0
-                                                          animate:^{ 
-                                                              CGRect frame = [optionsView frame];
-                                                              frame.origin.y = original_y;
-                                                              [optionsView setHidden:TRUE];
-                                                              [optionsView setFrame:frame]; 
-                                                          }] autorelease], 
-                                          nil
-                                          ] autorelease];
-            [move run];
+            [self hideAnimation:@"hide" target:optionsView completion:^(BOOL finished){}];
         } else {
             [optionsView setHidden:TRUE];
         }
