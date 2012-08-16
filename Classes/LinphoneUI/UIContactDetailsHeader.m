@@ -22,6 +22,7 @@
 #import "UIEditableTableViewCell.h"
 #import "FastAddressBook.h"
 #import "UILinphone.h"
+#import "PhoneMainView.h"
 
 @implementation UIContactDetailsHeader
 
@@ -228,6 +229,40 @@
     [cell.detailTextField setDelegate:self];
     
     return cell;
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)onAvatarClick:(id)event {
+    if(self.isEditing) {
+        ContactDetailsImagePickerController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsImagePickerController compositeViewDescription] push:TRUE], ContactDetailsImagePickerController);
+        if(controller != nil) {
+            [controller setAllowsEditing:TRUE];
+            [controller setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+            [controller setImagePickerDelegate:self];
+        }
+    }
+}
+
+
+#pragma mark - ContactDetailsImagePickerDelegate Functions
+
+- (void)changeContactImage:(UIImage*)image {
+    NSError* error = NULL;
+    if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+    }
+    NSData *dataRef = UIImagePNGRepresentation(image); 
+    CFDataRef cfdata = CFDataCreate(NULL,[dataRef bytes], [dataRef length]);
+                                    
+    if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)error)) {
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+    }
+    
+    CFRelease(cfdata);
+    
+    [self update];
 }
 
 

@@ -490,7 +490,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             } else {
                 // Go to Chat room view
                 [[PhoneMainView instance] popToView:[ChatViewController compositeViewDescription]];
-                ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+                ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]], ChatRoomViewController);
                 if(controller != nil) {
                    [controller setRemoteAddress:dest];
                 }

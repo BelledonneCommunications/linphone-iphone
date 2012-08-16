@@ -64,7 +64,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                  tabBar:@"UIMainBar"
                                                           tabBarEnabled:true
                                                              fullscreen:false
-                                                          landscapeMode:true
+                                                          landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
     }
     return compositeDescription;
@@ -78,6 +78,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[PhoneMainView instance] popCurrentView];
     }
 }
+
 
 #pragma mark - Property Functions
 
