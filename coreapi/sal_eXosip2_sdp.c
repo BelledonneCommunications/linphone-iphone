@@ -514,7 +514,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 
 		/* Get media specific RTCP attribute */
 		stream->rtcp_port = stream->rtp_port + 1;
-		snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), stream->rtp_addr);
+		snprintf(stream->rtcp_addr, sizeof(stream->rtcp_addr), "%s", stream->rtp_addr);
 		for (j = 0; ((attr = sdp_message_attribute_get(msg, i, j)) != NULL); j++) {
 			if ((keywordcmp("rtcp", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				char tmp[256];
