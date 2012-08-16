@@ -24,6 +24,7 @@
 
 @synthesize imagePickerDelegate;
 
+
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;

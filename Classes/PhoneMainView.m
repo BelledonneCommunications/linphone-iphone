@@ -516,7 +516,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
          
 - (UIViewController*)popCurrentView {
     [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Pop view"];
-    if([viewStack count] > 0) {
+    if([viewStack count] > 1) {
         [viewStack removeLastObject];
         [self _changeCurrentView:[viewStack lastObject] transition:[PhoneMainView getBackwardTransition] force:TRUE];
         return [mainViewController getCurrentViewController];
