@@ -244,6 +244,10 @@
     return NO;
 }
 
+- (void)didReceiveMemoryWarning {
+    [self clearCache];
+}
+
 
 #pragma mark - Event Functions
 
@@ -259,7 +263,18 @@
 #pragma mark -
 
 - (void)clearCache {
-    [viewControllerCache removeAllObjects];
+    for(NSString *key in [viewControllerCache allKeys]) {
+        UIViewController *vc = [viewControllerCache objectForKey:key];
+        if(vc != self.stateBarViewController &&
+           vc != self.tabBarViewController &&
+           vc != self.contentViewController) {
+            if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
+                [vc viewWillUnload];
+            }
+            [vc viewDidUnload];
+        }
+        [viewControllerCache removeObjectForKey:key];
+    }
 }
 
 - (UIInterfaceOrientation)currentOrientation {

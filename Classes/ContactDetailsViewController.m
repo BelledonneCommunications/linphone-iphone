@@ -208,10 +208,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                 forState:(UIControlStateDisabled | UIControlStateSelected)];
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {

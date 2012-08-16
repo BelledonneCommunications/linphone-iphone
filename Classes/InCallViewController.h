@@ -40,6 +40,7 @@
     UIView* testVideoView;
 #endif
     UICamSwitch* videoCameraSwitch;
+    UITapGestureRecognizer* singleFingerTap;
     
     UIActivityIndicatorView* videoWaitingForFirstImage;
     
