@@ -21,55 +21,174 @@
 
 @implementation BuschJaegerConfigParser
 
-+ (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate{
-    NSString *urlString;
-    NSString *userString;
-    NSString *passwordString;
-    
+@synthesize outdoorStations;
+
+/********
+ [outdoorstation_0]
+ address=elviish@test.linphone.org
+ name=Front Door
+ screenshot=yes
+ surveillance=yes
+ 
+ [outdoorstation_1]
+ address=2
+ name=Back Door
+ screenshot=no
+ surveillance=no
+ 
+ [outdoorstation_2]
+ address=3
+ name=Roof Door
+ screenshot=no
+ surveillance=yes
+ 
+ [levelpushbutton]
+ name=Apartment Door
+ 
+ [network]
+ domain=test.linphone.org
+ local-address=test.linphone.org
+ global-address=sip.linphone.org
+ 
+ [user_0]
+ user=miaou
+ opendoor=yes
+ surveillance=yes
+ switchlight=yes
+ switching=yes
+ eillance=no
+ 
+ [outdoorstation_2]
+ address=3
+ name=Roof Door
+ screenshot=no
+ surveillance=yes
+ 
+ [levelpushbutton]
+ name=Apartment Door
+ 
+ [network]
+ domain=test.linphone.org
+ local-address=test.linphone.org
+ global-address=sip.linphone.org
+ 
+ [user_0]
+ user=miaou
+ opendoor=yes
+ surveillance=yes
+ switchlight=yes
+ switching=yes
+***************/
+
+- (id)init {
+    self = [super init];
+    if(self != nil) {
+        outdoorStations = [[NSMutableSet alloc] init];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [outdoorStations release];
+    [super dealloc];
+}
+
++ (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data {
     NSError  *error;
-    NSRegularExpression *regex;
+    NSRegularExpression *regex = [NSRegularExpression
+             regularExpressionWithPattern:regexString
+             options:0
+             error:&error];
     
-    {
-        error = NULL;
-        regex = [NSRegularExpression
-                 regularExpressionWithPattern:@"URL=([^\\s]+)"
-                 options:0
-                 error:&error];
-        
-        NSTextCheckingResult* result = [regex firstMatchInString:data options:0 range:NSMakeRange(0, [data length])];
-        if(result && result.numberOfRanges == 2) {
-            NSRange range = [result rangeAtIndex:1];
-            urlString = [data substringWithRange:range];
+    NSTextCheckingResult* result = [regex firstMatchInString:data options:0 range:NSMakeRange(0, [data length])];
+    if(result && result.numberOfRanges == 2) {
+        NSRange range = [result rangeAtIndex:1];
+        return [data substringWithRange:range];
+    }
+    return nil;
+}
+
+- (void)parseOutdoorStation:(int)ID array:(NSArray*)array {
+    OutdoorStation *os = [[OutdoorStation alloc] initWithId:ID];
+    NSString *param;
+    for(NSString *entry in array) {
+        if((param = [BuschJaegerConfigParser getRegexValue:@"^address=(.*)$" data:entry]) != nil) {
+            os.address = param;
+        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^name=(.*)$" data:entry]) != nil) {
+            os.name = param;
+        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^screenshot=(.*)$" data:entry]) != nil) {
+            os.screenshot = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
+        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
+            os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
+        } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
+            NSLog(@"Unknown entry in outdoorstation_%d section: %@", ID, entry);
         }
     }
+    [outdoorStations addObject:os];
+}
+
+- (void)parseSection:(NSString*)section array:(NSArray*)array {
+    NSString *param;
+    if((param = [BuschJaegerConfigParser getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
+        [self parseOutdoorStation:[param intValue] array:array];
+    } else {
+        NSLog(@"Unknown section: %@", section);
+    }
+}
+
+- (void)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
+    NSLog(@"%@", data);
+    NSArray *arr = [data componentsSeparatedByString:@"\n"];
+    NSString *last_section = nil;
+    int last_index = -1;
     
-    {
-        error = NULL;
-        regex = [NSRegularExpression
-                 regularExpressionWithPattern:@"USER=([^\\s]+)"
-                 options:0
-                 error:&error];
-        
-        NSTextCheckingResult* result = [regex firstMatchInString:data options:0 range:NSMakeRange(0, [data length])];
-        if(result && result.numberOfRanges == 2) {
-            NSRange range = [result rangeAtIndex:1];
-            userString = [data substringWithRange:range];
+    for (int i = 0; i < [arr count]; ++i) {
+        NSString *subStr = [arr objectAtIndex:i];
+        if([subStr hasPrefix:@"["]) {
+            if([subStr hasSuffix:@"]"]) {
+            if(last_index != -1) {
+                NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, i - last_index)]];
+                [self parseSection:last_section array:subArray];
+            }
+            last_section = subStr;
+            last_index = i + 1;
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate buschJaegerConfigParserError:NSLocalizedString(@"Invalid configuration file", nil)];
+                });
+                return;
+            }
         }
     }
-    
-    {
-        error = NULL;
-        regex = [NSRegularExpression
-                 regularExpressionWithPattern:@"PW=([^\\s]+)"
-                 options:0
-                 error:&error];
-        
-        NSTextCheckingResult* result = [regex firstMatchInString:data options:0 range:NSMakeRange(0, [data length])];
-        if(result && result.numberOfRanges == 2) {
-            NSRange range = [result rangeAtIndex:1];
-            passwordString = [data substringWithRange:range];
-        }
+    if(last_index != -1) {
+        NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, [arr count] - last_index)]];
+        [self parseSection:last_section array:subArray];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [delegate buschJaegerConfigParserSuccess];
+    });
+}
+
+- (void)reset {
+    [outdoorStations removeAllObjects];
+}
+
+- (BOOL)saveFile:(NSString*)file {
+    return TRUE;
+}
+
+- (BOOL)parseFile:(NSString*)file {
+    [self reset];
+    return TRUE;
+}
+
+- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
+    [self reset];
+    NSString *urlString = [BuschJaegerConfigParser getRegexValue:@"URL=([^\\s]+)" data:data];
+    NSString *userString = [BuschJaegerConfigParser getRegexValue:@"USER=([^\\s]+)" data:data];
+    NSString *passwordString = [BuschJaegerConfigParser getRegexValue:@"PW=([^\\s]+)" data:data];
+
     if(urlString != nil && userString != nil && passwordString != nil) {
         NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
@@ -77,14 +196,13 @@
             NSError *error = nil;
             NSData *data  = nil;
             data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(data == nil) {
+            if(data == nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigParserError:[error localizedDescription]];
-                } else {
-                    NSString *dataString = [NSString stringWithUTF8String:[data bytes]];
-                    [delegate buschJaegerConfigParserSuccessful];
-                }
-            });
+                });
+            } else {
+                [self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate];
+            }
         });
         return TRUE;
     } else {

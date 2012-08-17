@@ -1,4 +1,4 @@
-/* UILightButton.h
+/* OutdoorStation.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,17 +17,28 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIToggleButton.h"
-#include "linphonecore.h"
+#import "OutdoorStation.h"
 
+@implementation OutdoorStation
 
-@interface UILightButton : UIToggleButton<UIToggleButtonDelegate> {
-@public
-    LinphoneChatRoom* chatRoom;
-    
+@synthesize ID;
+@synthesize name;
+@synthesize address;
+@synthesize screenshot;
+@synthesize surveillance;
+
+- (id)initWithId:(int)aID {
+    self = [super init];
+    if(self != nil) {
+        self->ID = aID;
+    }
+    return self;
 }
 
--(void) send;
+- (void)dealloc {
+    self.name = nil;
+    self.address = nil;
+    [super dealloc];
+}
 
 @end
-

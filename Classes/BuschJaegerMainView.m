@@ -25,7 +25,7 @@
 @synthesize settingsButton;
 
 - (IBAction)settingsClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
+    BuschJaegerAppDelegate *delegate = [BuschJaegerAppDelegate instance];
     [delegate.navigationController pushViewController:delegate.buschJaegerSettingsView animated:TRUE];
 }
 

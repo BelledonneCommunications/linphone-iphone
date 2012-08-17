@@ -79,8 +79,7 @@
 }
 
 - (IBAction)onBackClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegate.navigationController popViewControllerAnimated:TRUE];
+    [[BuschJaegerAppDelegate instance].navigationController popViewControllerAnimated:TRUE];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -88,7 +87,7 @@
     if(zbs != nil) {
         BOOL handled = FALSE;
         for(ZBarSymbol *symbol in zbs) {
-            if([BuschJaegerConfigParser parseQRCode:[symbol data] delegate:self]) {
+            if([[[BuschJaegerAppDelegate instance] configuration] parseQRCode:[symbol data] delegate:self]) {
                 handled = TRUE;
                 [waitView setHidden:FALSE];
             }
@@ -99,7 +98,7 @@
     }
 }
 
-- (void)buschJaegerConfigParserSuccessful {
+- (void)buschJaegerConfigParserSuccess {
     UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Success",nil)
                                                         message:NSLocalizedString(@"The providing configuration is successfully applied", nil)
                                                        delegate:nil

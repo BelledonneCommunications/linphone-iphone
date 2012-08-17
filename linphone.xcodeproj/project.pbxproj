@@ -185,6 +185,11 @@
 		D37CD20D15DE2C610028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */; };
 		D37CD21015DE548A0028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */; };
 		D37CD21115DE548A0028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */; };
+		D37CD21515DE74B20028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD21415DE74B20028869A /* OutdoorStation.m */; };
+		D37CD21615DE74B20028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD21415DE74B20028869A /* OutdoorStation.m */; };
+		D37CD21715DE7D0F0028869A /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerCallView.m */; };
+		D37CD21815DE7D130028869A /* BuschJaegerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */; };
+		D37CD21915DE7D1D0028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECF614D0179C00460C04 /* BuschJaegerCallView.xib */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -628,6 +633,8 @@
 		D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerUtils.m; sourceTree = "<group>"; };
 		D37CD20E15DE54890028869A /* BuschJaegerConfigParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerConfigParser.h; sourceTree = "<group>"; };
 		D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfigParser.m; sourceTree = "<group>"; };
+		D37CD21315DE74B20028869A /* OutdoorStation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutdoorStation.h; path = Model/OutdoorStation.h; sourceTree = "<group>"; };
+		D37CD21415DE74B20028869A /* OutdoorStation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutdoorStation.m; path = Model/OutdoorStation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -738,48 +745,49 @@
 				34A6ECF214D0176400460C04 /* BuschJaeger */,
 				340751E4150E4D0200B89C47 /* CallDelegate.h */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
-				2214EB7012F84668002A5394 /* LinphoneUI */,
-				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
-				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
-				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
-				222A483112F7176F0075F07F /* IncallViewController.xib */,
-				3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */,
-				222A483212F7176F0075F07F /* IncallViewController.m */,
-				222A483312F7176F0075F07F /* IncallViewController.h */,
-				22E0A81B111C44E100B04932 /* MoreViewController.xib */,
-				22E0A81C111C44E100B04932 /* MoreViewController.m */,
-				22E0A81D111C44E100B04932 /* MoreViewController.h */,
-				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
-				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
-				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
-				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
-				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
-				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
-				22F2508C107141E100AC9B3F /* PhoneViewController.m */,
-				22F2508D107141E100AC9B3F /* PhoneViewController.xib */,
-				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
-				22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */,
-				22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */,
 				227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */,
 				227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */,
 				227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */,
-				2242D9C710D691F900E9963F /* GenericTabViewController.h */,
-				2242D9C810D691F900E9963F /* GenericTabViewController.m */,
-				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
-				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
-				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
-				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
-				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
+				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
 				340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */,
 				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
 				344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */,
-				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
+				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
+				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
+				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
+				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
+				22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */,
+				22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */,
+				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
+				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
+				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
+				2242D9C710D691F900E9963F /* GenericTabViewController.h */,
+				2242D9C810D691F900E9963F /* GenericTabViewController.m */,
+				3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */,
+				222A483312F7176F0075F07F /* IncallViewController.h */,
+				222A483212F7176F0075F07F /* IncallViewController.m */,
+				222A483112F7176F0075F07F /* IncallViewController.xib */,
+				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
+				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
+				2214EB7012F84668002A5394 /* LinphoneUI */,
 				34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */,
 				34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */,
 				34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */,
+				D37CD21215DE73D40028869A /* Model */,
+				22E0A81D111C44E100B04932 /* MoreViewController.h */,
+				22E0A81C111C44E100B04932 /* MoreViewController.m */,
+				22E0A81B111C44E100B04932 /* MoreViewController.xib */,
+				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
+				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
+				22F2508C107141E100AC9B3F /* PhoneViewController.m */,
+				22F2508D107141E100AC9B3F /* PhoneViewController.xib */,
 				3418844514C6CAD300EA48C7 /* StatusSubViewController.h */,
 				3418844614C6CAD300EA48C7 /* StatusSubViewController.m */,
 				3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */,
+				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
+				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
+				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
+				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 			);
@@ -1357,6 +1365,15 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		D37CD21215DE73D40028869A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D37CD21315DE74B20028869A /* OutdoorStation.h */,
+				D37CD21415DE74B20028869A /* OutdoorStation.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1489,6 +1506,7 @@
 				D378AB7B15DD457D0098505D /* BuschJaegerApp.xib in Resources */,
 				D37CD1F815DE27810028869A /* BuschJaegerMainView.xib in Resources */,
 				D37CD20915DE2AAC0028869A /* bj_settings.png in Resources */,
+				D37CD21915DE7D1D0028869A /* BuschJaegerCallView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1522,6 +1540,7 @@
 				D37CD1F515DE27810028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD20C15DE2C610028869A /* BuschJaegerUtils.m in Sources */,
 				D37CD21015DE548A0028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD21515DE74B20028869A /* OutdoorStation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1550,6 +1569,9 @@
 				D37CD1F615DE27810028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD20D15DE2C610028869A /* BuschJaegerUtils.m in Sources */,
 				D37CD21115DE548A0028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD21615DE74B20028869A /* OutdoorStation.m in Sources */,
+				D37CD21715DE7D0F0028869A /* BuschJaegerCallView.m in Sources */,
+				D37CD21815DE7D130028869A /* BuschJaegerAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

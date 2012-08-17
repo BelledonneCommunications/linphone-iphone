@@ -21,6 +21,7 @@
 #import "BuschJaegerMainView.h"
 #import "BuschJaegerCallView.h"
 #import "BuschJaegerSettingsView.h"
+#import "BuschJaegerConfigParser.h"
 
 @interface BuschJaegerAppDelegate : NSObject<UIApplicationDelegate, LinphoneUICallDelegate> {
     @private
@@ -29,6 +30,7 @@
     BuschJaegerCallView* buschJaegerCallView;
     BuschJaegerSettingsView* buschJaegerSettingsView;
     UINavigationController* navigationController;
+    BuschJaegerConfigParser* configuration;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -36,5 +38,8 @@
 @property (nonatomic, retain) IBOutlet BuschJaegerCallView* buschJaegerCallView;
 @property (nonatomic, retain) IBOutlet BuschJaegerSettingsView* buschJaegerSettingsView;
 @property (nonatomic, retain) IBOutlet UINavigationController* navigationController;
+@property (readonly) BuschJaegerConfigParser* configuration;
+
++ (BuschJaegerAppDelegate*)instance;
 
 @end

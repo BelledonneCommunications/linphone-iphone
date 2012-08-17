@@ -521,7 +521,6 @@
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="decline">UIHangUpButton</string>
 						<string key="endOrRejectCall">UIHangUpButton</string>
-						<string key="imageView">UIImageView</string>
 						<string key="lights">UIDigitButton</string>
 						<string key="mute">UIToggleButton</string>
 						<string key="openDoor">UIDigitButton</string>
@@ -537,10 +536,6 @@
 						<object class="IBToOneOutletInfo" key="endOrRejectCall">
 							<string key="name">endOrRejectCall</string>
 							<string key="candidateClassName">UIHangUpButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="imageView">
-							<string key="name">imageView</string>
-							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="lights">
 							<string key="name">lights</string>

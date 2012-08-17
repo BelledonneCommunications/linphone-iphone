@@ -24,6 +24,20 @@
 @synthesize buschJaegerCallView;
 @synthesize buschJaegerSettingsView;
 @synthesize navigationController;
+@synthesize configuration;
+
+- (id)init {
+    self = [super init];
+    if (self != nil) {
+        configuration = [[BuschJaegerConfigParser alloc] init];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [configuration release];
+    [super dealloc];
+}
 
 - (void) loadDefaultSettings {
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
@@ -91,6 +105,10 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
     [buschJaegerCallView activateVideoView:TRUE];
+}
+
++ (BuschJaegerAppDelegate*)instance {
+    return (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {

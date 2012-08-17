@@ -19,15 +19,24 @@
 
 #import <Foundation/Foundation.h>
 
+#import "OutdoorStation.h"
+
 @protocol BuschJaegerConfigParser <NSObject>
 
-- (void)buschJaegerConfigParserSuccessful;
+- (void)buschJaegerConfigParserSuccess;
 - (void)buschJaegerConfigParserError:(NSString *)error;
 
 @end
 
-@interface BuschJaegerConfigParser : NSObject
+@interface BuschJaegerConfigParser : NSObject {
+    NSMutableSet *outdoorStations;
+}
 
-+ (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate;
+@property (readonly) NSMutableSet *outdoorStations;
+
+- (void)reset;
+- (BOOL)saveFile:(NSString*)file;
+- (BOOL)parseFile:(NSString*)file;
+- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate;
 
 @end
