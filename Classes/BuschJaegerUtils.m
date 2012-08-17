@@ -1,4 +1,4 @@
-/* BuschJaegerMainView.m
+/* BuschJaegerUtils.m
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,16 +17,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerMainView.h"
-#import "BuschJaegerAppDelegate.h"
+#import "BuschJaegerUtils.h"
 
-@implementation BuschJaegerMainView
+#import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 
-@synthesize settingsButton;
+@implementation BuschJaegerUtils
 
-- (IBAction)settingsClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegate.navigationController pushViewController:delegate.buschJaegerSettingsView animated:TRUE];
++ (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
+    CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.frame = view.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
+    [view.layer insertSublayer:gradient atIndex:0];
 }
 
 @end

@@ -1,6 +1,6 @@
-/* BuschJaegerMainView.m
+/* BuschJaegerSettingsView.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,16 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerMainView.h"
-#import "BuschJaegerAppDelegate.h"
+#import <UIKit/UIKit.h>
 
-@implementation BuschJaegerMainView
+#import "ZBarReaderViewController.h"
+#import "BuschJaegerConfigParser.h"
 
-@synthesize settingsButton;
-
-- (IBAction)settingsClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegate.navigationController pushViewController:delegate.buschJaegerSettingsView animated:TRUE];
+@interface BuschJaegerSettingsView : UIViewController<ZBarReaderDelegate, BuschJaegerConfigParser> {
+    ZBarReaderViewController *scanController;
+    UIView *scanButton;
+    UIView *backButton;
+    UIView *waitView;
 }
+
+@property (nonatomic, retain) IBOutlet UIView *scanButton;
+@property (nonatomic, retain) IBOutlet UIView *backButton;
+@property (nonatomic, retain) IBOutlet UIView *waitView;
+
+
+- (IBAction)onScanClick:(id)sender;
+- (IBAction)onBackClick:(id)sender;
 
 @end

@@ -21,6 +21,9 @@
 @implementation BuschJaegerAppDelegate
 @synthesize window;
 @synthesize buschJaegerMainView;
+@synthesize buschJaegerCallView;
+@synthesize buschJaegerSettingsView;
+@synthesize navigationController;
 
 - (void) loadDefaultSettings {
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
@@ -65,7 +68,7 @@
     assert(lm == [LinphoneManager instance]);
     
 	[[LinphoneManager instance]	startLibLinphone];
-    [[LinphoneManager instance] setCallDelegate:buschJaegerMainView];
+    [[LinphoneManager instance] setCallDelegate:self];
     
 	[window addSubview:buschJaegerMainView.view];
 	[window makeKeyAndVisible];
@@ -81,18 +84,47 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    
-    [buschJaegerMainView activateVideoView:FALSE];
+    [buschJaegerCallView activateVideoView:FALSE];
 	[[LinphoneManager instance] enterBackgroundMode];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[LinphoneManager instance] becomeActive];
-    [buschJaegerMainView activateVideoView:TRUE];
+    [buschJaegerCallView activateVideoView:TRUE];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
 
+}
+
+// UI changes
+-(void) displayDialerFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayDialerFromUI:viewCtrl forUser:username withDisplayName:displayName];
+}
+-(void) displayCall: (LinphoneCall*) call InProgressFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayCall:call InProgressFromUI:viewCtrl forUser:username withDisplayName:displayName];
+}
+-(void) displayIncomingCall: (LinphoneCall*) call NotificationFromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayIncomingCall:call NotificationFromUI:viewCtrl forUser:username withDisplayName:displayName];
+}
+-(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayInCall:call FromUI:viewCtrl forUser:username withDisplayName:displayName];
+}
+-(void) displayVideoCall:(LinphoneCall*) call  FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayVideoCall:call FromUI:viewCtrl forUser:username withDisplayName:displayName];
+}
+
+//status reporting
+-(void) displayStatus:(NSString*) message {
+    [buschJaegerCallView displayStatus:message];
+}
+
+-(void) displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
+    [buschJaegerCallView displayAskToEnableVideoCall:call forUser:username withDisplayName:displayName];
+}
+
+-(void) firstVideoFrameDecoded:(LinphoneCall*) call {
+    [buschJaegerCallView firstVideoFrameDecoded:call];
 }
 
 @end

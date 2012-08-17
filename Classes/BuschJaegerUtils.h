@@ -1,4 +1,4 @@
-/* BuschJaegerMainView.m
+/* BuschJaegerUtils.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,16 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerMainView.h"
-#import "BuschJaegerAppDelegate.h"
+#import <Foundation/Foundation.h>
 
-@implementation BuschJaegerMainView
+@interface BuschJaegerUtils : NSObject
 
-@synthesize settingsButton;
-
-- (IBAction)settingsClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegate.navigationController pushViewController:delegate.buschJaegerSettingsView animated:TRUE];
-}
++ (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor;
 
 @end

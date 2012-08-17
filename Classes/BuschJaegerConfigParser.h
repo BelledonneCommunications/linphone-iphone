@@ -1,4 +1,4 @@
-/* BuschJaegerMainView.m
+/* BuschJaegerConfigParser.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,16 +17,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerMainView.h"
-#import "BuschJaegerAppDelegate.h"
+#import <Foundation/Foundation.h>
 
-@implementation BuschJaegerMainView
+@protocol BuschJaegerConfigParser <NSObject>
 
-@synthesize settingsButton;
+- (void)buschJaegerConfigParserSuccessful;
+- (void)buschJaegerConfigParserError:(NSString *)error;
 
-- (IBAction)settingsClick:(id)sender {
-    BuschJaegerAppDelegate *delegate = (BuschJaegerAppDelegate *)[UIApplication sharedApplication].delegate;
-    [delegate.navigationController pushViewController:delegate.buschJaegerSettingsView animated:TRUE];
-}
+@end
+
+@interface BuschJaegerConfigParser : NSObject
+
++ (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate;
 
 @end

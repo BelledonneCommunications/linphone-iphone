@@ -19,14 +19,22 @@
 
 #import <Foundation/Foundation.h>
 #import "BuschJaegerMainView.h"
+#import "BuschJaegerCallView.h"
+#import "BuschJaegerSettingsView.h"
 
-@interface BuschJaegerAppDelegate : NSObject<UIApplicationDelegate> {
+@interface BuschJaegerAppDelegate : NSObject<UIApplicationDelegate, LinphoneUICallDelegate> {
     @private
     UIWindow *window;
     BuschJaegerMainView* buschJaegerMainView;
+    BuschJaegerCallView* buschJaegerCallView;
+    BuschJaegerSettingsView* buschJaegerSettingsView;
+    UINavigationController* navigationController;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet BuschJaegerMainView* buschJaegerMainView;
+@property (nonatomic, retain) IBOutlet BuschJaegerCallView* buschJaegerCallView;
+@property (nonatomic, retain) IBOutlet BuschJaegerSettingsView* buschJaegerSettingsView;
+@property (nonatomic, retain) IBOutlet UINavigationController* navigationController;
 
 @end
