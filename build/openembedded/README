@@ -1,6 +1,5 @@
 Recipes for open embedded: http://www.openembedded.org
 
-
 Documentations:
 http://docs.openembedded.org/usermanual/
 http://bitbake.berlios.de/manual/
@@ -13,7 +12,9 @@ Instructions for compilation from sources: (requires 10 Go of free space)
   For IGEPv2 use environment variable MACHINE=igep0020
 
 - Add linphone recipes to the pool with an higher priority:
-  Edit conf/bblayers.conf to set EXTRA_LAYERS to the source repository of linphone:
+  Edit conf/bblayers.conf to set EXTRA_LAYERS to point to the source repository of linphone. Search the EXTRALAYERS definition in conf/bblayers.conf
+  and modify it like this:
+
      # Add your overlay location to EXTRALAYERS
      # Make sure to have a conf/layers.conf in there
      EXTRALAYERS ?= "/home/smorlat/sources/git/linphone-daemon/build/openembedded"
@@ -23,7 +24,7 @@ Instructions for compilation from sources: (requires 10 Go of free space)
   Source appropriate environment with "~/.oe/enviro*"  
   Change directory to where you launched Angstrom install script.
 
-- Compile linphone / linphonec
+- Compile linphone
   bitbake -c clean linphone
   bitbake linphone
 

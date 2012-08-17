@@ -21,3 +21,4 @@ PARALLEL_MAKE = ""
 
 SRC_URI[md5sum] = "98330bc00a581ed8d71ebe34afabbcf9"
 SRC_URI[sha256sum] = "835cd886105e4e39791f0e8cfe004c39b069f2e6dcb0795a68a6c79b5d14af2c"
+LIC_FILES_CHKSUM = "file://COPYING;md5=8791c23ddf418deb5be264cffb5fa6bc"
