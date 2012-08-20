@@ -23,10 +23,6 @@
 
 
 @interface UIDigitButton : UILongTouchButton<UILongTouchButtonDelegate> {
-@private
-	char  digit;
-    bool  dtmf;
-	UITextField* addressField;    
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;

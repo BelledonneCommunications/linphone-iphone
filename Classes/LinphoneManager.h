@@ -76,23 +76,10 @@ typedef struct _LinphoneManagerSounds {
     
 @private
 	NSTimer* mIterateTimer;
-	bool isbackgroundModeEnabled;
     
 	Connectivity connectivity;
-	const char*  frontCamId;
-	const char*  backCamId;
     
-    FastAddressBook* fastAddressBook;
-    
-    LinphoneManagerSounds sounds;
     NSMutableArray *inhibitedEvent;
-    sqlite3 *database;
-    
-    /* MODIFICATION: Add buschjaeger configuration */
-    BuschJaegerConfigParser *configuration;
-    /**/
-    /* MODIFICATIOn: add NSUSerDefault settings */
-    NSDictionary *currentSettings;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
