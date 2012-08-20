@@ -40,6 +40,9 @@ NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
 NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
+/* MODIFICATION: Add buschjaeger configuration event */
+NSString *const kLinphoneConfigurationUpdate = @"LinphoneConfigurationUpdate";
+/**/
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kContactSipField = @"SIP";
@@ -1176,6 +1179,11 @@ static LinphoneCoreVTable linphonec_vtable = {
     return YES;
 }
 
-
+// no proxy configured alert
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
+	}
+}
 
 @end

@@ -212,6 +212,12 @@
 		D37CD38D15E22FDC0028869A /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D37CD38B15E22FD60028869A /* libiconv.dylib */; };
 		D37CD38F15E2331C0028869A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38E15E2331C0028869A /* Settings.bundle */; };
 		D37CD39015E2331C0028869A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38E15E2331C0028869A /* Settings.bundle */; };
+		D37CD39A15E244D10028869A /* UIStationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD39915E244D10028869A /* UIStationCell.m */; };
+		D37CD39B15E244D10028869A /* UIStationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD39915E244D10028869A /* UIStationCell.m */; };
+		D37CD39D15E244E40028869A /* UIStationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD39C15E244E40028869A /* UIStationCell.xib */; };
+		D37CD39E15E244E40028869A /* UIStationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD39C15E244E40028869A /* UIStationCell.xib */; };
+		D37CD3A115E2452C0028869A /* BuschJaegerStationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */; };
+		D37CD3A215E2452C0028869A /* BuschJaegerStationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */; };
 		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
@@ -596,6 +602,11 @@
 		D37CD38615E22C010028869A /* BuschJaegerMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerMainView.xib; sourceTree = "<group>"; };
 		D37CD38B15E22FD60028869A /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		D37CD38E15E2331C0028869A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		D37CD39815E244D10028869A /* UIStationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStationCell.h; sourceTree = "<group>"; };
+		D37CD39915E244D10028869A /* UIStationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStationCell.m; sourceTree = "<group>"; };
+		D37CD39C15E244E40028869A /* UIStationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStationCell.xib; sourceTree = "<group>"; };
+		D37CD39F15E245290028869A /* BuschJaegerStationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerStationViewController.h; sourceTree = "<group>"; };
+		D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerStationViewController.m; sourceTree = "<group>"; };
 		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
 		D380801115C29984005BE9BC /* ColorSpaceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorSpaceUtilities.h; path = Utils/ColorSpaceUtilities.h; sourceTree = "<group>"; };
@@ -733,6 +744,8 @@
 				D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */,
 				D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */,
 				D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */,
+				D37CD39F15E245290028869A /* BuschJaegerStationViewController.h */,
+				D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */,
 				D37CD30915E21E330028869A /* BuschJaegerUtils.h */,
 				D37CD30A15E21E330028869A /* BuschJaegerUtils.m */,
 				D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */,
@@ -982,6 +995,9 @@
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
+				D37CD39815E244D10028869A /* UIStationCell.h */,
+				D37CD39915E244D10028869A /* UIStationCell.m */,
+				D37CD39C15E244E40028869A /* UIStationCell.xib */,
 				D32648421588F6FA00930C67 /* UIToggleButton.h */,
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				D3196D3C15A32BD7007FEEBA /* UITransferButton.h */,
@@ -1397,6 +1413,7 @@
 				D37CD38215E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */,
 				D37CD38915E22C020028869A /* BuschJaegerMainView.xib in Resources */,
 				D37CD38F15E2331C0028869A /* Settings.bundle in Resources */,
+				D37CD39D15E244E40028869A /* UIStationCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1434,6 +1451,7 @@
 				D37CD38315E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */,
 				D37CD38A15E22C020028869A /* BuschJaegerMainView.xib in Resources */,
 				D37CD39015E2331C0028869A /* Settings.bundle in Resources */,
+				D37CD39E15E244E40028869A /* UIStationCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1509,6 +1527,8 @@
 				D37CD35315E22A470028869A /* OutdoorStation.m in Sources */,
 				D37CD38015E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */,
+				D37CD39A15E244D10028869A /* UIStationCell.m in Sources */,
+				D37CD3A115E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1552,6 +1572,8 @@
 				D37CD35415E22A470028869A /* OutdoorStation.m in Sources */,
 				D37CD38115E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */,
+				D37CD39B15E244D10028869A /* UIStationCell.m in Sources */,
+				D37CD3A215E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

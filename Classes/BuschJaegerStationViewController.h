@@ -1,4 +1,4 @@
-/* BuschJaegerWelcomeView.h
+/* BuschJaegerStationViewController.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -18,16 +18,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "BuschJaegerStationViewController.h"
 
-@interface BuschJaegerWelcomeView : UIViewController {
-    UIButton* settingsButton;
-    BuschJaegerStationViewController *tableController;
-}
+@interface BuschJaegerStationViewController : UITableViewController
 
-@property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet BuschJaegerStationViewController *tableController;
-
-- (IBAction)settingsClick:(id)sender;
+@property (nonatomic, copy) NSArray *stations;
 
 @end

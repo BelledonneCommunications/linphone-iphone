@@ -36,6 +36,9 @@ extern NSString *const kLinphoneTextReceivedSound;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
+/* MODIFICATION: Add buschjaeger configuration event */
+extern NSString *const kLinphoneConfigurationUpdate;
+/**/
 extern NSString *const kLinphoneAddressBookUpdate;
 
 extern NSString *const kContactSipField;

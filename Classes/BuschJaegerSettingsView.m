@@ -107,6 +107,8 @@
     [errorView show];
     [errorView release];
     [waitView setHidden:TRUE];
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[[LinphoneManager instance] configuration] forKey:@"configuration"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneConfigurationUpdate object:self userInfo:dict];
 }
 
 - (void)buschJaegerConfigParserError:(NSString *)error {
@@ -118,6 +120,8 @@
     [errorView show];
     [errorView release];
     [waitView setHidden:TRUE];
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[[LinphoneManager instance] configuration] forKey:@"configuration"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneConfigurationUpdate object:self userInfo:dict];
 }
 
 @end

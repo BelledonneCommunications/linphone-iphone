@@ -34,76 +34,13 @@
 				<string key="IBProxiedObjectIdentifier">IBFirstResponder</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
-			<object class="IBUIViewController" id="105759972">
-				<string key="IBUINibName">BuschJaegerCallView</string>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUIViewController" id="660452430">
-				<string key="IBUINibName">BuschJaegerWelcomeView</string>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUIViewController" id="396228537">
-				<string key="IBUINibName">BuschJaegerSettingsView</string>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUINavigationController" id="292382756">
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<bool key="IBUIDefinesPresentationContext">YES</bool>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-				<object class="IBUINavigationBar" key="IBUINavigationBar" id="62639881">
-					<nil key="NSNextResponder"/>
-					<int key="NSvFlags">256</int>
-					<string key="NSFrameSize">{0, 0}</string>
-					<string key="NSReuseIdentifierKey">_NS:15</string>
-					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				</object>
-				<array class="NSMutableArray" key="IBUIViewControllers">
-					<object class="IBUIViewController" id="831081166">
-						<object class="IBUINavigationItem" key="IBUINavigationItem" id="786979008">
-							<reference key="IBUINavigationBar"/>
-							<string key="IBUITitle">Root View Controller</string>
-							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						</object>
-						<reference key="IBUIParentViewController" ref="292382756"/>
-						<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-							<int key="IBUIInterfaceOrientation">1</int>
-							<int key="interfaceOrientation">1</int>
-						</object>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<bool key="IBUIHorizontal">NO</bool>
-					</object>
-				</array>
-				<bool key="IBUINavigationBarHidden">YES</bool>
-			</object>
-			<object class="IBUIView" id="192697182">
+			<object class="IBUIView" id="168986707">
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -114,6 +51,70 @@
 				</object>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
+			<object class="IBUIViewController" id="503124518">
+				<string key="IBUINibName">BuschJaegerCallView</string>
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="205165019">
+				<string key="IBUINibName">BuschJaegerWelcomeView</string>
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="829372912">
+				<string key="IBUINibName">BuschJaegerSettingsView</string>
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUINavigationController" id="864273647">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<bool key="IBUIDefinesPresentationContext">YES</bool>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+				<object class="IBUINavigationBar" key="IBUINavigationBar" id="711683312">
+					<nil key="NSNextResponder"/>
+					<int key="NSvFlags">256</int>
+					<string key="NSFrameSize">{0, 0}</string>
+					<string key="NSReuseIdentifierKey">_NS:15</string>
+					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				</object>
+				<array class="NSMutableArray" key="IBUIViewControllers">
+					<object class="IBUIViewController" id="702913231">
+						<object class="IBUINavigationItem" key="IBUINavigationItem" id="885531587">
+							<reference key="IBUINavigationBar"/>
+							<string key="IBUITitle">Root View Controller</string>
+							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						</object>
+						<reference key="IBUIParentViewController" ref="864273647"/>
+						<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+							<int key="IBUIInterfaceOrientation">1</int>
+							<int key="interfaceOrientation">1</int>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<bool key="IBUIHorizontal">NO</bool>
+					</object>
+				</array>
+				<bool key="IBUINavigationBarHidden">YES</bool>
+			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<array class="NSMutableArray" key="connectionRecords">
@@ -121,7 +122,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">callView</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="105759972"/>
+						<reference key="destination" ref="503124518"/>
 					</object>
 					<int key="connectionID">11</int>
 				</object>
@@ -129,7 +130,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">settingsView</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="396228537"/>
+						<reference key="destination" ref="829372912"/>
 					</object>
 					<int key="connectionID">12</int>
 				</object>
@@ -137,7 +138,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">welcomeView</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="660452430"/>
+						<reference key="destination" ref="205165019"/>
 					</object>
 					<int key="connectionID">13</int>
 				</object>
@@ -145,7 +146,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">navigationController</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="292382756"/>
+						<reference key="destination" ref="864273647"/>
 					</object>
 					<int key="connectionID">20</int>
 				</object>
@@ -153,7 +154,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">view</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="192697182"/>
+						<reference key="destination" ref="168986707"/>
 					</object>
 					<int key="connectionID">22</int>
 				</object>
@@ -179,50 +180,50 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">9</int>
-						<reference key="object" ref="396228537"/>
+						<reference key="object" ref="829372912"/>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">10</int>
-						<reference key="object" ref="105759972"/>
+						<reference key="object" ref="503124518"/>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
-						<reference key="object" ref="660452430"/>
+						<reference key="object" ref="205165019"/>
 						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">16</int>
-						<reference key="object" ref="292382756"/>
+						<reference key="object" ref="864273647"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="62639881"/>
-							<reference ref="831081166"/>
+							<reference ref="711683312"/>
+							<reference ref="702913231"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">17</int>
-						<reference key="object" ref="62639881"/>
-						<reference key="parent" ref="292382756"/>
+						<reference key="object" ref="711683312"/>
+						<reference key="parent" ref="864273647"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">18</int>
-						<reference key="object" ref="831081166"/>
+						<reference key="object" ref="702913231"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="786979008"/>
+							<reference ref="885531587"/>
 						</array>
-						<reference key="parent" ref="292382756"/>
+						<reference key="parent" ref="864273647"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">19</int>
-						<reference key="object" ref="786979008"/>
-						<reference key="parent" ref="831081166"/>
+						<reference key="object" ref="885531587"/>
+						<reference key="parent" ref="702913231"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">21</int>
-						<reference key="object" ref="192697182"/>
+						<reference key="object" ref="168986707"/>
 						<reference key="parent" ref="0"/>
 					</object>
 				</array>
@@ -248,7 +249,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">22</int>
+			<int key="maxID">23</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -320,9 +321,10 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">BuschJaegerMainView</string>
-					<string key="superclassName">UINavigationController</string>
+					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="callView">BuschJaegerCallView</string>
+						<string key="navigationController">UINavigationController</string>
 						<string key="settingsView">BuschJaegerSettingsView</string>
 						<string key="welcomeView">BuschJaegerWelcomeView</string>
 					</dictionary>
@@ -330,6 +332,10 @@
 						<object class="IBToOneOutletInfo" key="callView">
 							<string key="name">callView</string>
 							<string key="candidateClassName">BuschJaegerCallView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="navigationController">
+							<string key="name">navigationController</string>
+							<string key="candidateClassName">UINavigationController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="settingsView">
 							<string key="name">settingsView</string>

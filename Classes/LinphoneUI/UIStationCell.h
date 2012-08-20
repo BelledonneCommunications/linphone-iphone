@@ -1,6 +1,6 @@
-/* BuschJaegerWelcomeView.h
+/* UIStationCell.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "BuschJaegerStationViewController.h"
+#import "OutdoorStation.h"
 
-@interface BuschJaegerWelcomeView : UIViewController {
-    UIButton* settingsButton;
-    BuschJaegerStationViewController *tableController;
-}
+@interface UIStationCell : UITableViewCell
 
-@property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet BuschJaegerStationViewController *tableController;
 
-- (IBAction)settingsClick:(id)sender;
+@property (nonatomic, retain) OutdoorStation *station;
+
+@property (nonatomic, retain) IBOutlet UIImageView *stationImage;
+@property (nonatomic, retain) IBOutlet UILabel *stationName;
+
+- (id)initWithIdentifier:(NSString*)identifier;
 
 @end

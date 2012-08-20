@@ -23,6 +23,62 @@
 @implementation BuschJaegerWelcomeView
 
 @synthesize settingsButton;
+@synthesize tableController;
+
+#pragma mark - Lifecycle Functions
+
+- (void)dealloc {
+    [settingsButton release];
+    [tableController release];
+    
+    // Remove all observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    [self updateConfiguration:[LinphoneManager instance].configuration];
+    [tableController.view setBackgroundColor:[UIColor clearColor]];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(configurationUpdateEvent:)
+                                                 name:kLinphoneConfigurationUpdate
+                                               object:nil];
+}
+
+- (void)vieWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneConfigurationUpdate
+                                                  object:nil];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)configurationUpdateEvent: (NSNotification*) notif {
+    BuschJaegerConfigParser *configuration = [notif.userInfo objectForKey:@"configuration"];
+    [self updateConfiguration:configuration];
+}
+
+- (void)updateConfiguration:(BuschJaegerConfigParser *)configuration {
+    [tableController setStations:[NSArray arrayWithArray:[[configuration outdoorStations] allObjects]]];
+}
+
+
+#pragma mark - 
 
 - (IBAction)settingsClick:(id)sender {
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:TRUE];
