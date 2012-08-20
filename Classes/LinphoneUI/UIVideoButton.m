@@ -27,8 +27,8 @@
 @synthesize waitView;
 
 - (void)initUIVideoButton {
-    self->locked = FALSE;
-    self->unlockVideoState = FALSE;
+    locked = FALSE;
+    unlockVideoState = FALSE;
 }
 
 - (id)init{

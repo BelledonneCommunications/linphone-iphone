@@ -21,7 +21,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 
 - (void)initUACellBackgroundView {
     [super setBackgroundColor:[UIColor clearColor]];
-    self->automaticPositioning = TRUE;
+    automaticPositioning = TRUE;
 }
      
 - (id)init {
@@ -53,10 +53,10 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 }
      
 - (void)setBackgroundColor:(UIColor *)abackgroundColor {
-    if(self->backgroundColor != nil) {
-        [self->backgroundColor release];
+    if(backgroundColor != nil) {
+        [backgroundColor release];
     }
-    self->backgroundColor = [[UIColor alloc]initWithCGColor:abackgroundColor.CGColor];
+    backgroundColor = [[UIColor alloc]initWithCGColor:abackgroundColor.CGColor];
     [self setNeedsDisplay];
 }
 

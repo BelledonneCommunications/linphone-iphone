@@ -33,25 +33,6 @@
 @end
 
 @interface UICallCell : UITableViewCell {
-    @private
-    BOOL firstCell;
-    BOOL conferenceCell;
-    BOOL currentCall;
-    
-    UIImageView* headerBackgroundImage;
-    UIImageView* headerBackgroundHighlightImage;
-    
-    UILabel *addressLabel;
-    UILabel *stateLabel;
-    UIImageView *stateImage;
-    UIPauseButton *pauseButton;
-    UIButton *removeButton;
-    UIImageView *avatarImage;
-    
-    UIView *headerView;
-    UIView *avatarView;
-    
-    UICallCellData *data;
 }
 
 @property (nonatomic, retain) UICallCellData *data;

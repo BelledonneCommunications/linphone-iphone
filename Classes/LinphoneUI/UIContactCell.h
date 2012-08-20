@@ -21,10 +21,6 @@
 #import <AddressBook/AddressBook.h>
 
 @interface UIContactCell : UITableViewCell {
-    UILabel *firstNameLabel;
-    UILabel *lastNameLabel;
-    UIImageView *avatarImage;
-    ABRecordRef contact;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;

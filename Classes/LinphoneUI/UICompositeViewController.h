@@ -24,15 +24,6 @@
 #import "TPMultiLayoutViewController.h"
 
 @interface UICompositeViewDescription: NSObject{
-    NSString *name;
-    NSString *content;
-    NSString *stateBar;
-    BOOL stateBarEnabled;
-    NSString *tabBar;
-    BOOL tabBarEnabled;
-    BOOL fullscreen;
-    BOOL landscapeMode;
-    BOOL portraitMode;
 }
 
 @property (retain) NSString *name;
@@ -65,14 +56,8 @@
 
 @interface UICompositeViewController : TPMultiLayoutViewController {
     @private
-    UIView *stateBarView;
-    UIView *contentView;
-    UIView *tabBarView;
-    
     NSMutableDictionary *viewControllerCache;
-    
     UICompositeViewDescription *currentViewDescription;
-    CATransition *viewTransition;
     UIInterfaceOrientation currentOrientation;
 }
 

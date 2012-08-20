@@ -21,16 +21,8 @@
 
 @class ConsoleViewController;
 @interface MoreViewController : UITableViewController {
-
+    @private
 	bool isLogViewEnabled;
-	
-	UITableViewCell *credit;
-	UITextView *creditText;
-
-	UITableViewCell *web;
-	UILabel *weburi;
-	UITableViewCell *console;
-
 	ConsoleViewController *consoleViewController;
 	bool isDebug;
 }

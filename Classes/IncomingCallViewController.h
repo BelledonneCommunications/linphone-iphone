@@ -31,11 +31,6 @@
 @end
 
 @interface IncomingCallViewController : UIViewController <UICompositeViewDelegate> {
-@private
-    UILabel* addressLabel;
-    UIImageView* avatarImage;
-    LinphoneCall *call;
-    id<IncomingCallViewDelegate> delegate;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;

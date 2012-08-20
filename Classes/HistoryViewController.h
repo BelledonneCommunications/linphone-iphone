@@ -24,13 +24,6 @@
 #import "UIToggleButton.h"
 
 @interface HistoryViewController : UIViewController<UICompositeViewDelegate> {
-    @private
-    HistoryTableViewController *tableController;
-    UITableView *tableView;
-    
-    UIButton *allButton;
-    UIButton *missedButton;
-    UIToggleButton *editButton;
 }
 
 @property (nonatomic, retain) IBOutlet HistoryTableViewController* tableController;

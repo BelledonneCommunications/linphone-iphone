@@ -83,10 +83,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Property Functions
 
 - (void)setDataList:(NSDictionary *)adatalist {
-    if (self->dataList != nil) {
-        [self->dataList release];
+    if([dataList isEqualToDictionary:adatalist]) {
+        return;
     }
-    self->dataList = [adatalist retain];
+    [dataList release];
+    dataList = [adatalist retain];
     [tableView reloadData];
 }
 

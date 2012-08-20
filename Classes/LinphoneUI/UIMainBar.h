@@ -21,15 +21,6 @@
 #import "TPMultiLayoutViewController.h"
 
 @interface UIMainBar : TPMultiLayoutViewController {
-    UIButton *historyButton;
-    UIButton *contactsButton;
-    UIButton *dialerButton;
-    UIButton *settingsButton;
-    UIButton *chatButton;
-    UIView *historyNotificationView;
-    UILabel *historyNotificationLabel;
-    UIView *chatNotificationView;
-    UILabel *chatNotificationLabel;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* historyButton;

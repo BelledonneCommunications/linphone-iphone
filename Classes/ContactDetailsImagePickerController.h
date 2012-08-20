@@ -26,8 +26,6 @@
 @end
 
 @interface ContactDetailsImagePickerController : UIImagePickerController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
-@private
-        id<ContactDetailsImagePickerDelegate> imagePickerDelegate;
 }
 
 @property (nonatomic, retain) id<ContactDetailsImagePickerDelegate> imagePickerDelegate;

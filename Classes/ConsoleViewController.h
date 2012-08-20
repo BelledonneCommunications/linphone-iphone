@@ -22,8 +22,6 @@
 #import "LogView.h"
 
 @interface ConsoleViewController : UIViewController <LogView> {
-	UITextView* logs;
-	UIView*		logsView;
 }
 
 -(void) doAction;

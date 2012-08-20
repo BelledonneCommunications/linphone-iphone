@@ -22,11 +22,6 @@
 #import "UICompositeViewController.h"
 
 @interface FirstLoginViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
-	UIButton* loginButton;
-	UIButton* siteButton;
-	UITextField* usernameField;
-    UITextField* passwordField;
-	UIView* waitView;
 }
 
 - (IBAction)onLoginClick:(id)sender;

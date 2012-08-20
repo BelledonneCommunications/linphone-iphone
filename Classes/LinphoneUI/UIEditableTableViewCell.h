@@ -20,7 +20,6 @@
 #import <UIKit/UIKit.h>
 
 @interface UIEditableTableViewCell : UITableViewCell {
-    UITextField *detailTextField;
 }
 
 @property (nonatomic, retain) IBOutlet UITextField *detailTextField;

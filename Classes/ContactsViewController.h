@@ -42,13 +42,6 @@ typedef enum _ContactSelectionMode {
 @end
 
 @interface ContactsViewController : UIViewController<UICompositeViewDelegate> {
-    ContactsTableViewController *tableController;
-    UITableView *tableView;
-    
-    UIButton *allButton;
-    UIButton *linphoneButton;
-    UIButton *backButton;
-    UIButton *addButton;
 }
 
 @property (nonatomic, retain) IBOutlet ContactsTableViewController* tableController;

@@ -69,7 +69,10 @@
 #pragma mark - Property Functions
 
 - (void)setMissedFilter:(BOOL)amissedFilter {
-    self->missedFilter = amissedFilter;
+    if(missedFilter == amissedFilter) {
+        return;
+    }
+    missedFilter = amissedFilter;
     [self loadData];
     [[self tableView] reloadData];
 }
