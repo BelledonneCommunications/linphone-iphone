@@ -154,10 +154,11 @@ int __aeabi_idiv(int a, int b) {
     }
 }
 
+/* MODIFICATION: Add default settings */
 - (void) loadDefaultSettings {
     NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
     if(!settingsBundle) {
-        NSLog(@"Could not find Settings.bundle");
+        [LinphoneLogger log:LinphoneLoggerError format:@"Could not find Settings.bundle"];
         return;
     }
     
@@ -187,8 +188,12 @@ int __aeabi_idiv(int a, int b) {
     
 }
 
+/**/
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    /* MODIFICATION: Add default settings */
     [self loadDefaultSettings];
+    /**/
     
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
     
@@ -216,8 +221,11 @@ int __aeabi_idiv(int a, int b) {
         // Only execute one time at application start
         if(!started) {
             started = TRUE;
+            /* MODIFICATION: Change Main View
+            [[PhoneMainView instance] startUp];
+             */
             [window setRootViewController:[[[BuschJaegerMainView alloc] initWithNibName:@"BuschJaegerMainView" bundle:[NSBundle mainBundle]] autorelease]];
-            //[[PhoneMainView instance] startUp];
+            /**/
         }
     }
 }
@@ -230,7 +238,7 @@ int __aeabi_idiv(int a, int b) {
     [self startApplication];
     if([LinphoneManager isLcReady]) {
         if([[url scheme] isEqualToString:@"sip"]) {
-            /*
+            /* MODIFICATION: Remove URL handling
             // Go to ChatRoom view
             DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
             if(controller != nil) {
@@ -251,7 +259,7 @@ int __aeabi_idiv(int a, int b) {
             NSString *loc_key = [alert objectForKey:@"loc-key"];
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
-                    /*
+                    /* MODIFICATION: Remove remote notification
                     [[LinphoneManager instance] addInhibitedEvent:kLinphoneTextReceivedSound];
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
                      */
@@ -271,7 +279,7 @@ int __aeabi_idiv(int a, int b) {
         }
         linphone_core_accept_call([LinphoneManager getLc], call);
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
-        /*
+        /* MODIFICATION: Remove chat local notificaiton
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);

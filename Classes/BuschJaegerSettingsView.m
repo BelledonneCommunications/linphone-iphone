@@ -87,10 +87,10 @@
     if(zbs != nil) {
         BOOL handled = FALSE;
         for(ZBarSymbol *symbol in zbs) {
-            /*if([[[LinphoneManager instance] configuration] parseQRCode:[symbol data] delegate:self]) {
+            if([[[LinphoneManager instance] configuration] parseQRCode:[symbol data] delegate:self]) {
                 handled = TRUE;
                 [waitView setHidden:FALSE];
-            }*/
+            }
         }
         if(handled) {
             [self dismissModalViewControllerAnimated:TRUE];

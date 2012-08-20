@@ -18,6 +18,7 @@
  */
 
 #import "BuschJaegerConfigParser.h"
+#import "Utils.h"
 
 @implementation BuschJaegerConfigParser
 
@@ -121,7 +122,7 @@
         } else if((param = [BuschJaegerConfigParser getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
             os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
         } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
-            NSLog(@"Unknown entry in outdoorstation_%d section: %@", ID, entry);
+            [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in outdoorstation_%d section: %@", ID, entry];
         }
     }
     [outdoorStations addObject:os];
@@ -132,12 +133,12 @@
     if((param = [BuschJaegerConfigParser getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
         [self parseOutdoorStation:[param intValue] array:array];
     } else {
-        NSLog(@"Unknown section: %@", section);
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
 }
 
 - (void)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
-    NSLog(@"%@", data);
+    [LinphoneLogger log:LinphoneLoggerDebug format:@"%@", data];
     NSArray *arr = [data componentsSeparatedByString:@"\n"];
     NSString *last_section = nil;
     int last_index = -1;

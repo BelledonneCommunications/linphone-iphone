@@ -26,8 +26,9 @@
 #import "LogView.h"
 #import "FastAddressBook.h"
 #import "Utils.h"
+/* MODIFICATION: Add buschjaeger configuration */
 #import "BuschJaegerConfigParser.h"
-
+/**/
 #include "linphonecore.h"
 
 extern NSString *const kLinphoneTextReceived;
@@ -84,6 +85,12 @@ typedef struct _LinphoneManagerSounds {
     NSMutableArray *inhibitedEvent;
     sqlite3 *database;
     
+    /* MODIFICATION: Add buschjaeger configuration */
+    BuschJaegerConfigParser *configuration;
+    /**/
+    /* MODIFICATIOn: add NSUSerDefault settings */
+    NSDictionary *currentSettings;
+    
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
@@ -124,6 +131,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
+@property (readonly) BuschJaegerConfigParser *configuration;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 

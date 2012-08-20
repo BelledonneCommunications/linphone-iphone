@@ -240,7 +240,7 @@
     // no pending call, call adapter
     NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
     const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
-    ms_message("Calling ADAPTER '%s'", adapter);
+    [LinphoneLogger logc:LinphoneLoggerLog format:"Calling ADAPTER '%s'", adapter];
     LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
     linphone_call_params_enable_video(lcallParams, true);
     LinphoneCall* lc = linphone_core_invite_with_params([LinphoneManager getLc], adapter,lcallParams);
