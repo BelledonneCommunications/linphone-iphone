@@ -19,12 +19,11 @@ typedef enum  {
 } UACellBackgroundViewPosition;
 
 @interface UACellBackgroundView : UIView {
-    UACellBackgroundViewPosition position;
-    BOOL automaticPositioning;
 }
 
 @property(nonatomic) UACellBackgroundViewPosition position;
-@property(nonatomic, copy) UIColor *backgroundColor; 
+@property(nonatomic, copy) UIColor *backgroundColor;
+@property(nonatomic, copy) UIColor *borderColor;
 @property(assign) BOOL automaticPositioning;
 
 @end
