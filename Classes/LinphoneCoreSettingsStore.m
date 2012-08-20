@@ -155,6 +155,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	}
 	{
 		[self setString: linphone_core_get_stun_server(lc) forKey:@"stun_preference"];
+        [self
+            setInteger:lp_config_get_int(linphone_core_get_config(lc),"app","ice_preference"
+            , 0) forKey:@"ice_preference"];
 	}
 	
 	{
@@ -429,7 +432,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     NSString* stun_server = [self stringForKey:@"stun_preference"];
     if ([stun_server length] > 0){
         linphone_core_set_stun_server(lc,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-        linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
+        BOOL ice_preference = [self boolForKey:@"ice_preference"];
+        if(ice_preference) {
+            linphone_core_set_firewall_policy(lc, LinphonePolicyUseIce);
+        } else {
+            linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
+        }
     } else {
         linphone_core_set_stun_server(lc, NULL);
         linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
