@@ -29,26 +29,11 @@
 @class VideoViewController;
 
 @interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate, UICompositeViewDelegate> {
-    
-    InCallTableViewController* callTableController;
-    UITableView* callTableView;
-    
-    UIView* videoGroup;
-    UIView* videoView;
-    UIView* videoPreview;
-#ifdef TEST_VIDEO_VIEW_CHANGE
-    UIView* testVideoView;
-#endif
-    UICamSwitch* videoCameraSwitch;
+    @private
     UITapGestureRecognizer* singleFingerTap;
-    
-    UIActivityIndicatorView* videoWaitingForFirstImage;
-    
     NSTimer* hideControlsTimer;
-    
     BOOL videoShown;
     VideoZoomHandler* videoZoomHandler;
-    
     UIActionSheet* visibleActionSheet;
 }
 

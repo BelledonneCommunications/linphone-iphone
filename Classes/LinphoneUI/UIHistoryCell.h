@@ -22,12 +22,6 @@
 #include "linphonecore.h"
 
 @interface UIHistoryCell : UITableViewCell {
-    UIImageView*    imageView;
-    UILabel*        addressLabel;
-    UIButton*       detailsButton;
-    UIButton*       deleteButton;
-    @private
-    LinphoneCallLog *callLog;
 }
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;

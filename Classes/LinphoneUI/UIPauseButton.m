@@ -29,7 +29,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initUIPauseButton {
-    self->type = UIPauseButtonType_CurrentCall;
+    type = UIPauseButtonType_CurrentCall;
 }
 
 - (id)init{
@@ -91,8 +91,8 @@
 #pragma mark - 
 
 - (void)setType:(UIPauseButtonType) atype call:(LinphoneCall*)acall {
-    self->type = atype;
-    self->call = acall;
+    type = atype;
+    call = acall;
 }
 
 

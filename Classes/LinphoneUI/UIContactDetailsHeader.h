@@ -24,16 +24,9 @@
 #import "ContactDetailsDelegate.h"
 
 @interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, ContactDetailsImagePickerDelegate> {
-    UILabel *addressLabel;
-    UIImageView *avatarImage;
-    UIView *normalView;
-    UIView *editView;
-    UITableView *tableView;
-    
+    @private
     NSArray *propertyList;
-    ABRecordRef contact;
     BOOL editing;
-    id<ContactDetailsDelegate> contactDetailsDelegate;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;

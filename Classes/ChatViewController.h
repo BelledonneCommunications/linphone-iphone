@@ -25,8 +25,6 @@
 #import "UICompositeViewController.h"
 
 @interface ChatViewController : UIViewController<UICompositeViewDelegate> {
-    ChatTableViewController *tableController;
-    UIToggleButton *editButton;
 }
 
 @property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;

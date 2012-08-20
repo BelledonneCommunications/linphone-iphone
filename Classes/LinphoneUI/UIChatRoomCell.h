@@ -22,14 +22,6 @@
 #import "ChatModel.h"
 
 @interface UIChatRoomCell : UITableViewCell {
-    UIImageView *backgroundImage;
-    UIView *innerView;
-    UIView *messageView;
-    UILabel *messageLabel;
-    UIButton *deleteButton;
-    UILabel *dateLabel;
-    
-    ChatModel *chat;
 }
 
 @property (nonatomic, retain) ChatModel *chat;

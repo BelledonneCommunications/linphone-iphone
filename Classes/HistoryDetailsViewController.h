@@ -24,17 +24,7 @@
 #import "UICompositeViewController.h"
 
 @interface HistoryDetailsViewController : UIViewController<UICompositeViewDelegate> {
-    LinphoneCallLog *callLog;
-    UIImageView *avatarImage;
-    UILabel *addressLabel;
-    UILabel *dateLabel;
-    UILabel *dateHeaderLabel;
-    UILabel *durationLabel;
-    UILabel *durationHeaderLabel;
-    UILabel *typeLabel;
-    UILabel *typeHeaderLabel;
-    UIButton *addressButton;
-    UIButton *addContactButton;
+    @private
     ABRecordRef contact;
 }
 @property (nonatomic, retain) IBOutlet  UIImageView *avatarImage;

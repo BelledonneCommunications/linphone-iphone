@@ -90,9 +90,9 @@
     }
     
     if([self chatId] != nil) {
-        [self->chatId release];
+        [chatId release];
     } 
-    self->chatId = [[NSNumber alloc] initWithInt:sqlite3_last_insert_rowid(database)];
+    chatId = [[NSNumber alloc] initWithInt:sqlite3_last_insert_rowid(database)];
     sqlite3_finalize(sqlStatement);
 }
 

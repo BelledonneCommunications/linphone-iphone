@@ -22,9 +22,6 @@
 #import "ContactDetailsDelegate.h"
 
 @interface UIContactDetailsFooter : UIViewController {
-@private
-    UIButton *removeButton;
-    id<ContactDetailsDelegate> contactDetailsDelegate;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton *removeButton;

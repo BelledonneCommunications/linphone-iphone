@@ -34,7 +34,7 @@ enum TableSection {
 #pragma mark - Lifecycle Functions
 
 - (void)initInCallTableViewController {
-    self->callCellData = [[NSMutableDictionary alloc] init];
+    callCellData = [[NSMutableDictionary alloc] init];
 }
 
 - (id)init{

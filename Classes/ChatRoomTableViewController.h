@@ -24,7 +24,6 @@
 @interface ChatRoomTableViewController : UITableViewController {
 @private
     NSMutableArray *data;
-    NSString *remoteAddress;
 }
 
 @property (nonatomic, retain) NSString *remoteAddress;

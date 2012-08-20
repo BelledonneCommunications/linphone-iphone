@@ -84,7 +84,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)viewDidLoad {
     // Avoid IOS 4 bug
-    if(self->loadCount++ > 0)
+    if(loadCount++ > 0)
         return;
     
     [super viewDidLoad];
@@ -160,7 +160,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [super viewDidUnload];
 
     // Avoid IOS 4 bug
-    self->loadCount--;
+    loadCount--;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

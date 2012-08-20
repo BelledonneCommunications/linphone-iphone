@@ -102,7 +102,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initUICompositeViewController {
-    self->viewControllerCache = [[NSMutableDictionary alloc] init];
+    viewControllerCache = [[NSMutableDictionary alloc] init];
     currentOrientation = UIDeviceOrientationUnknown;
 }
 

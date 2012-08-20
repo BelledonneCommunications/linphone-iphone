@@ -20,8 +20,6 @@
 #import <UIKit/UIKit.h>
 
 @interface UITransferButton : UIButton {
-@private
-	UITextField* addressField;    
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;

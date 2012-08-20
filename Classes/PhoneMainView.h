@@ -41,13 +41,8 @@
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
     @private
-    UICompositeViewController *mainViewController;
-
     UIActionSheet *batteryActionSheet;
-    
     int loadCount;
-    
-    UICompositeViewDescription *currentView;
     NSMutableArray *viewStack;
 }
 

@@ -21,7 +21,6 @@
 
 @interface HistoryTableViewController : UITableViewController {
     @private
-    BOOL missedFilter;
     NSMutableArray *callLogs;
 }
 
