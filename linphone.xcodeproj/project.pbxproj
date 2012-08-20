@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -16,14 +17,12 @@
 		220FAD3710765B400068D98F /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2E10765B400068D98F /* libosipparser2.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
-		2211DB95147564B400DEE054 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2211DB94147564B400DEE054 /* Settings.bundle */; };
 		2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
 		2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
 		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
-		2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
-		2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMuteButton.m */; };
+		2214EBF312F86360002A5394 /* UIMicroButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMicroButton.m */; };
 		22276E8313C73D3100210156 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
 		22276E8413C73D3100210156 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8113C73D3100210156 /* libavutil.a */; };
 		22276E8513C73D3100210156 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
@@ -31,17 +30,12 @@
 		22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		223148E41178A08200637D6A /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E31178A08200637D6A /* libilbc.a */; };
 		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
-		223963171393CFAF001DE689 /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
-		2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
-		2245671D107699F700F10948 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2245671C107699F700F10948 /* Settings.bundle */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
-		2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
 		226183AD1472527D0037138E /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		226183AE1472527D0037138E /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
 		226183B0147259670037138E /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
-		226B563F13CAF1CD00921595 /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
 		226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADD14E2D0B800513B67 /* libbcg729.a */; };
 		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
@@ -51,9 +45,7 @@
 		2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
 		2274550810700509006EC466 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
 		228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		228B19AF130290C500F154D3 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 228B19AE130290C500F154D3 /* iTunesArtwork */; };
 		22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
-		22968A8812F87C2000588287 /* UIDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A8712F87C2000588287 /* UIDuration.m */; };
 		22A10F3B11F8960300373793 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
 		22AA8AFD13D7125600B30535 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFB13D7125500B30535 /* libx264.a */; };
 		22AA8AFE13D7125600B30535 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFC13D7125500B30535 /* libmsx264.a */; };
@@ -63,26 +55,15 @@
 		22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
-		22D8F11F147548E2008C97DB /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
-		22D8F124147548E2008C97DB /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
-		22D8F139147548E2008C97DB /* oldphone-mono-30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* oldphone-mono-30s.caf */; };
-		22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 228B19AE130290C500F154D3 /* iTunesArtwork */; };
-		22D8F13D147548E2008C97DB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
-		22D8F140147548E2008C97DB /* audio.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226B563E13CAF1CD00921595 /* audio.plist */; };
-		22D8F141147548E2008C97DB /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
-		22D8F142147548E2008C97DB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		22D8F144147548E2008C97DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E90D12F7E4CF00220D9C /* UIDigitButton.m */; };
-		22D8F14D147548E2008C97DB /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2248E99E12F801C200220D9C /* LinphoneManager.m */; };
 		22D8F14E147548E2008C97DB /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		22D8F14F147548E2008C97DB /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
-		22D8F150147548E2008C97DB /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBD912F8558F002A5394 /* UIToggleButton.m */; };
-		22D8F151147548E2008C97DB /* UIMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMuteButton.m */; };
+		22D8F151147548E2008C97DB /* UIMicroButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EBF212F86360002A5394 /* UIMicroButton.m */; };
 		22D8F152147548E2008C97DB /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
-		22D8F153147548E2008C97DB /* UIDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A8712F87C2000588287 /* UIDuration.m */; };
 		22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
 		22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22BB1A68132FF16A005CD7AA /* UIEraseButton.m */; };
-		22D8F157147548E2008C97DB /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 223963161393CFAF001DE689 /* FastAddressBook.m */; };
 		22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AA8B0013D83F6300B30535 /* UICamSwitch.m */; };
 		22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
@@ -116,80 +97,135 @@
 		22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
 		22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AB1472527D0037138E /* libsrtp.a */; };
-		22D8F180147548E2008C97DB /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
-		22E1A9E813CAF4AA00219531 /* video.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22E1A9E713CAF4AA00219531 /* video.plist */; };
 		22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AD133B5EA20044EA25 /* libssl.a */; };
 		22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E5B0AE133B5EA20044EA25 /* libcrypto.a */; };
-		22F51EF6107FA66500F98953 /* untitled.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22F51EF5107FA66500F98953 /* untitled.plist */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340751961506459A00B89C47 /* CoreTelephony.framework */; };
 		34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340751961506459A00B89C47 /* CoreTelephony.framework */; };
-		340751E7150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIToggleVideoButton.m */; };
-		340751E8150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIToggleVideoButton.m */; };
+		340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
+		340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
 		341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
-		341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
+		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
+		34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		348848E014D98859005B0B54 /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D714D98859005B0B54 /* bj_decline.png */; };
-		348848E114D98859005B0B54 /* bj_door_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D814D98859005B0B54 /* bj_door_hl.png */; };
-		348848E214D98859005B0B54 /* bj_door.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848D914D98859005B0B54 /* bj_door.png */; };
-		348848E314D98859005B0B54 /* bj_end_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DA14D98859005B0B54 /* bj_end_call.png */; };
-		348848E414D98859005B0B54 /* bj_light_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DB14D98859005B0B54 /* bj_light_hl.png */; };
-		348848E514D98859005B0B54 /* bj_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DC14D98859005B0B54 /* bj_light.png */; };
-		348848E614D98859005B0B54 /* bj_mute_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DD14D98859005B0B54 /* bj_mute_off.png */; };
-		348848E714D98859005B0B54 /* bj_mute_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DE14D98859005B0B54 /* bj_mute_on.png */; };
-		348848E814D98859005B0B54 /* bj_start_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 348848DF14D98859005B0B54 /* bj_start_call.png */; };
-		34A6ECF714D0179C00460C04 /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerCallView.m */; };
-		34A6ECF814D0179C00460C04 /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECF614D0179C00460C04 /* BuschJaegerCallView.xib */; };
-		34A6ED0614D1440300460C04 /* BuschJaegerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */; };
-		34ACD0AC14D80D4100EE0B0A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 34ACD0AB14D80D4100EE0B0A /* UILightButton.m */; };
-		34ACD0AD14D80D4100EE0B0A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 34ACD0AB14D80D4100EE0B0A /* UILightButton.m */; };
-		34E28E7A14D98F6D00D84BDD /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 34E28E7914D98F6D00D84BDD /* 01.wav */; };
-		5749FCB21518D6C100F0712D /* App_Apple_Icon_DES_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */; };
-		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
-		D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */; };
-		D2E7F40E155CD5AB00970BDF /* App_Apple_Icon_DES_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */; };
-		D378AB4F15DCF1B80098505D /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D378AB4915DCF1B80098505D /* libzbar.a */; };
-		D378AB5015DCF1B80098505D /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D378AB4915DCF1B80098505D /* libzbar.a */; };
-		D378AB5115DCF1B90098505D /* zbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4B15DCF1B80098505D /* zbar-back.png */; };
-		D378AB5215DCF1B90098505D /* zbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4B15DCF1B80098505D /* zbar-back.png */; };
-		D378AB5315DCF1B90098505D /* zbar-help.html in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4C15DCF1B80098505D /* zbar-help.html */; };
-		D378AB5415DCF1B90098505D /* zbar-help.html in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4C15DCF1B80098505D /* zbar-help.html */; };
-		D378AB5515DCF1B90098505D /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4D15DCF1B80098505D /* zbar-helpicons.png */; };
-		D378AB5615DCF1B90098505D /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4D15DCF1B80098505D /* zbar-helpicons.png */; };
-		D378AB5715DCF1B90098505D /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4E15DCF1B80098505D /* zbar-samples.png */; };
-		D378AB5815DCF1B90098505D /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB4E15DCF1B80098505D /* zbar-samples.png */; };
-		D378AB5B15DD02CD0098505D /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D378AB5A15DD02CC0098505D /* libiconv.dylib */; };
-		D378AB5C15DD02D30098505D /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D378AB5A15DD02CC0098505D /* libiconv.dylib */; };
-		D378AB6E15DD3FFD0098505D /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB6C15DD3FFB0098505D /* BuschJaegerSettingsView.m */; };
-		D378AB6F15DD3FFD0098505D /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB6C15DD3FFB0098505D /* BuschJaegerSettingsView.m */; };
-		D378AB7015DD3FFD0098505D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378AB6D15DD3FFC0098505D /* BuschJaegerSettingsView.xib */; };
-		D378AB7115DD3FFD0098505D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378AB6D15DD3FFC0098505D /* BuschJaegerSettingsView.xib */; };
-		D378AB7315DD40FE0098505D /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB7215DD40FE0098505D /* bj_barcode.png */; };
-		D378AB7415DD40FE0098505D /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D378AB7215DD40FE0098505D /* bj_barcode.png */; };
-		D378AB7A15DD457D0098505D /* BuschJaegerApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378AB7915DD457C0098505D /* BuschJaegerApp.xib */; };
-		D378AB7B15DD457D0098505D /* BuschJaegerApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D378AB7915DD457C0098505D /* BuschJaegerApp.xib */; };
-		D37CD1E915DE26B80028869A /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
-		D37CD1EA15DE26B80028869A /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
-		D37CD1F515DE27810028869A /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD1F315DE27810028869A /* BuschJaegerMainView.m */; };
-		D37CD1F615DE27810028869A /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD1F315DE27810028869A /* BuschJaegerMainView.m */; };
-		D37CD1F715DE27810028869A /* BuschJaegerMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD1F415DE27810028869A /* BuschJaegerMainView.xib */; };
-		D37CD1F815DE27810028869A /* BuschJaegerMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD1F415DE27810028869A /* BuschJaegerMainView.xib */; };
-		D37CD20815DE2AAC0028869A /* bj_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD20715DE2AAC0028869A /* bj_settings.png */; };
-		D37CD20915DE2AAC0028869A /* bj_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD20715DE2AAC0028869A /* bj_settings.png */; };
-		D37CD20C15DE2C610028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */; };
-		D37CD20D15DE2C610028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */; };
-		D37CD21015DE548A0028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */; };
-		D37CD21115DE548A0028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */; };
-		D37CD21515DE74B20028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD21415DE74B20028869A /* OutdoorStation.m */; };
-		D37CD21615DE74B20028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD21415DE74B20028869A /* OutdoorStation.m */; };
-		D37CD21715DE7D0F0028869A /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ECF514D0179C00460C04 /* BuschJaegerCallView.m */; };
-		D37CD21815DE7D130028869A /* BuschJaegerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */; };
-		D37CD21915DE7D1D0028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECF614D0179C00460C04 /* BuschJaegerCallView.xib */; };
+		D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
+		D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
+		D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
+		D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
+		D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D32460E5159D9AAD00BA7F3A /* UITransparentView.m */; };
+		D32460E7159D9AAD00BA7F3A /* UITransparentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D32460E5159D9AAD00BA7F3A /* UITransparentView.m */; };
+		D326483815887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
+		D326483915887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
+		D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
+		D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
+		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
+		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
+		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
+		D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
+		D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
+		D34BD61915C13D0B0070C209 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
+		D34BD6A615C13DB70070C209 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc */; };
+		D34BD6A715C13DB70070C209 /* linphonerc-ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-ipad */; };
+		D34BD74115C13E250070C209 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
+		D35860D615B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		D35860D715B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
+		D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
+		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
+		D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
+		D37CD2D115E21CB30028869A /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2BF15E21CB30028869A /* 01.wav */; };
+		D37CD2D215E21CB30028869A /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2BF15E21CB30028869A /* 01.wav */; };
+		D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
+		D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
+		D37CD2E115E21CB30028869A /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C715E21CB30028869A /* bj_decline.png */; };
+		D37CD2E215E21CB30028869A /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C715E21CB30028869A /* bj_decline.png */; };
+		D37CD2E315E21CB30028869A /* bj_door_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C815E21CB30028869A /* bj_door_hl.png */; };
+		D37CD2E415E21CB30028869A /* bj_door_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C815E21CB30028869A /* bj_door_hl.png */; };
+		D37CD2E515E21CB30028869A /* bj_door.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C915E21CB30028869A /* bj_door.png */; };
+		D37CD2E615E21CB30028869A /* bj_door.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C915E21CB30028869A /* bj_door.png */; };
+		D37CD2E715E21CB30028869A /* bj_end_call.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CA15E21CB30028869A /* bj_end_call.png */; };
+		D37CD2E815E21CB30028869A /* bj_end_call.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CA15E21CB30028869A /* bj_end_call.png */; };
+		D37CD2E915E21CB30028869A /* bj_light_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CB15E21CB30028869A /* bj_light_hl.png */; };
+		D37CD2EA15E21CB30028869A /* bj_light_hl.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CB15E21CB30028869A /* bj_light_hl.png */; };
+		D37CD2EB15E21CB30028869A /* bj_light.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CC15E21CB30028869A /* bj_light.png */; };
+		D37CD2EC15E21CB30028869A /* bj_light.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CC15E21CB30028869A /* bj_light.png */; };
+		D37CD2ED15E21CB30028869A /* bj_mute_off.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CD15E21CB30028869A /* bj_mute_off.png */; };
+		D37CD2EE15E21CB30028869A /* bj_mute_off.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CD15E21CB30028869A /* bj_mute_off.png */; };
+		D37CD2EF15E21CB30028869A /* bj_mute_on.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CE15E21CB30028869A /* bj_mute_on.png */; };
+		D37CD2F015E21CB30028869A /* bj_mute_on.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CE15E21CB30028869A /* bj_mute_on.png */; };
+		D37CD2F115E21CB30028869A /* bj_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CF15E21CB30028869A /* bj_settings.png */; };
+		D37CD2F215E21CB30028869A /* bj_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2CF15E21CB30028869A /* bj_settings.png */; };
+		D37CD2F315E21CB30028869A /* bj_start_call.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2D015E21CB30028869A /* bj_start_call.png */; };
+		D37CD2F415E21CB30028869A /* bj_start_call.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2D015E21CB30028869A /* bj_start_call.png */; };
+		D37CD30D15E21E330028869A /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */; };
+		D37CD30E15E21E330028869A /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */; };
+		D37CD30F15E21E330028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30015E21E320028869A /* BuschJaegerCallView.xib */; };
+		D37CD31015E21E330028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30015E21E320028869A /* BuschJaegerCallView.xib */; };
+		D37CD31115E21E330028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */; };
+		D37CD31215E21E330028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */; };
+		D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
+		D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
+		D37CD31915E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
+		D37CD31A15E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
+		D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
+		D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
+		D37CD32115E21E520028869A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD32015E21E520028869A /* UILightButton.m */; };
+		D37CD32215E21E520028869A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD32015E21E520028869A /* UILightButton.m */; };
+		D37CD32815E220620028869A /* buschjaeger_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32315E220620028869A /* buschjaeger_icon_57.png */; };
+		D37CD32915E220620028869A /* buschjaeger_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32315E220620028869A /* buschjaeger_icon_57.png */; };
+		D37CD32A15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */; };
+		D37CD32B15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */; };
+		D37CD32C15E220620028869A /* buschjaeger_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32515E220620028869A /* buschjaeger_icon_72.png */; };
+		D37CD32D15E220620028869A /* buschjaeger_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32515E220620028869A /* buschjaeger_icon_72.png */; };
+		D37CD32E15E220620028869A /* buschjaeger_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */; };
+		D37CD32F15E220620028869A /* buschjaeger_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */; };
+		D37CD33015E220620028869A /* buschjaeger_icon_512.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32715E220620028869A /* buschjaeger_icon_512.png */; };
+		D37CD33115E220620028869A /* buschjaeger_icon_512.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32715E220620028869A /* buschjaeger_icon_512.png */; };
+		D37CD33C15E2214C0028869A /* BuschJaegerApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD33B15E2214C0028869A /* BuschJaegerApp.xib */; };
+		D37CD33D15E2214C0028869A /* BuschJaegerApp.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD33B15E2214C0028869A /* BuschJaegerApp.xib */; };
+		D37CD35315E22A470028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD35215E22A470028869A /* OutdoorStation.m */; };
+		D37CD35415E22A470028869A /* OutdoorStation.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD35215E22A470028869A /* OutdoorStation.m */; };
+		D37CD37315E22B0C0028869A /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37CD36D15E22B0C0028869A /* libzbar.a */; };
+		D37CD37415E22B0C0028869A /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D37CD36D15E22B0C0028869A /* libzbar.a */; };
+		D37CD37515E22B0C0028869A /* zbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD36F15E22B0C0028869A /* zbar-back.png */; };
+		D37CD37615E22B0C0028869A /* zbar-back.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD36F15E22B0C0028869A /* zbar-back.png */; };
+		D37CD37715E22B0C0028869A /* zbar-help.html in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37015E22B0C0028869A /* zbar-help.html */; };
+		D37CD37815E22B0C0028869A /* zbar-help.html in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37015E22B0C0028869A /* zbar-help.html */; };
+		D37CD37915E22B0C0028869A /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37115E22B0C0028869A /* zbar-helpicons.png */; };
+		D37CD37A15E22B0C0028869A /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37115E22B0C0028869A /* zbar-helpicons.png */; };
+		D37CD37B15E22B0C0028869A /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37215E22B0C0028869A /* zbar-samples.png */; };
+		D37CD37C15E22B0C0028869A /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37215E22B0C0028869A /* zbar-samples.png */; };
+		D37CD38015E22B700028869A /* BuschJaegerWelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */; };
+		D37CD38115E22B700028869A /* BuschJaegerWelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */; };
+		D37CD38215E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */; };
+		D37CD38315E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */; };
+		D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD38515E22C000028869A /* BuschJaegerMainView.m */; };
+		D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD38515E22C000028869A /* BuschJaegerMainView.m */; };
+		D37CD38915E22C020028869A /* BuschJaegerMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38615E22C010028869A /* BuschJaegerMainView.xib */; };
+		D37CD38A15E22C020028869A /* BuschJaegerMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38615E22C010028869A /* BuschJaegerMainView.xib */; };
+		D37CD38C15E22FD60028869A /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D37CD38B15E22FD60028869A /* libiconv.dylib */; };
+		D37CD38D15E22FDC0028869A /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D37CD38B15E22FD60028869A /* libiconv.dylib */; };
+		D37CD38F15E2331C0028869A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38E15E2331C0028869A /* Settings.bundle */; };
+		D37CD39015E2331C0028869A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D37CD38E15E2331C0028869A /* Settings.bundle */; };
+		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
+		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
+		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
+		D380800615C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
+		D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
+		D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
+		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
+		D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
+		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
+		D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
+		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
+		D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
+		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
+		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -216,17 +252,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_0.png; path = Resources/stat_sys_signal_0.png; sourceTree = "<group>"; };
-		1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_1.png; path = Resources/stat_sys_signal_1.png; sourceTree = "<group>"; };
-		1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_2.png; path = Resources/stat_sys_signal_2.png; sourceTree = "<group>"; };
-		1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_3.png; path = Resources/stat_sys_signal_3.png; sourceTree = "<group>"; };
-		1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stat_sys_signal_4.png; path = Resources/stat_sys_signal_4.png; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* buschjaeger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = buschjaeger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		22058C70116E305000B08DDD /* icone-linphone-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-57.png"; path = "Resources/icone-linphone-57.png"; sourceTree = "<group>"; };
 		220FAC79107654FC0068D98F /* eX_call.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_call.h; sourceTree = "<group>"; };
 		220FAC7A107654FC0068D98F /* eX_message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_message.h; sourceTree = "<group>"; };
 		220FAC7B107654FC0068D98F /* eX_options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eX_options.h; sourceTree = "<group>"; };
@@ -341,72 +371,32 @@
 		220FAD2E10765B400068D98F /* libosipparser2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libosipparser2.a; path = "liblinphone-sdk/apple-darwin/lib/libosipparser2.a"; sourceTree = "<group>"; };
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-		220FAE4A10767A6A0068D98F /* PhoneMainView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneMainView.xib; sourceTree = "<group>"; };
 		2211DB8F147555C800DEE054 /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = "<group>"; };
 		2211DB911475562600DEE054 /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
-		2211DB94147564B400DEE054 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = "nogpl-thirdparties/Settings.bundle"; sourceTree = "<group>"; };
 		2211DBBB14769C8200DEE054 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
-		2211DBCA1476BE7300DEE054 /* ajouter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ajouter.png; path = Resources/ajouter.png; sourceTree = "<group>"; };
-		2211DBCB1476BE7300DEE054 /* clavier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = clavier.png; path = Resources/clavier.png; sourceTree = "<group>"; };
-		2211DBCC1476BE7300DEE054 /* contact.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact.png; path = Resources/contact.png; sourceTree = "<group>"; };
-		2211DBCD1476BE7300DEE054 /* effacer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = effacer.png; path = Resources/effacer.png; sourceTree = "<group>"; };
-		2211DBCE1476BE7300DEE054 /* grouper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = grouper.png; path = Resources/grouper.png; sourceTree = "<group>"; };
-		2211DBCF1476BE7300DEE054 /* HP_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP_inverse.png; path = Resources/HP_inverse.png; sourceTree = "<group>"; };
-		2211DBD01476BE7300DEE054 /* HP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HP.png; path = Resources/HP.png; sourceTree = "<group>"; };
-		2211DBD11476BE7300DEE054 /* micro_inverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro_inverse.png; path = Resources/micro_inverse.png; sourceTree = "<group>"; };
-		2211DBD21476BE7300DEE054 /* micro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro.png; path = Resources/micro.png; sourceTree = "<group>"; };
-		2211DBD31476BE7300DEE054 /* pause_inactif.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause_inactif.png; path = Resources/pause_inactif.png; sourceTree = "<group>"; };
-		2211DBD41476BE7300DEE054 /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause.png; path = Resources/pause.png; sourceTree = "<group>"; };
 		2214783C1386A2030020F8B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2214EB7812F846B1002A5394 /* UICallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallButton.h; sourceTree = "<group>"; };
 		2214EB7912F846B1002A5394 /* UICallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallButton.m; sourceTree = "<group>"; };
 		2214EB8712F84EBB002A5394 /* UIHangUpButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHangUpButton.h; sourceTree = "<group>"; };
 		2214EB8812F84EBB002A5394 /* UIHangUpButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHangUpButton.m; sourceTree = "<group>"; };
-		2214EB8A12F84FE9002A5394 /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
-		2214EBD812F8558F002A5394 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
-		2214EBD912F8558F002A5394 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
-		2214EBF112F86360002A5394 /* UIMuteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMuteButton.h; sourceTree = "<group>"; };
-		2214EBF212F86360002A5394 /* UIMuteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMuteButton.m; sourceTree = "<group>"; };
-		2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneUIDelegates.h; sourceTree = "<group>"; };
+		2214EBF112F86360002A5394 /* UIMicroButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMicroButton.h; sourceTree = "<group>"; };
+		2214EBF212F86360002A5394 /* UIMicroButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMicroButton.m; sourceTree = "<group>"; };
 		2218A5CE12F973450088A667 /* LogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogView.h; sourceTree = "<group>"; };
-		2218A92212FBE1340088A667 /* FirstLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginViewController.h; sourceTree = "<group>"; };
-		2218A92312FBE1340088A667 /* FirstLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginViewController.m; sourceTree = "<group>"; };
-		2218A92412FBE1340088A667 /* FirstLoginViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FirstLoginViewController.xib; sourceTree = "<group>"; };
-		22226C11118197C0000CA27B /* startcall-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-green.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/startcall-green.png"; sourceTree = "<group>"; };
-		22226C13118197EC000CA27B /* stopcall-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "stopcall-red.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/stopcall-red.png"; sourceTree = "<group>"; };
 		22276E8013C73D3100210156 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "liblinphone-sdk/apple-darwin/lib/libavcodec.a"; sourceTree = "<group>"; };
 		22276E8113C73D3100210156 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "liblinphone-sdk/apple-darwin/lib/libavutil.a"; sourceTree = "<group>"; };
 		22276E8213C73D3100210156 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
 		22276E8613C73D8A00210156 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		22276E8813C73DC000210156 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		222A483112F7176F0075F07F /* IncallViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IncallViewController.xib; sourceTree = "<group>"; };
-		222A483212F7176F0075F07F /* IncallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IncallViewController.m; sourceTree = "<group>"; };
-		222A483312F7176F0075F07F /* IncallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IncallViewController.h; sourceTree = "<group>"; };
 		223148E31178A08200637D6A /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<group>"; };
 		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = "<group>"; };
-		223963151393CFAE001DE689 /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAddressBook.h; sourceTree = "<group>"; };
-		223963161393CFAF001DE689 /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FastAddressBook.m; sourceTree = "<group>"; };
-		2242D91410D66BF300E9963F /* in_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call.png; path = Resources/in_call.png; sourceTree = "<group>"; };
-		2242D91510D66BF300E9963F /* out_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call.png; path = Resources/out_call.png; sourceTree = "<group>"; };
-		2242D9C710D691F900E9963F /* GenericTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenericTabViewController.h; sourceTree = "<group>"; };
-		2242D9C810D691F900E9963F /* GenericTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericTabViewController.m; sourceTree = "<group>"; };
-		2242E312125235120061DDCE /* oldphone-mono-30s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "oldphone-mono-30s.caf"; path = "liblinphone-sdk/apple-darwin/share/sounds/linphone/rings/oldphone-mono-30s.caf"; sourceTree = "<group>"; };
-		2245671C107699F700F10948 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
 		2248E90D12F7E4CF00220D9C /* UIDigitButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButton.m; sourceTree = "<group>"; };
-		2248E99D12F801C200220D9C /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
-		2248E99E12F801C200220D9C /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
 		2258633C11410BAC00C5A737 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		225CB2E811ABB51000628906 /* clavier-01-106px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-106px.png"; path = "Resources/clavier-01-106px.png"; sourceTree = "<group>"; };
-		225CB2E911ABB51000628906 /* clavier-01-108px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-108px.png"; path = "Resources/clavier-01-108px.png"; sourceTree = "<group>"; };
-		225CB2ED11ABB65D00628906 /* clavier-01-160px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clavier-01-160px.png"; path = "Resources/clavier-01-160px.png"; sourceTree = "<group>"; };
-		225CB2F911ABB76400628906 /* linphone-banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-banner.png"; path = "liblinphone-sdk/apple-darwin/share/pixmaps/linphone/linphone-banner.png"; sourceTree = "<group>"; };
 		226183AA1472527D0037138E /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		226183AB1472527D0037138E /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
 		226183AF147259670037138E /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		226B563E13CAF1CD00921595 /* audio.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = audio.plist; path = Settings.bundle/audio.plist; sourceTree = "<group>"; };
 		226CDADD14E2D0B800513B67 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		226CDADE14E2D0B800513B67 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
@@ -417,22 +407,14 @@
 		22744043106F33FC006EC466 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		22744056106F9BC9006EC466 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		2274550710700509006EC466 /* linphonerc */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = linphonerc; sourceTree = "<group>"; };
-		227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallHistoryTableViewController.h; sourceTree = "<group>"; };
-		227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallHistoryTableViewController.m; sourceTree = "<group>"; };
-		227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallHistoryTableViewController.xib; sourceTree = "<group>"; };
 		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		228B19AE130290C500F154D3 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = text; name = iTunesArtwork; path = Resources/iTunesArtwork; sourceTree = "<group>"; };
 		22968A5D12F875C600588287 /* UISpeakerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpeakerButton.h; sourceTree = "<group>"; };
 		22968A5E12F875C600588287 /* UISpeakerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISpeakerButton.m; sourceTree = "<group>"; };
-		22968A8612F87C2000588287 /* UIDuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDuration.h; sourceTree = "<group>"; };
-		22968A8712F87C2000588287 /* UIDuration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDuration.m; sourceTree = "<group>"; };
 		22AA8AFB13D7125500B30535 /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = "liblinphone-sdk/apple-darwin/lib/libx264.a"; sourceTree = "<group>"; };
 		22AA8AFC13D7125500B30535 /* libmsx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsx264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsx264.a"; sourceTree = "<group>"; };
 		22AA8AFF13D83F6300B30535 /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
 		22AA8B0013D83F6300B30535 /* UICamSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICamSwitch.m; sourceTree = "<group>"; };
 		22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
-		22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactPickerDelegate.h; sourceTree = "<group>"; };
-		22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactPickerDelegate.m; sourceTree = "<group>"; };
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22BB1A67132FF16A005CD7AA /* UIEraseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEraseButton.h; sourceTree = "<group>"; };
 		22BB1A68132FF16A005CD7AA /* UIEraseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEraseButton.m; sourceTree = "<group>"; };
@@ -440,11 +422,11 @@
 		22C7555F1317E59C007BC101 /* UIBluetoothButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBluetoothButton.m; sourceTree = "<group>"; };
 		22C7560513265C6A007BC101 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		22C7560613265C6A007BC101 /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
-		22C7560713265C6A007BC101 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
+		22C7560713265C6A007BC101 /* asn1_mac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = asn1_mac.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		22C7560813265C6A007BC101 /* asn1t.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1t.h; sourceTree = "<group>"; };
 		22C7560913265C6A007BC101 /* bio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bio.h; sourceTree = "<group>"; };
 		22C7560A13265C6A007BC101 /* blowfish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blowfish.h; sourceTree = "<group>"; };
-		22C7560B13265C6A007BC101 /* bn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bn.h; sourceTree = "<group>"; };
+		22C7560B13265C6A007BC101 /* bn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = bn.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		22C7560C13265C6A007BC101 /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
 		22C7560D13265C6A007BC101 /* cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cast.h; sourceTree = "<group>"; };
 		22C7560E13265C6A007BC101 /* comp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = comp.h; sourceTree = "<group>"; };
@@ -462,7 +444,7 @@
 		22C7561A13265C6A007BC101 /* ec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ec.h; sourceTree = "<group>"; };
 		22C7561B13265C6A007BC101 /* ecdh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecdh.h; sourceTree = "<group>"; };
 		22C7561C13265C6A007BC101 /* ecdsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecdsa.h; sourceTree = "<group>"; };
-		22C7561D13265C6A007BC101 /* engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
+		22C7561D13265C6A007BC101 /* engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = engine.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		22C7561E13265C6A007BC101 /* err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = err.h; sourceTree = "<group>"; };
 		22C7561F13265C6A007BC101 /* evp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = evp.h; sourceTree = "<group>"; };
 		22C7562013265C6A007BC101 /* fips.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fips.h; sourceTree = "<group>"; };
@@ -510,131 +492,123 @@
 		22C7564A13265C6A007BC101 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		22C7564B13265C6A007BC101 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
-		22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "linphone-no-gpl-thirdparties.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		22E028B413B4CCBD0068A713 /* VideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoViewController.h; sourceTree = "<group>"; };
-		22E028B513B4CCBD0068A713 /* VideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoViewController.m; sourceTree = "<group>"; };
-		22E028B613B4CCBD0068A713 /* VideoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoViewController.xib; sourceTree = "<group>"; };
-		22E0A81B111C44E100B04932 /* MoreViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MoreViewController.xib; sourceTree = "<group>"; };
-		22E0A81C111C44E100B04932 /* MoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreViewController.m; sourceTree = "<group>"; };
-		22E0A81D111C44E100B04932 /* MoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreViewController.h; sourceTree = "<group>"; };
-		22E0A81E111C44E100B04932 /* ConsoleViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConsoleViewController.xib; sourceTree = "<group>"; };
-		22E0A81F111C44E100B04932 /* ConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConsoleViewController.m; sourceTree = "<group>"; };
-		22E0A820111C44E100B04932 /* ConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleViewController.h; sourceTree = "<group>"; };
-		22E19E47138A67A000FBFE87 /* missed_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = missed_call.png; path = Resources/missed_call.png; sourceTree = "<group>"; };
-		22E1A9E713CAF4AA00219531 /* video.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = video.plist; path = Settings.bundle/video.plist; sourceTree = "<group>"; };
+		22D8F187147548E2008C97DB /* buschjaeger-no-gpl-thirdparties.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "buschjaeger-no-gpl-thirdparties.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		22E5B0AD133B5EA20044EA25 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "liblinphone-sdk/apple-darwin/lib/libssl.a"; sourceTree = "<group>"; };
 		22E5B0AE133B5EA20044EA25 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libcrypto.a"; sourceTree = "<group>"; };
-		22F2508B107141E100AC9B3F /* PhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneViewController.h; sourceTree = "<group>"; };
-		22F2508C107141E100AC9B3F /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneViewController.m; sourceTree = "<group>"; };
-		22F2508D107141E100AC9B3F /* PhoneViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneViewController.xib; sourceTree = "<group>"; };
-		22F51EF5107FA66500F98953 /* untitled.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = untitled.plist; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340751961506459A00B89C47 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		340751E4150E4D0200B89C47 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
-		340751E5150F38FC00B89C47 /* UIToggleVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleVideoButton.h; sourceTree = "<group>"; };
-		340751E6150F38FD00B89C47 /* UIToggleVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleVideoButton.m; sourceTree = "<group>"; };
-		340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ConferenceCallDetailView-ipad.xib"; sourceTree = "<group>"; };
-		3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = submodules/linphone/mediastreamer2/src/nowebcamCIF.jpg; sourceTree = "<group>"; };
-		3418844514C6CAD300EA48C7 /* StatusSubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusSubViewController.h; sourceTree = "<group>"; };
-		3418844614C6CAD300EA48C7 /* StatusSubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusSubViewController.m; sourceTree = "<group>"; };
-		3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StatusSubViewController.xib; sourceTree = "<group>"; };
-		3418844C14C6D1CE00EA48C7 /* startcall-gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "startcall-gray.png"; path = "Resources/startcall-gray.png"; sourceTree = "<group>"; };
-		3418844F14C6F66E00EA48C7 /* status_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_green.png; path = Resources/status_green.png; sourceTree = "<group>"; };
-		3418845114C6F66F00EA48C7 /* status_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_orange.png; path = Resources/status_orange.png; sourceTree = "<group>"; };
-		3418845214C6F66F00EA48C7 /* status_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_red.png; path = Resources/status_red.png; sourceTree = "<group>"; };
-		3418845B14C7077400EA48C7 /* status_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = status_gray.png; path = Resources/status_gray.png; sourceTree = "<group>"; };
+		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
+		340751E6150F38FD00B89C47 /* UIVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIVideoButton.m; sourceTree = "<group>"; };
 		341FCA8D149798210084BC26 /* linphonerc-ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-ipad"; sourceTree = "<group>"; };
 		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
-		3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "InCallViewController-ipad.xib"; sourceTree = "<group>"; };
-		3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PhoneViewController-ipad.xib"; sourceTree = "<group>"; };
-		344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailView.xib; sourceTree = "<group>"; };
-		344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConferenceCallDetailView.h; sourceTree = "<group>"; };
-		344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConferenceCallDetailView.m; sourceTree = "<group>"; };
-		344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConferenceCallDetailCell.xib; sourceTree = "<group>"; };
-		344ABDE41483E596007420B6 /* unverified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = unverified.png; path = Resources/unverified.png; sourceTree = "<group>"; };
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		3485649D152C423F003FE041 /* in_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = in_call_video.png; path = Resources/in_call_video.png; sourceTree = "<group>"; };
-		3485649E152C423F003FE041 /* out_call_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = out_call_video.png; path = Resources/out_call_video.png; sourceTree = "<group>"; };
-		348848D714D98859005B0B54 /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/160/bj_decline.png; sourceTree = "<group>"; };
-		348848D814D98859005B0B54 /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/160/bj_door_hl.png; sourceTree = "<group>"; };
-		348848D914D98859005B0B54 /* bj_door.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door.png; path = Resources/160/bj_door.png; sourceTree = "<group>"; };
-		348848DA14D98859005B0B54 /* bj_end_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_end_call.png; path = Resources/160/bj_end_call.png; sourceTree = "<group>"; };
-		348848DB14D98859005B0B54 /* bj_light_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light_hl.png; path = Resources/160/bj_light_hl.png; sourceTree = "<group>"; };
-		348848DC14D98859005B0B54 /* bj_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light.png; path = Resources/160/bj_light.png; sourceTree = "<group>"; };
-		348848DD14D98859005B0B54 /* bj_mute_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_off.png; path = Resources/160/bj_mute_off.png; sourceTree = "<group>"; };
-		348848DE14D98859005B0B54 /* bj_mute_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_on.png; path = Resources/160/bj_mute_on.png; sourceTree = "<group>"; };
-		348848DF14D98859005B0B54 /* bj_start_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_start_call.png; path = Resources/160/bj_start_call.png; sourceTree = "<group>"; };
-		34957F3E147D3FBF00DD7A09 /* secured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = secured.png; path = Resources/secured.png; sourceTree = "<group>"; };
-		34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icone-linphone-72.png"; path = "Resources/icone-linphone-72.png"; sourceTree = "<group>"; };
-		34A6ECF414D0179C00460C04 /* BuschJaegerCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerCallView.h; sourceTree = "<group>"; };
-		34A6ECF514D0179C00460C04 /* BuschJaegerCallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerCallView.m; sourceTree = "<group>"; };
-		34A6ECF614D0179C00460C04 /* BuschJaegerCallView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerCallView.xib; sourceTree = "<group>"; };
-		34A6ED0414D1440300460C04 /* BuschJaegerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerAppDelegate.h; sourceTree = "<group>"; };
-		34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerAppDelegate.m; sourceTree = "<group>"; };
-		34ACD0AA14D80D4100EE0B0A /* UILightButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILightButton.h; sourceTree = "<group>"; };
-		34ACD0AB14D80D4100EE0B0A /* UILightButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILightButton.m; sourceTree = "<group>"; };
-		34C7646814CD51CD008E9607 /* contact_vide.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_vide.png; path = Resources/contact_vide.png; sourceTree = "<group>"; };
-		34C7646A14CD5585008E9607 /* dialer-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer-orange.png"; path = "submodules/linphone/pixmaps/dialer-orange.png"; sourceTree = "<group>"; };
-		34C7646B14CD5585008E9607 /* history-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "history-orange.png"; path = "submodules/linphone/pixmaps/history-orange.png"; sourceTree = "<group>"; };
-		34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainScreenWithVideoPreview.xib; sourceTree = "<group>"; };
-		34CA8534148F669900503C01 /* VideoViewController-ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoViewController-ipad.xib"; sourceTree = "<group>"; };
-		34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainScreenWithVideoPreview.h; sourceTree = "<group>"; };
-		34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainScreenWithVideoPreview.m; sourceTree = "<group>"; };
-		34E28E7914D98F6D00D84BDD /* 01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = 01.wav; path = Resources/01.wav; sourceTree = "<group>"; };
-		5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_57.png; path = Resources/App_Apple_Icon_DES_57.png; sourceTree = "<group>"; };
-		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		8D1107310486CEB800E47090 /* linphone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "linphone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_114.png; path = Resources/App_Apple_Icon_DES_114.png; sourceTree = "<group>"; };
-		D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_72.png; path = Resources/App_Apple_Icon_DES_72.png; sourceTree = "<group>"; };
-		D378AB3515DCF1B80098505D /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
-		D378AB3615DCF1B80098505D /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
-		D378AB3715DCF1B80098505D /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
-		D378AB3815DCF1B80098505D /* ImageScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageScanner.h; sourceTree = "<group>"; };
-		D378AB3915DCF1B80098505D /* Processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Processor.h; sourceTree = "<group>"; };
-		D378AB3A15DCF1B80098505D /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
-		D378AB3B15DCF1B80098505D /* Symbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Symbol.h; sourceTree = "<group>"; };
-		D378AB3C15DCF1B80098505D /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
-		D378AB3D15DCF1B80098505D /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
-		D378AB3E15DCF1B80098505D /* zbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zbar.h; sourceTree = "<group>"; };
-		D378AB3F15DCF1B80098505D /* ZBarCameraSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarCameraSimulator.h; sourceTree = "<group>"; };
-		D378AB4015DCF1B80098505D /* ZBarCaptureReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarCaptureReader.h; sourceTree = "<group>"; };
-		D378AB4115DCF1B80098505D /* ZBarHelpController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarHelpController.h; sourceTree = "<group>"; };
-		D378AB4215DCF1B80098505D /* ZBarImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarImage.h; sourceTree = "<group>"; };
-		D378AB4315DCF1B80098505D /* ZBarImageScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarImageScanner.h; sourceTree = "<group>"; };
-		D378AB4415DCF1B80098505D /* ZBarReaderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderController.h; sourceTree = "<group>"; };
-		D378AB4515DCF1B80098505D /* ZBarReaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderView.h; sourceTree = "<group>"; };
-		D378AB4615DCF1B80098505D /* ZBarReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderViewController.h; sourceTree = "<group>"; };
-		D378AB4715DCF1B80098505D /* ZBarSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSDK.h; sourceTree = "<group>"; };
-		D378AB4815DCF1B80098505D /* ZBarSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSymbol.h; sourceTree = "<group>"; };
-		D378AB4915DCF1B80098505D /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzbar.a; sourceTree = "<group>"; };
-		D378AB4B15DCF1B80098505D /* zbar-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-back.png"; sourceTree = "<group>"; };
-		D378AB4C15DCF1B80098505D /* zbar-help.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "zbar-help.html"; sourceTree = "<group>"; };
-		D378AB4D15DCF1B80098505D /* zbar-helpicons.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-helpicons.png"; sourceTree = "<group>"; };
-		D378AB4E15DCF1B80098505D /* zbar-samples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-samples.png"; sourceTree = "<group>"; };
-		D378AB5A15DD02CC0098505D /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
-		D378AB6B15DD3FFB0098505D /* BuschJaegerSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerSettingsView.h; sourceTree = "<group>"; };
-		D378AB6C15DD3FFB0098505D /* BuschJaegerSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerSettingsView.m; sourceTree = "<group>"; };
-		D378AB6D15DD3FFC0098505D /* BuschJaegerSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D378AB7215DD40FE0098505D /* bj_barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_barcode.png; path = Resources/160/bj_barcode.png; sourceTree = "<group>"; };
-		D378AB7915DD457C0098505D /* BuschJaegerApp.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerApp.xib; sourceTree = "<group>"; };
-		D37CD1F215DE27810028869A /* BuschJaegerMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerMainView.h; sourceTree = "<group>"; };
-		D37CD1F315DE27810028869A /* BuschJaegerMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerMainView.m; sourceTree = "<group>"; };
-		D37CD1F415DE27810028869A /* BuschJaegerMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerMainView.xib; sourceTree = "<group>"; };
-		D37CD20715DE2AAC0028869A /* bj_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_settings.png; path = Resources/160/bj_settings.png; sourceTree = "<group>"; };
-		D37CD20A15DE2C600028869A /* BuschJaegerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerUtils.h; sourceTree = "<group>"; };
-		D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerUtils.m; sourceTree = "<group>"; };
-		D37CD20E15DE54890028869A /* BuschJaegerConfigParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerConfigParser.h; sourceTree = "<group>"; };
-		D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfigParser.m; sourceTree = "<group>"; };
-		D37CD21315DE74B20028869A /* OutdoorStation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutdoorStation.h; path = Model/OutdoorStation.h; sourceTree = "<group>"; };
-		D37CD21415DE74B20028869A /* OutdoorStation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutdoorStation.m; path = Model/OutdoorStation.m; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* buschjaeger-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "buschjaeger-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		D3196D3C15A32BD7007FEEBA /* UITransferButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransferButton.h; sourceTree = "<group>"; };
+		D3196D3D15A32BD8007FEEBA /* UITransferButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransferButton.m; sourceTree = "<group>"; };
+		D32409C1158B49A600C8C119 /* UILongTouchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILongTouchButton.h; sourceTree = "<group>"; };
+		D32409C2158B49A600C8C119 /* UILongTouchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILongTouchButton.m; sourceTree = "<group>"; };
+		D32460E4159D9AAD00BA7F3A /* UITransparentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentView.h; sourceTree = "<group>"; };
+		D32460E5159D9AAD00BA7F3A /* UITransparentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentView.m; sourceTree = "<group>"; };
+		D326483615887D5200930C67 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OrderedDictionary.h; path = Utils/OrderedDictionary.h; sourceTree = "<group>"; };
+		D326483715887D5200930C67 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OrderedDictionary.m; path = Utils/OrderedDictionary.m; sourceTree = "<group>"; };
+		D32648421588F6FA00930C67 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
+		D32648431588F6FB00930C67 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
+		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
+		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
+		D35860D515B549B500513429 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
+		D35E757F159328EA0066B1C1 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
+		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
+		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
+		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
+		D37CD2BF15E21CB30028869A /* 01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = 01.wav; path = Resources/01.wav; sourceTree = "<group>"; };
+		D37CD2C615E21CB30028869A /* bj_barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_barcode.png; path = Resources/bj_barcode.png; sourceTree = "<group>"; };
+		D37CD2C715E21CB30028869A /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/bj_decline.png; sourceTree = "<group>"; };
+		D37CD2C815E21CB30028869A /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/bj_door_hl.png; sourceTree = "<group>"; };
+		D37CD2C915E21CB30028869A /* bj_door.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door.png; path = Resources/bj_door.png; sourceTree = "<group>"; };
+		D37CD2CA15E21CB30028869A /* bj_end_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_end_call.png; path = Resources/bj_end_call.png; sourceTree = "<group>"; };
+		D37CD2CB15E21CB30028869A /* bj_light_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light_hl.png; path = Resources/bj_light_hl.png; sourceTree = "<group>"; };
+		D37CD2CC15E21CB30028869A /* bj_light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_light.png; path = Resources/bj_light.png; sourceTree = "<group>"; };
+		D37CD2CD15E21CB30028869A /* bj_mute_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_off.png; path = Resources/bj_mute_off.png; sourceTree = "<group>"; };
+		D37CD2CE15E21CB30028869A /* bj_mute_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_mute_on.png; path = Resources/bj_mute_on.png; sourceTree = "<group>"; };
+		D37CD2CF15E21CB30028869A /* bj_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_settings.png; path = Resources/bj_settings.png; sourceTree = "<group>"; };
+		D37CD2D015E21CB30028869A /* bj_start_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_start_call.png; path = Resources/bj_start_call.png; sourceTree = "<group>"; };
+		D37CD2FE15E21E320028869A /* BuschJaegerCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerCallView.h; sourceTree = "<group>"; };
+		D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerCallView.m; sourceTree = "<group>"; };
+		D37CD30015E21E320028869A /* BuschJaegerCallView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerCallView.xib; sourceTree = "<group>"; };
+		D37CD30115E21E320028869A /* BuschJaegerConfigParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerConfigParser.h; sourceTree = "<group>"; };
+		D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfigParser.m; sourceTree = "<group>"; };
+		D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerSettingsView.h; sourceTree = "<group>"; };
+		D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerSettingsView.m; sourceTree = "<group>"; };
+		D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D37CD30915E21E330028869A /* BuschJaegerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerUtils.h; sourceTree = "<group>"; };
+		D37CD30A15E21E330028869A /* BuschJaegerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerUtils.m; sourceTree = "<group>"; };
+		D37CD31F15E21E520028869A /* UILightButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILightButton.h; sourceTree = "<group>"; };
+		D37CD32015E21E520028869A /* UILightButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILightButton.m; sourceTree = "<group>"; };
+		D37CD32315E220620028869A /* buschjaeger_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_57.png; path = Resources/buschjaeger_icon_57.png; sourceTree = "<group>"; };
+		D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "buschjaeger_icon_57@2x.png"; path = "Resources/buschjaeger_icon_57@2x.png"; sourceTree = "<group>"; };
+		D37CD32515E220620028869A /* buschjaeger_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_72.png; path = Resources/buschjaeger_icon_72.png; sourceTree = "<group>"; };
+		D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "buschjaeger_icon_72@2x.png"; path = "Resources/buschjaeger_icon_72@2x.png"; sourceTree = "<group>"; };
+		D37CD32715E220620028869A /* buschjaeger_icon_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_512.png; path = Resources/buschjaeger_icon_512.png; sourceTree = "<group>"; };
+		D37CD33B15E2214C0028869A /* BuschJaegerApp.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerApp.xib; sourceTree = "<group>"; };
+		D37CD35115E22A470028869A /* OutdoorStation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutdoorStation.h; path = Model/OutdoorStation.h; sourceTree = "<group>"; };
+		D37CD35215E22A470028869A /* OutdoorStation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutdoorStation.m; path = Model/OutdoorStation.m; sourceTree = "<group>"; };
+		D37CD35915E22B0C0028869A /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
+		D37CD35A15E22B0C0028869A /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
+		D37CD35B15E22B0C0028869A /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		D37CD35C15E22B0C0028869A /* ImageScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageScanner.h; sourceTree = "<group>"; };
+		D37CD35D15E22B0C0028869A /* Processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Processor.h; sourceTree = "<group>"; };
+		D37CD35E15E22B0C0028869A /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
+		D37CD35F15E22B0C0028869A /* Symbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Symbol.h; sourceTree = "<group>"; };
+		D37CD36015E22B0C0028869A /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
+		D37CD36115E22B0C0028869A /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
+		D37CD36215E22B0C0028869A /* zbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zbar.h; sourceTree = "<group>"; };
+		D37CD36315E22B0C0028869A /* ZBarCameraSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarCameraSimulator.h; sourceTree = "<group>"; };
+		D37CD36415E22B0C0028869A /* ZBarCaptureReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarCaptureReader.h; sourceTree = "<group>"; };
+		D37CD36515E22B0C0028869A /* ZBarHelpController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarHelpController.h; sourceTree = "<group>"; };
+		D37CD36615E22B0C0028869A /* ZBarImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarImage.h; sourceTree = "<group>"; };
+		D37CD36715E22B0C0028869A /* ZBarImageScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarImageScanner.h; sourceTree = "<group>"; };
+		D37CD36815E22B0C0028869A /* ZBarReaderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderController.h; sourceTree = "<group>"; };
+		D37CD36915E22B0C0028869A /* ZBarReaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderView.h; sourceTree = "<group>"; };
+		D37CD36A15E22B0C0028869A /* ZBarReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderViewController.h; sourceTree = "<group>"; };
+		D37CD36B15E22B0C0028869A /* ZBarSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSDK.h; sourceTree = "<group>"; };
+		D37CD36C15E22B0C0028869A /* ZBarSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSymbol.h; sourceTree = "<group>"; };
+		D37CD36D15E22B0C0028869A /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzbar.a; sourceTree = "<group>"; };
+		D37CD36F15E22B0C0028869A /* zbar-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-back.png"; sourceTree = "<group>"; };
+		D37CD37015E22B0C0028869A /* zbar-help.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "zbar-help.html"; sourceTree = "<group>"; };
+		D37CD37115E22B0C0028869A /* zbar-helpicons.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-helpicons.png"; sourceTree = "<group>"; };
+		D37CD37215E22B0C0028869A /* zbar-samples.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-samples.png"; sourceTree = "<group>"; };
+		D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerWelcomeView.h; sourceTree = "<group>"; };
+		D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerWelcomeView.m; sourceTree = "<group>"; };
+		D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerWelcomeView.xib; sourceTree = "<group>"; };
+		D37CD38415E22C000028869A /* BuschJaegerMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerMainView.h; sourceTree = "<group>"; };
+		D37CD38515E22C000028869A /* BuschJaegerMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerMainView.m; sourceTree = "<group>"; };
+		D37CD38615E22C010028869A /* BuschJaegerMainView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerMainView.xib; sourceTree = "<group>"; };
+		D37CD38B15E22FD60028869A /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		D37CD38E15E2331C0028869A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
+		D380801115C29984005BE9BC /* ColorSpaceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorSpaceUtilities.h; path = Utils/ColorSpaceUtilities.h; sourceTree = "<group>"; };
+		D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorSpaceUtilites.m; path = Utils/ColorSpaceUtilites.m; sourceTree = "<group>"; };
+		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
+		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
+		D3E84F3C15B018A600420DAC /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
+		D3EA53FB159850E80037DC6B /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
+		D3EA53FC159850E80037DC6B /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
+		D3F7997F15BD32370018C273 /* TPMultiLayoutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TPMultiLayoutViewController.h; path = Utils/TPMultiLayoutViewController/TPMultiLayoutViewController.h; sourceTree = "<group>"; };
+		D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TPMultiLayoutViewController.m; path = Utils/TPMultiLayoutViewController/TPMultiLayoutViewController.m; sourceTree = "<group>"; };
+		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
+		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -642,54 +616,56 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D378AB5B15DD02CD0098505D /* libiconv.dylib in Frameworks */,
-				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
-				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
-				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
-				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
-				344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */,
-				344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */,
-				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
-				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
-				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
-				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
-				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
+				D37CD38C15E22FD60028869A /* libiconv.dylib in Frameworks */,
+				22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */,
+				22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */,
+				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
+				224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */,
+				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
+				2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */,
+				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */,
+				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */,
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
+				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
+				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
+				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
+				D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */,
+				344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */,
+				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
 				22276E8313C73D3100210156 /* libavcodec.a in Frameworks */,
 				22276E8413C73D3100210156 /* libavutil.a in Frameworks */,
-				22276E8513C73D3100210156 /* libswscale.a in Frameworks */,
-				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
 				22E5B0B0133B5EA20044EA25 /* libcrypto.a in Frameworks */,
-				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */,
-				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
+				226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */,
 				220FAD3110765B400068D98F /* libeXosip2.a in Frameworks */,
 				220FAD3210765B400068D98F /* libgsm.a in Frameworks */,
+				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
+				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
+				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
+				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
+				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
+				226183B0147259670037138E /* libmssilk.a in Frameworks */,
+				22AA8AFE13D7125600B30535 /* libmsx264.a in Frameworks */,
+				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
 				220FAD3610765B400068D98F /* libosip2.a in Frameworks */,
 				220FAD3710765B400068D98F /* libosipparser2.a in Frameworks */,
+				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
+				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
+				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
 				220FAD3810765B400068D98F /* libspeex.a in Frameworks */,
 				220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */,
-				224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */,
-				22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */,
-				22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */,
-				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
-				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
-				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
-				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
-				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
-				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
-				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
-				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
-				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
-				22AA8AFD13D7125600B30535 /* libx264.a in Frameworks */,
-				22AA8AFE13D7125600B30535 /* libmsx264.a in Frameworks */,
-				226183AD1472527D0037138E /* libSKP_SILK_SDK.a in Frameworks */,
 				226183AE1472527D0037138E /* libsrtp.a in Frameworks */,
-				226183B0147259670037138E /* libmssilk.a in Frameworks */,
-				D378AB4F15DCF1B80098505D /* libzbar.a in Frameworks */,
+				22E5B0AF133B5EA20044EA25 /* libssl.a in Frameworks */,
+				226183AD1472527D0037138E /* libSKP_SILK_SDK.a in Frameworks */,
+				22276E8513C73D3100210156 /* libswscale.a in Frameworks */,
+				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
+				22AA8AFD13D7125600B30535 /* libx264.a in Frameworks */,
+				344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */,
+				D37CD37315E22B0C0028869A /* libzbar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -697,42 +673,45 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D378AB5C15DD02D30098505D /* libiconv.dylib in Frameworks */,
-				34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */,
-				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
-				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
-				22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */,
-				22D8F15E147548E2008C97DB /* CoreMedia.framework in Frameworks */,
-				22D8F15F147548E2008C97DB /* CoreVideo.framework in Frameworks */,
-				22D8F163147548E2008C97DB /* libssl.a in Frameworks */,
-				22D8F164147548E2008C97DB /* libcrypto.a in Frameworks */,
-				22D8F165147548E2008C97DB /* Foundation.framework in Frameworks */,
-				22D8F166147548E2008C97DB /* UIKit.framework in Frameworks */,
-				22D8F167147548E2008C97DB /* CoreGraphics.framework in Frameworks */,
-				22D8F168147548E2008C97DB /* CoreAudio.framework in Frameworks */,
-				22D8F169147548E2008C97DB /* AudioToolbox.framework in Frameworks */,
-				22D8F16A147548E2008C97DB /* libeXosip2.a in Frameworks */,
-				22D8F16B147548E2008C97DB /* libgsm.a in Frameworks */,
-				22D8F16C147548E2008C97DB /* libosip2.a in Frameworks */,
-				22D8F16D147548E2008C97DB /* libosipparser2.a in Frameworks */,
-				22D8F16E147548E2008C97DB /* libspeex.a in Frameworks */,
-				22D8F16F147548E2008C97DB /* libspeexdsp.a in Frameworks */,
+				D37CD38D15E22FDC0028869A /* libiconv.dylib in Frameworks */,
 				22D8F170147548E2008C97DB /* AVFoundation.framework in Frameworks */,
-				22D8F171147548E2008C97DB /* AddressBookUI.framework in Frameworks */,
 				22D8F172147548E2008C97DB /* AddressBook.framework in Frameworks */,
-				22D8F173147548E2008C97DB /* SystemConfiguration.framework in Frameworks */,
-				22D8F174147548E2008C97DB /* libilbc.a in Frameworks */,
-				22D8F175147548E2008C97DB /* libmsilbc.a in Frameworks */,
+				22D8F171147548E2008C97DB /* AddressBookUI.framework in Frameworks */,
 				22D8F176147548E2008C97DB /* CFNetwork.framework in Frameworks */,
-				22D8F177147548E2008C97DB /* libortp.a in Frameworks */,
+				22D8F169147548E2008C97DB /* AudioToolbox.framework in Frameworks */,
+				22D8F168147548E2008C97DB /* CoreAudio.framework in Frameworks */,
+				22D8F167147548E2008C97DB /* CoreGraphics.framework in Frameworks */,
+				22D8F15E147548E2008C97DB /* CoreMedia.framework in Frameworks */,
+				34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */,
+				22D8F15F147548E2008C97DB /* CoreVideo.framework in Frameworks */,
+				22D8F165147548E2008C97DB /* Foundation.framework in Frameworks */,
+				D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */,
+				22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */,
+				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
+				22D8F173147548E2008C97DB /* SystemConfiguration.framework in Frameworks */,
+				22D8F166147548E2008C97DB /* UIKit.framework in Frameworks */,
 				22D8F178147548E2008C97DB /* libresolv.dylib in Frameworks */,
+				D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */,
+				22D8F164147548E2008C97DB /* libcrypto.a in Frameworks */,
+				22D8F16A147548E2008C97DB /* libeXosip2.a in Frameworks */,
+				22D8F174147548E2008C97DB /* libilbc.a in Frameworks */,
+				22D8F16B147548E2008C97DB /* libgsm.a in Frameworks */,
+				D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */,
+				D34BD61915C13D0B0070C209 /* libmediastreamer.a in Frameworks */,
+				22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */,
+				22D8F175147548E2008C97DB /* libmsilbc.a in Frameworks */,
 				22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */,
 				22D8F17A147548E2008C97DB /* libopencore-amrnb.a in Frameworks */,
-				22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */,
+				22D8F177147548E2008C97DB /* libortp.a in Frameworks */,
+				22D8F16C147548E2008C97DB /* libosip2.a in Frameworks */,
+				22D8F16D147548E2008C97DB /* libosipparser2.a in Frameworks */,
 				22D8F17E147548E2008C97DB /* libSKP_SILK_SDK.a in Frameworks */,
 				22D8F17F147548E2008C97DB /* libsrtp.a in Frameworks */,
-				22D8F180147548E2008C97DB /* libmssilk.a in Frameworks */,
-				D378AB5015DCF1B80098505D /* libzbar.a in Frameworks */,
+				22D8F16E147548E2008C97DB /* libspeex.a in Frameworks */,
+				22D8F16F147548E2008C97DB /* libspeexdsp.a in Frameworks */,
+				22D8F163147548E2008C97DB /* libssl.a in Frameworks */,
+				22D8F15B147548E2008C97DB /* libvpx.a in Frameworks */,
+				D37CD37415E22B0C0028869A /* libzbar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -742,52 +721,32 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				34A6ECF214D0176400460C04 /* BuschJaeger */,
+				D37CD33B15E2214C0028869A /* BuschJaegerApp.xib */,
+				D37CD2FE15E21E320028869A /* BuschJaegerCallView.h */,
+				D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */,
+				D37CD30015E21E320028869A /* BuschJaegerCallView.xib */,
+				D37CD30115E21E320028869A /* BuschJaegerConfigParser.h */,
+				D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */,
+				D37CD38415E22C000028869A /* BuschJaegerMainView.h */,
+				D37CD38515E22C000028869A /* BuschJaegerMainView.m */,
+				D37CD38615E22C010028869A /* BuschJaegerMainView.xib */,
+				D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */,
+				D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */,
+				D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */,
+				D37CD30915E21E330028869A /* BuschJaegerUtils.h */,
+				D37CD30A15E21E330028869A /* BuschJaegerUtils.m */,
+				D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */,
+				D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */,
+				D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */,
 				340751E4150E4D0200B89C47 /* CallDelegate.h */,
 				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
-				227BCDBF10D4004600FBFD76 /* CallHistoryTableViewController.h */,
-				227BCDC010D4004600FBFD76 /* CallHistoryTableViewController.m */,
-				227BCDC110D4004600FBFD76 /* CallHistoryTableViewController.xib */,
-				344ABD79147FD32B007420B6 /* ConferenceCallDetailCell.xib */,
-				340A75AF14C0670A006AA708 /* ConferenceCallDetailView-ipad.xib */,
-				344ABD75147FCB68007420B6 /* ConferenceCallDetailView.h */,
-				344ABD76147FCB68007420B6 /* ConferenceCallDetailView.m */,
-				344ABD71147FC438007420B6 /* ConferenceCallDetailView.xib */,
-				22E0A820111C44E100B04932 /* ConsoleViewController.h */,
-				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
-				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
-				22B5EFE310CE5E5800777D97 /* ContactPickerDelegate.h */,
-				22B5EFE410CE5E5800777D97 /* ContactPickerDelegate.m */,
-				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
-				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
-				2218A92412FBE1340088A667 /* FirstLoginViewController.xib */,
-				2242D9C710D691F900E9963F /* GenericTabViewController.h */,
-				2242D9C810D691F900E9963F /* GenericTabViewController.m */,
-				3422AA4F14975EC9000D4E8A /* InCallViewController-ipad.xib */,
-				222A483312F7176F0075F07F /* IncallViewController.h */,
-				222A483212F7176F0075F07F /* IncallViewController.m */,
-				222A483112F7176F0075F07F /* IncallViewController.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
+				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
+				D3EA53FC159850E80037DC6B /* LinphoneManager.m */,
 				2214EB7012F84668002A5394 /* LinphoneUI */,
-				34CA8537148F692A00503C01 /* MainScreenWithVideoPreview.h */,
-				34CA8538148F692A00503C01 /* MainScreenWithVideoPreview.m */,
-				34CA852E148F646700503C01 /* MainScreenWithVideoPreview.xib */,
-				D37CD21215DE73D40028869A /* Model */,
-				22E0A81D111C44E100B04932 /* MoreViewController.h */,
-				22E0A81C111C44E100B04932 /* MoreViewController.m */,
-				22E0A81B111C44E100B04932 /* MoreViewController.xib */,
-				3422AA5214978352000D4E8A /* PhoneViewController-ipad.xib */,
-				22F2508B107141E100AC9B3F /* PhoneViewController.h */,
-				22F2508C107141E100AC9B3F /* PhoneViewController.m */,
-				22F2508D107141E100AC9B3F /* PhoneViewController.xib */,
-				3418844514C6CAD300EA48C7 /* StatusSubViewController.h */,
-				3418844614C6CAD300EA48C7 /* StatusSubViewController.m */,
-				3418844714C6CAD300EA48C7 /* StatusSubViewController.xib */,
-				34CA8534148F669900503C01 /* VideoViewController-ipad.xib */,
-				22E028B413B4CCBD0068A713 /* VideoViewController.h */,
-				22E028B513B4CCBD0068A713 /* VideoViewController.m */,
-				22E028B613B4CCBD0068A713 /* VideoViewController.xib */,
+				D37CD35015E22A3E0028869A /* Model */,
+				D326483415887D4400930C67 /* Utils */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 			);
@@ -797,8 +756,8 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* linphone.app */,
-				22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */,
+				1D6058910D05DD3D006BFB54 /* buschjaeger.app */,
+				22D8F187147548E2008C97DB /* buschjaeger-no-gpl-thirdparties.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -991,46 +950,46 @@
 			path = speex;
 			sourceTree = "<group>";
 		};
-		2211DB9614764F6B00DEE054 /* nogpl-thirdparties */ = {
-			isa = PBXGroup;
-			children = (
-				2211DB94147564B400DEE054 /* Settings.bundle */,
-			);
-			name = "nogpl-thirdparties";
-			sourceTree = "<group>";
-		};
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
-				340751E5150F38FC00B89C47 /* UIToggleVideoButton.h */,
-				340751E6150F38FD00B89C47 /* UIToggleVideoButton.m */,
-				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
-				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
-				2248E99D12F801C200220D9C /* LinphoneManager.h */,
-				2248E99E12F801C200220D9C /* LinphoneManager.m */,
-				2214EB7812F846B1002A5394 /* UICallButton.h */,
-				2214EB7912F846B1002A5394 /* UICallButton.m */,
-				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
-				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
-				2214EB8A12F84FE9002A5394 /* UILinphone.h */,
-				2214EBD812F8558F002A5394 /* UIToggleButton.h */,
-				2214EBD912F8558F002A5394 /* UIToggleButton.m */,
-				2214EBF112F86360002A5394 /* UIMuteButton.h */,
-				2214EBF212F86360002A5394 /* UIMuteButton.m */,
-				22968A5D12F875C600588287 /* UISpeakerButton.h */,
-				22968A5E12F875C600588287 /* UISpeakerButton.m */,
-				22968A8612F87C2000588287 /* UIDuration.h */,
-				22968A8712F87C2000588287 /* UIDuration.m */,
-				2218A5C412F9597B0088A667 /* LinphoneUIDelegates.h */,
 				2218A5CE12F973450088A667 /* LogView.h */,
+				D35E757F159328EA0066B1C1 /* UIAddressTextField.h */,
+				D35E7580159328EB0066B1C1 /* UIAddressTextField.m */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
-				22BB1A67132FF16A005CD7AA /* UIEraseButton.h */,
-				22BB1A68132FF16A005CD7AA /* UIEraseButton.m */,
-				223963151393CFAE001DE689 /* FastAddressBook.h */,
-				223963161393CFAF001DE689 /* FastAddressBook.m */,
+				2214EB7812F846B1002A5394 /* UICallButton.h */,
+				2214EB7912F846B1002A5394 /* UICallButton.m */,
 				22AA8AFF13D83F6300B30535 /* UICamSwitch.h */,
 				22AA8B0013D83F6300B30535 /* UICamSwitch.m */,
+				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
+				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
+				D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */,
+				D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */,
+				22BB1A67132FF16A005CD7AA /* UIEraseButton.h */,
+				22BB1A68132FF16A005CD7AA /* UIEraseButton.m */,
+				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
+				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
+				D37CD31F15E21E520028869A /* UILightButton.h */,
+				D37CD32015E21E520028869A /* UILightButton.m */,
+				D3E84F3C15B018A600420DAC /* UILinphone.h */,
+				D380800415C28A7A005BE9BC /* UILinphone.m */,
+				D32409C1158B49A600C8C119 /* UILongTouchButton.h */,
+				D32409C2158B49A600C8C119 /* UILongTouchButton.m */,
+				2214EBF112F86360002A5394 /* UIMicroButton.h */,
+				2214EBF212F86360002A5394 /* UIMicroButton.m */,
+				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
+				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
+				22968A5D12F875C600588287 /* UISpeakerButton.h */,
+				22968A5E12F875C600588287 /* UISpeakerButton.m */,
+				D32648421588F6FA00930C67 /* UIToggleButton.h */,
+				D32648431588F6FB00930C67 /* UIToggleButton.m */,
+				D3196D3C15A32BD7007FEEBA /* UITransferButton.h */,
+				D3196D3D15A32BD8007FEEBA /* UITransferButton.m */,
+				D32460E4159D9AAD00BA7F3A /* UITransparentView.h */,
+				D32460E5159D9AAD00BA7F3A /* UITransparentView.m */,
+				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
+				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -1116,7 +1075,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB5A15DD02CC0098505D /* libiconv.dylib */,
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -1146,9 +1104,11 @@
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
 				344ABDE71484E723007420B6 /* libzrtpcpp.a */,
-				2245671C107699F700F10948 /* Settings.bundle */,
+				D37CD38E15E2331C0028869A /* Settings.bundle */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
+				D37CD38B15E22FD60028869A /* libiconv.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
+				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
@@ -1160,22 +1120,18 @@
 				22276E8813C73DC000210156 /* CoreMedia.framework */,
 				340751961506459A00B89C47 /* CoreTelephony.framework */,
 				22276E8613C73D8A00210156 /* CoreVideo.framework */,
+				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
 				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
 				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
 				22744043106F33FC006EC466 /* Security.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
-				226B563E13CAF1CD00921595 /* audio.plist */,
-				22F51EF5107FA66500F98953 /* untitled.plist */,
-				22E1A9E713CAF4AA00219531 /* video.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				220FAC77107654FC0068D98F /* include */,
 				2214783B1386A2030020F8B8 /* Localizable.strings */,
-				2211DB9614764F6B00DEE054 /* nogpl-thirdparties */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
-				D378AB3115DCF1B80098505D /* ZBarSDK */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1192,58 +1148,26 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D2E1B2E11549A88D007B0B0D /* App_Apple_Icon_DES_114.png */,
-				5749FCB11518D6C100F0712D /* App_Apple_Icon_DES_57.png */,
-				D2E7F40D155CD5AB00970BDF /* App_Apple_Icon_DES_72.png */,
-				34E28E7914D98F6D00D84BDD /* 01.wav */,
-				34ACD07414D2DBB300EE0B0A /* BuschJaeger */,
-				3485649D152C423F003FE041 /* in_call_video.png */,
-				3485649E152C423F003FE041 /* out_call_video.png */,
-				34A6ECEA14CF13CB00460C04 /* icone-linphone-72.png */,
-				34C7646A14CD5585008E9607 /* dialer-orange.png */,
-				34C7646B14CD5585008E9607 /* history-orange.png */,
-				34C7646814CD51CD008E9607 /* contact_vide.png */,
-				3418845B14C7077400EA48C7 /* status_gray.png */,
-				3418844F14C6F66E00EA48C7 /* status_green.png */,
-				3418845114C6F66F00EA48C7 /* status_orange.png */,
-				3418845214C6F66F00EA48C7 /* status_red.png */,
-				3418844C14C6D1CE00EA48C7 /* startcall-gray.png */,
-				3418843614C58BB100EA48C7 /* nowebcamCIF.jpg */,
-				1AE0A49314AC5C64002C99BD /* stat_sys_signal_0.png */,
-				1AE0A49414AC5C64002C99BD /* stat_sys_signal_1.png */,
-				1AE0A49514AC5C64002C99BD /* stat_sys_signal_2.png */,
-				1AE0A49614AC5C64002C99BD /* stat_sys_signal_3.png */,
-				1AE0A49714AC5C64002C99BD /* stat_sys_signal_4.png */,
-				344ABDE41483E596007420B6 /* unverified.png */,
-				34957F3E147D3FBF00DD7A09 /* secured.png */,
-				2211DBCA1476BE7300DEE054 /* ajouter.png */,
-				2211DBCB1476BE7300DEE054 /* clavier.png */,
-				2211DBCC1476BE7300DEE054 /* contact.png */,
-				2211DBCD1476BE7300DEE054 /* effacer.png */,
-				2211DBCE1476BE7300DEE054 /* grouper.png */,
-				2211DBCF1476BE7300DEE054 /* HP_inverse.png */,
-				2211DBD01476BE7300DEE054 /* HP.png */,
-				2211DBD11476BE7300DEE054 /* micro_inverse.png */,
-				2211DBD21476BE7300DEE054 /* micro.png */,
-				2211DBD31476BE7300DEE054 /* pause_inactif.png */,
-				2211DBD41476BE7300DEE054 /* pause.png */,
-				70571E1913FABCB000CDD3C2 /* rootca.pem */,
-				22E19E47138A67A000FBFE87 /* missed_call.png */,
-				228B19AE130290C500F154D3 /* iTunesArtwork */,
-				2242E312125235120061DDCE /* oldphone-mono-30s.caf */,
-				225CB2F911ABB76400628906 /* linphone-banner.png */,
-				225CB2ED11ABB65D00628906 /* clavier-01-160px.png */,
-				225CB2E811ABB51000628906 /* clavier-01-106px.png */,
-				225CB2E911ABB51000628906 /* clavier-01-108px.png */,
-				22226C13118197EC000CA27B /* stopcall-red.png */,
-				22226C11118197C0000CA27B /* startcall-green.png */,
-				22058C70116E305000B08DDD /* icone-linphone-57.png */,
-				2242D91410D66BF300E9963F /* in_call.png */,
-				2242D91510D66BF300E9963F /* out_call.png */,
-				8D1107310486CEB800E47090 /* linphone-Info.plist */,
+				D37CD2BF15E21CB30028869A /* 01.wav */,
+				D37CD2C615E21CB30028869A /* bj_barcode.png */,
+				D37CD2C715E21CB30028869A /* bj_decline.png */,
+				D37CD2C915E21CB30028869A /* bj_door.png */,
+				D37CD2C815E21CB30028869A /* bj_door_hl.png */,
+				D37CD2CA15E21CB30028869A /* bj_end_call.png */,
+				D37CD2CC15E21CB30028869A /* bj_light.png */,
+				D37CD2CB15E21CB30028869A /* bj_light_hl.png */,
+				D37CD2CD15E21CB30028869A /* bj_mute_off.png */,
+				D37CD2CE15E21CB30028869A /* bj_mute_on.png */,
+				D37CD2CF15E21CB30028869A /* bj_settings.png */,
+				D37CD2D015E21CB30028869A /* bj_start_call.png */,
+				8D1107310486CEB800E47090 /* buschjaeger-Info.plist */,
+				D37CD32715E220620028869A /* buschjaeger_icon_512.png */,
+				D37CD32315E220620028869A /* buschjaeger_icon_57.png */,
+				D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */,
+				D37CD32515E220620028869A /* buschjaeger_icon_72.png */,
+				D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */,
 				2274550710700509006EC466 /* linphonerc */,
 				341FCA8D149798210084BC26 /* linphonerc-ipad */,
-				220FAE4A10767A6A0068D98F /* PhoneMainView.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1258,120 +1182,114 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		34A6ECF214D0176400460C04 /* BuschJaeger */ = {
+		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB7915DD457C0098505D /* BuschJaegerApp.xib */,
-				34A6ED0414D1440300460C04 /* BuschJaegerAppDelegate.h */,
-				34A6ED0514D1440300460C04 /* BuschJaegerAppDelegate.m */,
-				34A6ECF414D0179C00460C04 /* BuschJaegerCallView.h */,
-				34A6ECF514D0179C00460C04 /* BuschJaegerCallView.m */,
-				34A6ECF614D0179C00460C04 /* BuschJaegerCallView.xib */,
-				D37CD20E15DE54890028869A /* BuschJaegerConfigParser.h */,
-				D37CD20F15DE548A0028869A /* BuschJaegerConfigParser.m */,
-				D37CD1F215DE27810028869A /* BuschJaegerMainView.h */,
-				D37CD1F315DE27810028869A /* BuschJaegerMainView.m */,
-				D37CD1F415DE27810028869A /* BuschJaegerMainView.xib */,
-				D378AB6B15DD3FFB0098505D /* BuschJaegerSettingsView.h */,
-				D378AB6C15DD3FFB0098505D /* BuschJaegerSettingsView.m */,
-				D378AB6D15DD3FFC0098505D /* BuschJaegerSettingsView.xib */,
-				D37CD20A15DE2C600028869A /* BuschJaegerUtils.h */,
-				D37CD20B15DE2C610028869A /* BuschJaegerUtils.m */,
-				34ACD0AA14D80D4100EE0B0A /* UILightButton.h */,
-				34ACD0AB14D80D4100EE0B0A /* UILightButton.m */,
+				D37CD35515E22B0C0028869A /* ZBarSDK */,
+				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
+				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
+				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
+				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
+				D326483615887D5200930C67 /* OrderedDictionary.h */,
+				D326483715887D5200930C67 /* OrderedDictionary.m */,
+				D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */,
+				D3F9A9EB15AF27620045320F /* UACellBackgroundView */,
+				C9B3A6FD15B485DB006F52EE /* Utils.h */,
+				D35860D515B549B500513429 /* Utils.m */,
 			);
-			name = BuschJaeger;
+			name = Utils;
 			sourceTree = "<group>";
 		};
-		34ACD07414D2DBB300EE0B0A /* BuschJaeger */ = {
+		D37CD35015E22A3E0028869A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB7215DD40FE0098505D /* bj_barcode.png */,
-				348848D714D98859005B0B54 /* bj_decline.png */,
-				348848D914D98859005B0B54 /* bj_door.png */,
-				348848D814D98859005B0B54 /* bj_door_hl.png */,
-				348848DA14D98859005B0B54 /* bj_end_call.png */,
-				348848DC14D98859005B0B54 /* bj_light.png */,
-				348848DB14D98859005B0B54 /* bj_light_hl.png */,
-				348848DD14D98859005B0B54 /* bj_mute_off.png */,
-				348848DE14D98859005B0B54 /* bj_mute_on.png */,
-				D37CD20715DE2AAC0028869A /* bj_settings.png */,
-				348848DF14D98859005B0B54 /* bj_start_call.png */,
+				D37CD35115E22A470028869A /* OutdoorStation.h */,
+				D37CD35215E22A470028869A /* OutdoorStation.m */,
 			);
-			name = BuschJaeger;
+			name = Model;
 			sourceTree = "<group>";
 		};
-		D378AB3115DCF1B80098505D /* ZBarSDK */ = {
+		D37CD35515E22B0C0028869A /* ZBarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB3215DCF1B80098505D /* Headers */,
-				D378AB4915DCF1B80098505D /* libzbar.a */,
-				D378AB4A15DCF1B80098505D /* Resources */,
+				D37CD35615E22B0C0028869A /* Headers */,
+				D37CD36D15E22B0C0028869A /* libzbar.a */,
+				D37CD36E15E22B0C0028869A /* Resources */,
 			);
-			path = ZBarSDK;
+			name = ZBarSDK;
+			path = Utils/ZBarSDK;
 			sourceTree = "<group>";
 		};
-		D378AB3215DCF1B80098505D /* Headers */ = {
+		D37CD35615E22B0C0028869A /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB3315DCF1B80098505D /* ZBarSDK */,
+				D37CD35715E22B0C0028869A /* ZBarSDK */,
 			);
 			path = Headers;
 			sourceTree = "<group>";
 		};
-		D378AB3315DCF1B80098505D /* ZBarSDK */ = {
+		D37CD35715E22B0C0028869A /* ZBarSDK */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB3415DCF1B80098505D /* zbar */,
-				D378AB3E15DCF1B80098505D /* zbar.h */,
-				D378AB3F15DCF1B80098505D /* ZBarCameraSimulator.h */,
-				D378AB4015DCF1B80098505D /* ZBarCaptureReader.h */,
-				D378AB4115DCF1B80098505D /* ZBarHelpController.h */,
-				D378AB4215DCF1B80098505D /* ZBarImage.h */,
-				D378AB4315DCF1B80098505D /* ZBarImageScanner.h */,
-				D378AB4415DCF1B80098505D /* ZBarReaderController.h */,
-				D378AB4515DCF1B80098505D /* ZBarReaderView.h */,
-				D378AB4615DCF1B80098505D /* ZBarReaderViewController.h */,
-				D378AB4715DCF1B80098505D /* ZBarSDK.h */,
-				D378AB4815DCF1B80098505D /* ZBarSymbol.h */,
+				D37CD35815E22B0C0028869A /* zbar */,
+				D37CD36215E22B0C0028869A /* zbar.h */,
+				D37CD36315E22B0C0028869A /* ZBarCameraSimulator.h */,
+				D37CD36415E22B0C0028869A /* ZBarCaptureReader.h */,
+				D37CD36515E22B0C0028869A /* ZBarHelpController.h */,
+				D37CD36615E22B0C0028869A /* ZBarImage.h */,
+				D37CD36715E22B0C0028869A /* ZBarImageScanner.h */,
+				D37CD36815E22B0C0028869A /* ZBarReaderController.h */,
+				D37CD36915E22B0C0028869A /* ZBarReaderView.h */,
+				D37CD36A15E22B0C0028869A /* ZBarReaderViewController.h */,
+				D37CD36B15E22B0C0028869A /* ZBarSDK.h */,
+				D37CD36C15E22B0C0028869A /* ZBarSymbol.h */,
 			);
 			path = ZBarSDK;
 			sourceTree = "<group>";
 		};
-		D378AB3415DCF1B80098505D /* zbar */ = {
+		D37CD35815E22B0C0028869A /* zbar */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB3515DCF1B80098505D /* Decoder.h */,
-				D378AB3615DCF1B80098505D /* Exception.h */,
-				D378AB3715DCF1B80098505D /* Image.h */,
-				D378AB3815DCF1B80098505D /* ImageScanner.h */,
-				D378AB3915DCF1B80098505D /* Processor.h */,
-				D378AB3A15DCF1B80098505D /* Scanner.h */,
-				D378AB3B15DCF1B80098505D /* Symbol.h */,
-				D378AB3C15DCF1B80098505D /* Video.h */,
-				D378AB3D15DCF1B80098505D /* Window.h */,
+				D37CD35915E22B0C0028869A /* Decoder.h */,
+				D37CD35A15E22B0C0028869A /* Exception.h */,
+				D37CD35B15E22B0C0028869A /* Image.h */,
+				D37CD35C15E22B0C0028869A /* ImageScanner.h */,
+				D37CD35D15E22B0C0028869A /* Processor.h */,
+				D37CD35E15E22B0C0028869A /* Scanner.h */,
+				D37CD35F15E22B0C0028869A /* Symbol.h */,
+				D37CD36015E22B0C0028869A /* Video.h */,
+				D37CD36115E22B0C0028869A /* Window.h */,
 			);
 			path = zbar;
 			sourceTree = "<group>";
 		};
-		D378AB4A15DCF1B80098505D /* Resources */ = {
+		D37CD36E15E22B0C0028869A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D378AB4B15DCF1B80098505D /* zbar-back.png */,
-				D378AB4C15DCF1B80098505D /* zbar-help.html */,
-				D378AB4D15DCF1B80098505D /* zbar-helpicons.png */,
-				D378AB4E15DCF1B80098505D /* zbar-samples.png */,
+				D37CD36F15E22B0C0028869A /* zbar-back.png */,
+				D37CD37015E22B0C0028869A /* zbar-help.html */,
+				D37CD37115E22B0C0028869A /* zbar-helpicons.png */,
+				D37CD37215E22B0C0028869A /* zbar-samples.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		D37CD21215DE73D40028869A /* Model */ = {
+		D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */ = {
 			isa = PBXGroup;
 			children = (
-				D37CD21315DE74B20028869A /* OutdoorStation.h */,
-				D37CD21415DE74B20028869A /* OutdoorStation.m */,
+				D3F7997F15BD32370018C273 /* TPMultiLayoutViewController.h */,
+				D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */,
 			);
-			name = Model;
+			name = TPMultiLayoutViewController;
+			sourceTree = "<group>";
+		};
+		D3F9A9EB15AF27620045320F /* UACellBackgroundView */ = {
+			isa = PBXGroup;
+			children = (
+				D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */,
+				D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */,
+			);
+			name = UACellBackgroundView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1382,6 +1300,7 @@
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "linphone" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
+				D33CF34715D3985000CD4B85 /* ShellScript */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				2247673A129C3B9C002B94B4 /* CopyFiles */,
@@ -1392,7 +1311,7 @@
 			);
 			name = linphone;
 			productName = linphone;
-			productReference = 1D6058910D05DD3D006BFB54 /* linphone.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* buschjaeger.app */;
 			productType = "com.apple.product-type.application";
 		};
 		22D8F11D147548E2008C97DB /* linphone-no-gpl-thirdparties */ = {
@@ -1400,6 +1319,7 @@
 			buildConfigurationList = 22D8F182147548E2008C97DB /* Build configuration list for PBXNativeTarget "linphone-no-gpl-thirdparties" */;
 			buildPhases = (
 				22D8F11E147548E2008C97DB /* Resources */,
+				D33CF35115D3AC9800CD4B85 /* ShellScript */,
 				22D8F143147548E2008C97DB /* Sources */,
 				22D8F15A147548E2008C97DB /* Frameworks */,
 				22D8F181147548E2008C97DB /* CopyFiles */,
@@ -1410,7 +1330,7 @@
 			);
 			name = "linphone-no-gpl-thirdparties";
 			productName = linphone;
-			productReference = 22D8F187147548E2008C97DB /* linphone-no-gpl-thirdparties.app */;
+			productReference = 22D8F187147548E2008C97DB /* buschjaeger-no-gpl-thirdparties.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1448,38 +1368,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				2274550810700509006EC466 /* linphonerc in Resources */,
-				2245671D107699F700F10948 /* Settings.bundle in Resources */,
-				22F51EF6107FA66500F98953 /* untitled.plist in Resources */,
-				2242E313125235120061DDCE /* oldphone-mono-30s.caf in Resources */,
-				228B19AF130290C500F154D3 /* iTunesArtwork in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
-				226B563F13CAF1CD00921595 /* audio.plist in Resources */,
-				22E1A9E813CAF4AA00219531 /* video.plist in Resources */,
-				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
 				341FCA8E149798210084BC26 /* linphonerc-ipad in Resources */,
-				34A6ECF814D0179C00460C04 /* BuschJaegerCallView.xib in Resources */,
-				348848E014D98859005B0B54 /* bj_decline.png in Resources */,
-				348848E114D98859005B0B54 /* bj_door_hl.png in Resources */,
-				348848E214D98859005B0B54 /* bj_door.png in Resources */,
-				348848E314D98859005B0B54 /* bj_end_call.png in Resources */,
-				348848E414D98859005B0B54 /* bj_light_hl.png in Resources */,
-				348848E514D98859005B0B54 /* bj_light.png in Resources */,
-				348848E614D98859005B0B54 /* bj_mute_off.png in Resources */,
-				348848E714D98859005B0B54 /* bj_mute_on.png in Resources */,
-				348848E814D98859005B0B54 /* bj_start_call.png in Resources */,
-				34E28E7A14D98F6D00D84BDD /* 01.wav in Resources */,
-				5749FCB21518D6C100F0712D /* App_Apple_Icon_DES_57.png in Resources */,
-				D2E1B2E21549A88D007B0B0D /* App_Apple_Icon_DES_114.png in Resources */,
-				D2E7F40E155CD5AB00970BDF /* App_Apple_Icon_DES_72.png in Resources */,
-				D378AB5115DCF1B90098505D /* zbar-back.png in Resources */,
-				D378AB5315DCF1B90098505D /* zbar-help.html in Resources */,
-				D378AB5515DCF1B90098505D /* zbar-helpicons.png in Resources */,
-				D378AB5715DCF1B90098505D /* zbar-samples.png in Resources */,
-				D378AB7015DD3FFD0098505D /* BuschJaegerSettingsView.xib in Resources */,
-				D378AB7315DD40FE0098505D /* bj_barcode.png in Resources */,
-				D378AB7A15DD457D0098505D /* BuschJaegerApp.xib in Resources */,
-				D37CD1F715DE27810028869A /* BuschJaegerMainView.xib in Resources */,
-				D37CD20815DE2AAC0028869A /* bj_settings.png in Resources */,
+				D37CD2D115E21CB30028869A /* 01.wav in Resources */,
+				D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */,
+				D37CD2E115E21CB30028869A /* bj_decline.png in Resources */,
+				D37CD2E315E21CB30028869A /* bj_door_hl.png in Resources */,
+				D37CD2E515E21CB30028869A /* bj_door.png in Resources */,
+				D37CD2E715E21CB30028869A /* bj_end_call.png in Resources */,
+				D37CD2E915E21CB30028869A /* bj_light_hl.png in Resources */,
+				D37CD2EB15E21CB30028869A /* bj_light.png in Resources */,
+				D37CD2ED15E21CB30028869A /* bj_mute_off.png in Resources */,
+				D37CD2EF15E21CB30028869A /* bj_mute_on.png in Resources */,
+				D37CD2F115E21CB30028869A /* bj_settings.png in Resources */,
+				D37CD2F315E21CB30028869A /* bj_start_call.png in Resources */,
+				D37CD30F15E21E330028869A /* BuschJaegerCallView.xib in Resources */,
+				D37CD31915E21E330028869A /* BuschJaegerSettingsView.xib in Resources */,
+				D37CD32815E220620028869A /* buschjaeger_icon_57.png in Resources */,
+				D37CD32A15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */,
+				D37CD32C15E220620028869A /* buschjaeger_icon_72.png in Resources */,
+				D37CD32E15E220620028869A /* buschjaeger_icon_72@2x.png in Resources */,
+				D37CD33015E220620028869A /* buschjaeger_icon_512.png in Resources */,
+				D37CD33C15E2214C0028869A /* BuschJaegerApp.xib in Resources */,
+				D37CD37515E22B0C0028869A /* zbar-back.png in Resources */,
+				D37CD37715E22B0C0028869A /* zbar-help.html in Resources */,
+				D37CD37915E22B0C0028869A /* zbar-helpicons.png in Resources */,
+				D37CD37B15E22B0C0028869A /* zbar-samples.png in Resources */,
+				D37CD38215E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */,
+				D37CD38915E22C020028869A /* BuschJaegerMainView.xib in Resources */,
+				D37CD38F15E2331C0028869A /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1487,30 +1404,69 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22D8F11F147548E2008C97DB /* linphonerc in Resources */,
-				22D8F124147548E2008C97DB /* untitled.plist in Resources */,
-				22D8F139147548E2008C97DB /* oldphone-mono-30s.caf in Resources */,
-				22D8F13C147548E2008C97DB /* iTunesArtwork in Resources */,
-				22D8F13D147548E2008C97DB /* Localizable.strings in Resources */,
-				22D8F140147548E2008C97DB /* audio.plist in Resources */,
-				22D8F141147548E2008C97DB /* video.plist in Resources */,
-				22D8F142147548E2008C97DB /* rootca.pem in Resources */,
-				2211DB95147564B400DEE054 /* Settings.bundle in Resources */,
-				341FCA8F149798210084BC26 /* linphonerc-ipad in Resources */,
-				D378AB5215DCF1B90098505D /* zbar-back.png in Resources */,
-				D378AB5415DCF1B90098505D /* zbar-help.html in Resources */,
-				D378AB5615DCF1B90098505D /* zbar-helpicons.png in Resources */,
-				D378AB5815DCF1B90098505D /* zbar-samples.png in Resources */,
-				D378AB7115DD3FFD0098505D /* BuschJaegerSettingsView.xib in Resources */,
-				D378AB7415DD40FE0098505D /* bj_barcode.png in Resources */,
-				D378AB7B15DD457D0098505D /* BuschJaegerApp.xib in Resources */,
-				D37CD1F815DE27810028869A /* BuschJaegerMainView.xib in Resources */,
-				D37CD20915DE2AAC0028869A /* bj_settings.png in Resources */,
-				D37CD21915DE7D1D0028869A /* BuschJaegerCallView.xib in Resources */,
+				D34BD6A615C13DB70070C209 /* linphonerc in Resources */,
+				D34BD6A715C13DB70070C209 /* linphonerc-ipad in Resources */,
+				D34BD74115C13E250070C209 /* Localizable.strings in Resources */,
+				D37CD2D215E21CB30028869A /* 01.wav in Resources */,
+				D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */,
+				D37CD2E215E21CB30028869A /* bj_decline.png in Resources */,
+				D37CD2E415E21CB30028869A /* bj_door_hl.png in Resources */,
+				D37CD2E615E21CB30028869A /* bj_door.png in Resources */,
+				D37CD2E815E21CB30028869A /* bj_end_call.png in Resources */,
+				D37CD2EA15E21CB30028869A /* bj_light_hl.png in Resources */,
+				D37CD2EC15E21CB30028869A /* bj_light.png in Resources */,
+				D37CD2EE15E21CB30028869A /* bj_mute_off.png in Resources */,
+				D37CD2F015E21CB30028869A /* bj_mute_on.png in Resources */,
+				D37CD2F215E21CB30028869A /* bj_settings.png in Resources */,
+				D37CD2F415E21CB30028869A /* bj_start_call.png in Resources */,
+				D37CD31015E21E330028869A /* BuschJaegerCallView.xib in Resources */,
+				D37CD31A15E21E330028869A /* BuschJaegerSettingsView.xib in Resources */,
+				D37CD32915E220620028869A /* buschjaeger_icon_57.png in Resources */,
+				D37CD32B15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */,
+				D37CD32D15E220620028869A /* buschjaeger_icon_72.png in Resources */,
+				D37CD32F15E220620028869A /* buschjaeger_icon_72@2x.png in Resources */,
+				D37CD33115E220620028869A /* buschjaeger_icon_512.png in Resources */,
+				D37CD33D15E2214C0028869A /* BuschJaegerApp.xib in Resources */,
+				D37CD37615E22B0C0028869A /* zbar-back.png in Resources */,
+				D37CD37815E22B0C0028869A /* zbar-help.html in Resources */,
+				D37CD37A15E22B0C0028869A /* zbar-helpicons.png in Resources */,
+				D37CD37C15E22B0C0028869A /* zbar-samples.png in Resources */,
+				D37CD38315E22B700028869A /* BuschJaegerWelcomeView.xib in Resources */,
+				D37CD38A15E22C020028869A /* BuschJaegerMainView.xib in Resources */,
+				D37CD39015E2331C0028869A /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D33CF34715D3985000CD4B85 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\ncommand -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n    fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+		};
+		D33CF35115D3AC9800CD4B85 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\n    command -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n        fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
@@ -1518,29 +1474,41 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
-				2248E99F12F801C200220D9C /* LinphoneManager.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,
-				2214EBDA12F8558F002A5394 /* UIToggleButton.m in Sources */,
-				2214EBF312F86360002A5394 /* UIMuteButton.m in Sources */,
+				2214EBF312F86360002A5394 /* UIMicroButton.m in Sources */,
 				22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */,
-				22968A8812F87C2000588287 /* UIDuration.m in Sources */,
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
-				223963171393CFAF001DE689 /* FastAddressBook.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
 				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
-				34A6ECF714D0179C00460C04 /* BuschJaegerCallView.m in Sources */,
-				34A6ED0614D1440300460C04 /* BuschJaegerAppDelegate.m in Sources */,
-				34ACD0AC14D80D4100EE0B0A /* UILightButton.m in Sources */,
-				340751E7150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */,
-				D378AB6E15DD3FFD0098505D /* BuschJaegerSettingsView.m in Sources */,
-				D37CD1E915DE26B80028869A /* VideoZoomHandler.m in Sources */,
-				D37CD1F515DE27810028869A /* BuschJaegerMainView.m in Sources */,
-				D37CD20C15DE2C610028869A /* BuschJaegerUtils.m in Sources */,
-				D37CD21015DE548A0028869A /* BuschJaegerConfigParser.m in Sources */,
-				D37CD21515DE74B20028869A /* OutdoorStation.m in Sources */,
+				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
+				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
+				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
+				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
+				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
+				D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */,
+				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
+				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
+				D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
+				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
+				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
+				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
+				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
+				D35860D615B549B500513429 /* Utils.m in Sources */,
+				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
+				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
+				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				D37CD30D15E21E330028869A /* BuschJaegerCallView.m in Sources */,
+				D37CD31115E21E330028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
+				D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */,
+				D37CD32115E21E520028869A /* UILightButton.m in Sources */,
+				D37CD35315E22A470028869A /* OutdoorStation.m in Sources */,
+				D37CD38015E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
+				D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1549,29 +1517,41 @@
 			buildActionMask = 2147483647;
 			files = (
 				22D8F144147548E2008C97DB /* main.m in Sources */,
+				22D8F145147548E2008C97DB /* LinphoneAppDelegate.m in Sources */,
 				22D8F14C147548E2008C97DB /* UIDigitButton.m in Sources */,
-				22D8F14D147548E2008C97DB /* LinphoneManager.m in Sources */,
 				22D8F14E147548E2008C97DB /* UICallButton.m in Sources */,
 				22D8F14F147548E2008C97DB /* UIHangUpButton.m in Sources */,
-				22D8F150147548E2008C97DB /* UIToggleButton.m in Sources */,
-				22D8F151147548E2008C97DB /* UIMuteButton.m in Sources */,
+				22D8F151147548E2008C97DB /* UIMicroButton.m in Sources */,
 				22D8F152147548E2008C97DB /* UISpeakerButton.m in Sources */,
-				22D8F153147548E2008C97DB /* UIDuration.m in Sources */,
 				22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */,
 				22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */,
-				22D8F157147548E2008C97DB /* FastAddressBook.m in Sources */,
 				22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */,
 				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
-				34ACD0AD14D80D4100EE0B0A /* UILightButton.m in Sources */,
-				340751E8150F38FD00B89C47 /* UIToggleVideoButton.m in Sources */,
-				D378AB6F15DD3FFD0098505D /* BuschJaegerSettingsView.m in Sources */,
-				D37CD1EA15DE26B80028869A /* VideoZoomHandler.m in Sources */,
-				D37CD1F615DE27810028869A /* BuschJaegerMainView.m in Sources */,
-				D37CD20D15DE2C610028869A /* BuschJaegerUtils.m in Sources */,
-				D37CD21115DE548A0028869A /* BuschJaegerConfigParser.m in Sources */,
-				D37CD21615DE74B20028869A /* OutdoorStation.m in Sources */,
-				D37CD21715DE7D0F0028869A /* BuschJaegerCallView.m in Sources */,
-				D37CD21815DE7D130028869A /* BuschJaegerAppDelegate.m in Sources */,
+				340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */,
+				34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
+				D326483915887D5200930C67 /* OrderedDictionary.m in Sources */,
+				D32648451588F6FC00930C67 /* UIToggleButton.m in Sources */,
+				D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
+				D32409C4158B49A600C8C119 /* UILongTouchButton.m in Sources */,
+				D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
+				D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */,
+				D32460E7159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
+				D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */,
+				D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */,
+				D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
+				D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */,
+				D35860D715B549B500513429 /* Utils.m in Sources */,
+				D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
+				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
+				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				D37CD30E15E21E330028869A /* BuschJaegerCallView.m in Sources */,
+				D37CD31215E21E330028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
+				D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */,
+				D37CD32215E21E520028869A /* UILightButton.m in Sources */,
+				D37CD35415E22A470028869A /* OutdoorStation.m in Sources */,
+				D37CD38115E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
+				D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1593,12 +1573,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1608,9 +1586,8 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					DEBUG,
 				);
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1621,37 +1598,40 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = linphone;
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = buschjaeger;
+				SKIP_INSTALL = NO;
 			};
 			name = Debug;
 		};
 		228B19A61302902F00F154D3 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				LINK_WITH_STANDARD_LIBRARIES = YES;
-				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
+				PROVISIONING_PROFILE = "B8ED8915-B69D-40DA-9B89-1700C44B156B";
 				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DistributionAdhoc;
 		};
@@ -1659,14 +1639,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
-				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
+				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1677,8 +1654,6 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1689,21 +1664,18 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = linphone;
-				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = buschjaeger;
+				SKIP_INSTALL = NO;
 			};
 			name = DistributionAdhoc;
 		};
@@ -1711,13 +1683,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					arm6,
-				);
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1725,8 +1693,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					IN_LINPHONE,
 					VIDEO_ENABLED,
+					DEBUG,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1737,26 +1705,18 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
-				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
-				PROVISIONING_PROFILE = "";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
+				SKIP_INSTALL = NO;
 			};
 			name = Debug;
 		};
@@ -1764,13 +1724,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					arm6,
-				);
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1779,7 +1735,6 @@
 					IN_LINPHONE,
 					VIDEO_ENABLED,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1790,26 +1745,18 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
-				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
-				PROVISIONING_PROFILE = "";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
+				SKIP_INSTALL = NO;
 			};
 			name = Release;
 		};
@@ -1817,14 +1764,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					arm6,
-				);
-				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
+				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1833,7 +1776,6 @@
 					IN_LINPHONE,
 					VIDEO_ENABLED,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1844,26 +1786,18 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
-				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
-				PROVISIONING_PROFILE = "075921BC-C7D8-42E1-B864-F05FD9BF841C";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
+				SKIP_INSTALL = NO;
 			};
 			name = Distribution;
 		};
@@ -1871,14 +1805,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					arm6,
-				);
-				CODE_SIGN_ENTITLEMENTS = untitled.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
+				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1887,7 +1817,6 @@
 					IN_LINPHONE,
 					VIDEO_ENABLED,
 				);
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1898,43 +1827,40 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-l",
-					linphone,
-					"-l",
-					mediastreamer,
-				);
-				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
-				PROVISIONING_PROFILE = "7EBE410C-11B9-4346-9977-2C3BEE43ED16";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
+				SKIP_INSTALL = NO;
 			};
 			name = DistributionAdhoc;
 		};
 		22F3D55513CC3C9100A0DA02 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1942,13 +1868,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1959,8 +1882,6 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -1971,38 +1892,40 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = linphone;
-				PROVISIONING_PROFILE = "";
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = buschjaeger;
+				SKIP_INSTALL = NO;
 			};
 			name = Release;
 		};
 		22F51EE7107FA53D00F98953 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				LINK_WITH_STANDARD_LIBRARIES = YES;
-				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
+				PROVISIONING_PROFILE = "075921BC-C7D8-42E1-B864-F05FD9BF841C";
 				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribution;
 		};
@@ -2010,13 +1933,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
-					armv6,
-				);
-				CODE_SIGN_ENTITLEMENTS = untitled.plist;
+				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2027,8 +1948,6 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
-				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -2039,37 +1958,40 @@
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
 				);
-				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				INFOPLIST_FILE = "buschjaeger-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/Classes/Utils/ZBarSDK\"",
 				);
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = linphone;
-				SDKROOT = iphoneos;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = buschjaeger;
+				SKIP_INSTALL = NO;
 			};
 			name = Distribution;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					"$(ARCHS_STANDARD_32_BIT)",
+					armv6,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

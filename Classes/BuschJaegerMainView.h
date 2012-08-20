@@ -19,12 +19,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "BuschJaegerCallView.h"
+#import "BuschJaegerSettingsView.h"
+#import "BuschJaegerWelcomeView.h"
+
 @interface BuschJaegerMainView : UIViewController {
-    UIButton* settingsButton;
+    
 }
 
-@property (nonatomic, retain) IBOutlet UIButton* settingsButton;
+@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, retain) IBOutlet BuschJaegerCallView *callView;
+@property (nonatomic, retain) IBOutlet BuschJaegerSettingsView *settingsView;
+@property (nonatomic, retain) IBOutlet BuschJaegerWelcomeView *welcomeView;
 
-- (IBAction)settingsClick:(id)sender;
++ (BuschJaegerMainView*) instance;
 
 @end

@@ -1,10 +1,21 @@
-//
-//  VideoZoomHandler.m
-//  linphone
-//
-//  Created by Pierre-Eric Pelloux-Prayer on 25/04/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+/* VideoZoomHandler.m
+ *
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or   
+ *  (at your option) any later version.                                 
+ *                                                                      
+ *  This program is distributed in the hope that it will be useful,     
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
+ *  GNU Library General Public License for more details.                
+ *                                                                      
+ *  You should have received a copy of the GNU General Public License   
+ *  along with this program; if not, write to the Free Software         
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */ 
 
 #import "VideoZoomHandler.h"
 #include "linphonecore.h"
@@ -12,8 +23,7 @@
 
 @implementation VideoZoomHandler
 
-
--(void) zoomInOut:(UITapGestureRecognizer*) reco {
+- (void)zoomInOut:(UITapGestureRecognizer*) reco {
     if (zoomLevel != 1)
         zoomLevel = 1;
     else
@@ -29,7 +39,7 @@
     linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), zoomLevel, &cx, &cy);
 }
 
--(void) videoPan:(UIPanGestureRecognizer*) reco {
+- (void)videoPan:(UIPanGestureRecognizer*) reco {
     if (zoomLevel <= 1.0)
         return;
     
@@ -53,7 +63,7 @@
     cy = y;
 }
 
--(void) pinch:(UIPinchGestureRecognizer*) reco {
+- (void)pinch:(UIPinchGestureRecognizer*) reco {
     float s = zoomLevel;
     // CGPoint point = [reco locationInView:videoGroup];
     // float ccx = cx + (point.x / videoGroup.frame.size.width - 0.5) / s;
@@ -76,13 +86,12 @@
     linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), s, &cx, &cy);
 }
 
--(void) resetZoom {
+- (void)resetZoom {
     zoomLevel = 1;
     cx = cy = 0.5;
 }
 
-
--(void) setup: (UIView*) view {
+- (void)setup: (UIView*) view {
     videoView = view;
     
     UITapGestureRecognizer* doubleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(zoomInOut:)];
@@ -101,4 +110,5 @@
     
     [self resetZoom];
 }
+
 @end

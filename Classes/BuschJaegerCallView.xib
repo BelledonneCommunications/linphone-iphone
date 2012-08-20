@@ -160,9 +160,13 @@
 								<reference key="IBUIHighlightedTitleColor" ref="684165454"/>
 								<reference key="IBUINormalTitleColor" ref="684165454"/>
 								<reference key="IBUINormalTitleShadowColor" ref="628689408"/>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUISelectedImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">bj_mute_on.png</string>
+								</object>
+								<object class="NSCustomResource" key="IBUINormalImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">bj_mute_off.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="488695651"/>
 								<reference key="IBUIFont" ref="1052967191"/>
@@ -173,6 +177,7 @@
 								<string key="NSFrame">{{207, 0}, {73, 58}}</string>
 								<reference key="NSSuperview" ref="903884486"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
 								<bool key="IBUIOpaque">NO</bool>
@@ -490,7 +495,7 @@
 				<string key="8.object.labelIdentifier">IBBuiltInLabel-Red</string>
 				<string key="9.CustomClassName">UIMuteButton</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="2" key="9.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="9.object.labelIdentifier">IBBuiltInLabel-Red</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
@@ -569,7 +574,18 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">UIDigitButton</string>
-					<string key="superclassName">UIButton</string>
+					<string key="superclassName">UILongTouchButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/UIDigitButton.h</string>
@@ -584,11 +600,11 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">UIMuteButton</string>
-					<string key="superclassName">UIToggleButton</string>
+					<string key="className">UILongTouchButton</string>
+					<string key="superclassName">UIButton</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/UIMuteButton.h</string>
+						<string key="minorKey">./Classes/UILongTouchButton.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -616,6 +632,7 @@
 			<string key="bj_end_call.png">{160, 98}</string>
 			<string key="bj_light.png">{160, 98}</string>
 			<string key="bj_light_hl.png">{160, 98}</string>
+			<string key="bj_mute_off.png">{160, 98}</string>
 			<string key="bj_mute_on.png">{160, 98}</string>
 			<string key="bj_start_call.png">{160, 98}</string>
 			<string key="icon5.png">{16, 16}</string>

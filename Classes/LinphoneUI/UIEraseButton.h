@@ -19,11 +19,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UILongTouchButton.h"
 
-@interface UIEraseButton : UIButton {
+@interface UIEraseButton : UILongTouchButton<UILongTouchButtonDelegate>  {
 @private
-	UITextField* mAddress;
-	
+	UITextField* addressField;    
 }
--(void) initWithAddressField:(UITextField*) address;
+
+@property (nonatomic, retain) IBOutlet UITextField* addressField;
+
 @end

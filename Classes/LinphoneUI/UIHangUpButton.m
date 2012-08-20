@@ -20,57 +20,109 @@
 #import "UIHangUpButton.h"
 #import "LinphoneManager.h"
 
+#import "private.h"
+
 @implementation UIHangUpButton
 
--(void) touchUp:(id) sender {
-    LinphoneCore* lc = [LinphoneManager getLc];
-    if (!lc)
-        return;
-    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-    
-    if (call)
-        linphone_core_terminate_call(lc,call);
-	else if (linphone_core_is_in_conference(lc)) {
-		linphone_core_terminate_conference(lc);
-	} else {
-		const MSList* calls = linphone_core_get_calls(lc);
-		if (ms_list_size(calls) == 1 
-			&& !linphone_call_params_local_conference_mode(linphone_call_get_current_params((LinphoneCall*)(calls->data)))) {
-			//Only one call in the list, hangin up!
-			linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
-		} else {
-			ms_message("Cannot make a decision on which call to terminate");
-		}
-	}
+
+#pragma mark - Static Functions
+
++ (bool)isInConference:(LinphoneCall*) call {
+    if (!call)
+        return false;
+    return linphone_call_get_current_params(call)->in_conference;
 }
 
-- (id)initWithFrame:(CGRect)frame {
++ (int)callCount:(LinphoneCore*) lc {
+    int count = 0;
+    const MSList* calls = linphone_core_get_calls(lc);
     
-    self = [super initWithFrame:frame];
+    while (calls != 0) {
+        if (![UIHangUpButton isInConference:((LinphoneCall*)calls->data)]) {
+            count++;
+        }
+        calls = calls->next;
+    }
+    return count;
+}
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUIHangUpButton {
+    [self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (id)init{
+    self = [super init];
     if (self) {
-		[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+		[self initUIHangUpButton];
     }
     return self;
 }
+
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-    }
+		[self initUIHangUpButton];
+	}
     return self;
 }	
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIHangUpButton];
+    }
+    return self;
+}
 
 - (void)dealloc {
     [super dealloc];
 }
 
+
+#pragma mark - 
+
+- (void)update {
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore * lc = [LinphoneManager getLc];
+        if(linphone_core_get_calls_nb(lc) == 1 || // One call
+           linphone_core_get_current_call(lc) != NULL ||  // In call
+           linphone_core_is_in_conference(lc) || // In conference
+           (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
+           ) {
+            [self setEnabled:true];   
+            return;
+        }
+    }  else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update hangup button: Linphone core not ready"];
+    }
+    [self setEnabled:false];
+}
+
+
+#pragma mark - Action Functions
+
+-(void) touchUp:(id) sender {
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore* lc = [LinphoneManager getLc];
+        LinphoneCall* currentcall = linphone_core_get_current_call(lc);
+        if (linphone_core_is_in_conference(lc) || // In conference
+            (linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf
+            ) {
+            linphone_core_terminate_conference(lc);
+        } else if(currentcall != NULL) { // In a call
+            linphone_core_terminate_call(lc, currentcall);
+        } else {
+            const MSList* calls = linphone_core_get_calls(lc);
+            if (ms_list_size(calls) == 1) { // Only one call
+                linphone_core_terminate_call(lc,(LinphoneCall*)(calls->data));
+            }
+        }
+    } else {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot trigger hangup button: Linphone core not ready"];
+    }
+}
 
 @end

@@ -42,6 +42,22 @@
 
 #pragma mark - View lifecycle
 
+- (void)dealloc {
+    [videoView release];
+    [startCall release];
+    [takeCall release];
+    [decline release];
+    [endOrRejectCall release];
+    [mute release];
+    [lights release];
+    [openDoor release];
+    
+    // Remove all observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [super dealloc];
+}
+
 // 59x47
 // 54
 // 54 -> 67
@@ -50,9 +66,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [openDoor initWithNumber:'1'];
-    [lights initWithNumber:'2'];
-    [mute initWithOnImage:[UIImage imageNamed:@"bj_mute_on.png"] offImage:[UIImage imageNamed:@"bj_mute_off.png"] debugName:"MUTE_BTN"];
+    [openDoor setDigit:'1'];
+    [lights setDigit:'2'];
+    [mute setImage:[UIImage imageNamed:@"bj_mute_on.png"] forState:UIControlStateHighlighted | UIControlStateSelected];
     
     /* init gradients */
     {
@@ -78,167 +94,133 @@
         [BuschJaegerUtils createGradientForView:takeCall withTopColor:col1 bottomColor:col2];
     }
     
+    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+    
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [[LinphoneManager instance] setRegistrationDelegate:self];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     
-    [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:takeCall hidden:YES withName:"TAKE_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(callUpdateEvent:)
+                                                 name:kLinphoneCallUpdate
+                                               object:nil];
     
+    [startCall setHidden:NO];
+    [takeCall setHidden:YES];
+    [mute setHidden:NO];
+    [decline setHidden:YES];
+    [endOrRejectCall setHidden:YES];
+    [videoView setHidden:YES];
     
     if (!chatRoom) {
         NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
         const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
         chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], adapter);
         
-        lights->chatRoom = chatRoom;
-        openDoor->chatRoom = chatRoom;
+        //lights->chatRoom = chatRoom;
+        //openDoor->chatRoom = chatRoom;
     }
+    
+    // Update on show
+    LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+    LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
+    [self callUpdate:call state:state animated:FALSE];
 }
 
-- (void)activateVideoView:(BOOL)value{
-    if (value){
-        linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
-    }else{
-        linphone_core_set_native_video_window_id([LinphoneManager getLc],0);	
-        linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+- (void)vieWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneCallUpdate
+                                                  object:nil];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)callUpdateEvent: (NSNotification*) notif {
+    LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
+    LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
+    [self callUpdate:call state:state animated:TRUE];
+}
+
+
+#pragma mark - 
+
+- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {    
+    // Fake call update
+    if(call == NULL) {
+        return;
     }
-
-}
-
-- (void)viewDidDisappear:(BOOL)animated{
     
-}
-
-- (void)displayCall:(LinphoneCall *)call InProgressFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    /* nothing */
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-}
-
-- (void)displayDialerFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:startCall hidden:NO withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:takeCall hidden:YES withName:"TAKE_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:YES withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-}
-
-- (void)displayInCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:takeCall hidden:YES withName:"TAKE_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:endOrRejectCall hidden:NO withName:"END_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-}
-
-- (void)displayIncomingCall:(LinphoneCall *)call NotificationFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:takeCall hidden:NO withName:"TAKE_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:YES withName:"MUTE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:decline hidden:NO withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:endOrRejectCall hidden:YES withName:"END_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-    
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-        && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
-        // Create a new notification
-        UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-        if (notif)
+	switch (state) {
+		case LinphoneCallIncomingReceived:
         {
-            notif.repeatInterval = 0;
-            notif.alertBody = NSLocalizedString(@" Ding Dong !",nil);
-            notif.alertAction = @"See the answer";
-            notif.soundName = @BJ_RING_FILE ".wav";
-            NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
-            notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
-            
-            [[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+            [self displayIncomingCall:call];
         }
-    }else{
-        NSBundle* myBundle = [NSBundle mainBundle];
-        
-        NSString* path = [myBundle pathForResource:@BJ_RING_FILE ofType:@"wav"];
-        if (path) {
-            const char* soundfile = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
-            ms_message("Using '%s' as ring file", soundfile);
-            SystemSoundID sid;
-            NSURL *pathURL = [NSURL fileURLWithPath : path];
-            NSError *setCategoryError = nil;
-            [[AVAudioSession sharedInstance]
-             setCategory: AVAudioSessionCategoryAmbient
-             error: &setCategoryError];
-            //redirect audio to speaker
-            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-            AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-                                     , sizeof (audioRouteOverride)
-                                     , &audioRouteOverride);
-
-            AudioServicesCreateSystemSoundID((CFURLRef) pathURL, &sid);
-            AudioServicesPlaySystemSound(sid);
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+        case LinphoneCallUpdated:
+        {
+			//check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[self displayVideoCall];
+			} else {
+                [self displayInCall];
+            }
+			break;
         }
-
-    }
-
-    linphone_call_enable_camera(call, FALSE);
-}
-
-- (void)displayVideoCall:(LinphoneCall *)call FromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName {
-    [LinphoneManager set:startCall hidden:YES withName:"START_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:takeCall hidden:YES withName:"TAKE_CALL_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:mute hidden:NO withName:"MUTE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:decline hidden:YES withName:"DECLINE_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:endOrRejectCall hidden:NO withName:"END_BTN" andReason:__FUNCTION__];
-    [LinphoneManager set:videoView hidden:NO withName:"VIDEO_VIEW" andReason:__FUNCTION__];
-        
-}
-
-- (void)displayStatus:(NSString *)message {
+        default:
+            break;
+	}
     
 }
 
-- (void)displayNotRegisteredFromUI:(UIViewController *)viewCtrl {
-    
+- (void)displayIncomingCall:(LinphoneCall *)call {
+    [startCall setHidden:YES];
+    [takeCall setHidden:NO];
+    [mute setHidden:YES];
+    [decline setHidden:NO];
+    [endOrRejectCall setHidden:YES];
+    [videoView setHidden:NO];
 }
 
-- (void)displayRegisteredFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName onDomain:(NSString *)domain {
-    
+- (void)displayInCall {
+    [startCall setHidden:YES];
+    [takeCall setHidden:YES];
+    [mute setHidden:NO];
+    [decline setHidden:YES];
+    [endOrRejectCall setHidden:NO];
+    [videoView setHidden:NO];
 }
 
-- (void)displayRegisteringFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName onDomain:(NSString *)domain {
-    
-}
-
-- (void)displayRegistrationFailedFromUI:(UIViewController *)viewCtrl forUser:(NSString *)username withDisplayName:(NSString *)displayName onDomain:(NSString *)domain forReason:(NSString *)reason {
-    
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
-    
+- (void)displayVideoCall {
+    [startCall setHidden:YES];
+    [takeCall setHidden:YES];
+    [mute setHidden:NO];
+    [decline setHidden:YES];
+    [endOrRejectCall setHidden:NO];
+    [videoView setHidden:NO];
 }
 
 - (IBAction)takeCall:(id)sender {
@@ -268,18 +250,6 @@
     }
     linphone_call_enable_camera(lc, false);  
     linphone_call_params_destroy(lcallParams);
-}
-
--(void)displayAskToEnableVideoCall:(LinphoneCall*) call forUser:(NSString*) username withDisplayName:(NSString*) displayName {
-    
-}
-
--(void)firstVideoFrameDecoded:(LinphoneCall*) call {
-    
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType) type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void*) datas {
-    
 }
 
 @end

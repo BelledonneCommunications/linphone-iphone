@@ -19,7 +19,7 @@
 
 #import "BuschJaegerSettingsView.h"
 #import "BuschJaegerUtils.h"
-#import "BuschJaegerAppDelegate.h"
+#import "BuschJaegerMainView.h"
 
 @implementation BuschJaegerSettingsView
 
@@ -79,7 +79,7 @@
 }
 
 - (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerAppDelegate instance].navigationController popViewControllerAnimated:TRUE];
+    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:TRUE];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -87,10 +87,10 @@
     if(zbs != nil) {
         BOOL handled = FALSE;
         for(ZBarSymbol *symbol in zbs) {
-            if([[[BuschJaegerAppDelegate instance] configuration] parseQRCode:[symbol data] delegate:self]) {
+            /*if([[[LinphoneManager instance] configuration] parseQRCode:[symbol data] delegate:self]) {
                 handled = TRUE;
                 [waitView setHidden:FALSE];
-            }
+            }*/
         }
         if(handled) {
             [self dismissModalViewControllerAnimated:TRUE];

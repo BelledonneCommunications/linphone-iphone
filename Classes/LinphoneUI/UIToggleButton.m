@@ -16,75 +16,99 @@
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
+
 #import "UIToggleButton.h"
-#include "linphonecore.h"
 
 @implementation UIToggleButton
 
--(void) touchUp:(id) sender {
-	[self toggle];
-}
--(bool) isOn {
-	return mIsOn;
-}
--(bool) toggle {
-    ms_message("UI - Toggle button '%s' state change %d -> %d",
-               debugName, mIsOn, !mIsOn);
-	if (mIsOn) {
-		[self setImage:mOffImage forState:UIControlStateNormal];
-		mIsOn=!mIsOn;
-		[self onOff];
-	} else {
-		[self setImage:mOnImage forState:UIControlStateNormal];
-		mIsOn=!mIsOn;
-		[self onOn];
-	}
-	return mIsOn;
-	
-}
--(bool) reset {
-	mIsOn = [self isInitialStateOn];
-	[self setImage:mIsOn?mOnImage:mOffImage forState:UIControlStateNormal];
-	return mIsOn;
-}
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
-    mOnImage = [onImage retain];
-    mOffImage = [offImage retain];
-    mIsOn=false;
-    debugName = name;
-	[self reset];
+#pragma mark - Lifecycle Functions
+
+- (void)initUIToggleButton {
+    [self update];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-	
 }
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
 
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIToggleButton];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIToggleButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIToggleButton];
+	}
+    return self;
+}	
 
 - (void)dealloc {
     [super dealloc];
-	[mOffImage release];
-	[mOffImage release];
 }
+
+
+#pragma mark - 
+
+- (void)touchUp:(id) sender {
+	[self toggle];
+}
+
+- (bool)toggle {
+	if (self.selected) {
+		self.selected=!self.selected;
+		[self onOff];
+	} else {
+        self.selected=!self.selected;
+		[self onOn];
+	}
+	return self.selected;
+}
+
+- (void)setOn {
+	if (!self.selected) {
+		[self toggle];
+	}
+}
+
+- (void)setOff {
+	if (self.selected) {
+		[self toggle];
+	}
+}
+
+- (bool)update {
+	self.selected = [self onUpdate];
+	return self.selected;
+}
+
+
+#pragma mark - UIToggleButtonDelegate Functions
 
 -(void) onOn {
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-}
--(void) onOff {
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-}
--(bool) isInitialStateOn {
-    [NSException raise:NSInternalInconsistencyException 
-                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
-    return false;
+    /*[NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/
 }
 
+-(void) onOff {
+    /*[NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/
+}
+
+-(bool) onUpdate {
+    /*[NSException raise:NSInternalInconsistencyException 
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];*/
+    return false;
+}
 
 @end

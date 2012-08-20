@@ -19,6 +19,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifdef DEBUG
+
 // Dump exception
 void uncaughtExceptionHandler(NSException *exception) {
     NSLog(@"Crash: %@", exception);
@@ -26,12 +28,14 @@ void uncaughtExceptionHandler(NSException *exception) {
     // Internal error reporting
 }
 
+#endif
+
 int main(int argc, char *argv[]) {
-	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-    
+#ifdef DEBUG
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+#endif
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     int retVal = UIApplicationMain(argc, argv, nil, nil);
 	[pool release];
     return retVal;
 }
-

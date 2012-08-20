@@ -1,4 +1,4 @@
-/* linphoneAppDelegate.h
+/* LinphoneAppDelegate.h
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -17,44 +17,21 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */                                                                           
 
-
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#import "CoreTelephony/CTCallCenter.h"
+#import <CoreTelephony/CTCallCenter.h>
 
-#define DIALER_TAB_INDEX 1
-#define CONTACTS_TAB_INDEX 2
-#define HISTORY_TAB_INDEX 0
-#define MORE_TAB_INDEX 3
+@interface UILinphoneWindow : UIWindow
 
-@class ContactPickerDelegate;
-@class IncallViewController;
-@class PhoneViewController;
-@class CallHistoryTableViewController;
+@end
 
-
-@interface linphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
+@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     UIWindow *window;
-	IBOutlet UITabBarController*  myTabBarController;
-	IBOutlet ABPeoplePickerNavigationController* myPeoplePickerController;
-	IBOutlet PhoneViewController* myPhoneViewController;
-	CallHistoryTableViewController* myCallHistoryTableViewController;
-	ContactPickerDelegate* myContactPickerDelegate;
-    
     CTCallCenter* callCenter;
+    BOOL started;
 }
 
-- (void) loadDefaultSettings:(NSDictionary *) appDefaults;
--(void) setupUI;
--(void) setupGSMInteraction;
-
--(void) startApplication;
-
-@property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UITabBarController*  myTabBarController;
-@property (nonatomic, retain) ABPeoplePickerNavigationController* myPeoplePickerController;
-@property (nonatomic, retain) IBOutlet PhoneViewController* myPhoneViewController;
-
+@property (assign) BOOL started;
 
 @end
 

@@ -10,7 +10,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Linphone must be restarted for changes to take effect</string>
+			<string>Welcome must be restarted for changes to take effect</string>
 		</dict>
 		<dict>
 			<key>AutocapitalizationType</key>
@@ -98,7 +98,7 @@
 			<key>KeyboardType</key>
 			<string>NumbersAndPunctuation</string>
 		</dict>
-        <dict>
+		<dict>
 			<key>Key</key>
 			<string>stun_preference</string>
 			<key>Title</key>
