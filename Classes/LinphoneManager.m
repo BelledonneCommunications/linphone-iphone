@@ -595,6 +595,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     
     [self setupNetworkReachabilityCallback];
+    /* MODIFICATION: Update following NSUserDefault settings */
+    [self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
 	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
@@ -746,7 +748,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)becomeActive {
-    [self refreshRegisters];
+    /* MODIFICATION Use NSSUerDefault settings */
+    if (![self reconfigureLinphoneIfNeeded:currentSettings]) {
+        [self refreshRegisters];
+    }
+    /**/
     
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
