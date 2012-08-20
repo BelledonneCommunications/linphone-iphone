@@ -1166,11 +1166,13 @@ static LinphoneCoreVTable linphonec_vtable = {
 	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
 		backgroundSupported = [device isMultitaskingSupported];
 	
+    BOOL isbackgroundModeEnabled;
 	if (backgroundSupported) {
 		isbackgroundModeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
 	} else {
 		isbackgroundModeEnabled=false;
 	}
+    lp_config_set_int(linphone_core_get_config(theLinphoneCore),"app","backgroundmode_preference", isbackgroundModeEnabled);
     
     [currentSettings release];
     currentSettings = newSettings;

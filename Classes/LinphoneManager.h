@@ -81,6 +81,10 @@ typedef struct _LinphoneManagerSounds {
     
     NSMutableArray *inhibitedEvent;
     
+    /* MODIFICATION: Add NSUSerdefault settings */
+    NSDictionary *currentSettings;
+    /**/
+    
 @public
     CallContext currentCallContextBeforeGoingBackground;
 }
