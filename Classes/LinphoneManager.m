@@ -234,6 +234,10 @@ struct codec_name_pref_table codec_pref_table[]={
     if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Create sqlite3 database"];
         NSString *resourceDocumentPath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"sqlite"];
+        if ([fileManager fileExistsAtPath:resourceDocumentPath] == NO) {
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't find original database: %@", [error localizedDescription]];
+            return;
+        }
         [fileManager copyItemAtPath:resourceDocumentPath toPath:databaseDocumentPath error:&error];
         if(error != nil) {
             [LinphoneLogger log:LinphoneLoggerError format:@"Can't copy database: %@", [error localizedDescription]];

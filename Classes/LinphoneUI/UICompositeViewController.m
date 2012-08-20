@@ -245,6 +245,7 @@
 }
 
 - (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
     [self clearCache];
 }
 

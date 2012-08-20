@@ -43,7 +43,6 @@
     @private
     UICompositeViewController *mainViewController;
 
-    UIActionSheet *incomingCallActionSheet;
     UIActionSheet *batteryActionSheet;
     
     int loadCount;
