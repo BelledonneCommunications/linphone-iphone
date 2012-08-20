@@ -18,7 +18,10 @@
  */
 
 #import "BuschJaegerStationViewController.h"
+#import "BuschJaegerUtils.h"
+#import "UACellBackgroundView.h"
 #import "UIStationCell.h"
+#import "LinphoneManager.h"
 
 @implementation BuschJaegerStationViewController
 
@@ -33,6 +36,7 @@
     stations = [astations copy];
     [self.tableView reloadData];
 }
+
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -49,11 +53,27 @@
     UIStationCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
         cell = [[[UIStationCell alloc] initWithIdentifier:kCellId] autorelease];
+        
+        // Background View
+        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        cell.selectedBackgroundView = selectedBackgroundView;
+        [selectedBackgroundView setBackgroundColor:BUSCHJAEGER_NORMAL_COLOR];
+        [selectedBackgroundView setBorderColor:[UIColor clearColor]];
     }
 	
     [cell setStation:[stations objectAtIndex:[indexPath row]]];
     
     return cell;
+}
+
+
+#pragma mark - UITableViewDelegate Functions
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    OutdoorStation *os = [stations objectAtIndex:[indexPath row]];
+    NSString *addr = [FastAddressBook normalizeSipURI:[os address]];
+    [[LinphoneManager instance] call:addr displayName:[os name] transfer:FALSE];
 }
 
 

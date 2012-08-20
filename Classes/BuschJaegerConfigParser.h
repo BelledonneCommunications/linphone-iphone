@@ -35,8 +35,9 @@
 @property (readonly) NSMutableSet *outdoorStations;
 
 - (void)reset;
+- (BOOL)loadFile:(NSString*)file;
 - (BOOL)saveFile:(NSString*)file;
-- (BOOL)parseFile:(NSString*)file;
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate;
++ (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data;
 
 @end

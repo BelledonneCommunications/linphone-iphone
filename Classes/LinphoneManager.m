@@ -42,6 +42,7 @@ NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 /* MODIFICATION: Add buschjaeger configuration event */
 NSString *const kLinphoneConfigurationUpdate = @"LinphoneConfigurationUpdate";
+NSString *const kLinphoneConfigurationPath = @"buschjaeger.ini";
 /**/
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
@@ -204,6 +205,7 @@ struct codec_name_pref_table codec_pref_table[]={
         
         /* MODIFICATION: Add buschjaeger configuration */
         configuration = [[BuschJaegerConfigParser alloc] init];
+        [configuration loadFile:kLinphoneConfigurationPath];
         /**/
     }
     return self;
@@ -1187,5 +1189,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"check_config_disable_preference"];
 	}
 }
+/**/
 
 @end

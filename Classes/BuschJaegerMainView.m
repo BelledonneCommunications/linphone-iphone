@@ -125,6 +125,26 @@ static BuschJaegerMainView* mainViewInstance=nil;
         {
             [self displayIncomingCall:call];
         }
+        case LinphoneCallOutgoingInit:
+        {
+            linphone_call_enable_camera(call, FALSE);
+        }
+        case LinphoneCallPausedByRemote:
+		case LinphoneCallConnected:
+        case LinphoneCallUpdated:
+        {
+            [navigationController popToViewController:welcomeView animated:FALSE];
+            [navigationController pushViewController:callView animated:TRUE];
+            break;
+        }
+        case LinphoneCallError:
+		case LinphoneCallEnd:
+        {
+            if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
+                [navigationController popToViewController:welcomeView animated:TRUE];
+            }
+			break;
+        }
         default:
             break;
 	}
@@ -144,26 +164,12 @@ static BuschJaegerMainView* mainViewInstance=nil;
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
             notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
             
-            [[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notif];
         }
     }else{
-        NSError *setCategoryError = nil;
-        [[AVAudioSession sharedInstance]
-         setCategory: AVAudioSessionCategoryAmbient
-         error: &setCategoryError];
-        //redirect audio to speaker
-        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-        AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-                                 , sizeof (audioRouteOverride)
-                                 , &audioRouteOverride);
-        
+        [[LinphoneManager instance] enableSpeaker:TRUE];
         AudioServicesPlaySystemSound([LinphoneManager instance].sounds.call);
     }
-    
-    [navigationController popToRootViewControllerAnimated:FALSE];
-    [navigationController pushViewController:callView animated:TRUE];
-    
-    linphone_call_enable_camera(call, FALSE);
 }
 
 + (BuschJaegerMainView *) instance {

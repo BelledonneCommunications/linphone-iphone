@@ -29,27 +29,18 @@
 
 @interface BuschJaegerCallView : UIViewController {
 @private
-    UIView* videoView;
-    UIButton* startCall;
-    UIButton* takeCall;
-    UIHangUpButton* decline;
-    UIHangUpButton* endOrRejectCall;
-    UIToggleButton* mute;
-    UIDigitButton* lights;
-    UIDigitButton* openDoor;
-    
     LinphoneChatRoom * chatRoom;
     VideoZoomHandler* videoZoomHandler;
 }
 
 @property (nonatomic, retain) IBOutlet UIView* videoView;
-@property (nonatomic, retain) IBOutlet UIButton* startCall;
-@property (nonatomic, retain) IBOutlet UIButton* takeCall;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* decline;
-@property (nonatomic, retain) IBOutlet UIHangUpButton* endOrRejectCall;
-@property (nonatomic, retain) IBOutlet UIToggleButton* mute;
-@property (nonatomic, retain) IBOutlet UIDigitButton* lights;
-@property (nonatomic, retain) IBOutlet UIDigitButton* openDoor;
+@property (nonatomic, retain) IBOutlet UIButton* startCallButton;
+@property (nonatomic, retain) IBOutlet UIButton* takeCallButton;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* declineButton;
+@property (nonatomic, retain) IBOutlet UIHangUpButton* endOrRejectCallButton;
+@property (nonatomic, retain) IBOutlet UIToggleButton* microButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* lightsButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* openDoorButton;
 
 - (IBAction)takeCall:(id)sender;
 - (IBAction)startCall:(id)sender;

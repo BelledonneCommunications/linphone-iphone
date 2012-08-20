@@ -31,4 +31,11 @@
     [view.layer insertSublayer:gradient atIndex:0];
 }
 
++ (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
+    CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.frame = button.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
+    [button.layer insertSublayer:gradient below:button.imageView.layer];
+}
+
 @end

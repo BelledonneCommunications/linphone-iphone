@@ -26,13 +26,13 @@
 @implementation BuschJaegerCallView
 
 @synthesize videoView;
-@synthesize startCall;
-@synthesize takeCall;
-@synthesize decline;
-@synthesize endOrRejectCall;
-@synthesize mute;
-@synthesize lights;
-@synthesize openDoor;
+@synthesize startCallButton;
+@synthesize takeCallButton;
+@synthesize declineButton;
+@synthesize endOrRejectCallButton;
+@synthesize microButton;
+@synthesize lightsButton;
+@synthesize openDoorButton;
 
 
 - (void)didReceiveMemoryWarning {
@@ -44,13 +44,13 @@
 
 - (void)dealloc {
     [videoView release];
-    [startCall release];
-    [takeCall release];
-    [decline release];
-    [endOrRejectCall release];
-    [mute release];
-    [lights release];
-    [openDoor release];
+    [startCallButton release];
+    [takeCallButton release];
+    [declineButton release];
+    [endOrRejectCallButton release];
+    [microButton release];
+    [lightsButton release];
+    [openDoorButton release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -66,32 +66,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [openDoor setDigit:'1'];
-    [lights setDigit:'2'];
-    [mute setImage:[UIImage imageNamed:@"bj_mute_on.png"] forState:UIControlStateHighlighted | UIControlStateSelected];
+    [openDoorButton setDigit:'1'];
+    [lightsButton setDigit:'2'];
+    [microButton setImage:[UIImage imageNamed:@"bj_mute_off.png"] forState:UIControlStateHighlighted | UIControlStateSelected];
     
     /* init gradients */
     {
-        UIColor* col1 = [UIColor colorWithRed:32.0/255 green:45.0/255 blue:62.0/255 alpha:1.0];
-        UIColor* col2 = [UIColor colorWithRed:18.0/255 green:26.0/255 blue:41.0/255 alpha:1.0];
+        UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
+        UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
     
-        [BuschJaegerUtils createGradientForView:startCall withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForView:openDoor withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForView:lights withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForView:mute withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:startCallButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:microButton withTopColor:col1 bottomColor:col2];
     }
     {
-        UIColor* col1 = [UIColor colorWithRed:153.0/255 green:48.0/255 blue:48.0/255 alpha:1.0];
-        UIColor* col2 = [UIColor colorWithRed:66.0/255 green:15.0/255 blue:15.0/255 alpha:1.0];
+        UIColor* col1 = BUSCHJAEGER_RED_COLOR;
+        UIColor* col2 = BUSCHJAEGER_RED_COLOR2;
         
-        [BuschJaegerUtils createGradientForView:endOrRejectCall withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForView:decline withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:endOrRejectCallButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:declineButton withTopColor:col1 bottomColor:col2];
     }
     {
-        UIColor* col1 = [UIColor colorWithRed:91.0/255 green:161.0/255 blue:89.0/255 alpha:1.0];
-        UIColor* col2 = [UIColor colorWithRed:25.0/255 green:54.0/255 blue:24.0/255 alpha:1.0];
+        UIColor* col1 = BUSCHJAEGER_GREEN_COLOR;
+        UIColor* col2 = BUSCHJAEGER_GREEN_COLOR;
         
-        [BuschJaegerUtils createGradientForView:takeCall withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForView:takeCallButton withTopColor:col1 bottomColor:col2];
     }
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
@@ -123,11 +123,11 @@
                                                  name:kLinphoneCallUpdate
                                                object:nil];
     
-    [startCall setHidden:NO];
-    [takeCall setHidden:YES];
-    [mute setHidden:NO];
-    [decline setHidden:YES];
-    [endOrRejectCall setHidden:YES];
+    [startCallButton setHidden:NO];
+    [takeCallButton setHidden:YES];
+    [microButton setHidden:NO];
+    [declineButton setHidden:YES];
+    [endOrRejectCallButton setHidden:YES];
     [videoView setHidden:YES];
     
     if (!chatRoom) {
@@ -172,6 +172,8 @@
         return;
     }
     
+    [microButton update];
+    
 	switch (state) {
 		case LinphoneCallIncomingReceived:
         {
@@ -197,29 +199,29 @@
 }
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
-    [startCall setHidden:YES];
-    [takeCall setHidden:NO];
-    [mute setHidden:YES];
-    [decline setHidden:NO];
-    [endOrRejectCall setHidden:YES];
+    [startCallButton setHidden:YES];
+    [takeCallButton setHidden:NO];
+    [microButton setHidden:YES];
+    [declineButton setHidden:NO];
+    [endOrRejectCallButton setHidden:YES];
     [videoView setHidden:NO];
 }
 
 - (void)displayInCall {
-    [startCall setHidden:YES];
-    [takeCall setHidden:YES];
-    [mute setHidden:NO];
-    [decline setHidden:YES];
-    [endOrRejectCall setHidden:NO];
+    [startCallButton setHidden:YES];
+    [takeCallButton setHidden:YES];
+    [microButton setHidden:NO];
+    [declineButton setHidden:YES];
+    [endOrRejectCallButton setHidden:NO];
     [videoView setHidden:NO];
 }
 
 - (void)displayVideoCall {
-    [startCall setHidden:YES];
-    [takeCall setHidden:YES];
-    [mute setHidden:NO];
-    [decline setHidden:YES];
-    [endOrRejectCall setHidden:NO];
+    [startCallButton setHidden:YES];
+    [takeCallButton setHidden:YES];
+    [microButton setHidden:NO];
+    [declineButton setHidden:YES];
+    [endOrRejectCallButton setHidden:NO];
     [videoView setHidden:NO];
 }
 

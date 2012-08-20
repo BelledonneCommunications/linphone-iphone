@@ -24,10 +24,15 @@
 
 - (id)initWithId:(int)ID;
 
+- (NSString*)write;
++ (id)parse:(NSString*)section array:(NSArray*)array;
+
 @property (readonly) int ID;
 @property (copy) NSString* name;
 @property (copy) NSString* address;
+@property (copy) NSString* type;
 @property (assign) BOOL screenshot;
 @property (assign) BOOL surveillance;
+
 
 @end

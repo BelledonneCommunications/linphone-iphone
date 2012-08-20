@@ -19,8 +19,19 @@
 
 #import <Foundation/Foundation.h>
 
+#define BUSCHJAEGER_NORMAL_COLOR [UIColor colorWithRed:32.0/255 green:45.0/255 blue:62.0/255 alpha:1.0]
+#define BUSCHJAEGER_NORMAL_COLOR2 [UIColor colorWithRed:18.0/255 green:26.0/255 blue:41.0/255 alpha:1.0]
+
+#define BUSCHJAEGER_RED_COLOR [UIColor colorWithRed:153.0/255 green:48.0/255 blue:48.0/255 alpha:1.0]
+#define BUSCHJAEGER_RED_COLOR2 [UIColor colorWithRed:66.0/255 green:15.0/255 blue:15.0/255 alpha:1.0]
+
+#define BUSCHJAEGER_GREEN_COLOR [UIColor colorWithRed:91.0/255 green:161.0/255 blue:89.0/255 alpha:1.0]
+#define BUSCHJAEGER_GREEN_COLOR2 [UIColor colorWithRed:25.0/255 green:54.0/255 blue:24.0/255 alpha:1.0]
+
+
 @interface BuschJaegerUtils : NSObject
 
 + (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor;
++ (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor;
 
 @end

@@ -109,35 +109,16 @@
     return nil;
 }
 
-- (void)parseOutdoorStation:(int)ID array:(NSArray*)array {
-    OutdoorStation *os = [[OutdoorStation alloc] initWithId:ID];
-    NSString *param;
-    for(NSString *entry in array) {
-        if((param = [BuschJaegerConfigParser getRegexValue:@"^address=(.*)$" data:entry]) != nil) {
-            os.address = param;
-        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^name=(.*)$" data:entry]) != nil) {
-            os.name = param;
-        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^screenshot=(.*)$" data:entry]) != nil) {
-            os.screenshot = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
-        } else if((param = [BuschJaegerConfigParser getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
-            os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
-        } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
-            [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in outdoorstation_%d section: %@", ID, entry];
-        }
-    }
-    [outdoorStations addObject:os];
-}
-
 - (void)parseSection:(NSString*)section array:(NSArray*)array {
-    NSString *param;
-    if((param = [BuschJaegerConfigParser getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
-        [self parseOutdoorStation:[param intValue] array:array];
+    id obj;
+    if((obj = [OutdoorStation parse:section array:array]) != nil) {
+        [outdoorStations addObject:obj];
     } else {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
 }
 
-- (void)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
+- (BOOL)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"%@", data];
     NSArray *arr = [data componentsSeparatedByString:@"\n"];
     NSString *last_section = nil;
@@ -147,17 +128,17 @@
         NSString *subStr = [arr objectAtIndex:i];
         if([subStr hasPrefix:@"["]) {
             if([subStr hasSuffix:@"]"]) {
-            if(last_index != -1) {
-                NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, i - last_index)]];
-                [self parseSection:last_section array:subArray];
-            }
-            last_section = subStr;
-            last_index = i + 1;
+                if(last_index != -1) {
+                    NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, i - last_index)]];
+                    [self parseSection:last_section array:subArray];
+                }
+                last_section = subStr;
+                last_index = i + 1;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigParserError:NSLocalizedString(@"Invalid configuration file", nil)];
                 });
-                return;
+                return FALSE;
             }
         }
     }
@@ -169,6 +150,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [delegate buschJaegerConfigParserSuccess];
     });
+    return TRUE;
 }
 
 - (void)reset {
@@ -176,12 +158,41 @@
 }
 
 - (BOOL)saveFile:(NSString*)file {
+    NSMutableString *data = [NSMutableString string];
+    for(OutdoorStation *os in outdoorStations) {
+        [data appendString:[os write]];
+    }
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:file];
+    
+    NSError *error;
+    if(![data writeToFile:databaseDocumentPath atomically:FALSE encoding:NSUTF8StringEncoding error:&error]) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't write BuschJaeger ini file: %@", [error localizedDescription]];
+        return FALSE;
+    }
     return TRUE;
 }
 
-- (BOOL)parseFile:(NSString*)file {
+- (BOOL)loadFile:(NSString*)file {
     [self reset];
-    return TRUE;
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:file];
+    if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"BuschJaeger ini file doesn't exist: %@", file];
+        return FALSE;
+    }
+    NSError *error;
+    NSString *data = [NSString stringWithContentsOfFile:databaseDocumentPath encoding:NSUTF8StringEncoding error:&error];
+    if(data == nil) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't read BuschJaeger ini file: %@", [error localizedDescription]];
+        return FALSE;
+    }
+    return [self parseConfig:data delegate:nil];;
 }
 
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
