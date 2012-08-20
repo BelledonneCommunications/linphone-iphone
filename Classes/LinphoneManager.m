@@ -218,7 +218,7 @@ struct codec_name_pref_table codec_pref_table[]={
 #pragma mark - Database Functions
 
 - (void)openDatabase {
-    /*NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0];
     NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:@"database.txt"];
 
@@ -229,6 +229,10 @@ struct codec_name_pref_table codec_pref_table[]={
     if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Create sqlite3 database"];
         NSString *resourceDocumentPath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"sqlite"];
+        if ([fileManager fileExistsAtPath:resourceDocumentPath] == NO) {
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't find original database: %@", [error localizedDescription]];
+            return;
+        }
         [fileManager copyItemAtPath:resourceDocumentPath toPath:databaseDocumentPath error:&error];
         if(error != nil) {
             [LinphoneLogger log:LinphoneLoggerError format:@"Can't copy database: %@", [error localizedDescription]];
@@ -238,15 +242,15 @@ struct codec_name_pref_table codec_pref_table[]={
 
     if(sqlite3_open([databaseDocumentPath UTF8String], &database) != SQLITE_OK) {
         [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", databaseDocumentPath];
-    }*/
+    }
 }
 
 - (void)closeDatabase {
-    /*if(database != NULL) {
+    if(database != NULL) {
         if(sqlite3_close(database) != SQLITE_OK) {
             [LinphoneLogger logc:LinphoneLoggerError format:"Can't close sqlite3 database."];
         }
-    }*/
+    }
 }
 
 

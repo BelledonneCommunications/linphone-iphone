@@ -1185,7 +1185,6 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D37CD35515E22B0C0028869A /* ZBarSDK */,
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
@@ -1196,6 +1195,7 @@
 				D3F9A9EB15AF27620045320F /* UACellBackgroundView */,
 				C9B3A6FD15B485DB006F52EE /* Utils.h */,
 				D35860D515B549B500513429 /* Utils.m */,
+				D37CD35515E22B0C0028869A /* ZBarSDK */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
