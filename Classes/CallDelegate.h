@@ -22,21 +22,19 @@
 
 enum CallDelegateType {
     CD_UNDEFINED = 0,
-    CD_NEW_CALL,
     CD_ZRTP,
     CD_VIDEO_UPDATE,
-    CD_STOP_VIDEO_ON_LOW_BATTERY,
-    CD_TRANSFER_CALL
+    CD_STOP_VIDEO_ON_LOW_BATTERY
 };
 
-@protocol UIActionSheetCustomDelegate 
+@protocol CallActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType) type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void*) datas;
 @end
 
 @interface CallDelegate : NSObject<UIActionSheetDelegate> {
     enum CallDelegateType eventType;
     LinphoneCall* call;
-    id<UIActionSheetCustomDelegate> delegate;
+    id<CallActionSheetDelegate> delegate;
     NSTimer* timeout;
 }
 
