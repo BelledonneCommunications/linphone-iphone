@@ -941,6 +941,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}
 }
 
+- (BOOL)reconfigureLinphone {
+    return [self reconfigureLinphoneIfNeeded:currentSettings];
+}
+
 - (BOOL)reconfigureLinphoneIfNeeded:(NSDictionary *)settings {
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSDictionary* newSettings = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];

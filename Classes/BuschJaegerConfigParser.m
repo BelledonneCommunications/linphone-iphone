@@ -18,11 +18,13 @@
  */
 
 #import "BuschJaegerConfigParser.h"
+#import "LinphoneManager.h"
 #import "Utils.h"
 
 @implementation BuschJaegerConfigParser
 
 @synthesize outdoorStations;
+@synthesize network;
 
 /********
  [outdoorstation_0]
@@ -113,6 +115,8 @@
     id obj;
     if((obj = [OutdoorStation parse:section array:array]) != nil) {
         [outdoorStations addObject:obj];
+    } else if((obj = [Network parse:section array:array]) != nil) {
+        self.network = obj;
     } else {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
@@ -147,14 +151,12 @@
         [self parseSection:last_section array:subArray];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [delegate buschJaegerConfigParserSuccess];
-    });
     return TRUE;
 }
 
 - (void)reset {
     [outdoorStations removeAllObjects];
+    self.network = nil;
 }
 
 - (BOOL)saveFile:(NSString*)file {
@@ -213,7 +215,15 @@
                     [delegate buschJaegerConfigParserError:[error localizedDescription]];
                 });
             } else {
-                [self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate];
+                if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                    [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
+                    [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
+                    [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
+                    [[LinphoneManager instance] reconfigureLinphone];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [delegate buschJaegerConfigParserSuccess];
+                    });
+                }
             }
         });
         return TRUE;

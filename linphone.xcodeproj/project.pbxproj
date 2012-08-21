@@ -224,6 +224,8 @@
 		D380800615C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
 		D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
+		D383A44E15E3C98C00CDE5C9 /* Network.m in Sources */ = {isa = PBXBuildFile; fileRef = D383A44D15E3C98C00CDE5C9 /* Network.m */; };
+		D383A44F15E3C98C00CDE5C9 /* Network.m in Sources */ = {isa = PBXBuildFile; fileRef = D383A44D15E3C98C00CDE5C9 /* Network.m */; };
 		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
@@ -611,6 +613,8 @@
 		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
 		D380801115C29984005BE9BC /* ColorSpaceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorSpaceUtilities.h; path = Utils/ColorSpaceUtilities.h; sourceTree = "<group>"; };
 		D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorSpaceUtilites.m; path = Utils/ColorSpaceUtilites.m; sourceTree = "<group>"; };
+		D383A44C15E3C98C00CDE5C9 /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Network.h; path = Model/Network.h; sourceTree = "<group>"; };
+		D383A44D15E3C98C00CDE5C9 /* Network.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Network.m; path = Model/Network.m; sourceTree = "<group>"; };
 		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
 		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
 		D3E84F3C15B018A600420DAC /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
@@ -1219,6 +1223,8 @@
 		D37CD35015E22A3E0028869A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D383A44C15E3C98C00CDE5C9 /* Network.h */,
+				D383A44D15E3C98C00CDE5C9 /* Network.m */,
 				D37CD35115E22A470028869A /* OutdoorStation.h */,
 				D37CD35215E22A470028869A /* OutdoorStation.m */,
 			);
@@ -1529,6 +1535,7 @@
 				D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD39A15E244D10028869A /* UIStationCell.m in Sources */,
 				D37CD3A115E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
+				D383A44E15E3C98C00CDE5C9 /* Network.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1574,6 +1581,7 @@
 				D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD39B15E244D10028869A /* UIStationCell.m in Sources */,
 				D37CD3A215E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
+				D383A44F15E3C98C00CDE5C9 /* Network.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

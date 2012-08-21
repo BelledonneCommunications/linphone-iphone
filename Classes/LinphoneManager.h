@@ -120,6 +120,10 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
+/* MODIFICATION: Add NSUSerdefault settings */
+- (BOOL)reconfigureLinphone;
+/**/
+
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (nonatomic) int defaultExpires;
