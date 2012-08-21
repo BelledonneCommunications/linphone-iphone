@@ -31,7 +31,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initUIDigitButton {
-    self->dtmf = FALSE;
+    dtmf = FALSE;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 }

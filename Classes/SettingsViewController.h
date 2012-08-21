@@ -23,8 +23,6 @@
 #import "IASKAppSettingsViewController.h"
 
 @interface SettingsViewController: UIViewController<IASKSettingsDelegate, UICompositeViewDelegate> {
-    IASKAppSettingsViewController *settingsController;
-    UINavigationController *navigationController;
 }
 
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;

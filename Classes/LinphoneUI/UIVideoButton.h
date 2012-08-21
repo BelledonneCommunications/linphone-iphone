@@ -22,13 +22,7 @@
 #import "UIToggleButton.h"
 
 @interface UIVideoButton : UIToggleButton<UIToggleButtonDelegate> {
-    BOOL locked;
-    BOOL unlockVideoState;
-    UIActivityIndicatorView *waitView;
 }
-
-@property (assign) BOOL locked;
-@property (assign) BOOL unlockVideoState;
 
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView*  waitView;
 

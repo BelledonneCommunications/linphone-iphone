@@ -170,7 +170,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
         cell = [[[UIContactCell alloc] initWithIdentifier:kCellId] autorelease];
-    // Background View
+        
+        // Background View
         UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];

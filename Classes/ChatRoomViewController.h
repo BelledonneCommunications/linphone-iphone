@@ -27,17 +27,8 @@
 #include "linphonecore.h"
 
 @interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
-    ChatRoomTableViewController *tableController;
-    UITextField *messageField;
-    UIButton *sendButton;
-    NSString *remoteAddress;
-    UIToggleButton *editButton;
+    @private
     LinphoneChatRoom *chatRoom;
-    UILabel *addressLabel;
-    UIImageView *avatarImage;
-    UIView *headerView;
-    UIView *footerView;
-    UIImageView *fieldBackgroundImage;
 }
 
 

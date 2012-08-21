@@ -17,11 +17,15 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 
 @synthesize position;
 @synthesize backgroundColor;
+@synthesize borderColor;
 @synthesize automaticPositioning;
 
 - (void)initUACellBackgroundView {
-    [super setBackgroundColor:[UIColor clearColor]];
-    self->automaticPositioning = TRUE;
+    backgroundColor = nil;
+    [self setBackgroundColor:[UIColor colorWithRed:0.02 green:0.549 blue:0.961 alpha:1.0]];
+    borderColor = nil;
+    [self setBorderColor:[UIColor grayColor]];
+    automaticPositioning = TRUE;
 }
      
 - (id)init {
@@ -53,10 +57,19 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 }
      
 - (void)setBackgroundColor:(UIColor *)abackgroundColor {
-    if(self->backgroundColor != nil) {
-        [self->backgroundColor release];
+    if(backgroundColor != nil) {
+        [backgroundColor release];
     }
-    self->backgroundColor = [[UIColor alloc]initWithCGColor:abackgroundColor.CGColor];
+    backgroundColor = [[UIColor alloc] initWithCGColor:abackgroundColor.CGColor];
+    [self setNeedsDisplay];
+}
+
+- (void)setBorderColor:(UIColor *)aborderColor {
+    if(borderColor != nil) {
+        [borderColor release];
+    }
+    
+    borderColor = [[UIColor alloc] initWithCGColor:aborderColor.CGColor];
     [self setNeedsDisplay];
 }
 
@@ -123,7 +136,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     CGGradientRef myGradient = nil;
     const CGFloat *default_components = CGColorGetComponents([[self backgroundColor] CGColor]);
     CGFloat components[8] = {default_components[0], default_components[1], default_components[2], default_components[3], default_components[0] * 0.766f, default_components[1] * 0.766f, default_components[2] * 0.766f, default_components[3]};
-    CGContextSetStrokeColorWithColor(c, [[UIColor grayColor] CGColor]);
+    CGContextSetStrokeColorWithColor(c, [borderColor CGColor]);
     CGContextSetLineWidth(c, lineWidth);
     CGContextSetAllowsAntialiasing(c, YES);
     CGContextSetShouldAntialias(c, YES);

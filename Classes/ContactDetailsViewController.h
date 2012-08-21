@@ -25,12 +25,6 @@
 #import "ContactDetailsTableViewController.h"
 
 @interface ContactDetailsViewController : UIViewController<UICompositeViewDelegate, ContactDetailsDelegate> {
-    ContactDetailsTableViewController *tableController;
-    ABRecordRef contact;
-    UIToggleButton *editButton;
-    UIButton *backButton;
-    UIButton *cancelButton;
-    
     ABAddressBookRef addressBook;
     BOOL inhibUpdate;
 }

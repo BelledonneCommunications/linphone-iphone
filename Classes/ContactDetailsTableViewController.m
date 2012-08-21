@@ -377,7 +377,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
         CFRelease(contact);
     }
-    self->contact = acontact;
+    contact = acontact;
     [self loadData];
     [headerController setContact:contact];
 }

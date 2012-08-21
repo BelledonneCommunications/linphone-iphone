@@ -23,10 +23,6 @@
 
 @class ConsoleViewController;
 @interface MoreViewController : UIViewController<UICompositeViewDelegate> {
-    @private
-    UIButton *linkButton;
-    UILabel *nameLabel;
-    UILabel *versionLabel;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton *linkButton;

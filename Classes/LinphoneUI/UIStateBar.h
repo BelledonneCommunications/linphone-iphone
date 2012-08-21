@@ -21,10 +21,6 @@
 #import "TPMultiLayoutViewController.h"
 
 @interface UIStateBar : TPMultiLayoutViewController {
-    UIImageView*    registrationStateImage;
-    UILabel*        registrationStateLabel;
-    UIImageView*    callQualityImage;
-    UIImageView*    callSecurityImage;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* registrationStateImage;

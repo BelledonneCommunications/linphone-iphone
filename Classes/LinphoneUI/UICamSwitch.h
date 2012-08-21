@@ -21,11 +21,9 @@
 
 
 @interface UICamSwitch : UIButton {
-  
 @private
 	const char* currentCamId;
 	const char* nextCamId;
-	UIView* preview;
 }
 @property (nonatomic, retain) IBOutlet UIView* preview;
 @end

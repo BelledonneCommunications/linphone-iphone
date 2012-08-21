@@ -54,7 +54,12 @@ const NSInteger SECURE_BUTTON_TAG=5;
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    return [super initWithNibName:@"InCallViewController" bundle:[NSBundle mainBundle]];
+    self = [super initWithNibName:@"InCallViewController" bundle:[NSBundle mainBundle]];
+    if(self != nil) {
+        self->singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
+        self->videoZoomHandler = [[VideoZoomHandler alloc] init];
+    }
+    return self;
 }
 
 - (void)dealloc {
@@ -72,6 +77,9 @@ const NSInteger SECURE_BUTTON_TAG=5;
     [videoWaitingForFirstImage release];
     
     [videoZoomHandler release];
+    
+    [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
+    [singleFingerTap release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -172,13 +180,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
     linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
     
-    UITapGestureRecognizer* singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
     [singleFingerTap setNumberOfTapsRequired:1];
     [singleFingerTap setCancelsTouchesInView: FALSE];
     [[PhoneMainView instance].view addGestureRecognizer:singleFingerTap];
-    [singleFingerTap release];
     
-    videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoGroup];
     videoGroup.alpha = 0;
     
@@ -187,6 +192,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     removeTableBackground([callTableController view]);
 }
 
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
+}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];

@@ -27,10 +27,6 @@
 @end
 
 @interface ContactDetailsLabelViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, UICompositeViewDelegate> {
-    NSDictionary *dataList;
-    UITableView *tableView;
-    NSString *selectedData;
-    id<ContactDetailsLabelViewDelegate> delegate;
 }
 
 @property (nonatomic, copy) NSString *selectedData;

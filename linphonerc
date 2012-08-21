@@ -29,6 +29,7 @@ playback_dev_id=AU: Audio Unit Receiver
 ringer_dev_id=AQ: Audio Queue Device
 capture_dev_id=AU: Audio Unit Receiver
 echocancellation=0
+dtmf_player_amp=0.007
 
 [misc]
 history_max_size=30

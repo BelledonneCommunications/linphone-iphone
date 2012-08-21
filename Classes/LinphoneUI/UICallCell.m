@@ -92,7 +92,7 @@
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    self->currentCall = FALSE;
+    currentCall = FALSE;
     [headerBackgroundHighlightImage setAlpha:0.0f];
     [data release];
     data = nil;

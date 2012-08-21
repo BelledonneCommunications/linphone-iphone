@@ -142,20 +142,20 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)newContact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
-    self->contact = NULL;
+    contact = NULL;
     [self resetData];
-    self->contact = ABPersonCreate();
-    [tableController setContact:self->contact];
+    contact = ABPersonCreate();
+    [tableController setContact:contact];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)newContact:(NSString*)address {
     [LinphoneLogger logc:LinphoneLoggerLog format:"New contact"];
-    self->contact = NULL;
+    contact = NULL;
     [self resetData];
-    self->contact = ABPersonCreate();
-    [tableController setContact:self->contact];
+    contact = ABPersonCreate();
+    [tableController setContact:contact];
     [tableController addSipField:address];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
@@ -163,20 +163,20 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)editContact:(ABRecordRef)acontact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
-    self->contact = NULL;
+    contact = NULL;
     [self resetData];
-    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:self->contact];
+    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:contact];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
 
 - (void)editContact:(ABRecordRef)acontact address:(NSString*)address {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Edit contact %p", acontact];
-    self->contact = NULL;
+    contact = NULL;
     [self resetData];
-    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:self->contact];
+    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:contact];
     [tableController addSipField:address];
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
@@ -187,10 +187,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)setContact:(ABRecordRef)acontact {
     [LinphoneLogger logc:LinphoneLoggerLog format:"Set contact %p", acontact];
-    self->contact = NULL;
+    contact = NULL;
     [self resetData];
-    self->contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
-    [tableController setContact:self->contact];
+    contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
+    [tableController setContact:contact];
 }
 
 
@@ -206,10 +206,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     // Set selected+disabled background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"contact_ok_disabled.png"]
                 forState:(UIControlStateDisabled | UIControlStateSelected)];
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

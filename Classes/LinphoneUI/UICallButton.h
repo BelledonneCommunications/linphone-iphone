@@ -21,8 +21,6 @@
 
 
 @interface UICallButton : UIButton {
-@private
-	UITextField* addressField;    
 }
 
 @property (nonatomic, retain) IBOutlet UITextField* addressField;

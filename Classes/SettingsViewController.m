@@ -442,6 +442,15 @@ static UICompositeViewDescription *compositeDescription = nil;
             [hiddenKeys removeObject:@"start_at_boot_preference"];
         }
         [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+    } else if ([@"stun_preference" compare: notif.object] == NSOrderedSame) {
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+        NSString *stun_server = [notif.userInfo objectForKey:@"stun_preference"];
+        if (stun_server && ([stun_server length] > 0)) {
+            [hiddenKeys removeObject:@"ice_preference"];
+        } else {
+            [hiddenKeys addObject:@"ice_preference"];
+        }
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
     }
 }
 
@@ -488,6 +497,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     if([[[[LinphoneManager instance] settingsStore] objectForKey:@"random_port_preference"] boolValue]) {
         [hiddenKeys addObject:@"port_preference"];
+    }
+
+    if([[[[[LinphoneManager instance] settingsStore] objectForKey:@"stun_preference"] stringValue] length] == 0) {
+        [hiddenKeys addObject:@"ice_preference"];
     }
 
     return hiddenKeys;

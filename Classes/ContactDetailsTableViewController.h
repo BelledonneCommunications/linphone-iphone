@@ -27,13 +27,9 @@
 
 @interface ContactDetailsTableViewController : UITableViewController<ContactDetailsLabelViewDelegate, UITextFieldDelegate> {
 @private
-    ABRecordRef contact;
     NSMutableArray *dataCache;
     NSMutableArray *labelArray;
     NSIndexPath *editingIndexPath;
-    UIContactDetailsHeader *headerController;
-    UIContactDetailsFooter *footerController;
-    id<ContactDetailsDelegate> contactDetailsDelegate;
 }
 
 @property (nonatomic, assign) ABRecordRef contact;

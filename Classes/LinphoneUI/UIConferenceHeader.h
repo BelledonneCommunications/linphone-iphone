@@ -22,8 +22,6 @@
 #import "UIPauseButton.h"
 
 @interface UIConferenceHeader : UIViewController {
-    UIImageView *stateImage;
-    UIPauseButton *pauseButton;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* stateImage;

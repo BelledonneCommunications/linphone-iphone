@@ -22,26 +22,13 @@
 #import "UICompositeViewController.h"
 
 @interface WizardViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate> {
-    UIScrollView *contentView;
-    
-    UIView *welcomeView;
-    UIView *choiceView;
-    UIView *createAccountView;
-    UIView *connectAccountView;
-    UIView *externalAccountView;
-    UIView *validateAccountView;
-    
-    UIView *waitView;
-    UIView *currentView;
+    @private
     UITextField *activeTextField;
-    
-    UIButton *backButton;
-    UIButton *startButton;
-    
+    UIView *currentView;
     NSMutableArray *historyViews;
 }
 
-@property (nonatomic, retain) IBOutlet UIView *contentView;
+@property (nonatomic, retain) IBOutlet UIScrollView *contentView;
 
 @property (nonatomic, retain) IBOutlet UIView *welcomeView;
 @property (nonatomic, retain) IBOutlet UIView *choiceView;

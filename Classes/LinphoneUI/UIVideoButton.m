@@ -22,13 +22,9 @@
 
 @implementation UIVideoButton
 
-@synthesize locked;
-@synthesize unlockVideoState;
 @synthesize waitView;
 
 - (void)initUIVideoButton {
-    self->locked = FALSE;
-    self->unlockVideoState = FALSE;
 }
 
 - (id)init{
@@ -68,8 +64,6 @@
     
     [self setEnabled: FALSE];
     [waitView startAnimating];
-    [self setLocked: TRUE];
-    [self setUnlockVideoState: TRUE];
     
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
@@ -95,8 +89,6 @@
     
     [self setEnabled: FALSE];
     [waitView startAnimating];
-    [self setLocked: TRUE];
-    [self setUnlockVideoState: FALSE];
     
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) { 
@@ -116,26 +108,28 @@
             LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
             if (currentCall) {
                 LinphoneCallState state = linphone_call_get_state(currentCall);
-                if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
-                    if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
-                        val = true;
-                        if(locked && unlockVideoState) {
-                            locked = FALSE;
-                            [waitView stopAnimating];
-                        }
-                    } else {
-                        if(locked && !unlockVideoState) {
-                            locked = FALSE;
-                            [waitView stopAnimating];
-                        }
+                switch (state) {
+                    case LinphoneCallUpdated:
+                    {
+                        [waitView stopAnimating];
                     }
-                    if(!locked) {
+                    case LinphoneCallStreamsRunning:
+                    {
                         [self setEnabled:TRUE];
+                        if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
+                            val = true;
+                        }
+                        break;
                     }
-                } else {
-                    // Disable button if the call is not running
-                    [self setEnabled:FALSE];
-                    [waitView stopAnimating];
+                        
+                    default:
+                    {
+                        // Disable button if the call is not running
+                        [self setEnabled:FALSE];
+                        [waitView stopAnimating];
+                        break;
+                    }
+
                 }
             } else {
                 // Disable button if there is no call

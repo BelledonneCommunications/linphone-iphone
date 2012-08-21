@@ -27,31 +27,6 @@
 #import "UIDigitButton.h"
 
 @interface DialerViewController : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
-@private
-	//Buttons
-	UITextField*    addressField;
-    UIButton*       addContactButton;
-    UIButton*       backButton;
-	UIEraseButton*  eraseButton;
-	UICallButton*   callButton;
-    UICallButton*   addCallButton;
-    UITransferButton*   transferButton;
-
-	//Key pad
-	UIDigitButton*  oneButton;
-	UIDigitButton*  twoButton;
-	UIDigitButton*  threeButton;
-	UIDigitButton*  fourButton;
-	UIDigitButton*  fiveButton;
-	UIDigitButton*  sixButton;
-	UIDigitButton*  sevenButton;
-	UIDigitButton*  eightButton;
-	UIDigitButton*  nineButton;
-	UIDigitButton*  starButton;
-	UIDigitButton*  zeroButton;
-	UIDigitButton*  sharpButton;
-    
-    BOOL transferMode;
 }
 
 - (void)setAddress:(NSString*)address;
@@ -68,18 +43,18 @@
 @property (nonatomic, retain) IBOutlet UIButton* backButton;
 @property (nonatomic, retain) IBOutlet UIEraseButton* eraseButton;
 
-@property (nonatomic, retain) IBOutlet UIButton* oneButton;
-@property (nonatomic, retain) IBOutlet UIButton* twoButton;
-@property (nonatomic, retain) IBOutlet UIButton* threeButton;
-@property (nonatomic, retain) IBOutlet UIButton* fourButton;
-@property (nonatomic, retain) IBOutlet UIButton* fiveButton;
-@property (nonatomic, retain) IBOutlet UIButton* sixButton;
-@property (nonatomic, retain) IBOutlet UIButton* sevenButton;
-@property (nonatomic, retain) IBOutlet UIButton* eightButton;
-@property (nonatomic, retain) IBOutlet UIButton* nineButton;
-@property (nonatomic, retain) IBOutlet UIButton* starButton;
-@property (nonatomic, retain) IBOutlet UIButton* zeroButton;
-@property (nonatomic, retain) IBOutlet UIButton* sharpButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* oneButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* twoButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* threeButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* fourButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* fiveButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* sixButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* sevenButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* eightButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* nineButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* starButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* zeroButton;
+@property (nonatomic, retain) IBOutlet UIDigitButton* sharpButton;
 
 - (IBAction)onAddContactClick: (id) event;
 - (IBAction)onBackClick: (id) event;

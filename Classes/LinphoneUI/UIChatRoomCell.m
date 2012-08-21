@@ -78,7 +78,7 @@ static UIFont *CELL_FONT = nil;
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    self->chat = nil;
+    chat = nil;
 }
 
 - (void)update {

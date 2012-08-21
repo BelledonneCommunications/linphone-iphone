@@ -74,20 +74,10 @@ typedef struct _LinphoneManagerSounds {
     
 @private
 	NSTimer* mIterateTimer;
-	bool isbackgroundModeEnabled;
     
 	Connectivity connectivity;
-	const char*  frontCamId;
-	const char*  backCamId;
     
-    FastAddressBook* fastAddressBook;
-    
-    LinphoneManagerSounds sounds;
     NSMutableArray *inhibitedEvent;
-    id<IASKSettingsStore> settingsStore;
-    sqlite3 *database;
-    NSDictionary *castelCommands;
-    
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
