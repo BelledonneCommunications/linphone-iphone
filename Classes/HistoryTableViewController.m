@@ -60,8 +60,8 @@
 
 #pragma mark - ViewController Functions 
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     [self loadData];
 }
 
@@ -74,7 +74,6 @@
     }
     missedFilter = amissedFilter;
     [self loadData];
-    [[self tableView] reloadData];
 }
 
 
@@ -94,6 +93,7 @@
         }
         logs = ms_list_next(logs);
     }
+    [[self tableView] reloadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
