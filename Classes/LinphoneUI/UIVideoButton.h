@@ -24,9 +24,6 @@
 @interface UIVideoButton : UIToggleButton<UIToggleButtonDelegate> {
 }
 
-@property (assign) BOOL locked;
-@property (assign) BOOL unlockVideoState;
-
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView*  waitView;
 
 @end
