@@ -2524,6 +2524,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 					linphone_call_delete_ice_session(call);
 				} else return err;
 			}
+		} else {
+			call->params = *params;
 		}
 #endif
 		err = linphone_core_start_update_call(lc, call);
