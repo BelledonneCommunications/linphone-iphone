@@ -326,6 +326,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 		case LinphoneCallOutgoingInit: 
         case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
+        case LinphoneCallStreamsRunning:
         case LinphoneCallUpdated:
         {
             [self changeCurrentView:[InCallViewController compositeViewDescription]];
@@ -358,11 +359,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
             } else {
                 [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			}
-			break;
-        }
-		case LinphoneCallStreamsRunning:
-        {
-            [self changeCurrentView:[InCallViewController compositeViewDescription]];
 			break;
         }
         default:
