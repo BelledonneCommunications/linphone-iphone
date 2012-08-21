@@ -25,6 +25,8 @@
 
 @implementation BuschJaegerCallView
 
+@synthesize incomingView;
+@synthesize contactLabel;
 @synthesize videoView;
 @synthesize startCallButton;
 @synthesize takeCallButton;
@@ -123,6 +125,7 @@
                                                  name:kLinphoneCallUpdate
                                                object:nil];
     
+    [incomingView setHidden:YES];
     [startCallButton setHidden:NO];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];
@@ -178,6 +181,7 @@
 		case LinphoneCallIncomingReceived:
         {
             [self displayIncomingCall:call];
+            break;
         }
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallConnected:
@@ -199,15 +203,40 @@
 }
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
+    [incomingView setHidden:NO];
     [startCallButton setHidden:YES];
     [takeCallButton setHidden:NO];
     [microButton setHidden:YES];
     [declineButton setHidden:NO];
     [endOrRejectCallButton setHidden:YES];
     [videoView setHidden:NO];
+    
+
+    NSString *contactName = NSLocalizedString(@"Unknown", nil);
+    
+    // Extract caller address
+    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    if(addr) {
+        char *address = linphone_address_as_string_uri_only(addr);
+        if(address != NULL) {
+            contactName = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:address]];
+            ms_free(address);
+        }
+    }
+    
+    // Find caller in outdoor stations
+    NSSet *outstations = [[LinphoneManager instance] configuration].outdoorStations;
+    for(OutdoorStation *os in outstations) {
+        if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:contactName]) {
+            contactName = os.name;
+            break;
+        }
+    }
+    [contactLabel setText:contactName];
 }
 
 - (void)displayInCall {
+    [incomingView setHidden:YES];
     [startCallButton setHidden:YES];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];
@@ -217,6 +246,7 @@
 }
 
 - (void)displayVideoCall {
+    [incomingView setHidden:YES];
     [startCallButton setHidden:YES];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];

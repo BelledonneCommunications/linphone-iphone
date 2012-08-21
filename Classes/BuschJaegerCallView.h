@@ -33,6 +33,8 @@
     VideoZoomHandler* videoZoomHandler;
 }
 
+@property (nonatomic, retain) IBOutlet UIView* incomingView;
+@property (nonatomic, retain) IBOutlet UILabel* contactLabel;
 @property (nonatomic, retain) IBOutlet UIView* videoView;
 @property (nonatomic, retain) IBOutlet UIButton* startCallButton;
 @property (nonatomic, retain) IBOutlet UIButton* takeCallButton;
