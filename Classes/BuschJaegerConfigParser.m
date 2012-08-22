@@ -204,7 +204,7 @@
     NSString *passwordString = [BuschJaegerConfigParser getRegexValue:@"PW=([^\\s]+)" data:data];
 
     if(urlString != nil && userString != nil && passwordString != nil) {
-        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]];
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
