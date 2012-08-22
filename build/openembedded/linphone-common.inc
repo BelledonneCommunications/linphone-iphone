@@ -9,6 +9,7 @@ SRC_URI_append_igep0020 = " file://alsa_8khz.patch"
 DEPENDS = "intltool readline libosip2 libexosip2 speex alsa-lib spandsp"
 DEPENDS_append_video = " libxv ffmpeg libv4l"
 DEPENDS_append_gtk = " gtk+"
+DEPENDS_append_gsm = " libgsm"
 DEPENDS_${PN} = "intltool liblinphone"
 DEPENDS_${PN}_append_gsm = " libgsm"
 DEPENDS_${PN}_append_gtk = " gtk+"
@@ -23,7 +24,6 @@ PROVIDES_gtk = "linphone linphonec liblinphone libmediastreamer libortp"
 
 inherit autotools pkgconfig gettext
 
-#export PKG_CONFIG=${STAGING_BINDIR_NATIVE}/pkg-config
 
 LINPHONE_OE_ENABLE_TESTS = "--disable-tests"
 LINPHONE_OE_ENABLE_VIDEO = "--disable-video"

@@ -1,0 +1,98 @@
+diff -urNad libgsm-1.0.10~/src/debug.c libgsm-1.0.10/src/debug.c
+--- libgsm-1.0.10~/src/debug.c	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/src/debug.c	2007-11-01 15:53:42.000000000 +0100
+@@ -49,7 +49,7 @@
+ 	fprintf( stderr, "%s [%d .. %d]: ", name, from, to );
+ 	while (from <= to) {
+ 
+-		fprintf(stderr, "%d ", ptr[ from ] );
++		fprintf(stderr, "%ld ", ptr[ from ] );
+ 		from++;
+ 		if (nprinted++ >= 7) {
+ 			nprinted = 0;
+@@ -63,14 +63,14 @@
+ 	char		* name,
+ 	longword	  value	)
+ {
+-	fprintf(stderr, "%s: %d\n", name, (long)value );
++	fprintf(stderr, "%s: %ld\n", name, (long)value );
+ }
+ 
+ void gsm_debug_word P2(  (name, value),
+ 	char	* name,
+ 	word	  value	)
+ {
+-	fprintf(stderr, "%s: %d\n", name, (long)value);
++	fprintf(stderr, "%s: %ld\n", name, (long)value);
+ }
+ 
+ #endif
+diff -urNad libgsm-1.0.10~/src/toast.c libgsm-1.0.10/src/toast.c
+--- libgsm-1.0.10~/src/toast.c	2007-11-01 15:37:52.000000000 +0100
++++ libgsm-1.0.10/src/toast.c	2007-11-01 15:53:42.000000000 +0100
+@@ -251,8 +251,8 @@
+ {
+ 	char * s;
+ 	if (!(s = malloc(len))) {
+-		fprintf(stderr, "%s: failed to malloc %d bytes -- abort\n",
+-			progname, len);
++		fprintf(stderr, "%s: failed to malloc %ld bytes -- abort\n",
++			progname, (long) len);
+ 		onintr();
+ 		exit(1);
+ 	}
+@@ -270,7 +270,7 @@
+ 	maxlen = strlen(name) + 1 + strlen(want) + strlen(cut);
+ 	p = strcpy(emalloc(maxlen), name);
+ 
+-	if (s = suffix(p, cut)) strcpy(s, want);
++	if ((s = suffix(p, cut))) strcpy(s, want);
+ 	else if (*want && !suffix(p, want)) strcat(p, want);
+ 
+ 	return p;
+@@ -386,7 +386,7 @@
+ 		ut[0] = instat.st_atime;
+ 		ut[1] = instat.st_mtime;
+ 
+-		(void) utime(outname, ut);
++		(void) utime(outname, (struct utimbuf *)ut);
+ 
+ #endif	/* UTIMBUF */
+ 	}
+@@ -416,7 +416,7 @@
+ 	}
+ 	if (st->st_nlink > 1 && !f_cat && !f_precious) {
+ 		fprintf(stderr, 
+-		      "%s: \"%s\" has %s other link%s -- unchanged.\n",
++		      "%s: \"%s\" has %d other link%s -- unchanged.\n",
+ 			progname,name,st->st_nlink - 1,"s" + (st->st_nlink<=2));
+ 		return 0;
+ 	}
+@@ -585,8 +585,8 @@
+ 
+ 		if (cc != sizeof(s)) {
+ 			if (cc >= 0) fprintf(stderr,
+-			"%s: incomplete frame (%d byte%s missing) from %s\n",
+-					progname, sizeof(s) - cc,
++			"%s: incomplete frame (%ld byte%s missing) from %s\n",
++					progname, (long) sizeof(s) - cc,
+ 					"s" + (sizeof(s) - cc == 1),
+ 					inname ? inname : "stdin" );
+ 			gsm_destroy(r);
+@@ -624,8 +624,6 @@
+ 
+ static int process P1((name), char * name)
+ {
+-	int step = 0;
+-
+ 	out     = (FILE *)0;
+ 	in      = (FILE *)0;
+ 
+@@ -779,7 +777,6 @@
+ 	case 'h': help();    exit(0);
+ 
+ 	default: 
+-	usage:
+ 		fprintf(stderr,
+ 	"Usage: %s [-fcpdhvuaslFC] [files...] (-h for help)\n",
+ 			progname);

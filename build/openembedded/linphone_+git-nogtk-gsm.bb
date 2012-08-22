@@ -1,9 +1,9 @@
-## THIS unusable work in progress ##
+
 
 DESCRIPTION = "Audio/video SIP-based IP phone (console edition)"
 HOMEPAGE = "http://www.linphone.org/?lang=us"
 LICENSE = "GPLv2"
-PR="r9"
+PR="r10"
 
 DEFAULT_PREFERENCE = "3"
 OVERRIDES_append = ":console"
