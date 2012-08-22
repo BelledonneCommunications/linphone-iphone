@@ -384,10 +384,12 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	if (desc->ice_mismatch == TRUE) {
 		sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-mismatch"), NULL);
 	} else {
-		if (desc->ice_pwd[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-pwd"), osip_strdup(desc->ice_pwd));
-		if (desc->ice_ufrag[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-ufrag"), osip_strdup(desc->ice_ufrag));
-		add_ice_candidates(msg, lineno, desc);
-		add_ice_remote_candidates(msg, lineno, desc);
+		if (desc->rtp_port != 0) {
+			if (desc->ice_pwd[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-pwd"), osip_strdup(desc->ice_pwd));
+			if (desc->ice_ufrag[0] != '\0') sdp_message_a_attribute_add(msg, lineno, osip_strdup("ice-ufrag"), osip_strdup(desc->ice_ufrag));
+			add_ice_candidates(msg, lineno, desc);
+			add_ice_remote_candidates(msg, lineno, desc);
+		}
 	}
 }
 
