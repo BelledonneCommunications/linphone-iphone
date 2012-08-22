@@ -165,7 +165,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)changeView: (HistoryView) view {
+- (void)changeView:(HistoryView)view {
     if(view == History_All) {
         [ContactSelection setSipFilter:FALSE];
         [tableController loadData];
