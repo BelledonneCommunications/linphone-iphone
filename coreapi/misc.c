@@ -772,7 +772,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						break;
 				}
 			}
-			if (stream->ice_mismatch == TRUE) {
+			if ((stream->ice_mismatch == TRUE) || (stream->rtp_port == 0)) {
 				ice_check_list_set_state(cl, ICL_Failed);
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
