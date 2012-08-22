@@ -333,7 +333,7 @@
                 if(currentOrientation == UIDeviceOrientationUnknown) {
                     return [UIApplication sharedApplication].statusBarOrientation;
                 }
-                return currentOrientation;
+                deviceOrientation = currentOrientation;
             }
             if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
                 if ([currentViewDescription portraitMode]) {
