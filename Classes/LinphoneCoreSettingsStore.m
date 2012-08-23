@@ -126,6 +126,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         }
         linphone_address_destroy(parsed);
     }
+    {
+        [self setInteger: linphone_core_get_audio_port(lc) forKey:@"audio_port_preference"];
+        [self setInteger: linphone_core_get_video_port(lc) forKey:@"video_port_preference"];
+    }
 	{
 		LCSipTransports tp;
 		const char *tname = "udp";
@@ -144,7 +148,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setString:tname forKey:@"transport_preference"];
         [self setInteger:port forKey:@"port_preference"];
         
-        [self setInteger:lp_config_get_int(linphone_core_get_config(lc),"app","random_port_preference", 1) forKey:@"random_port_preference"];
+        [self setInteger:lp_config_get_int(linphone_core_get_config(lc),"sip","sip_random_port", 1) forKey:@"random_port_preference"];
 	}
 	{
 		LinphoneAuthInfo *ai;
@@ -291,8 +295,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
 		}
 	}
-    lp_config_set_int(linphone_core_get_config(lc),"app","random_port_preference",random_port_preference);
-	
+    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_random_port", random_port_preference);
+	lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tcp_random_port", random_port_preference);
+    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tls_random_port", random_port_preference);
 	
 	//configure sip account
 	
@@ -464,6 +469,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         linphone_address_destroy(parsed);
     }
     
+
+    // Audio & Video Port
+    int audio_port_preference = [self integerForKey:@"audio_port_preference"];
+    linphone_core_set_audio_port(lc, audio_port_preference);
+    int video_port_preference = [self integerForKey:@"video_port_preference"];
+    linphone_core_set_audio_port(lc, video_port_preference);
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;

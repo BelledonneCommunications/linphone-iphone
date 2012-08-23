@@ -111,6 +111,10 @@ typedef struct _LinphoneManagerSounds {
 - (void)addInhibitedEvent:(NSString*)event;
 - (BOOL)removeInhibitedEvent:(NSString*)event;
 
++ (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
++ (NSString*)bundleFile:(NSString*)file;
++ (NSString*)documentFile:(NSString*)file;
+
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
