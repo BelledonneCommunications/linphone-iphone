@@ -791,6 +791,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						candidate->priority, candidate->foundation, default_candidate);
 				}
 				if (ice_restarted == FALSE) {
+					bool_t losing_pairs_added = FALSE;
 					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 						const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
 						const char *addr = NULL;
@@ -798,8 +799,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						int componentID = j + 1;
 						if (candidate->addr[0] == '\0') break;
 						get_default_addr_and_port(componentID, md, stream, &addr, &port);
-						ice_add_losing_pair(ice_session_check_list(call->ice_session, i), j + 1, candidate->addr, candidate->port, addr, port);
+						ice_add_losing_pair(cl, j + 1, candidate->addr, candidate->port, addr, port);
+						losing_pairs_added = TRUE;
 					}
+					if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
 				}
 			}
 		}
