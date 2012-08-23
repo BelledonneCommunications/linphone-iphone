@@ -1718,7 +1718,13 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				}
 				break;
 			case IS_Failed:
-				linphone_call_delete_ice_session(call);
+				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
+					if (ice_session_role(call->ice_session) == IR_Controlling) {
+						/* At least one ICE session has succeeded, so perform a call update. */
+						ice_session_select_candidates(call->ice_session);
+						linphone_core_update_call(call->core, call, &call->current_params);
+					}
+				}
 				break;
 			default:
 				break;

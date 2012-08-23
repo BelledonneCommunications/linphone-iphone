@@ -808,7 +808,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 		ice_session_check_mismatch(call->ice_session);
 	}
-	if ((ice_session_state(call->ice_session) == IS_Failed) || (ice_session_nb_check_lists(call->ice_session) == 0)) {
+	if (ice_session_nb_check_lists(call->ice_session) == 0) {
 		linphone_call_delete_ice_session(call);
 	}
 }
