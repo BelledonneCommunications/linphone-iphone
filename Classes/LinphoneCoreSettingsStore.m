@@ -266,10 +266,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
 	NSString* transport = [self stringForKey:@"transport_preference"];
 	int port_preference = [self integerForKey:@"port_preference"];
+    
     BOOL random_port_preference = [self boolForKey:@"random_port_preference"];
+    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_random_port", random_port_preference);
+	lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tcp_random_port", random_port_preference);
+    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tls_random_port", random_port_preference);
     if(random_port_preference) {
         port_preference = (0xDFFF&random())+1024;
+        [self setInteger:port_preference forKey:@"port_preference"]; // Update back preference
     }
+    
 	LCSipTransports transportValue={0};
 	if (transport!=nil) {
 		if (linphone_core_get_sip_transports(lc, &transportValue)) {
@@ -295,9 +301,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];	
 		}
 	}
-    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_random_port", random_port_preference);
-	lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tcp_random_port", random_port_preference);
-    lp_config_set_int(linphone_core_get_config(lc),"sip","sip_tls_random_port", random_port_preference);
 	
 	//configure sip account
 	
