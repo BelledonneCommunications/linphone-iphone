@@ -2507,25 +2507,22 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	int err=0;
 	if (params!=NULL){
 #ifdef VIDEO_ENABLED
+		bool_t has_video = call->params.has_video;
 		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
 			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
 			call->videostream->ice_check_list = NULL;
 		}
-		if ((call->ice_session != NULL) && ((ice_session_state(call->ice_session) != IS_Completed) || (call->params.has_video != params->has_video))) {
+		call->params = *params;
+		if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed) && !has_video && params->has_video) {
 			/* Defer call update until the ICE candidates gathering process has finished. */
 			ms_message("Defer call update to gather ICE candidates");
-			call->params = *params;
 			update_local_media_description(lc, call);
-			if (call->params.has_video) {
-				linphone_call_init_video_stream(call);
-				video_stream_prepare_video(call->videostream);
-				if (linphone_core_gather_ice_candidates(lc,call)<0) {
-					/* Ice candidates gathering failed, proceed with the call anyway. */
-					linphone_call_delete_ice_session(call);
-				} else return err;
-			}
-		} else {
-			call->params = *params;
+			linphone_call_init_video_stream(call);
+			video_stream_prepare_video(call->videostream);
+			if (linphone_core_gather_ice_candidates(lc,call)<0) {
+				/* Ice candidates gathering failed, proceed with the call anyway. */
+				linphone_call_delete_ice_session(call);
+			} else return err;
 		}
 #endif
 		err = linphone_core_start_update_call(lc, call);
