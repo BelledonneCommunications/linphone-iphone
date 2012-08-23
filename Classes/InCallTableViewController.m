@@ -260,7 +260,7 @@ enum TableSection {
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {    
     if(section == CallSection) {
-        return [[UIView alloc] initWithFrame:CGRectZero];
+        return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
     } else if(section == ConferenceSection) {
         LinphoneCore* lc = [LinphoneManager getLc];
         if(linphone_core_get_conference_size(lc) > 0){
@@ -270,7 +270,7 @@ enum TableSection {
             [headerController release];
             return headerView;
         } else {
-            return [[UIView alloc] initWithFrame:CGRectZero];
+            return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
         }
     }
     return [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
