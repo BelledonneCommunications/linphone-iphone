@@ -21,24 +21,30 @@
 
 #import "OutdoorStation.h"
 #import "Network.h"
+#import "History.h"
 
-@protocol BuschJaegerConfigParser <NSObject>
+@protocol BuschJaegerConfigurationDelegate <NSObject>
 
-- (void)buschJaegerConfigParserSuccess;
-- (void)buschJaegerConfigParserError:(NSString *)error;
+- (void)buschJaegerConfigurationSuccess;
+- (void)buschJaegerConfigurationError:(NSString *)error;
 
 @end
 
-@interface BuschJaegerConfigParser : NSObject {
+@interface BuschJaegerConfiguration : NSObject {
 }
 
+@property (readonly) NSMutableSet *history;
 @property (readonly) NSMutableSet *outdoorStations;
-@property (assign) Network *network;
+@property (readonly) Network *network;
 
 - (void)reset;
+
 - (BOOL)loadFile:(NSString*)file;
 - (BOOL)saveFile:(NSString*)file;
-- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate;
+- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+
+- (BOOL)loadHistory:(NSString*)url delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+
 + (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data;
 
 @end

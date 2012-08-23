@@ -17,14 +17,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerConfigParser.h"
+#import "BuschJaegerConfiguration.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
 
-@implementation BuschJaegerConfigParser
+@implementation BuschJaegerConfiguration
 
 @synthesize outdoorStations;
 @synthesize network;
+@synthesize history;
 
 /********
  [outdoorstation_0]
@@ -87,12 +88,16 @@
     self = [super init];
     if(self != nil) {
         outdoorStations = [[NSMutableSet alloc] init];
+        history = [[NSMutableSet alloc] init];
+        network = [[Network alloc] init];
     }
     return self;
 }
 
 - (void)dealloc {
     [outdoorStations release];
+    [history release];
+    [network release];
     [super dealloc];
 }
 
@@ -105,10 +110,20 @@
     
     NSTextCheckingResult* result = [regex firstMatchInString:data options:0 range:NSMakeRange(0, [data length])];
     if(result && result.numberOfRanges == 2) {
-        NSRange range = [result rangeAtIndex:1];
-        return [data substringWithRange:range];
+        return [data substringWithRange:[result rangeAtIndex:1]];
     }
     return nil;
+}
+
+- (BOOL)parseHistory:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    NSArray *arr = [data componentsSeparatedByString:@"\n"];
+    for (NSString *line in arr) {
+        History *his = [History parse:line];
+        if(his) {
+            [history addObject:his];
+        }
+    }
+    return TRUE;
 }
 
 - (void)parseSection:(NSString*)section array:(NSArray*)array {
@@ -116,13 +131,16 @@
     if((obj = [OutdoorStation parse:section array:array]) != nil) {
         [outdoorStations addObject:obj];
     } else if((obj = [Network parse:section array:array]) != nil) {
-        self.network = obj;
+        if(network != nil) {
+            [network release];
+        }
+        network = [obj retain];
     } else {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
 }
 
-- (BOOL)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
+- (BOOL)parseConfig:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"%@", data];
     NSArray *arr = [data componentsSeparatedByString:@"\n"];
     NSString *last_section = nil;
@@ -140,7 +158,7 @@
                 last_index = i + 1;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [delegate buschJaegerConfigParserError:NSLocalizedString(@"Invalid configuration file", nil)];
+                    [delegate buschJaegerConfigurationError:NSLocalizedString(@"Invalid configuration file", nil)];
                 });
                 return FALSE;
             }
@@ -155,8 +173,12 @@
 }
 
 - (void)reset {
+    [history removeAllObjects];
     [outdoorStations removeAllObjects];
-    self.network = nil;
+    if(network != nil) {
+        [network release];
+    }
+    network = [[Network alloc] init];
 }
 
 - (BOOL)saveFile:(NSString*)file {
@@ -164,6 +186,7 @@
     for(OutdoorStation *os in outdoorStations) {
         [data appendString:[os write]];
     }
+    [data appendString:[network write]];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0];
@@ -197,14 +220,45 @@
     return [self parseConfig:data delegate:nil];;
 }
 
-- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigParser>)delegate {
+- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     [self reset];
-    NSString *urlString = [BuschJaegerConfigParser getRegexValue:@"URL=([^\\s]+)" data:data];
-    NSString *userString = [BuschJaegerConfigParser getRegexValue:@"USER=([^\\s]+)" data:data];
-    NSString *passwordString = [BuschJaegerConfigParser getRegexValue:@"PW=([^\\s]+)" data:data];
+    NSString *urlString = [BuschJaegerConfiguration getRegexValue:@"URL=([^\\s]+)" data:data];
+    NSString *userString = [BuschJaegerConfiguration getRegexValue:@"USER=([^\\s]+)" data:data];
+    NSString *passwordString = [BuschJaegerConfiguration getRegexValue:@"PW=([^\\s]+)" data:data];
 
     if(urlString != nil && userString != nil && passwordString != nil) {
-        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+        if(request != nil) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+                NSURLResponse *response = nil;
+                NSError *error = nil;
+                NSData *data  = nil;
+                data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+                if(data == nil) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [delegate buschJaegerConfigurationError:[error localizedDescription]];
+                    });
+                } else {
+                    if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                        [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
+                        [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
+                        [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
+                        [[LinphoneManager instance] reconfigureLinphone];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate buschJaegerConfigurationSuccess];
+                        });
+                    }
+                }
+            });
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+- (BOOL)loadHistory:(NSString*)url delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+    if(request != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
@@ -212,24 +266,19 @@
             data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
             if(data == nil) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [delegate buschJaegerConfigParserError:[error localizedDescription]];
+                    [delegate buschJaegerConfigurationError:[error localizedDescription]];
                 });
             } else {
-                if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
-                    [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
-                    [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
-                    [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
-                    [[LinphoneManager instance] reconfigureLinphone];
+                if([self parseHistory:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [delegate buschJaegerConfigParserSuccess];
+                        [delegate buschJaegerConfigurationSuccess];
                     });
                 }
             }
         });
         return TRUE;
-    } else {
-        return FALSE;
     }
+    return FALSE;
 }
 
 @end

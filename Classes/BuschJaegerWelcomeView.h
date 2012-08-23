@@ -18,16 +18,16 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "BuschJaegerStationViewController.h"
+#import "BuschJaegerStationTableViewController.h"
 
 @interface BuschJaegerWelcomeView : UIViewController {
-    UIButton* settingsButton;
-    BuschJaegerStationViewController *tableController;
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet BuschJaegerStationViewController *tableController;
+@property (nonatomic, retain) IBOutlet UIButton* historyButton;
+@property (nonatomic, retain) IBOutlet BuschJaegerStationTableViewController *tableController;
 
 - (IBAction)settingsClick:(id)sender;
+- (IBAction)historyClick:(id)sender;
 
 @end

@@ -23,12 +23,14 @@
 @implementation BuschJaegerWelcomeView
 
 @synthesize settingsButton;
+@synthesize historyButton;
 @synthesize tableController;
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
     [settingsButton release];
+    [historyButton release];
     [tableController release];
     
     // Remove all observer
@@ -69,11 +71,11 @@
 #pragma mark - Event Functions
 
 - (void)configurationUpdateEvent: (NSNotification*) notif {
-    BuschJaegerConfigParser *configuration = [notif.userInfo objectForKey:@"configuration"];
+    BuschJaegerConfiguration *configuration = [notif.userInfo objectForKey:@"configuration"];
     [self updateConfiguration:configuration];
 }
 
-- (void)updateConfiguration:(BuschJaegerConfigParser *)configuration {
+- (void)updateConfiguration:(BuschJaegerConfiguration *)configuration {
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
     [tableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
@@ -84,6 +86,10 @@
 
 - (IBAction)settingsClick:(id)sender {
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:TRUE];
+}
+
+- (IBAction)historyClick:(id)sender {
+    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:TRUE];
 }
 
 @end

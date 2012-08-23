@@ -25,6 +25,7 @@
 @synthesize callView;
 @synthesize settingsView;
 @synthesize welcomeView;
+@synthesize historyView;
 
 static BuschJaegerMainView* mainViewInstance=nil;
 
@@ -61,9 +62,11 @@ static BuschJaegerMainView* mainViewInstance=nil;
 }
 
 - (void)dealloc {
+    [navigationController release];
     [callView release];
     [settingsView release];
     [welcomeView release];
+    [historyView release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -80,7 +83,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
     UIView *view = navigationController.view;
     [view setFrame:[self.view bounds]];
     [self.view addSubview:view];
-    [navigationController pushViewController:welcomeView animated:FALSE];
+    [navigationController setViewControllers:[NSArray arrayWithObject:welcomeView]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -134,14 +137,14 @@ static BuschJaegerMainView* mainViewInstance=nil;
         case LinphoneCallUpdated:
         {
             [navigationController popToViewController:welcomeView animated:FALSE];
-            [navigationController pushViewController:callView animated:TRUE];
+            [navigationController pushViewController:callView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
             break;
         }
         case LinphoneCallError:
 		case LinphoneCallEnd:
         {
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
-                [navigationController popToViewController:welcomeView animated:TRUE];
+                [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
             }
 			break;
         }

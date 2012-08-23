@@ -1,4 +1,4 @@
-/* UIStationCell.h
+/* History.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,17 +17,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import <UIKit/UIKit.h>
-#import "OutdoorStation.h"
+#import <Foundation/Foundation.h>
 
-@interface UIStationCell : UITableViewCell
+@interface History : NSObject
 
+@property (assign) int ID;
+@property (copy) NSDate *date;
+@property (assign) int stationID;
+@property (assign) BOOL incoming;
+@property (copy) NSArray *images;
 
-@property (nonatomic, retain) OutdoorStation *station;
-
-@property (nonatomic, retain) IBOutlet UIImageView *stationImage;
-@property (nonatomic, retain) IBOutlet UILabel *stationLabel;
-
-- (id)initWithIdentifier:(NSString*)identifier;
+- (NSString*)write;
++ (id)parse:(NSString*)line;
 
 @end

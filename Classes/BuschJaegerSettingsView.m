@@ -27,6 +27,9 @@
 @synthesize backButton;
 @synthesize waitView;
 
+
+#pragma mark - Lifecycle Functions
+
 - (void)initBuschJaegerSettingsView {
     scanController = [[ZBarReaderViewController alloc] init];
     [scanController setReaderDelegate:self];
@@ -61,6 +64,9 @@
     [super dealloc];
 }
 
+
+#pragma mark - ViewController Functions
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     /* init gradients */
@@ -74,13 +80,19 @@
     [waitView setHidden:TRUE];
 }
 
+
+#pragma mark - Action Functions
+
 - (IBAction)onScanClick:(id)sender {
-    [self presentModalViewController:scanController animated:TRUE];
+    [self presentModalViewController:scanController animated:FALSE];
 }
 
 - (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:TRUE];
+    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
 }
+
+
+#pragma mark - ZBarReaderDelegate Functions
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     ZBarSymbolSet *zbs = [info objectForKey:ZBarReaderControllerResults];
@@ -93,12 +105,15 @@
             }
         }
         if(handled) {
-            [self dismissModalViewControllerAnimated:TRUE];
+            [self dismissModalViewControllerAnimated:FALSE];
         }
     }
 }
 
-- (void)buschJaegerConfigParserSuccess {
+
+#pragma mark - BuschJaegerConfigurationDelegate Functions
+
+- (void)buschJaegerConfigurationSuccess {
     UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Success",nil)
                                                         message:NSLocalizedString(@"The providing configuration is successfully applied", nil)
                                                        delegate:nil
@@ -112,7 +127,7 @@
     [[[LinphoneManager instance] configuration] saveFile:kLinphoneConfigurationPath];
 }
 
-- (void)buschJaegerConfigParserError:(NSString *)error {
+- (void)buschJaegerConfigurationError:(NSString *)error {
     UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning error",nil)
                                                         message:[NSString stringWithFormat:NSLocalizedString(@"Connection issue: %@", nil), error]
                                                        delegate:nil

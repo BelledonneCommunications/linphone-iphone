@@ -205,7 +205,7 @@ struct codec_name_pref_table codec_pref_table[]={
         [self copyDefaultSettings];
 
         /* MODIFICATION: Add buschjaeger configuration */
-        configuration = [[BuschJaegerConfigParser alloc] init];
+        configuration = [[BuschJaegerConfiguration alloc] init];
         [configuration loadFile:kLinphoneConfigurationPath];
         /**/
     }

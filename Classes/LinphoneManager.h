@@ -27,7 +27,7 @@
 #import "FastAddressBook.h"
 #import "Utils.h"
 /* MODIFICATION: Add buschjaeger configuration */
-#import "BuschJaegerConfigParser.h"
+#import "BuschJaegerConfiguration.h"
 /**/
 #include "linphonecore.h"
 
@@ -134,7 +134,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
-@property (readonly) BuschJaegerConfigParser *configuration;
+@property (readonly) BuschJaegerConfiguration *configuration;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 

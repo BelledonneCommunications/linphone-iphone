@@ -1,4 +1,4 @@
-/* UIStationCell.h
+/* BuschJaegerHistoryTableViewController.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -18,16 +18,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "OutdoorStation.h"
 
-@interface UIStationCell : UITableViewCell
+@interface BuschJaegerHistoryTableViewController : UITableViewController
 
-
-@property (nonatomic, retain) OutdoorStation *station;
-
-@property (nonatomic, retain) IBOutlet UIImageView *stationImage;
-@property (nonatomic, retain) IBOutlet UILabel *stationLabel;
-
-- (id)initWithIdentifier:(NSString*)identifier;
+@property (nonatomic, retain) NSArray *history;
 
 @end

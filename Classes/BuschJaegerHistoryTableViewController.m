@@ -1,6 +1,6 @@
-/* BuschJaegerStationViewController.m
+/* BuschJaegerHistoryTableViewController.m
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "BuschJaegerStationViewController.h"
+#import "BuschJaegerHistoryTableViewController.h"
 #import "BuschJaegerUtils.h"
+#import "UIHistoryCell.h"
 #import "UACellBackgroundView.h"
-#import "UIStationCell.h"
-#import "LinphoneManager.h"
 
-@implementation BuschJaegerStationViewController
+@implementation BuschJaegerHistoryTableViewController
 
-@synthesize stations;
+@synthesize history;
 
-- (void)setStations:(NSArray *)astations {
-    if ([astations isEqualToArray:stations]) {
+- (void)setHistory:(NSArray *)ahistory {
+    if ([ahistory isEqualToArray:history]) {
         return;
     }
-
-    [stations release];
-    stations = [astations copy];
+    
+    [history release];
+    history = [ahistory retain];
     [self.tableView reloadData];
 }
 
@@ -45,14 +44,14 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [stations count];
+	return [history count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *kCellId = @"UIStationCell";
-    UIStationCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+    static NSString *kCellId = @"UIHistoryCell";
+    UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIStationCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[[UIHistoryCell alloc] initWithIdentifier:kCellId] autorelease];
         
         // Background View
         UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
@@ -61,7 +60,7 @@
         [selectedBackgroundView setBorderColor:[UIColor clearColor]];
     }
 	
-    [cell setStation:[stations objectAtIndex:[indexPath row]]];
+    [cell setHistory:[history objectAtIndex:[indexPath row]]];
     
     return cell;
 }
@@ -70,10 +69,7 @@
 #pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    OutdoorStation *os = [stations objectAtIndex:[indexPath row]];
-    NSString *addr = [FastAddressBook normalizeSipURI:[os address]];
-    [[LinphoneManager instance] call:addr displayName:[os name] transfer:FALSE];
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 

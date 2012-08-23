@@ -19,8 +19,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BuschJaegerStationViewController : UITableViewController
+@interface BuschJaegerStationTableViewController : UITableViewController
 
-@property (nonatomic, copy) NSArray *stations;
+@property (nonatomic, retain) NSArray *stations;
 
 @end

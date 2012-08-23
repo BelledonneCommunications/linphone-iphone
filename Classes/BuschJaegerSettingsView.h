@@ -20,13 +20,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ZBarReaderViewController.h"
-#import "BuschJaegerConfigParser.h"
+#import "BuschJaegerConfiguration.h"
 
-@interface BuschJaegerSettingsView : UIViewController<ZBarReaderDelegate, BuschJaegerConfigParser> {
+@interface BuschJaegerSettingsView : UIViewController<ZBarReaderDelegate, BuschJaegerConfigurationDelegate> {
+    @private
     ZBarReaderViewController *scanController;
-    UIView *scanButton;
-    UIView *backButton;
-    UIView *waitView;
 }
 
 @property (nonatomic, retain) IBOutlet UIView *scanButton;

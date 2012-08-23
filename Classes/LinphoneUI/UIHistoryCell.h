@@ -1,4 +1,4 @@
-/* UIStationCell.h
+/* UIHistoryCell.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -18,15 +18,18 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "OutdoorStation.h"
+#import "History.h"
 
-@interface UIStationCell : UITableViewCell
+@interface UIHistoryCell : UITableViewCell {
+    @private
+    NSDateFormatter *dateFormatter;
+}
 
+@property (nonatomic, retain) History *history;
 
-@property (nonatomic, retain) OutdoorStation *station;
-
-@property (nonatomic, retain) IBOutlet UIImageView *stationImage;
-@property (nonatomic, retain) IBOutlet UILabel *stationLabel;
+@property (nonatomic, retain) UIImageView *iconImage;
+@property (nonatomic, retain) UILabel *stationLabel;
+@property (nonatomic, retain) UILabel *dateLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

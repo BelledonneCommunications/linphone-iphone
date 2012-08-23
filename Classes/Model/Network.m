@@ -18,7 +18,7 @@
  */
 
 #import "Network.h"
-#import "BuschJaegerConfigParser.h"
+#import "BuschJaegerConfiguration.h"
 #import "Utils.h"
 
 @implementation Network
@@ -55,19 +55,19 @@
 + (id)parse:(NSString*)section array:(NSArray*)array {
     NSString *param;
     Network *net = nil;
-    if((param = [BuschJaegerConfigParser getRegexValue:@"^\\[(network)\\]$" data:section]) != nil) {
-        net = [[Network alloc] init];
+    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[(network)\\]$" data:section]) != nil) {
+        net = [[[Network alloc] init] autorelease];
         NSString *param;
         for(NSString *entry in array) {
-            if((param = [BuschJaegerConfigParser getRegexValue:@"^domain=(.*)$" data:entry]) != nil) {
+            if((param = [BuschJaegerConfiguration getRegexValue:@"^domain=(.*)$" data:entry]) != nil) {
                 net.domain = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^local-address=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^local-address=(.*)$" data:entry]) != nil) {
                 net.localAddress = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^global-address=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^global-address=(.*)$" data:entry]) != nil) {
                 net.globalAddress = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^local-history=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^local-history=(.*)$" data:entry]) != nil) {
                 net.localHistory = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^global-history=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^global-history=(.*)$" data:entry]) != nil) {
                 net.globalHistory = param;
             } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in %@ section: %@", section, entry];

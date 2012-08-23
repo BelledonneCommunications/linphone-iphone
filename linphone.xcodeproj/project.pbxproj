@@ -170,8 +170,8 @@
 		D37CD30E15E21E330028869A /* BuschJaegerCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */; };
 		D37CD30F15E21E330028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30015E21E320028869A /* BuschJaegerCallView.xib */; };
 		D37CD31015E21E330028869A /* BuschJaegerCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30015E21E320028869A /* BuschJaegerCallView.xib */; };
-		D37CD31115E21E330028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */; };
-		D37CD31215E21E330028869A /* BuschJaegerConfigParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */; };
+		D37CD31115E21E330028869A /* BuschJaegerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */; };
+		D37CD31215E21E330028869A /* BuschJaegerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */; };
 		D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
 		D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
 		D37CD31915E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
@@ -220,8 +220,8 @@
 		D37CD39B15E244D10028869A /* UIStationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD39915E244D10028869A /* UIStationCell.m */; };
 		D37CD39D15E244E40028869A /* UIStationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD39C15E244E40028869A /* UIStationCell.xib */; };
 		D37CD39E15E244E40028869A /* UIStationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD39C15E244E40028869A /* UIStationCell.xib */; };
-		D37CD3A115E2452C0028869A /* BuschJaegerStationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */; };
-		D37CD3A215E2452C0028869A /* BuschJaegerStationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */; };
+		D37CD3A115E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */; };
+		D37CD3A215E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */; };
 		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
@@ -230,6 +230,22 @@
 		D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
 		D383A44E15E3C98C00CDE5C9 /* Network.m in Sources */ = {isa = PBXBuildFile; fileRef = D383A44D15E3C98C00CDE5C9 /* Network.m */; };
 		D383A44F15E3C98C00CDE5C9 /* Network.m in Sources */ = {isa = PBXBuildFile; fileRef = D383A44D15E3C98C00CDE5C9 /* Network.m */; };
+		D384466F15E64B9E00DF89DF /* bj_station.png in Resources */ = {isa = PBXBuildFile; fileRef = D384466E15E64B9E00DF89DF /* bj_station.png */; };
+		D384467015E64B9E00DF89DF /* bj_station.png in Resources */ = {isa = PBXBuildFile; fileRef = D384466E15E64B9E00DF89DF /* bj_station.png */; };
+		D384467315E64CD600DF89DF /* bj_history.png in Resources */ = {isa = PBXBuildFile; fileRef = D384467215E64CD600DF89DF /* bj_history.png */; };
+		D384467415E64CD600DF89DF /* bj_history.png in Resources */ = {isa = PBXBuildFile; fileRef = D384467215E64CD600DF89DF /* bj_history.png */; };
+		D384467815E64D7400DF89DF /* BuschJaegerHistoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D384467615E64D7400DF89DF /* BuschJaegerHistoryView.m */; };
+		D384467915E64D7400DF89DF /* BuschJaegerHistoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D384467615E64D7400DF89DF /* BuschJaegerHistoryView.m */; };
+		D384467A15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D384467715E64D7400DF89DF /* BuschJaegerHistoryView.xib */; };
+		D384467B15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D384467715E64D7400DF89DF /* BuschJaegerHistoryView.xib */; };
+		D384467E15E656D600DF89DF /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D384467D15E656D600DF89DF /* UIHistoryCell.m */; };
+		D384467F15E656D600DF89DF /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D384467D15E656D600DF89DF /* UIHistoryCell.m */; };
+		D384468115E656ED00DF89DF /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D384468015E656ED00DF89DF /* UIHistoryCell.xib */; };
+		D384468215E656ED00DF89DF /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D384468015E656ED00DF89DF /* UIHistoryCell.xib */; };
+		D384468515E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */; };
+		D384468615E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */; };
+		D384468915E65CFE00DF89DF /* History.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468815E65CFE00DF89DF /* History.m */; };
+		D384468A15E65CFE00DF89DF /* History.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468815E65CFE00DF89DF /* History.m */; };
 		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
@@ -560,8 +576,8 @@
 		D37CD2FE15E21E320028869A /* BuschJaegerCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerCallView.h; sourceTree = "<group>"; };
 		D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerCallView.m; sourceTree = "<group>"; };
 		D37CD30015E21E320028869A /* BuschJaegerCallView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerCallView.xib; sourceTree = "<group>"; };
-		D37CD30115E21E320028869A /* BuschJaegerConfigParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerConfigParser.h; sourceTree = "<group>"; };
-		D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfigParser.m; sourceTree = "<group>"; };
+		D37CD30115E21E320028869A /* BuschJaegerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerConfiguration.h; sourceTree = "<group>"; };
+		D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfiguration.m; sourceTree = "<group>"; };
 		D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerSettingsView.h; sourceTree = "<group>"; };
 		D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerSettingsView.m; sourceTree = "<group>"; };
 		D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
@@ -613,14 +629,26 @@
 		D37CD39815E244D10028869A /* UIStationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIStationCell.h; sourceTree = "<group>"; };
 		D37CD39915E244D10028869A /* UIStationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStationCell.m; sourceTree = "<group>"; };
 		D37CD39C15E244E40028869A /* UIStationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIStationCell.xib; sourceTree = "<group>"; };
-		D37CD39F15E245290028869A /* BuschJaegerStationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerStationViewController.h; sourceTree = "<group>"; };
-		D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerStationViewController.m; sourceTree = "<group>"; };
+		D37CD39F15E245290028869A /* BuschJaegerStationTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerStationTableViewController.h; sourceTree = "<group>"; };
+		D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerStationTableViewController.m; sourceTree = "<group>"; };
 		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
 		D380801115C29984005BE9BC /* ColorSpaceUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorSpaceUtilities.h; path = Utils/ColorSpaceUtilities.h; sourceTree = "<group>"; };
 		D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorSpaceUtilites.m; path = Utils/ColorSpaceUtilites.m; sourceTree = "<group>"; };
 		D383A44C15E3C98C00CDE5C9 /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Network.h; path = Model/Network.h; sourceTree = "<group>"; };
 		D383A44D15E3C98C00CDE5C9 /* Network.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Network.m; path = Model/Network.m; sourceTree = "<group>"; };
+		D384466E15E64B9E00DF89DF /* bj_station.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_station.png; path = Resources/bj_station.png; sourceTree = "<group>"; };
+		D384467215E64CD600DF89DF /* bj_history.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_history.png; path = Resources/bj_history.png; sourceTree = "<group>"; };
+		D384467515E64D7400DF89DF /* BuschJaegerHistoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerHistoryView.h; sourceTree = "<group>"; };
+		D384467615E64D7400DF89DF /* BuschJaegerHistoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerHistoryView.m; sourceTree = "<group>"; };
+		D384467715E64D7400DF89DF /* BuschJaegerHistoryView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerHistoryView.xib; sourceTree = "<group>"; };
+		D384467C15E656D600DF89DF /* UIHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryCell.h; sourceTree = "<group>"; };
+		D384467D15E656D600DF89DF /* UIHistoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHistoryCell.m; sourceTree = "<group>"; };
+		D384468015E656ED00DF89DF /* UIHistoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIHistoryCell.xib; sourceTree = "<group>"; };
+		D384468315E6577600DF89DF /* BuschJaegerHistoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerHistoryTableViewController.h; sourceTree = "<group>"; };
+		D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerHistoryTableViewController.m; sourceTree = "<group>"; };
+		D384468715E65CFE00DF89DF /* History.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = History.h; path = Model/History.h; sourceTree = "<group>"; };
+		D384468815E65CFE00DF89DF /* History.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = History.m; path = Model/History.m; sourceTree = "<group>"; };
 		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
 		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
 		D3E84F3C15B018A600420DAC /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
@@ -746,16 +774,21 @@
 				D37CD2FE15E21E320028869A /* BuschJaegerCallView.h */,
 				D37CD2FF15E21E320028869A /* BuschJaegerCallView.m */,
 				D37CD30015E21E320028869A /* BuschJaegerCallView.xib */,
-				D37CD30115E21E320028869A /* BuschJaegerConfigParser.h */,
-				D37CD30215E21E320028869A /* BuschJaegerConfigParser.m */,
+				D37CD30115E21E320028869A /* BuschJaegerConfiguration.h */,
+				D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */,
+				D384468315E6577600DF89DF /* BuschJaegerHistoryTableViewController.h */,
+				D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */,
+				D384467515E64D7400DF89DF /* BuschJaegerHistoryView.h */,
+				D384467615E64D7400DF89DF /* BuschJaegerHistoryView.m */,
+				D384467715E64D7400DF89DF /* BuschJaegerHistoryView.xib */,
 				D37CD38415E22C000028869A /* BuschJaegerMainView.h */,
 				D37CD38515E22C000028869A /* BuschJaegerMainView.m */,
 				D37CD38615E22C010028869A /* BuschJaegerMainView.xib */,
 				D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */,
 				D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */,
 				D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */,
-				D37CD39F15E245290028869A /* BuschJaegerStationViewController.h */,
-				D37CD3A015E2452B0028869A /* BuschJaegerStationViewController.m */,
+				D37CD39F15E245290028869A /* BuschJaegerStationTableViewController.h */,
+				D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */,
 				D37CD30915E21E330028869A /* BuschJaegerUtils.h */,
 				D37CD30A15E21E330028869A /* BuschJaegerUtils.m */,
 				D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */,
@@ -993,6 +1026,9 @@
 				22BB1A68132FF16A005CD7AA /* UIEraseButton.m */,
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
+				D384467C15E656D600DF89DF /* UIHistoryCell.h */,
+				D384467D15E656D600DF89DF /* UIHistoryCell.m */,
+				D384468015E656ED00DF89DF /* UIHistoryCell.xib */,
 				D37CD31F15E21E520028869A /* UILightButton.h */,
 				D37CD32015E21E520028869A /* UILightButton.m */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
@@ -1180,12 +1216,14 @@
 				D37CD2C915E21CB30028869A /* bj_door.png */,
 				D37CD2C815E21CB30028869A /* bj_door_hl.png */,
 				D37CD2CA15E21CB30028869A /* bj_end_call.png */,
+				D384467215E64CD600DF89DF /* bj_history.png */,
 				D37CD2CC15E21CB30028869A /* bj_light.png */,
 				D37CD2CB15E21CB30028869A /* bj_light_hl.png */,
 				D37CD2CD15E21CB30028869A /* bj_mute_off.png */,
 				D37CD2CE15E21CB30028869A /* bj_mute_on.png */,
 				D37CD2CF15E21CB30028869A /* bj_settings.png */,
 				D37CD2D015E21CB30028869A /* bj_start_call.png */,
+				D384466E15E64B9E00DF89DF /* bj_station.png */,
 				8D1107310486CEB800E47090 /* buschjaeger-Info.plist */,
 				D37CD32715E220620028869A /* buschjaeger_icon_512.png */,
 				D37CD32315E220620028869A /* buschjaeger_icon_57.png */,
@@ -1231,6 +1269,8 @@
 		D37CD35015E22A3E0028869A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D384468715E65CFE00DF89DF /* History.h */,
+				D384468815E65CFE00DF89DF /* History.m */,
 				D383A44C15E3C98C00CDE5C9 /* Network.h */,
 				D383A44D15E3C98C00CDE5C9 /* Network.m */,
 				D37CD35115E22A470028869A /* OutdoorStation.h */,
@@ -1430,6 +1470,10 @@
 				D37CD39D15E244E40028869A /* UIStationCell.xib in Resources */,
 				D321FF9615E628BB0098B5F4 /* linphonrc in Resources */,
 				D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */,
+				D384466F15E64B9E00DF89DF /* bj_station.png in Resources */,
+				D384467315E64CD600DF89DF /* bj_history.png in Resources */,
+				D384467A15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */,
+				D384468115E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1470,6 +1514,10 @@
 				D37CD39E15E244E40028869A /* UIStationCell.xib in Resources */,
 				D321FF9715E628BB0098B5F4 /* linphonrc in Resources */,
 				D321FF9A15E628CB0098B5F4 /* linphonerc~ipad in Resources */,
+				D384467015E64B9E00DF89DF /* bj_station.png in Resources */,
+				D384467415E64CD600DF89DF /* bj_history.png in Resources */,
+				D384467B15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */,
+				D384468215E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1538,7 +1586,7 @@
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D37CD30D15E21E330028869A /* BuschJaegerCallView.m in Sources */,
-				D37CD31115E21E330028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD31115E21E330028869A /* BuschJaegerConfiguration.m in Sources */,
 				D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
 				D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */,
 				D37CD32115E21E520028869A /* UILightButton.m in Sources */,
@@ -1546,8 +1594,12 @@
 				D37CD38015E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD39A15E244D10028869A /* UIStationCell.m in Sources */,
-				D37CD3A115E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
+				D37CD3A115E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */,
 				D383A44E15E3C98C00CDE5C9 /* Network.m in Sources */,
+				D384467815E64D7400DF89DF /* BuschJaegerHistoryView.m in Sources */,
+				D384467E15E656D600DF89DF /* UIHistoryCell.m in Sources */,
+				D384468515E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */,
+				D384468915E65CFE00DF89DF /* History.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1584,7 +1636,7 @@
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D37CD30E15E21E330028869A /* BuschJaegerCallView.m in Sources */,
-				D37CD31215E21E330028869A /* BuschJaegerConfigParser.m in Sources */,
+				D37CD31215E21E330028869A /* BuschJaegerConfiguration.m in Sources */,
 				D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
 				D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */,
 				D37CD32215E21E520028869A /* UILightButton.m in Sources */,
@@ -1592,8 +1644,12 @@
 				D37CD38115E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */,
 				D37CD39B15E244D10028869A /* UIStationCell.m in Sources */,
-				D37CD3A215E2452C0028869A /* BuschJaegerStationViewController.m in Sources */,
+				D37CD3A215E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */,
 				D383A44F15E3C98C00CDE5C9 /* Network.m in Sources */,
+				D384467915E64D7400DF89DF /* BuschJaegerHistoryView.m in Sources */,
+				D384467F15E656D600DF89DF /* UIHistoryCell.m in Sources */,
+				D384468615E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */,
+				D384468A15E65CFE00DF89DF /* History.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

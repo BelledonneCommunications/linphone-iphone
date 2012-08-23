@@ -18,7 +18,7 @@
  */
 
 #import "OutdoorStation.h"
-#import "BuschJaegerConfigParser.h"
+#import "BuschJaegerConfiguration.h"
 #import "Utils.h"
 
 @implementation OutdoorStation
@@ -30,14 +30,6 @@
 @synthesize screenshot;
 @synthesize surveillance;
 
-- (id)initWithId:(int)aID {
-    self = [super init];
-    if(self != nil) {
-        self->ID = aID;
-    }
-    return self;
-}
-
 - (void)dealloc {
     self.name = nil;
     self.address = nil;
@@ -47,19 +39,20 @@
 + (id)parse:(NSString*)section array:(NSArray*)array {
     NSString *param;
     OutdoorStation *os = nil;
-    if((param = [BuschJaegerConfigParser getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
-        os = [[OutdoorStation alloc] initWithId:[param intValue]];
+    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
+        os = [[[OutdoorStation alloc] init] autorelease];
+        os.ID = [param intValue];
         NSString *param;
         for(NSString *entry in array) {
-            if((param = [BuschJaegerConfigParser getRegexValue:@"^address=(.*)$" data:entry]) != nil) {
+            if((param = [BuschJaegerConfiguration getRegexValue:@"^address=(.*)$" data:entry]) != nil) {
                 os.address = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^name=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^name=(.*)$" data:entry]) != nil) {
                 os.name = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^type=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^type=(.*)$" data:entry]) != nil) {
                 os.type = param;
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^screenshot=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^screenshot=(.*)$" data:entry]) != nil) {
                 os.screenshot = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
-            } else if((param = [BuschJaegerConfigParser getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
                 os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
             } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in %@ section: %@", section, entry];

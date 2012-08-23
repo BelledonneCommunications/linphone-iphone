@@ -1,4 +1,4 @@
-/* UIStationCell.m
+/* UIHistoryCell.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,46 +17,56 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIStationCell.h"
+#import "UIHistoryCell.h"
+#import "LinphoneManager.h"
 
-@implementation UIStationCell
+@implementation UIHistoryCell
 
-@synthesize stationImage;
+@synthesize history;
+@synthesize iconImage;
 @synthesize stationLabel;
-@synthesize station;
+@synthesize dateLabel;
 
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-        NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIStationCell"
+        NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIHistoryCell"
                                                               owner:self
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
+        
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        NSLocale *locale = [NSLocale currentLocale];
+        [dateFormatter setLocale:locale];
     }
     return self;
 }
 
 - (void)dealloc {
-    [station release];
-    [stationImage release];
-    [stationLabel release];
+    [dateFormatter release];
     
+    [history release];
+    [iconImage release];
+    [stationLabel release];
+    [dateLabel release];
     [super dealloc];
 }
 
 
 #pragma mark - Property Functions
 
-- (void)setStation:(OutdoorStation *)astation {
-    if(astation == station) {
+- (void)setHistory:(History *)ahistory {
+    if(ahistory == history) {
         return;
     }
-    [station release];
-    station = [astation retain];
+    [history release];
+    history = [ahistory retain];
     [self update];
 }
 
@@ -64,7 +74,16 @@
 #pragma mark - 
 
 - (void)update {
-    [stationLabel setText:station.name];
+    NSString *station = @"Unknown";
+    NSSet *set = [[[LinphoneManager instance].configuration outdoorStations] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"ID == %i", history.stationID]];
+    if([set count] == 1) {
+        station = [[set allObjects] objectAtIndex:0];
+    }
+    // Station
+    [stationLabel setText:station];
+    
+    // Date
+    [dateLabel setText:[dateFormatter stringFromDate:history.date]];
 }
 
 @end
