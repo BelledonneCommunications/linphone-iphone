@@ -371,9 +371,9 @@
 
 - (IBAction)onPadClick:(id)sender {
     if([padView isHidden]) {
-        [self showPad:TRUE];
+        [self showPad:[[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"]];
     } else {
-        [self hidePad:TRUE];
+        [self hidePad:[[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"]];
     }
 }
 
@@ -399,9 +399,9 @@
 
 - (IBAction)onOptionsClick:(id)sender {
     if([optionsView isHidden]) {
-        [self showOptions:TRUE];
+        [self showOptions:[[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"]];
     } else {
-        [self hideOptions:TRUE];
+        [self hideOptions:[[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"]];
     }
 }
 

@@ -183,6 +183,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     [self setString: lp_config_get_string(linphone_core_get_config(lc),"app","rotation_preference", "auto") forKey:@"rotation_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","animations_preference", 1) forKey:@"animations_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
     
@@ -486,6 +487,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference", debugmode);
 	if (debugmode) linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	else linphone_core_disable_logs();
+    
+    BOOL animations = [self boolForKey:@"animations_preference"];
+	lp_config_set_int(linphone_core_get_config(lc),"app","animations_preference", animations);
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];

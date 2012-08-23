@@ -484,7 +484,11 @@ static PhoneMainView* phoneMainViewInstance=nil;
     if(force || ![view equal: currentView]) {
         if(transition == nil)
             transition = [PhoneMainView getTransition:currentView new:view];
-        [mainViewController setViewTransition:transition];
+        if ([[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"] == true) {
+            [mainViewController setViewTransition:transition];
+        } else {
+            [mainViewController setViewTransition:nil];
+        }
         [mainViewController changeView:view];
         currentView = view;
     } 
