@@ -474,7 +474,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     int audio_port_preference = [self integerForKey:@"audio_port_preference"];
     linphone_core_set_audio_port(lc, audio_port_preference);
     int video_port_preference = [self integerForKey:@"video_port_preference"];
-    linphone_core_set_audio_port(lc, video_port_preference);
+    linphone_core_set_video_port(lc, video_port_preference);
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
