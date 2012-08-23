@@ -26,6 +26,7 @@
 @interface HistoryDetailsViewController : UIViewController<UICompositeViewDelegate> {
     @private
     ABRecordRef contact;
+    NSDateFormatter *dateFormatter;
 }
 @property (nonatomic, retain) IBOutlet  UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel *addressLabel;

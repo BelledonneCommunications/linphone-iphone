@@ -38,8 +38,22 @@
 
 #pragma mark - LifeCycle Functions
 
+- (id)init {
+    self = [super initWithNibName:@"HistoryDetailsViewController" bundle:[NSBundle mainBundle]];
+    if(self != nil) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        NSLocale *locale = [NSLocale currentLocale];
+        [dateFormatter setLocale:locale];
+    }
+    return self;
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [dateFormatter release];
     
     [avatarImage release];
     [addressLabel release];
@@ -221,13 +235,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     // Date
     NSDate *startData = [NSDate dateWithTimeIntervalSince1970:callLog->start_date_time];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    NSLocale *locale = [NSLocale currentLocale];
-    [dateFormatter setLocale:locale];
     [dateLabel setText:[dateFormatter stringFromDate:startData]];
-    [dateFormatter release];
 
     // Duration
     int duration = callLog->duration;
