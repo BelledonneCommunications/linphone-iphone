@@ -813,6 +813,17 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
+void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md)
+{
+	int i;
+	for (i = 0; i < md->nstreams; i++) {
+		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+		if (cl && (md->streams[i].rtp_port == 0)) {
+			if (cl->state != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
+		}
+	}
+}
+
 LinphoneCall * is_a_linphone_call(void *user_pointer){
 	LinphoneCall *call=(LinphoneCall*)user_pointer;
 	if (call==NULL) return NULL;
