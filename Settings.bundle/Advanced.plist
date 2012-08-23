@@ -67,6 +67,38 @@
                         <string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>audio_port_preference</string>
+			<key>Title</key>
+			<string>Audio Port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>7076</integer>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>video_port_preference</string>
+			<key>Title</key>
+			<string>Video Port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>9078</integer>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>udp</string>
 			<key>Key</key>

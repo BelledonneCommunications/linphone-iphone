@@ -202,7 +202,8 @@ struct codec_name_pref_table codec_pref_table[]={
         database = NULL;
 		self.defaultExpires = 600;
         [self openDatabase];
-        
+        [self copyDefaultSettings];
+
         /* MODIFICATION: Add buschjaeger configuration */
         configuration = [[BuschJaegerConfigParser alloc] init];
         [configuration loadFile:kLinphoneConfigurationPath];
@@ -236,30 +237,12 @@ struct codec_name_pref_table codec_pref_table[]={
 #pragma mark - Database Functions
 
 - (void)openDatabase {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsPath = [paths objectAtIndex:0];
-    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:@"database.txt"];
+    NSString *src = [LinphoneManager bundleFile:@"database.sqlite"];
+    NSString *dst = [LinphoneManager documentFile:@"database.sqlite"];
+    [LinphoneManager copyFile:src destination:dst override:FALSE];
 
-    // Copy default database
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
-    //[fileManager removeItemAtPath:databaseDocumentPath error:&error]; //TODO REMOVE
-    if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Create sqlite3 database"];
-        NSString *resourceDocumentPath = [[NSBundle mainBundle] pathForResource:@"database" ofType:@"sqlite"];
-        if ([fileManager fileExistsAtPath:resourceDocumentPath] == NO) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Can't find original database: %@", [error localizedDescription]];
-            return;
-        }
-        [fileManager copyItemAtPath:resourceDocumentPath toPath:databaseDocumentPath error:&error];
-        if(error != nil) {
-            [LinphoneLogger log:LinphoneLoggerError format:@"Can't copy database: %@", [error localizedDescription]];
-            return;
-        }
-    }
-
-    if(sqlite3_open([databaseDocumentPath UTF8String], &database) != SQLITE_OK) {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", databaseDocumentPath];
+    if(sqlite3_open([dst UTF8String], &database) != SQLITE_OK) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", dst];
     }
 }
 
@@ -557,7 +540,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-ipad":@"linphonerc" ofType:nil] ;
+	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory" ofType:nil] ;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
 	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
@@ -795,6 +778,12 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 
+- (void)copyDefaultSettings {
+    NSString *src = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc~ipad":@"linphonerc"];
+    NSString *dst = [LinphoneManager documentFile:@".linphonerc"];
+    [LinphoneManager copyFile:src destination:dst override:FALSE];
+}
+
 #pragma mark - Speaker Functions
 
 - (void)enableSpeaker:(BOOL)enable {
@@ -927,6 +916,46 @@ static LinphoneCoreVTable linphonec_vtable = {
         return TRUE;
     }
     return FALSE;
+}
+
+
+#pragma mark - Misc Functions
+
++ (NSString*)bundleFile:(NSString*)file {
+    return [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];
+}
+
++ (NSString*)documentFile:(NSString*)file {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0];
+    return [documentsPath stringByAppendingPathComponent:file];
+}
+
++ (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    if ([fileManager fileExistsAtPath:dst] == YES) {
+        if(override) {
+            [fileManager removeItemAtPath:dst error:&error];
+            if(error != nil) {
+                [LinphoneLogger log:LinphoneLoggerError format:@"Can't remove \"%@\": %@", dst, [error localizedDescription]];
+                return FALSE;
+            }
+        } else {
+            [LinphoneLogger log:LinphoneLoggerWarning format:@"\"%@\" already exists", dst];
+            return FALSE;
+        }
+    }
+    if ([fileManager fileExistsAtPath:src] == NO) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't find \"%@\": %@", src, [error localizedDescription]];
+        return FALSE;
+    }
+    [fileManager copyItemAtPath:src toPath:dst error:&error];
+    if(error != nil) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't copy \"%@\" to \"%@\": %@", src, dst, [error localizedDescription]];
+        return FALSE;
+    }
+    return TRUE;
 }
 
 
