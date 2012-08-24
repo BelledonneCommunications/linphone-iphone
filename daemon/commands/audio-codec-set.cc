@@ -6,7 +6,7 @@
 using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :
-		DaemonCommand("audio-codec-set", "audio-codec-set <payload type number> <property > <value>", "Set a property (number,clock_rate, recv_fmtp, send_fmtp) of a codec. Numbering of payload type is automatically performed at startup, any change will be loosed after restart.") {
+		DaemonCommand("audio-codec-set", "audio-codec-set <payload type number> <property> <value>", "Set a property (number, clock_rate, recv_fmtp, send_fmtp) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.") {
 }
 
 static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
