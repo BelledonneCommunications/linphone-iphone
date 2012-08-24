@@ -563,6 +563,270 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	}
 }
 
+int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
+{
+	char local_addr[64];
+	struct sockaddr_storage ss;
+	socklen_t ss_len;
+	IceCheckList *audio_check_list;
+	IceCheckList *video_check_list;
+	const char *server = linphone_core_get_stun_server(lc);
+
+	if ((server == NULL) || (call->ice_session == NULL)) return -1;
+	audio_check_list = ice_session_check_list(call->ice_session, 0);
+	video_check_list = ice_session_check_list(call->ice_session, 1);
+	if (audio_check_list == NULL) return -1;
+
+	if (lc->sip_conf.ipv6_enabled){
+		ms_warning("stun support is not implemented for ipv6");
+		return -1;
+	}
+
+	if (parse_hostname_to_addr(server, &ss, &ss_len) < 0) {
+		ms_error("Fail to parser stun server address: %s", server);
+		return -1;
+	}
+	if (lc->vtable.display_status != NULL)
+		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
+
+	/* Gather local host candidates. */
+	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
+		ms_error("Fail to get local ip");
+		return -1;
+	}
+	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
+	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	if (call->params.has_video && (video_check_list != NULL)) {
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+	}
+
+	/* Gather local srflx candidates. */
+	ice_session_gather_candidates(call->ice_session, ss, ss_len);
+	return 0;
+}
+
+void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
+{
+	const char *rtp_addr, *rtcp_addr;
+	IceSessionState session_state = ice_session_state(session);
+	int nb_candidates;
+	int i, j;
+	bool_t result;
+
+	if (session_state == IS_Completed) {
+		desc->ice_completed = TRUE;
+		ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+	}
+	else {
+		desc->ice_completed = FALSE;
+	}
+	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
+	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
+	for (i = 0; i < desc->nstreams; i++) {
+		SalStreamDescription *stream = &desc->streams[i];
+		IceCheckList *cl = ice_session_check_list(session, i);
+		nb_candidates = 0;
+		if (cl == NULL) continue;
+		if (ice_check_list_state(cl) == ICL_Completed) {
+			stream->ice_completed = TRUE;
+			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+		} else {
+			stream->ice_completed = FALSE;
+			result = ice_check_list_default_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
+		}
+		if (result == TRUE) {
+			strncpy(stream->rtp_addr, rtp_addr, sizeof(stream->rtp_addr));
+			strncpy(stream->rtcp_addr, rtcp_addr, sizeof(stream->rtcp_addr));
+		} else {
+			memset(stream->rtp_addr, 0, sizeof(stream->rtp_addr));
+			memset(stream->rtcp_addr, 0, sizeof(stream->rtcp_addr));
+		}
+		if ((strlen(ice_check_list_local_pwd(cl)) != strlen(desc->ice_pwd)) || (strcmp(ice_check_list_local_pwd(cl), desc->ice_pwd)))
+			strncpy(stream->ice_pwd, ice_check_list_local_pwd(cl), sizeof(stream->ice_pwd));
+		else
+			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
+		if ((strlen(ice_check_list_local_ufrag(cl)) != strlen(desc->ice_ufrag)) || (strcmp(ice_check_list_local_ufrag(cl), desc->ice_ufrag)))
+			strncpy(stream->ice_ufrag, ice_check_list_local_ufrag(cl), sizeof(stream->ice_ufrag));
+		else
+			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
+		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
+		if ((ice_check_list_state(cl) == ICL_Running) || (ice_check_list_state(cl) == ICL_Completed)) {
+			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
+			for (j = 0; j < MIN(ms_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
+				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
+				IceCandidate *ice_candidate = ms_list_nth_data(cl->local_candidates, j);
+				const char *default_addr = NULL;
+				int default_port = 0;
+				if (ice_candidate->componentID == 1) {
+					default_addr = stream->rtp_addr;
+					default_port = stream->rtp_port;
+				} else if (ice_candidate->componentID == 2) {
+					default_addr = stream->rtcp_addr;
+					default_port = stream->rtcp_port;
+				} else continue;
+				if (default_addr[0] == '\0') default_addr = desc->addr;
+				/* Only include the candidates matching the default destination for each component of the stream if the state is Completed as specified in RFC5245 section 9.1.2.2. */
+				if ((ice_check_list_state(cl) == ICL_Completed)
+					&& !((ice_candidate->taddr.port == default_port) && (strlen(ice_candidate->taddr.ip) == strlen(default_addr)) && (strcmp(ice_candidate->taddr.ip, default_addr) == 0)))
+					continue;
+				strncpy(sal_candidate->foundation, ice_candidate->foundation, sizeof(sal_candidate->foundation));
+				sal_candidate->componentID = ice_candidate->componentID;
+				sal_candidate->priority = ice_candidate->priority;
+				strncpy(sal_candidate->type, ice_candidate_type(ice_candidate), sizeof(sal_candidate->type));
+				strncpy(sal_candidate->addr, ice_candidate->taddr.ip, sizeof(sal_candidate->addr));
+				sal_candidate->port = ice_candidate->taddr.port;
+				if ((ice_candidate->base != NULL) && (ice_candidate->base != ice_candidate)) {
+					strncpy(sal_candidate->raddr, ice_candidate->base->taddr.ip, sizeof(sal_candidate->raddr));
+					sal_candidate->rport = ice_candidate->base->taddr.port;
+				}
+				nb_candidates++;
+			}
+		}
+		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
+			int rtp_port, rtcp_port;
+			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
+			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+			strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
+			stream->ice_remote_candidates[0].port = rtp_port;
+			strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
+			stream->ice_remote_candidates[1].port = rtcp_port;
+		}
+	}
+}
+
+static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port)
+{
+	if (componentID == 1) {
+		*addr = stream->rtp_addr;
+		*port = stream->rtp_port;
+	} else if (componentID == 2) {
+		*addr = stream->rtcp_addr;
+		*port = stream->rtcp_port;
+	} else return;
+	if ((*addr)[0] == '\0') *addr = md->addr;
+}
+
+void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
+{
+	bool_t ice_restarted = FALSE;
+
+	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
+		int i, j;
+
+		/* Check for ICE restart and set remote credentials. */
+		if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
+			ice_session_restart(call->ice_session);
+			ice_restarted = TRUE;
+		} else {
+			for (i = 0; i < md->nstreams; i++) {
+				const SalStreamDescription *stream = &md->streams[i];
+				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
+					ice_session_restart(call->ice_session);
+					ice_restarted = TRUE;
+					break;
+				}
+			}
+		}
+		if ((ice_session_remote_ufrag(call->ice_session) == NULL) && (ice_session_remote_pwd(call->ice_session) == NULL)) {
+			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+		} else if (ice_session_remote_credentials_changed(call->ice_session, md->ice_ufrag, md->ice_pwd)) {
+			if (ice_restarted == FALSE) {
+				ice_session_restart(call->ice_session);
+				ice_restarted = TRUE;
+			}
+			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+		}
+		for (i = 0; i < md->nstreams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
+				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
+					if (ice_restarted == FALSE) {
+						ice_session_restart(call->ice_session);
+						ice_restarted = TRUE;
+					}
+					ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
+					break;
+				}
+			}
+		}
+
+		/* Create ICE check lists if needed and parse ICE attributes. */
+		for (i = 0; i < md->nstreams; i++) {
+			const SalStreamDescription *stream = &md->streams[i];
+			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (cl == NULL) {
+				cl = ice_check_list_new();
+				ice_session_add_check_list(call->ice_session, cl);
+				switch (stream->type) {
+					case SalAudio:
+						if (call->audiostream != NULL) call->audiostream->ice_check_list = cl;
+						break;
+					case SalVideo:
+						if (call->videostream != NULL) call->videostream->ice_check_list = cl;
+						break;
+					default:
+						break;
+				}
+			}
+			if ((stream->ice_mismatch == TRUE) || (stream->rtp_port == 0)) {
+				ice_check_list_set_state(cl, ICL_Failed);
+			} else {
+				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
+					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+					const SalIceCandidate *candidate = &stream->ice_candidates[j];
+					bool_t default_candidate = FALSE;
+					const char *addr = NULL;
+					int port = 0;
+					if (candidate->addr[0] == '\0') break;
+					if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
+					get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
+					if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
+						default_candidate = TRUE;
+					ice_add_remote_candidate(cl, candidate->type, candidate->addr, candidate->port, candidate->componentID,
+						candidate->priority, candidate->foundation, default_candidate);
+				}
+				if (ice_restarted == FALSE) {
+					bool_t losing_pairs_added = FALSE;
+					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+						const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
+						const char *addr = NULL;
+						int port = 0;
+						int componentID = j + 1;
+						if (candidate->addr[0] == '\0') break;
+						get_default_addr_and_port(componentID, md, stream, &addr, &port);
+						ice_add_losing_pair(cl, j + 1, candidate->addr, candidate->port, addr, port);
+						losing_pairs_added = TRUE;
+					}
+					if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
+				}
+			}
+		}
+		for (i = ice_session_nb_check_lists(call->ice_session); i > md->nstreams; i--) {
+			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
+		}
+		ice_session_check_mismatch(call->ice_session);
+	}
+	if (ice_session_nb_check_lists(call->ice_session) == 0) {
+		linphone_call_delete_ice_session(call);
+	}
+}
+
+void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md)
+{
+	int i;
+	for (i = 0; i < md->nstreams; i++) {
+		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+		if (cl && (md->streams[i].rtp_port == 0)) {
+			if (ice_check_list_state(cl) != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
+		}
+	}
+}
+
 LinphoneCall * is_a_linphone_call(void *user_pointer){
 	LinphoneCall *call=(LinphoneCall*)user_pointer;
 	if (call==NULL) return NULL;

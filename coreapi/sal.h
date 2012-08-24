@@ -112,6 +112,33 @@ typedef struct SalEndpointCandidate{
 
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN 32
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN 6
+
+typedef struct SalIceCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char raddr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char foundation[SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN];
+	char type[SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN];
+	unsigned int componentID;
+	unsigned int priority;
+	int port;
+	int rport;
+} SalIceCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+
+typedef struct SalIceRemoteCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	int port;
+} SalIceRemoteCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES 2
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
+
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
 	enum ortp_srtp_crypto_suite_t algo;
@@ -125,8 +152,10 @@ typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
 	char typeother[32];
-	char addr[64];
-	int port;
+	char rtp_addr[64];
+	char rtcp_addr[64];
+	int rtp_port;
+	int rtcp_port;
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;
@@ -135,6 +164,12 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
+	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
+	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_mismatch;
+	bool_t ice_completed;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -148,7 +183,13 @@ typedef struct SalMediaDescription{
 	unsigned int session_ver;
 	unsigned int session_id;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_lite;
+	bool_t ice_completed;
 } SalMediaDescription;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);

@@ -87,7 +87,7 @@ bool_t sal_media_description_empty(const SalMediaDescription *md){
 	int i;
 	for(i=0;i<md->nstreams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->port!=0) return FALSE;
+		if (ss->rtp_port!=0) return FALSE;
 	}
 	return TRUE;
 }
@@ -114,7 +114,7 @@ static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (ss->dir==stream_dir) return TRUE;
 		/*compatibility check for phones that only used the null address and no attributes */
-		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->addr)))
+		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->rtp_addr)))
 			return TRUE;
 	}
 	return FALSE;
@@ -180,8 +180,10 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 bool_t sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2){
 	if (sd1->proto!=sd2->proto) return FALSE;
 	if (sd1->type!=sd2->type) return FALSE;
-	if (strcmp(sd1->addr,sd2->addr)!=0) return FALSE;
-	if (sd1->port!=sd2->port) return FALSE;
+	if (strcmp(sd1->rtp_addr,sd2->rtp_addr)!=0) return FALSE;
+	if (sd1->rtp_port!=sd2->rtp_port) return FALSE;
+	if (strcmp(sd1->rtcp_addr,sd2->rtcp_addr)!=0) return FALSE;
+	if (sd1->rtcp_port!=sd2->rtcp_port) return FALSE;
 	if (!payload_list_equals(sd1->payloads,sd2->payloads)) return FALSE;
 	if (sd1->bandwidth!=sd2->bandwidth) return FALSE;
 	if (sd1->ptime!=sd2->ptime) return FALSE;

@@ -1855,6 +1855,11 @@ void linphone_core_iterate(LinphoneCore *lc){
 		linphone_call_background_tasks(call,one_second_elapsed);
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
+			if (call->ice_session != NULL) {
+				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
+				linphone_call_delete_ice_session(call);
+				linphone_call_stop_media_streams(call);
+			}
 			linphone_core_start_invite(lc,call,NULL);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
@@ -2103,6 +2108,27 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 	return NULL;
 }
 
+int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
+	bool_t ice_ready = FALSE;
+	bool_t ping_ready = FALSE;
+
+	if (call->ice_session != NULL) {
+		if (ice_session_candidates_gathered(call->ice_session)) ice_ready = TRUE;
+	} else {
+		ice_ready = TRUE;
+	}
+	if (call->ping_op != NULL) {
+		if (call->ping_replied == TRUE) ping_ready = TRUE;
+	} else {
+		ping_ready = TRUE;
+	}
+
+	if ((ice_ready == TRUE) && (ping_ready == TRUE)) {
+		return linphone_core_start_invite(lc, call, dest_proxy);
+	}
+	return 0;
+}
+
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
 	int err;
 	char *contact;
@@ -2121,6 +2147,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphonePro
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
+		if (call->ice_session != NULL)
+			linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	real_url=linphone_address_as_string(call->log->to);
@@ -2243,6 +2271,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	char *real_url=NULL;
 	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
+	bool_t use_ice = FALSE;
 
 	linphone_core_preempt_sound_resources(lc);
 	
@@ -2284,14 +2313,29 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
-	if (dest_proxy!=NULL || lc->sip_conf.ping_with_options==FALSE){
-		linphone_core_start_invite(lc,call,dest_proxy);
-	}else{
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
+		/* Defer the start of the call after the ICE gathering process. */
+		linphone_call_init_media_streams(call);
+		linphone_call_start_media_streams_for_ice_gathering(call);
+		call->start_time=time(NULL);
+		if (linphone_core_gather_ice_candidates(lc,call)<0) {
+			/* Ice candidates gathering failed, proceed with the call anyway. */
+			linphone_call_delete_ice_session(call);
+			linphone_call_stop_media_streams(call);
+		} else {
+			use_ice = TRUE;
+		}
+	}
+
+	if (dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
 		/*defer the start of the call after the OPTIONS ping*/
+		call->ping_replied=FALSE;
 		call->ping_op=sal_op_new(lc->sal);
 		sal_ping(call->ping_op,from,real_url);
 		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
+	}else{
+		if (use_ice==FALSE) linphone_core_start_invite(lc,call,dest_proxy);
 	}
 
 	if (real_url!=NULL) ms_free(real_url);
@@ -2355,6 +2399,96 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
+	char *barmesg;
+	char *tmp;
+	LinphoneAddress *from_parsed;
+	SalMediaDescription *md;
+	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
+	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
+
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && sal_media_description_empty(md)){
+		sal_call_decline(call->op,SalReasonMedia,NULL);
+		linphone_call_unref(call);
+		return;
+	}
+
+	from_parsed=linphone_address_new(sal_op_get_from(call->op));
+	linphone_address_clean(from_parsed);
+	tmp=linphone_address_as_string(from_parsed);
+	linphone_address_destroy(from_parsed);
+	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
+	    (sal_call_autoanswer_asked(call->op)) ?_(" and asked autoanswer."):_("."));
+	if (lc->vtable.show) lc->vtable.show(lc);
+	if (lc->vtable.display_status)
+	    lc->vtable.display_status(lc,barmesg);
+
+	/* play the ring if this is the only call*/
+	if (ms_list_size(lc->calls)==1){
+		lc->current_call=call;
+		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
+			ring_stop(lc->ringstream);
+			lc->ringstream=NULL;
+			lc->dmfs_playing_start_time=0;
+		}
+		if (lc->sound_conf.ring_sndcard!=NULL){
+			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
+				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+				ms_message("Starting local ring...");
+				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
+			}
+			else
+			{
+				ms_message("the local ring is already started");
+			}
+		}
+	}else{
+		/* else play a tone within the context of the current call */
+		call->ringing_beep=TRUE;
+		linphone_core_play_tone(lc);
+	}
+
+	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
+
+	if (call->state==LinphoneCallIncomingReceived){
+		sal_call_notify_ringing(call->op,propose_early_media || ringback_tone!=NULL);
+
+		if (propose_early_media || ringback_tone!=NULL){
+			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
+			md=sal_call_get_final_media_description(call->op);
+			linphone_core_update_streams(lc,call,md);
+		}
+		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
+			linphone_core_accept_call(lc,call);
+		}
+	}
+	linphone_call_unref(call);
+
+	ms_free(barmesg);
+	ms_free(tmp);
+}
+
+int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
+	const char *subject;
+	call->camera_active=call->params.has_video;
+	update_local_media_description(lc,call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+
+	if (call->params.in_conference){
+		subject="Conference";
+	}else{
+		subject="Media change";
+	}
+	if (lc->vtable.display_status)
+		lc->vtable.display_status(lc,_("Modifying call parameters..."));
+	sal_call_set_local_media_description (call->op,call->localdesc);
+	return sal_call_update(call->op,subject);
+}
+
 /**
  * @ingroup call_control
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
@@ -2372,20 +2506,26 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
-		const char *subject;
-		call->params=*params;
-		call->camera_active=call->params.has_video;
-		update_local_media_description(lc,call);
-		
-		if (params->in_conference){
-			subject="Conference";
-		}else{
-			subject="Media change";
+#ifdef VIDEO_ENABLED
+		bool_t has_video = call->params.has_video;
+		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
+			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
+			call->videostream->ice_check_list = NULL;
 		}
-		if (lc->vtable.display_status)
-			lc->vtable.display_status(lc,_("Modifying call parameters..."));
-		sal_call_set_local_media_description (call->op,call->localdesc);
-		err=sal_call_update(call->op,subject);
+		call->params = *params;
+		if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed) && !has_video && params->has_video) {
+			/* Defer call update until the ICE candidates gathering process has finished. */
+			ms_message("Defer call update to gather ICE candidates");
+			update_local_media_description(lc, call);
+			linphone_call_init_video_stream(call);
+			video_stream_prepare_video(call->videostream);
+			if (linphone_core_gather_ice_candidates(lc,call)<0) {
+				/* Ice candidates gathering failed, proceed with the call anyway. */
+				linphone_call_delete_ice_session(call);
+			} else return err;
+		}
+#endif
+		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
 		if (call->videostream!=NULL){
@@ -2423,6 +2563,24 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	return -1;
 }
 
+int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call){
+	SalMediaDescription *md;
+	if (call->ice_session != NULL) {
+		if (ice_session_nb_losing_pairs(call->ice_session) > 0) {
+			/* Defer the sending of the answer until there are no losing pairs left. */
+			return 0;
+		}
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+	}
+	sal_call_set_local_media_description(call->op,call->localdesc);
+	sal_call_accept(call->op);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && !sal_media_description_empty(md))
+		linphone_core_update_streams (lc,call,md);
+	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	return 0;
+}
+
 /**
  * @ingroup call_control
  * Accept call modifications initiated by other end.
@@ -2443,14 +2601,14 @@ int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
  * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	SalMediaDescription *md;
+	bool_t old_has_video = call->params.has_video;
 	if (call->state!=LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
 		return -1;
 	}
 	if (params==NULL){
-		call->params.has_video=lc->video_policy.automatically_accept;
+		call->params.has_video=lc->video_policy.automatically_accept || call->current_params.has_video;
 	}else
 		call->params=*params;
 
@@ -2460,12 +2618,22 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	call->camera_active=call->params.has_video;
 	update_local_media_description(lc,call);
-	sal_call_set_local_media_description(call->op,call->localdesc);
-	sal_call_accept(call->op);
-	md=sal_call_get_final_media_description(call->op);
-	if (md && !sal_media_description_empty(md))
-		linphone_core_update_streams (lc,call,md);
-	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+	if (call->ice_session != NULL) {
+		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+#ifdef VIDEO_ENABLED
+		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
+			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
+				linphone_call_init_video_stream(call);
+				video_stream_prepare_video(call->videostream);
+				if (linphone_core_gather_ice_candidates(lc,call)<0) {
+					/* Ice candidates gathering failed, proceed with the call anyway. */
+					linphone_call_delete_ice_session(call);
+				} else return 0;
+			}
+		}
+#endif
+	}
+	linphone_core_start_accept_call_update(lc, call);
 	return 0;
 }
 
@@ -2728,6 +2896,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	update_local_media_description(lc,call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -2805,6 +2975,8 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
 	update_local_media_description(lc,the_call);
+	if (call->ice_session != NULL)
+		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
@@ -4073,7 +4245,7 @@ static MSFilter *get_dtmf_gen(LinphoneCore *lc){
 		return stream->dtmfgen;
 	}
 	if (lc->ringstream==NULL){
-		float amp=0.1;
+		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1);
 		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 		if (ringcard == NULL)
 			return NULL;
@@ -4498,7 +4670,7 @@ void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
 	set_network_reachable(lc,isReachable, ms_time(NULL));
 }
 
-bool_t linphone_core_is_network_reachabled(LinphoneCore* lc) {
+bool_t linphone_core_is_network_reachable(LinphoneCore* lc) {
 	return lc->network_reachable;
 }
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){

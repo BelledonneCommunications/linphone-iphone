@@ -171,6 +171,11 @@ void linphone_gtk_use_stun_toggled(GtkWidget *w){
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseStun);
 }
 
+void linphone_gtk_use_ice_toggled(GtkWidget *w){
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseIce);
+}
+
 void linphone_gtk_mtu_changed(GtkWidget *w){
 	if (GTK_WIDGET_SENSITIVE(w))
 		linphone_core_set_mtu(linphone_gtk_get_core(),gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
@@ -955,6 +960,9 @@ void linphone_gtk_show_parameters(void){
 		break;
 		case LinphonePolicyUseStun:
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_stun")),TRUE);
+		break;
+		case LinphonePolicyUseIce:
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_ice")),TRUE);
 		break;
 	}
 	mtu=linphone_core_get_mtu(lc);

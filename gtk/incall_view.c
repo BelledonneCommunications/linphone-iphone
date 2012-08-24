@@ -557,6 +557,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	gboolean in_conf=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));	
 
+	if ((callview==NULL) || (status==NULL)) return;
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));
 	else{

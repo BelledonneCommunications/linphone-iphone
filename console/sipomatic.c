@@ -97,7 +97,7 @@ void call_accept(Call *call)
 	osip_message_set_content_type(msg,"application/sdp");
 	osip_message_set_body(msg,call->sdpc->answerstr,strlen(call->sdpc->answerstr));
 	eXosip_call_send_answer(call->tid,200,msg);
- 	call->audio_stream=audio_stream_new(call->audio.localport,call->root->ipv6);
+	call->audio_stream=audio_stream_new(call->audio.localport,call->audio.localport+1,call->root->ipv6);
 	audio_stream_start_with_files(call->audio_stream, call->profile,
 				call->audio.remaddr,call->audio.remoteport,call->audio.remoteport+1,
 				 call->audio.pt,20,hellofile,record_file);

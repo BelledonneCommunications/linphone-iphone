@@ -140,6 +140,10 @@ public interface LinphoneCore {
 		 * Use stun server to discover RTP addresses and ports.
 		 */
 		static public FirewallPolicy UseStun = new FirewallPolicy(2,"UseStun");
+		/**
+		 * Use ICE.
+		 */
+		static public FirewallPolicy UseIce = new FirewallPolicy(3,"UseIce");
 		
 		private final int mValue;
 		private final String mStringValue;

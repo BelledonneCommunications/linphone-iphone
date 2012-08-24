@@ -46,7 +46,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		call->media_pending=TRUE;
 	}
 	call->resultdesc=new_md;
-	if (call->audiostream && call->audiostream->ticker){
+	if (call->ice_session != NULL) {
+		linphone_core_deactivate_ice_for_deactivated_media_streams(call, call->resultdesc);
+	}
+	if ((call->audiostream && call->audiostream->ticker) || (call->videostream && call->videostream->ticker)){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			if (!media_parameters_changed(call,oldmd,new_md) && !call->playing_ringbacktone){
@@ -140,16 +143,10 @@ static bool_t already_a_call_pending(LinphoneCore *lc){
 
 static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
-	char *barmesg;
 	LinphoneCall *call;
 	const char *from,*to;
-	char *tmp;
-	LinphoneAddress *from_parsed;
 	LinphoneAddress *from_addr, *to_addr;
-	SalMediaDescription *md;
-	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",TRUE);
-	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 	
 	/* first check if we can answer successfully to this invite */
 	if (lc->presence_mode==LinphoneStatusBusy ||
@@ -188,72 +185,18 @@ static void call_received(SalOp *h){
 	
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
 	sal_call_set_local_media_description(h,call->localdesc);
-	md=sal_call_get_final_media_description(h);
-
-	if (md && sal_media_description_empty(md)){
-		sal_call_decline(h,SalReasonMedia,NULL);
-		linphone_call_unref(call);
-		return;
-	}
 	
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
-	
-	from_parsed=linphone_address_new(sal_op_get_from(h));
-	linphone_address_clean(from_parsed);
-	tmp=linphone_address_as_string(from_parsed);
-	linphone_address_destroy(from_parsed);
-	barmesg=ortp_strdup_printf("%s %s%s",tmp,_("is contacting you"),
-	    (sal_call_autoanswer_asked(h)) ?_(" and asked autoanswer."):_("."));
-	if (lc->vtable.show) lc->vtable.show(lc);
-	if (lc->vtable.display_status) 
-	    lc->vtable.display_status(lc,barmesg);
-
-	/* play the ring if this is the only call*/
-	if (ms_list_size(lc->calls)==1){
-		lc->current_call=call;
-		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
-			ring_stop(lc->ringstream);
-			lc->ringstream=NULL;
-			lc->dmfs_playing_start_time=0;
-		}
-		if (lc->sound_conf.ring_sndcard!=NULL){
-			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
-				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-				ms_message("Starting local ring...");
-				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
-			}
-			else
-			{
-				ms_message("the local ring is already started");
-			}
-		}
-	}else{
-		/* else play a tone within the context of the current call */
-		call->ringing_beep=TRUE;
-		linphone_core_play_tone(lc);
-	}
-
-	
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
-	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
-	
-	if (call->state==LinphoneCallIncomingReceived){
-		sal_call_notify_ringing(h,propose_early_media || ringback_tone!=NULL);
 
-		if (propose_early_media || ringback_tone!=NULL){
-			linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
-			md=sal_call_get_final_media_description(h);
-			linphone_core_update_streams(lc,call,md);
-		}
-		if (sal_call_get_replaces(call->op)!=NULL && lp_config_get_int(lc->config,"sip","auto_answer_replacing_calls",1)){
-			linphone_core_accept_call(lc,call);
-		}
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
+		/* Defer ringing until the end of the ICE candidates gathering process. */
+		ms_message("Defer ringing to gather ICE candidates");
+		return;
 	}
-	linphone_call_unref(call);
 
-	ms_free(barmesg);
-	ms_free(tmp);
+	linphone_core_notify_incoming_call(lc,call);
 }
 
 static void call_ringing(SalOp *h){
@@ -320,7 +263,12 @@ static void call_accepted(SalOp *op){
 		ms_warning("No call to accept.");
 		return ;
 	}
-	
+
+	/* Handle remote ICE attributes if any. */
+	if (call->ice_session != NULL) {
+		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	}
+
 	md=sal_call_get_final_media_description(op);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||
@@ -414,6 +362,11 @@ static void call_ack(SalOp *op){
 
 static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 	SalMediaDescription *md;
+	SalMediaDescription *rmd=sal_call_get_remote_media_description(call->op);
+	if ((rmd!=NULL) && (call->ice_session!=NULL)) {
+		linphone_core_update_ice_from_remote_media_description(call,rmd);
+		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
+	}
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md))
@@ -810,7 +763,8 @@ static void ping_reply(SalOp *op){
 	ms_message("ping reply !");
 	if (call){
 		if (call->state==LinphoneCallOutgoingInit){
-			linphone_core_start_invite(call->core,call,NULL);
+			call->ping_replied=TRUE;
+			linphone_core_proceed_with_invite_if_ready(call->core,call,NULL);
 		}
 	}
 	else

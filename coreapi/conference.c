@@ -104,7 +104,7 @@ static RtpProfile *make_dummy_profile(int samplerate){
 static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	/*create a dummy audiostream in order to extract the local part of it */
 	/* network address and ports have no meaning and are not used here. */
-	AudioStream *st=audio_stream_new(65000,FALSE);
+	AudioStream *st=audio_stream_new(65000,65001,FALSE);
 	MSSndCard *playcard=lc->sound_conf.lsd_card ? 
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 	MSSndCard *captcard=lc->sound_conf.capt_sndcard;
@@ -114,6 +114,7 @@ static void add_local_endpoint(LinphoneConference *conf,LinphoneCore *lc){
 	audio_stream_start_full(st, conf->local_dummy_profile,
 				"127.0.0.1",
 				65000,
+				"127.0.0.1",
 				65001,
 				0,
 				40,

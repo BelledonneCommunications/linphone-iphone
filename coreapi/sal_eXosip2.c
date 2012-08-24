@@ -533,11 +533,13 @@ static void sdp_process(SalOp *h){
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		
 		for(i=0;i<h->result->nstreams;++i){
-			if (h->result->streams[i].port>0){
-				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);
+			if (h->result->streams[i].rtp_port>0){
+				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
 				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-				h->result->streams[i].port=h->base.remote_media->streams[i].port;
+				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
 				
 				if (h->result->streams[i].proto == SalProtoRtpSavp) {
 					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0]; 
@@ -2404,6 +2406,10 @@ int sal_call_update(SalOp *h, const char *subject){
 	eXosip_unlock();
 	osip_message_set_subject(reinvite,subject);
 	osip_message_set_allow(reinvite, "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	if (h->base.contact){
+		_osip_list_set_empty(&reinvite->contacts,(void (*)(void*))osip_contact_free);
+		osip_message_set_contact(reinvite,h->base.contact);
+	}
 	if (h->base.root->session_expires!=0){
 		osip_message_set_header(reinvite, "Session-expires", "200");
 		osip_message_set_supported(reinvite, "timer");

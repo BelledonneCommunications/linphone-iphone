@@ -850,6 +850,16 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 		{
 			linphone_core_set_firewall_policy(lc,LinphonePolicyNoFirewall);
 		}
+		else if (strcmp(args,"ice")==0)
+		{
+			setting = linphone_core_get_stun_server(lc);
+			if ( ! setting )
+			{
+				linphonec_out("No stun server address is defined, use 'stun <address>' first\n");
+				return 1;
+			}
+			linphone_core_set_firewall_policy(lc,LinphonePolicyUseIce);
+		}
 		else if (strcmp(args,"stun")==0)
 		{
 			setting = linphone_core_get_stun_server(lc);
@@ -882,6 +892,9 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			break;
 		case LinphonePolicyUseNatAddress:
 			linphonec_out("Using supplied nat address %s.\n", setting ? setting : linphone_core_get_nat_address(lc));
+			break;
+		case LinphonePolicyUseIce:
+			linphonec_out("Using ice with stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
 			break;
 	}
 	return 1;
