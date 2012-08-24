@@ -479,7 +479,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (UIViewController*)_changeCurrentView:(UICompositeViewDescription*)view transition:(CATransition*)transition force:(BOOL)force {
-    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: change view %d", [view name]];
+    [LinphoneLogger logc:LinphoneLoggerLog format:"PhoneMainView: Change current view to %@", [view name]];
     
     if(force || ![view equal: currentView]) {
         if(transition == nil)

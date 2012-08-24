@@ -451,6 +451,15 @@ static UICompositeViewDescription *compositeDescription = nil;
             [hiddenKeys addObject:@"ice_preference"];
         }
         [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+    } else if ([@"debugenable_preference" compare: notif.object] == NSOrderedSame) {
+        NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+        BOOL debugEnable = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
+        if (debugEnable) {
+            [hiddenKeys removeObject:@"console_button"];
+        } else {
+            [hiddenKeys addObject:@"console_button"];
+        }
+        [settingsController setHiddenKeys:hiddenKeys animated:TRUE];
     }
 }
 
@@ -493,6 +502,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"video_menu"];
     }
     
+    
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
     
     if([[[[LinphoneManager instance] settingsStore] objectForKey:@"random_port_preference"] boolValue]) {
@@ -503,6 +513,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"ice_preference"];
     }
 
+    if(![[[[LinphoneManager instance] settingsStore] objectForKey:@"debugenable_preference"] boolValue]) {
+        [hiddenKeys addObject:@"console_button"];
+    }
+    
     return hiddenKeys;
 }
 
@@ -524,5 +538,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[PhoneMainView instance].mainViewController clearCache];
     }
 #endif
+    if([key isEqual:@"console_button"]) {
+        [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
+    }
 }
 @end

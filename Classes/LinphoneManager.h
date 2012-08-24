@@ -23,7 +23,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <sqlite3.h>
 
-#import "LogView.h"
 #import "IASKSettingsReader.h"
 #import "IASKSettingsStore.h"
 #import "IASKAppSettingsViewController.h"
@@ -32,12 +31,15 @@
 
 #include "linphonecore.h"
 
+extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
 extern NSString *const kLinphoneTextReceivedSound;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
 extern NSString *const kLinphoneAddressBookUpdate;
+extern NSString *const kLinphoneLogsUpdate;
+extern NSString *const kLinphoneSettingsUpdate;
 
 extern NSString *const kContactSipField;
 
@@ -126,6 +128,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) sqlite3* database;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
+@property (readonly) NSMutableArray *logs;
 
 @end
 

@@ -38,12 +38,15 @@
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
+NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
 NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
+NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
+NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kContactSipField = @"SIP";
 
 extern void libmsilbc_init();
@@ -76,6 +79,7 @@ extern  void libmsbcg729_init();
 @synthesize fastAddressBook;
 @synthesize pushNotificationToken;
 @synthesize sounds;
+@synthesize logs;
 
 struct codec_name_pref_table{
     const char *name;
@@ -195,6 +199,7 @@ struct codec_name_pref_table codec_pref_table[]={
             }
         }
         inhibitedEvent = [[NSMutableArray alloc] init];
+        logs = [[NSMutableArray alloc] init];
         database = NULL;
         settingsStore = nil;
 		self.defaultExpires = 600;
@@ -216,6 +221,7 @@ struct codec_name_pref_table codec_pref_table[]={
     [fastAddressBook release];
     [self closeDatabase];
     [settingsStore release];
+    [logs release];
     
     [super dealloc];
 }
@@ -263,7 +269,15 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
 	NSLogv(format, args);
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-	//[[LinphoneManager instance] addLog:formatedString];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[LinphoneManager instance].logs addObject:formatedString];
+        
+        // Post event
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:formatedString forKey:@"log"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+    });
+    
 	[formatedString release];
     [format release];
 }
@@ -272,7 +286,14 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
 	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
 	NSLog(log, NULL);
-	//[[LinphoneManager instance] addLog:log];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[LinphoneManager instance].logs addObject:log];
+        
+        // Post event
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:log forKey:@"log"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:[LinphoneManager instance] userInfo:dict];
+    });
 }
 
 
@@ -280,10 +301,10 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 
 - (void)displayStatus:(NSString*) message {
     // Post event
-    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                            message, @"message", 
-                           nil] autorelease];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneDisplayStatus" object:self userInfo:dict];
+                           nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate object:self userInfo:dict];
 }
 
 
@@ -330,11 +351,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     }
     
     // Post event
-    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                            [NSValue valueWithPointer:call], @"call",
                            [NSNumber numberWithInt:state], @"state", 
-                           [NSString stringWithUTF8String:message], @"message", nil] autorelease];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneCallUpdate" object:self userInfo:dict];
+                           [NSString stringWithUTF8String:message], @"message", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
@@ -354,12 +375,12 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
     [LinphoneLogger logc:LinphoneLoggerLog format:"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message];
     
     // Post event
-    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                           [NSNumber numberWithInt:state], @"state", 
                           [NSValue valueWithPointer:cfg], @"cfg",
                           [NSString stringWithUTF8String:message], @"message", 
-                          nil] autorelease];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneRegistrationUpdate" object:self userInfo:dict];
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneRegistrationUpdate object:self userInfo:dict];
 }
 
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
@@ -388,13 +409,13 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     ms_free(fromStr);
     
     // Post event
-    NSDictionary* dict = [[[NSDictionary alloc] initWithObjectsAndKeys: 
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                            [NSValue valueWithPointer:room], @"room", 
                            [NSValue valueWithPointer:from], @"from",
                            [NSString stringWithUTF8String:message], @"message", 
                            chat, @"chat", 
-                           nil] autorelease];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"LinphoneTextReceived" object:self userInfo:dict]; 
+                           nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
     [chat release];
 }
 

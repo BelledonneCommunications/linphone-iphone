@@ -225,7 +225,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	
 	[changedDict release];
-	changedDict=[[NSMutableDictionary alloc] init];
+	changedDict = [[NSMutableDictionary alloc] init];
+    
+    // Post event
+    NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
 }
 
 - (void)setObject:(id)value forKey:(NSString *)key {
@@ -516,6 +520,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
 	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
+    
+    // Post event
+    NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
+    
     return YES;
 }
 

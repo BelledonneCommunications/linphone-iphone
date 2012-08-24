@@ -18,15 +18,11 @@
  */              
 
 #import <UIKit/UIKit.h>
+#import "UICompositeViewController.h"
 
-#import "LogView.h"
-
-@interface ConsoleViewController : UIViewController <LogView> {
+@interface ConsoleViewController : UIViewController<UICompositeViewDelegate, UIWebViewDelegate> {
 }
 
--(void) doAction;
-
-@property (nonatomic, retain) IBOutlet UITextView* logs;
-@property (nonatomic, retain) IBOutlet UIView*	logsView;
+@property (nonatomic, retain) IBOutlet UIWebView* logsView;
 
 @end

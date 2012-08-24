@@ -38,6 +38,7 @@
 #import "FirstLoginViewController.h"
 #import "WizardViewController.h"
 #import "IncomingCallViewController.h"
+#import "ConsoleViewController.h"
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
     @private
