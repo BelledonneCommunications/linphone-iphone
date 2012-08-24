@@ -9,7 +9,7 @@ public:
 
 void IPv6CommandPrivate::outputIPv6(Daemon* app, ostringstream& ost) {
 	bool ipv6_enabled = linphone_core_ipv6_enabled(app->getCore()) == TRUE ? true : false;
-	ost << "Status: ";
+	ost << "State: ";
 	if (ipv6_enabled) {
 		ost << "enabled\n";
 	} else {
