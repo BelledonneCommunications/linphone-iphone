@@ -2,24 +2,59 @@
 
 using namespace std;
 
-PtimeCommand::PtimeCommand() :
-		DaemonCommand("ptime", "ptime <ms>", "Set the if ms is defined, otherwise return the ptime.") {
+class PtimeCommandPrivate {
+public:
+	void outputPtime(Daemon *app, ostringstream &ost, int ms);
+};
+
+void PtimeCommandPrivate::outputPtime(Daemon* app, ostringstream& ost, int ms) {
+	ost << "Value: " << ms << "\n";
 }
+
+PtimeCommand::PtimeCommand() :
+		DaemonCommand("ptime", "ptime [up|down] <ms>", "Set the upload or download ptime if ms is defined, otherwise return the current value of the ptime."),
+		d(new PtimeCommandPrivate()) {
+}
+
+PtimeCommand::~PtimeCommand()
+{
+	delete d;
+}
+
 void PtimeCommand::exec(Daemon *app, const char *args) {
+	string direction;
 	int ms;
-	int ret = sscanf(args, "%d", &ms);
-	if (ret <= 0) {
-		ostringstream ostr;
-		ms = linphone_core_get_upload_ptime(app->getCore());
-		ostr << "Ptime: " << ms << "\n";
-		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
-	} else if (ret == 1) {
-		ostringstream ostr;
-		linphone_core_set_upload_ptime(app->getCore(), ms);
-		ms = linphone_core_get_upload_ptime(app->getCore());
-		ostr << "Ptime: " << ms << "\n";
-		app->sendResponse(Response(ostr.str().c_str(), Response::Ok));
+	istringstream ist(args);
+	ist >> direction;
+	if (ist.fail()) {
+		app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
 	} else {
-		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		if (direction.compare("up") == 0) {
+			if (!ist.eof()) {
+				ist >> ms;
+				if (ist.fail()) {
+					app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
+				}
+				linphone_core_set_upload_ptime(app->getCore(), ms);
+			}
+			ms = linphone_core_get_upload_ptime(app->getCore());
+			ostringstream ost;
+			d->outputPtime(app, ost, ms);
+			app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		} else if (direction.compare("down") == 0) {
+			if (!ist.eof()) {
+				ist >> ms;
+				if (ist.fail()) {
+					app->sendResponse(Response("Incorrect ms parameter.", Response::Error));
+				}
+				linphone_core_set_download_ptime(app->getCore(), ms);
+			}
+			ms = linphone_core_get_download_ptime(app->getCore());
+			ostringstream ost;
+			d->outputPtime(app, ost, ms);
+			app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		} else {
+			app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
+		}
 	}
 }
