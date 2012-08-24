@@ -14,6 +14,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.cc \
 			commands/call-stats.cc \
 			commands/call-status.cc \
+			commands/firewall-policy.cc \
 			commands/help.cc \
 			commands/msfilter-add-fmtp.cc \
 			commands/pop-event.cc \
@@ -35,6 +36,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.h \
 			commands/call-stats.h \
 			commands/call-status.h \
+			commands/firewall-policy.h \
 			commands/help.h \
 			commands/msfilter-add-fmtp.h \
 			commands/pop-event.h \

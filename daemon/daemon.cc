@@ -21,6 +21,7 @@
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
+#include "commands/firewall-policy.h"
 #include "commands/help.h"
 #include "commands/msfilter-add-fmtp.h"
 #include "commands/pop-event.h"
@@ -300,6 +301,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AudioStreamStopCommand());
 	mCommands.push_back(new MSFilterAddFmtpCommand());
 	mCommands.push_back(new PtimeCommand());
+	mCommands.push_back(new FirewallPolicyCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 
