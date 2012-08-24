@@ -33,6 +33,11 @@
 @interface BuschJaegerConfiguration : NSObject {
 }
 
+typedef enum _BuschJaegerConfigurationRequestType{
+    BuschJaegerConfigurationRequestType_Local,
+    BuschJaegerConfigurationRequestType_Global
+} BuschJaegerConfigurationRequestType;
+
 @property (readonly) NSMutableSet *history;
 @property (readonly) NSMutableSet *outdoorStations;
 @property (readonly) Network *network;
@@ -43,8 +48,10 @@
 - (BOOL)saveFile:(NSString*)file;
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
-- (BOOL)loadHistory:(NSString*)url delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image;
+
+- (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type;
 
 + (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data;
-
 @end

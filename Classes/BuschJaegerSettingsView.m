@@ -74,8 +74,8 @@
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
         
-        [BuschJaegerUtils createGradientForView:scanButton withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForView:scanButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
+        [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
     }
     [waitView setHidden:TRUE];
 }

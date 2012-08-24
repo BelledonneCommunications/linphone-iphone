@@ -20,12 +20,14 @@
 
 #import "BuschJaegerHistoryView.h"
 #import "BuschJaegerMainView.h"
+#import "BuschJaegerUtils.h"
 
 @implementation BuschJaegerHistoryView
 
 @synthesize backButton;
 @synthesize waitView;
 @synthesize tableController;
+
 
 #pragma mark - Lifecycle Functions 
 
@@ -37,6 +39,7 @@
     [super dealloc];
 }
 
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -45,19 +48,16 @@
     [tableController.view setBackgroundColor:[UIColor clearColor]];
     
     [waitView setHidden:TRUE];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
     
-    
-    [LinphoneManager instance].configuration.network.localHistory = @"http://elviish.eu/history.ini"; //tmp
-    if([[LinphoneManager instance].configuration loadHistory:[LinphoneManager instance].configuration.network.localHistory delegate:self]) {
-        [waitView setHidden:FALSE];
-    } else {
-        [waitView setHidden:TRUE];
+    /* init gradients */
+    {
+        UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
+        UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
+        
+        [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
     }
 }
+
 
 #pragma mark - Action Functions
 
@@ -65,13 +65,24 @@
     [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
 }
 
+
 #pragma mark - 
 
+- (void)reload {
+    [self view]; // Force view load
+    if([[LinphoneManager instance].configuration loadHistory:BuschJaegerConfigurationRequestType_Local delegate:self]) {
+        [waitView setHidden:FALSE];
+    } else {
+        [waitView setHidden:TRUE];
+    }
+}
+
 - (void)update {
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
     [tableController setHistory:[[LinphoneManager instance].configuration.history sortedArrayUsingDescriptors:sortDescriptors]];
 }
+
 
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 

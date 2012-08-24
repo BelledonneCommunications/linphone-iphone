@@ -118,9 +118,11 @@
 - (BOOL)parseHistory:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     NSArray *arr = [data componentsSeparatedByString:@"\n"];
     for (NSString *line in arr) {
-        History *his = [History parse:line];
-        if(his) {
-            [history addObject:his];
+        if([line length]) {
+            History *his = [History parse:line];
+            if(his) {
+                [history addObject:his];
+            }
         }
     }
     return TRUE;
@@ -256,7 +258,9 @@
     return FALSE;
 }
 
-- (BOOL)loadHistory:(NSString*)url delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+- (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    [history removeAllObjects];
+    NSString *url = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
@@ -269,16 +273,34 @@
                     [delegate buschJaegerConfigurationError:[error localizedDescription]];
                 });
             } else {
-                if([self parseHistory:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
+                if([self parseHistory:dataString delegate:delegate]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [delegate buschJaegerConfigurationSuccess];
                     });
                 }
+                [dataString release];
             }
         });
         return TRUE;
     }
     return FALSE;
+}
+
+
+- (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type {
+    NSString *gateway = nil;
+    NSString *urlString = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSRange range = [urlString rangeOfString:[url relativePath]];
+    if(range.location != NSNotFound) {
+        gateway = [urlString substringToIndex:range.location];
+    }
+    return gateway;
+}
+
+- (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image {
+    return [NSString stringWithFormat:@"%@/%@", [self getGateway:type], image];
 }
 
 @end

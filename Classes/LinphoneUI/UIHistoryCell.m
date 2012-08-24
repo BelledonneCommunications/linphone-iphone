@@ -27,6 +27,7 @@
 @synthesize stationLabel;
 @synthesize dateLabel;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString*)identifier {
@@ -74,16 +75,23 @@
 #pragma mark - 
 
 - (void)update {
-    NSString *station = @"Unknown";
+    NSString *stationName = @"Unknown";
     NSSet *set = [[[LinphoneManager instance].configuration outdoorStations] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"ID == %i", history.stationID]];
     if([set count] == 1) {
-        station = [[set allObjects] objectAtIndex:0];
+        OutdoorStation *station = [[set allObjects] objectAtIndex:0];
+        stationName = station.name;
     }
     // Station
-    [stationLabel setText:station];
+    [stationLabel setText:stationName];
     
     // Date
     [dateLabel setText:[dateFormatter stringFromDate:history.date]];
+    
+    if([history.images count] > 0) {
+        NSString *image = [history.images objectAtIndex:0];
+        [iconImage setImage:nil];
+        [iconImage loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:image]];
+    }
 }
 
 @end

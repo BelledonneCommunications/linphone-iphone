@@ -85,11 +85,12 @@
 #pragma mark - 
 
 - (IBAction)settingsClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:TRUE];
+    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:FALSE];
 }
 
 - (IBAction)historyClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:TRUE];
+    [[BuschJaegerMainView instance].historyView reload];
+    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:FALSE];
 }
 
 @end

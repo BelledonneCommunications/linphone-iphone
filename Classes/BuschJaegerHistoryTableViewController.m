@@ -19,12 +19,24 @@
 
 #import "BuschJaegerHistoryTableViewController.h"
 #import "BuschJaegerUtils.h"
+#import "BuschJaegerMainView.h"
 #import "UIHistoryCell.h"
 #import "UACellBackgroundView.h"
 
 @implementation BuschJaegerHistoryTableViewController
 
 @synthesize history;
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)dealloc {
+    [history release];
+    [super dealloc];
+}
+
+
+#pragma mark - Property Functions
 
 - (void)setHistory:(NSArray *)ahistory {
     if ([ahistory isEqualToArray:history]) {
@@ -70,6 +82,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    [[BuschJaegerMainView instance].historyDetailsView setHistory:[history objectAtIndex:[indexPath row]]];
+    [[BuschJaegerMainView instance].navigationController pushViewController:[BuschJaegerMainView instance].historyDetailsView animated:FALSE];
 }
 
 

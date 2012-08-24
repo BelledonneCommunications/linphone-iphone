@@ -27,6 +27,17 @@
 
 @synthesize stations;
 
+
+#pragma mark - Lifecycle Functions
+
+- (void)dealloc {
+    [stations release];
+    [super dealloc];
+}
+
+
+#pragma mark - Property Functions
+
 - (void)setStations:(NSArray *)astations {
     if ([astations isEqualToArray:stations]) {
         return;

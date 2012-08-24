@@ -1,4 +1,4 @@
-/* UIHistoryCell.h
+/* BuschJaegerHistoryDetailsView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -21,17 +21,21 @@
 #import "History.h"
 #import "UIRemoteImageView.h"
 
-@interface UIHistoryCell : UITableViewCell {
-    @private
+@interface BuschJaegerHistoryDetailsView : UIViewController<UITableViewDataSource, UITableViewDelegate> {
+@private
+    int currentIndex;
     NSDateFormatter *dateFormatter;
 }
 
+@property (nonatomic, retain) IBOutlet UIView *backButton;
 @property (nonatomic, retain) History *history;
-
-@property (nonatomic, retain) IBOutlet UIRemoteImageView *iconImage;
+@property (nonatomic, retain) IBOutlet UITableViewController *tableController;
 @property (nonatomic, retain) IBOutlet UILabel *stationLabel;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
+@property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
 
-- (id)initWithIdentifier:(NSString*)identifier;
+- (IBAction)nextImage:(id)sender;
+- (IBAction)previousImage:(id)sender;
+- (IBAction)hideImage:(id)sender;
 
 @end

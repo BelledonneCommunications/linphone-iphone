@@ -44,7 +44,7 @@
     History *history;
     NSError  *error;
     NSRegularExpression *regex = [NSRegularExpression
-                                  regularExpressionWithPattern:@"([\\d]+) ([\\d]+ [\\d]+) ([\\d]+) (.)"
+                                  regularExpressionWithPattern:@"([\\d]+) ([\\d]+ [\\d]+) ([\\d]+) (i|o)"
                                   options:NSRegularExpressionCaseInsensitive
                                   error:&error];
     
@@ -54,15 +54,14 @@
         history.ID = [[line substringWithRange:[result rangeAtIndex:1]] intValue];
         
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-        [dateFormat setDateFormat:@"yyyyMMdd hhmm"];
+        [dateFormat setDateFormat:@"yyyyMMdd HHmm"];
         NSString *stringDate = [line substringWithRange:[result rangeAtIndex:2]];
         history.date = [dateFormat dateFromString:stringDate];
         [dateFormat release];
         
         history.stationID = [[line substringWithRange:[result rangeAtIndex:3]] intValue];
         
-        history.incoming = [[line substringWithRange:[result rangeAtIndex:4]] compare:@"i" options:NSCaseInsensitiveSearch] == 0 ||
-                            [[line substringWithRange:[result rangeAtIndex:4]] compare:@"1" options:NSCaseInsensitiveSearch] == 0;
+        history.incoming = [[line substringWithRange:[result rangeAtIndex:4]] compare:@"i" options:NSCaseInsensitiveSearch] == 0;
         
         NSRange range = [result rangeAtIndex:0];
         range.location += range.length;
@@ -70,7 +69,7 @@
         NSArray *array = [[line substringWithRange:range] componentsSeparatedByString:@" "];
         history.images = [array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"length > 0"]];
     } else {
-        [LinphoneLogger log:LinphoneLoggerWarning format:@"Invalid history line", line];
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"Invalid history line: %@", line];
     }
     
     return history;

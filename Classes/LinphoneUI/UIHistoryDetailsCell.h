@@ -21,16 +21,12 @@
 #import "History.h"
 #import "UIRemoteImageView.h"
 
-@interface UIHistoryCell : UITableViewCell {
-    @private
-    NSDateFormatter *dateFormatter;
+@interface UIHistoryDetailsCell : UITableViewCell {
 }
 
-@property (nonatomic, retain) History *history;
+@property (nonatomic, retain) NSString *image;
 
-@property (nonatomic, retain) IBOutlet UIRemoteImageView *iconImage;
-@property (nonatomic, retain) IBOutlet UILabel *stationLabel;
-@property (nonatomic, retain) IBOutlet UILabel *dateLabel;
+@property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

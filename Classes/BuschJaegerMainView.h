@@ -23,6 +23,7 @@
 #import "BuschJaegerSettingsView.h"
 #import "BuschJaegerWelcomeView.h"
 #import "BuschJaegerHistoryView.h"
+#import "BuschJaegerHistoryDetailsView.h"
 
 @interface BuschJaegerMainView : UIViewController {
     
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) IBOutlet BuschJaegerSettingsView *settingsView;
 @property (nonatomic, retain) IBOutlet BuschJaegerWelcomeView *welcomeView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryView *historyView;
+@property (nonatomic, retain) IBOutlet BuschJaegerHistoryDetailsView *historyDetailsView;
 
 + (BuschJaegerMainView*) instance;
 

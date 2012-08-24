@@ -26,6 +26,7 @@
 @synthesize settingsView;
 @synthesize welcomeView;
 @synthesize historyView;
+@synthesize historyDetailsView;
 
 static BuschJaegerMainView* mainViewInstance=nil;
 
@@ -67,6 +68,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [settingsView release];
     [welcomeView release];
     [historyView release];
+    [historyDetailsView release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -79,6 +81,8 @@ static BuschJaegerMainView* mainViewInstance=nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self setWantsFullScreenLayout:TRUE];
     
     UIView *view = navigationController.view;
     [view setFrame:[self.view bounds]];

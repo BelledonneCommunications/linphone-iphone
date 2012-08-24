@@ -1,4 +1,4 @@
-/* UIHistoryCell.h
+/* UIRemoteImageView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,21 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
 #import <UIKit/UIKit.h>
-#import "History.h"
-#import "UIRemoteImageView.h"
 
-@interface UIHistoryCell : UITableViewCell {
-    @private
-    NSDateFormatter *dateFormatter;
-}
+@interface UIRemoteImageView : UIImageView
 
-@property (nonatomic, retain) History *history;
+@property (retain) UIActivityIndicatorView *waitIndicatorView;
 
-@property (nonatomic, retain) IBOutlet UIRemoteImageView *iconImage;
-@property (nonatomic, retain) IBOutlet UILabel *stationLabel;
-@property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 
-- (id)initWithIdentifier:(NSString*)identifier;
-
+- (void)loadImage:(NSString*) url;
 @end

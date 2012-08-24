@@ -178,12 +178,15 @@
     [microButton update];
     
 	switch (state) {
+        case LinphoneCallIncomingEarlyMedia:
 		case LinphoneCallIncomingReceived:
         {
             [self displayIncomingCall:call];
             break;
         }
 		case LinphoneCallOutgoingInit:
+        case LinphoneCallOutgoingProgress:
+        case LinphoneCallOutgoingRinging:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning:
         case LinphoneCallUpdated:

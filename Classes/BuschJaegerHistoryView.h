@@ -31,4 +31,6 @@
 
 - (IBAction)onBackClick:(id)sender;
 
+- (void)reload;
+
 @end

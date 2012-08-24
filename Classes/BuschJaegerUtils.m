@@ -25,15 +25,25 @@
 @implementation BuschJaegerUtils
 
 + (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
+    [BuschJaegerUtils createGradientForView:view withTopColor:topColor bottomColor:bottomColor cornerRadius:0];
+}
+
++ (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
+    [BuschJaegerUtils createGradientForButton:button withTopColor:topColor bottomColor:bottomColor cornerRadius:0];
+}
+
++ (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
     CAGradientLayer* gradient = [CAGradientLayer layer];
     gradient.frame = view.bounds;
+    gradient.cornerRadius = corner;
     gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
     [view.layer insertSublayer:gradient atIndex:0];
 }
 
-+ (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor {
++ (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
     CAGradientLayer* gradient = [CAGradientLayer layer];
     gradient.frame = button.bounds;
+    gradient.cornerRadius = corner;
     gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
     [button.layer insertSublayer:gradient below:button.imageView.layer];
 }

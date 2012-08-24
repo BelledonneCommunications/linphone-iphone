@@ -254,6 +254,16 @@
 		D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
+		D3FE9F3E15E789A30024F3E4 /* UIRemoteImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F3D15E789A30024F3E4 /* UIRemoteImageView.m */; };
+		D3FE9F3F15E789A30024F3E4 /* UIRemoteImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F3D15E789A30024F3E4 /* UIRemoteImageView.m */; };
+		D3FE9F4415E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F4215E78D700024F3E4 /* BuschJaegerHistoryDetailsView.m */; };
+		D3FE9F4515E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F4215E78D700024F3E4 /* BuschJaegerHistoryDetailsView.m */; };
+		D3FE9F4615E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4315E78D710024F3E4 /* BuschJaegerHistoryDetailsView.xib */; };
+		D3FE9F4715E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4315E78D710024F3E4 /* BuschJaegerHistoryDetailsView.xib */; };
+		D3FE9F4B15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F4915E790D80024F3E4 /* UIHistoryDetailsCell.m */; };
+		D3FE9F4C15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3FE9F4915E790D80024F3E4 /* UIHistoryDetailsCell.m */; };
+		D3FE9F4D15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */; };
+		D3FE9F4E15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
@@ -658,6 +668,14 @@
 		D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TPMultiLayoutViewController.m; path = Utils/TPMultiLayoutViewController/TPMultiLayoutViewController.m; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
+		D3FE9F3C15E789A30024F3E4 /* UIRemoteImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRemoteImageView.h; sourceTree = "<group>"; };
+		D3FE9F3D15E789A30024F3E4 /* UIRemoteImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRemoteImageView.m; sourceTree = "<group>"; };
+		D3FE9F4115E78D700024F3E4 /* BuschJaegerHistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerHistoryDetailsView.h; sourceTree = "<group>"; };
+		D3FE9F4215E78D700024F3E4 /* BuschJaegerHistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerHistoryDetailsView.m; sourceTree = "<group>"; };
+		D3FE9F4315E78D710024F3E4 /* BuschJaegerHistoryDetailsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerHistoryDetailsView.xib; sourceTree = "<group>"; };
+		D3FE9F4815E790D70024F3E4 /* UIHistoryDetailsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryDetailsCell.h; sourceTree = "<group>"; };
+		D3FE9F4915E790D80024F3E4 /* UIHistoryDetailsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHistoryDetailsCell.m; sourceTree = "<group>"; };
+		D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIHistoryDetailsCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -776,6 +794,9 @@
 				D37CD30015E21E320028869A /* BuschJaegerCallView.xib */,
 				D37CD30115E21E320028869A /* BuschJaegerConfiguration.h */,
 				D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */,
+				D3FE9F4115E78D700024F3E4 /* BuschJaegerHistoryDetailsView.h */,
+				D3FE9F4215E78D700024F3E4 /* BuschJaegerHistoryDetailsView.m */,
+				D3FE9F4315E78D710024F3E4 /* BuschJaegerHistoryDetailsView.xib */,
 				D384468315E6577600DF89DF /* BuschJaegerHistoryTableViewController.h */,
 				D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */,
 				D384467515E64D7400DF89DF /* BuschJaegerHistoryView.h */,
@@ -1029,6 +1050,9 @@
 				D384467C15E656D600DF89DF /* UIHistoryCell.h */,
 				D384467D15E656D600DF89DF /* UIHistoryCell.m */,
 				D384468015E656ED00DF89DF /* UIHistoryCell.xib */,
+				D3FE9F4815E790D70024F3E4 /* UIHistoryDetailsCell.h */,
+				D3FE9F4915E790D80024F3E4 /* UIHistoryDetailsCell.m */,
+				D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */,
 				D37CD31F15E21E520028869A /* UILightButton.h */,
 				D37CD32015E21E520028869A /* UILightButton.m */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
@@ -1039,6 +1063,8 @@
 				2214EBF212F86360002A5394 /* UIMicroButton.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
+				D3FE9F3C15E789A30024F3E4 /* UIRemoteImageView.h */,
+				D3FE9F3D15E789A30024F3E4 /* UIRemoteImageView.m */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				D37CD39815E244D10028869A /* UIStationCell.h */,
@@ -1474,6 +1500,8 @@
 				D384467315E64CD600DF89DF /* bj_history.png in Resources */,
 				D384467A15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */,
 				D384468115E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
+				D3FE9F4615E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */,
+				D3FE9F4D15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1518,6 +1546,8 @@
 				D384467415E64CD600DF89DF /* bj_history.png in Resources */,
 				D384467B15E64D7400DF89DF /* BuschJaegerHistoryView.xib in Resources */,
 				D384468215E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
+				D3FE9F4715E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */,
+				D3FE9F4E15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1600,6 +1630,9 @@
 				D384467E15E656D600DF89DF /* UIHistoryCell.m in Sources */,
 				D384468515E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */,
 				D384468915E65CFE00DF89DF /* History.m in Sources */,
+				D3FE9F3E15E789A30024F3E4 /* UIRemoteImageView.m in Sources */,
+				D3FE9F4415E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
+				D3FE9F4B15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1650,6 +1683,9 @@
 				D384467F15E656D600DF89DF /* UIHistoryCell.m in Sources */,
 				D384468615E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */,
 				D384468A15E65CFE00DF89DF /* History.m in Sources */,
+				D3FE9F3F15E789A30024F3E4 /* UIRemoteImageView.m in Sources */,
+				D3FE9F4515E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
+				D3FE9F4C15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
