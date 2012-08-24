@@ -17,7 +17,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 		MSSndCardManager *manager = ms_snd_card_manager_get();
 		MSSndCard *capture_card = ms_snd_card_manager_get_card(manager, linphone_core_get_capture_device(app->getCore()));
 		MSSndCard *play_card = ms_snd_card_manager_get_card(manager, linphone_core_get_playback_device(app->getCore()));
-		AudioStream *stream = audio_stream_new(local_port, false);
+		AudioStream *stream = audio_stream_new(local_port, local_port + 1, false);
 		if (audio_stream_start_now(stream, &av_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller) != 0) {
 			app->sendResponse(Response("Error during audio stream creation."));
 		}
