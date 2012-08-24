@@ -1096,17 +1096,15 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
 /**
  * @ingroup network_parameters
  * This method is called by the application to notify the linphone core library when network is reachable.
- * Calling this method with true trigger linphone to initiate a registration process for all proxy
- * configuration with parameter register set to enable.
- * This method disable the automatic registration mode. It means you must call this method after each network state changes
- *
+ * Calling this method with true trigger linphone to initiate a registration process for all proxies.
+ * Calling this method disables the automatic network detection mode. It means you must call this method after each network state changes.
  */
 void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t value);
 /**
  * @ingroup network_parameters
- * return network state either as positioned by the application or by linphone
+ * return network state either as positioned by the application or by linphone itself.
  */
-bool_t linphone_core_is_network_reachabled(LinphoneCore* lc);
+bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
 
 /**
  *  @ingroup network_parameters
