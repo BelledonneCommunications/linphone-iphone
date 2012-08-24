@@ -629,7 +629,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
 		if (cl == NULL) continue;
-		if (cl->state == ICL_Completed) {
+		if (ice_check_list_state(cl) == ICL_Completed) {
 			stream->ice_completed = TRUE;
 			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
 		} else {
@@ -652,7 +652,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		else
 			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
 		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
-		if ((cl->state == ICL_Running) || (cl->state == ICL_Completed)) {
+		if ((ice_check_list_state(cl) == ICL_Running) || (ice_check_list_state(cl) == ICL_Completed)) {
 			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
 			for (j = 0; j < MIN(ms_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
 				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
@@ -668,7 +668,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 				} else continue;
 				if (default_addr[0] == '\0') default_addr = desc->addr;
 				/* Only include the candidates matching the default destination for each component of the stream if the state is Completed as specified in RFC5245 section 9.1.2.2. */
-				if ((cl->state == ICL_Completed)
+				if ((ice_check_list_state(cl) == ICL_Completed)
 					&& !((ice_candidate->taddr.port == default_port) && (strlen(ice_candidate->taddr.ip) == strlen(default_addr)) && (strcmp(ice_candidate->taddr.ip, default_addr) == 0)))
 					continue;
 				strncpy(sal_candidate->foundation, ice_candidate->foundation, sizeof(sal_candidate->foundation));
@@ -684,7 +684,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 				nb_candidates++;
 			}
 		}
-		if ((cl->state == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
+		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
 			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
@@ -822,7 +822,7 @@ void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *ca
 	for (i = 0; i < md->nstreams; i++) {
 		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 		if (cl && (md->streams[i].rtp_port == 0)) {
-			if (cl->state != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
+			if (ice_check_list_state(cl) != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
 		}
 	}
 }
