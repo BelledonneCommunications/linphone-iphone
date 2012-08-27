@@ -20,6 +20,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/media-encryption.cc \
 			commands/msfilter-add-fmtp.cc \
 			commands/pop-event.cc \
+			commands/port.cc \
 			commands/ptime.cc \
 			commands/register.cc \
 			commands/register-status.cc \
@@ -44,6 +45,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/media-encryption.h \
 			commands/msfilter-add-fmtp.h \
 			commands/pop-event.h \
+			commands/port.h \
 			commands/ptime.h \
 			commands/register.h \
 			commands/register-status.h \
