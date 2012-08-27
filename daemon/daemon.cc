@@ -10,6 +10,7 @@
 #include <poll.h>
 
 #include "daemon.h"
+#include "commands/adaptive-jitter-compensation.h"
 #include "commands/answer.h"
 #include "commands/audio-codec-get.h"
 #include "commands/audio-codec-move.h"
@@ -308,6 +309,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new FirewallPolicyCommand());
 	mCommands.push_back(new MediaEncryptionCommand());
 	mCommands.push_back(new PortCommand());
+	mCommands.push_back(new AdaptiveBufferCompensationCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 

@@ -3,6 +3,7 @@
 bin_PROGRAMS=linphone-daemon linphone-daemon-pipetest
 
 linphone_daemon_SOURCES=daemon.cc \
+			commands/adaptive-jitter-compensation.cc \
 			commands/answer.cc \
 			commands/audio-codec-disable.cc \
 			commands/audio-codec-enable.cc \
@@ -28,6 +29,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/unregister.cc \
 			commands/quit.cc \
 			daemon.h \
+			commands/adaptive-jitter-compensation.h \
 			commands/answer.h \
 			commands/audio-codec-disable.h \
 			commands/audio-codec-enable.h \
