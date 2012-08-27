@@ -651,7 +651,7 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 	PayloadType *candidate=NULL;
 	int i;
 	PayloadType *it;
-	for(i=0;i<127;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		it=rtp_profile_get_payload(prof,i);
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
 			&& (clock_rate==it->clock_rate || clock_rate<=0)
@@ -734,7 +734,7 @@ static int codec_compare(const PayloadType *a, const PayloadType *b){
 
 static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 	int i;
-	for(i=0;i<127;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(&av_profile,i);
 		if (pt){
 			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
@@ -1014,7 +1014,7 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 		/*look for a free number */
 		MSList *elem;
 		int i;
-		for(i=lc->dyn_pt;i<=127;++i){
+		for(i=lc->dyn_pt;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 			bool_t already_assigned=FALSE;
 			for(elem=lc->payload_types;elem!=NULL;elem=elem->next){
 				PayloadType *it=(PayloadType*)elem->data;
@@ -1043,7 +1043,7 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 static void linphone_core_handle_static_payloads(LinphoneCore *lc){
 	RtpProfile *prof=&av_profile;
 	int i;
-	for(i=0;i<128;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(prof,i);
 		if (pt){
 			if (payload_type_get_number(pt)!=i){
