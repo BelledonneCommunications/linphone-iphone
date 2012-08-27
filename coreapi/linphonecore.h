@@ -903,9 +903,21 @@ void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *inf
 
 void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 
+void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
+
+bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore *lc);
+
 int linphone_core_get_audio_jittcomp(LinphoneCore *lc);
 
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
+
+void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
+
+bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore *lc);
+
+int linphone_core_get_video_jittcomp(LinphoneCore *lc);
+
+void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
 int linphone_core_get_audio_port(const LinphoneCore *lc);
 

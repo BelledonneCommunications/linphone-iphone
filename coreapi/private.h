@@ -369,6 +369,8 @@ typedef struct rtp_config
 	int nortp_timeout;
 	bool_t rtp_no_xmit_on_audio_mute;
                               /* stop rtp xmit when audio muted */
+	bool_t audio_adaptive_jitt_comp_enabled;
+	bool_t video_adaptive_jitt_comp_enabled;
 }rtp_config_t;
 
 
