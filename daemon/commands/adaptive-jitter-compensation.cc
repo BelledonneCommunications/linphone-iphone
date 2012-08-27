@@ -2,82 +2,82 @@
 
 using namespace std;
 
-class AdaptiveBufferCompensationCommandPrivate {
+class AdaptiveBufferCompensationResponse : public Response {
 public:
 	enum StreamType {
 		AudioStream,
-		VideoStream
+		VideoStream,
+		AllStreams
 	};
 
-	void outputAdaptiveBufferCompensation(Daemon *app, ostringstream &ost, StreamType type);
-	void outputAdaptiveBufferCompensations(Daemon *app, ostringstream &ost);
+	AdaptiveBufferCompensationResponse(LinphoneCore *core, StreamType type);
+
+private:
+	void outputAdaptiveBufferCompensation(LinphoneCore *core, ostringstream &ost, const char *header, bool_t value);
 };
 
-void AdaptiveBufferCompensationCommandPrivate::outputAdaptiveBufferCompensation(Daemon* app, ostringstream& ost, StreamType type) {
+AdaptiveBufferCompensationResponse::AdaptiveBufferCompensationResponse(LinphoneCore *core, StreamType type) : Response() {
 	bool enabled = false;
+	ostringstream ost;
 	switch (type) {
 		case AudioStream:
-			enabled = linphone_core_audio_adaptive_jittcomp_enabled(app->getCore());
-			ost << "Audio: ";
+			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core);
+			outputAdaptiveBufferCompensation(core, ost, "Audio", enabled);
 			break;
 		case VideoStream:
-			enabled = linphone_core_video_adaptive_jittcomp_enabled(app->getCore());
-			ost << "Video: ";
+			enabled = linphone_core_video_adaptive_jittcomp_enabled(core);
+			outputAdaptiveBufferCompensation(core, ost, "Video", enabled);
+			break;
+		case AllStreams:
+			enabled = linphone_core_audio_adaptive_jittcomp_enabled(core);
+			outputAdaptiveBufferCompensation(core, ost, "Audio", enabled);
+			enabled = linphone_core_video_adaptive_jittcomp_enabled(core);
+			outputAdaptiveBufferCompensation(core, ost, "Video", enabled);
 			break;
 	}
-	if (enabled) {
+	setBody(ost.str().c_str());
+}
+
+void AdaptiveBufferCompensationResponse::outputAdaptiveBufferCompensation(LinphoneCore *core, ostringstream &ost, const char *header, bool_t value) {
+	ost << header << ": ";
+	if (value) {
 		ost << "enabled\n";
 	} else {
 		ost << "disabled\n";
 	}
 }
 
-void AdaptiveBufferCompensationCommandPrivate::outputAdaptiveBufferCompensations(Daemon* app, ostringstream& ost)
-{
-	outputAdaptiveBufferCompensation(app, ost, AdaptiveBufferCompensationCommandPrivate::AudioStream);
-	outputAdaptiveBufferCompensation(app, ost, AdaptiveBufferCompensationCommandPrivate::VideoStream);
-}
-
 AdaptiveBufferCompensationCommand::AdaptiveBufferCompensationCommand() :
 		DaemonCommand("adaptive-jitter-compensation", "adaptive-jitter-compensation [<stream>] [enable|disable]",
 				"Enable or disable adaptive buffer compensation respectively with the 'enable' and 'disable' parameters for the specified stream, "
 				"return the status of the use of adaptive buffer compensation without parameter.\n"
-				"<stream> must be one of these values: audio, video."),
-		d(new AdaptiveBufferCompensationCommandPrivate()) {
-}
-
-AdaptiveBufferCompensationCommand::~AdaptiveBufferCompensationCommand() {
-	delete d;
+				"<stream> must be one of these values: audio, video.") {
 }
 
 void AdaptiveBufferCompensationCommand::exec(Daemon *app, const char *args) {
 	string stream;
 	string state;
 	istringstream ist(args);
-	ostringstream ost;
 	ist >> stream;
 	if (ist.fail()) {
-		d->outputAdaptiveBufferCompensations(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(AdaptiveBufferCompensationResponse(app->getCore(), AdaptiveBufferCompensationResponse::AllStreams));
 	} else {
 		ist >> state;
 		if (ist.fail()) {
 			if (stream.compare("audio") == 0) {
-				d->outputAdaptiveBufferCompensation(app, ost, AdaptiveBufferCompensationCommandPrivate::AudioStream);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(AdaptiveBufferCompensationResponse(app->getCore(), AdaptiveBufferCompensationResponse::AudioStream));
 			} else if (stream.compare("video") == 0) {
-				d->outputAdaptiveBufferCompensation(app, ost, AdaptiveBufferCompensationCommandPrivate::VideoStream);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(AdaptiveBufferCompensationResponse(app->getCore(), AdaptiveBufferCompensationResponse::VideoStream));
 			} else {
 				app->sendResponse(Response("Incorrect stream parameter.", Response::Error));
 			}
 		} else {
-			AdaptiveBufferCompensationCommandPrivate::StreamType type;
+			AdaptiveBufferCompensationResponse::StreamType type;
 			bool enabled;
 			if (stream.compare("audio") == 0) {
-				type = AdaptiveBufferCompensationCommandPrivate::AudioStream;
+				type = AdaptiveBufferCompensationResponse::AudioStream;
 			} else if (stream.compare("video") == 0) {
-				type = AdaptiveBufferCompensationCommandPrivate::VideoStream;
+				type = AdaptiveBufferCompensationResponse::VideoStream;
 			} else {
 				app->sendResponse(Response("Incorrect stream parameter.", Response::Error));
 				return;
@@ -90,16 +90,12 @@ void AdaptiveBufferCompensationCommand::exec(Daemon *app, const char *args) {
 				app->sendResponse(Response("Incorrect parameter.", Response::Error));
 				return;
 			}
-			switch (type) {
-				case AdaptiveBufferCompensationCommandPrivate::AudioStream:
-					linphone_core_enable_audio_adaptive_jittcomp(app->getCore(), enabled);
-					break;
-				case AdaptiveBufferCompensationCommandPrivate::VideoStream:
-					linphone_core_enable_video_adaptive_jittcomp(app->getCore(), enabled);
-					break;
+			if (type == AdaptiveBufferCompensationResponse::AudioStream) {
+				linphone_core_enable_audio_adaptive_jittcomp(app->getCore(), enabled);
+			} else if (type == AdaptiveBufferCompensationResponse::VideoStream) {
+				linphone_core_enable_video_adaptive_jittcomp(app->getCore(), enabled);
 			}
-			d->outputAdaptiveBufferCompensation(app, ost, type);
-			app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+			app->sendResponse(AdaptiveBufferCompensationResponse(app->getCore(), AdaptiveBufferCompensationResponse::AllStreams));
 		}
 	}
 }

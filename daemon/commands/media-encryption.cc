@@ -2,13 +2,14 @@
 
 using namespace std;
 
-class MediaEncryptionCommandPrivate {
+class MediaEncryptionResponse : public Response {
 public:
-	void outputMediaEncryption(Daemon *app, ostringstream &ost);
+	MediaEncryptionResponse(LinphoneCore *core);
 };
 
-void MediaEncryptionCommandPrivate::outputMediaEncryption(Daemon* app, ostringstream& ost) {
-	LinphoneMediaEncryption encryption = linphone_core_get_media_encryption(app->getCore());
+MediaEncryptionResponse::MediaEncryptionResponse(LinphoneCore *core) : Response() {
+	LinphoneMediaEncryption encryption = linphone_core_get_media_encryption(core);
+	ostringstream ost;
 	ost << "Encryption: ";
 	switch (encryption) {
 		case LinphoneMediaEncryptionNone:
@@ -21,16 +22,12 @@ void MediaEncryptionCommandPrivate::outputMediaEncryption(Daemon* app, ostringst
 			ost << "zrtp\n";
 			break;
 	}
+	setBody(ost.str().c_str());
 }
 
 MediaEncryptionCommand::MediaEncryptionCommand() :
 		DaemonCommand("media-encryption", "media-encryption [none|srtp|zrtp]",
-				"Set the media encryption policy if a parameter is given, otherwise return the media encrytion in use."),
-		d(new MediaEncryptionCommandPrivate()) {
-}
-
-MediaEncryptionCommand::~MediaEncryptionCommand() {
-	delete d;
+				"Set the media encryption policy if a parameter is given, otherwise return the media encrytion in use.") {
 }
 
 void MediaEncryptionCommand::exec(Daemon *app, const char *args) {
@@ -38,9 +35,7 @@ void MediaEncryptionCommand::exec(Daemon *app, const char *args) {
 	istringstream ist(args);
 	ist >> encryption_str;
 	if (ist.eof() && (encryption_str.length() == 0)) {
-		ostringstream ost;
-		d->outputMediaEncryption(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(MediaEncryptionResponse(app->getCore()));
 	} else if (ist.fail()) {
 		app->sendResponse(Response("Incorrect parameter.", Response::Error));
 	} else {
@@ -56,8 +51,6 @@ void MediaEncryptionCommand::exec(Daemon *app, const char *args) {
 			return;
 		}
 		linphone_core_set_media_encryption(app->getCore(), encryption);
-		ostringstream ost;
-		d->outputMediaEncryption(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(MediaEncryptionResponse(app->getCore()));
 	}
 }

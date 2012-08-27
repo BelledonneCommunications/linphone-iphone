@@ -2,63 +2,76 @@
 
 using namespace std;
 
-enum PortType {
-	SIPPort,
-	AudioRTPPort,
-	VideoRTPPort
-};
-
 enum Protocol {
 	UDPProtocol,
 	TCPProtocol,
 	TLSProtocol
 };
 
-class PortCommandPrivate {
+class PortResponse : public Response {
 public:
-	void outputPort(Daemon *app, ostringstream &ost, PortType type);
-	void outputPorts(Daemon *app, ostringstream &ost);
+	enum PortType {
+		SIPPort,
+		AudioRTPPort,
+		VideoRTPPort,
+		AllPorts
+	};
+
+	PortResponse(LinphoneCore *core, PortType type);
+
+private:
+	void outputSIPPort(LinphoneCore *core, ostringstream &ost);
+	void outputAudioRTPPort(LinphoneCore *core, ostringstream &ost);
+	void outputVideoRTPPort(LinphoneCore *core, ostringstream &ost);
 };
 
-void PortCommandPrivate::outputPort(Daemon* app, ostringstream& ost, PortType type) {
+PortResponse::PortResponse(LinphoneCore *core, PortResponse::PortType type) : Response() {
+	ostringstream ost;
 	switch (type) {
 		case SIPPort:
-			LCSipTransports transports;
-			linphone_core_get_sip_transports(app->getCore(), &transports);
-			ost << "SIP: ";
-			if (transports.udp_port > 0) {
-				ost << transports.udp_port << " UDP\n";
-			} else if (transports.tcp_port > 0) {
-				ost << transports.tcp_port << " TCP\n";
-			} else {
-				ost << transports.tls_port << " TLS\n";
-			}
+			outputSIPPort(core, ost);
 			break;
 		case AudioRTPPort:
-			ost << "Audio RTP: " << linphone_core_get_audio_port(app->getCore()) << "\n";
+			outputAudioRTPPort(core, ost);
 			break;
 		case VideoRTPPort:
-			ost << "Video RTP: " << linphone_core_get_video_port(app->getCore()) << "\n";
+			outputVideoRTPPort(core, ost);
 			break;
+		case AllPorts:
+			outputSIPPort(core, ost);
+			outputAudioRTPPort(core, ost);
+			outputVideoRTPPort(core, ost);
+			break;
+	}
+	setBody(ost.str().c_str());
+}
+
+void PortResponse::outputSIPPort(LinphoneCore *core, ostringstream &ost) {
+	LCSipTransports transports;
+	linphone_core_get_sip_transports(core, &transports);
+	ost << "SIP: ";
+	if (transports.udp_port > 0) {
+		ost << transports.udp_port << " UDP\n";
+	} else if (transports.tcp_port > 0) {
+		ost << transports.tcp_port << " TCP\n";
+	} else {
+		ost << transports.tls_port << " TLS\n";
 	}
 }
 
-void PortCommandPrivate::outputPorts(Daemon* app, ostringstream& ost) {
-	outputPort(app, ost, SIPPort);
-	outputPort(app, ost, AudioRTPPort);
-	outputPort(app, ost, VideoRTPPort);
+void PortResponse::outputAudioRTPPort(LinphoneCore *core, ostringstream &ost) {
+	ost << "Audio RTP: " << linphone_core_get_audio_port(core) << "\n";
+}
+
+void PortResponse::outputVideoRTPPort(LinphoneCore *core, ostringstream &ost) {
+	ost << "Video RTP: " << linphone_core_get_video_port(core) << "\n";
 }
 
 PortCommand::PortCommand() :
 		DaemonCommand("port", "port [<type>] [<port>] [<protocol>]",
 				"Set the port to use for type if port is set, otherwise return the port used for type if specified or all the used ports if no type is specified.\n"
 				"<type> must be one of these values: sip, audio, video.\n"
-				"<protocol> should be defined only for sip port and have one of these values: udp, tcp, tls."),
-		d(new PortCommandPrivate()) {
-}
-
-PortCommand::~PortCommand() {
-	delete d;
+				"<protocol> should be defined only for sip port and have one of these values: udp, tcp, tls.") {
 }
 
 void PortCommand::exec(Daemon *app, const char *args) {
@@ -68,22 +81,18 @@ void PortCommand::exec(Daemon *app, const char *args) {
 	ostringstream ost;
 	ist >> type;
 	if (ist.eof() && (type.length() == 0)) {
-		d->outputPorts(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(PortResponse(app->getCore(), PortResponse::AllPorts));
 	} else if (ist.fail()) {
 		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 	} else {
 		ist >> port;
 		if (ist.fail()) {
 			if (type.compare("sip") == 0) {
-				d->outputPort(app, ost, SIPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
 			} else if (type.compare("audio") == 0) {
-				d->outputPort(app, ost, AudioRTPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
 			} else if (type.compare("video") == 0) {
-				d->outputPort(app, ost, VideoRTPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
 			} else {
 				app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 			}
@@ -118,16 +127,13 @@ void PortCommand::exec(Daemon *app, const char *args) {
 						break;
 				}
 				linphone_core_set_sip_transports(app->getCore(), &transports);
-				d->outputPort(app, ost, SIPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::SIPPort));
 			} else if (type.compare("audio") == 0) {
 				linphone_core_set_audio_port(app->getCore(), port);
-				d->outputPort(app, ost, AudioRTPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::AudioRTPPort));
 			} else if (type.compare("video") == 0) {
 				linphone_core_set_video_port(app->getCore(), port);
-				d->outputPort(app, ost, VideoRTPPort);
-				app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+				app->sendResponse(PortResponse(app->getCore(), PortResponse::VideoRTPPort));
 			} else {
 				app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 			}

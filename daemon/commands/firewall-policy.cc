@@ -2,13 +2,14 @@
 
 using namespace std;
 
-class FirewallPolicyCommandPrivate {
+class FirewallPolicyResponse : public Response {
 public:
-	void outputFirewallPolicy(Daemon *app, ostringstream &ost);
+	FirewallPolicyResponse(LinphoneCore *core);
 };
 
-void FirewallPolicyCommandPrivate::outputFirewallPolicy(Daemon* app, ostringstream& ost) {
-	LinphoneFirewallPolicy policy = linphone_core_get_firewall_policy(app->getCore());
+FirewallPolicyResponse::FirewallPolicyResponse(LinphoneCore *core) : Response() {
+	ostringstream ost;
+	LinphoneFirewallPolicy policy = linphone_core_get_firewall_policy(core);
 	ost << "Type: ";
 	switch (policy) {
 		case LinphonePolicyNoFirewall:
@@ -16,17 +17,18 @@ void FirewallPolicyCommandPrivate::outputFirewallPolicy(Daemon* app, ostringstre
 			break;
 		case LinphonePolicyUseNatAddress:
 			ost << "nat\n";
-			ost << "Address: " << linphone_core_get_nat_address(app->getCore()) << "\n";
+			ost << "Address: " << linphone_core_get_nat_address(core) << "\n";
 			break;
 		case LinphonePolicyUseStun:
 			ost << "stun\n";
-			ost << "Address: " << linphone_core_get_stun_server(app->getCore()) << "\n";
+			ost << "Address: " << linphone_core_get_stun_server(core) << "\n";
 			break;
 		case LinphonePolicyUseIce:
 			ost << "ice\n";
-			ost << "Address: " << linphone_core_get_stun_server(app->getCore()) << "\n";
+			ost << "Address: " << linphone_core_get_stun_server(core) << "\n";
 			break;
 	}
+	setBody(ost.str().c_str());
 }
 
 FirewallPolicyCommand::FirewallPolicyCommand() :
@@ -34,12 +36,7 @@ FirewallPolicyCommand::FirewallPolicyCommand() :
 				"Set the firewall policy if type is set, otherwise return the used firewall policy.\n"
 				"<type> must be one of these values: none, nat, stun, ice.\n"
 				"<address> must be specified for the 'nat' and 'stun' types. "
-				"It represents the public address of the gateway for the 'nat' type and the STUN server address for the 'stun' and 'ice' types."),
-		d(new FirewallPolicyCommandPrivate()) {
-}
-
-FirewallPolicyCommand::~FirewallPolicyCommand() {
-	delete d;
+				"It represents the public address of the gateway for the 'nat' type and the STUN server address for the 'stun' and 'ice' types.") {
 }
 
 void FirewallPolicyCommand::exec(Daemon *app, const char *args) {
@@ -48,9 +45,7 @@ void FirewallPolicyCommand::exec(Daemon *app, const char *args) {
 	istringstream ist(args);
 	ist >> type;
 	if (ist.eof() && (type.length() == 0)) {
-		ostringstream ost;
-		d->outputFirewallPolicy(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(FirewallPolicyResponse(app->getCore()));
 	} else if (ist.fail()) {
 		app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 	} else {
@@ -85,8 +80,6 @@ void FirewallPolicyCommand::exec(Daemon *app, const char *args) {
 		} else if ((policy == LinphonePolicyUseStun) || (policy == LinphonePolicyUseIce)) {
 			linphone_core_set_stun_server(app->getCore(), address.c_str());
 		}
-		ostringstream ost;
-		d->outputFirewallPolicy(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(FirewallPolicyResponse(app->getCore()));
 	}
 }

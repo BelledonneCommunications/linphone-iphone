@@ -2,23 +2,35 @@
 
 using namespace std;
 
-class PtimeCommandPrivate {
+class PtimeResponse : public Response {
 public:
-	void outputPtime(Daemon *app, ostringstream &ost, int ms);
+	enum Direction {
+		Upload,
+		Download,
+		BothDirections
+	};
+	PtimeResponse(LinphoneCore *core, Direction dir);
 };
 
-void PtimeCommandPrivate::outputPtime(Daemon* app, ostringstream& ost, int ms) {
-	ost << "Value: " << ms << "\n";
+PtimeResponse::PtimeResponse(LinphoneCore *core, Direction dir) : Response() {
+	ostringstream ost;
+	switch (dir) {
+		case Upload:
+			ost << "Upload: " << linphone_core_get_upload_ptime(core) << "\n";
+			break;
+		case Download:
+			ost << "Download: " << linphone_core_get_download_ptime(core) << "\n";
+			break;
+		case BothDirections:
+			ost << "Upload: " << linphone_core_get_upload_ptime(core) << "\n";
+			ost << "Download: " << linphone_core_get_download_ptime(core) << "\n";
+			break;
+	}
+	setBody(ost.str().c_str());
 }
 
 PtimeCommand::PtimeCommand() :
-		DaemonCommand("ptime", "ptime [up|down] <ms>", "Set the upload or download ptime if ms is defined, otherwise return the current value of the ptime."),
-		d(new PtimeCommandPrivate()) {
-}
-
-PtimeCommand::~PtimeCommand()
-{
-	delete d;
+		DaemonCommand("ptime", "ptime [up|down] <ms>", "Set the upload or download ptime if ms is defined, otherwise return the current value of the ptime.") {
 }
 
 void PtimeCommand::exec(Daemon *app, const char *args) {
@@ -27,7 +39,7 @@ void PtimeCommand::exec(Daemon *app, const char *args) {
 	istringstream ist(args);
 	ist >> direction;
 	if (ist.fail()) {
-		app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
+		app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::BothDirections));
 	} else {
 		if (direction.compare("up") == 0) {
 			if (!ist.eof()) {
@@ -37,10 +49,7 @@ void PtimeCommand::exec(Daemon *app, const char *args) {
 				}
 				linphone_core_set_upload_ptime(app->getCore(), ms);
 			}
-			ms = linphone_core_get_upload_ptime(app->getCore());
-			ostringstream ost;
-			d->outputPtime(app, ost, ms);
-			app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+			app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Upload));
 		} else if (direction.compare("down") == 0) {
 			if (!ist.eof()) {
 				ist >> ms;
@@ -49,10 +58,7 @@ void PtimeCommand::exec(Daemon *app, const char *args) {
 				}
 				linphone_core_set_download_ptime(app->getCore(), ms);
 			}
-			ms = linphone_core_get_download_ptime(app->getCore());
-			ostringstream ost;
-			d->outputPtime(app, ost, ms);
-			app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+			app->sendResponse(PtimeResponse(app->getCore(), PtimeResponse::Download));
 		} else {
 			app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
 		}

@@ -2,29 +2,26 @@
 
 using namespace std;
 
-class IPv6CommandPrivate {
+class IPv6Response : public Response {
 public:
-	void outputIPv6(Daemon *app, ostringstream &ost);
+	IPv6Response(LinphoneCore *core);
 };
 
-void IPv6CommandPrivate::outputIPv6(Daemon* app, ostringstream& ost) {
-	bool ipv6_enabled = linphone_core_ipv6_enabled(app->getCore()) == TRUE ? true : false;
+IPv6Response::IPv6Response(LinphoneCore *core) : Response() {
+	ostringstream ost;
+	bool ipv6_enabled = linphone_core_ipv6_enabled(core) == TRUE ? true : false;
 	ost << "State: ";
 	if (ipv6_enabled) {
 		ost << "enabled\n";
 	} else {
 		ost << "disabled\n";
 	}
+	setBody(ost.str().c_str());
 }
 
 IPv6Command::IPv6Command() :
 		DaemonCommand("ipv6", "ipv6 [enable|disable]",
-				"Enable or disable IPv6 respectively with the 'enable' and 'disable' parameters, return the status of the use of IPv6 without parameter."),
-		d(new IPv6CommandPrivate()) {
-}
-
-IPv6Command::~IPv6Command() {
-	delete d;
+				"Enable or disable IPv6 respectively with the 'enable' and 'disable' parameters, return the status of the use of IPv6 without parameter.") {
 }
 
 void IPv6Command::exec(Daemon *app, const char *args) {
@@ -32,9 +29,7 @@ void IPv6Command::exec(Daemon *app, const char *args) {
 	istringstream ist(args);
 	ist >> status;
 	if (ist.fail()) {
-		ostringstream ost;
-		d->outputIPv6(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(IPv6Response(app->getCore()));
 	} else {
 		if (status.compare("enable") == 0) {
 			linphone_core_enable_ipv6(app->getCore(), TRUE);
@@ -44,8 +39,6 @@ void IPv6Command::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("Incorrect parameter.", Response::Error));
 			return;
 		}
-		ostringstream ost;
-		d->outputIPv6(app, ost);
-		app->sendResponse(Response(ost.str().c_str(), Response::Ok));
+		app->sendResponse(IPv6Response(app->getCore()));
 	}
 }
