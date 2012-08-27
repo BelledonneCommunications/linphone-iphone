@@ -125,7 +125,7 @@ NSTimer *callSecurityTimer;
 
     if (config == NULL) {
         state = LinphoneRegistrationNone;
-        if(![LinphoneManager isLcReady] || linphone_core_is_network_reachabled([LinphoneManager getLc]))
+        if(![LinphoneManager isLcReady] || linphone_core_is_network_reachable([LinphoneManager getLc]))
             message = NSLocalizedString(@"No SIP account configured", nil);
         else
             message = NSLocalizedString(@"Network down", nil);
