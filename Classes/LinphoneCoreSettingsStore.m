@@ -173,10 +173,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		const char *val;
 		switch(menc){
-			LinphoneMediaEncryptionSRTP:
+			case LinphoneMediaEncryptionSRTP:
 				val="SRTP";
 				break;
-			LinphoneMediaEncryptionZRTP:
+			case LinphoneMediaEncryptionZRTP:
 				val="ZRTP";
 				break;
 			default:
