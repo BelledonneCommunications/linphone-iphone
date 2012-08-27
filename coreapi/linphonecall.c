@@ -1203,7 +1203,6 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 }
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
-	int jitt_comp=lc->rtp_conf.audio_jitt_comp;
 	int used_pt=-1;
 	/* look for savp stream first */
 	const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
@@ -1263,6 +1262,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
+			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1271,7 +1271,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				stream->rtcp_addr[0]!='\0' ? stream->rtcp_addr : call->resultdesc->addr,
 				linphone_core_rtcp_enabled(lc) ? (stream->rtcp_port) : 0,
 				used_pt,
-				jitt_comp,
+				linphone_core_get_audio_jittcomp(lc),
 				playfile,
 				recfile,
 				playcard,
@@ -1351,6 +1351,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 
 			video_stream_enable_adaptive_bitrate_control(call->videostream,
 			                                          linphone_core_adaptive_rate_control_enabled(lc));
+			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (lc->video_window_id!=0)
@@ -1387,7 +1388,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				video_stream_start(call->videostream,
 					call->video_profile, rtp_addr, vstream->rtp_port,
 					rtcp_addr, linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
-					used_pt, lc->rtp_conf.audio_jitt_comp, cam);
+					used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
 			}
 			

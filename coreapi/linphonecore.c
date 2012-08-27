@@ -623,6 +623,7 @@ static void rtp_config_read(LinphoneCore *lc)
 	int jitt_comp;
 	int nortp_timeout;
 	bool_t rtp_no_xmit_on_audio_mute;
+	bool_t adaptive_jitt_comp_enabled;
 
 	port=lp_config_get_int(lc->config,"rtp","audio_rtp_port",7078);
 	linphone_core_set_audio_port(lc,port);
@@ -635,11 +636,15 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_set_audio_jittcomp(lc,jitt_comp);
 	jitt_comp=lp_config_get_int(lc->config,"rtp","video_jitt_comp",60);
 	if (jitt_comp==0) jitt_comp=60;
-	lc->rtp_conf.video_jitt_comp=jitt_comp;
+	linphone_core_set_video_jittcomp(lc,jitt_comp);
 	nortp_timeout=lp_config_get_int(lc->config,"rtp","nortp_timeout",30);
 	linphone_core_set_nortp_timeout(lc,nortp_timeout);
 	rtp_no_xmit_on_audio_mute=lp_config_get_int(lc->config,"rtp","rtp_no_xmit_on_audio_mute",FALSE);
 	linphone_core_set_rtp_no_xmit_on_audio_mute(lc,rtp_no_xmit_on_audio_mute);
+	adaptive_jitt_comp_enabled = lp_config_get_int(lc->config, "rtp", "audio_adaptive_jitt_comp_enabled", TRUE);
+	linphone_core_enable_audio_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
+	adaptive_jitt_comp_enabled = lp_config_get_int(lc->config, "rtp", "video_adaptive_jitt_comp_enabled", TRUE);
+	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 }
 
 static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
@@ -1376,14 +1381,44 @@ const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
 	return lc->friends;
 }
 
+void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore* lc, bool_t val)
+{
+	lc->rtp_conf.audio_adaptive_jitt_comp_enabled = val;
+}
+
+bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore* lc)
+{
+	return lc->rtp_conf.audio_adaptive_jitt_comp_enabled;
+}
+
 /**
- * Returns the nominal jitter buffer size in milliseconds.
+ * Returns the nominal audio jitter buffer size in milliseconds.
  *
  * @ingroup media_parameters
 **/
 int linphone_core_get_audio_jittcomp(LinphoneCore *lc)
 {
 	return lc->rtp_conf.audio_jitt_comp;
+}
+
+void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore* lc, bool_t val)
+{
+	lc->rtp_conf.video_adaptive_jitt_comp_enabled = val;
+}
+
+bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore* lc)
+{
+	return lc->rtp_conf.video_adaptive_jitt_comp_enabled;
+}
+
+/**
+ * Returns the nominal video jitter buffer size in milliseconds.
+ *
+ * @ingroup media_parameters
+**/
+int linphone_core_get_video_jittcomp(LinphoneCore *lc)
+{
+	return lc->rtp_conf.video_jitt_comp;
 }
 
 /**
@@ -1431,6 +1466,16 @@ bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc){
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
 {
 	lc->rtp_conf.audio_jitt_comp=value;
+}
+
+/**
+ * Sets the nominal video jitter buffer size in milliseconds.
+ *
+ * @ingroup media_parameters
+**/
+void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value)
+{
+	lc->rtp_conf.video_jitt_comp=value;
 }
 
 void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_xmit_on_audio_mute){
@@ -4474,6 +4519,8 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","audio_jitt_comp",config->audio_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->video_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);
+	lp_config_set_int(lc->config,"rtp","audio_jitt_comp_enabled",config->audio_adaptive_jitt_comp_enabled);
+	lp_config_set_int(lc->config,"rtp","video_jitt_comp_enabled",config->video_adaptive_jitt_comp_enabled);
 }
 
 void sound_config_uninit(LinphoneCore *lc)
