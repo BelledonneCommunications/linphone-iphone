@@ -647,14 +647,15 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 }
 
-static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
+static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
 	PayloadType *candidate=NULL;
 	int i;
 	PayloadType *it;
 	for(i=0;i<127;++i){
 		it=rtp_profile_get_payload(prof,i);
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
-			&& (clock_rate==it->clock_rate || clock_rate<=0) ){
+			&& (clock_rate==it->clock_rate || clock_rate<=0)
+			&& (channels==it->channels || channels<=0) ){
 			if ( (recv_fmtp && it->recv_fmtp && strstr(recv_fmtp,it->recv_fmtp)!=NULL) ||
 				(recv_fmtp==NULL && it->recv_fmtp==NULL) ){
 				/*exact match*/
@@ -676,7 +677,7 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
-	int rate,enabled;
+	int rate,channels,enabled;
 	PayloadType *pt;
 
 	*ret=NULL;
@@ -686,8 +687,9 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 
 	rate=lp_config_get_int(config,codeckey,"rate",8000);
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
+	channels=lp_config_get_int(config,codeckey,"channels",0);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	pt=find_payload(&av_profile,mime,rate,fmtp);
+	pt=find_payload(&av_profile,mime,rate,channels,fmtp);
 	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
 	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
@@ -4559,6 +4561,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 			sprintf(key,"audio_codec_%i",index);
 			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"channels",pt->channels);
 			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 			index++;
 		}
