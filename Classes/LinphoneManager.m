@@ -848,7 +848,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 #pragma mark - Call Functions
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer {
-    if (!linphone_core_is_network_reachabled(theLinphoneCore)) {
+    if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
 														message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call",nil) 
 													   delegate:nil 
