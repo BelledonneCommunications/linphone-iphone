@@ -17,6 +17,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/firewall-policy.cc \
 			commands/help.cc \
 			commands/ipv6.cc \
+			commands/media-encryption.cc \
 			commands/msfilter-add-fmtp.cc \
 			commands/pop-event.cc \
 			commands/ptime.cc \
@@ -40,6 +41,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/firewall-policy.h \
 			commands/help.h \
 			commands/ipv6.h \
+			commands/media-encryption.h \
 			commands/msfilter-add-fmtp.h \
 			commands/pop-event.h \
 			commands/ptime.h \

@@ -24,6 +24,7 @@
 #include "commands/firewall-policy.h"
 #include "commands/help.h"
 #include "commands/ipv6.h"
+#include "commands/media-encryption.h"
 #include "commands/msfilter-add-fmtp.h"
 #include "commands/pop-event.h"
 #include "commands/ptime.h"
@@ -304,6 +305,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new PtimeCommand());
 	mCommands.push_back(new IPv6Command());
 	mCommands.push_back(new FirewallPolicyCommand());
+	mCommands.push_back(new MediaEncryptionCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 
