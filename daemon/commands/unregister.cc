@@ -3,22 +3,41 @@
 using namespace std;
 
 UnregisterCommand::UnregisterCommand() :
-		DaemonCommand("unregister", "unregister <register_id>", "Unregister the daemon from proxy.") {
+		DaemonCommand("unregister", "unregister <register_id|ALL>", "Unregister the daemon from the specified proxy or from all proxies.") {
 }
+
 void UnregisterCommand::exec(Daemon *app, const char *args) {
-	LinphoneCore *lc = app->getCore();
 	LinphoneProxyConfig *cfg = NULL;
+	string param;
 	int pid;
-	if (sscanf(args, "%i", &pid) == 1) {
-		cfg = app->findProxy(pid);
-		if (cfg == NULL) {
-			app->sendResponse(Response("No register with such id."));
-			return;
-		}
-	} else {
-		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+
+	istringstream ist(args);
+	ist >> param;
+	if (ist.fail()) {
+		app->sendResponse(Response("Missing parameter.", Response::Error));
 		return;
 	}
-	linphone_core_remove_proxy_config(lc, cfg);
+	if (param.compare("ALL") == 0) {
+		for (int i = 1; i <= app->maxProxyId(); i++) {
+			cfg = app->findProxy(i);
+			if (cfg != NULL) {
+				linphone_core_remove_proxy_config(app->getCore(), cfg);
+			}
+		}
+	} else {
+		ist.str(param);
+		ist.seekg(0);
+		ist >> pid;
+		if (ist.fail()) {
+			app->sendResponse(Response("Incorrect parameter.", Response::Error));
+			return;
+		}
+		cfg = app->findProxy(pid);
+		if (cfg == NULL) {
+			app->sendResponse(Response("No register with such id.", Response::Error));
+			return;
+		}
+		linphone_core_remove_proxy_config(app->getCore(), cfg);
+	}
 	app->sendResponse(Response());
 }

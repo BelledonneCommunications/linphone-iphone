@@ -155,6 +155,7 @@ public:
 	bool pullEvent();
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);
+	inline int maxProxyId() { return mProxyIds; };
 	int updateAudioStreamId(AudioStream *audio_stream);
 private:
 	static void* iterateThread(void *arg);
