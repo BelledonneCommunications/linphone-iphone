@@ -4678,11 +4678,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
 	if(!isReachable) {
-		sal_unlisten_ports (lc->sal);
-	} else {
-		apply_transports(lc);
+		sal_reset_transports(lc->sal);
 	}
-
 }
 
 void linphone_core_refresh_registers(LinphoneCore* lc) {

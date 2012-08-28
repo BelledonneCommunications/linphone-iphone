@@ -353,6 +353,32 @@ int sal_unlisten_ports(Sal *ctx){
 	return 0;
 }
 
+int sal_reset_transports(Sal *ctx){
+#ifdef HAVE_EXOSIP_RESET_TRANSPORTS
+	if (ctx->running){
+		ms_message("Exosip transports reset.");
+		eXosip_reset_transports();
+	}
+	return 0;
+#else
+	ms_warning("sal_reset_transports() not implemented in this version.");
+	return -1;
+#endif
+}
+
+
+static void set_tls_options(Sal *ctx){
+	if (ctx->rootCa) {
+		eXosip_tls_ctx_t tlsCtx;
+		memset(&tlsCtx, 0, sizeof(tlsCtx));
+		snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
+		eXosip_set_tls_ctx(&tlsCtx);
+	}                       
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
+	eXosip_tls_verify_certificate(ctx->verify_server_certs);
+#endif
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -369,16 +395,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		proto= IPPROTO_TCP;
 			keepalive=-1;	
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
-
-		if (ctx->rootCa) {
-			eXosip_tls_ctx_t tlsCtx;
-			memset(&tlsCtx, 0, sizeof(tlsCtx));
-			snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
-			eXosip_set_tls_ctx(&tlsCtx);
-		}                       
-#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
-		eXosip_tls_verify_certificate(ctx->verify_server_certs);
-#endif
+		set_tls_options(ctx);
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
