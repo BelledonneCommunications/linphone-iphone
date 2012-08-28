@@ -647,14 +647,15 @@ static void rtp_config_read(LinphoneCore *lc)
 	linphone_core_enable_video_adaptive_jittcomp(lc, adaptive_jitt_comp_enabled);
 }
 
-static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, const char *recv_fmtp){
+static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int clock_rate, int channels, const char *recv_fmtp){
 	PayloadType *candidate=NULL;
 	int i;
 	PayloadType *it;
-	for(i=0;i<127;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		it=rtp_profile_get_payload(prof,i);
 		if (it!=NULL && strcasecmp(mime_type,it->mime_type)==0
-			&& (clock_rate==it->clock_rate || clock_rate<=0) ){
+			&& (clock_rate==it->clock_rate || clock_rate<=0)
+			&& (channels==it->channels || channels<=0) ){
 			if ( (recv_fmtp && it->recv_fmtp && strstr(recv_fmtp,it->recv_fmtp)!=NULL) ||
 				(recv_fmtp==NULL && it->recv_fmtp==NULL) ){
 				/*exact match*/
@@ -676,7 +677,7 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
-	int rate,enabled;
+	int rate,channels,enabled;
 	PayloadType *pt;
 
 	*ret=NULL;
@@ -686,8 +687,9 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 
 	rate=lp_config_get_int(config,codeckey,"rate",8000);
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
+	channels=lp_config_get_int(config,codeckey,"channels",0);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	pt=find_payload(&av_profile,mime,rate,fmtp);
+	pt=find_payload(&av_profile,mime,rate,channels,fmtp);
 	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
 	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
@@ -732,7 +734,7 @@ static int codec_compare(const PayloadType *a, const PayloadType *b){
 
 static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 	int i;
-	for(i=0;i<127;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(&av_profile,i);
 		if (pt){
 			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
@@ -1012,7 +1014,7 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 		/*look for a free number */
 		MSList *elem;
 		int i;
-		for(i=lc->dyn_pt;i<=127;++i){
+		for(i=lc->dyn_pt;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 			bool_t already_assigned=FALSE;
 			for(elem=lc->payload_types;elem!=NULL;elem=elem->next){
 				PayloadType *it=(PayloadType*)elem->data;
@@ -1041,7 +1043,7 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 static void linphone_core_handle_static_payloads(LinphoneCore *lc){
 	RtpProfile *prof=&av_profile;
 	int i;
-	for(i=0;i<128;++i){
+	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
 		PayloadType *pt=rtp_profile_get_payload(prof,i);
 		if (pt){
 			if (payload_type_get_number(pt)!=i){
@@ -4559,6 +4561,7 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 			sprintf(key,"audio_codec_%i",index);
 			lp_config_set_string(lc->config,key,"mime",pt->mime_type);
 			lp_config_set_int(lc->config,key,"rate",pt->clock_rate);
+			lp_config_set_int(lc->config,key,"channels",pt->channels);
 			lp_config_set_int(lc->config,key,"enabled",linphone_core_payload_type_enabled(lc,pt));
 			index++;
 		}
@@ -4803,11 +4806,13 @@ const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
 	return lc->sound_conf.ringback_tone;
 }
 
-static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {
+static PayloadType* find_payload_type_from_list(const char* type, int rate, int channels, const MSList* from) {
 	const MSList *elem;
 	for(elem=from;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0) && (rate == -1 || rate==pt->clock_rate)) {
+		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0)
+			&& (rate == -1 || rate==pt->clock_rate)
+			&& (channels == 0 || channels==pt->channels)) {
 			return pt;
 		}
 	}
@@ -4820,12 +4825,12 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate,const
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * Returns NULL if not found.
  */
-PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) {
-	PayloadType* result = find_payload_type_from_list(type, rate, linphone_core_get_audio_codecs(lc));
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	PayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
 		return result;
 	} else {
-		result = find_payload_type_from_list(type, rate, linphone_core_get_video_codecs(lc));
+		result = find_payload_type_from_list(type, rate, 0, linphone_core_get_video_codecs(lc));
 		if (result) {
 			return result;
 		}
