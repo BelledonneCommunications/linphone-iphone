@@ -5,11 +5,10 @@ bin_PROGRAMS=linphone-daemon linphone-daemon-pipetest
 linphone_daemon_SOURCES=daemon.cc \
 			commands/adaptive-jitter-compensation.cc \
 			commands/answer.cc \
-			commands/audio-codec-disable.cc \
-			commands/audio-codec-enable.cc \
 			commands/audio-codec-get.cc \
 			commands/audio-codec-move.cc \
 			commands/audio-codec-set.cc \
+			commands/audio-codec-toggle.cc \
 			commands/audio-stream-start.cc \
 			commands/audio-stream-stop.cc \
 			commands/call.cc \
@@ -31,11 +30,10 @@ linphone_daemon_SOURCES=daemon.cc \
 			daemon.h \
 			commands/adaptive-jitter-compensation.h \
 			commands/answer.h \
-			commands/audio-codec-disable.h \
-			commands/audio-codec-enable.h \
 			commands/audio-codec-get.h \
 			commands/audio-codec-move.h \
 			commands/audio-codec-set.h \
+			commands/audio-codec-toggle.h \
 			commands/audio-stream-start.h \
 			commands/audio-stream-stop.h \
 			commands/call.h \

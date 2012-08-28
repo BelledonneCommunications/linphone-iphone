@@ -1,15 +1,13 @@
-#include "audio-codec-enable.h"
+#include "audio-codec-toggle.h"
 #include "audio-codec-get.h"
 
 using namespace std;
 
-AudioCodecEnableCommand::AudioCodecEnableCommand() :
-		DaemonCommand("audio-codec-enable", "audio-codec-enable <payload_type_number|mime_type|ALL>",
-				"Enable an audio codec.\n"
-				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
+AudioCodecToggleCommand::AudioCodecToggleCommand(const char *name, const char *proto, const char *help, bool enable) :
+		DaemonCommand(name, proto, help), mEnable(enable) {
 }
 
-void AudioCodecEnableCommand::exec(Daemon *app, const char *args) {
+void AudioCodecToggleCommand::exec(Daemon *app, const char *args) {
 	istringstream ist(args);
 
 	if (ist.peek() == EOF) {
@@ -29,10 +27,10 @@ void AudioCodecEnableCommand::exec(Daemon *app, const char *args) {
 		for (const MSList *node = linphone_core_get_audio_codecs(app->getCore()); node != NULL; node = ms_list_next(node)) {
 			PayloadType *payload = reinterpret_cast<PayloadType*>(node->data);
 			if (parser.all()) {
-				linphone_core_enable_payload_type(app->getCore(), payload, true);
+				linphone_core_enable_payload_type(app->getCore(), payload, mEnable);
 			} else {
 				if (ptnum == linphone_core_get_payload_type_number(app->getCore(), payload)) {
-					linphone_core_enable_payload_type(app->getCore(), payload, true);
+					linphone_core_enable_payload_type(app->getCore(), payload, mEnable);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 					return;
 				}
@@ -46,4 +44,16 @@ void AudioCodecEnableCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("Audio codec not found.", Response::Error));
 		}
 	}
+}
+
+AudioCodecEnableCommand::AudioCodecEnableCommand() :
+		AudioCodecToggleCommand("audio-codec-enable", "audio-codec-enable <payload_type_number|mime_type|ALL>",
+					"Enable an audio codec.\n"
+					"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1", true) {
+}
+
+AudioCodecDisableCommand::AudioCodecDisableCommand() :
+		AudioCodecToggleCommand("audio-codec-disable", "audio-codec-disable <payload_type_number|mime_type|ALL>",
+					"Disable an audio codec.\n"
+					"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1", false) {
 }
