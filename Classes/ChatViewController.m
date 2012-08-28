@@ -25,6 +25,7 @@
 
 @synthesize tableController;
 @synthesize editButton;
+@synthesize addressField;
 
 #pragma mark - Lifecycle Functions
 
@@ -103,14 +104,29 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-    [ContactSelection setSelectionMode:ContactSelectionModeMessage];
-    [ContactSelection setAddAddress:nil];
-    [ContactSelection setSipFilter:TRUE];
-    [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
+    if ([[addressField text ]length] == 0) { // if no address is manually set, lauch address book
+		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
+		[ContactSelection setAddAddress:nil];
+		[ContactSelection setSipFilter:TRUE];
+		[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
+	} else {
+		//Push ChatRoom
+		ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+		if(controller != nil) {
+			[controller setRemoteAddress:[addressField text]];
+		}
+		addressField.text = @"";
+	}
 }
 
 - (IBAction)onEditClick:(id)event {
     [tableController setEditing:![tableController isEditing] animated:TRUE];
 }
 
+#pragma mark - UITextFieldDelegate Functions
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [addressField resignFirstResponder];
+    return YES;
+}
 @end

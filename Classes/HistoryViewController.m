@@ -27,6 +27,7 @@
 @synthesize allButton;
 @synthesize missedButton;
 @synthesize editButton;
+@synthesize deleteButton;
 
 typedef enum _HistoryView {
     History_All,
@@ -48,6 +49,7 @@ typedef enum _HistoryView {
     [allButton release];
     [missedButton release];
     [editButton release];
+	[deleteButton release];
     [super dealloc];
 }
 
@@ -162,7 +164,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditClick:(id) event {
     [tableController setEditing:![tableController isEditing] animated:TRUE];
+	[deleteButton setHidden:![tableController isEditing]];
 }
 
+- (IBAction)onDeleteClick:(id) event {
+	linphone_core_clear_call_logs([LinphoneManager getLc]);
+	[tableController loadData];
+	[editButton toggle];
+	[self onEditClick:nil];
+}
 
 @end

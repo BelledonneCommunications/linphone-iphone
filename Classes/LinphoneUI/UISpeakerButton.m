@@ -38,7 +38,21 @@ static void audioRouteChangeListenerCallback (
                                        const void             *inPropertyValue                             // 4
                                        ) {
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
-    [(UISpeakerButton*)inUserData update];  
+    UISpeakerButton* button=(UISpeakerButton*)inUserData;
+	UInt32 routeSize = sizeof (CFStringRef);
+	CFStringRef route;
+	AudioSessionGetProperty (kAudioSessionProperty_AudioRoute,
+										  &routeSize,
+										  &route);
+	
+	if (route &&
+		button.selected  && 
+		!( [(NSString*)route isEqualToString: @"Speaker"] || [(NSString*)route isEqualToString: @"SpeakerAndMicrophone"])) {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Audio route change to [%s] rejected by speaker button", [(NSString*)route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
+		// reject change
+		[button onOn];
+	} else
+		[(UISpeakerButton*)inUserData update];  
    
 }
 

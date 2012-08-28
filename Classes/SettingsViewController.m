@@ -509,7 +509,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"port_preference"];
     }
 
-    if([[[[[LinphoneManager instance] settingsStore] objectForKey:@"stun_preference"] stringValue] length] == 0) {
+    if([[[[LinphoneManager instance] settingsStore] objectForKey:@"stun_preference"]  length] == 0) {
         [hiddenKeys addObject:@"ice_preference"];
     }
 

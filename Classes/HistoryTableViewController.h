@@ -23,6 +23,7 @@
     @private
     NSMutableArray *callLogs;
 }
+- (void)loadData;
 
 @property (nonatomic, assign) BOOL missedFilter;
 

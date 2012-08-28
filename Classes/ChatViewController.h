@@ -24,11 +24,12 @@
 #import "ChatTableViewController.h"
 #import "UICompositeViewController.h"
 
-@interface ChatViewController : UIViewController<UICompositeViewDelegate> {
+@interface ChatViewController : UIViewController<UITextFieldDelegate,UICompositeViewDelegate> {
 }
 
 @property (nonatomic, retain) IBOutlet ChatTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
+@property (nonatomic, retain) IBOutlet UITextField *addressField;
 
 - (IBAction)onAddClick:(id) event;
 - (IBAction)onEditClick:(id) event;

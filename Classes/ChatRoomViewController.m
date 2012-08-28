@@ -33,6 +33,7 @@
 @synthesize avatarImage;
 @synthesize headerView;
 @synthesize footerView;
+@synthesize chatView;
 @synthesize fieldBackgroundImage;
 
 
@@ -73,7 +74,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                stateBar:nil 
                                                         stateBarEnabled:false 
                                                                  tabBar:@"UIMainBar" 
-                                                          tabBarEnabled:true 
+                                                          tabBarEnabled:false /*to keep room for chat*/
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
@@ -108,7 +109,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(textReceivedEvent:) 
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    if([tableController isEditing])
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+											 selector:@selector(onMessageChange:) 
+												 name:UITextViewTextDidChangeNotification 
+											   object:nil];
+	if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
     [[tableController tableView] reloadData];
@@ -132,6 +137,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneTextReceived
                                                     object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                    name:UITextViewTextDidChangeNotification
+												  object:nil];
 }
 
 -(void)didReceiveMemoryWarning {
@@ -189,7 +197,20 @@ static UICompositeViewDescription *compositeDescription = nil;
         return FALSE;
     }
     if(chatRoom == NULL) {
-        chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
+		LinphoneProxyConfig* proxyCfg;
+		linphone_core_get_default_proxy([LinphoneManager getLc], &proxyCfg);
+		if (![remoteAddress hasPrefix:@"sip:"] && proxyCfg) {
+			//hmm probably a username only
+			char normalizedUserName[256];
+			LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));  
+			linphone_proxy_config_normalize_number(proxyCfg,[remoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
+			linphone_address_set_username(linphoneAddress, normalizedUserName);
+			remoteAddress=[NSString stringWithUTF8String:normalizedUserName];
+			linphone_address_destroy(linphoneAddress);
+			
+		}
+
+		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
     }
     
     // Save message in database
@@ -271,7 +292,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)keyboardWillHide:(NSNotification *)notif {
     //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    //CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView beginAnimations:@"resize" context:nil];
@@ -280,9 +301,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
     // Move view
-    CGRect frame = [[self view] frame];
-    frame.origin.y = 0;
-    [[self view] setFrame:frame];
+    CGRect frame = [[self chatView/*view*/] frame];
+    frame.origin.y = frame.origin.y + endFrame.size.height /*0*/;
+    [[self /*view*/chatView] setFrame:frame];
     
     // Resize table view
     CGRect tableFrame = [tableController.view frame];
@@ -311,25 +332,26 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // Move view
     {
-        CGRect frame = [[self view] frame];
-        CGRect rect = [PhoneMainView instance].view.bounds;
-        CGPoint pos = {frame.size.width, frame.size.height};
-        CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
-        frame.origin.y = (rect.size.height - gPos.y - endFrame.size.height);
+        CGRect frame = [[self chatView/*view*/] frame];
+       // CGRect rect = [PhoneMainView instance].view.bounds;
+		
+       // CGPoint pos = {frame.size.width, frame.size.height};
+       // CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+        frame.origin.y = /*(rect.size.height - gPos.y*/ frame.origin.y - endFrame.size.height;
         if(frame.origin.y > 0) frame.origin.y = 0;
-        [[self view] setFrame:frame];
+        [[self chatView] setFrame:frame];
     }
     
     // Resize table view
     {
-        CGPoint pos = {0, 0};
-        CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];
+        /*CGPoint pos = {0, 0};
+        CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];*/
         CGRect tableFrame = [tableController.view frame];
-        tableFrame.origin.y = gPos.y;
-        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        tableFrame.origin.y += endFrame.size.height - headerView.frame.size.height/*gPos.y*/;
+        tableFrame.size.height = tableFrame.size.height - endFrame.size.height+headerView.frame.size.height;
         [tableController.view setFrame:tableFrame];
     }
-    
+
     // Scroll
     int lastSection = [tableController.tableView numberOfSections] -1;
     if(lastSection >= 0) {

@@ -3,19 +3,19 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1296</int>
 		<string key="IBDocument.SystemVersion">11E53</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
 		<string key="IBDocument.AppKitVersion">1138.47</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1498</string>
+			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBProxyObject</string>
-			<string>IBUIButton</string>
-			<string>IBUIImageView</string>
 			<string>IBUITableView</string>
+			<string>IBUIButton</string>
 			<string>IBUIView</string>
+			<string>IBUIImageView</string>
+			<string>IBProxyObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -62,7 +62,7 @@
 							<object class="IBUIImageView" id="868223268">
 								<reference key="NSNextResponder" ref="786589861"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrameSize">{320, 58}</string>
+								<string key="NSFrameSize">{320, 44}</string>
 								<reference key="NSSuperview" ref="786589861"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1031075615"/>
@@ -77,7 +77,7 @@
 							<object class="IBUIButton" id="1031075615">
 								<reference key="NSNextResponder" ref="786589861"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{160, 58}</string>
+								<string key="NSFrameSize">{160, 44}</string>
 								<reference key="NSSuperview" ref="786589861"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1001416449"/>
@@ -113,7 +113,7 @@
 								</object>
 							</object>
 						</array>
-						<string key="NSFrameSize">{320, 58}</string>
+						<string key="NSFrameSize">{320, 44}</string>
 						<reference key="NSSuperview" ref="1031663480"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="868223268"/>
@@ -395,10 +395,10 @@ AAgACAAIAAEAAQABAAE</bytes>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="background.png">{640, 523}</string>
-			<string key="contact_back_default.png">{320, 117}</string>
-			<string key="contact_back_over.png">{320, 117}</string>
+			<string key="contact_back_default.png">{320, 88}</string>
+			<string key="contact_back_over.png">{320, 88}</string>
 			<string key="toolsbar_background.png">{5, 117}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">1498</string>
+		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
 </archive>

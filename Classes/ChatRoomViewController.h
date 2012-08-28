@@ -34,12 +34,13 @@
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet UITextField* messageField;
+@property (nonatomic, retain) IBOutlet UITextView* messageField;
 @property (nonatomic, retain) IBOutlet UIButton* sendButton;
 @property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UIView *headerView;
 @property (nonatomic, retain) IBOutlet UIView *footerView;
+@property (nonatomic, retain) IBOutlet UIView *chatView;
 @property (nonatomic, retain) IBOutlet UIImageView *fieldBackgroundImage;
 @property (nonatomic, copy) NSString *remoteAddress;
 

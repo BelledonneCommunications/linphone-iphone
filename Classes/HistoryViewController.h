@@ -32,9 +32,11 @@
 @property (nonatomic, retain) IBOutlet UIButton* allButton;
 @property (nonatomic, retain) IBOutlet UIButton* missedButton;
 @property (nonatomic, retain) IBOutlet UIToggleButton* editButton;
+@property (nonatomic, retain) IBOutlet UIButton* deleteButton;
 
 - (IBAction)onAllClick:(id) event;
 - (IBAction)onMissedClick:(id) event;
 - (IBAction)onEditClick:(id) event;
+- (IBAction)onDeleteClick:(id) event;
 
 @end

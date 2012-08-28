@@ -3,20 +3,20 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1296</int>
 		<string key="IBDocument.SystemVersion">11E53</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
 		<string key="IBDocument.AppKitVersion">1138.47</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1498</string>
+			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBProxyObject</string>
-			<string>IBUIButton</string>
 			<string>IBUIImageView</string>
+			<string>IBUIButton</string>
 			<string>IBUITableView</string>
-			<string>IBUITableViewController</string>
 			<string>IBUIView</string>
+			<string>IBUITableViewController</string>
+			<string>IBProxyObject</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -45,7 +45,7 @@
 							<object class="IBUIImageView" id="958933557">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrameSize">{320, 58}</string>
+								<string key="NSFrameSize">{320, 44}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="600417980"/>
@@ -60,7 +60,7 @@
 							<object class="IBUIButton" id="257572356">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">289</int>
-								<string key="NSFrame">{{108, 0}, {106, 58}}</string>
+								<string key="NSFrame">{{120, 0}, {80, 44}}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="596330568"/>
@@ -99,7 +99,7 @@
 							<object class="IBUIButton" id="596330568">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">289</int>
-								<string key="NSFrame">{{214, 0}, {106, 58}}</string>
+								<string key="NSFrame">{{200, 0}, {80, 44}}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="562388802"/>
@@ -128,7 +128,7 @@
 							<object class="IBUIButton" id="600417980">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{108, 58}</string>
+								<string key="NSFrameSize">{80, 44}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1037245389"/>
@@ -156,7 +156,7 @@
 							<object class="IBUIButton" id="1037245389">
 								<reference key="NSNextResponder" ref="95706395"/>
 								<int key="NSvFlags">-2147483356</int>
-								<string key="NSFrameSize">{108, 58}</string>
+								<string key="NSFrameSize">{80, 44}</string>
 								<reference key="NSSuperview" ref="95706395"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="257572356"/>
@@ -182,7 +182,7 @@
 								<reference key="IBUIFont" ref="895098900"/>
 							</object>
 						</array>
-						<string key="NSFrameSize">{320, 58}</string>
+						<string key="NSFrameSize">{320, 44}</string>
 						<reference key="NSSuperview" ref="812520855"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="958933557"/>
@@ -199,7 +199,7 @@
 					<object class="IBUITableView" id="562388802">
 						<reference key="NSNextResponder" ref="812520855"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrame">{{0, 58}, {320, 402}}</string>
+						<string key="NSFrame">{{0, 44}, {320, 416}}</string>
 						<reference key="NSSuperview" ref="812520855"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -579,6 +579,6 @@
 			<string key="contacts_linphone_selected.png">{213, 117}</string>
 			<string key="toolsbar_background.png">{5, 117}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">1498</string>
+		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
 </archive>
