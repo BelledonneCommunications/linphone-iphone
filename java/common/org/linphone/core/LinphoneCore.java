@@ -495,7 +495,7 @@ public interface LinphoneCore {
 	 * 
 	 * return null if not found
 	 */
-	PayloadType findPayloadType(String mime,int clockRate); 
+	PayloadType findPayloadType(String mime, int clockRate, int channels); 
 	/**
 	 * not implemented yet
 	 * @param pt
