@@ -684,9 +684,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findPayloadType(JNIEnv*
 																			,jobject  thiz
 																			,jlong lc
 																			,jstring jmime
-																			,jint rate) {
+																			,jint rate
+																			,jint channels) {
 	const char* mime = env->GetStringUTFChars(jmime, NULL);
-	jlong result = (jlong)linphone_core_find_payload_type((LinphoneCore*)lc,mime,rate);
+	jlong result = (jlong)linphone_core_find_payload_type((LinphoneCore*)lc,mime,rate,channels);
 	env->ReleaseStringUTFChars(jmime, mime);
 	return result;
 }

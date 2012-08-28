@@ -4806,11 +4806,13 @@ const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc){
 	return lc->sound_conf.ringback_tone;
 }
 
-static PayloadType* find_payload_type_from_list(const char* type, int rate,const MSList* from) {
+static PayloadType* find_payload_type_from_list(const char* type, int rate, int channels, const MSList* from) {
 	const MSList *elem;
 	for(elem=from;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
-		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0) && (rate == -1 || rate==pt->clock_rate)) {
+		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0)
+			&& (rate == -1 || rate==pt->clock_rate)
+			&& (channels == 0 || channels==pt->channels)) {
 			return pt;
 		}
 	}
@@ -4823,12 +4825,12 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate,const
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * Returns NULL if not found.
  */
-PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate) {
-	PayloadType* result = find_payload_type_from_list(type, rate, linphone_core_get_audio_codecs(lc));
+PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
+	PayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
 		return result;
 	} else {
-		result = find_payload_type_from_list(type, rate, linphone_core_get_video_codecs(lc));
+		result = find_payload_type_from_list(type, rate, 0, linphone_core_get_video_codecs(lc));
 		if (result) {
 			return result;
 		}
