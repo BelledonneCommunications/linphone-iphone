@@ -176,7 +176,11 @@ PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *
 	}
 }
 
-PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type) : mSuccesful(true), mPayloadTypeNumber(-1) {
+PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type, bool accept_all) : mAll(false), mSuccesful(true), mPayloadTypeNumber(-1) {
+	if (accept_all && (mime_type.compare("ALL") == 0)) {
+		mAll = true;
+		return;
+	}
 	istringstream ist(mime_type);
 	ist >> mPayloadTypeNumber;
 	if (ist.fail()) {

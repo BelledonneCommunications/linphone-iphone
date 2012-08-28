@@ -128,10 +128,12 @@ private:
 
 class PayloadTypeParser {
 public:
-	PayloadTypeParser(LinphoneCore *core, const std::string &mime_type);
+	PayloadTypeParser(LinphoneCore *core, const std::string &mime_type, bool accept_all = false);
+	inline bool all() { return mAll; };
 	inline bool successful() { return mSuccesful; };
 	inline int payloadTypeNumber() { return mPayloadTypeNumber; };
 private:
+	bool mAll;
 	bool mSuccesful;
 	int mPayloadTypeNumber;
 };
