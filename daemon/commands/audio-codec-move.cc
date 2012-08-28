@@ -4,7 +4,7 @@ using namespace std;
 
 AudioCodecMoveCommand::AudioCodecMoveCommand() :
 		DaemonCommand("audio-codec-move", "audio-codec-move <payload_type_number|mime_type> <index>",
-				"Move a codec to the an index.\n"
+				"Move a codec to the specified index.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 }
 
