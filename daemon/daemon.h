@@ -126,6 +126,16 @@ public:
 private:
 };
 
+class PayloadTypeParser {
+public:
+	PayloadTypeParser(LinphoneCore *core, const std::string &mime_type);
+	inline bool successful() { return mSuccesful; };
+	inline int payloadTypeNumber() { return mPayloadTypeNumber; };
+private:
+	bool mSuccesful;
+	int mPayloadTypeNumber;
+};
+
 class Daemon {
 	friend class DaemonCommand;
 public:

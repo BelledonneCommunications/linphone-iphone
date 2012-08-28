@@ -176,6 +176,25 @@ PayloadTypeResponse::PayloadTypeResponse(LinphoneCore *core, const PayloadType *
 	}
 }
 
+PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type) : mSuccesful(true), mPayloadTypeNumber(-1) {
+	istringstream ist(mime_type);
+	ist >> mPayloadTypeNumber;
+	if (ist.fail()) {
+		char type[12];
+		int rate, channels;
+		if (sscanf(mime_type.c_str(), "%11[^/]/%u/%u", type, &rate, &channels) != 3) {
+			mSuccesful = false;
+			return;
+		}
+		const PayloadType *pt = linphone_core_find_payload_type(core, type, rate, channels);
+		if (pt == NULL) {
+			mPayloadTypeNumber = -1;
+		} else {
+			mPayloadTypeNumber = linphone_core_get_payload_type_number(core, pt);
+		}
+	}
+}
+
 DaemonCommand::DaemonCommand(const char *name, const char *proto, const char *help) :
 		mName(name), mProto(proto), mHelp(help) {
 }

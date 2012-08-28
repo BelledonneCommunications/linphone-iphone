@@ -6,7 +6,9 @@
 using namespace std;
 
 AudioCodecSetCommand::AudioCodecSetCommand() :
-		DaemonCommand("audio-codec-set", "audio-codec-set <payload type number> <property> <value>", "Set a property (number, clock_rate, recv_fmtp, send_fmtp) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.") {
+		DaemonCommand("audio-codec-set", "audio-codec-set <payload_type_number|mime_type> <property> <value>",
+				"Set a property (number, clock_rate, recv_fmtp, send_fmtp) of a codec. Numbering of payload type is automatically performed at startup, any change will be lost after restart.\n"
+				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
 }
 
 static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
@@ -23,41 +25,64 @@ static PayloadType *findPayload(LinphoneCore *lc, int payload_type, int *index){
 }
 
 void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
-	int payload_type;
-	char param[256], value[256];
-	if (sscanf(args, "%d %255s %255s", &payload_type, param, value) == 3) {
-		PayloadType *payload;
-		int index;
-		if ((payload=findPayload(app->getCore(),payload_type,&index))!=NULL){
-			bool handled = false;
-			if (strcmp("clock_rate", param) == 0) {
-				payload->clock_rate = atoi(value);
+	istringstream ist(args);
+
+	if (ist.peek() == EOF) {
+		app->sendResponse(Response("Missing parameters.", Response::Error));
+		return;
+	}
+
+	string mime_type;
+	ist >> mime_type;
+	PayloadTypeParser parser(app->getCore(), mime_type);
+	if (!parser.successful()) {
+		app->sendResponse(Response("Incorrect mime type format.", Response::Error));
+		return;
+	}
+	int ptnum = parser.payloadTypeNumber();
+	string param;
+	string value;
+	ist >> param;
+	if (ist.fail()) {
+		app->sendResponse(Response("Missing/Incorrect parameter(s).", Response::Error));
+		return;
+	}
+	ist >> value;
+	if (value.length() > 255) value.resize(255);
+
+	PayloadType *payload;
+	int index;
+	if ((payload = findPayload(app->getCore(), ptnum, &index)) != NULL) {
+		bool handled = false;
+		if (param.compare("clock_rate") == 0) {
+			if (value.length() > 0) {
+				payload->clock_rate = atoi(value.c_str());
 				handled = true;
-			} else if (strcmp("recv_fmtp", param) == 0) {
-				payload_type_set_recv_fmtp(payload, value);
-				handled = true;
-			} else if (strcmp("send_fmtp", param) == 0) {
-				payload_type_set_send_fmtp(payload, value);
-				handled = true;
-			}else if (strcmp("number", param) == 0) {
-				PayloadType *conflict=findPayload(app->getCore(),atoi(value),NULL);
-				if (conflict){
-					app->sendResponse(Response("New payload type number is already used."));
-				}else{
-					_payload_type_set_number(payload, atoi(value));
+			}
+		} else if (param.compare("recv_fmtp") == 0) {
+			payload_type_set_recv_fmtp(payload, value.c_str());
+			handled = true;
+		} else if (param.compare("send_fmtp") == 0) {
+			payload_type_set_send_fmtp(payload, value.c_str());
+			handled = true;
+		} else if (param.compare("number") == 0) {
+			if (value.length() > 0) {
+				PayloadType *conflict = findPayload(app->getCore(), atoi(value.c_str()), NULL);
+				if (conflict) {
+					app->sendResponse(Response("New payload type number is already used.", Response::Error));
+				} else {
+					_payload_type_set_number(payload, atoi(value.c_str()));
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 				}
 				return;
 			}
-			if (handled) {
-				app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
-			} else {
-				app->sendResponse(Response("Invalid codec parameter"));
-			}
-			return;
 		}
-		app->sendResponse(Response("Audio codec not found."));
-	} else {
-		app->sendResponse(Response("Missing/Incorrect parameter(s)."));
+		if (handled) {
+			app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
+		} else {
+			app->sendResponse(Response("Invalid codec parameter.", Response::Error));
+		}
+		return;
 	}
+	app->sendResponse(Response("Audio codec not found.", Response::Error));
 }
