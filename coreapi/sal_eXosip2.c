@@ -462,6 +462,7 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 	if (ctx->rootCa)
 		ms_free(ctx->rootCa);
 	ctx->rootCa = ms_strdup(rootCa);
+	set_tls_options(ctx);
 }
 
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
