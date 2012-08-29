@@ -207,11 +207,19 @@
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
             NSString *loc_key = [alert objectForKey:@"loc-key"];
+			/*if we receive a remote notification, it is because our TCP background socket was no more working.
+			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
+			LinphoneCore *lc=[LinphoneManager getLc];
+			linphone_core_set_network_reachable(lc,FALSE);
+			linphone_core_set_network_reachable(lc,TRUE);
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
                     [[LinphoneManager instance] addInhibitedEvent:kLinphoneTextReceivedSound];
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
-                }
+                }else{
+					//it's a call
+					[[LinphoneManager instance] didReceiveRemoteNotification];
+				}
             }
         }
     }

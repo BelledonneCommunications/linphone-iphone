@@ -633,24 +633,30 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if(address == nil) {
             address = @"Unknown";
         }
-        
-		// Create a new notification
-		appData->notification = [[UILocalNotification alloc] init];
-		if (appData->notification) {
-			appData->notification.repeatInterval = 0;
-			appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
-			appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
-			appData->notification.soundName = @"ring.caf";
-			appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
+        if (![[LinphoneManager instance] shouldAutoAcceptCall]){
+			// case where a remote notification is already received
+			// Create a new local notification
+			appData->notification = [[UILocalNotification alloc] init];
+			if (appData->notification) {
+				appData->notification.repeatInterval = 0;
+				appData->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
+				appData->notification.alertAction = NSLocalizedString(@"Answer", nil);
+				appData->notification.soundName = @"ring.caf";
+				appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
 			
 			[[UIApplication sharedApplication] presentLocalNotificationNow:appData->notification];
+			}
 		}
 	} else {
-       IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
-        if(controller != nil) {
-            [controller setCall:call];
-            [controller setDelegate:self];
-        }
+		if ([[LinphoneManager instance] shouldAutoAcceptCall]){
+			linphone_core_accept_call(linphone_call_get_core(call),call);
+		}else{
+			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
+			if(controller != nil) {
+				[controller setCall:call];
+				[controller setDelegate:self];
+			}
+		}
 	}
 }
 

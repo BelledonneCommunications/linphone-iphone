@@ -116,7 +116,7 @@ struct codec_name_pref_table codec_pref_table[]={
 + (NSSet *)unsupportedCodecs {
     NSMutableSet *set = [NSMutableSet set];
 	for(int i=0;codec_pref_table[i].name!=NULL;++i) {
-        if(linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name, codec_pref_table[i].rate) == NULL) {
+        if(linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name, codec_pref_table[i].rate,-1) == NULL) {
             [set addObject:codec_pref_table[i].prefname];
 		}
 	}
@@ -205,6 +205,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		self.defaultExpires = 600;
         [self openDatabase];
         [self copyDefaultSettings];
+		lastRemoteNotificationTime=0;
     }
     return self;
 }
@@ -663,7 +664,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	ms_set_cpu_count(cpucount);
 
 	if (![LinphoneManager isNotIphone3G]){
-		PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"SILK",24000);
+		PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"SILK",24000,-1);
 		if (pt) {
 			linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
 			[LinphoneLogger logc:LinphoneLoggerWarning format:"SILK/24000 and video disabled on old iPhone 3G"];
@@ -711,6 +712,14 @@ static LinphoneCoreVTable linphonec_vtable = {
         proxyReachability=nil;
         
     }
+}
+
+- (void)didReceiveRemoteNotification{
+	lastRemoteNotificationTime=time(NULL);
+}
+
+- (BOOL)shouldAutoAcceptCall{
+	return lastRemoteNotificationTime!=0 && lastRemoteNotificationTime-time(NULL)<10;
 }
 
 - (BOOL)resignActive {

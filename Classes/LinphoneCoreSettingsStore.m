@@ -380,7 +380,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
             }
             // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
             // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
-            NSString *params = [NSString stringWithFormat:@"APN-TOK=%@;APN-MSG=IM_MSG;APN-CAL=IC_MSG;APN-CAL-SND=ring.caf;APN-MSG-SND=msg.caf", tokenString];
+#ifdef DEBUG
+	#define APPMODE_SUFFIX @"dev"
+#else
+	#define APPMODE_SUFFIX @"prod"
+#endif
+            NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
             linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
         }
         
