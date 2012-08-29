@@ -942,8 +942,34 @@ static LinphoneCoreVTable linphonec_vtable = {
         pushNotificationToken = [apushNotificationToken retain];
     }
     if([LinphoneManager isLcReady]) {
-        [(LinphoneCoreSettingsStore*)settingsStore synchronizeAccount];
+		LinphoneProxyConfig *cfg=nil;
+		linphone_core_get_default_proxy(theLinphoneCore, &cfg);
+        if (cfg) {
+			linphone_proxy_config_edit(cfg);
+			[self addPushTokenToProxyConfig: cfg];
+			linphone_proxy_config_done(cfg);
+		}
     }
+}
+
+- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)proxyCfg{
+	NSData *tokenData =  pushNotificationToken;
+	if(tokenData != nil) {
+		const unsigned char *tokenBuffer = [tokenData bytes];
+		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
+		for(int i = 0; i < [tokenData length]; ++i) {
+			[tokenString appendFormat:@"%02X", (unsigned int)tokenBuffer[i]];
+		}
+		// NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
+		// NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
+#ifdef DEBUG
+#define APPMODE_SUFFIX @"dev"
+#else
+#define APPMODE_SUFFIX @"prod"
+#endif
+		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
+		linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
+	}
 }
 
 - (void)addInhibitedEvent:(NSString*)event {

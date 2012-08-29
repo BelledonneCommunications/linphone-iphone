@@ -102,6 +102,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
 - (void)didReceiveRemoteNotification;
+- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCall;
 
 + (void)kickOffNetworkConnection;
