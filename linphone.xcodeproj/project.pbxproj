@@ -52,7 +52,6 @@
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
 		2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
-		2274550810700509006EC466 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc-factory */; };
 		228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
 		22A10F3B11F8960300373793 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
@@ -122,13 +121,18 @@
 		34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340751961506459A00B89C47 /* CoreTelephony.framework */; };
 		340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
 		340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
-		341FCA8E149798210084BC26 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-factory~ipad */; };
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */; };
+		57F005C415EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
+		57F005C515EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
+		57F005C815EE2D9200914747 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C615EE2D9200914747 /* linphonerc-factory */; };
+		57F005C915EE2D9200914747 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C615EE2D9200914747 /* linphonerc-factory */; };
+		57F005CA15EE2D9200914747 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C715EE2D9200914747 /* linphonerc-factory~ipad */; };
+		57F005CB15EE2D9200914747 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C715EE2D9200914747 /* linphonerc-factory~ipad */; };
 		70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 70571E1913FABCB000CDD3C2 /* rootca.pem */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -187,8 +191,6 @@
 		D3211BBE159CBFD60098460B /* back_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBB159CBFD60098460B /* back_default.png */; };
 		D3211BC0159CBFD70098460B /* back_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBC159CBFD60098460B /* back_disabled.png */; };
 		D3211BC2159CBFD70098460B /* back_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3211BBD159CBFD60098460B /* back_over.png */; };
-		D321FF9615E628BB0098B5F4 /* linphonrc in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9515E628BB0098B5F4 /* linphonrc */; };
-		D321FF9715E628BB0098B5F4 /* linphonrc in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9515E628BB0098B5F4 /* linphonrc */; };
 		D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9815E628CB0098B5F4 /* linphonerc~ipad */; };
 		D321FF9A15E628CB0098B5F4 /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9815E628CB0098B5F4 /* linphonerc~ipad */; };
 		D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
@@ -454,8 +456,6 @@
 		D34BD6A215C13DB70070C209 /* linphone-banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 225CB2F911ABB76400628906 /* linphone-banner.png */; };
 		D34BD6A415C13DB70070C209 /* linphone_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22058C70116E305000B08DDD /* linphone_icon_57.png */; };
 		D34BD6A515C13DB70070C209 /* linphone_icon_72.png in Resources */ = {isa = PBXBuildFile; fileRef = 34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */; };
-		D34BD6A615C13DB70070C209 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc-factory */; };
-		D34BD6A715C13DB70070C209 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-factory~ipad */; };
 		D34BD6A815C13DB70070C209 /* list_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5416159858A80037DC6B /* list_delete_default.png */; };
 		D34BD6A915C13DB70070C209 /* list_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3EA5417159858A80037DC6B /* list_delete_over.png */; };
 		D34BD6AA15C13DB70070C209 /* list_details_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D354981815876FE7000081D8 /* list_details_default.png */; };
@@ -1360,7 +1360,6 @@
 		2274402E106F335E006EC466 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		22744043106F33FC006EC466 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		22744056106F9BC9006EC466 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		2274550710700509006EC466 /* linphonerc-factory */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "linphonerc-factory"; sourceTree = "<group>"; };
 		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		22968A5D12F875C600588287 /* UISpeakerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpeakerButton.h; sourceTree = "<group>"; };
 		22968A5E12F875C600588287 /* UISpeakerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISpeakerButton.m; sourceTree = "<group>"; };
@@ -1465,13 +1464,15 @@
 		340751E4150E4D0200B89C47 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
 		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
 		340751E6150F38FD00B89C47 /* UIVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIVideoButton.m; sourceTree = "<group>"; };
-		341FCA8D149798210084BC26 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_72.png; path = Resources/linphone_icon_72.png; sourceTree = "<group>"; };
+		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
+		57F005C615EE2D9200914747 /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
+		57F005C715EE2D9200914747 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		70571E1913FABCB000CDD3C2 /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -1532,7 +1533,6 @@
 		D3211BBB159CBFD60098460B /* back_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_default.png; path = Resources/back_default.png; sourceTree = "<group>"; };
 		D3211BBC159CBFD60098460B /* back_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_disabled.png; path = Resources/back_disabled.png; sourceTree = "<group>"; };
 		D3211BBD159CBFD60098460B /* back_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = back_over.png; path = Resources/back_over.png; sourceTree = "<group>"; };
-		D321FF9515E628BB0098B5F4 /* linphonrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonrc; path = Resources/linphonrc; sourceTree = "<group>"; };
 		D321FF9815E628CB0098B5F4 /* linphonerc~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc~ipad"; path = "Resources/linphonerc~ipad"; sourceTree = "<group>"; };
 		D32409C1158B49A600C8C119 /* UILongTouchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILongTouchButton.h; sourceTree = "<group>"; };
 		D32409C2158B49A600C8C119 /* UILongTouchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILongTouchButton.m; sourceTree = "<group>"; };
@@ -2656,6 +2656,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				57F005C615EE2D9200914747 /* linphonerc-factory */,
+				57F005C715EE2D9200914747 /* linphonerc-factory~ipad */,
+				57F005C315EE2CCF00914747 /* linphonerc */,
 				D3F83F741582253100336684 /* accept_default.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
@@ -2853,10 +2856,7 @@
 				D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */,
 				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
 				D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */,
-				2274550710700509006EC466 /* linphonerc-factory */,
-				341FCA8D149798210084BC26 /* linphonerc-factory~ipad */,
 				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
-				D321FF9515E628BB0098B5F4 /* linphonrc */,
 				D3EA5416159858A80037DC6B /* list_delete_default.png */,
 				D3EA5417159858A80037DC6B /* list_delete_over.png */,
 				D354981815876FE7000081D8 /* list_details_default.png */,
@@ -3329,7 +3329,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2274550810700509006EC466 /* linphonerc-factory in Resources */,
 				22F254811073D99800AC9B3F /* ringback.wav in Resources */,
 				2237D4091084D7A9001383EE /* ring.wav in Resources */,
 				22E0A823111C44E100B04932 /* ConsoleViewController.xib in Resources */,
@@ -3340,7 +3339,6 @@
 				2218A92612FBE1340088A667 /* FirstLoginViewController.xib in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
 				70571E1A13FABCB000CDD3C2 /* rootca.pem in Resources */,
-				341FCA8E149798210084BC26 /* linphonerc-factory~ipad in Resources */,
 				34A6ECEB14CF13CB00460C04 /* linphone_icon_72.png in Resources */,
 				D347347A1580DDF1003C7B8C /* PhoneMainView.xib in Resources */,
 				D347347E1580E5F8003C7B8C /* history_default.png in Resources */,
@@ -3762,9 +3760,11 @@
 				D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D3804E6015D92A57008072A5 /* msg.caf in Resources */,
 				D3804E6215D92A57008072A5 /* msg.wav in Resources */,
-				D321FF9615E628BB0098B5F4 /* linphonrc in Resources */,
 				D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */,
 				2234C8CA15ED049A00E18E83 /* DialerViewController.xib in Resources */,
+				57F005C415EE2CCF00914747 /* linphonerc in Resources */,
+				57F005C815EE2D9200914747 /* linphonerc-factory in Resources */,
+				57F005CA15EE2D9200914747 /* linphonerc-factory~ipad in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3938,8 +3938,6 @@
 				D34BD6A215C13DB70070C209 /* linphone-banner.png in Resources */,
 				D34BD6A415C13DB70070C209 /* linphone_icon_57.png in Resources */,
 				D34BD6A515C13DB70070C209 /* linphone_icon_72.png in Resources */,
-				D34BD6A615C13DB70070C209 /* linphonerc-factory in Resources */,
-				D34BD6A715C13DB70070C209 /* linphonerc-factory~ipad in Resources */,
 				D34BD6A815C13DB70070C209 /* list_delete_default.png in Resources */,
 				D34BD6A915C13DB70070C209 /* list_delete_over.png in Resources */,
 				D34BD6AA15C13DB70070C209 /* list_details_default.png in Resources */,
@@ -4205,9 +4203,11 @@
 				D30BBD1915D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D3804E6115D92A57008072A5 /* msg.caf in Resources */,
 				D3804E6315D92A57008072A5 /* msg.wav in Resources */,
-				D321FF9715E628BB0098B5F4 /* linphonrc in Resources */,
 				D321FF9A15E628CB0098B5F4 /* linphonerc~ipad in Resources */,
 				2234C8CB15ED049A00E18E83 /* DialerViewController.xib in Resources */,
+				57F005C515EE2CCF00914747 /* linphonerc in Resources */,
+				57F005C915EE2D9200914747 /* linphonerc-factory in Resources */,
+				57F005CB15EE2D9200914747 /* linphonerc-factory~ipad in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
