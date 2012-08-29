@@ -360,7 +360,14 @@ void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
-    
+/**
+ * Return TRUE if this call is currently part of a conference
+ *@param call #LinphoneCall
+ *@return TRUE if part of a conference.
+ *
+ @ingroup call_control
+ */
+bool_t linphone_call_is_in_conference(const LinphoneCall *call);
 /**
  * Enables or disable echo cancellation for this call
  * @param call
@@ -579,11 +586,19 @@ struct _LinphoneChatRoom;
  * @addtogroup chatroom
  * @{
  */
+
+/**
+ * A chat room message to old content to be sent.
+ * <br> Can be created by linphone_chat_room_create_message().
+ */
+typedef struct _LinphoneChatMessage LinphoneChatMessage;
+	
 /**
  * A chat room is the place where text messages are exchanged.
  * <br> Can be created by linphone_core_create_chat_room().
  */
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
+
 /**
  * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
  * @param lc #LinphoneCore object
@@ -597,6 +612,12 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
  */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 
+/**
+ * create a message attached to a dedicated chat room;
+ */
+LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message);
+
+	
 
 /**
  * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
@@ -610,6 +631,44 @@ const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
  * @param msg message to be sent
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+/**
+ *LinphoneChatMessageStatus used to notify if message has been succesfully delivered or not
+ */
+typedef enum _LinphoneChatMessageStates {
+	LinphoneChatMessageStateIdle, /** initial state*/
+	LinphoneChatMessageStateInProgress, /*delivery in progress**/
+	LinphoneChatMessageStateDelivered, /** message succesffully delivered an acknoleged by remote end point*/
+	LinphoneChatMessageStateNotDelivered /** message was not delivered*/
+}LinphoneChatMessageState;
+
+/**
+ * to string function
+ */
+const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
+/**
+ * user pointer set function
+ */
+void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
+/**
+ * user pointer get function
+ */
+void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
+	
+/**
+ * Call back used to notify message delivery status
+ *@param msg #LinphoneChatMessage object
+ *@param status #LinphoneChatMessageStatus
+ *@param ud us user data
+ */
+typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+/**
+ * send a message to peer member of this chat room.
+ * @param cr #LinphoneChatRoom object
+ * @param msg #LinphoneChatMessage message to be sent
+ * @param status_cb #LinphoneChatMessageStatus status call back invoked when to message is delivered or not. May be NULL
+ * @param ud user data for the status cb.
+ */
+void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
 
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);

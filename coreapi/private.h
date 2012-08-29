@@ -86,6 +86,14 @@ typedef struct _CallCallbackObj
 
 static const int linphone_call_magic=0x3343;
 
+struct _LinphoneChatMessage {
+	const char* message;
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageStateChangeCb cb;
+	void* cb_ud;
+	void* message_userdata;
+};
+	
 struct _LinphoneCall
 {
 	int magic; /*used to distinguish from proxy config*/
@@ -138,6 +146,7 @@ struct _LinphoneCall
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
 	IceSession *ice_session;
+	LinphoneChatMessage* pending_message;
 };
 
 
@@ -277,6 +286,10 @@ LinphoneProxyConfig * is_a_linphone_proxy_config(void *user_pointer);
 
 static const int linphone_proxy_config_magic=0x7979;
 
+/*chat*/	
+void linphone_chat_message_destroy(LinphoneChatMessage* msg);
+/**/	
+
 struct _LinphoneProxyConfig
 {
 	int magic;
@@ -324,6 +337,8 @@ struct _LinphoneChatRoom{
 	void * user_data;
 };
 
+
+	
 struct _LinphoneFriend{
 	LinphoneAddress *uri;
 	SalOp *insub;
