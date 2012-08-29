@@ -4,7 +4,7 @@ LICENSE = "BSD"
 HOMEPAGE = "http://www.speex.org"
 DEPENDS = "libogg"
 PV = "1.1+git"
-PR = "r3"
+PR = "r4"
 SPEEX_TMP_DIR="/tmp/SPEEX_TMP"
 SRC_URI = "file://${SPEEX_TMP_DIR}/speex.tar.gz"
 S = "${WORKDIR}/speex"
@@ -17,7 +17,9 @@ inherit autotools pkgconfig
 LEAD_SONAME = "libspeex.so"
 
 #check for TARGET_FPU=soft and inform configure of the result so it can disable some floating points
-EXTRA_OECONF += "--enable-fixed-point --enable-armv7neon-asm"
+EXTRA_OECONF += "--enable-fixed-point"
+EXTRA_OECONF_append_armv5te = " --enable-arm5e-asm"
+EXTRA_OECONF_append_armv7a = " --enable-armv7neon-asm"
 
 do_fetch_prepend () {
 	import os,bb
