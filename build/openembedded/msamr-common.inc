@@ -3,7 +3,7 @@ SECTION = "libs"
 PRIORITY = "optional"
 LICENSE = "GPL3"
 
-DEPENDS = "opencore-amr" 
+DEPENDS = "linphone opencore-amr"
 DEPENDS_append_wideband = " vo-amrwbenc"
 
 MSAMR_WIDEBAND = ""
