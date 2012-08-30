@@ -78,7 +78,7 @@ typedef struct _LinphoneManagerSounds {
 	NSTimer* mIterateTimer;
     time_t lastRemoteNotificationTime;
 	Connectivity connectivity;
-    
+    BOOL stopWaitingRegisters;
     NSMutableArray *inhibitedEvent;
     
 @public
@@ -104,6 +104,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)didReceiveRemoteNotification;
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCall;
+- (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;

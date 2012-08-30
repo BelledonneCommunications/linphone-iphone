@@ -389,6 +389,8 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
 
 -(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
     [LinphoneLogger logc:LinphoneLoggerLog format:"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message];
+	if (state==LinphoneRegistrationOk)
+		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
     
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -507,10 +509,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				linphone_proxy_config_expires(proxy, lLinphoneMgr.defaultExpires); //might be better to save the previous value
 			}
 			
-			if (lLinphoneMgr.connectivity == none) {
-				linphone_core_set_network_reachable([LinphoneManager getLc],true);
-				
-			} else if (lLinphoneMgr.connectivity != newConnectivity) {
+			if (lLinphoneMgr.connectivity != newConnectivity) {
 				// connectivity has changed
 				linphone_core_set_network_reachable([LinphoneManager getLc],false);
 				if (newConnectivity == wwan && proxy && isWifiOnly) {
@@ -518,6 +517,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				} 
 				linphone_core_set_network_reachable([LinphoneManager getLc],true);
 				[LinphoneLogger logc:LinphoneLoggerLog format:"Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan")];
+				[lLinphoneMgr waitForRegisterToArrive];
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
 		}
@@ -747,6 +747,23 @@ static LinphoneCoreVTable linphonec_vtable = {
 		[[[LinphoneManager instance] settingsStore] synchronize];
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
     return YES;
+}
+
+- (void)waitForRegisterToArrive{
+	int i;
+	UIBackgroundTaskIdentifier bgid;
+	stopWaitingRegisters=FALSE;
+	[LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
+	bgid=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
+	}];
+	for(i=0;i<100 && (!stopWaitingRegisters);i++){
+		linphone_core_iterate(theLinphoneCore);
+		usleep(20000);
+	}
+	[LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
+	[[UIApplication sharedApplication] endBackgroundTask:bgid];
 }
 
 - (BOOL)enterBackgroundMode {
