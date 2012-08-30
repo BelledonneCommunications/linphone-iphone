@@ -5,6 +5,8 @@ IMAGE_INSTALL += " \
   kbd-keymaps \
   keymaps \
   linphonec \
+  linphone-plugins \
+  linphone-rings \
 "
 
 rootfs_postprocess() {
