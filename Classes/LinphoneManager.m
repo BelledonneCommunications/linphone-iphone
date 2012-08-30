@@ -733,7 +733,12 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (BOOL)shouldAutoAcceptCall{
-	return lastRemoteNotificationTime!=0 && lastRemoteNotificationTime-time(NULL)<10;
+	if (lastRemoteNotificationTime!=0){
+		if ((time(NULL)-lastRemoteNotificationTime)<15)
+			return TRUE;
+		lastRemoteNotificationTime=0;
+	}
+	return FALSE;
 }
 
 - (BOOL)resignActive {
