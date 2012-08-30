@@ -408,19 +408,29 @@ static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t ad
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen){
 	struct addrinfo hints,*res=NULL;
+	int family = PF_INET;
+	int port_int = 3478;
 	int ret;
-	const char *port;
+	char port[6];
 	char host[NI_MAXHOST];
-	char *p;
-	host[NI_MAXHOST-1]='\0';
-	strncpy(host,server,sizeof(host)-1);
-	p=strchr(host,':');
-	if (p) {
-		*p='\0';
-		port=p+1;
-	}else port="3478";
+	char *p1, *p2;
+	if ((sscanf(server, "[%64[^]]]:%d", host, &port_int) == 2) || (sscanf(server, "[%64[^]]]", host) == 1)) {
+		family = PF_INET6;
+	} else {
+		p1 = strchr(server, ':');
+		p2 = strrchr(server, ':');
+		if (p1 && p2 && (p1 != p2)) {
+			family = PF_INET6;
+			host[NI_MAXHOST-1]='\0';
+			strncpy(host, server, sizeof(host) - 1);
+		} else if (sscanf(server, "%[^:]:%d", host, &port_int) != 2) {
+			host[NI_MAXHOST-1]='\0';
+			strncpy(host, server, sizeof(host) - 1);
+		}
+	}
+	snprintf(port, sizeof(port), "%d", port_int);
 	memset(&hints,0,sizeof(hints));
-	hints.ai_family=PF_INET;
+	hints.ai_family=family;
 	hints.ai_socktype=SOCK_DGRAM;
 	hints.ai_protocol=IPPROTO_UDP;
 	ret=getaddrinfo(host,port,&hints,&res);
