@@ -23,7 +23,6 @@
 #import "Utils.h"
 
 #include "linphonecore.h"
-#include "private.h"
 
 @implementation UICallBar
 
@@ -218,6 +217,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneCallUpdate
                                                   object:nil];
+	if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+		//reseting speaker button because no more call
+		speakerButton.selected=FALSE; 
+	}
 }
 
 #pragma mark - Event Functions

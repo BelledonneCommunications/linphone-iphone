@@ -20,7 +20,6 @@
 #import "UIHangUpButton.h"
 #import "LinphoneManager.h"
 
-#import "private.h"
 
 @implementation UIHangUpButton
 
@@ -30,7 +29,7 @@
 + (bool)isInConference:(LinphoneCall*) call {
     if (!call)
         return false;
-    return linphone_call_get_current_params(call)->in_conference;
+    return linphone_call_is_in_conference(call);
 }
 
 + (int)callCount:(LinphoneCore*) lc {

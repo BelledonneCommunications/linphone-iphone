@@ -29,7 +29,7 @@
 @synthesize direction;
 @synthesize time;
 @synthesize read;
-
+@synthesize state;
 
 #pragma mark - Lifecycle Functions
 
@@ -43,6 +43,7 @@
         self.message = [NSString stringWithUTF8String: (const char*) sqlite3_column_text(sqlStatement, 4)];
         self.time = [NSDate dateWithTimeIntervalSince1970:sqlite3_column_int(sqlStatement, 5)];
         self.read = [NSNumber numberWithInt:sqlite3_column_int(sqlStatement, 6)];
+		self.state = [NSNumber numberWithInt:sqlite3_column_int(sqlStatement, 7)];  
     }
     return self;
 }
@@ -55,7 +56,7 @@
     [direction release];
     [time release];
     [read release];
-    
+    [state release];
     [super dealloc];
 }
 
@@ -69,7 +70,7 @@
         return;
     }
     
-    const char *sql = "INSERT INTO chat (localContact, remoteContact, direction, message, time, read) VALUES (@LOCALCONTACT, @REMOTECONTACT, @DIRECTION, @MESSAGE, @TIME, @READ)";
+    const char *sql = "INSERT INTO chat (localContact, remoteContact, direction, message, time, read, state) VALUES (@LOCALCONTACT, @REMOTECONTACT, @DIRECTION, @MESSAGE, @TIME, @READ, @STATE)";
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare_v2(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -83,6 +84,7 @@
     sqlite3_bind_text(sqlStatement, 4, [message UTF8String], -1, SQLITE_STATIC);
     sqlite3_bind_double(sqlStatement, 5, [time timeIntervalSince1970]);
     sqlite3_bind_int(sqlStatement, 6, [read intValue]);
+	sqlite3_bind_int(sqlStatement, 7, [state intValue]);
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -134,7 +136,7 @@
         return;
     }
     
-    const char *sql = "UPDATE chat SET localContact=@LOCALCONTACT, remoteContact=@REMOTECONTACT, direction=@DIRECTION, message=@MESSAGE, time=@TIME, read=@READ WHERE id=@ID";
+    const char *sql = "UPDATE chat SET localContact=@LOCALCONTACT, remoteContact=@REMOTECONTACT, direction=@DIRECTION, message=@MESSAGE, time=@TIME, read=@READ, state=@STATE WHERE id=@ID";
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare_v2(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -148,7 +150,8 @@
     sqlite3_bind_text(sqlStatement, 4, [message UTF8String], -1, SQLITE_STATIC);
     sqlite3_bind_double(sqlStatement, 5, [time timeIntervalSince1970]);
     sqlite3_bind_int(sqlStatement, 6, [read intValue]);
-    sqlite3_bind_int(sqlStatement, 7, [chatId intValue]);
+    sqlite3_bind_int(sqlStatement, 7, [state intValue]);
+	sqlite3_bind_int(sqlStatement, 8, [chatId intValue]);
     
     if (sqlite3_step(sqlStatement) != SQLITE_DONE) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -196,7 +199,7 @@
         return array;
     }
     
-    const char *sql = "SELECT id, localContact, remoteContact, direction, message, time, read FROM chat GROUP BY remoteContact ORDER BY time DESC";
+    const char *sql = "SELECT id, localContact, remoteContact, direction, message, time, read, state FROM chat GROUP BY remoteContact ORDER BY time DESC";
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare_v2(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database)];
@@ -228,7 +231,7 @@
         return array;
     }
     
-    const char *sql = "SELECT id, localContact, remoteContact, direction, message, time, read FROM chat WHERE remoteContact=@REMOTECONTACT ORDER BY time ASC";
+    const char *sql = "SELECT id, localContact, remoteContact, direction, message, time, read, state FROM chat WHERE remoteContact=@REMOTECONTACT ORDER BY time ASC";
     sqlite3_stmt *sqlStatement;
     if (sqlite3_prepare_v2(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
         [LinphoneLogger logc:LinphoneLoggerError format:"Can't execute the query: %s (%s)", sql, sqlite3_errmsg(database)];

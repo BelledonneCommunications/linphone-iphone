@@ -29,5 +29,6 @@
 @property (nonatomic, retain) NSString *remoteAddress;
 
 - (void)addChatEntry:(ChatModel*)chat;
+- (void)updateChatEntry:(ChatModel*)chat;
 
 @end

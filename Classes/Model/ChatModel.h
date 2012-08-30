@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface ChatModel : NSObject {
     @private
     NSNumber *chatId;
@@ -28,6 +29,7 @@
     NSString *message;
     NSDate *time;
     NSNumber *read;
+	NSNumber *state; //0 IDLE, 1 in progress, 2 delivered, 3 not delivered see LinphoneChatMessageState
 }
 
 @property (readonly) NSNumber *chatId;
@@ -37,6 +39,7 @@
 @property (copy) NSString *message;
 @property (copy) NSDate *time;
 @property (copy) NSNumber *read;
+@property (copy) NSNumber *state;
 
 - (void)create;
 + (ChatModel*)read:(NSNumber*)id;

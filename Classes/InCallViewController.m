@@ -31,7 +31,7 @@
 #import "UILinphone.h"
 
 #include "linphonecore.h"
-#include "private.h"
+
 
 const NSInteger SECURE_BUTTON_TAG=5;
 
@@ -428,7 +428,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [videoWaitingForFirstImage startAnimating];
     
     LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-    if (call != NULL && call->videostream) {
+    //linphone_call_params_get_used_video_codec return 0 if no video stream enabled
+	if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
         linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
     }
 }

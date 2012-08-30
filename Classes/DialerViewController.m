@@ -27,7 +27,7 @@
 #import "Utils.h"
 
 #include "linphonecore.h"
-#include "private.h"
+
 
 @implementation DialerViewController
 

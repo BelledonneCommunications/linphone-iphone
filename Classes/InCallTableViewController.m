@@ -22,7 +22,7 @@
 #import "UIConferenceHeader.h"
 #import "LinphoneManager.h"
 
-#include "private.h"
+
 
 @implementation InCallTableViewController
 
@@ -92,7 +92,7 @@ enum TableSection {
 + (bool)isInConference:(LinphoneCall*) call {
     if (!call)
         return false;
-    return linphone_call_get_current_params(call)->in_conference;
+    return linphone_call_is_in_conference(call);
 }
 
 + (int)callCount:(LinphoneCore*) lc {

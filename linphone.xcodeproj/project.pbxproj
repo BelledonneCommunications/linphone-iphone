@@ -35,6 +35,12 @@
 		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
 		2234C8CA15ED049A00E18E83 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8C715ED049A00E18E83 /* DialerViewController.xib */; };
 		2234C8CB15ED049A00E18E83 /* DialerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8C715ED049A00E18E83 /* DialerViewController.xib */; };
+		2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */; };
+		2234C8EA15EE2F7F00E18E83 /* chat_message_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */; };
+		2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */; };
+		2234C8EC15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */; };
+		2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */; };
+		2234C8EF15EE744200E18E83 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */; };
 		2237D4091084D7A9001383EE /* ring.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* ring.wav */; };
 		2242E313125235120061DDCE /* ring.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* ring.caf */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -208,7 +214,6 @@
 		D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2315A5B2020033019F /* chat_send_disabled.png */; };
 		D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
 		D32B6E2A15A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
-		D32B6E2C15A5C0800033019F /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		D32B6E3815A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
 		D32B6E3915A5C2430033019F /* ChatModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E3715A5C2430033019F /* ChatModel.m */; };
@@ -410,7 +415,6 @@
 		D34BD67415C13DB70070C209 /* contacts_linphone_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D354980415875534000081D8 /* contacts_linphone_selected.png */; };
 		D34BD67515C13DB70070C209 /* contacts_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327FC158100E400FA0D23 /* contacts_over.png */; };
 		D34BD67615C13DB70070C209 /* contacts_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts_selected.png */; };
-		D34BD67715C13DB70070C209 /* database.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D32B6E2B15A5C0800033019F /* database.sqlite */; };
 		D34BD67815C13DB70070C209 /* decline_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F761582253100336684 /* decline_default.png */; };
 		D34BD67915C13DB70070C209 /* decline_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F771582253100336684 /* decline_over.png */; };
 		D34BD67A15C13DB70070C209 /* dialer_address_background.png in Resources */ = {isa = PBXBuildFile; fileRef = D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */; };
@@ -1340,6 +1344,9 @@
 		223148E31178A08200637D6A /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<group>"; };
 		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = "<group>"; };
 		2234C8C715ED049A00E18E83 /* DialerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DialerViewController.xib; sourceTree = "<group>"; };
+		2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_delivered.png; path = Resources/chat_message_delivered.png; sourceTree = "<group>"; };
+		2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_not_delivered.png; path = Resources/chat_message_not_delivered.png; sourceTree = "<group>"; };
+		2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_inprogress.png; path = Resources/chat_message_inprogress.png; sourceTree = "<group>"; };
 		2237D4081084D7A9001383EE /* ring.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ring.wav; path = Resources/ring.wav; sourceTree = "<group>"; };
 		2242E312125235120061DDCE /* ring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ring.caf; path = Resources/ring.caf; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -1549,7 +1556,6 @@
 		D32B6E2315A5B2020033019F /* chat_send_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_send_disabled.png; path = Resources/chat_send_disabled.png; sourceTree = "<group>"; };
 		D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomTableViewController.h; sourceTree = "<group>"; };
 		D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatRoomTableViewController.m; sourceTree = "<group>"; };
-		D32B6E2B15A5C0800033019F /* database.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = database.sqlite; path = Resources/database.sqlite; sourceTree = "<group>"; };
 		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		D32B6E3615A5C2430033019F /* ChatModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChatModel.h; path = Model/ChatModel.h; sourceTree = "<group>"; };
 		D32B6E3715A5C2430033019F /* ChatModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ChatModel.m; path = Model/ChatModel.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -2659,6 +2665,9 @@
 				57F005C615EE2D9200914747 /* linphonerc-factory */,
 				57F005C715EE2D9200914747 /* linphonerc-factory~ipad */,
 				57F005C315EE2CCF00914747 /* linphonerc */,
+				2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */,
+				2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */,
+				2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */,
 				D3F83F741582253100336684 /* accept_default.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
@@ -2786,7 +2795,6 @@
 				D38327EC1580FE3A00FA0D23 /* contacts_selected.png */,
 				D3A74E7A15C69392001500B9 /* contacts_selected_landscape~ipad.png */,
 				D3A74E7B15C69392001500B9 /* contacts_selected~ipad.png */,
-				D32B6E2B15A5C0800033019F /* database.sqlite */,
 				D3F83F761582253100336684 /* decline_default.png */,
 				D3F83F771582253100336684 /* decline_over.png */,
 				D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */,
@@ -3532,7 +3540,6 @@
 				D3B9A3E515A58C450096EA4E /* chat_send_default.png in Resources */,
 				D3B9A3E715A58C450096EA4E /* chat_send_over.png in Resources */,
 				D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */,
-				D32B6E2C15A5C0800033019F /* database.sqlite in Resources */,
 				D3A8BB7415A6C81A00F96BE5 /* UIChatRoomCell.xib in Resources */,
 				D3A8BB7B15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */,
 				D3A8BB7D15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */,
@@ -3765,6 +3772,9 @@
 				57F005C415EE2CCF00914747 /* linphonerc in Resources */,
 				57F005C815EE2D9200914747 /* linphonerc-factory in Resources */,
 				57F005CA15EE2D9200914747 /* linphonerc-factory~ipad in Resources */,
+				2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
+				2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
+				2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3892,7 +3902,6 @@
 				D34BD67415C13DB70070C209 /* contacts_linphone_selected.png in Resources */,
 				D34BD67515C13DB70070C209 /* contacts_over.png in Resources */,
 				D34BD67615C13DB70070C209 /* contacts_selected.png in Resources */,
-				D34BD67715C13DB70070C209 /* database.sqlite in Resources */,
 				D34BD67815C13DB70070C209 /* decline_default.png in Resources */,
 				D34BD67915C13DB70070C209 /* decline_over.png in Resources */,
 				D34BD67A15C13DB70070C209 /* dialer_address_background.png in Resources */,
@@ -4208,6 +4217,9 @@
 				57F005C515EE2CCF00914747 /* linphonerc in Resources */,
 				57F005C915EE2D9200914747 /* linphonerc-factory in Resources */,
 				57F005CB15EE2D9200914747 /* linphonerc-factory~ipad in Resources */,
+				2234C8EA15EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
+				2234C8EC15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
+				2234C8EF15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

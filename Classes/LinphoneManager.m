@@ -33,7 +33,7 @@
 
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
-#include "private.h"
+
 
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
@@ -231,13 +231,27 @@ struct codec_name_pref_table codec_pref_table[]={
 #pragma mark - Database Functions
 
 - (void)openDatabase {
-    NSString *src = [LinphoneManager bundleFile:@"database.sqlite"];
-    NSString *dst = [LinphoneManager documentFile:@"database.sqlite"];
-    [LinphoneManager copyFile:src destination:dst override:FALSE];
-
-    if(sqlite3_open([dst UTF8String], &database) != SQLITE_OK) {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", dst];
-    }
+    NSString *databasePath = [LinphoneManager documentFile:@"chat_database.sqlite"];
+	NSFileManager *filemgr = [NSFileManager defaultManager];
+	//[filemgr removeItemAtPath:databasePath error:nil];
+	BOOL firstInstall= ![filemgr fileExistsAtPath: databasePath ];
+    
+	if(sqlite3_open([databasePath UTF8String], &database) != SQLITE_OK) {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Can't open \"%@\" sqlite3 database.", databasePath];
+		return;
+    } 
+	
+	if (firstInstall) {
+		char *errMsg;
+		//better to create the db from the code
+		const char *sql_stmt = "CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, localContact TEXT NOT NULL, remoteContact TEXT NOT NULL, direction INTEGER, message TEXT NOT NULL, time NUMERIC, read INTEGER, state INTEGER)";
+			
+			if (sqlite3_exec(database, sql_stmt, NULL, NULL, &errMsg) != SQLITE_OK) {
+				[LinphoneLogger logc:LinphoneLoggerError format:"Can't create table error[%s] ", errMsg];
+			}
+	}
+	
+	[filemgr release];
 }
 
 - (void)closeDatabase {

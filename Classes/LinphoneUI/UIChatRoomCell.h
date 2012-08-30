@@ -31,7 +31,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *messageLabel;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
-
+@property (nonatomic, retain) IBOutlet UIImageView* statusImage;
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat width:(int)width;
 

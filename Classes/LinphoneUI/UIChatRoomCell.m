@@ -21,6 +21,7 @@
 #import "Utils.h"
 
 #import <NinePatch.h>
+#include "linphonecore.h"
 
 @implementation UIChatRoomCell
 
@@ -31,6 +32,7 @@
 @synthesize deleteButton;
 @synthesize dateLabel;
 @synthesize chat;
+@synthesize statusImage;
 
 static const CGFloat CELL_MIN_HEIGHT = 40.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
@@ -59,7 +61,7 @@ static UIFont *CELL_FONT = nil;
     [messageLabel release];
     [deleteButton release];
     [dateLabel release];
-    
+    [statusImage release];
     [chat release];
     
     [super dealloc];
@@ -96,6 +98,18 @@ static UIFont *CELL_FONT = nil;
     [dateFormatter setLocale:locale];
     [dateLabel setText:[dateFormatter stringFromDate:[chat time]]];
     [dateFormatter release];
+	if ([chat.state intValue] == LinphoneChatMessageStateInProgress) {
+		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"] ];
+		statusImage.hidden=FALSE;
+	} else if ([chat.state intValue] == LinphoneChatMessageStateDelivered) {
+		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"] ];
+		statusImage.hidden=FALSE;
+	} else if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
+		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
+		statusImage.hidden=FALSE;
+	} else {
+		statusImage.hidden=TRUE;
+	}
 }
 
 - (void)setEditing:(BOOL)editing {

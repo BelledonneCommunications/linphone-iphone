@@ -186,6 +186,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     [avatarImage setImage:image];
 }
+static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
+	ChatRoomViewController* thiz=(ChatRoomViewController*)ud;
+	ChatModel *chat = (ChatModel *)linphone_chat_message_get_user_data(msg); 
+	[LinphoneLogger log:LinphoneLoggerLog 
+				 format:@"Delivery status for [%@] is [%s]",chat.message,linphone_chat_message_state_to_string(state)];
+	[chat setState:[NSNumber numberWithInt:state]];
+	[chat update];
+	[thiz.tableController updateChatEntry:chat];
+}
 
 - (BOOL)sendMessage:(NSString *)message {
     if(![LinphoneManager isLcReady]) {
@@ -211,6 +220,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 
 		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
+		
     }
     
     // Save message in database
@@ -221,11 +231,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     [chat setDirection:[NSNumber numberWithInt:0]];
     [chat setTime:[NSDate date]];
     [chat setRead:[NSNumber numberWithInt:1]];
+	[chat setState:[NSNumber numberWithInt:1]]; //INPROGRESS
     [chat create];
     [tableController addChatEntry:chat];
     [chat release];
-    
-    linphone_chat_room_send_message(chatRoom, [message UTF8String]);
+    LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom,[message UTF8String]);
+	linphone_chat_message_set_user_data(msg,chat);
+    linphone_chat_room_send_message2(chatRoom, msg,message_status,self);
     return TRUE;
 }
 

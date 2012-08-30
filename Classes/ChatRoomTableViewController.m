@@ -71,7 +71,19 @@
     [self.tableView endUpdates];
     [self scrollToLastUnread:true];
 }
-
+- (void)updateChatEntry:(ChatModel*)chat {
+    if(data == nil) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update entry: null data"];
+        return;
+    }
+	NSInteger index = [data indexOfObject:chat];
+    if (index<0) {
+		[LinphoneLogger logc:LinphoneLoggerWarning format:"chat entries diesn not exixt"];
+		return;
+	}
+	[[self tableView] reloadData]; //just reload
+	return;
+}
 - (void)scrollToLastUnread:(BOOL)animated {
     if(data == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
