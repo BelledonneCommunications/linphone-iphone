@@ -15,8 +15,6 @@
 			<false/>
 			<key>Key</key>
 			<string>prefix_preference</string>
-			<key>KeyboardType</key>
-			<string>NumberPad</string>
 			<key>Title</key>
 			<string>Prefix</string>
 			<key>Type</key>

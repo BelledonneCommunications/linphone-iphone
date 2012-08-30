@@ -103,6 +103,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
             [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
+			[self setString:linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
 				|| port!=NULL){
 				char tmp[256]={0};
@@ -115,6 +116,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_address_destroy(proxy_addr);
 			
 			[self setBool: (linphone_proxy_config_get_route(cfg)!=NULL) forKey:@"outbound_proxy_preference"];
+			[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
 			
 		}
 	}
@@ -332,11 +334,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
-		NSString* prefix = [self stringForKey:@"prefix_preference"];
-        bool substitute_plus_by_00 = [self boolForKey:@"substitute_+_by_00_preference"];
+		
+        
 		//possible valid config detected
 		
-		proxyCfg = linphone_proxy_config_new();
+		proxyCfg = linphone_core_create_proxy_config(lc);
         
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
@@ -356,19 +358,30 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
 			linphone_proxy_config_expires(proxyCfg, 0);
 		} else {
-            int expire = [self integerForKey:@"expire_preference"];
-            if(expire < lLinphoneMgr.defaultExpires)
-                expire = lLinphoneMgr.defaultExpires;
-			linphone_proxy_config_expires(proxyCfg, expire);
+            if ([self objectForKey:@"expire_preference"]) {
+				int expire = [self integerForKey:@"expire_preference"];
+				/*if(expire < lLinphoneMgr.defaultExpires)
+				 expire = lLinphoneMgr.defaultExpires;*/
+				linphone_proxy_config_expires(proxyCfg, expire);
+			}
+			//else not set 
+		
 		}
 		
 		if (isOutboundProxy)
 			linphone_proxy_config_set_route(proxyCfg,proxy);
 		
-		if ([prefix length]>0) {
-			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		if ([self objectForKey:@"prefix_preference"]) {		
+			NSString* prefix = [self stringForKey:@"prefix_preference"];
+			if ([prefix length]>0) {
+				linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			}
 		}
-		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
+		if ([self objectForKey:@"substitute_+_by_00_preference"]) {
+			bool substitute_plus_by_00 = [self boolForKey:@"substitute_+_by_00_preference"];
+			linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
+		}
+		
         
         [[LinphoneManager instance ]addPushTokenToProxyConfig : proxyCfg ];
         

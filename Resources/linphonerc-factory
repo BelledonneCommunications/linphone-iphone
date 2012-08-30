@@ -29,11 +29,6 @@ dtmf_player_amp=0.007
 history_max_size=30
 max_calls=3
 
-[video]
-display=1
-capture=1
-show_local=0
-enabled=1
-size=qvga
-display_filter_auto_rotate=1
 
+[default_values]
+reg_expires=600
