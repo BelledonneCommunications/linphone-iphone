@@ -48,8 +48,9 @@
 	if (cr->op)
 		 sal_op_release(cr->op);
  }
- 
-void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
+
+
+static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
 	const char *route=NULL;
 	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op=NULL;
@@ -62,6 +63,7 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 		    call->state==LinphoneCallPausedByRemote){
 			ms_message("send SIP message through the existing call.");
 			op = call->op;
+			call->pending_message=msg;
 		}
 	}
 	if (op==NULL){
@@ -73,10 +75,14 @@ void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg){
 			cr->op=NULL;
 		}
 		cr->op=op;
+		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
-	sal_text_send(op,identity,cr->peer,msg);
+	sal_text_send(op,identity,cr->peer,msg->message);
 }
 
+void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
+	_linphone_chat_room_send_message(cr,linphone_chat_room_create_message(cr,msg));
+}
 bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
 	if (linphone_address_get_username(cr->peer_url) && linphone_address_get_username(from) && 
 		strcmp(linphone_address_get_username(cr->peer_url),linphone_address_get_username(from))==0) return TRUE;
@@ -122,4 +128,43 @@ void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr){
 }
 const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
 	return cr->peer_url;
+}
+
+LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message) {
+	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
+	msg->chat_room=(LinphoneChatRoom*)cr;
+	msg->message=ms_strdup(message);
+	return msg;
+}
+void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
+	if (msg->message) ms_free((void*)msg->message);
+	ms_free((void*)msg);
+}
+void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud) {
+	msg->cb=status_cb;
+	msg->cb_ud=ud;
+	_linphone_chat_room_send_message(cr, msg);
+}
+
+const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
+	switch (state) {
+		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle"; 
+		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
+		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
+		case  LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
+		default: return "Unknown state";
+	}
+	
+}
+/**
+ * user pointer set function
+ */
+void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void* ud) {
+	message->message_userdata=ud;
+}
+/**
+ * user pointer get function
+ */
+void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message) {
+	return message->message_userdata;
 }

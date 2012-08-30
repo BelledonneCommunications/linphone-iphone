@@ -50,6 +50,10 @@ AC_CHECK_LIB([eXosip2],[eXosip_trylock],
 	[AC_DEFINE([HAVE_EXOSIP_TRYLOCK],[1],[Defined when eXosip_get_socket is available])],
 	[],
 	[-losipparser2 -losip2 ])
+AC_CHECK_LIB([eXosip2],[eXosip_reset_transports],
+	[AC_DEFINE([HAVE_EXOSIP_RESET_TRANSPORTS],[1],[Defined when eXosip_reset_transports is available])],
+	[],
+	[-losipparser2 -losip2 ])
 dnl AC_CHECK_LIB([eXosip2],[eXosip_get_naptr],
 dnl	[AC_DEFINE([HAVE_EXOSIP_NAPTR_SUPPORT],[1],[Defined when eXosip_get_naptr is available])],
 dnl	[],

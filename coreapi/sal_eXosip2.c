@@ -353,6 +353,32 @@ int sal_unlisten_ports(Sal *ctx){
 	return 0;
 }
 
+int sal_reset_transports(Sal *ctx){
+#ifdef HAVE_EXOSIP_RESET_TRANSPORTS
+	if (ctx->running){
+		ms_message("Exosip transports reset.");
+		eXosip_reset_transports();
+	}
+	return 0;
+#else
+	ms_warning("sal_reset_transports() not implemented in this version.");
+	return -1;
+#endif
+}
+
+
+static void set_tls_options(Sal *ctx){
+	if (ctx->rootCa) {
+		eXosip_tls_ctx_t tlsCtx;
+		memset(&tlsCtx, 0, sizeof(tlsCtx));
+		snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
+		eXosip_set_tls_ctx(&tlsCtx);
+	}                       
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
+	eXosip_tls_verify_certificate(ctx->verify_server_certs);
+#endif
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -369,16 +395,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 		proto= IPPROTO_TCP;
 			keepalive=-1;	
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
-
-		if (ctx->rootCa) {
-			eXosip_tls_ctx_t tlsCtx;
-			memset(&tlsCtx, 0, sizeof(tlsCtx));
-			snprintf(tlsCtx.root_ca_cert, sizeof(tlsCtx.client.cert), "%s", ctx->rootCa);
-			eXosip_set_tls_ctx(&tlsCtx);
-		}                       
-#ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
-		eXosip_tls_verify_certificate(ctx->verify_server_certs);
-#endif
+		set_tls_options(ctx);
 		break;
 	default:
 		ms_warning("unexpected proto, using datagram");
@@ -445,6 +462,7 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 	if (ctx->rootCa)
 		ms_free(ctx->rootCa);
 	ctx->rootCa = ms_strdup(rootCa);
+	set_tls_options(ctx);
 }
 
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
@@ -1935,7 +1953,8 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 
 static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
-
+	LinphoneChatMessage* chat_msg;
+	ms_message("Processing reponse status [%i] for method [%s]",ev->response->status_code,osip_message_get_method(ev->request));
 	if (op==NULL){
 		ms_warning("other_request_reply(): Receiving response to unknown request.");
 		return;
@@ -1944,6 +1963,16 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 		update_contact_from_response(op,ev->response);
 		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
 			sal->callbacks.ping_reply(op);
+		else if (ev->request && strcmp(osip_message_get_method(ev->request),"MESSAGE")==0) {
+			/*out of call message acknolegment*/
+			chat_msg=(LinphoneChatMessage* )op->base.user_pointer;
+			if (chat_msg->cb) {
+				chat_msg->cb(chat_msg
+							 ,(ev->response->status_code==200?LinphoneChatMessageStateDelivered:LinphoneChatMessageStateNotDelivered)
+							 ,chat_msg->cb_ud);
+			}
+			linphone_chat_message_destroy(chat_msg);
+		}
 	}
 }
 

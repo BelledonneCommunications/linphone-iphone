@@ -1915,3 +1915,6 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 	}
 }
 
+bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
+	return call->params.in_conference;
+}

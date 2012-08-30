@@ -4678,11 +4678,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
 	if(!isReachable) {
-		sal_unlisten_ports (lc->sal);
-	} else {
-		apply_transports(lc);
+		sal_reset_transports(lc->sal);
 	}
-
 }
 
 void linphone_core_refresh_registers(LinphoneCore* lc) {
@@ -4811,20 +4808,15 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 	for(elem=from;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		if ((strcasecmp((char*)type, payload_type_get_mime(pt)) == 0)
-			&& (rate == -1 || rate==pt->clock_rate)
-			&& (channels == 0 || channels==pt->channels)) {
+			&& (rate == LINPHONE_FIND_PAYLOAD_IGNORE_RATE || rate==pt->clock_rate)
+			&& (channels == LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS || channels==pt->channels)) {
 			return pt;
 		}
 	}
 	return NULL;
 }
 
-/**
- * Get payload type  from mime type and clock rate
- * @ingroup media_parameters
- * This function searches in audio and video codecs for the given payload type name and clockrate.
- * Returns NULL if not found.
- */
+
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) {
 	PayloadType* result = find_payload_type_from_list(type, rate, channels, linphone_core_get_audio_codecs(lc));
 	if (result)  {
