@@ -928,6 +928,26 @@ bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *p
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
+/**
+ * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algirithm
+ * @ingroup media_parameters
+ */
+#define LINPHONE_FIND_PAYLOAD_IGNORE_RATE -1
+/**
+ * Wildcard value used by #linphone_core_find_payload_type to ignore channel in search algirithm
+ * @ingroup media_parameters
+ */
+#define LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS -1
+/**
+ * Get payload type  from mime type and clock rate
+ * @ingroup media_parameters
+ * This function searches in audio and video codecs for the given payload type name and clockrate.
+ * @param lc #LinphoneCore object
+ * @param type payload mime type (I.E SPEEX, PCMU, VP8)
+ * @param rate, can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
+ * @param channels, number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
+ * @return Returns NULL if not found.
+ */	
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
 
 int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
