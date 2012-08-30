@@ -42,10 +42,17 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 }
 
-void linphone_proxy_config_init(LinphoneProxyConfig *obj){
+#define DEFAULT_INT(config,name,default) \
+		config?lp_config_get_int(config,"default_values",#name,default):default
+#define DEFAULT_STRING(config,name,default) \
+	config?lp_config_get_string(config,"default_values",#name,default):default
+
+static void linphone_proxy_config_init(LinphoneCore* lc,LinphoneProxyConfig *obj){
 	memset(obj,0,sizeof(LinphoneProxyConfig));
 	obj->magic=linphone_proxy_config_magic;
-	obj->expires=3600;
+	obj->expires=DEFAULT_INT((lc?lc->config:NULL),reg_expires,3600);
+	obj->dial_prefix=ms_strdup(DEFAULT_STRING((lc?lc->config:NULL),dial_prefix,'\0'));
+	obj->dial_escape_plus=DEFAULT_INT((lc?lc->config:NULL),dial_escape_plus,0);
 }
 
 /**
@@ -54,14 +61,20 @@ void linphone_proxy_config_init(LinphoneProxyConfig *obj){
 **/
 
 /**
- * Creates an empty proxy config.
+ * @deprecated, use #linphone_core_create_proxy_config instead
+ *Creates an empty proxy config.
 **/
-LinphoneProxyConfig *linphone_proxy_config_new(){
+LinphoneProxyConfig *linphone_proxy_config_new() {
+	return linphone_core_create_proxy_config(NULL);
+}
+LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc) {
 	LinphoneProxyConfig *obj=NULL;
 	obj=ms_new(LinphoneProxyConfig,1);
-	linphone_proxy_config_init(obj);
+	linphone_proxy_config_init(lc,obj);
 	return obj;
 }
+
+
 
 /**
  * Destroys a proxy config.
@@ -701,13 +714,13 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
-	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",600));
+	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",DEFAULT_INT(config,reg_expires,600)));
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 	
 	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
 
-	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",0));
-	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",NULL));
+	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",DEFAULT_INT(config,dial_escape_plus,0)));
+	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",DEFAULT_STRING(config,dial_prefix,NULL)));
 	
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0) 

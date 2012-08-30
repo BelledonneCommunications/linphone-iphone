@@ -956,6 +956,14 @@ const char *linphone_core_get_payload_type_description(LinphoneCore *lc, Payload
 
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
 
+/**
+ * @ingroup proxy 
+ *Create a proxy config with default value from Linphone core.
+ *@param lc #LinphoneCore object
+ *@return #LinphoneProxyConfig with defualt value set 
+ */
+LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
+	
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 void linphone_core_clear_proxy_config(LinphoneCore *lc);
