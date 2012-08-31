@@ -938,8 +938,11 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	SalMediaDescription *md=call->localdesc;
 	AudioStream *audiostream;
+	int dscp=lp_config_get_int(lc->config,"rtp","audio_dscp",-1);
 
 	call->audiostream=audiostream=audio_stream_new(md->streams[0].rtp_port,md->streams[0].rtcp_port,linphone_core_ipv6_enabled(lc));
+	if (dscp!=-1)
+		audio_stream_set_dscp(audiostream,dscp);
 	if (linphone_core_echo_limiter_enabled(lc)){
 		const char *type=lp_config_get_string(lc->config,"sound","el_type","mic");
 		if (strcasecmp(type,"mic")==0)
@@ -990,7 +993,11 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && md->streams[1].rtp_port>0){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
+		int dscp=lp_config_get_int(lc->config,"rtp","video_dscp",-1);
+		
 		call->videostream=video_stream_new(md->streams[1].rtp_port,md->streams[1].rtcp_port,linphone_core_ipv6_enabled(lc));
+		if (dscp!=-1)
+			video_stream_set_dscp(call->videostream,dscp);
 		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
 		if (video_recv_buf_size>0) rtp_session_set_recv_buf_size(call->videostream->session,video_recv_buf_size);
 
