@@ -86,7 +86,15 @@ typedef bool_t (*LinphoneCoreIterateHook)(void *data);
 void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
-
+/**
+ * @ingroup misc
+ *Function to get  call country code from  ISO 3166-1 alpha-2 code, ex: FR returns 33
+ *@param iso country code alpha2
+ *@return call country code or -1 if not found
+ */
+int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
+	
+	
 #ifdef __cplusplus
 }
 #endif
