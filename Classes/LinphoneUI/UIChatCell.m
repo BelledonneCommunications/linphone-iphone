@@ -71,14 +71,18 @@
 #pragma mark - 
 
 - (void)update {
+	NSString *displayName = nil;
+    UIImage *image = nil;
     if(chat == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat cell: null chat"];
         return;
     }
-    
-    NSString *displayName = nil;
-    UIImage *image = nil;
-    NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[chat remoteContact]];
+    LinphoneAddress* linphoneAddress =linphone_core_interpret_url([LinphoneManager getLc],[[chat remoteContact] cStringUsingEncoding: NSUTF8StringEncoding]);
+	if (linphoneAddress==NULL)
+		return ;
+	char *tmp=linphone_address_as_string_uri_only(linphoneAddress);
+	NSString *normalizedSipAddress=[NSString stringWithUTF8String:tmp];
+	ms_free(tmp);
     ABRecordRef contact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
     if(contact != nil) {
         displayName = [FastAddressBook getContactDisplayName:contact];
@@ -87,7 +91,7 @@
     
     // Display name
     if(displayName == nil) {
-        displayName = [chat remoteContact];
+        displayName = [NSString stringWithCString:linphone_address_get_username(linphoneAddress) encoding:NSUTF8StringEncoding];
     }
     [addressLabel setText:displayName];
     
@@ -99,6 +103,7 @@
     
     // Message
     [chatContentLabel setText:[chat message]];
+	linphone_address_destroy(linphoneAddress);
 }
 
 - (void)layoutSubviews {

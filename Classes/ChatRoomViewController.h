@@ -29,6 +29,7 @@
 @interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
+	NSString *_remoteAddress;
 }
 
 

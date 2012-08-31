@@ -26,7 +26,7 @@
     NSMutableArray *data;
 }
 
-@property (nonatomic, retain) NSString *remoteAddress;
+@property (nonatomic, copy) NSString *remoteAddress;
 
 - (void)addChatEntry:(ChatModel*)chat;
 - (void)updateChatEntry:(ChatModel*)chat;
