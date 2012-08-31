@@ -2179,11 +2179,21 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	if (h->rid==-1){
 		SalAddress *from_parsed=sal_address_new(from);
 		char domain[256];
+		char *uri, *domain_ptr = NULL;
 		if (from_parsed==NULL) {
 			ms_warning("sal_register() bad from %s",from);
 			return -1;
 		}
-		snprintf(domain,sizeof(domain),"sip:%s",sal_address_get_domain(from_parsed));
+		/* Get domain using sal_address_as_string_uri_only() and stripping the username part instead of
+		   using sal_address_get_domain() because to have a properly formatted domain with IPv6 proxy addresses. */
+		uri = sal_address_as_string_uri_only(from_parsed);
+		if (uri) domain_ptr = strchr(uri, '@');
+		if (domain_ptr) {
+			snprintf(domain,sizeof(domain),"sip:%s",domain_ptr+1);
+		} else {
+			snprintf(domain,sizeof(domain),"sip:%s",sal_address_get_domain(from_parsed));
+		}
+		if (uri) ms_free(uri);
 		sal_address_destroy(from_parsed);
 		eXosip_lock();
 		h->rid=eXosip_register_build_initial_register(from,domain,NULL,expires,&msg);
