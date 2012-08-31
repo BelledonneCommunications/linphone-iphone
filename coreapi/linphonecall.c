@@ -333,9 +333,17 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 	}
 }
 
+static void update_sal_media_description_from_params(SalMediaDescription *md, const LinphoneCallParams *params){
+	if (params->down_bw)
+		md->bandwidth=params->down_bw;
+	if (params->down_ptime)
+		md->streams[0].ptime=params->down_ptime;
+}
+
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
+	int ping_time=-1;
 	call->dir=LinphoneCallOutgoing;
 	call->op=sal_op_new(lc->sal);
 	sal_op_set_user_pointer(call->op,call);
@@ -350,7 +358,11 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->localdesc=create_local_media_description (lc,call);
 	call->camera_active=params->has_video;
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
-		linphone_core_run_stun_tests(call->core,call);
+		ping_time=linphone_core_run_stun_tests(call->core,call);
+	}
+	if (ping_time>=0) {
+		linphone_core_adapt_to_network(lc,ping_time,&call->params);
+		update_sal_media_description_from_params(call->localdesc,&call->params);
 	}
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
@@ -363,6 +375,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
+	int ping_time=-1;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -385,7 +398,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
-	call->localdesc=create_local_media_description (lc,call);
+	call->localdesc=create_local_media_description(lc,call);
 	call->camera_active=call->params.has_video;
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
@@ -403,11 +416,15 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			}
 			break;
 		case LinphonePolicyUseStun:
-			linphone_core_run_stun_tests(call->core,call);
+			ping_time=linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
 		default:
 			break;
 	}
+	if (ping_time>=0) {
+		linphone_core_adapt_to_network(lc,ping_time,&call->params);
+		update_sal_media_description_from_params(call->localdesc,&call->params);
+	};
 	discover_mtu(lc,linphone_address_get_domain(from));
 	return call;
 }
@@ -1137,6 +1154,7 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 	int remote_bw=0;
 	LinphoneCore *lc=call->core;
 	int up_ptime=0;
+	const LinphoneCallParams *params=&call->params;
 	*used_pt=-1;
 
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
@@ -1146,7 +1164,9 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 		if ((pt->flags & PAYLOAD_TYPE_FLAG_CAN_SEND) && first) {
 			if (desc->type==SalAudio){
 				linphone_core_update_allocated_audio_bandwidth_in_call(call,pt);
-				up_ptime=linphone_core_get_upload_ptime(lc);
+				if (params->up_ptime)
+					up_ptime=params->up_ptime;
+				else up_ptime=linphone_core_get_upload_ptime(lc);
 			}
 			*used_pt=payload_type_get_number(pt);
 			first=FALSE;
@@ -1161,7 +1181,12 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 		}
 
 		if (desc->type==SalAudio){
-				bw=get_min_bandwidth(call->audio_bw,remote_bw);
+			int audio_bw=call->audio_bw;
+			if (params->up_bw){
+				if (params->up_bw< audio_bw)
+					audio_bw=params->up_bw;
+			}
+			bw=get_min_bandwidth(audio_bw,remote_bw);
 		}else bw=get_min_bandwidth(get_video_bandwidth(linphone_core_get_upload_bandwidth (lc),call->audio_bw),remote_bw);
 		if (bw>0) pt->normal_bitrate=bw*1000;
 		else if (desc->type==SalAudio){

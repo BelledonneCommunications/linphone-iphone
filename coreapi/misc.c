@@ -466,12 +466,13 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 	return len;
 }
 
-void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
+/* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
-
+	
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
-		return;
+		return -1;
 	}
 	if (server!=NULL){
 		struct sockaddr_storage ss;
@@ -483,29 +484,31 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		bool_t cone_audio=FALSE,cone_video=FALSE;
 		struct timeval init,cur;
 		SalEndpointCandidate *ac,*vc;
+		double elapsed;
+		int ret=0;
 		
 		ac=&call->localdesc->streams[0].candidates[0];
 		vc=&call->localdesc->streams[1].candidates[0];
 		
 		if (parse_hostname_to_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
-			return;
+			return -1;
 		}
 		if (lc->vtable.display_status!=NULL)
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
 		sock1=create_socket(call->audio_port);
-		if (sock1==-1) return;
+		if (sock1==-1) return -1;
 		if (video_enabled){
 			sock2=create_socket(call->video_port);
-			if (sock2==-1) return ;
+			if (sock2==-1) return -1;
 		}
 		got_audio=FALSE;
 		got_video=FALSE;
 		gettimeofday(&init,NULL);
 		do{
-			double elapsed;
+			
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
@@ -544,10 +547,12 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  {
 				ms_message("Stun responses timeout, going ahead.");
+				ret=-1;
 				break;
 			}
 			loops++;
 		}while(!(got_audio && (got_video||sock2==-1)  ) );
+		if (ret==0) ret=(int)elapsed;
 		if (!got_audio){
 			ms_error("No stun server response for audio port.");
 		}else{
@@ -570,8 +575,28 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}
 		close_socket(sock1);
 		if (sock2!=-1) close_socket(sock2);
+		return ret;
+	}
+	return -1;
+	
+}
+
+void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
+	if (lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
+		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
+		
+		if (ping_time_ms>threshold){
+			int edge_ptime=lp_config_get_int(lc->config,"net","edge_ptime",100);
+			int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",30);
+			/* we are in a 2G network*/
+			params->up_bw=params->down_bw=edge_bw;
+			params->up_ptime=params->down_ptime=edge_ptime;
+			
+		}/*else use default settings */
 	}
 }
+
+
 
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
