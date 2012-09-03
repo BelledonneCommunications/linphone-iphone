@@ -1954,12 +1954,12 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
 	LinphoneChatMessage* chat_msg;
-	ms_message("Processing reponse status [%i] for method [%s]",ev->response->status_code,osip_message_get_method(ev->request));
 	if (op==NULL){
 		ms_warning("other_request_reply(): Receiving response to unknown request.");
 		return;
 	}
 	if (ev->response){
+		ms_message("Processing reponse status [%i] for method [%s]",ev->response->status_code,osip_message_get_method(ev->request));
 		update_contact_from_response(op,ev->response);
 		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
 			sal->callbacks.ping_reply(op);
