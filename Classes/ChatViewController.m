@@ -103,6 +103,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
+-(void) startChatRoom {
+	//Push ChatRoom
+	ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+	if(controller != nil) {
+		[controller setRemoteAddress:[addressField text]];
+	}
+	addressField.text = @"";
+	
+}
 - (IBAction)onAddClick:(id)event {
     if ([[addressField text ]length] == 0) { // if no address is manually set, lauch address book
 		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
@@ -110,12 +119,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[ContactSelection setSipFilter:TRUE];
 		[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
 	} else {
-		//Push ChatRoom
-		ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
-		if(controller != nil) {
-			[controller setRemoteAddress:[addressField text]];
-		}
-		addressField.text = @"";
+		[self startChatRoom]; 
 	}
 }
 
@@ -127,6 +131,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [addressField resignFirstResponder];
-    return YES;
+    if ([[addressField text ]length]> 0) 
+		[self startChatRoom];
+	return YES;
 }
 @end

@@ -162,8 +162,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	{
 		[self setString: linphone_core_get_stun_server(lc) forKey:@"stun_preference"];
         [self
-            setInteger:lp_config_get_int(linphone_core_get_config(lc),"app","ice_preference"
-            , 0) forKey:@"ice_preference"];
+            setBool:linphone_core_get_firewall_policy(lc)==LinphonePolicyUseIce forKey:@"ice_preference"];
 	}
 	
 	{
