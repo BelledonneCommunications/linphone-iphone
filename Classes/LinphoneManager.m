@@ -73,7 +73,6 @@ extern  void libmsbcg729_init();
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
-@synthesize defaultExpires;
 @synthesize settingsStore;
 @synthesize database;
 @synthesize fastAddressBook;
@@ -203,7 +202,6 @@ struct codec_name_pref_table codec_pref_table[]={
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         settingsStore = nil;
-		self.defaultExpires = 600;
         [self openDatabase];
         [self copyDefaultSettings];
 		lastRemoteNotificationTime=0;
@@ -506,7 +504,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
 				linphone_proxy_config_expires(proxy, 0);
 			} else if (proxy){
-				linphone_proxy_config_expires(proxy, lLinphoneMgr.defaultExpires); //might be better to save the previous value
+				linphone_proxy_config_expires(proxy, lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","default_expires",3600));
 			}
 			
 			if (lLinphoneMgr.connectivity != newConnectivity) {

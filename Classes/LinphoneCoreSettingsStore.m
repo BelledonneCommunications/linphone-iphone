@@ -102,7 +102,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
-            [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
+            [self setInteger: lp_config_get_int(linphone_core_get_config(lc),"app","default_expires",3600) forKey:@"expire_preference"];
 			[self setString:linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
 				|| port!=NULL){
@@ -352,19 +352,17 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_set_identity(proxyCfg,identity);
 		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
+		
+
+		int expire = [self integerForKey:@"expire_preference"];
+		lp_config_set_int(linphone_core_get_config(lc),"app","default_expires",expire);
+		
 		BOOL isWifiOnly = [self boolForKey:@"wifi_only_preference"];
 		
 		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
 			linphone_proxy_config_expires(proxyCfg, 0);
 		} else {
-            if ([self objectForKey:@"expire_preference"]) {
-				int expire = [self integerForKey:@"expire_preference"];
-				/*if(expire < lLinphoneMgr.defaultExpires)
-				 expire = lLinphoneMgr.defaultExpires;*/
-				linphone_proxy_config_expires(proxyCfg, expire);
-			}
-			//else not set 
-		
+            linphone_proxy_config_expires(proxyCfg,expire);
 		}
 		
 		if (isOutboundProxy)

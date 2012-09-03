@@ -126,7 +126,6 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
-@property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
