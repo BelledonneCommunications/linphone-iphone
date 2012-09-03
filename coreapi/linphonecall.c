@@ -521,11 +521,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			switch(call->reason){
 				case LinphoneReasonDeclined:
 					call->log->status=LinphoneCallDeclined;
-<<<<<<< HEAD
-				break;
-=======
 					break;
->>>>>>> add device identifier api
 				case LinphoneReasonNotAnswered:
 					call->log->status=LinphoneCallMissed;
 				break;
@@ -1747,6 +1743,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			ice_session_eliminate_redundant_candidates(call->ice_session);
 			ice_session_choose_default_candidates(call->ice_session);
 		} else {
+			ms_warning("No STUN answer from [%s], disabling ICE",linphone_core_get_stun_server(call->core));
 			linphone_call_delete_ice_session(call);
 		}
 		switch (call->state) {

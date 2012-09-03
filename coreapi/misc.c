@@ -611,6 +611,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 	}
 
+	ms_message("ICE: gathering candidate from [%s]",server);
 	/* Gather local srflx candidates. */
 	ice_session_gather_candidates(call->ice_session, ss, ss_len);
 	return 0;

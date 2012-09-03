@@ -1903,7 +1903,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
-				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
+				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
+						,linphone_core_get_stun_server(lc));
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
