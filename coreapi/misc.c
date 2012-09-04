@@ -467,7 +467,7 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 }
 
 /* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc){
 	const char *server=linphone_core_get_stun_server(lc);
 	
 	if (lc->sip_conf.ipv6_enabled){
@@ -483,12 +483,8 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		bool_t got_audio,got_video;
 		bool_t cone_audio=FALSE,cone_video=FALSE;
 		struct timeval init,cur;
-		SalEndpointCandidate *ac,*vc;
 		double elapsed;
 		int ret=0;
-		
-		ac=&call->localdesc->streams[0].candidates[0];
-		vc=&call->localdesc->streams[1].candidates[0];
 		
 		if (parse_hostname_to_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
@@ -569,28 +565,25 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				}
 			}
 		}
-		if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0)
-		    || sock2==-1){
-			strcpy(call->localdesc->addr,ac->addr);
-		}
 		close_socket(sock1);
 		if (sock2!=-1) close_socket(sock2);
 		return ret;
 	}
 	return -1;
-	
 }
 
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
 	if (lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
+		ms_message("Stun server ping time is %i ms",ping_time_ms);
 		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
 		
 		if (ping_time_ms>threshold){
 			int edge_ptime=lp_config_get_int(lc->config,"net","edge_ptime",100);
-			int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",30);
+			int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",20);
 			/* we are in a 2G network*/
 			params->up_bw=params->down_bw=edge_bw;
 			params->up_ptime=params->down_ptime=edge_ptime;
+			params->has_video=FALSE;
 			
 		}/*else use default settings */
 	}

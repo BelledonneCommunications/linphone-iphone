@@ -105,11 +105,6 @@ typedef enum{
 	SalStreamInactive
 }SalStreamDir;
 
-typedef struct SalEndpointCandidate{
-	char addr[64];
-	int port;
-}SalEndpointCandidate;
-
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
@@ -159,7 +154,6 @@ typedef struct SalStreamDescription{
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;
-	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
 	SalStreamDir dir;
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
