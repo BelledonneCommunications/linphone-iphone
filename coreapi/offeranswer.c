@@ -240,7 +240,6 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	if (result->payloads && !only_telephone_event(result->payloads) && (remote_offer->rtp_port!=0 || remote_offer->rtp_port==SalStreamSendOnly)){
 		strcpy(result->rtp_addr,local_cap->rtp_addr);
 		strcpy(result->rtcp_addr,local_cap->rtcp_addr);
-		memcpy(result->candidates,local_cap->candidates,sizeof(result->candidates));
 		result->rtp_port=local_cap->rtp_port;
 		result->rtcp_port=local_cap->rtcp_port;
 		result->bandwidth=local_cap->bandwidth;

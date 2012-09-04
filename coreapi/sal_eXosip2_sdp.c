@@ -279,10 +279,6 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 	rtcp_addr=desc->rtcp_addr;
 	rtp_port=desc->rtp_port;
 	rtcp_port=desc->rtcp_port;
-	if (desc->candidates[0].addr[0]!='\0'){
-		rtp_addr=desc->candidates[0].addr;
-		rtp_port=desc->candidates[0].port;
-	}
 
 	if (desc->proto == SalProtoRtpSavp) {
 		int i;

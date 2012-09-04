@@ -69,8 +69,12 @@ struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
 	LinphoneMediaEncryption media_encryption;
-	PayloadType *audio_codec;
-	PayloadType *video_codec;
+	PayloadType *audio_codec; /*audio codec currently in use */
+	PayloadType *video_codec; /*video codec currently in use */
+	int down_bw;
+	int up_bw;
+	int down_ptime;
+	int up_ptime;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
@@ -179,10 +183,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
-int do_registration(LinphoneCore *lc, bool_t doit);
-void check_for_registration(LinphoneCore *lc);
 void check_sound_device(LinphoneCore *lc);
-void linphone_core_verify_codecs(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *to, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
@@ -229,7 +230,14 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFri
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
-void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
+
+typedef struct StunCandidate{
+	char addr[64];
+	int port;
+}StunCandidate;
+
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc);
+void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
@@ -386,6 +394,7 @@ typedef struct rtp_config
                               /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
+	bool_t pad;
 }rtp_config_t;
 
 
