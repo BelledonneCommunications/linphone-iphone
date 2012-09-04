@@ -16,6 +16,7 @@ You need:
  $ port install libeXosip2 #WARNING: currently outdated in macport
  $ port install ffmpeg-devel
  $ port install libvpx
+ $ port install readline
  
 - Install srtp (optional) for call encryption
  $ port install srtp

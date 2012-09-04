@@ -827,6 +827,24 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 
 /* function to be periodically called in a main loop */
 void linphone_core_iterate(LinphoneCore *lc);
+#if 0 /*not implemented yet*/
+/**
+ * @ingroup initializing
+ * Provide Linphone Core with an unique identifier. This be later used to identified contact address coming from this device.
+ * Value is not saved.
+ * @param lc object
+ * @param string identifying the device, can be EMEI or UDID
+ *
+ */
+void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id);
+/**
+ * @ingroup initializing
+ * get Linphone unique identifier
+ *
+ */
+const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
+
+#endif
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 

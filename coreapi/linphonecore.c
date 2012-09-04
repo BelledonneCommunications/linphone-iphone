@@ -1903,7 +1903,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
-				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
+				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
+						,linphone_core_get_stun_server(lc));
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
@@ -5104,3 +5105,10 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
+void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
+	if (lc->device_id) ms_free(lc->device_id);
+	lc->device_id=ms_strdup(device_id);
+}
+const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
+	return lc->device_id;
+}

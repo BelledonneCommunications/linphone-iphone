@@ -542,6 +542,7 @@ struct _LinphoneCore
 	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
+	char* device_id;
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
