@@ -34,6 +34,6 @@ public interface LinphoneChatRoom {
 	* send a message to peer member of this chat room.
 	* @param  	message to be sent
 	*/
-	void sendMessage(String message);
+	void sendMessage(Object opaque, String message);
 
 }
