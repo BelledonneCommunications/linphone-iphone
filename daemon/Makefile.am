@@ -14,6 +14,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.cc \
 			commands/call-stats.cc \
 			commands/call-status.cc \
+			commands/dtmf.cc \
 			commands/firewall-policy.cc \
 			commands/help.cc \
 			commands/ipv6.cc \
@@ -39,6 +40,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/call.h \
 			commands/call-stats.h \
 			commands/call-status.h \
+			commands/dtmf.h \
 			commands/firewall-policy.h \
 			commands/help.h \
 			commands/ipv6.h \

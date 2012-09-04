@@ -21,6 +21,7 @@
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
+#include "commands/dtmf.h"
 #include "commands/firewall-policy.h"
 #include "commands/help.h"
 #include "commands/ipv6.h"
@@ -314,6 +315,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new UnregisterCommand());
 	mCommands.push_back(new CallCommand());
 	mCommands.push_back(new TerminateCommand());
+	mCommands.push_back(new DtmfCommand());
 	mCommands.push_back(new PopEventCommand());
 	mCommands.push_back(new AnswerCommand());
 	mCommands.push_back(new CallStatusCommand());
