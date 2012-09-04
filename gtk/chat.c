@@ -19,6 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+
+#ifdef HAVE_GTK_OSX
+#include <gtkosxapplication.h>
+#endif
+
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const char *with){
 	GtkWidget *w;
 	GtkTextBuffer *b;
@@ -37,6 +42,7 @@ GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const char *with){
 }
 
 void linphone_gtk_create_chatroom(const char *with){
+	
 	LinphoneChatRoom *cr=linphone_core_create_chat_room(linphone_gtk_get_core(),with);
 	if (!cr) return;
 	linphone_gtk_init_chatroom(cr,with);
@@ -101,9 +107,15 @@ void linphone_gtk_send_text(GtkWidget *button){
 
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
 	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);
-	if (w==NULL){
+	if (w==NULL){		
 		w=linphone_gtk_init_chatroom(room,linphone_address_as_string_uri_only(from));
 	}
+
+	#ifdef HAVE_GTK_OSX
+	/* Notify when a new message is send */
+	linphone_gtk_status_icon_set_blinking(TRUE);
+	#endif
+	
 	linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
 				linphone_address_as_string_uri_only(from),
 				message,FALSE);

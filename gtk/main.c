@@ -65,8 +65,9 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
-static void linphone_gtk_status_icon_set_blinking(gboolean val);
+void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
+
 
 
 static gboolean verbose=0;
@@ -1347,7 +1348,7 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 
 #endif
 
-static void linphone_gtk_status_icon_set_blinking(gboolean val){
+void linphone_gtk_status_icon_set_blinking(gboolean val){
 #ifdef HAVE_GTK_OSX
 	static gint attention_id;
 	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);

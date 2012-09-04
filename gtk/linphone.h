@@ -97,6 +97,8 @@ void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, c
 
 void linphone_gtk_show_directory_search(void);
 
+void linphone_gtk_status_icon_set_blinking(gboolean val);
+
 /*functions controlling the different views*/
 gboolean linphone_gtk_use_in_call_view();
 LinphoneCall *linphone_gtk_get_currently_displayed_call(gboolean *is_conf);
