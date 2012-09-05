@@ -501,7 +501,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
 				linphone_proxy_config_expires(proxy, 0);
 			} else if (proxy){
-				linphone_proxy_config_expires(proxy, lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","default_expires",3600));
+				int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
+				if (defaultExpire>=0)
+				linphone_proxy_config_expires(proxy, defaultExpire);
+				//else keep default value from linphonecore
 			}
 			
 			if (lLinphoneMgr.connectivity != newConnectivity) {
@@ -1066,6 +1069,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",value?[key UTF8String]:NULL, [value UTF8String]);
 }
 -(NSString*)lpConfigStringForKey:(NSString*) key {
+	if (!theLinphoneCore) {
+		[LinphoneLogger log:LinphoneLoggerError format:@"cannot read configuration because linphone core not ready yet"];
+		return nil;
+	};
 	const char* value=lp_config_get_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],NULL);	
 	if (value) 
 		return [NSString stringWithCString:value encoding:[NSString defaultCStringEncoding]];

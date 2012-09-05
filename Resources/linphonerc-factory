@@ -30,5 +30,3 @@ history_max_size=30
 max_calls=3
 
 
-[default_values]
-reg_expires=600
