@@ -371,7 +371,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - 
 
 - (void)startUp {   
-    if ([[LinphoneManager instance].settingsStore boolForKey:@"enable_first_login_view_preference"] == true) {
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {
         // Change to fist login view
         [self changeCurrentView: [FirstLoginViewController compositeViewDescription]];
     } else {
@@ -484,7 +484,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     if(force || ![view equal: currentView]) {
         if(transition == nil)
             transition = [PhoneMainView getTransition:currentView new:view];
-        if ([[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"] == true) {
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
             [mainViewController setViewTransition:transition];
         } else {
             [mainViewController setViewTransition:nil];

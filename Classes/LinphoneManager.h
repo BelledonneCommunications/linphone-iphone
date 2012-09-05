@@ -80,6 +80,7 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
     NSMutableArray *inhibitedEvent;
+	
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -123,7 +124,17 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
-@property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
+-(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key; 
+-(NSString*)lpConfigStringForKey:(NSString*) key;
+
+-(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key; 
+-(NSInteger)lpConfigIntForKey:(NSString*) key;
+
+-(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
+-(BOOL)lpConfigBoolForKey:(NSString*) key;
+
+
+
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;

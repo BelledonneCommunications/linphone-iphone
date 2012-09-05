@@ -73,7 +73,6 @@ extern  void libmsbcg729_init();
 @synthesize connectivity;
 @synthesize frontCamId;
 @synthesize backCamId;
-@synthesize settingsStore;
 @synthesize database;
 @synthesize fastAddressBook;
 @synthesize pushNotificationToken;
@@ -180,7 +179,7 @@ struct codec_name_pref_table codec_pref_table[]={
 
 - (id)init {
     if ((self = [super init])) {
-        fastAddressBook = [[FastAddressBook alloc] init];
+        
         
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
@@ -201,7 +200,6 @@ struct codec_name_pref_table codec_pref_table[]={
         inhibitedEvent = [[NSMutableArray alloc] init];
         logs = [[NSMutableArray alloc] init];
         database = NULL;
-        settingsStore = nil;
         [self openDatabase];
         [self copyDefaultSettings];
 		lastRemoteNotificationTime=0;
@@ -220,7 +218,6 @@ struct codec_name_pref_table codec_pref_table[]={
     [inhibitedEvent release];
     [fastAddressBook release];
     [self closeDatabase];
-    [settingsStore release];
     [logs release];
     
     [super dealloc];
@@ -616,6 +613,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
     
+	
+	fastAddressBook = [[FastAddressBook alloc] init];
+	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
 	const char* lRing = [[myBundle pathForResource:@"ring"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -691,8 +691,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     else
         ms_set_cpu_count(1);
     
-	if (!settingsStore)
-		settingsStore = [[LinphoneCoreSettingsStore alloc] init];
+
     
     [LinphoneLogger logc:LinphoneLoggerWarning format:"Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()
@@ -742,8 +741,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (BOOL)resignActive {
-    if ([[LinphoneManager instance] settingsStore] != Nil)
-		[[[LinphoneManager instance] settingsStore] synchronize];
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
     return YES;
 }
@@ -1061,4 +1058,31 @@ static LinphoneCoreVTable linphonec_vtable = {
     return TRUE;
 }
 
+
+
+
+
+-(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",value?[key UTF8String]:NULL, [value UTF8String]);
+}
+-(NSString*)lpConfigStringForKey:(NSString*) key {
+	const char* value=lp_config_get_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],NULL);	
+	if (value) 
+		return [NSString stringWithCString:value encoding:[NSString defaultCStringEncoding]];
+	else
+		return nil;
+}
+-(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key {
+	lp_config_set_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value );
+}
+-(NSInteger)lpConfigIntForKey:(NSString*) key {
+	return lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],-1);
+}
+
+-(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key {
+	return [self lpConfigSetInt:(NSInteger)(value==TRUE) forKey:key];
+}
+-(BOOL)lpConfigBoolForKey:(NSString*) key {
+	return [self lpConfigIntForKey:key] == 1;		
+}
 @end

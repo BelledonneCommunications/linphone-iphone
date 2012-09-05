@@ -226,7 +226,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     // Animation
-    if(animation && [[LinphoneManager instance].settingsStore boolForKey:@"animations_preference"] == true) {
+    if(animation && [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
       CATransition* trans = [CATransition animation];
       [trans setType:kCATransitionPush];
       [trans setDuration:0.35];
@@ -254,17 +254,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)clearProxyConfig {
-    [[LinphoneManager instance].settingsStore setObject:@"" forKey:@"username_preference"];
-    [[LinphoneManager instance].settingsStore setObject:@"" forKey:@"password_preference"];
-    [[LinphoneManager instance].settingsStore setObject:@"" forKey:@"domain_preference"];
-    [[LinphoneManager instance].settingsStore synchronize];
+	linphone_core_clear_proxy_config([LinphoneManager getLc]);
+	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
 }
 
 - (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {
-    [[LinphoneManager instance].settingsStore setObject:username forKey:@"username_preference"];
-    [[LinphoneManager instance].settingsStore setObject:password forKey:@"password_preference"];
-    [[LinphoneManager instance].settingsStore setObject:domain forKey:@"domain_preference"];
-    [[LinphoneManager instance].settingsStore synchronize];
+	const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] UTF8String];
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+	LinphoneAuthInfo* info=linphone_auth_info_new([username UTF8String],NULL,[password UTF8String],NULL,NULL);
+	linphone_proxy_config_set_identity(proxyCfg,identity);
+	linphone_proxy_config_set_server_addr(proxyCfg,[domain UTF8String]);
+	linphone_proxy_config_enable_register(proxyCfg,true);
+	linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
+	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
+	linphone_core_add_auth_info([LinphoneManager getLc],info)
+	;
 }
 
 - (void)checkUserExist:(NSString*)username {

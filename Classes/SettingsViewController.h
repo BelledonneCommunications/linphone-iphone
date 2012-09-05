@@ -21,8 +21,11 @@
 
 #import "UICompositeViewController.h"
 #import "IASKAppSettingsViewController.h"
+#import "LinphoneCoreSettingsStore.h"
 
 @interface SettingsViewController: UIViewController<IASKSettingsDelegate, UICompositeViewDelegate> {
+	@private
+	LinphoneCoreSettingsStore* settingsStore;
 }
 
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;

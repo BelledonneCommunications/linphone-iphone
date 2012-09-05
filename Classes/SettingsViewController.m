@@ -29,7 +29,7 @@
 #import "IASKPSTextFieldSpecifierViewCell.h"
 #import "IASKSpecifier.h"
 #import "IASKTextField.h"
-
+#include "lpconfig.h"
 
 #pragma mark - IASKSwitchEx Class
 
@@ -349,9 +349,9 @@
 - (void)dealloc {
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [settingsController release];
+    [settingsStore release];
+	[settingsController release];
     [navigationController release];
-    
     [super dealloc];
 }
 
@@ -379,12 +379,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+	
+	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
+	[settingsStore transformLinphoneCoreToKeys];
+	
     settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
     settingsController.showCreditsFooter = FALSE;
     settingsController.hiddenKeys = [self findHiddenKeys];
-    settingsController.settingsStore = [[LinphoneManager instance] settingsStore];
+    settingsController.settingsStore = settingsStore;
     
     [navigationController.view setBackgroundColor:[UIColor clearColor]];
     
@@ -491,7 +494,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"backgroundmode_preference"];
         [hiddenKeys addObject:@"start_at_boot_preference"];
     } else {
-         if(![[[[LinphoneManager instance] settingsStore] objectForKey:@"backgroundmode_preference"] boolValue]) {
+         if(![[LinphoneManager instance] lpConfigBoolForKey:@"backgroundmode_preference"]) {
              [hiddenKeys addObject:@"start_at_boot_preference"];
          }
     }
@@ -505,15 +508,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
     
-    if([[[[LinphoneManager instance] settingsStore] objectForKey:@"random_port_preference"] boolValue]) {
+    if(lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"sip","sip_random_port",0)==1) {
         [hiddenKeys addObject:@"port_preference"];
     }
 
-    if([[[[LinphoneManager instance] settingsStore] objectForKey:@"stun_preference"]  length] == 0) {
+    if(linphone_core_get_stun_server([LinphoneManager getLc]) != NULL) {
         [hiddenKeys addObject:@"ice_preference"];
     }
 
-    if(![[[[LinphoneManager instance] settingsStore] objectForKey:@"debugenable_preference"] boolValue]) {
+    if(![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
         [hiddenKeys addObject:@"console_button"];
     }
     

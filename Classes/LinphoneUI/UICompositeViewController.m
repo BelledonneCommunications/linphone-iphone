@@ -326,7 +326,7 @@
             return [UIApplication sharedApplication].statusBarOrientation;
         }
         
-        NSString* rotationPreference = [[LinphoneManager instance].settingsStore objectForKey:@"rotation_preference"];
+        NSString* rotationPreference = [[LinphoneManager instance] lpConfigStringForKey:@"rotation_preference"];
         if([rotationPreference isEqualToString:@"auto"]) {
             // Don't rotate in UIDeviceOrientationFaceUp UIDeviceOrientationFaceDown
             if(!UIDeviceOrientationIsPortrait(deviceOrientation) && !UIDeviceOrientationIsLandscape(deviceOrientation)) {

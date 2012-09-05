@@ -79,8 +79,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  name:kLinphoneRegistrationUpdate
                                                object:nil];
     
-	[usernameField setText:[[LinphoneManager instance].settingsStore objectForKey:@"username_preference"]];
-	[passwordField setText:[[LinphoneManager instance].settingsStore objectForKey:@"password_preference"]];
+	
+	[usernameField setText:[[LinphoneManager instance] lpConfigStringForKey:@"wizard_username"]];
+	[passwordField setText:[[LinphoneManager instance] lpConfigStringForKey:@"wizard_password"]];
     
     // Update on show
     const MSList* list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
@@ -104,7 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	NSString* siteUrl = [[LinphoneManager instance].settingsStore objectForKey:@"first_login_view_url"];
+	NSString* siteUrl = [[LinphoneManager instance] lpConfigStringForKey:@"first_login_view_url"];
 	if (siteUrl==nil) {
 		siteUrl=@"http://www.linphone.org";
 	}
@@ -123,7 +124,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
     switch (state) {
         case LinphoneRegistrationOk: {
-            [[LinphoneManager instance].settingsStore setBool:false forKey:@"enable_first_login_view_preference"]; 
+            [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"enable_first_login_view_preference"]; 
             [waitView setHidden:true];
             [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
             break;
@@ -137,8 +138,8 @@ static UICompositeViewDescription *compositeDescription = nil;
             [waitView setHidden:true];
             
             //erase uername passwd
-			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"username_preference"];
-			[[LinphoneManager instance].settingsStore setObject:Nil forKey:@"password_preference"];
+			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"wizard_username"];
+			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"wizard_password"];
             break;
         }
         case LinphoneRegistrationProgress: {
@@ -175,10 +176,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
         [error release];
 	} else {
-		[[LinphoneManager instance].settingsStore setObject:usernameField.text forKey:@"username_preference"];
-		[[LinphoneManager instance].settingsStore setObject:passwordField.text forKey:@"password_preference"];
+		linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+		linphone_core_clear_proxy_config([LinphoneManager getLc]);
+		LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
+		/*default domain is supposed to be preset from linphonerc*/
+		NSString* identity = [NSString stringWithFormat:@"sip:%@@%@",usernameField.text,linphone_proxy_config_get_addr(proxyCfg)];
+		linphone_proxy_config_set_identity(proxyCfg,[identity UTF8String]);
+		LinphoneAuthInfo* auth_info =linphone_auth_info_new([usernameField.text UTF8String]
+															,[usernameField.text UTF8String]
+															,[passwordField.text UTF8String]
+															,NULL
+															,NULL);
+		linphone_core_add_auth_info([LinphoneManager getLc], auth_info);
+		linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
+		linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
 		[self.waitView setHidden:false];
-        [[LinphoneManager instance].settingsStore synchronize];
 	};
 }
 

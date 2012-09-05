@@ -403,7 +403,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView commitAnimations];
     }
     
-    if([[[LinphoneManager instance] settingsStore] boolForKey:@"self_video_preference"]) {
+    if([[LinphoneManager instance] lpConfigBoolForKey:@"self_video_preference"]) {
         [videoPreview setHidden:FALSE];
     } else {
         [videoPreview setHidden:TRUE];
