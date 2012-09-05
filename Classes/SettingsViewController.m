@@ -512,7 +512,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"port_preference"];
     }
 
-    if(linphone_core_get_stun_server([LinphoneManager getLc]) != NULL) {
+    if(linphone_core_get_stun_server([LinphoneManager getLc]) == NULL) {
         [hiddenKeys addObject:@"ice_preference"];
     }
 
