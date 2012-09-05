@@ -1267,6 +1267,8 @@ void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTran
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
+int linphone_core_get_calls_nb(const LinphoneCore *lc);
+
 const MSList *linphone_core_get_calls(LinphoneCore *lc);
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
