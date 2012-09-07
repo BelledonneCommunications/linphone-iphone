@@ -91,7 +91,7 @@ typedef struct _CallCallbackObj
 static const int linphone_call_magic=0x3343;
 
 struct _LinphoneChatMessage {
-	const char* message;
+	char* message;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessageStateChangeCb cb;
 	void* cb_ud;

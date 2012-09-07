@@ -253,6 +253,12 @@ typedef enum SalSubscribeStatus{
 	SalSubscribeTerminated
 }SalSubscribeStatus;
 
+typedef enum SalTextDeliveryStatus{
+	SalTextDeliveryInProgress,
+	SalTextDeliveryDone,
+	SalTextDeliveryFailed
+}SalTextDeliveryStatus;
+
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
@@ -269,6 +275,7 @@ typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
@@ -293,6 +300,7 @@ typedef struct SalCallbacks{
 	SalOnDtmfReceived dtmf_received;
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
+	SalOnTextDeliveryUpdate text_delivery_update;
 	SalOnNotify notify;
 	SalOnNotifyPresence notify_presence;
 	SalOnNotifyRefer notify_refer;

@@ -801,6 +801,28 @@ static void notify_refer(SalOp *op, SalReferStatus status){
 	}
 }
 
+static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus status){
+	switch(status){
+		case SalTextDeliveryInProgress:
+			return LinphoneChatMessageStateInProgress;
+		case SalTextDeliveryDone:
+			return LinphoneChatMessageStateDelivered;
+		case SalTextDeliveryFailed:
+			return LinphoneChatMessageStateNotDelivered;
+	}
+	return LinphoneChatMessageStateIdle;
+}
+
+static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
+	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
+	if (chat_msg && chat_msg->cb) {
+		chat_msg->cb(chat_msg
+			,chatStatusSal2Linphone(status)
+			,chat_msg->cb_ud);
+	}
+	linphone_chat_message_destroy(chat_msg);
+}
+
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -818,12 +840,13 @@ SalCallbacks linphone_sal_callbacks={
 	dtmf_received,
 	refer_received,
 	text_received,
+	text_delivery_update,
 	notify,
 	notify_presence,
 	notify_refer,
 	subscribe_received,
 	subscribe_closed,
-	ping_reply
+	ping_reply,
 };
 
 

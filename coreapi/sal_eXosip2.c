@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "sal_eXosip2.h"
-#include "private.h"
 #include "offeranswer.h"
 
 #ifdef ANDROID
@@ -98,12 +97,12 @@ static void sal_remove_register(Sal *sal, int rid){
 	}
 }
 
-static SalOp * sal_find_other(Sal *sal, osip_message_t *response){
+static SalOp * sal_find_other(Sal *sal, osip_message_t *message){
 	const MSList *elem;
 	SalOp *op;
-	osip_call_id_t *callid=osip_message_get_call_id(response);
+	osip_call_id_t *callid=osip_message_get_call_id(message);
 	if (callid==NULL) {
-		ms_error("There is no call-id in this response !");
+		ms_error("There is no call-id in this message !");
 		return NULL;
 	}
 	for(elem=sal->other_transactions;elem!=NULL;elem=elem->next){
@@ -931,9 +930,9 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 }
 void sal_op_cancel_authentication(SalOp *h) {
 	if (h->rid >0) {
-		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"));
+		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,"Authentication failure");
 	} else if (h->cid >0) {
-		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"),0);
+		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,"Authentication failure",0);
 	} else {
 		ms_warning("Auth failure not handled");
 	}
@@ -999,6 +998,7 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 		return sal_find_in_subscribe(sal,ev->nid);
 	}
 	if (ev->response) return sal_find_other(sal,ev->response);
+	else if (ev->request) return sal_find_other(sal,ev->request);
 	return NULL;
 }
 
@@ -1953,7 +1953,6 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 
 static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
-	LinphoneChatMessage* chat_msg;
 	if (op==NULL){
 		ms_warning("other_request_reply(): Receiving response to unknown request.");
 		return;
@@ -1963,16 +1962,18 @@ static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 		update_contact_from_response(op,ev->response);
 		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
 			sal->callbacks.ping_reply(op);
-		else if (ev->request && strcmp(osip_message_get_method(ev->request),"MESSAGE")==0) {
-			/*out of call message acknolegment*/
-			chat_msg=(LinphoneChatMessage* )op->base.user_pointer;
-			if (chat_msg->cb) {
-				chat_msg->cb(chat_msg
-							 ,(ev->response->status_code==200?LinphoneChatMessageStateDelivered:LinphoneChatMessageStateNotDelivered)
-							 ,chat_msg->cb_ud);
+	}
+	if (ev->request && strcmp(osip_message_get_method(ev->request),"MESSAGE")==0) {
+		/*out of call message acknolegment*/
+		SalTextDeliveryStatus status=SalTextDeliveryFailed;
+		if (ev->response){
+			if (ev->response->status_code<200){
+				status=SalTextDeliveryInProgress;
+			}else if (ev->response->status_code<300 && ev->response->status_code>=200){
+				status=SalTextDeliveryDone;
 			}
-			linphone_chat_message_destroy(chat_msg);
 		}
+		sal->callbacks.text_delivery_update(op,status);
 	}
 }
 
@@ -2081,8 +2082,8 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
 				return process_authentication(sal,ev);
 			}
-    	case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
-   		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
+		case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
+		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
 			sal_exosip_subscription_closed(sal,ev);
 			break;
 		case EXOSIP_REGISTRATION_FAILURE:

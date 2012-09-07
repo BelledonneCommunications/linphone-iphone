@@ -90,6 +90,10 @@ const char* linphone_gtk_get_used_identity(){
 	else return linphone_core_get_primary_contact(lc);
 }
 
+static void on_chat_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *user_pointer){
+	g_message("chat message state is %s",linphone_chat_message_state_to_string(state));
+}
+
 void linphone_gtk_send_text(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	GtkWidget *entry=linphone_gtk_get_widget(w,"text_entry");
@@ -97,10 +101,12 @@ void linphone_gtk_send_text(GtkWidget *button){
 	const gchar *entered;
 	entered=gtk_entry_get_text(GTK_ENTRY(entry));
 	if (strlen(entered)>0) {
+		LinphoneChatMessage *msg;
 		linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
 				linphone_gtk_get_used_identity(),
 				entered,TRUE);
-		linphone_chat_room_send_message(cr,entered);
+		msg=linphone_chat_room_create_message(cr,entered);
+		linphone_chat_room_send_message2(cr,msg,on_chat_state_changed,NULL);
 		gtk_entry_set_text(GTK_ENTRY(entry),"");
 	}
 }

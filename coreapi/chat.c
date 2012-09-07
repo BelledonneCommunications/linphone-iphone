@@ -136,10 +136,12 @@ LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *c
 	msg->message=ms_strdup(message);
 	return msg;
 }
+
 void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
-	if (msg->message) ms_free((void*)msg->message);
-	ms_free((void*)msg);
+	if (msg->message) ms_free(msg->message);
+	ms_free(msg);
 }
+
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
