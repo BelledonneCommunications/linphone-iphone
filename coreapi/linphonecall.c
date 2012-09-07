@@ -1781,10 +1781,15 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
+		int ping_time = -1;
 		if (evd->info.ice_processing_successful==TRUE) {
 			ice_session_compute_candidates_foundations(call->ice_session);
 			ice_session_eliminate_redundant_candidates(call->ice_session);
 			ice_session_choose_default_candidates(call->ice_session);
+			ping_time = ice_session_gathering_duration(call->ice_session);
+			if (ping_time >=0) {
+				ping_time /= ice_session_nb_check_lists(call->ice_session);
+			}
 		} else {
 			ms_warning("No STUN answer from [%s], disabling ICE",linphone_core_get_stun_server(call->core));
 			linphone_call_delete_ice_session(call);
@@ -1797,10 +1802,16 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_core_start_accept_call_update(call->core, call);
 				break;
 			case LinphoneCallOutgoingInit:
+				if (ping_time >= 0) {
+					linphone_core_adapt_to_network(call->core, ping_time, &call->params);
+				}
 				linphone_call_stop_media_streams(call);
 				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
 			default:
+				if (ping_time >= 0) {
+					linphone_core_adapt_to_network(call->core, ping_time, &call->params);
+				}
 				linphone_call_stop_media_streams(call);
 				linphone_core_notify_incoming_call(call->core, call);
 				break;
