@@ -661,6 +661,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)batteryLevelChanged:(NSNotification*)notif {
+	if (! [LinphoneManager isLcReady]) return;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
         return;

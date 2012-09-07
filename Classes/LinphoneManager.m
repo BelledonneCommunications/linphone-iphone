@@ -503,7 +503,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			} else if (proxy){
 				int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
 				if (defaultExpire>=0)
-				linphone_proxy_config_expires(proxy, defaultExpire);
+					linphone_proxy_config_expires(proxy, defaultExpire);
 				//else keep default value from linphonecore
 			}
 			
@@ -538,13 +538,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     proxyReachability = SCNetworkReachabilityCreateWithName(nil, nodeName);
     
-	//initial state is network off should be done as soon as possible
-	SCNetworkReachabilityFlags flags;
-	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags: %s", SCErrorString(SCError())];
-		return;
-	}
-	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);
 
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register reachability cb: %s", SCErrorString(SCError())];
@@ -712,12 +705,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
-#if 0
-    if (settingsStore != nil) {
-        [settingsStore release];
-        settingsStore = nil;
-    }
-#endif
+
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
@@ -772,8 +760,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
 	if (proxyCfg && [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
 		//For registration register
-		linphone_core_refresh_registers(theLinphoneCore);
-		
+		[self refreshRegisters];
 		//wait for registration answer
 		int i=0;
 		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
@@ -833,21 +820,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)refreshRegisters{
-	/*first check if network is available*/
-	if (proxyReachability){
-		SCNetworkReachabilityFlags flags=0;
-		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags, re-creating reachability context."];
-			[self setupNetworkReachabilityCallback];
-		}else{
-			networkReachabilityCallBack(proxyReachability, flags, 0);
-			if (flags==0){
-				/*workaround iOS bug: reachability API cease to work after some time.*/
-				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
-				[self setupNetworkReachabilityCallback];
-			}
-		}
-	}else [LinphoneLogger logc:LinphoneLoggerError format:"No proxy reachability context created !"];
+	if (connectivity==none){
+		//don't trust ios when he says there is no network. Create a new reachability context, the previous one might be mis-functionning.
+		[self setupNetworkReachabilityCallback];
+	}
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
 
