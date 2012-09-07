@@ -955,6 +955,11 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getProxy(JNIEn
 		return NULL;
 	}
 }
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setContactParameters(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jparams) {
+	const char* params = env->GetStringUTFChars(jparams, NULL);
+	linphone_proxy_config_set_contact_parameters((LinphoneProxyConfig*)proxyCfg, params);
+	env->ReleaseStringUTFChars(jparams, params);
+}
 extern "C" int Java_org_linphone_core_LinphoneProxyConfigImpl_setRoute(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jroute) {
 	if (jroute != NULL) {
 		const char* route = env->GetStringUTFChars(jroute, NULL);
