@@ -124,6 +124,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [messageField resignFirstResponder];
+    
     if(chatRoom != NULL) {
         linphone_chat_room_destroy(chatRoom);
         chatRoom = NULL;
