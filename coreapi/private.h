@@ -409,7 +409,6 @@ typedef struct net_config
 	int upload_bw;
 	int firewall_policy;
 	int mtu;
-	int down_ptime;
 	bool_t nat_sdp_only;
 }net_config_t;
 

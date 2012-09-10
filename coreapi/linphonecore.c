@@ -967,14 +967,14 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
  * Set audio packetization time linphone expects to receive from peer
  */
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
-	lc->net_conf.down_ptime=ptime;
+	lp_config_set_int(lc->config,"rtp","download_ptime",ptime);
 }
 
 /**
  * Get audio packetization time linphone expects to receive from peer
  */
 int linphone_core_get_download_ptime(LinphoneCore *lc) {
-	return lc->net_conf.down_ptime;
+	return lp_config_get_int(lc->config,"rtp","download_ptime",0);
 }
 
 /**
