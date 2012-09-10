@@ -1029,18 +1029,20 @@ static void make_notification(const char *title, const char *body){
 
 #endif
 
-static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
+void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 #ifdef HAVE_NOTIFY
 	if (!notify_is_initted())
 		if (!notify_init ("Linphone")) ms_error("Libnotify failed to init.");
 #endif
 	if (!call) {
+	  
 #ifdef HAVE_NOTIFY
 		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
 #ifdef HAVE_NOTIFY1
 	,NULL
 #endif
 ),NULL))
+	 
 				ms_error("Failed to send notification.");
 #else
 		linphone_gtk_show_main_window();

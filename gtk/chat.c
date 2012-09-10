@@ -112,14 +112,24 @@ void linphone_gtk_send_text(GtkWidget *button){
 }
 
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
-	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);
+	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);	
 	if (w==NULL){		
 		w=linphone_gtk_init_chatroom(room,linphone_address_as_string_uri_only(from));
+		g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(FALSE));
 	}
 
 	#ifdef HAVE_GTK_OSX
-	/* Notify when a new message is send */
+	/* Notified when a new message is sent */
 	linphone_gtk_status_icon_set_blinking(TRUE);
+	#else 
+	if (!gtk_window_is_active((GtkWindow*)w)){
+		if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_notified"))){
+			linphone_gtk_notify(NULL,message);
+			g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(TRUE));
+		}
+	} else {
+		g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(FALSE));
+	}
 	#endif
 	
 	linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
