@@ -740,6 +740,9 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
+	if (obj->contact_params!=NULL){
+		lp_config_set_string(config,key,"contact_params",obj->contact_params);
+	}
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
@@ -774,6 +777,8 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
+	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
+	
 	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",DEFAULT_INT(config,reg_expires,600)));
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 	
