@@ -502,7 +502,7 @@ AS_CASE($enable_external_mediastreamer,
 			AC_CONFIG_SUBDIRS( mediastreamer2 )
 			MEDIASTREAMER_DIR=${top_srcdir}/mediastreamer2
 			MEDIASTREAMER_CFLAGS="-I\$(top_srcdir)/mediastreamer2/include"
-			MEDIASTREAMER_LIBS="\$(top_builddir)/mediastreamer2/src/libmediastreamer.la"
+			MEDIASTREAMER_LIBS="\$(top_builddir)/mediastreamer2/src/libmediastreamer_base.la \$(top_builddir)/mediastreamer2/src/libmediastreamer_voip.la"
 dnl need to temporary change quotes to allow square brackets
 		 	changequote(<<, >>)
 			MS2_VERSION=`grep -e '^.C_INIT(' $MEDIASTREAMER_DIR/configure.ac | sed -e 's:\([^(]\+\)(\[mediastreamer\],\[\(.*\)\]):\2:g'`
