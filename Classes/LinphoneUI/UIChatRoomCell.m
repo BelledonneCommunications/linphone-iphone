@@ -38,7 +38,7 @@ static const CGFloat CELL_MIN_HEIGHT = 40.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
-static const CGFloat CELL_MESSAGE_Y_MARGIN = 33.0f;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
 static UIFont *CELL_FONT = nil;
 

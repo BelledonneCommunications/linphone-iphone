@@ -73,7 +73,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                 content:@"ChatRoomViewController" 
                                                                stateBar:nil 
                                                         stateBarEnabled:false 
-                                                                 tabBar:@"UIMainBar" 
+                                                                 tabBar:/*@"UIMainBar"*/nil
                                                           tabBarEnabled:false /*to keep room for chat*/
                                                              fullscreen:false
                                                           landscapeMode:[LinphoneManager runningOnIpad]
@@ -167,11 +167,20 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     NSString *displayName = nil;
     UIImage *image = nil;
-	LinphoneAddress* linphoneAddress =linphone_core_interpret_url([LinphoneManager getLc],[_remoteAddress cStringUsingEncoding: NSUTF8StringEncoding]);
-	if (linphoneAddress==NULL)
-		return ;
-	char *tmp=linphone_address_as_string_uri_only(linphoneAddress);
-	NSString *normalizedSipAddress=[NSString stringWithUTF8String:tmp];
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [_remoteAddress UTF8String]);
+	if (linphoneAddress == NULL) {
+        [[PhoneMainView instance] popCurrentView];
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
+														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to send a message or use a valid SIP address (I.E sip:john@example.net)",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil];
+		[error show];
+		[error release];
+        return;
+    }
+	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
+	NSString *normalizedSipAddress = [NSString stringWithUTF8String:tmp];
 	ms_free(tmp);
 	
     ABRecordRef acontact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
@@ -180,7 +189,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         image = [FastAddressBook getContactImage:acontact thumbnail:true];
     }
 	[_remoteAddress release];
-    _remoteAddress =[normalizedSipAddress retain];
+    _remoteAddress = [normalizedSipAddress retain];
+    
     // Display name
     if(displayName == nil) {
         displayName = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
@@ -192,14 +202,15 @@ static UICompositeViewDescription *compositeDescription = nil;
         image = [UIImage imageNamed:@"avatar_unknown_small.png"];
     }
     [avatarImage setImage:image];
-	linphone_address_destroy(linphoneAddress);
+    
+    linphone_address_destroy(linphoneAddress);
 }
 
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
-	ChatRoomViewController* thiz=(ChatRoomViewController*)ud;
+	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
 	ChatModel *chat = (ChatModel *)linphone_chat_message_get_user_data(msg); 
 	[LinphoneLogger log:LinphoneLoggerLog 
-				 format:@"Delivery status for [%@] is [%s]",chat.message,linphone_chat_message_state_to_string(state)];
+				 format:@"Delivery status for [%@] is [%s]", chat.message, linphone_chat_message_state_to_string(state)];
 	[chat setState:[NSNumber numberWithInt:state]];
 	[chat update];
 	[thiz.tableController updateChatEntry:chat];
@@ -215,10 +226,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         return FALSE;
     }
     if(chatRoom == NULL) {
-		
-
 		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [_remoteAddress UTF8String]);
-		
     }
     
     // Save message in database
@@ -233,9 +241,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [chat create];
     [tableController addChatEntry:chat];
     [chat release];
-    LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom,[message UTF8String]);
-	linphone_chat_message_set_user_data(msg,chat);
-    linphone_chat_room_send_message2(chatRoom, msg,message_status,self);
+    LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
+	linphone_chat_message_set_user_data(msg, chat);
+    linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
     return TRUE;
 }
 
@@ -302,7 +310,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (void)keyboardWillHide:(NSNotification *)notif {
     //CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    //CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     [UIView beginAnimations:@"resize" context:nil];
@@ -310,16 +318,27 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [UIView setAnimationCurve:curve];
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
-    // Move view
-    CGRect frame = [[self chatView/*view*/] frame];
-    frame.origin.y = frame.origin.y + endFrame.size.height /*0*/;
-    [[self /*view*/chatView] setFrame:frame];
+    // Resize chat view
+    {
+        CGRect chatFrame = [[self chatView] frame];
+        chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
+        [[self chatView] setFrame:chatFrame];
+    }
     
-    // Resize table view
-    CGRect tableFrame = [tableController.view frame];
-    tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-    tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
-    [tableController.view setFrame:tableFrame];
+    // Move header view
+    {
+        CGRect headerFrame = [headerView frame];
+        headerFrame.origin.y = 0;
+        [headerView setFrame:headerFrame];
+    }
+    
+    // Resize & Move table view
+    {
+        CGRect tableFrame = [tableController.view frame];
+        tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        [tableController.view setFrame:tableFrame];
+    }
     
     [UIView commitAnimations];
 }
@@ -340,30 +359,36 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         endFrame.size.width = width;
     }
     
-    // Move view
+    // Resize chat view
     {
-        CGRect frame = [[self chatView/*view*/] frame];
-       // CGRect rect = [PhoneMainView instance].view.bounds;
-		
-       // CGPoint pos = {frame.size.width, frame.size.height};
-       // CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
-        frame.origin.y = /*(rect.size.height - gPos.y*/ frame.origin.y - endFrame.size.height;
-        if(frame.origin.y > 0) frame.origin.y = 0;
-        [[self chatView] setFrame:frame];
-    }
-    
-    // Resize table view
-    {
-        /*CGPoint pos = {0, 0};
-        CGPoint gPos = [[self.view superview] convertPoint:pos toView:self.view];*/
-        CGRect tableFrame = [tableController.view frame];
-        tableFrame.origin.y += endFrame.size.height - headerView.frame.size.height/*gPos.y*/;
-        tableFrame.size.height = tableFrame.size.height - endFrame.size.height+headerView.frame.size.height;
-        [tableController.view setFrame:tableFrame];
+        CGRect viewFrame = [[self view] frame];
+        CGRect rect = [PhoneMainView instance].view.bounds;
+        CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
+        CGPoint gPos = [self.view convertPoint:pos toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+        float diff = (rect.size.height - gPos.y - endFrame.size.height);
+        if(diff > 0) diff = 0;
+        CGRect chatFrame = [[self chatView] frame];
+        chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
+        [[self chatView] setFrame:chatFrame];
     }
 
+    // Move header view
+    {
+        CGRect headerFrame = [headerView frame];
+        headerFrame.origin.y = -headerFrame.size.height;
+        [headerView setFrame:headerFrame];
+    }
+    
+    // Resize & Move table view
+    {
+        CGRect tableFrame = [tableController.view frame];
+        tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        [tableController.view setFrame:tableFrame];
+    }
+    
     // Scroll
-    int lastSection = [tableController.tableView numberOfSections] -1;
+    int lastSection = [tableController.tableView numberOfSections] - 1;
     if(lastSection >= 0) {
         int lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
         if(lastRow >=0) {

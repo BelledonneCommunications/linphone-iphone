@@ -737,20 +737,21 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)waitForRegisterToArrive{
-	int i;
-	UIBackgroundTaskIdentifier bgid;
-	stopWaitingRegisters=FALSE;
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
-	bgid=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
-	}];
-	for(i=0;i<100 && (!stopWaitingRegisters);i++){
-		linphone_core_iterate(theLinphoneCore);
-		usleep(20000);
-	}
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
-	[[UIApplication sharedApplication] endBackgroundTask:bgid];
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+        stopWaitingRegisters = FALSE;
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
+        UIBackgroundTaskIdentifier bgid = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+            [LinphoneManager instance]->stopWaitingRegisters=TRUE;
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
+        }];
+        for(int i=0;i<100 && (!stopWaitingRegisters);i++){
+            linphone_core_iterate(theLinphoneCore);
+            usleep(20000);
+        }
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
+        [[UIApplication sharedApplication] endBackgroundTask:bgid];
+    }
 }
 
 - (BOOL)enterBackgroundMode {
@@ -913,8 +914,8 @@ static LinphoneCoreVTable linphonec_vtable = {
         }
         linphone_address_destroy(linphoneAddress);
 	} else if (proxyCfg==nil){
-		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
-														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
+														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid SIP address (I.E sip:john@example.net)",nil)
 													   delegate:nil 
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 											  otherButtonTitles:nil];

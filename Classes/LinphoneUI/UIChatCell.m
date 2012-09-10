@@ -77,13 +77,14 @@
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat cell: null chat"];
         return;
     }
-    LinphoneAddress* linphoneAddress =linphone_core_interpret_url([LinphoneManager getLc],[[chat remoteContact] cStringUsingEncoding: NSUTF8StringEncoding]);
-	if (linphoneAddress==NULL)
-		return ;
-	char *tmp=linphone_address_as_string_uri_only(linphoneAddress);
-	NSString *normalizedSipAddress=[NSString stringWithUTF8String:tmp];
+    LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [[chat remoteContact] UTF8String]);
+	if (linphoneAddress == NULL)
+		return;
+	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
+	NSString *normalizedSipAddress = [NSString stringWithUTF8String:tmp];
 	ms_free(tmp);
-    ABRecordRef contact =[[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+    
+    ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
     if(contact != nil) {
         displayName = [FastAddressBook getContactDisplayName:contact];
         image = [FastAddressBook getContactImage:contact thumbnail:true];
@@ -91,7 +92,7 @@
     
     // Display name
     if(displayName == nil) {
-        displayName = [NSString stringWithCString:linphone_address_get_username(linphoneAddress) encoding:NSUTF8StringEncoding];
+        displayName = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
     }
     [addressLabel setText:displayName];
     
@@ -103,7 +104,8 @@
     
     // Message
     [chatContentLabel setText:[chat message]];
-	linphone_address_destroy(linphoneAddress);
+    
+    linphone_address_destroy(linphoneAddress);
 }
 
 - (void)layoutSubviews {

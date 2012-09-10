@@ -2662,12 +2662,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				57F005C615EE2D9200914747 /* linphonerc-factory */,
-				57F005C715EE2D9200914747 /* linphonerc-factory~ipad */,
-				57F005C315EE2CCF00914747 /* linphonerc */,
-				2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */,
-				2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */,
-				2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */,
 				D3F83F741582253100336684 /* accept_default.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
@@ -2748,6 +2742,9 @@
 				D3A74F5A15C6AA0B001500B9 /* chat_field.9.png */,
 				D3A74F5D15C6ADA9001500B9 /* chat_field.9@2x.png */,
 				D3B9A3DA15A58C440096EA4E /* chat_field.png */,
+				2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */,
+				2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */,
+				2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */,
 				D3B9A3DB15A58C440096EA4E /* chat_ok_default.png */,
 				D3B9A3DC15A58C440096EA4E /* chat_ok_over.png */,
 				D38327FF158100E400FA0D23 /* chat_over.png */,
@@ -2864,6 +2861,9 @@
 				D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */,
 				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
 				D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */,
+				57F005C315EE2CCF00914747 /* linphonerc */,
+				57F005C615EE2D9200914747 /* linphonerc-factory */,
+				57F005C715EE2D9200914747 /* linphonerc-factory~ipad */,
 				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
 				D3EA5416159858A80037DC6B /* list_delete_default.png */,
 				D3EA5417159858A80037DC6B /* list_delete_over.png */,
