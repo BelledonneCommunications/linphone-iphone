@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2203127213A247B50049A2ED /* iosdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203127013A247B40049A2ED /* iosdisplay.h */; };
 		220ED19A13A8F87700AC21E0 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19713A8F87700AC21E0 /* libspeexdsp.a */; };
 		220ED19B13A8F87700AC21E0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19813A8F87700AC21E0 /* libspeex.a */; };
 		220ED19C13A8F87700AC21E0 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19913A8F87700AC21E0 /* libortp.a */; };
@@ -190,7 +189,6 @@
 		225D64741521BFA6008B2E81 /* toast.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5411F84E2D00373793 /* toast.h */; };
 		225D64751521BFA6008B2E81 /* unproto.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5511F84E2D00373793 /* unproto.h */; };
 		225D64761521BFA6008B2E81 /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
-		225D64771521BFA6008B2E81 /* iosdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203127013A247B40049A2ED /* iosdisplay.h */; };
 		225D64781521BFA6008B2E81 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		225D64791521BFA6008B2E81 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
 		225D647A1521BFA6008B2E81 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
@@ -339,7 +337,6 @@
 		225D65411521C009008B2E81 /* toast.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5411F84E2D00373793 /* toast.h */; };
 		225D65421521C009008B2E81 /* unproto.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5511F84E2D00373793 /* unproto.h */; };
 		225D65431521C009008B2E81 /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
-		225D65441521C009008B2E81 /* iosdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203127013A247B40049A2ED /* iosdisplay.h */; };
 		225D65451521C009008B2E81 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		225D65461521C009008B2E81 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
 		225D65471521C009008B2E81 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
@@ -445,7 +442,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2203127013A247B40049A2ED /* iosdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iosdisplay.h; sourceTree = "<group>"; };
 		2203127113A247B40049A2ED /* iosdisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iosdisplay.m; sourceTree = "<group>"; };
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
 		220ED19713A8F87700AC21E0 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
@@ -1002,7 +998,6 @@
 				222CA62311F6CF7600621220 /* ulaw.c */,
 				222CA62411F6CF7600621220 /* vfw-missing.h */,
 				222CA62911F6CF7600621220 /* void.c */,
-				2203127013A247B40049A2ED /* iosdisplay.h */,
 				2203127113A247B40049A2ED /* iosdisplay.m */,
 				2203127413A249F70049A2ED /* filter-template.c */,
 				221F58E313AF44B300D603C9 /* scaler.h */,
@@ -1284,7 +1279,6 @@
 				225D64741521BFA6008B2E81 /* toast.h in Headers */,
 				225D64751521BFA6008B2E81 /* unproto.h in Headers */,
 				225D64761521BFA6008B2E81 /* linphonecore_utils.h in Headers */,
-				225D64771521BFA6008B2E81 /* iosdisplay.h in Headers */,
 				225D64781521BFA6008B2E81 /* nowebcam.h in Headers */,
 				225D64791521BFA6008B2E81 /* swscale.h in Headers */,
 				225D647A1521BFA6008B2E81 /* alldescs.h in Headers */,
@@ -1371,7 +1365,6 @@
 				225D65411521C009008B2E81 /* toast.h in Headers */,
 				225D65421521C009008B2E81 /* unproto.h in Headers */,
 				225D65431521C009008B2E81 /* linphonecore_utils.h in Headers */,
-				225D65441521C009008B2E81 /* iosdisplay.h in Headers */,
 				225D65451521C009008B2E81 /* nowebcam.h in Headers */,
 				225D65461521C009008B2E81 /* swscale.h in Headers */,
 				225D65471521C009008B2E81 /* alldescs.h in Headers */,
@@ -1458,7 +1451,6 @@
 				22A10B5A11F84E2D00373793 /* toast.h in Headers */,
 				22A10B5B11F84E2D00373793 /* unproto.h in Headers */,
 				229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */,
-				2203127213A247B50049A2ED /* iosdisplay.h in Headers */,
 				220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */,
 				2258C44113A9377B0087A596 /* swscale.h in Headers */,
 				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
@@ -1820,7 +1812,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
@@ -1879,7 +1870,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
@@ -2189,6 +2179,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					IPV6_PKTINFO,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -2203,7 +2194,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
@@ -2248,6 +2238,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					IPV6_PKTINFO,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -2262,7 +2253,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
@@ -2307,6 +2297,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = liblinphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					IPV6_PKTINFO,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
 					ENABLE_TRACE,
@@ -2321,7 +2312,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,
@@ -2421,7 +2411,6 @@
 					"POSIXTIMER_INTERVAL=10000",
 					IN_LINPHONE,
 					__MAC_AQ_ENABLED__,
-					HAVE_EXOSIP_GET_SOCKET,
 					MS2_INTERNAL,
 					VIDEO_ENABLED,
 					HAVE_LIBAVCODEC_AVCODEC_H,

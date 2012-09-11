@@ -17,8 +17,6 @@
 		220FAD3710765B400068D98F /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2E10765B400068D98F /* libosipparser2.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
-		2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
-		2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
 		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
@@ -43,7 +41,6 @@
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
 		2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
-		2274550810700509006EC466 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc-factory */; };
 		228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228697C311AC29B800E9E0CA /* CFNetwork.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
 		22A10F3B11F8960300373793 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
@@ -104,19 +101,18 @@
 		34075199150645A300B89C47 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340751961506459A00B89C47 /* CoreTelephony.framework */; };
 		340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
 		340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
-		341FCA8E149798210084BC26 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-factory~ipad */; };
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		57F005C415EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
+		57F005C515EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
 		D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
-		D321FF9615E628BB0098B5F4 /* linphonrc in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9515E628BB0098B5F4 /* linphonrc */; };
-		D321FF9715E628BB0098B5F4 /* linphonrc in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9515E628BB0098B5F4 /* linphonrc */; };
 		D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9815E628CB0098B5F4 /* linphonerc~ipad */; };
 		D321FF9A15E628CB0098B5F4 /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9815E628CB0098B5F4 /* linphonerc~ipad */; };
 		D32409C3158B49A600C8C119 /* UILongTouchButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32409C2158B49A600C8C119 /* UILongTouchButton.m */; };
@@ -130,11 +126,18 @@
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
+		D33BEE1F15FF711B004ED2AF /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1C15FF711B004ED2AF /* linphonerc-factory */; };
+		D33BEE2015FF711B004ED2AF /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1C15FF711B004ED2AF /* linphonerc-factory */; };
+		D33BEE2115FF711B004ED2AF /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */; };
+		D33BEE2215FF711B004ED2AF /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */; };
+		D33BEE2315FF711B004ED2AF /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1E15FF711B004ED2AF /* rootca.pem */; };
+		D33BEE2415FF711B004ED2AF /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1E15FF711B004ED2AF /* rootca.pem */; };
+		D33BEE2715FF7450004ED2AF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D33BEE2515FF7450004ED2AF /* libmediastreamer_base.a */; };
+		D33BEE2815FF7450004ED2AF /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D33BEE2615FF7450004ED2AF /* libmediastreamer_voip.a */; };
+		D33BEE2915FF7470004ED2AF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D33BEE2515FF7450004ED2AF /* libmediastreamer_base.a */; };
+		D33BEE2A15FF7470004ED2AF /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D33BEE2615FF7450004ED2AF /* libmediastreamer_voip.a */; };
 		D34BD61515C13B7B0070C209 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
-		D34BD61915C13D0B0070C209 /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
-		D34BD6A615C13DB70070C209 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 2274550710700509006EC466 /* linphonerc-factory */; };
-		D34BD6A715C13DB70070C209 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 341FCA8D149798210084BC26 /* linphonerc-factory~ipad */; };
 		D34BD74115C13E250070C209 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		D35860D615B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		D35860D715B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
@@ -265,7 +268,6 @@
 		D3FE9F4D15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */; };
 		D3FE9F4E15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
-		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -411,7 +413,6 @@
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		2211DB8F147555C800DEE054 /* libmediastreamer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer.a"; sourceTree = "<group>"; };
 		2211DB911475562600DEE054 /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
-		2211DBBB14769C8200DEE054 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
 		2214783C1386A2030020F8B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2214EB7812F846B1002A5394 /* UICallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallButton.h; sourceTree = "<group>"; };
 		2214EB7912F846B1002A5394 /* UICallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallButton.m; sourceTree = "<group>"; };
@@ -419,7 +420,6 @@
 		2214EB8812F84EBB002A5394 /* UIHangUpButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHangUpButton.m; sourceTree = "<group>"; };
 		2214EBF112F86360002A5394 /* UIMicroButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMicroButton.h; sourceTree = "<group>"; };
 		2214EBF212F86360002A5394 /* UIMicroButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIMicroButton.m; sourceTree = "<group>"; };
-		2218A5CE12F973450088A667 /* LogView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogView.h; sourceTree = "<group>"; };
 		22276E8013C73D3100210156 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "liblinphone-sdk/apple-darwin/lib/libavcodec.a"; sourceTree = "<group>"; };
 		22276E8113C73D3100210156 /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "liblinphone-sdk/apple-darwin/lib/libavutil.a"; sourceTree = "<group>"; };
 		22276E8213C73D3100210156 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
@@ -444,7 +444,6 @@
 		2274402E106F335E006EC466 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		22744043106F33FC006EC466 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		22744056106F9BC9006EC466 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		2274550710700509006EC466 /* linphonerc-factory */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = "linphonerc-factory"; sourceTree = "<group>"; };
 		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		22968A5D12F875C600588287 /* UISpeakerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpeakerButton.h; sourceTree = "<group>"; };
 		22968A5E12F875C600588287 /* UISpeakerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UISpeakerButton.m; sourceTree = "<group>"; };
@@ -537,15 +536,14 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340751961506459A00B89C47 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		340751E4150E4D0200B89C47 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
 		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
 		340751E6150F38FD00B89C47 /* UIVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIVideoButton.m; sourceTree = "<group>"; };
-		341FCA8D149798210084BC26 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -553,7 +551,6 @@
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
 		D3196D3C15A32BD7007FEEBA /* UITransferButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransferButton.h; sourceTree = "<group>"; };
 		D3196D3D15A32BD8007FEEBA /* UITransferButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransferButton.m; sourceTree = "<group>"; };
-		D321FF9515E628BB0098B5F4 /* linphonrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonrc; path = Resources/linphonrc; sourceTree = "<group>"; };
 		D321FF9815E628CB0098B5F4 /* linphonerc~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc~ipad"; path = "Resources/linphonerc~ipad"; sourceTree = "<group>"; };
 		D32409C1158B49A600C8C119 /* UILongTouchButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILongTouchButton.h; sourceTree = "<group>"; };
 		D32409C2158B49A600C8C119 /* UILongTouchButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILongTouchButton.m; sourceTree = "<group>"; };
@@ -566,6 +563,11 @@
 		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
 		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
+		D33BEE1C15FF711B004ED2AF /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
+		D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
+		D33BEE1E15FF711B004ED2AF /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
+		D33BEE2515FF7450004ED2AF /* libmediastreamer_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_base.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_base.a"; sourceTree = "<group>"; };
+		D33BEE2615FF7450004ED2AF /* libmediastreamer_voip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_voip.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_voip.a"; sourceTree = "<group>"; };
 		D35860D515B549B500513429 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
 		D35E757F159328EA0066B1C1 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
 		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
@@ -712,7 +714,8 @@
 				220FAD3210765B400068D98F /* libgsm.a in Frameworks */,
 				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
-				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
+				D33BEE2715FF7450004ED2AF /* libmediastreamer_base.a in Frameworks */,
+				D33BEE2815FF7450004ED2AF /* libmediastreamer_voip.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				226183B0147259670037138E /* libmssilk.a in Frameworks */,
@@ -764,7 +767,8 @@
 				22D8F174147548E2008C97DB /* libilbc.a in Frameworks */,
 				22D8F16B147548E2008C97DB /* libgsm.a in Frameworks */,
 				D34BD61815C13D0B0070C209 /* liblinphone.a in Frameworks */,
-				D34BD61915C13D0B0070C209 /* libmediastreamer.a in Frameworks */,
+				D33BEE2915FF7470004ED2AF /* libmediastreamer_base.a in Frameworks */,
+				D33BEE2A15FF7470004ED2AF /* libmediastreamer_voip.a in Frameworks */,
 				22D8F17B147548E2008C97DB /* libmsamr.a in Frameworks */,
 				22D8F175147548E2008C97DB /* libmsilbc.a in Frameworks */,
 				22D8F179147548E2008C97DB /* libopencore-amrwb.a in Frameworks */,
@@ -815,8 +819,6 @@
 				D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */,
 				D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */,
 				D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */,
-				340751E4150E4D0200B89C47 /* CallDelegate.h */,
-				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
@@ -1030,7 +1032,6 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
-				2218A5CE12F973450088A667 /* LogView.h */,
 				D35E757F159328EA0066B1C1 /* UIAddressTextField.h */,
 				D35E7580159328EB0066B1C1 /* UIAddressTextField.m */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
@@ -1163,6 +1164,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				D33BEE2515FF7450004ED2AF /* libmediastreamer_base.a */,
+				D33BEE2615FF7450004ED2AF /* libmediastreamer_voip.a */,
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -1236,6 +1239,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D33BEE1C15FF711B004ED2AF /* linphonerc-factory */,
+				D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */,
+				D33BEE1E15FF711B004ED2AF /* rootca.pem */,
 				D37CD2BF15E21CB30028869A /* 01.wav */,
 				D37CD2C615E21CB30028869A /* bj_barcode.png */,
 				D37CD2C715E21CB30028869A /* bj_decline.png */,
@@ -1256,10 +1262,8 @@
 				D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */,
 				D37CD32515E220620028869A /* buschjaeger_icon_72.png */,
 				D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */,
-				2274550710700509006EC466 /* linphonerc-factory */,
-				341FCA8D149798210084BC26 /* linphonerc-factory~ipad */,
 				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
-				D321FF9515E628BB0098B5F4 /* linphonrc */,
+				57F005C315EE2CCF00914747 /* linphonerc */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1463,9 +1467,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2274550810700509006EC466 /* linphonerc-factory in Resources */,
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
-				341FCA8E149798210084BC26 /* linphonerc-factory~ipad in Resources */,
 				D37CD2D115E21CB30028869A /* 01.wav in Resources */,
 				D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */,
 				D37CD2E115E21CB30028869A /* bj_decline.png in Resources */,
@@ -1494,7 +1496,7 @@
 				D37CD38915E22C020028869A /* BuschJaegerMainView.xib in Resources */,
 				D37CD38F15E2331C0028869A /* Settings.bundle in Resources */,
 				D37CD39D15E244E40028869A /* UIStationCell.xib in Resources */,
-				D321FF9615E628BB0098B5F4 /* linphonrc in Resources */,
+				57F005C415EE2CCF00914747 /* linphonerc in Resources */,
 				D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */,
 				D384466F15E64B9E00DF89DF /* bj_station.png in Resources */,
 				D384467315E64CD600DF89DF /* bj_history.png in Resources */,
@@ -1502,6 +1504,9 @@
 				D384468115E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
 				D3FE9F4615E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */,
 				D3FE9F4D15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */,
+				D33BEE1F15FF711B004ED2AF /* linphonerc-factory in Resources */,
+				D33BEE2115FF711B004ED2AF /* linphonerc-factory~ipad in Resources */,
+				D33BEE2315FF711B004ED2AF /* rootca.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1509,8 +1514,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D34BD6A615C13DB70070C209 /* linphonerc-factory in Resources */,
-				D34BD6A715C13DB70070C209 /* linphonerc-factory~ipad in Resources */,
 				D34BD74115C13E250070C209 /* Localizable.strings in Resources */,
 				D37CD2D215E21CB30028869A /* 01.wav in Resources */,
 				D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */,
@@ -1540,7 +1543,7 @@
 				D37CD38A15E22C020028869A /* BuschJaegerMainView.xib in Resources */,
 				D37CD39015E2331C0028869A /* Settings.bundle in Resources */,
 				D37CD39E15E244E40028869A /* UIStationCell.xib in Resources */,
-				D321FF9715E628BB0098B5F4 /* linphonrc in Resources */,
+				57F005C515EE2CCF00914747 /* linphonerc in Resources */,
 				D321FF9A15E628CB0098B5F4 /* linphonerc~ipad in Resources */,
 				D384467015E64B9E00DF89DF /* bj_station.png in Resources */,
 				D384467415E64CD600DF89DF /* bj_history.png in Resources */,
@@ -1548,6 +1551,9 @@
 				D384468215E656ED00DF89DF /* UIHistoryCell.xib in Resources */,
 				D3FE9F4715E78D720024F3E4 /* BuschJaegerHistoryDetailsView.xib in Resources */,
 				D3FE9F4E15E790D80024F3E4 /* UIHistoryDetailsCell.xib in Resources */,
+				D33BEE2015FF711B004ED2AF /* linphonerc-factory in Resources */,
+				D33BEE2215FF711B004ED2AF /* linphonerc-factory~ipad in Resources */,
+				D33BEE2415FF711B004ED2AF /* rootca.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1597,7 +1603,6 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
-				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
@@ -1650,7 +1655,6 @@
 				22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */,
 				22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */,
 				22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */,
-				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
 				340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D326483915887D5200930C67 /* OrderedDictionary.m in Sources */,
@@ -1817,6 +1821,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -1858,6 +1863,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -1899,6 +1905,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -1940,6 +1947,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -2114,7 +2122,7 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: jehan monnier (E8MYPN2NXL)";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2122,7 +2130,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "FFF4AA57-7302-4F48-B969-20CFC1B10BAF";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";

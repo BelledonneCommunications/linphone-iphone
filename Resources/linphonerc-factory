@@ -32,12 +32,4 @@ dtmf_player_amp=0.007
 history_max_size=30
 max_calls=1
 
-[video]
-display=1
-capture=0
-show_local=0
-enabled=1
-size=qvga
-recv_buf_size=65535
-display_filter_auto_rotate=1
 

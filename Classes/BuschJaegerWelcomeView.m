@@ -79,6 +79,7 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
     [tableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
+    [historyButton setEnabled: configuration.network.localAddress != nil];
 }
 
 

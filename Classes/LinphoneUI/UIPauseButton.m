@@ -21,7 +21,7 @@
 #import "LinphoneManager.h"
 
 #include "linphonecore.h"
-#include "private.h"
+
 
 @implementation UIPauseButton
 
@@ -62,7 +62,7 @@
 + (bool)isInConference: (LinphoneCall*) call {
     if (!call)
         return false;
-    return linphone_call_get_current_params(call)->in_conference;
+    return linphone_call_is_in_conference(call);
 }
 
 + (int)notInConferenceCallCount: (LinphoneCore*) lc {

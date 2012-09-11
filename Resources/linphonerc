@@ -4,7 +4,21 @@ sip_tcp_random_port=1
 sip_tls_random_port=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 keepalive_period=30000
+default_proxy=0
 
 [rtp]
 audio_rtp_port=7076
 video_rtp_port=9078
+
+[video]
+display=1
+capture=1
+show_local=0
+enabled=1
+size=qvga
+display_filter_auto_rotate=1
+
+
+
+[default_values]
+reg_expires=600

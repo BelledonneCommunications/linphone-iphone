@@ -23,7 +23,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <sqlite3.h>
 
-#import "LogView.h"
 #import "FastAddressBook.h"
 #import "Utils.h"
 /* MODIFICATION: Add buschjaeger configuration */
@@ -31,6 +30,7 @@
 /**/
 #include "linphonecore.h"
 
+extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
 extern NSString *const kLinphoneTextReceivedSound;
 extern NSString *const kLinphoneCallUpdate;
@@ -41,6 +41,8 @@ extern NSString *const kLinphoneConfigurationUpdate;
 extern NSString *const kLinphoneConfigurationPath;
 /**/
 extern NSString *const kLinphoneAddressBookUpdate;
+extern NSString *const kLinphoneLogsUpdate;
+extern NSString *const kLinphoneSettingsUpdate;
 
 extern NSString *const kContactSipField;
 
@@ -77,10 +79,11 @@ typedef struct _LinphoneManagerSounds {
     
 @private
 	NSTimer* mIterateTimer;
-    
+    time_t lastRemoteNotificationTime;
 	Connectivity connectivity;
-    
+    BOOL stopWaitingRegisters;
     NSMutableArray *inhibitedEvent;
+	
     
     /* MODIFICATION: Add NSUSerdefault settings */
     NSDictionary *currentSettings;
@@ -106,6 +109,10 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
+- (void)didReceiveRemoteNotification;
+- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
+- (BOOL)shouldAutoAcceptCall;
+- (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
@@ -124,19 +131,29 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
+-(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key; 
+-(NSString*)lpConfigStringForKey:(NSString*) key;
+
+-(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key; 
+-(NSInteger)lpConfigIntForKey:(NSString*) key;
+
+-(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
+-(BOOL)lpConfigBoolForKey:(NSString*) key;
+
+
 /* MODIFICATION: Add NSUSerdefault settings */
 - (BOOL)reconfigureLinphone;
 /**/
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
-@property (nonatomic) int defaultExpires;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
 @property (readonly) BuschJaegerConfiguration *configuration;
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
+@property (readonly) NSMutableArray *logs;
 
 @end
 
