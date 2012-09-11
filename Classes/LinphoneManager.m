@@ -78,6 +78,7 @@ extern  void libmsbcg729_init();
 @synthesize pushNotificationToken;
 @synthesize sounds;
 @synthesize logs;
+@synthesize speakerEnabled;
 
 struct codec_name_pref_table{
     const char *name;
@@ -179,8 +180,13 @@ struct codec_name_pref_table codec_pref_table[]={
 
 - (id)init {
     if ((self = [super init])) {
+        AudioSessionInitialize(NULL, NULL, NULL, NULL);
+        OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+        if (lStatus) {
+            [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
+        }
         
-        
+        // Sounds
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
             sounds.call = 0;
@@ -197,9 +203,11 @@ struct codec_name_pref_table codec_pref_table[]={
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
             }
         }
+        
         inhibitedEvent = [[NSMutableArray alloc] init];
         logs = [[NSMutableArray alloc] init];
         database = NULL;
+        speakerEnabled = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
 		lastRemoteNotificationTime=0;
@@ -219,6 +227,11 @@ struct codec_name_pref_table codec_pref_table[]={
     [fastAddressBook release];
     [self closeDatabase];
     [logs release];
+    
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+	if (lStatus) {
+		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
+	}
     
     [super dealloc];
 }
@@ -347,7 +360,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
-            [self enableSpeaker:FALSE];
+            [self setSpeakerEnabled:FALSE];
     }
     
     // Enable speaker when video
@@ -357,7 +370,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
        state == LinphoneCallStreamsRunning ||
        state == LinphoneCallUpdated) {
         if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-            [self enableSpeaker:TRUE];
+            [self setSpeakerEnabled:TRUE];
         }
     }
     
@@ -835,10 +848,36 @@ static LinphoneCoreVTable linphonec_vtable = {
     [LinphoneManager copyFile:src destination:dst override:FALSE];
 }
 
+
 #pragma mark - Speaker Functions
 
-- (void)enableSpeaker:(BOOL)enable {
-    //redirect audio to speaker
+static void audioRouteChangeListenerCallback (
+                                              void                   *inUserData,                                 // 1
+                                              AudioSessionPropertyID inPropertyID,                                // 2
+                                              UInt32                 inPropertyValueSize,                         // 3
+                                              const void             *inPropertyValue                             // 4
+                                              ) {
+    if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
+    LinphoneManager* lm = (LinphoneManager*)inUserData;
+    
+    bool enabled = false;
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
+        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        CFRelease(lNewRoute);
+    }
+    
+    if(enabled != lm.speakerEnabled) { // Reforce value
+        lm.speakerEnabled = lm.speakerEnabled;
+    }
+}
+
+- (void)setSpeakerEnabled:(BOOL)enable {
+    speakerEnabled = enable;
     if(enable) {
         UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
@@ -851,21 +890,6 @@ static LinphoneCoreVTable linphonec_vtable = {
                                  , &audioRouteOverride);
     }
 }
-
-- (BOOL)isSpeakerEnabled {
-    bool enabled = false;
-    CFStringRef lNewRoute = CFSTR("Unknown");
-    UInt32 lNewRouteSize = sizeof(lNewRoute);
-    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
-    if (!lStatus && lNewRouteSize > 0) {
-        NSString *route = (NSString *) lNewRoute;
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
-        CFRelease(lNewRoute);
-    }
-    return enabled;
-}
-
 
 #pragma mark - Call Functions
 

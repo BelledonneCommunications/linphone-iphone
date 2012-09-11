@@ -80,7 +80,6 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
     NSMutableArray *inhibitedEvent;
-	
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -112,9 +111,6 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)refreshRegisters;
 
-- (void)enableSpeaker:(BOOL)enable;
-- (BOOL)isSpeakerEnabled;
-
 - (void)addInhibitedEvent:(NSString*)event;
 - (BOOL)removeInhibitedEvent:(NSString*)event;
 
@@ -133,8 +129,6 @@ typedef struct _LinphoneManagerSounds {
 -(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
 -(BOOL)lpConfigBoolForKey:(NSString*) key;
 
-
-
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
@@ -143,6 +137,7 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
+@property (nonatomic, assign) BOOL speakerEnabled;
 
 @end
 
