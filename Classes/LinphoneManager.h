@@ -83,7 +83,6 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
     NSMutableArray *inhibitedEvent;
-	
     
     /* MODIFICATION: Add NSUSerdefault settings */
     NSDictionary *currentSettings;
@@ -119,9 +118,6 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)refreshRegisters;
 
-- (void)enableSpeaker:(BOOL)enable;
-- (BOOL)isSpeakerEnabled;
-
 - (void)addInhibitedEvent:(NSString*)event;
 - (BOOL)removeInhibitedEvent:(NSString*)event;
 
@@ -154,6 +150,7 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
+@property (nonatomic, assign) BOOL speakerEnabled;
 
 @end
 
