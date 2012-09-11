@@ -250,7 +250,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">This assistant will help you  to use a SIP account for your calls.</string>
+						<string key="IBUIText">This assistant will help you to use a SIP account for your calls.</string>
 						<object class="NSColor" key="IBUITextColor" id="784405869">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
@@ -434,7 +434,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password with your email address</string>
+						<string key="IBUIText">Enter your username and password with your email address</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -661,7 +661,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password of your linphone.org account</string>
+						<string key="IBUIText">Enter your username and password of your linphone.org account</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -804,7 +804,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password with your SIP domain</string>
+						<string key="IBUIText">Enter your username and password with your SIP domain</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>

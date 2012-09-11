@@ -404,7 +404,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">16</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Add call</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -439,7 +439,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">17</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Add call</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -499,7 +499,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">19</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Video</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -548,7 +548,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">21</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Micro</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -585,7 +585,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">22</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Speaker</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -622,7 +622,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">23</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Add call</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -659,7 +659,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">24</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Pause</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -692,7 +692,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">25</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Start Conference</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -721,7 +721,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">26</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Hangup</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -750,7 +750,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">27</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Back</string>
+									<string key="IBUIAccessibilityLabel"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1035,7 +1035,7 @@
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">12</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Star</string>
+									<string key="IBUIAccessibilityLabel">Étoile</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1077,7 +1077,7 @@
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<int key="IBUITag">14</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Sharp</string>
+									<string key="IBUIAccessibilityLabel">Dièse</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1111,7 +1111,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">16</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Transfer call</string>
+									<string key="IBUIAccessibilityLabel">Transferer l'appel</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1143,7 +1143,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">17</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Add call</string>
+									<string key="IBUIAccessibilityLabel">Ajouter un appel</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1203,7 +1203,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">19</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Video</string>
+									<string key="IBUIAccessibilityLabel">Vidéo</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1289,7 +1289,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">22</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Speaker</string>
+									<string key="IBUIAccessibilityLabel">Haut parleur</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1396,7 +1396,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">25</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Start Conference</string>
+									<string key="IBUIAccessibilityLabel">Démarrer une conférence</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1425,7 +1425,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">26</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Hangup</string>
+									<string key="IBUIAccessibilityLabel">Raccrocher</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -1454,7 +1454,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<int key="IBUITag">27</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Back</string>
+									<string key="IBUIAccessibilityLabel">Retour</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>

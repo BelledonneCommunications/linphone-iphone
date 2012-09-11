@@ -1,0 +1,30 @@
+/* Codecs */
+"Codecs" = "Codecs";
+
+/* Speex 16Khz */
+"Speex 16Khz" = "Speex 16Khz";
+
+/* Speex 8Khz */
+"Speex 8Khz" = "Speex 8Khz";
+
+/* Silk 24Khz */
+"Silk 24Khz" = "Silk 24Khz";
+
+/* Silk 16Khz */
+"Silk 16Khz" = "Silk 16Khz";
+
+/* G722 */
+"G722" = "G722";
+
+/* GSM */
+"GSM" = "GSM";
+
+/* ILBC */
+"ILBC" = "ILBC";
+
+/* PCMU */
+"PCMU" = "PCMU";
+
+/* PCMA */
+"PCMA" = "PCMA";
+

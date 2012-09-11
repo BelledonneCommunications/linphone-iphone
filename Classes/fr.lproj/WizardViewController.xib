@@ -66,7 +66,7 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Cancel</string>
+									<string key="IBUIAccessibilityLabel">Annuler</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -108,7 +108,7 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Start</string>
+									<string key="IBUIAccessibilityLabel">Démarrer</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -135,7 +135,7 @@
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Back</string>
+									<string key="IBUIAccessibilityLabel">Retour</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -217,7 +217,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Linphone setup assistant icon</string>
+							<string key="IBUIAccessibilityLabel">Icône de l'assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -237,7 +237,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">This assistant will help you  to use a SIP account for your calls.</string>
+						<string key="IBUIText">Cet assistant va vous aider à utiliser votre compte SIP pour vos appels.</string>
 						<object class="NSColor" key="IBUITextColor" id="784405869">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
@@ -278,7 +278,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Account setup assistant</string>
+							<string key="IBUIAccessibilityLabel">Assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -296,14 +296,14 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Create linphone.org account</string>
+							<string key="IBUIAccessibilityLabel">Créer un compte linphone.org</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Create an account on linphone.org</string>
+						<string key="IBUINormalTitle">Crée un compte linphone.org</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="1066110140">
@@ -333,14 +333,14 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Sign in linphone.org account</string>
+							<string key="IBUIAccessibilityLabel">S'enregistrer sur un compte linphone.org</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">I have already a linphone.org account</string>
+						<string key="IBUINormalTitle">J'ai déjà un compte linphone.org</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -356,14 +356,14 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Sign in SIP account</string>
+							<string key="IBUIAccessibilityLabel">S'enregistrer sur un compte SIP</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">I have already a SIP account</string>
+						<string key="IBUINormalTitle">J'ai déjà un compte SIP</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -391,7 +391,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Account setup assistant</string>
+							<string key="IBUIAccessibilityLabel">Assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -410,7 +410,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password with your email address</string>
+						<string key="IBUIText">Entrer votre nom d'utilisateur, votre mot de passe ainsi que votre addresse email</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -432,12 +432,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">100</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Username</string>
+							<string key="IBUIAccessibilityLabel">Nom d'utilisateur</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Username</string>
+						<string key="IBUIPlaceholder">Nom d'utilisateur</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -475,12 +475,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">101</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Password</string>
+							<string key="IBUIAccessibilityLabel">Mot de passe</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Password</string>
+						<string key="IBUIPlaceholder">Mot de passe</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -507,12 +507,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">102</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Password again</string>
+							<string key="IBUIAccessibilityLabel">Mot de passe à nouveau</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Password</string>
+						<string key="IBUIPlaceholder">Mot de passe</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -567,13 +567,13 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Register</string>
+							<string key="IBUIAccessibilityLabel">Créer</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Register</string>
+						<string key="IBUINormalTitle">S'enregistrer</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -608,7 +608,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Account setup assistant</string>
+							<string key="IBUIAccessibilityLabel">Assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -627,7 +627,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password of your linphone.org account</string>
+						<string key="IBUIText">Entrez le nom d'utilisateur et le mot de passe de votre compte linphone.org</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -646,13 +646,13 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Sign in</string>
+							<string key="IBUIAccessibilityLabel">S'enregistrer</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Sign in</string>
+						<string key="IBUINormalTitle">S'enregistrer</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -671,12 +671,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">101</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Password</string>
+							<string key="IBUIAccessibilityLabel">Mot de passe</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Password</string>
+						<string key="IBUIPlaceholder">Mot de passe</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -703,12 +703,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">100</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Username</string>
+							<string key="IBUIAccessibilityLabel">Nom d'utilisateur</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Username</string>
+						<string key="IBUIPlaceholder">Nom d'utilisateur</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -743,7 +743,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Account setup assistant</string>
+							<string key="IBUIAccessibilityLabel">Assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -762,7 +762,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Enter you username and password with your SIP domain</string>
+						<string key="IBUIText">Entrez votre nom d'utilisateur, votre mot de passe ainsi que votre domaine SIP</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -784,12 +784,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">100</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Username</string>
+							<string key="IBUIAccessibilityLabel">Nom d'utilisateur</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Username</string>
+						<string key="IBUIPlaceholder">Nom d'utilisateur</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -815,12 +815,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">101</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Password</string>
+							<string key="IBUIAccessibilityLabel">Mot de passe</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Password</string>
+						<string key="IBUIPlaceholder">Mot de passe</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -847,12 +847,12 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUITag">104</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Domain</string>
+							<string key="IBUIAccessibilityLabel">Domaine</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Domain</string>
+						<string key="IBUIPlaceholder">Domaine</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -875,13 +875,13 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Sign in</string>
+							<string key="IBUIAccessibilityLabel">S'enregistrer</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Sign in</string>
+						<string key="IBUINormalTitle">S'enregistrer</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -909,7 +909,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Account setup assistant</string>
+							<string key="IBUIAccessibilityLabel">Assistant de configuration de compte</string>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -928,7 +928,7 @@
 						<int key="IBUITag">200</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Your account is created. Please check your mails in order to validate your account.</string>
+						<string key="IBUIText">Votre compte est crée. Vérifier vos emails pour valider votre compte.</string>
 						<reference key="IBUITextColor" ref="784405869"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
@@ -947,13 +947,13 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Check validation</string>
+							<string key="IBUIAccessibilityLabel">Vérifier la validation</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Check validation</string>
+						<string key="IBUINormalTitle">Verifiez la validation</string>
 						<reference key="IBUINormalTitleColor" ref="784405869"/>
 						<reference key="IBUINormalTitleShadowColor" ref="929224261"/>
 						<reference key="IBUIHighlightedBackgroundImage" ref="1066110140"/>
@@ -977,7 +977,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Password</string>
+						<string key="IBUIPlaceholder">Mot de passe</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -1009,7 +1009,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
-						<string key="IBUIPlaceholder">Username</string>
+						<string key="IBUIPlaceholder">Nom d'utilisateur</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>

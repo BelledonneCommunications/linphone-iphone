@@ -45,7 +45,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Conference</string>
+							<string key="IBUIAccessibilityLabel">Conférence</string>
 							<integer value="260" key="IBUIAccessibilityTraits"/>
 							<boolean value="YES" key="IBUIIsAccessibilityElement"/>
 						</object>

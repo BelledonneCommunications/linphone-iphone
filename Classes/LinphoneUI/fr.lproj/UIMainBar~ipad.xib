@@ -79,7 +79,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">1</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">History</string>
+							<string key="IBUIAccessibilityLabel">Historique</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -141,7 +141,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">History missed</string>
+									<string key="IBUIAccessibilityLabel">Appel(s) manqué(s)</string>
 									<integer value="0" key="IBUIAccessibilityTraits"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -220,7 +220,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">4</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Dialer</string>
+							<string key="IBUIAccessibilityLabel">Clavier</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -252,7 +252,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">5</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Settings</string>
+							<string key="IBUIAccessibilityLabel">Options</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -332,7 +332,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-									<string key="IBUIAccessibilityLabel">Chat missed</string>
+									<string key="IBUIAccessibilityLabel">Message(s) manqué(s)</string>
 									<integer value="0" key="IBUIAccessibilityTraits"/>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -413,7 +413,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">1</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">History</string>
+							<string key="IBUIAccessibilityLabel"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -492,7 +492,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">3</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Contacts</string>
+							<string key="IBUIAccessibilityLabel"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -524,7 +524,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">4</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Dialer</string>
+							<string key="IBUIAccessibilityLabel"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -547,7 +547,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">5</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Settings</string>
+							<string key="IBUIAccessibilityLabel"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -579,7 +579,7 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUITag">6</int>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-							<string key="IBUIAccessibilityLabel">Chat</string>
+							<string key="IBUIAccessibilityLabel"/>
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>

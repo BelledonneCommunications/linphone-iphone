@@ -755,32 +755,14 @@
 		D381881615FE3F7F00C3EDCA /* UIContactDetailsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881815FE3F7F00C3EDCA /* UIContactDetailsHeader.xib */; };
 		D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* InCallViewController.xib */; };
 		D381881A15FE3FCA00C3EDCA /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* InCallViewController.xib */; };
-		D381883815FE447200C3EDCA /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
-		D381883915FE447200C3EDCA /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
-		D381883A15FE447200C3EDCA /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
-		D381883B15FE447200C3EDCA /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
-		D381883C15FE447200C3EDCA /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
-		D381883D15FE447200C3EDCA /* ChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatRoomViewController.m */; };
 		D381883E15FE447200C3EDCA /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B015FE340100C3EDCA /* ChatRoomViewController.xib */; };
 		D381883F15FE447200C3EDCA /* ChatRoomViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B015FE340100C3EDCA /* ChatRoomViewController.xib */; };
-		D381884015FE447200C3EDCA /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatTableViewController.m */; };
-		D381884115FE447200C3EDCA /* ChatTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatTableViewController.m */; };
-		D381884215FE447200C3EDCA /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
-		D381884315FE447200C3EDCA /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
 		D381884415FE447200C3EDCA /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B415FE340500C3EDCA /* ChatViewController.xib */; };
 		D381884515FE447200C3EDCA /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B415FE340500C3EDCA /* ChatViewController.xib */; };
-		D381884E15FE448400C3EDCA /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
-		D381884F15FE448400C3EDCA /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
-		D381885015FE448400C3EDCA /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
-		D381885115FE448400C3EDCA /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
-		D381885215FE448400C3EDCA /* UICallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* UICallBar.m */; };
-		D381885315FE448400C3EDCA /* UICallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* UICallBar.m */; };
 		D381885415FE448400C3EDCA /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E415FE349700C3EDCA /* UICallBar.xib */; };
 		D381885515FE448400C3EDCA /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E415FE349700C3EDCA /* UICallBar.xib */; };
 		D381885615FE448400C3EDCA /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */; };
 		D381885715FE448400C3EDCA /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */; };
-		D381885915FE44A700C3EDCA /* accept_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F741582253100336684 /* accept_default.png */; };
-		D381885A15FE44A700C3EDCA /* accept_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F83F741582253100336684 /* accept_default.png */; };
 		D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EB1580FE3A00FA0D23 /* contacts_default.png */; };
 		D38327F41580FE3A00FA0D23 /* contacts_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts_selected.png */; };
 		D38327F51580FE3A00FA0D23 /* dialer_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327ED1580FE3A00FA0D23 /* dialer_default.png */; };
@@ -3833,7 +3815,6 @@
 				D381884415FE447200C3EDCA /* ChatViewController.xib in Resources */,
 				D381885415FE448400C3EDCA /* UICallBar.xib in Resources */,
 				D381885615FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
-				D381885915FE44A700C3EDCA /* accept_default.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4283,7 +4264,6 @@
 				D381884515FE447200C3EDCA /* ChatViewController.xib in Resources */,
 				D381885515FE448400C3EDCA /* UICallBar.xib in Resources */,
 				D381885715FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
-				D381885A15FE44A700C3EDCA /* accept_default.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4406,14 +4386,6 @@
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
-				D381883815FE447200C3EDCA /* CallDelegate.m in Sources */,
-				D381883A15FE447200C3EDCA /* ChatRoomTableViewController.m in Sources */,
-				D381883C15FE447200C3EDCA /* ChatRoomViewController.m in Sources */,
-				D381884015FE447200C3EDCA /* ChatTableViewController.m in Sources */,
-				D381884215FE447200C3EDCA /* ChatViewController.m in Sources */,
-				D381884E15FE448400C3EDCA /* UIAddressTextField.m in Sources */,
-				D381885015FE448400C3EDCA /* UIBluetoothButton.m in Sources */,
-				D381885215FE448400C3EDCA /* UICallBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4504,14 +4476,6 @@
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
-				D381883915FE447200C3EDCA /* CallDelegate.m in Sources */,
-				D381883B15FE447200C3EDCA /* ChatRoomTableViewController.m in Sources */,
-				D381883D15FE447200C3EDCA /* ChatRoomViewController.m in Sources */,
-				D381884115FE447200C3EDCA /* ChatTableViewController.m in Sources */,
-				D381884315FE447200C3EDCA /* ChatViewController.m in Sources */,
-				D381884F15FE448400C3EDCA /* UIAddressTextField.m in Sources */,
-				D381885115FE448400C3EDCA /* UIBluetoothButton.m in Sources */,
-				D381885315FE448400C3EDCA /* UICallBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
