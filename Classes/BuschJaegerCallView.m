@@ -191,6 +191,7 @@
 		case LinphoneCallStreamsRunning:
         case LinphoneCallUpdated:
         {
+            [[LinphoneManager instance] setSpeakerEnabled:TRUE];
 			//check video
 			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				[self displayVideoCall];

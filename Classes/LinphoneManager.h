@@ -136,7 +136,6 @@ typedef struct _LinphoneManagerSounds {
 -(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
 -(BOOL)lpConfigBoolForKey:(NSString*) key;
 
-
 /* MODIFICATION: Add NSUSerdefault settings */
 - (BOOL)reconfigureLinphone;
 /**/

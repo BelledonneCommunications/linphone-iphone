@@ -1748,6 +1748,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1766,7 +1767,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "B8ED8915-B69D-40DA-9B89-1700C44B156B";
+				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1814,6 +1815,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = DistributionAdhoc;
 		};
@@ -1856,6 +1858,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1897,6 +1900,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1939,6 +1943,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Distribution;
 		};
@@ -1981,6 +1986,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = DistributionAdhoc;
 		};
@@ -1991,7 +1997,7 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1999,7 +2005,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2046,6 +2052,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -2064,7 +2071,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "075921BC-C7D8-42E1-B864-F05FD9BF841C";
+				PROVISIONING_PROFILE = "B9B5980F-5156-43AD-841D-0502B5818325";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2112,6 +2119,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Distribution;
 		};
@@ -2122,7 +2130,7 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
-				CODE_SIGN_IDENTITY = "iPhone Developer: jehan monnier (E8MYPN2NXL)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2130,7 +2138,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "FFF4AA57-7302-4F48-B969-20CFC1B10BAF";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -174,7 +174,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
             [[UIApplication sharedApplication] presentLocalNotificationNow:notif];
         }
     }else{
-        [[LinphoneManager instance] enableSpeaker:TRUE];
+        [[LinphoneManager instance] setSpeakerEnabled:TRUE];
         AudioServicesPlaySystemSound([LinphoneManager instance].sounds.call);
     }
 }
