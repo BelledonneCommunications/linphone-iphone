@@ -120,7 +120,7 @@
 								<reference key="IBUIFont" ref="255564883"/>
 							</object>
 						</array>
-						<string key="NSFrameSize">{320, 58}</string>
+						<string key="NSFrameSize">{320, 44}</string>
 						<reference key="NSSuperview" ref="581237105"/>
 						<reference key="NSNextKeyView" ref="778261436"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>

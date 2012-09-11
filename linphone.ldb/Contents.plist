@@ -2022,17 +2022,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>2</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/HistoryDetailsViewController/1/HistoryDetailsViewController.xib</string>
+								<string>Classes/HistoryDetailsViewController/2/HistoryDetailsViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-10T15:21:27Z</date>
+					<date>2012-09-11T12:08:15Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2042,7 +2042,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>8e3f7756f219a2bd1a73da657abf7f25
+					<string>5772e41dc8ea1406d99370f79cb51bce
 </string>
 					<key>name</key>
 					<string>HistoryDetailsViewController.xib</string>
@@ -2446,9 +2446,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>2</string>
 					</dict>
 				</dict>
 				<dict>
@@ -7273,7 +7273,7 @@ La cause était: %2$@</string>
 								<key>en</key>
 								<string>'%@' not registered</string>
 								<key>fr</key>
-								<string>'%' n'est pas enregistré</string>
+								<string>'%@' n'est pas enregistré</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

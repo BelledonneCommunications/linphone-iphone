@@ -268,6 +268,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(contact) {
         ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
         if(controller != nil) {
+            [ContactSelection setSelectionMode:ContactSelectionModeNone];
             [controller setContact:contact];
         }
     }
