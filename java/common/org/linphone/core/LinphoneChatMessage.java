@@ -59,4 +59,6 @@ public interface LinphoneChatMessage {
 	Object getUserData();
 	
 	void setUserData();
+	
+	String getMessage();
 }

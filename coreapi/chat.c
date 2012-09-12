@@ -165,6 +165,11 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 	}
 	
 }
+
+char* linphone_chat_message_get_message(LinphoneChatMessage* msg) {
+	return msg->message;
+}
+
 /**
  * user pointer set function
  */

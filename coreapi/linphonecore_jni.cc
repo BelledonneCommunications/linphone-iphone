@@ -1377,10 +1377,15 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
 }
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setUserData(JNIEnv*  env
 																		,jobject  thiz
-																		,jlong ptr
-																		) {
+																		,jlong ptr) {
 	jobject ud = env->NewGlobalRef(thiz);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr,(void*) ud);
+}
+extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getMessage(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	jstring jvalue =env->NewStringUTF(linphone_chat_message_get_message((LinphoneChatMessage*)ptr));
+	return jvalue;
 }
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz
