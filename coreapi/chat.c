@@ -119,6 +119,13 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 	ms_free(cleanfrom);
 }
 
+LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
+	return cr->lc;
+}
+
+LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg){
+	return msg->chat_room;
+}
 
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud){
 	cr->user_data=ud;

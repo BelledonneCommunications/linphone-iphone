@@ -8,6 +8,7 @@ public interface LinphoneChatMessage {
 		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
 	}
 	static class State {
+		@SuppressWarnings("rawtypes")
 		static private Vector values = new Vector();
 		private final int mValue;
 		public final int value() {return mValue;}
@@ -30,6 +31,7 @@ public interface LinphoneChatMessage {
 		 */
 		public final static State NotDelivered = new State(3,"NotDelivered");
 		
+		@SuppressWarnings("unchecked")
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -47,7 +49,14 @@ public interface LinphoneChatMessage {
 		public String toString() {
 			return mStringValue;
 		}
+		public int toInt() {
+			return mValue;
+		}
 	}
+	
+	long getNativePtr();
+	
 	Object getUserData();
+	
 	void setUserData();
 }

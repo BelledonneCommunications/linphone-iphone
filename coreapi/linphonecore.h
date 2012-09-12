@@ -669,7 +669,8 @@ typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,Linpho
  * @param ud user data for the status cb.
  */
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
-
+LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
