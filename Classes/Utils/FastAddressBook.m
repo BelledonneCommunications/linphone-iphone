@@ -74,6 +74,9 @@
             ret = [ret substringFromIndex:4];
         }
         ret = [@"sip:" stringByAppendingString:ret];
+        if([ret hasSuffix:@":5060"]) {
+            ret = [ret substringToIndex:[ret length] - 5];
+        }
     }
     return ret;
 }

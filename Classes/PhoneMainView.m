@@ -43,6 +43,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     currentView = nil;
     viewStack = [[NSMutableArray alloc] init];
     loadCount = 0; // For avoiding IOS 4 bug
+    inhibitedEvents = [[NSMutableArray alloc] init];
 }
 
 - (id)init {
@@ -73,7 +74,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [mainViewController release];
-    
+    [inhibitedEvents release];
     [viewStack release];
 
     [super dealloc];
@@ -566,6 +567,18 @@ static PhoneMainView* phoneMainViewInstance=nil;
     }
 }
 
+- (void)addInhibitedEvent:(id)event {
+    [inhibitedEvents addObject:event];
+}
+
+- (BOOL)removeInhibitedEvent:(id)event {
+    NSUInteger index = [inhibitedEvents indexOfObject:event];
+    if(index != NSNotFound) {
+        [inhibitedEvents removeObjectAtIndex:index];
+        return TRUE;
+    }
+    return FALSE;
+}
 
 #pragma mark - ActionSheet Functions
 
@@ -595,7 +608,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}
 	} else {
-        if(![[LinphoneManager instance] removeInhibitedEvent:kLinphoneTextReceivedSound]) {
+        if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
         }
     }
@@ -634,7 +647,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
             address = @"Unknown";
         }
         if (![[LinphoneManager instance] shouldAutoAcceptCall]){
-			// case where a remote notification is already received
+			// case where a remote notification is not already received
 			// Create a new local notification
 			appData->notification = [[UILocalNotification alloc] init];
 			if (appData->notification) {

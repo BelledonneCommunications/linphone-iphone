@@ -33,7 +33,6 @@
 
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
-extern NSString *const kLinphoneTextReceivedSound;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
@@ -79,7 +78,6 @@ typedef struct _LinphoneManagerSounds {
     time_t lastRemoteNotificationTime;
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
-    NSMutableArray *inhibitedEvent;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -110,9 +108,6 @@ typedef struct _LinphoneManagerSounds {
 - (void)setupNetworkReachabilityCallback;
 
 - (void)refreshRegisters;
-
-- (void)addInhibitedEvent:(NSString*)event;
-- (BOOL)removeInhibitedEvent:(NSString*)event;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;

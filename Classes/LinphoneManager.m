@@ -40,7 +40,6 @@ static LinphoneManager* theLinphoneManager = nil;
 
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
-NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
@@ -204,13 +203,12 @@ struct codec_name_pref_table codec_pref_table[]={
             }
         }
         
-        inhibitedEvent = [[NSMutableArray alloc] init];
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         speakerEnabled = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
-		lastRemoteNotificationTime=0;
+        lastRemoteNotificationTime=0;
     }
     return self;
 }
@@ -223,7 +221,6 @@ struct codec_name_pref_table codec_pref_table[]={
         AudioServicesDisposeSystemSoundID(sounds.message);
     }
     
-    [inhibitedEvent release];
     [fastAddressBook release];
     [self closeDatabase];
     [logs release];
@@ -713,7 +710,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}	
 }
 
-
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -732,16 +728,16 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)didReceiveRemoteNotification{
-	lastRemoteNotificationTime=time(NULL);
+    lastRemoteNotificationTime=time(NULL);
 }
 
 - (BOOL)shouldAutoAcceptCall{
-	if (lastRemoteNotificationTime!=0){
-		if ((time(NULL)-lastRemoteNotificationTime)<15)
-			return TRUE;
-		lastRemoteNotificationTime=0;
-	}
-	return FALSE;
+    if (lastRemoteNotificationTime!=0){
+        if ((time(NULL)-lastRemoteNotificationTime)<15)
+            return TRUE;
+        lastRemoteNotificationTime=0;
+    }
+    return FALSE;
 }
 
 - (BOOL)resignActive {
@@ -1007,19 +1003,6 @@ static void audioRouteChangeListenerCallback (
 		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
 		linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
 	}
-}
-
-- (void)addInhibitedEvent:(NSString*)event {
-    [inhibitedEvent addObject:event];
-}
-
-- (BOOL)removeInhibitedEvent:(NSString*)event {
-    NSUInteger index = [inhibitedEvent indexOfObject:kLinphoneTextReceivedSound];
-    if(index != NSNotFound) {
-        [inhibitedEvent removeObjectAtIndex:index];
-        return TRUE;
-    }
-    return FALSE;
 }
 
 
