@@ -41,6 +41,16 @@
  global-history=http://welcome.dyndns.org:8080/history.ini
  */
 
+- (void)dealloc {
+    [domain release];
+    [localAddress release];
+    [globalAddress release];
+    [localHistory release];
+    [globalHistory release];
+    
+    [super dealloc];
+}
+
 - (NSString*)write {
     NSMutableString *str = [NSMutableString string];
     [str appendString:[NSString stringWithFormat:@"\n[network]\n"]];

@@ -27,6 +27,7 @@
 @synthesize users;
 @synthesize network;
 @synthesize history;
+@synthesize levelPushButton;
 
 /********
  [outdoorstation_0]
@@ -92,6 +93,7 @@
         users = [[NSMutableSet alloc] init];
         history = [[NSMutableSet alloc] init];
         network = [[Network alloc] init];
+        levelPushButton = [[LevelPushButton alloc] init];
     }
     return self;
 }
@@ -101,6 +103,7 @@
     [users release];
     [history release];
     [network release];
+    [levelPushButton release];
     [super dealloc];
 }
 
@@ -142,7 +145,12 @@
             [network release];
         }
         network = [obj retain];
-    } else {
+    } else if((obj = [LevelPushButton parse:section array:array]) != nil) {
+        if(levelPushButton != nil) {
+            [levelPushButton release];
+        }
+        levelPushButton = [obj retain];
+    }else {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
 }
@@ -187,6 +195,10 @@
         [network release];
     }
     network = [[Network alloc] init];
+    if(levelPushButton != nil) {
+        [levelPushButton release];
+    }
+    levelPushButton = [[LevelPushButton alloc] init];
 }
 
 - (BOOL)saveFile:(NSString*)file {
@@ -198,6 +210,7 @@
         [data appendString:[usr write]];
     }
     [data appendString:[network write]];
+    [data appendString:[levelPushButton write]];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsPath = [paths objectAtIndex:0];

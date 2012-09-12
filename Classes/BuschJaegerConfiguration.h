@@ -23,6 +23,7 @@
 #import "User.h"
 #import "Network.h"
 #import "History.h"
+#import "LevelPushButton.h"
 
 @protocol BuschJaegerConfigurationDelegate <NSObject>
 
@@ -43,6 +44,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
 @property (readonly) NSMutableSet *users;
 @property (readonly) NSMutableSet *outdoorStations;
 @property (readonly) Network *network;
+@property (readonly) LevelPushButton *levelPushButton;
 
 - (void)reset;
 

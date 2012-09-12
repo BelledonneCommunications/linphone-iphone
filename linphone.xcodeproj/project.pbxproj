@@ -126,6 +126,18 @@
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
 		D32B9DFD15A2F131000B6DEC /* FastAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */; };
+		D32EDD9B1600C450009A84C7 /* LevelPushButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32EDD9A1600C450009A84C7 /* LevelPushButton.m */; };
+		D32EDD9C1600C450009A84C7 /* LevelPushButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32EDD9A1600C450009A84C7 /* LevelPushButton.m */; };
+		D32EDDA31600C8FC009A84C7 /* ringtone_01_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDD9E1600C8FC009A84C7 /* ringtone_01_1600_loop.wav */; };
+		D32EDDA41600C8FC009A84C7 /* ringtone_01_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDD9E1600C8FC009A84C7 /* ringtone_01_1600_loop.wav */; };
+		D32EDDA51600C8FC009A84C7 /* ringtone_02_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDD9F1600C8FC009A84C7 /* ringtone_02_1600_loop.wav */; };
+		D32EDDA61600C8FC009A84C7 /* ringtone_02_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDD9F1600C8FC009A84C7 /* ringtone_02_1600_loop.wav */; };
+		D32EDDA71600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA01600C8FC009A84C7 /* ringtone_03_1600_loop.wav */; };
+		D32EDDA81600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA01600C8FC009A84C7 /* ringtone_03_1600_loop.wav */; };
+		D32EDDA91600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA11600C8FC009A84C7 /* ringtone_04_1600_loop.wav */; };
+		D32EDDAA1600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA11600C8FC009A84C7 /* ringtone_04_1600_loop.wav */; };
+		D32EDDAB1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA21600C8FC009A84C7 /* ringtone_05_1600_loop.wav */; };
+		D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = D32EDDA21600C8FC009A84C7 /* ringtone_05_1600_loop.wav */; };
 		D33BEE1F15FF711B004ED2AF /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1C15FF711B004ED2AF /* linphonerc-factory */; };
 		D33BEE2015FF711B004ED2AF /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1C15FF711B004ED2AF /* linphonerc-factory */; };
 		D33BEE2115FF711B004ED2AF /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */; };
@@ -579,6 +591,13 @@
 		D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FastAddressBook.h; path = Utils/FastAddressBook.h; sourceTree = "<group>"; };
 		D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FastAddressBook.m; path = Utils/FastAddressBook.m; sourceTree = "<group>"; };
+		D32EDD991600C450009A84C7 /* LevelPushButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelPushButton.h; path = Model/LevelPushButton.h; sourceTree = "<group>"; };
+		D32EDD9A1600C450009A84C7 /* LevelPushButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LevelPushButton.m; path = Model/LevelPushButton.m; sourceTree = "<group>"; };
+		D32EDD9E1600C8FC009A84C7 /* ringtone_01_1600_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_01_1600_loop.wav; path = Resources/ringtone_01_1600_loop.wav; sourceTree = "<group>"; };
+		D32EDD9F1600C8FC009A84C7 /* ringtone_02_1600_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_02_1600_loop.wav; path = Resources/ringtone_02_1600_loop.wav; sourceTree = "<group>"; };
+		D32EDDA01600C8FC009A84C7 /* ringtone_03_1600_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_03_1600_loop.wav; path = Resources/ringtone_03_1600_loop.wav; sourceTree = "<group>"; };
+		D32EDDA11600C8FC009A84C7 /* ringtone_04_1600_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_04_1600_loop.wav; path = Resources/ringtone_04_1600_loop.wav; sourceTree = "<group>"; };
+		D32EDDA21600C8FC009A84C7 /* ringtone_05_1600_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_05_1600_loop.wav; path = Resources/ringtone_05_1600_loop.wav; sourceTree = "<group>"; };
 		D33BEE1C15FF711B004ED2AF /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
 		D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		D33BEE1E15FF711B004ED2AF /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = Resources/rootca.pem; sourceTree = "<group>"; };
@@ -1289,10 +1308,15 @@
 				D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */,
 				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
 				D376EAE316008454007C8226 /* ringtone_01_1600.wav */,
+				D32EDD9E1600C8FC009A84C7 /* ringtone_01_1600_loop.wav */,
 				D376EAE416008454007C8226 /* ringtone_02_1600.wav */,
+				D32EDD9F1600C8FC009A84C7 /* ringtone_02_1600_loop.wav */,
 				D376EAE516008454007C8226 /* ringtone_03_1600.wav */,
+				D32EDDA01600C8FC009A84C7 /* ringtone_03_1600_loop.wav */,
 				D376EAE616008454007C8226 /* ringtone_04_1600.wav */,
+				D32EDDA11600C8FC009A84C7 /* ringtone_04_1600_loop.wav */,
 				D376EAE716008454007C8226 /* ringtone_05_1600.wav */,
+				D32EDDA21600C8FC009A84C7 /* ringtone_05_1600_loop.wav */,
 				D33BEE1E15FF711B004ED2AF /* rootca.pem */,
 				D376EAF716009E2A007C8226 /* snapshot.png */,
 				D376EAE0160082A4007C8226 /* trash.png */,
@@ -1333,6 +1357,8 @@
 			children = (
 				D384468715E65CFE00DF89DF /* History.h */,
 				D384468815E65CFE00DF89DF /* History.m */,
+				D32EDD991600C450009A84C7 /* LevelPushButton.h */,
+				D32EDD9A1600C450009A84C7 /* LevelPushButton.m */,
 				D383A44C15E3C98C00CDE5C9 /* Network.h */,
 				D383A44D15E3C98C00CDE5C9 /* Network.m */,
 				D37CD35115E22A470028869A /* OutdoorStation.h */,
@@ -1548,6 +1574,11 @@
 				D376EAF016008454007C8226 /* ringtone_05_1600.wav in Resources */,
 				D376EAF816009E2A007C8226 /* bj_save.png in Resources */,
 				D376EAFA16009E2A007C8226 /* snapshot.png in Resources */,
+				D32EDDA31600C8FC009A84C7 /* ringtone_01_1600_loop.wav in Resources */,
+				D32EDDA51600C8FC009A84C7 /* ringtone_02_1600_loop.wav in Resources */,
+				D32EDDA71600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */,
+				D32EDDA91600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
+				D32EDDAB1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1602,6 +1633,11 @@
 				D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */,
 				D376EAF916009E2A007C8226 /* bj_save.png in Resources */,
 				D376EAFB16009E2A007C8226 /* snapshot.png in Resources */,
+				D32EDDA41600C8FC009A84C7 /* ringtone_01_1600_loop.wav in Resources */,
+				D32EDDA61600C8FC009A84C7 /* ringtone_02_1600_loop.wav in Resources */,
+				D32EDDA81600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */,
+				D32EDDAA1600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
+				D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1687,6 +1723,7 @@
 				D3FE9F4415E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
 				D3FE9F4B15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 				D376EAF416008DF1007C8226 /* User.m in Sources */,
+				D32EDD9B1600C450009A84C7 /* LevelPushButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1740,6 +1777,7 @@
 				D3FE9F4515E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
 				D3FE9F4C15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 				D376EAF516008DF1007C8226 /* User.m in Sources */,
+				D32EDD9C1600C450009A84C7 /* LevelPushButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

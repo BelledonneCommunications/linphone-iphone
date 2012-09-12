@@ -98,6 +98,12 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                              selector:@selector(callUpdateEvent:)
                                                  name:kLinphoneCallUpdate
                                                object:nil];
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textReceivedEvent:)
+                                                 name:kLinphoneTextReceived
+                                               object:nil];
 }
 
 - (void)vieWillDisappear:(BOOL)animated{
@@ -106,6 +112,11 @@ static BuschJaegerMainView* mainViewInstance=nil;
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCallUpdate
+                                                  object:nil];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneTextReceived
                                                   object:nil];
 }
 
@@ -116,6 +127,11 @@ static BuschJaegerMainView* mainViewInstance=nil;
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     [self callUpdate:call state:state animated:TRUE];
+}
+
+
+- (void)textReceivedEvent: (NSNotification*) notif {
+    [self displayMessage:notif];
 }
 
 
@@ -160,13 +176,39 @@ static BuschJaegerMainView* mainViewInstance=nil;
 - (void)displayIncomingCall:(LinphoneCall *)call {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
         && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"], nil];
+        
+        NSString *contactName = NSLocalizedString(@"Unknown", nil);
+        
+        // Extract caller address
+        const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+        if(addr) {
+            char *address = linphone_address_as_string_uri_only(addr);
+            if(address != NULL) {
+                contactName = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:address]];
+                ms_free(address);
+            }
+        }
+        
+        // Find caller in outdoor stations
+        NSSet *outstations = [[LinphoneManager instance] configuration].outdoorStations;
+        for(OutdoorStation *os in outstations) {
+            if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:contactName]) {
+                contactName = os.name;
+                break;
+            }
+        }
+        
+        NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), contactName];
+        
         // Create a new notification
         UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
         if (notif) {
             notif.repeatInterval = 0;
-            notif.alertBody = NSLocalizedString(@"Ding Dong !",nil);
-            notif.alertAction = @"See the answer";
-            notif.soundName = @"01.wav";
+            notif.alertBody = msg;
+            notif.alertAction = NSLocalizedString(@"Answer", nil);
+            notif.soundName = ringtone;
             NSData *callData = [NSData dataWithBytes:&call length:sizeof(call)];
             notif.userInfo = [NSDictionary dictionaryWithObject:callData forKey:@"call"];
             
@@ -175,6 +217,36 @@ static BuschJaegerMainView* mainViewInstance=nil;
     }else{
         [[LinphoneManager instance] setSpeakerEnabled:TRUE];
         AudioServicesPlaySystemSound([LinphoneManager instance].sounds.call);
+    }
+}
+
+- (void)displayMessage:(id)message {
+    NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), [LinphoneManager instance].configuration.levelPushButton.name];
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"], nil];
+        
+		// Create a new notification
+		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
+		if (notif) {
+			notif.repeatInterval = 0;
+			notif.alertBody = msg;
+			notif.alertAction = NSLocalizedString(@"Show", nil);
+			notif.soundName = ringtone;
+			
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		}
+	} else {
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Dring !",nil)
+                                                        message:msg
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                              otherButtonTitles:nil,nil];
+        [error show];
+        [error release];
+        [[LinphoneManager instance] setSpeakerEnabled:TRUE];
+        AudioServicesPlayAlertSound([LinphoneManager instance].sounds.level);
     }
 }
 

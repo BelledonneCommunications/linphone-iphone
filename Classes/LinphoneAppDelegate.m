@@ -172,6 +172,8 @@
                                  @"NO", @"enable_srtp_preference",
                                  @"YES", @"backgroundmode_preference",
                                  @"YES", @"outbound_proxy_preference",
+                                 @"ringtone_01_1600", @"ringtone_preference",
+                                 @"ringtone_01_1600", @"level_ringtone_preference",
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
@@ -251,8 +253,8 @@
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
             NSString *loc_key = [alert objectForKey:@"loc-key"];
-			/*if we receive a remote notification, it is because our TCP background socket was no more working.
-			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
+			//if we receive a remote notification, it is because our TCP background socket was no more working.
+            //As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 			LinphoneCore *lc = [LinphoneManager getLc];
 			linphone_core_set_network_reachable(lc, FALSE);
 			linphone_core_set_network_reachable(lc, TRUE);

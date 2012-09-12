@@ -464,6 +464,14 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
     [chat release];
 	*/
+    
+    // Post event
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                          [NSValue valueWithPointer:room], @"room",
+                          [NSValue valueWithPointer:from], @"from",
+                          [NSString stringWithUTF8String:message], @"message",
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
 }
 
 static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
@@ -1330,9 +1338,6 @@ static void audioRouteChangeListenerCallback (
     }
     {
         NSString *ringtone = [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"];
-        if(ringtone == nil) {
-            ringtone = @"ringtone_01_1600";
-        }
         NSString *path = [[NSBundle mainBundle] pathForResource:ringtone ofType:@"wav"];
         sounds.call = 0;
         OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
@@ -1345,9 +1350,6 @@ static void audioRouteChangeListenerCallback (
     }
     {
         NSString *ringtone = [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"];
-        if(ringtone == nil) {
-            ringtone = @"ringtone_01_1600";
-        }
         NSString *path = [[NSBundle mainBundle] pathForResource:ringtone ofType:@"wav"];
         sounds.level = 0;
         OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.level);
