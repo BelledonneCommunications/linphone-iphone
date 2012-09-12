@@ -1067,7 +1067,7 @@ static void audioRouteChangeListenerCallback (
 
 
 -(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",value?[key UTF8String]:NULL, [value UTF8String]);
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value?[value UTF8String]:NULL);
 }
 -(NSString*)lpConfigStringForKey:(NSString*) key {
 	if (!theLinphoneCore) {
