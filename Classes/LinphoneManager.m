@@ -192,22 +192,26 @@ struct codec_name_pref_table codec_pref_table[]={
         }
         
         // Sounds
-        {
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"01" ofType:@"wav"];
+        /*{
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"01" ofType:@"wav"];*/
             sounds.call = 0;
-            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
+            /*OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
             if(status != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
             }
         }
-        /*{
-            NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
+        {
+            NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];*/
             sounds.message = 0;
-            OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.message);
+            /*OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.message);
             if(status != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
             }
         }*/
+        
+        /* MODIFICATION add level ringtone */
+        sounds.level = 0;
+        /**/
         
         inhibitedEvent = [[NSMutableArray alloc] init];
         logs = [[NSMutableArray alloc] init];
@@ -1175,13 +1179,9 @@ static void audioRouteChangeListenerCallback (
 	}
 	
     
-    
 	// Set audio assets
-	const char*  lRing = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char*  lRingBack = [[myBundle pathForResource:@"01"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-    
+	linphone_core_set_ring(theLinphoneCore, "");
+	linphone_core_set_ringback(theLinphoneCore, "");
 	
 	
 	//configure sip account
@@ -1338,6 +1338,38 @@ static void audioRouteChangeListenerCallback (
     [currentSettings release];
     currentSettings = newSettings;
     [currentSettings retain];
+    
+    /* Configure sounds */
+    if(sounds.call) {
+        AudioServicesDisposeSystemSoundID(sounds.call);
+    }
+    {
+        NSString *ringtone = [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"];
+        if(ringtone == nil) {
+            ringtone = @"ringtone_01_1600";
+        }
+        NSString *path = [[NSBundle mainBundle] pathForResource:ringtone ofType:@"wav"];
+        sounds.call = 0;
+        OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.call);
+        if(status != 0) {
+            [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
+        }
+    }
+    if(sounds.level) {
+        AudioServicesDisposeSystemSoundID(sounds.level);
+    }
+    {
+        NSString *ringtone = [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"];
+        if(ringtone == nil) {
+            ringtone = @"ringtone_01_1600";
+        }
+        NSString *path = [[NSBundle mainBundle] pathForResource:ringtone ofType:@"wav"];
+        sounds.level = 0;
+        OSStatus status = AudioServicesCreateSystemSoundID((CFURLRef)[NSURL fileURLWithPath:path], &sounds.level);
+        if(status != 0) {
+            [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"call\" system sound"];
+        }
+    }
     
     return YES;
 }

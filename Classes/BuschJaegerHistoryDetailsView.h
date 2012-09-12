@@ -20,8 +20,9 @@
 #import <UIKit/UIKit.h>
 #import "History.h"
 #import "UIRemoteImageView.h"
+#import "BuschJaegerConfiguration.h"
 
-@interface BuschJaegerHistoryDetailsView : UIViewController<UITableViewDataSource, UITableViewDelegate> {
+@interface BuschJaegerHistoryDetailsView : UIViewController<UITableViewDataSource, UITableViewDelegate, BuschJaegerConfigurationDelegate> {
 @private
     int currentIndex;
     NSDateFormatter *dateFormatter;
@@ -34,6 +35,8 @@
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
 
+- (IBAction)onBackClick:(id)sender;
+- (IBAction)onDeleteClick:(id)sender;
 - (IBAction)nextImage:(id)sender;
 - (IBAction)previousImage:(id)sender;
 - (IBAction)hideImage:(id)sender;

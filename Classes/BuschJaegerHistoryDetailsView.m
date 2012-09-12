@@ -137,6 +137,10 @@
     [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
 }
 
+- (IBAction)onDeleteClick:(id)sender {
+    [[LinphoneManager instance].configuration removeHistory:BuschJaegerConfigurationRequestType_Local history:history delegate:self];
+}
+
 - (IBAction)nextImage:(id)sender {
     if([history.images count]) {
         currentIndex = (currentIndex - 1);
@@ -195,5 +199,23 @@
     [imageView setImage:nil];
     [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
 }
+
+#pragma mark - BuschJaegerConfigurationDelegate Functions
+
+- (void)buschJaegerConfigurationSuccess {
+    [[BuschJaegerMainView instance].historyView reload];
+    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+}
+
+- (void)buschJaegerConfigurationError:(NSString *)error {
+    UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"History delete error",nil)
+                                                        message:[NSString stringWithFormat:NSLocalizedString(@"Connection issue: %@", nil), error]
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                              otherButtonTitles:nil,nil];
+    [errorView show];
+    [errorView release];
+}
+
 
 @end

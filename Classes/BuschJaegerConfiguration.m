@@ -241,13 +241,20 @@
                         [delegate buschJaegerConfigurationError:[error localizedDescription]];
                     });
                 } else {
-                    if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
-                        [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
-                        [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
-                        [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
-                        [[LinphoneManager instance] reconfigureLinphone];
+                    NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+                    if(urlResponse.statusCode == 200) {
+                        if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                            [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
+                            [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
+                            [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
+                            [[LinphoneManager instance] reconfigureLinphone];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [delegate buschJaegerConfigurationSuccess];
+                            });
+                        }
+                    } else {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [delegate buschJaegerConfigurationSuccess];
+                            [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                         });
                     }
                 }
@@ -273,13 +280,51 @@
                     [delegate buschJaegerConfigurationError:[error localizedDescription]];
                 });
             } else {
-                NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
-                if([self parseHistory:dataString delegate:delegate]) {
+                NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+                if(urlResponse.statusCode == 200) {
+                    NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
+                    if([self parseHistory:dataString delegate:delegate]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate buschJaegerConfigurationSuccess];
+                        });
+                    }
+                    [dataString release];
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
+                    });
+                }
+            }
+        });
+        return TRUE;
+    }
+    return FALSE;
+}
+
+- (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    NSString *url = [NSString stringWithFormat:@"%@/adduser.cgi?type=delhistory&id=%d", [self getGateway:type], ahistory.ID];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+    if(request != nil) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+            NSURLResponse *response = nil;
+            NSError *error = nil;
+            NSData *data  = nil;
+            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+            if(data == nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate buschJaegerConfigurationError:[error localizedDescription]];
+                });
+            } else {
+                NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+                if(urlResponse.statusCode == 200) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [delegate buschJaegerConfigurationSuccess];
                     });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
+                    });
                 }
-                [dataString release];
             }
         });
         return TRUE;

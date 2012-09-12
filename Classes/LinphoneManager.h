@@ -70,6 +70,9 @@ typedef struct _LinphoneCallAppData {
 
 typedef struct _LinphoneManagerSounds {
     SystemSoundID call;
+    /* MODIFICATION add level ringtone */
+    SystemSoundID level;
+    /**/
     SystemSoundID message;
 } LinphoneManagerSounds;
 

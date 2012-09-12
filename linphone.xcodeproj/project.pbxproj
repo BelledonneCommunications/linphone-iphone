@@ -145,8 +145,18 @@
 		D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
-		D37CD2D115E21CB30028869A /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2BF15E21CB30028869A /* 01.wav */; };
-		D37CD2D215E21CB30028869A /* 01.wav in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2BF15E21CB30028869A /* 01.wav */; };
+		D376EAE1160082A4007C8226 /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE0160082A4007C8226 /* trash.png */; };
+		D376EAE2160082A4007C8226 /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE0160082A4007C8226 /* trash.png */; };
+		D376EAE816008454007C8226 /* ringtone_01_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE316008454007C8226 /* ringtone_01_1600.wav */; };
+		D376EAE916008454007C8226 /* ringtone_01_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE316008454007C8226 /* ringtone_01_1600.wav */; };
+		D376EAEA16008454007C8226 /* ringtone_02_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE416008454007C8226 /* ringtone_02_1600.wav */; };
+		D376EAEB16008454007C8226 /* ringtone_02_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE416008454007C8226 /* ringtone_02_1600.wav */; };
+		D376EAEC16008454007C8226 /* ringtone_03_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE516008454007C8226 /* ringtone_03_1600.wav */; };
+		D376EAED16008454007C8226 /* ringtone_03_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE516008454007C8226 /* ringtone_03_1600.wav */; };
+		D376EAEE16008454007C8226 /* ringtone_04_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE616008454007C8226 /* ringtone_04_1600.wav */; };
+		D376EAEF16008454007C8226 /* ringtone_04_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE616008454007C8226 /* ringtone_04_1600.wav */; };
+		D376EAF016008454007C8226 /* ringtone_05_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE716008454007C8226 /* ringtone_05_1600.wav */; };
+		D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE716008454007C8226 /* ringtone_05_1600.wav */; };
 		D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E115E21CB30028869A /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C715E21CB30028869A /* bj_decline.png */; };
@@ -573,7 +583,12 @@
 		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
-		D37CD2BF15E21CB30028869A /* 01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = 01.wav; path = Resources/01.wav; sourceTree = "<group>"; };
+		D376EAE0160082A4007C8226 /* trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = trash.png; path = Resources/trash.png; sourceTree = "<group>"; };
+		D376EAE316008454007C8226 /* ringtone_01_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_01_1600.wav; path = Resources/ringtone_01_1600.wav; sourceTree = "<group>"; };
+		D376EAE416008454007C8226 /* ringtone_02_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_02_1600.wav; path = Resources/ringtone_02_1600.wav; sourceTree = "<group>"; };
+		D376EAE516008454007C8226 /* ringtone_03_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_03_1600.wav; path = Resources/ringtone_03_1600.wav; sourceTree = "<group>"; };
+		D376EAE616008454007C8226 /* ringtone_04_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_04_1600.wav; path = Resources/ringtone_04_1600.wav; sourceTree = "<group>"; };
+		D376EAE716008454007C8226 /* ringtone_05_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_05_1600.wav; path = Resources/ringtone_05_1600.wav; sourceTree = "<group>"; };
 		D37CD2C615E21CB30028869A /* bj_barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_barcode.png; path = Resources/bj_barcode.png; sourceTree = "<group>"; };
 		D37CD2C715E21CB30028869A /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/bj_decline.png; sourceTree = "<group>"; };
 		D37CD2C815E21CB30028869A /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/bj_door_hl.png; sourceTree = "<group>"; };
@@ -1239,10 +1254,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D33BEE1C15FF711B004ED2AF /* linphonerc-factory */,
-				D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */,
-				D33BEE1E15FF711B004ED2AF /* rootca.pem */,
-				D37CD2BF15E21CB30028869A /* 01.wav */,
 				D37CD2C615E21CB30028869A /* bj_barcode.png */,
 				D37CD2C715E21CB30028869A /* bj_decline.png */,
 				D37CD2C915E21CB30028869A /* bj_door.png */,
@@ -1262,8 +1273,17 @@
 				D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */,
 				D37CD32515E220620028869A /* buschjaeger_icon_72.png */,
 				D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */,
-				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
 				57F005C315EE2CCF00914747 /* linphonerc */,
+				D33BEE1C15FF711B004ED2AF /* linphonerc-factory */,
+				D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */,
+				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
+				D376EAE316008454007C8226 /* ringtone_01_1600.wav */,
+				D376EAE416008454007C8226 /* ringtone_02_1600.wav */,
+				D376EAE516008454007C8226 /* ringtone_03_1600.wav */,
+				D376EAE616008454007C8226 /* ringtone_04_1600.wav */,
+				D376EAE716008454007C8226 /* ringtone_05_1600.wav */,
+				D33BEE1E15FF711B004ED2AF /* rootca.pem */,
+				D376EAE0160082A4007C8226 /* trash.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1468,7 +1488,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2214783D1386A2030020F8B8 /* Localizable.strings in Resources */,
-				D37CD2D115E21CB30028869A /* 01.wav in Resources */,
 				D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */,
 				D37CD2E115E21CB30028869A /* bj_decline.png in Resources */,
 				D37CD2E315E21CB30028869A /* bj_door_hl.png in Resources */,
@@ -1507,6 +1526,12 @@
 				D33BEE1F15FF711B004ED2AF /* linphonerc-factory in Resources */,
 				D33BEE2115FF711B004ED2AF /* linphonerc-factory~ipad in Resources */,
 				D33BEE2315FF711B004ED2AF /* rootca.pem in Resources */,
+				D376EAE1160082A4007C8226 /* trash.png in Resources */,
+				D376EAE816008454007C8226 /* ringtone_01_1600.wav in Resources */,
+				D376EAEA16008454007C8226 /* ringtone_02_1600.wav in Resources */,
+				D376EAEC16008454007C8226 /* ringtone_03_1600.wav in Resources */,
+				D376EAEE16008454007C8226 /* ringtone_04_1600.wav in Resources */,
+				D376EAF016008454007C8226 /* ringtone_05_1600.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1515,7 +1540,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D34BD74115C13E250070C209 /* Localizable.strings in Resources */,
-				D37CD2D215E21CB30028869A /* 01.wav in Resources */,
 				D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */,
 				D37CD2E215E21CB30028869A /* bj_decline.png in Resources */,
 				D37CD2E415E21CB30028869A /* bj_door_hl.png in Resources */,
@@ -1554,6 +1578,12 @@
 				D33BEE2015FF711B004ED2AF /* linphonerc-factory in Resources */,
 				D33BEE2215FF711B004ED2AF /* linphonerc-factory~ipad in Resources */,
 				D33BEE2415FF711B004ED2AF /* rootca.pem in Resources */,
+				D376EAE2160082A4007C8226 /* trash.png in Resources */,
+				D376EAE916008454007C8226 /* ringtone_01_1600.wav in Resources */,
+				D376EAEB16008454007C8226 /* ringtone_02_1600.wav in Resources */,
+				D376EAED16008454007C8226 /* ringtone_03_1600.wav in Resources */,
+				D376EAEF16008454007C8226 /* ringtone_04_1600.wav in Resources */,
+				D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

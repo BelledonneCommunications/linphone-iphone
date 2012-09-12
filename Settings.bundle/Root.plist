@@ -9,8 +9,6 @@
 			<string>SIP account</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Welcome must be restarted for changes to take effect</string>
 		</dict>
 		<dict>
 			<key>AutocapitalizationType</key>
@@ -111,6 +109,66 @@
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Sounds</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Welcome must be restarted for changes to take effect</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>ringtone_01_1600</string>
+			<key>Key</key>
+			<string>ringtone_preference</string>
+			<key>Title</key>
+			<string>Ringtone</string>
+			<key>Titles</key>
+			<array>
+				<string>Ringtone 1</string>
+				<string>Ringtone 2</string>
+				<string>Ringtone 3</string>
+				<string>Ringtone 4</string>
+				<string>Ringtone 5</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>ringtone_01_1600</string>
+				<string>ringtone_02_1600</string>
+				<string>ringtone_03_1600</string>
+				<string>ringtone_04_1600</string>
+				<string>ringtone_05_1600</string>
+			</array>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>ringtone_01_1600</string>
+			<key>Key</key>
+			<string>level_ringtone_preference</string>
+			<key>Title</key>
+			<string>Level Ringtone</string>
+			<key>Titles</key>
+			<array>
+				<string>Ringtone 1</string>
+				<string>Ringtone 2</string>
+				<string>Ringtone 3</string>
+				<string>Ringtone 4</string>
+				<string>Ringtone 5</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>ringtone_01_1600</string>
+				<string>ringtone_02_1600</string>
+				<string>ringtone_03_1600</string>
+				<string>ringtone_04_1600</string>
+				<string>ringtone_05_1600</string>
+			</array>
 		</dict>
 	</array>
 	<key>StringsTable</key>

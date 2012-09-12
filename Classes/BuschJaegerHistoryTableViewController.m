@@ -26,12 +26,14 @@
 @implementation BuschJaegerHistoryTableViewController
 
 @synthesize history;
+@synthesize waitView;
 
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
     [history release];
+    [waitView release];
     [super dealloc];
 }
 
@@ -44,9 +46,10 @@
     }
     
     [history release];
-    history = [ahistory retain];
+    history = [[NSMutableArray alloc] initWithArray:ahistory];
     [self.tableView reloadData];
 }
+
 
 
 #pragma mark - UITableViewDataSource Functions
@@ -86,5 +89,36 @@
     [[BuschJaegerMainView instance].navigationController pushViewController:[BuschJaegerMainView instance].historyDetailsView animated:FALSE];
 }
 
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return UITableViewCellEditingStyleDelete;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
+    if(editingStyle == UITableViewCellEditingStyleDelete) {
+        History *ahistory = [history objectAtIndex:[indexPath row]];
+        [[LinphoneManager instance].configuration removeHistory:BuschJaegerConfigurationRequestType_Local history:ahistory delegate:self];
+        [tableView beginUpdates];
+        [history removeObjectAtIndex:[indexPath row]];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+    }
+}
+
+
+#pragma mark - BuschJaegerConfigurationDelegate Functions
+
+- (void)buschJaegerConfigurationSuccess {
+}
+
+- (void)buschJaegerConfigurationError:(NSString *)error {
+    UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"History delete error",nil)
+                                                        message:[NSString stringWithFormat:NSLocalizedString(@"Connection issue: %@", nil), error]
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                              otherButtonTitles:nil,nil];
+    [errorView show];
+    [errorView release];
+    [[BuschJaegerMainView instance].historyView reload];
+}
 
 @end

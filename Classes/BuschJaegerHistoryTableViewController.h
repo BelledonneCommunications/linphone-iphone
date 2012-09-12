@@ -18,9 +18,14 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "BuschJaegerConfiguration.h"
 
-@interface BuschJaegerHistoryTableViewController : UITableViewController
+@interface BuschJaegerHistoryTableViewController : UITableViewController<BuschJaegerConfigurationDelegate> {
+    @private
+    NSMutableArray *history;
+}
 
-@property (nonatomic, retain) NSArray *history;
+@property (nonatomic, copy) NSArray *history;
+@property (nonatomic, retain) IBOutlet UIView *waitView;
 
 @end

@@ -77,7 +77,7 @@
 
 - (void)updateConfiguration:(BuschJaegerConfiguration *)configuration {
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
-    NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
+    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
     [tableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
     [historyButton setEnabled: configuration.network.localAddress != nil];
 }

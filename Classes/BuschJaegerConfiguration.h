@@ -49,9 +49,12 @@ typedef enum _BuschJaegerConfigurationRequestType{
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
 - (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)history delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+
 - (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image;
 
 - (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type;
 
 + (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data;
+
 @end

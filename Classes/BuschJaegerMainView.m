@@ -162,8 +162,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
         && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
         // Create a new notification
         UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-        if (notif)
-        {
+        if (notif) {
             notif.repeatInterval = 0;
             notif.alertBody = NSLocalizedString(@"Ding Dong !",nil);
             notif.alertAction = @"See the answer";

@@ -75,4 +75,8 @@
     return history;
 }
 
+- (void)remove {
+    
+}
+
 @end
