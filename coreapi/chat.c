@@ -170,6 +170,10 @@ char* linphone_chat_message_get_message(LinphoneChatMessage* msg) {
 	return msg->message;
 }
 
+const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
+	return linphone_chat_room_get_peer_address(msg->chat_room);
+}
+
 /**
  * user pointer set function
  */

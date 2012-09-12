@@ -60,5 +60,17 @@ public interface LinphoneChatMessage {
 	
 	void setUserData();
 	
+	/**
+	 * get text associated to this LinphoneChatMessage
+	 * 
+	 * @return text sent along with the message
+	 */
 	String getMessage();
+	
+	/**
+	 * get peer address associated to this LinphoneChatMessage
+	 *
+	 * @return LinphoneAddress peer address
+	 */
+	LinphoneAddress getPeerAddress();
 }

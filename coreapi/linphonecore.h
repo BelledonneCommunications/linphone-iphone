@@ -672,6 +672,7 @@ void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage*
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 char* linphone_chat_message_get_message(LinphoneChatMessage *msg);
+const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 

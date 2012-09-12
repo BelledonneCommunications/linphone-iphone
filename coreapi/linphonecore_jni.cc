@@ -1387,6 +1387,11 @@ extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getMessage(JNI
 	jstring jvalue =env->NewStringUTF(linphone_chat_message_get_message((LinphoneChatMessage*)ptr));
 	return jvalue;
 }
+extern "C" long Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (long) linphone_chat_message_get_peer_address((LinphoneChatMessage*)ptr);
+}
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
