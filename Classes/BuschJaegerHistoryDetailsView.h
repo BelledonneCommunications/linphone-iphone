@@ -33,6 +33,9 @@
 @property (nonatomic, retain) IBOutlet UITableViewController *tableController;
 @property (nonatomic, retain) IBOutlet UILabel *stationLabel;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
+
+@property (nonatomic, retain) IBOutlet UIView *fullscreenView;
+@property (nonatomic, retain) IBOutlet UIButton *saveButton;
 @property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
 
 - (IBAction)onBackClick:(id)sender;
@@ -40,5 +43,6 @@
 - (IBAction)nextImage:(id)sender;
 - (IBAction)previousImage:(id)sender;
 - (IBAction)hideImage:(id)sender;
+- (IBAction)saveImage:(id)sender;
 
 @end

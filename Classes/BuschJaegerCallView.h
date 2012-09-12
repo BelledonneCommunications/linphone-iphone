@@ -42,7 +42,9 @@
 @property (nonatomic, retain) IBOutlet UIToggleButton* microButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* lightsButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoorButton;
+@property (nonatomic, retain) IBOutlet UIButton* snapshotButton;
 
 - (IBAction)takeCall:(id)sender;
+- (IBAction)onSnapshotClick:(id)sender;
 
 @end

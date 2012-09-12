@@ -34,11 +34,7 @@
 @synthesize microButton;
 @synthesize lightsButton;
 @synthesize openDoorButton;
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
+@synthesize snapshotButton;
 
 
 #pragma mark - View lifecycle
@@ -51,6 +47,7 @@
     [microButton release];
     [lightsButton release];
     [openDoorButton release];
+    [snapshotButton release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -58,11 +55,6 @@
     [super dealloc];
 }
 
-// 59x47
-// 54
-// 54 -> 67
-// 59 -> 73 x 58
-// 257
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -90,8 +82,8 @@
         [BuschJaegerUtils createGradientForView:takeCallButton withTopColor:col1 bottomColor:col2];
     }
     
-    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);
-    linphone_core_set_native_preview_window_id([LinphoneManager getLc],0);
+    linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc], 0);
     
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
@@ -227,7 +219,7 @@
     [declineButton setHidden:NO];
     [endOrRejectCallButton setHidden:YES];
     [videoView setHidden:NO];
-    
+    [snapshotButton setHidden:YES];
 
     NSString *contactName = NSLocalizedString(@"Unknown", nil);
     
@@ -259,6 +251,7 @@
     [declineButton setHidden:YES];
     [endOrRejectCallButton setHidden:NO];
     [videoView setHidden:NO];
+    [snapshotButton setHidden:YES];
 }
 
 - (void)displayVideoCall {
@@ -268,7 +261,17 @@
     [declineButton setHidden:YES];
     [endOrRejectCallButton setHidden:NO];
     [videoView setHidden:NO];
+    [snapshotButton setHidden:NO];
 }
+
+- (void)saveImage:(NSString*)imagePath {
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    if(image != nil) {
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+    }
+}
+
+#pragma mark - Actions Functions
 
 - (IBAction)takeCall:(id)sender {
     const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);	
@@ -280,6 +283,17 @@
             return;
         }
         calls = calls->next;
+    }
+}
+
+- (IBAction)onSnapshotClick:(id)sender {
+    LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+    if(call != NULL) {
+        NSString *imagePath = [NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%.0f.%@", [NSDate timeIntervalSinceReferenceDate] * 1000.0, @"jpg"]];
+        int ret = linphone_call_take_video_snapshot(call, [imagePath UTF8String]);
+        if(ret == 0) {
+            [self performSelector:@selector(saveImage:) withObject:imagePath afterDelay:0.5];
+        }
     }
 }
 

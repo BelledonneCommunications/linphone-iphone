@@ -31,6 +31,8 @@
 @synthesize stationLabel;
 @synthesize dateLabel;
 @synthesize imageView;
+@synthesize saveButton;
+@synthesize fullscreenView;
 
 #pragma mark - Lifecycle Functions
 
@@ -72,8 +74,9 @@
     [backButton release];
     [stationLabel release];
     [dateLabel release];
-    
+    [fullscreenView release];
     [imageView release];
+    [saveButton release];
     
     [dateFormatter release];
     
@@ -98,7 +101,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [imageView setHidden:TRUE];
+    [fullscreenView setHidden:TRUE];
 }
 
 
@@ -157,9 +160,12 @@
 }
 
 - (IBAction)hideImage:(id)sender {
-    [imageView setHidden:TRUE];
+    [fullscreenView setHidden:TRUE];
 }
 
+- (IBAction)saveImage:(id)sender {
+    UIImageWriteToSavedPhotosAlbum([imageView image], nil, nil, nil);
+}
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -195,7 +201,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     currentIndex = [indexPath row];
-    [imageView setHidden:FALSE];
+    [fullscreenView setHidden:FALSE];
     [imageView setImage:nil];
     [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
 }

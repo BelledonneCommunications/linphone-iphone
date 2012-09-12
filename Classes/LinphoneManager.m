@@ -217,7 +217,9 @@ struct codec_name_pref_table codec_pref_table[]={
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         speakerEnabled = FALSE;
+        /* MODIFICATION: Disable database */
         [self openDatabase];
+        /**/
         [self copyDefaultSettings];
 
         /* MODIFICATION: Add buschjaeger configuration */

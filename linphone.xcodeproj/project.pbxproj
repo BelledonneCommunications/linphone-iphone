@@ -159,6 +159,10 @@
 		D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE716008454007C8226 /* ringtone_05_1600.wav */; };
 		D376EAF416008DF1007C8226 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = D376EAF316008DF1007C8226 /* User.m */; };
 		D376EAF516008DF1007C8226 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = D376EAF316008DF1007C8226 /* User.m */; };
+		D376EAF816009E2A007C8226 /* bj_save.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAF616009E2A007C8226 /* bj_save.png */; };
+		D376EAF916009E2A007C8226 /* bj_save.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAF616009E2A007C8226 /* bj_save.png */; };
+		D376EAFA16009E2A007C8226 /* snapshot.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAF716009E2A007C8226 /* snapshot.png */; };
+		D376EAFB16009E2A007C8226 /* snapshot.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAF716009E2A007C8226 /* snapshot.png */; };
 		D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E115E21CB30028869A /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C715E21CB30028869A /* bj_decline.png */; };
@@ -593,6 +597,8 @@
 		D376EAE716008454007C8226 /* ringtone_05_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_05_1600.wav; path = Resources/ringtone_05_1600.wav; sourceTree = "<group>"; };
 		D376EAF216008DF1007C8226 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Model/User.h; sourceTree = "<group>"; };
 		D376EAF316008DF1007C8226 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Model/User.m; sourceTree = "<group>"; };
+		D376EAF616009E2A007C8226 /* bj_save.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_save.png; path = Resources/bj_save.png; sourceTree = "<group>"; };
+		D376EAF716009E2A007C8226 /* snapshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = snapshot.png; path = Resources/snapshot.png; sourceTree = "<group>"; };
 		D37CD2C615E21CB30028869A /* bj_barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_barcode.png; path = Resources/bj_barcode.png; sourceTree = "<group>"; };
 		D37CD2C715E21CB30028869A /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/bj_decline.png; sourceTree = "<group>"; };
 		D37CD2C815E21CB30028869A /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/bj_door_hl.png; sourceTree = "<group>"; };
@@ -1268,6 +1274,7 @@
 				D37CD2CB15E21CB30028869A /* bj_light_hl.png */,
 				D37CD2CD15E21CB30028869A /* bj_mute_off.png */,
 				D37CD2CE15E21CB30028869A /* bj_mute_on.png */,
+				D376EAF616009E2A007C8226 /* bj_save.png */,
 				D37CD2CF15E21CB30028869A /* bj_settings.png */,
 				D37CD2D015E21CB30028869A /* bj_start_call.png */,
 				D384466E15E64B9E00DF89DF /* bj_station.png */,
@@ -1287,6 +1294,7 @@
 				D376EAE616008454007C8226 /* ringtone_04_1600.wav */,
 				D376EAE716008454007C8226 /* ringtone_05_1600.wav */,
 				D33BEE1E15FF711B004ED2AF /* rootca.pem */,
+				D376EAF716009E2A007C8226 /* snapshot.png */,
 				D376EAE0160082A4007C8226 /* trash.png */,
 			);
 			name = Resources;
@@ -1538,6 +1546,8 @@
 				D376EAEC16008454007C8226 /* ringtone_03_1600.wav in Resources */,
 				D376EAEE16008454007C8226 /* ringtone_04_1600.wav in Resources */,
 				D376EAF016008454007C8226 /* ringtone_05_1600.wav in Resources */,
+				D376EAF816009E2A007C8226 /* bj_save.png in Resources */,
+				D376EAFA16009E2A007C8226 /* snapshot.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1590,6 +1600,8 @@
 				D376EAED16008454007C8226 /* ringtone_03_1600.wav in Resources */,
 				D376EAEF16008454007C8226 /* ringtone_04_1600.wav in Resources */,
 				D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */,
+				D376EAF916009E2A007C8226 /* bj_save.png in Resources */,
+				D376EAFB16009E2A007C8226 /* snapshot.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
