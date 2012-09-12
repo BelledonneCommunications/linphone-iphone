@@ -38,7 +38,6 @@ static LinphoneManager* theLinphoneManager = nil;
 
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
-NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 /* MODIFICATION: Add buschjaeger configuration event */
@@ -213,7 +212,6 @@ struct codec_name_pref_table codec_pref_table[]={
         sounds.level = 0;
         /**/
         
-        inhibitedEvent = [[NSMutableArray alloc] init];
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         speakerEnabled = FALSE;
@@ -221,7 +219,7 @@ struct codec_name_pref_table codec_pref_table[]={
         [self openDatabase];
         /**/
         [self copyDefaultSettings];
-
+	lastRemoteNotificationTime=0;
         /* MODIFICATION: Add buschjaeger configuration */
         configuration = [[BuschJaegerConfiguration alloc] init];
         [configuration loadFile:kLinphoneConfigurationPath];
@@ -238,7 +236,6 @@ struct codec_name_pref_table codec_pref_table[]={
         AudioServicesDisposeSystemSoundID(sounds.message);
     }
     
-    [inhibitedEvent release];
     [fastAddressBook release];
     [self closeDatabase];
     [logs release];
@@ -739,7 +736,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}	
 }
 
-
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -758,16 +754,16 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)didReceiveRemoteNotification{
-	lastRemoteNotificationTime=time(NULL);
+    lastRemoteNotificationTime=time(NULL);
 }
 
 - (BOOL)shouldAutoAcceptCall{
-	if (lastRemoteNotificationTime!=0){
-		if ((time(NULL)-lastRemoteNotificationTime)<15)
-			return TRUE;
-		lastRemoteNotificationTime=0;
-	}
-	return FALSE;
+    if (lastRemoteNotificationTime!=0){
+        if ((time(NULL)-lastRemoteNotificationTime)<15)
+            return TRUE;
+        lastRemoteNotificationTime=0;
+    }
+    return FALSE;
 }
 
 - (BOOL)resignActive {
@@ -1035,19 +1031,6 @@ static void audioRouteChangeListenerCallback (
 		linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
 	}
 	*/
-}
-
-- (void)addInhibitedEvent:(NSString*)event {
-    [inhibitedEvent addObject:event];
-}
-
-- (BOOL)removeInhibitedEvent:(NSString*)event {
-    NSUInteger index = [inhibitedEvent indexOfObject:kLinphoneTextReceivedSound];
-    if(index != NSNotFound) {
-        [inhibitedEvent removeObjectAtIndex:index];
-        return TRUE;
-    }
-    return FALSE;
 }
 
 
@@ -1389,7 +1372,7 @@ static void audioRouteChangeListenerCallback (
 
 
 -(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",value?[key UTF8String]:NULL, [value UTF8String]);
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value?[value UTF8String]:NULL);
 }
 -(NSString*)lpConfigStringForKey:(NSString*) key {
 	if (!theLinphoneCore) {

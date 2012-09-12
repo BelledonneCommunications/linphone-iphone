@@ -245,6 +245,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
+    /* MODIFICATION: Remove remote notification
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
@@ -252,22 +253,21 @@
             NSString *loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			LinphoneCore *lc=[LinphoneManager getLc];
-			linphone_core_set_network_reachable(lc,FALSE);
-			linphone_core_set_network_reachable(lc,TRUE);
+			LinphoneCore *lc = [LinphoneManager getLc];
+			linphone_core_set_network_reachable(lc, FALSE);
+			linphone_core_set_network_reachable(lc, TRUE);
             if(loc_key != nil) {
                 if([loc_key isEqualToString:@"IM_MSG"]) {
-                    /* MODIFICATION: Remove remote notification
-                    [[LinphoneManager instance] addInhibitedEvent:kLinphoneTextReceivedSound];
+                    [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
-                     */
-                }else{
-					//it's a call
-					[[LinphoneManager instance] didReceiveRemoteNotification];
-				}
+                } else if([loc_key isEqualToString:@"IC_MSG"]) {
+                    //it's a call
+                    [[LinphoneManager instance] didReceiveRemoteNotification];
+                }
             }
         }
     }
+    */
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
