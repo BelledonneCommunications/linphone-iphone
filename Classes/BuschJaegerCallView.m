@@ -28,7 +28,6 @@
 @synthesize incomingView;
 @synthesize contactLabel;
 @synthesize videoView;
-@synthesize startCallButton;
 @synthesize takeCallButton;
 @synthesize declineButton;
 @synthesize endOrRejectCallButton;
@@ -46,7 +45,6 @@
 
 - (void)dealloc {
     [videoView release];
-    [startCallButton release];
     [takeCallButton release];
     [declineButton release];
     [endOrRejectCallButton release];
@@ -76,10 +74,6 @@
     {
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
-    
-        [BuschJaegerUtils createGradientForButton:startCallButton withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
-        [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
         [BuschJaegerUtils createGradientForButton:microButton withTopColor:col1 bottomColor:col2];
     }
     {
@@ -126,7 +120,6 @@
                                                object:nil];
     
     [incomingView setHidden:YES];
-    [startCallButton setHidden:NO];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];
     [declineButton setHidden:YES];
@@ -140,6 +133,27 @@
         
         //lights->chatRoom = chatRoom;
         //openDoor->chatRoom = chatRoom;
+    }
+    
+    User *usr = [[[LinphoneManager instance] configuration] getCurrentUser];
+    /* init gradients for openDoorButton*/
+    {
+        bool enabled = (usr != nil && usr.opendoor);
+        UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
+        UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
+        
+        [self.openDoorButton setEnabled:enabled];
+        [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
+    }
+    
+    /* init gradients for lightsButton */
+    {
+        bool enabled = (usr != nil && usr.switchlight);
+        UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
+        UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
+        
+        [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
+        [self.lightsButton setEnabled:enabled];
     }
     
     // Update on show
@@ -208,7 +222,6 @@
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
     [incomingView setHidden:NO];
-    [startCallButton setHidden:YES];
     [takeCallButton setHidden:NO];
     [microButton setHidden:YES];
     [declineButton setHidden:NO];
@@ -241,7 +254,6 @@
 
 - (void)displayInCall {
     [incomingView setHidden:YES];
-    [startCallButton setHidden:YES];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];
     [declineButton setHidden:YES];
@@ -251,7 +263,6 @@
 
 - (void)displayVideoCall {
     [incomingView setHidden:YES];
-    [startCallButton setHidden:YES];
     [takeCallButton setHidden:YES];
     [microButton setHidden:NO];
     [declineButton setHidden:YES];
@@ -270,22 +281,6 @@
         }
         calls = calls->next;
     }
-}
-
-- (IBAction)startCall:(id)sender {
-    // no pending call, call adapter
-    NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
-    const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Calling ADAPTER '%s'", adapter];
-    LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
-    linphone_call_params_enable_video(lcallParams, true);
-    LinphoneCall* lc = linphone_core_invite_with_params([LinphoneManager getLc], adapter,lcallParams);
-    if (!lc) {
-        ms_error("Failed to start a new call");
-        return;
-    }
-    linphone_call_enable_camera(lc, false);  
-    linphone_call_params_destroy(lcallParams);
 }
 
 @end

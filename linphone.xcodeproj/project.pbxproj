@@ -157,6 +157,8 @@
 		D376EAEF16008454007C8226 /* ringtone_04_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE616008454007C8226 /* ringtone_04_1600.wav */; };
 		D376EAF016008454007C8226 /* ringtone_05_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE716008454007C8226 /* ringtone_05_1600.wav */; };
 		D376EAF116008454007C8226 /* ringtone_05_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE716008454007C8226 /* ringtone_05_1600.wav */; };
+		D376EAF416008DF1007C8226 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = D376EAF316008DF1007C8226 /* User.m */; };
+		D376EAF516008DF1007C8226 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = D376EAF316008DF1007C8226 /* User.m */; };
 		D37CD2DF15E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E015E21CB30028869A /* bj_barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C615E21CB30028869A /* bj_barcode.png */; };
 		D37CD2E115E21CB30028869A /* bj_decline.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD2C715E21CB30028869A /* bj_decline.png */; };
@@ -589,6 +591,8 @@
 		D376EAE516008454007C8226 /* ringtone_03_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_03_1600.wav; path = Resources/ringtone_03_1600.wav; sourceTree = "<group>"; };
 		D376EAE616008454007C8226 /* ringtone_04_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_04_1600.wav; path = Resources/ringtone_04_1600.wav; sourceTree = "<group>"; };
 		D376EAE716008454007C8226 /* ringtone_05_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_05_1600.wav; path = Resources/ringtone_05_1600.wav; sourceTree = "<group>"; };
+		D376EAF216008DF1007C8226 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Model/User.h; sourceTree = "<group>"; };
+		D376EAF316008DF1007C8226 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Model/User.m; sourceTree = "<group>"; };
 		D37CD2C615E21CB30028869A /* bj_barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_barcode.png; path = Resources/bj_barcode.png; sourceTree = "<group>"; };
 		D37CD2C715E21CB30028869A /* bj_decline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_decline.png; path = Resources/bj_decline.png; sourceTree = "<group>"; };
 		D37CD2C815E21CB30028869A /* bj_door_hl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_door_hl.png; path = Resources/bj_door_hl.png; sourceTree = "<group>"; };
@@ -1325,6 +1329,8 @@
 				D383A44D15E3C98C00CDE5C9 /* Network.m */,
 				D37CD35115E22A470028869A /* OutdoorStation.h */,
 				D37CD35215E22A470028869A /* OutdoorStation.m */,
+				D376EAF216008DF1007C8226 /* User.h */,
+				D376EAF316008DF1007C8226 /* User.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1668,6 +1674,7 @@
 				D3FE9F3E15E789A30024F3E4 /* UIRemoteImageView.m in Sources */,
 				D3FE9F4415E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
 				D3FE9F4B15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
+				D376EAF416008DF1007C8226 /* User.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,6 +1727,7 @@
 				D3FE9F3F15E789A30024F3E4 /* UIRemoteImageView.m in Sources */,
 				D3FE9F4515E78D720024F3E4 /* BuschJaegerHistoryDetailsView.m in Sources */,
 				D3FE9F4C15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
+				D376EAF516008DF1007C8226 /* User.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

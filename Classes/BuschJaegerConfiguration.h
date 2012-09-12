@@ -20,6 +20,7 @@
 #import <Foundation/Foundation.h>
 
 #import "OutdoorStation.h"
+#import "User.h"
 #import "Network.h"
 #import "History.h"
 
@@ -39,6 +40,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
 } BuschJaegerConfigurationRequestType;
 
 @property (readonly) NSMutableSet *history;
+@property (readonly) NSMutableSet *users;
 @property (readonly) NSMutableSet *outdoorStations;
 @property (readonly) Network *network;
 
@@ -50,6 +52,8 @@ typedef enum _BuschJaegerConfigurationRequestType{
 
 - (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 - (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)history delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+
+- (User*)getCurrentUser;
 
 - (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image;
 

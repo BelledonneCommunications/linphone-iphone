@@ -24,6 +24,7 @@
 @implementation BuschJaegerConfiguration
 
 @synthesize outdoorStations;
+@synthesize users;
 @synthesize network;
 @synthesize history;
 
@@ -88,6 +89,7 @@
     self = [super init];
     if(self != nil) {
         outdoorStations = [[NSMutableSet alloc] init];
+        users = [[NSMutableSet alloc] init];
         history = [[NSMutableSet alloc] init];
         network = [[Network alloc] init];
     }
@@ -96,6 +98,7 @@
 
 - (void)dealloc {
     [outdoorStations release];
+    [users release];
     [history release];
     [network release];
     [super dealloc];
@@ -132,6 +135,8 @@
     id obj;
     if((obj = [OutdoorStation parse:section array:array]) != nil) {
         [outdoorStations addObject:obj];
+    } else if((obj = [User parse:section array:array]) != nil) {
+        [users addObject:obj];
     } else if((obj = [Network parse:section array:array]) != nil) {
         if(network != nil) {
             [network release];
@@ -153,7 +158,7 @@
         if([subStr hasPrefix:@"["]) {
             if([subStr hasSuffix:@"]"]) {
                 if(last_index != -1) {
-                    NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, i - last_index)]];
+                    NSArray *subArray = [arr subarrayWithRange:NSMakeRange(last_index, i - last_index)];
                     [self parseSection:last_section array:subArray];
                 }
                 last_section = subStr;
@@ -167,7 +172,7 @@
         }
     }
     if(last_index != -1) {
-        NSArray *subArray = [NSArray arrayWithArray:[arr subarrayWithRange:NSMakeRange(last_index, [arr count] - last_index)]];
+        NSArray *subArray = [arr subarrayWithRange:NSMakeRange(last_index, [arr count] - last_index)];
         [self parseSection:last_section array:subArray];
     }
     
@@ -177,6 +182,7 @@
 - (void)reset {
     [history removeAllObjects];
     [outdoorStations removeAllObjects];
+    [users removeAllObjects];
     if(network != nil) {
         [network release];
     }
@@ -187,6 +193,9 @@
     NSMutableString *data = [NSMutableString string];
     for(OutdoorStation *os in outdoorStations) {
         [data appendString:[os write]];
+    }
+    for(User *usr in users) {
+        [data appendString:[usr write]];
     }
     [data appendString:[network write]];
     
@@ -346,6 +355,19 @@
 
 - (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image {
     return [NSString stringWithFormat:@"%@/%@", [self getGateway:type], image];
+}
+
+- (User*)getCurrentUser {
+    NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+    NSEnumerator *enumerator = [users objectEnumerator];
+    
+    User *usr;
+    while ((usr = [enumerator nextObject])) {
+        if([usr.name compare:username options:0] == 0) {
+            return usr;
+        }
+    }
+    return nil;
 }
 
 @end

@@ -51,9 +51,9 @@
             } else if((param = [BuschJaegerConfiguration getRegexValue:@"^type=(.*)$" data:entry]) != nil) {
                 os.type = param;
             } else if((param = [BuschJaegerConfiguration getRegexValue:@"^screenshot=(.*)$" data:entry]) != nil) {
-                os.screenshot = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
+                os.screenshot = [param compare:@"yes" options:NSCaseInsensitiveSearch] == 0 || [param compare:@"true" options:NSCaseInsensitiveSearch] == 0;
             } else if((param = [BuschJaegerConfiguration getRegexValue:@"^surveillance=(.*)$" data:entry]) != nil) {
-                os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] || [param compare:@"true" options:NSCaseInsensitiveSearch];
+                os.surveillance = [param compare:@"yes" options:NSCaseInsensitiveSearch] == 0 || [param compare:@"true" options:NSCaseInsensitiveSearch] == 0;
             } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in %@ section: %@", section, entry];
             }

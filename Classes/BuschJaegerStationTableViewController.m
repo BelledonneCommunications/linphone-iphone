@@ -83,6 +83,17 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     OutdoorStation *os = [stations objectAtIndex:[indexPath row]];
+    User *usr = [[LinphoneManager instance].configuration getCurrentUser];
+    if(!os.surveillance || usr == nil || !usr.surveillance) {
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Surveillance issue",nil)
+                                                            message:NSLocalizedString(@"You can't call this camera", nil)
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                  otherButtonTitles:nil,nil];
+        [errorView show];
+        [errorView release];
+        return;
+    }
     NSString *addr = [FastAddressBook normalizeSipURI:[os address]];
     [[LinphoneManager instance] call:addr displayName:[os name] transfer:FALSE];
 }

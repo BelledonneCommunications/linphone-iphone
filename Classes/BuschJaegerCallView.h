@@ -36,7 +36,6 @@
 @property (nonatomic, retain) IBOutlet UIView* incomingView;
 @property (nonatomic, retain) IBOutlet UILabel* contactLabel;
 @property (nonatomic, retain) IBOutlet UIView* videoView;
-@property (nonatomic, retain) IBOutlet UIButton* startCallButton;
 @property (nonatomic, retain) IBOutlet UIButton* takeCallButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* declineButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton* endOrRejectCallButton;
@@ -45,6 +44,5 @@
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoorButton;
 
 - (IBAction)takeCall:(id)sender;
-- (IBAction)startCall:(id)sender;
 
 @end

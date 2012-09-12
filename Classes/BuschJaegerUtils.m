@@ -33,7 +33,15 @@
 }
 
 + (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
+    // Remove previous
+    [view.layer.sublayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        CALayer *layer = (CALayer *)obj;
+        if([layer.name compare:@"BuschJaegerLayer" options:0]) {
+            [layer removeFromSuperlayer];
+        }
+    }];
     CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.name = @"BuschJaegerLayer";
     gradient.frame = view.bounds;
     gradient.cornerRadius = corner;
     gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
@@ -41,7 +49,15 @@
 }
 
 + (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
+    // Remove previous
+    [button.layer.sublayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        CALayer *layer = (CALayer *)obj;
+        if([layer.name compare:@"BuschJaegerLayer" options:0]) {
+            [layer removeFromSuperlayer];
+        }
+    }];
     CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.name = @"BuschJaegerLayer";
     gradient.frame = button.bounds;
     gradient.cornerRadius = corner;
     gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];

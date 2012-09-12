@@ -28,6 +28,9 @@
 #define BUSCHJAEGER_GREEN_COLOR [UIColor colorWithRed:91.0/255 green:161.0/255 blue:89.0/255 alpha:1.0]
 #define BUSCHJAEGER_GREEN_COLOR2 [UIColor colorWithRed:25.0/255 green:54.0/255 blue:24.0/255 alpha:1.0]
 
+#define BUSCHJAEGER_GRAY_COLOR [UIColor colorWithRed:161.0/255 green:161.0/255 blue:161.0/255 alpha:1.0]
+#define BUSCHJAEGER_GRAY_COLOR2 [UIColor colorWithRed:54.0/255 green:54.0/255 blue:54.0/255 alpha:1.0]
+
 #define BUSCHJAEGER_DEFAULT_CORNER_RADIUS 5
 
 @interface BuschJaegerUtils : NSObject
