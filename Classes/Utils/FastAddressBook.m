@@ -22,6 +22,8 @@
 
 @implementation FastAddressBook
 
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
+
 + (NSString*)getContactDisplayName:(ABRecordRef)contact {
     NSString *retString = nil;
     if (contact) {
