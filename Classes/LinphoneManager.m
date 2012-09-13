@@ -35,6 +35,12 @@
 #include "lpconfig.h"
 
 
+static void audioRouteChangeListenerCallback (
+                                              void                   *inUserData,                                 // 1
+                                              AudioSessionPropertyID inPropertyID,                                // 2
+                                              UInt32                 inPropertyValueSize,                         // 3
+                                              const void             *inPropertyValue                             // 4
+                                              );
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
