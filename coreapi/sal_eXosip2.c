@@ -2222,12 +2222,26 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 int sal_register_refresh(SalOp *op, int expires){
 	osip_message_t *msg=NULL;
 	const char *contact=sal_op_get_contact(op);
-
+	int tries=0;
+	
 	if (op->rid==-1){
 		ms_error("Unexistant registration context, not possible to refresh.");
 		return -1;
 	}
+#ifdef HAVE_EXOSIP_TRYLOCK
+	/*iOS hack: in the keep alive handler, we have no more than 10 seconds to refresh registers, otherwise the application is suspended forever.
+	 * In order to prevent this case that can occur when the exosip thread is busy with DNS while network isn't in a good shape, we try to take
+	 * the exosip lock in a non blocking way, and give up if it takes too long*/
+	while (eXosip_trylock()!=0){
+		ms_usleep(100000);
+		if (tries>30) {/*after 3 seconds, give up*/
+			ms_warning("Could not obtain exosip lock in a reasonable time, giving up.");
+			return -1;
+		}
+	}
+#else
 	eXosip_lock();
+#endif
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);
