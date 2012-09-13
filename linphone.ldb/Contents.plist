@@ -453,17 +453,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>2</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/1/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/2/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-10T15:08:28Z</date>
+					<date>2012-09-13T15:35:03Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -473,7 +473,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>5899ee290abaa696222088258d0de490
+					<string>d02ecf8f1bacbfa8e5793231b6735940
 </string>
 					<key>name</key>
 					<string>ChatViewController.xib</string>
@@ -587,9 +587,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>2</string>
 					</dict>
 				</dict>
 				<dict>

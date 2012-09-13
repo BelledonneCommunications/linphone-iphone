@@ -300,6 +300,11 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     footerRect.size.height += diff;
     [footerView setFrame:footerRect];
     
+    // Always stay at bottom
+    CGPoint contentPt = [tableController.tableView contentOffset];
+    contentPt.y += diff;
+    [tableController.tableView setContentOffset:contentPt animated:FALSE];
+    
     CGRect tableRect = [tableController.view frame];
     tableRect.size.height -= diff;
     [tableController.view setFrame:tableRect];
@@ -371,8 +376,15 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     {
         CGRect tableFrame = [tableController.view frame];
         tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+        double diff = tableFrame.size.height;
         tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        diff = tableFrame.size.height - diff;
         [tableController.view setFrame:tableFrame];
+        
+        // Always stay at bottom
+        CGPoint contentPt = [tableController.tableView contentOffset];
+        contentPt.y -= diff;
+        [tableController.tableView setContentOffset:contentPt animated:FALSE];
     }
     
     [UIView commitAnimations];

@@ -61,7 +61,7 @@
 							</object>
 							<object class="IBUIButton" id="174033966">
 								<reference key="NSNextResponder" ref="852221244"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">289</int>
 								<string key="NSFrame">{{160, 0}, {160, 44}}</string>
 								<reference key="NSSuperview" ref="852221244"/>
 								<reference key="NSWindow"/>
@@ -99,7 +99,7 @@
 							</object>
 							<object class="IBUIButton" id="1001279594">
 								<reference key="NSNextResponder" ref="852221244"/>
-								<int key="NSvFlags">289</int>
+								<int key="NSvFlags">292</int>
 								<string key="NSFrameSize">{160, 44}</string>
 								<reference key="NSSuperview" ref="852221244"/>
 								<reference key="NSWindow"/>
@@ -150,7 +150,6 @@
 						<string key="NSFrame">{{0, 74}, {320, 378}}</string>
 						<reference key="NSSuperview" ref="1010501960"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
