@@ -21,4 +21,4 @@ display_filter_auto_rotate=1
 
 
 [default_values]
-reg_expires=600
+reg_expires=610

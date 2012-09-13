@@ -403,9 +403,9 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 #pragma mark - Text Received Functions
 
-- (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
+- (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room  message:(LinphoneChatMessage*)msg {
     
-    char *fromStr = linphone_address_as_string_uri_only(from);
+    char *fromStr = linphone_address_as_string_uri_only(linphone_chat_message_get_from(msg));
     if(fromStr == NULL)
         return;
     
@@ -413,27 +413,35 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     ChatModel *chat = [[ChatModel alloc] init];
     [chat setLocalContact:@""];
     [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
-    [chat setMessage:[NSString stringWithUTF8String:message]];
-    [chat setDirection:[NSNumber numberWithInt:1]];
+    if (linphone_chat_message_get_external_body_url(msg)) {
+		[chat setMessage:NSLocalizedString(@"Incoming file",nil)];
+	} else {
+		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
+    }
+	[chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
     ms_free(fromStr);
-    
+    NSString* ext_body_url=nil;
+	if (linphone_chat_message_get_external_body_url(msg)) {
+		ext_body_url=[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(msg)];
+	}
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                           [NSValue valueWithPointer:room], @"room", 
-                           [NSValue valueWithPointer:from], @"from",
-                           [NSString stringWithUTF8String:message], @"message", 
-                           chat, @"chat", 
+							[NSValue valueWithPointer:room], @"room", 
+							[NSValue valueWithPointer:linphone_chat_message_get_from(msg)], @"from",
+							chat.message, @"message", 
+							chat, @"chat",
+							ext_body_url,@"external_body_url",
                            nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
     [chat release];
 }
 
-static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
-    [(LinphoneManager*)linphone_core_get_user_data(lc) onTextReceived:lc room:room from:from message:message];
+static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
+    [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
 }
 
 
@@ -570,7 +578,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_message=linphone_iphone_log,
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
-	.text_received=linphone_iphone_text_received,
+	.text_received=NULL,
+	.message_received=linphone_iphone_message_received,
 	.dtmf_received=NULL,
     .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
@@ -1066,7 +1075,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 
 -(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",value?[key UTF8String]:NULL, [value UTF8String]);
+	if (!key) return;
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value?[value UTF8String]:NULL);
 }
 -(NSString*)lpConfigStringForKey:(NSString*) key {
 	if (!theLinphoneCore) {

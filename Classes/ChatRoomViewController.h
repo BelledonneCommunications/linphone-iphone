@@ -26,10 +26,16 @@
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
+@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSURLConnectionDataDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
 	NSString *_remoteAddress;
+	UIActionSheet* photoSourceSelector;
+	NSURLConnection* uploadCnx;
+	NSURLConnection* downloadCnx;
+	NSString* pendingFileUrl; /*Url received from the remote party to be downloaded*/
+	NSMutableData* downloadedData;
+	NSInteger totalBytesExpectedToRead;
 }
 
 
@@ -44,10 +50,15 @@
 @property (nonatomic, retain) IBOutlet UIView *chatView;
 @property (nonatomic, retain) IBOutlet UIImageView *fieldBackgroundImage;
 @property (nonatomic, copy) NSString *remoteAddress;
+@property (nonatomic, retain) IBOutlet UIButton* pictButton;
+@property (nonatomic, retain) IBOutlet UIButton* cancelTransfertButton;
+@property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;
 - (IBAction)onSendClick:(id)event;
+- (IBAction)onPictClick:(id)event;
+- (IBAction)onTransferCancelClick:(id)event;
 
 @end

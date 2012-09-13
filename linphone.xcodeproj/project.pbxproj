@@ -42,6 +42,13 @@
 		2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */; };
 		2234C8EF15EE744200E18E83 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */; };
 		2237D4091084D7A9001383EE /* ring.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* ring.wav */; };
+		22405EEB16006F0800B92522 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
+		22405EEC16006F0800B92522 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
+		22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EED1600B4E400B92522 /* AssetsLibrary.framework */; };
+		22405F001601C19200B92522 /* ImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22405EFE1601C19100B92522 /* ImageViewerViewController.m */; };
+		22405F011601C19200B92522 /* ImageViewerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22405EFE1601C19100B92522 /* ImageViewerViewController.m */; };
+		22405F021601C19200B92522 /* ImageViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22405EFF1601C19100B92522 /* ImageViewerViewController.xib */; };
+		22405F031601C19200B92522 /* ImageViewerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22405EFF1601C19100B92522 /* ImageViewerViewController.xib */; };
 		2242E313125235120061DDCE /* ring.caf in Resources */ = {isa = PBXBuildFile; fileRef = 2242E312125235120061DDCE /* ring.caf */; };
 		224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2245F78A1201D38000C4179D /* MoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E0A81B111C44E100B04932 /* MoreViewController.xib */; };
@@ -53,6 +60,7 @@
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
 		226CDADF14E2D0B800513B67 /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADD14E2D0B800513B67 /* libbcg729.a */; };
 		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
+		226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 226EF06B15FA256B005865C7 /* MobileCoreServices.framework */; };
 		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
 		226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
@@ -1133,7 +1141,6 @@
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
-		F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB8F147555C800DEE054 /* libmediastreamer.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1348,6 +1355,12 @@
 		2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_not_delivered.png; path = Resources/chat_message_not_delivered.png; sourceTree = "<group>"; };
 		2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_inprogress.png; path = Resources/chat_message_inprogress.png; sourceTree = "<group>"; };
 		2237D4081084D7A9001383EE /* ring.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ring.wav; path = Resources/ring.wav; sourceTree = "<group>"; };
+		22405EE916006F0700B92522 /* libmediastreamer_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_base.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_base.a"; sourceTree = "<group>"; };
+		22405EEA16006F0700B92522 /* libmediastreamer_voip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_voip.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_voip.a"; sourceTree = "<group>"; };
+		22405EED1600B4E400B92522 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		22405EFD1601C19000B92522 /* ImageViewerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerViewController.h; sourceTree = "<group>"; };
+		22405EFE1601C19100B92522 /* ImageViewerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageViewerViewController.m; sourceTree = "<group>"; };
+		22405EFF1601C19100B92522 /* ImageViewerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageViewerViewController.xib; sourceTree = "<group>"; };
 		2242E312125235120061DDCE /* ring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ring.caf; path = Resources/ring.caf; sourceTree = "<group>"; };
 		224567C1107B968500F10948 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2248E90C12F7E4CF00220D9C /* UIDigitButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButton.h; sourceTree = "<group>"; };
@@ -1360,6 +1373,7 @@
 		2264B6D111200342002C2C53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		226CDADD14E2D0B800513B67 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		226CDADE14E2D0B800513B67 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
+		226EF06B15FA256B005865C7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrwb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrwb.a"; sourceTree = "<group>"; };
 		226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libopencore-amrnb.a"; path = "liblinphone-sdk/apple-darwin/lib/libopencore-amrnb.a"; sourceTree = "<group>"; };
 		226F2ED51344B0EF00F6EF27 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
@@ -2050,6 +2064,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */,
+				22405EEB16006F0800B92522 /* libmediastreamer_base.a in Frameworks */,
+				22405EEC16006F0800B92522 /* libmediastreamer_voip.a in Frameworks */,
+				226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */,
 				22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */,
 				22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */,
 				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
@@ -2078,7 +2096,6 @@
 				220FAD3210765B400068D98F /* libgsm.a in Frameworks */,
 				223148E41178A08200637D6A /* libilbc.a in Frameworks */,
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
-				F476004C147AAF4600FFF19B /* libmediastreamer.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				226183B0147259670037138E /* libmssilk.a in Frameworks */,
@@ -2229,6 +2246,9 @@
 				D350F20B15A43BB100149E54 /* WizardViewController.h */,
 				D350F20C15A43BB100149E54 /* WizardViewController.m */,
 				D350F20D15A43BB100149E54 /* WizardViewController.xib */,
+				22405EFD1601C19000B92522 /* ImageViewerViewController.h */,
+				22405EFE1601C19100B92522 /* ImageViewerViewController.m */,
+				22405EFF1601C19100B92522 /* ImageViewerViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -2590,6 +2610,10 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
+				22405EE916006F0700B92522 /* libmediastreamer_base.a */,
+				22405EEA16006F0700B92522 /* libmediastreamer_voip.a */,
+				226EF06B15FA256B005865C7 /* MobileCoreServices.framework */,
 				2258633C11410BAC00C5A737 /* README */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
 				22276E8113C73D3100210156 /* libavutil.a */,
@@ -3775,6 +3799,7 @@
 				2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
 				2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
 				2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
+				22405F021601C19200B92522 /* ImageViewerViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4220,6 +4245,7 @@
 				2234C8EA15EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
 				2234C8EC15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
 				2234C8EF15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
+				22405F031601C19200B92522 /* ImageViewerViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4342,6 +4368,7 @@
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
+				22405F001601C19200B92522 /* ImageViewerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4432,6 +4459,7 @@
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
+				22405F011601C19200B92522 /* ImageViewerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4491,6 +4519,7 @@
 					HAVE_SILK,
 					DEBUG,
 				);
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -4564,6 +4593,7 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -4831,6 +4861,7 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,
@@ -4904,6 +4935,7 @@
 					HAVE_X264,
 					HAVE_SILK,
 				);
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
 					submodules/linphone/coreapi,
 					submodules/linphone/mediastreamer2/include,

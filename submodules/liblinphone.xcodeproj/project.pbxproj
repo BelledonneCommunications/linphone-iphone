@@ -29,7 +29,6 @@
 		221DCB6E153584410025E54D /* yuv2rgb.vs in Sources */ = {isa = PBXBuildFile; fileRef = 221DCB6B153584410025E54D /* yuv2rgb.vs */; };
 		221DCB6F153584410025E54D /* yuv2rgb.vs in Sources */ = {isa = PBXBuildFile; fileRef = 221DCB6B153584410025E54D /* yuv2rgb.vs */; };
 		221F58A013AB50F800D603C9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221F589F13AB50F800D603C9 /* CoreMedia.framework */; };
-		221F58A413AB708C00D603C9 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
 		221F58E413AF44B300D603C9 /* scaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58E313AF44B300D603C9 /* scaler.h */; };
 		222CA63211F6CF7600621220 /* allfilters.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BE11F6CF7600621220 /* allfilters.h */; };
 		222CA63311F6CF7600621220 /* dsptools.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BF11F6CF7600621220 /* dsptools.h */; };
@@ -113,6 +112,12 @@
 		222CA78411F6CFB100621220 /* siplogin.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76211F6CFB100621220 /* siplogin.c */; };
 		222CA78511F6CFB100621220 /* sipsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 222CA76311F6CFB100621220 /* sipsetup.c */; };
 		222CA78611F6CFB100621220 /* sipsetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA76411F6CFB100621220 /* sipsetup.h */; };
+		22405EDD160065C200B92522 /* basedescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 22405EDC160065C200B92522 /* basedescs.h */; };
+		22405EE01600668800B92522 /* msvoip.c in Sources */ = {isa = PBXBuildFile; fileRef = 22405EDF1600668800B92522 /* msvoip.c */; };
+		22405EE2160066C700B92522 /* voipdescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 22405EE1160066C700B92522 /* voipdescs.h */; };
+		22405EE51600671D00B92522 /* logging.c in Sources */ = {isa = PBXBuildFile; fileRef = 22405EE31600671D00B92522 /* logging.c */; };
+		22405EE61600671D00B92522 /* rtpprofile.c in Sources */ = {isa = PBXBuildFile; fileRef = 22405EE41600671D00B92522 /* rtpprofile.c */; };
+		22405EE81600675C00B92522 /* genericplc.c in Sources */ = {isa = PBXBuildFile; fileRef = 22405EE71600675C00B92522 /* genericplc.c */; };
 		2258C44113A9377B0087A596 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
 		2258C44513A945520087A596 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44213A945520087A596 /* libswscale.a */; };
 		2258C44613A945520087A596 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44313A945520087A596 /* libavutil.a */; };
@@ -191,7 +196,6 @@
 		225D64761521BFA6008B2E81 /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
 		225D64781521BFA6008B2E81 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		225D64791521BFA6008B2E81 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
-		225D647A1521BFA6008B2E81 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
 		225D647B1521BFA6008B2E81 /* scaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58E313AF44B300D603C9 /* scaler.h */; };
 		225D647C1521BFA6008B2E81 /* g722.h in Headers */ = {isa = PBXBuildFile; fileRef = 229A614B13DDFE3500090183 /* g722.h */; };
 		225D647D1521BFA6008B2E81 /* shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F613E14816002BA2C0 /* shaders.h */; };
@@ -339,7 +343,6 @@
 		225D65431521C009008B2E81 /* linphonecore_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9D5813043EAB00EFCD1C /* linphonecore_utils.h */; };
 		225D65451521C009008B2E81 /* nowebcam.h in Headers */ = {isa = PBXBuildFile; fileRef = 220ED1AA13A9062500AC21E0 /* nowebcam.h */; };
 		225D65461521C009008B2E81 /* swscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 2258C44013A9377B0087A596 /* swscale.h */; };
-		225D65471521C009008B2E81 /* alldescs.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58A313AB708C00D603C9 /* alldescs.h */; };
 		225D65481521C009008B2E81 /* scaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 221F58E313AF44B300D603C9 /* scaler.h */; };
 		225D65491521C009008B2E81 /* g722.h in Headers */ = {isa = PBXBuildFile; fileRef = 229A614B13DDFE3500090183 /* g722.h */; };
 		225D654A1521C009008B2E81 /* shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E542F613E14816002BA2C0 /* shaders.h */; };
@@ -466,7 +469,6 @@
 		221F589D13AB503F00D603C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		221F589F13AB50F800D603C9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		221F58A113AB6F8000D603C9 /* pixconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pixconv.c; sourceTree = "<group>"; };
-		221F58A313AB708C00D603C9 /* alldescs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alldescs.h; path = build/iphone/alldescs.h; sourceTree = "<group>"; };
 		221F58A513AB716300D603C9 /* tonedetector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tonedetector.c; sourceTree = "<group>"; };
 		221F58A613AB716300D603C9 /* jpegwriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jpegwriter.c; sourceTree = "<group>"; };
 		221F58A713AB716300D603C9 /* h264dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = h264dec.c; sourceTree = "<group>"; };
@@ -639,6 +641,12 @@
 		222CA76311F6CFB100621220 /* sipsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
 		222CA76411F6CFB100621220 /* sipsetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
 		22313679143DED490035C1F4 /* msandroidvideo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = msandroidvideo.cpp; sourceTree = "<group>"; };
+		22405EDC160065C200B92522 /* basedescs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = basedescs.h; path = build/iphone/basedescs.h; sourceTree = "<group>"; };
+		22405EDF1600668800B92522 /* msvoip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msvoip.c; sourceTree = "<group>"; };
+		22405EE1160066C700B92522 /* voipdescs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = voipdescs.h; path = build/iphone/voipdescs.h; sourceTree = "<group>"; };
+		22405EE31600671D00B92522 /* logging.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = logging.c; sourceTree = "<group>"; };
+		22405EE41600671D00B92522 /* rtpprofile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtpprofile.c; sourceTree = "<group>"; };
+		22405EE71600675C00B92522 /* genericplc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = genericplc.c; sourceTree = "<group>"; };
 		224AD571143208BB00510FF3 /* android-display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "android-display.c"; path = "../../../../../../workspace-android/linphone-android/submodules/linphone/mediastreamer2/src/android-display.c"; sourceTree = "<group>"; };
 		224AD57314320EB400510FF3 /* scaler_arm.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = scaler_arm.S; path = "../../../../../../workspace-android/linphone-android/submodules/linphone/mediastreamer2/src/scaler_arm.S"; sourceTree = "<group>"; };
 		22512698145F13CE0041FBF2 /* aqsnd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aqsnd.c; sourceTree = "<group>"; };
@@ -846,8 +854,9 @@
 		222CA4CF11F6CF2000621220 /* mediastreamer2 */ = {
 			isa = PBXGroup;
 			children = (
+				22405EE1160066C700B92522 /* voipdescs.h */,
+				22405EDC160065C200B92522 /* basedescs.h */,
 				22B5106813AFD37B00CD87DA /* nowebcamCIF.jpg */,
-				221F58A313AB708C00D603C9 /* alldescs.h */,
 				22DD19E013A8D82C0018ECD4 /* tests */,
 				222CA5B811F6CF7600621220 /* include */,
 				222CA5DC11F6CF7600621220 /* src */,
@@ -916,6 +925,8 @@
 		222CA5DC11F6CF7600621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				22405EE71600675C00B92522 /* genericplc.c */,
+				22405EDF1600668800B92522 /* msvoip.c */,
 				221DCB6A153584410025E54D /* yuv2rgb.fs */,
 				221DCB6B153584410025E54D /* yuv2rgb.vs */,
 				221DCB6715347EF80025E54D /* opengles_display.c */,
@@ -1045,6 +1056,8 @@
 		222CA6B611F6CF9F00621220 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				22405EE31600671D00B92522 /* logging.c */,
+				22405EE41600671D00B92522 /* rtpprofile.c */,
 				F4D9F23D145710540035B0D0 /* netsim.c */,
 				F4D9F23E145710540035B0D0 /* ortp_srtp.c */,
 				7014533D13FA841E00A01D86 /* zrtp.c */,
@@ -1281,11 +1294,12 @@
 				225D64761521BFA6008B2E81 /* linphonecore_utils.h in Headers */,
 				225D64781521BFA6008B2E81 /* nowebcam.h in Headers */,
 				225D64791521BFA6008B2E81 /* swscale.h in Headers */,
-				225D647A1521BFA6008B2E81 /* alldescs.h in Headers */,
 				225D647B1521BFA6008B2E81 /* scaler.h in Headers */,
 				225D647C1521BFA6008B2E81 /* g722.h in Headers */,
 				225D647D1521BFA6008B2E81 /* shaders.h in Headers */,
 				225D64811521BFA6008B2E81 /* zrtp.h in Headers */,
+				22405EDD160065C200B92522 /* basedescs.h in Headers */,
+				22405EE2160066C700B92522 /* voipdescs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1367,7 +1381,6 @@
 				225D65431521C009008B2E81 /* linphonecore_utils.h in Headers */,
 				225D65451521C009008B2E81 /* nowebcam.h in Headers */,
 				225D65461521C009008B2E81 /* swscale.h in Headers */,
-				225D65471521C009008B2E81 /* alldescs.h in Headers */,
 				225D65481521C009008B2E81 /* scaler.h in Headers */,
 				225D65491521C009008B2E81 /* g722.h in Headers */,
 				225D654A1521C009008B2E81 /* shaders.h in Headers */,
@@ -1453,7 +1466,6 @@
 				229B9D5913043EAB00EFCD1C /* linphonecore_utils.h in Headers */,
 				220ED1AC13A9062600AC21E0 /* nowebcam.h in Headers */,
 				2258C44113A9377B0087A596 /* swscale.h in Headers */,
-				221F58A413AB708C00D603C9 /* alldescs.h in Headers */,
 				221F58E413AF44B300D603C9 /* scaler.h in Headers */,
 				229A614F13DDFE3500090183 /* g722.h in Headers */,
 				70E542FA13E14816002BA2C0 /* shaders.h in Headers */,
@@ -1658,6 +1670,8 @@
 				221DCB6915347EF80025E54D /* opengles_display.c in Sources */,
 				221DCB6D153584410025E54D /* yuv2rgb.fs in Sources */,
 				221DCB6F153584410025E54D /* yuv2rgb.vs in Sources */,
+				22405EE01600668800B92522 /* msvoip.c in Sources */,
+				22405EE81600675C00B92522 /* genericplc.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1690,6 +1704,8 @@
 				225D65B41521C009008B2E81 /* zrtp.c in Sources */,
 				225D65B81521C009008B2E81 /* netsim.c in Sources */,
 				225D65B91521C009008B2E81 /* ortp_srtp.c in Sources */,
+				22405EE51600671D00B92522 /* logging.c in Sources */,
+				22405EE61600671D00B92522 /* rtpprofile.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

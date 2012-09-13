@@ -102,7 +102,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
-            [self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires",600) forKey:@"expire_preference"];
+            [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
 			[self setString:linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
 				|| port!=NULL){
@@ -119,6 +119,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
 			
 		}
+	} else {
+		[self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires",600) forKey:@"expire_preference"];
 	}
     {
         LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
@@ -191,7 +193,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","animations_preference", 1) forKey:@"animations_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
-    
+	[self setString: lp_config_get_string(linphone_core_get_config(lc),"app","file_upload_url_preference",NULL) forKey:@"file_upload_url_preference"];
+	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = TRUE;
 	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]!=Nil)
@@ -355,7 +358,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		
 
 		int expire = [self integerForKey:@"expire_preference"];
-		lp_config_set_int(linphone_core_get_config(lc),"default_values","reg_expires",expire);
+		linphone_proxy_config_expires(proxyCfg,expire);
 		
 		BOOL isWifiOnly = [self boolForKey:@"wifi_only_preference"];
 		
@@ -505,6 +508,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(linphone_core_get_config(lc),"app","animations_preference", animations);
+	NSString*  file_upload_url= [self stringForKey:@"file_upload_url_preference"];
+	[[LinphoneManager instance] lpConfigSetString:file_upload_url forKey:@"file_upload_url_preference"];
+	
+
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = [self boolForKey:@"start_at_boot_preference"];

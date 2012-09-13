@@ -156,6 +156,20 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>sharing server</string>
+			<key>Key</key>
+			<string>file_upload_url_preference</string>
+		</dict>
 	</array>
 </dict>
 </plist>
