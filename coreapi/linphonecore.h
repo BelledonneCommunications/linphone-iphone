@@ -617,7 +617,6 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr);
  */
 LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message);
 
-	
 
 /**
  * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
@@ -641,18 +640,61 @@ typedef enum _LinphoneChatMessageStates {
 	LinphoneChatMessageStateNotDelivered /** message was not delivered*/
 }LinphoneChatMessageState;
 
+	
 /**
  * to string function
  */
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
+
+/**
+ * clone a chat message 
+ *@param message #LinphoneChatMessage obj
+ *@return #LinphoneChatMessage
+ */
+LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
+/**
+ * set origine of the message
+ *@param message #LinphoneChatMessage obj
+ *@param from #LinphoneAddress origin of this message (copied)
+ */
+void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
+
+/**
+ * get origine of the message 
+ *@param message #LinphoneChatMessage obj
+ *@return #LinphoneAddress
+ */
+LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
+	
+/**
+ * Linphone message can carry external body as defined by rfc2017
+ * @param message #LinphoneChatMessage
+ * @return return external body url null if not present.
+ */
+const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+	
+/**
+ * Linphone message can carry external body as defined by rfc2017
+ * 
+ * @param  #LinphoneChatMessage  
+ * @param url ex: access-type=URL; URL="http://www.foo.com/file"
+ */
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+
+/**
+ * get text part of this message
+ *@return text or NULL if no text.
+ */
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
+/**
+ * user pointer get function
+ */
+
+void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 /**
  * user pointer set function
  */
 void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
-/**
- * user pointer get function
- */
-void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 	
 /**
  * Call back used to notify message delivery status
@@ -744,6 +786,7 @@ typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, c
 typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
 /**
  * Callback prototype
+ * @deprecated use #MessageReceived instead.
  *
  * @param lc #LinphoneCore object
  * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
@@ -751,6 +794,15 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
  * @param message incoming message
  *  */
 typedef void (*TextMessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+/**
+ * Chat message callback prototype
+ *
+ * @param lc #LinphoneCore object
+ * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
+ * @param LinphoneChatMessage incoming message
+ * */
+typedef void (*MessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+	
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
@@ -774,7 +826,8 @@ typedef struct _LinphoneVTable{
 	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending subscription request */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
-	TextMessageReceived text_received; /**< A text message has been received */
+	TextMessageReceived text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
+	MessageReceived message_received; /** a message is received, can be text or external body*/
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */

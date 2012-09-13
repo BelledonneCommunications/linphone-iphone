@@ -55,6 +55,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op=NULL;
 	LinphoneCall *call;
+	char* content_type;
 	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
 		if (call->state==LinphoneCallConnected ||
 		    call->state==LinphoneCallStreamsRunning ||
@@ -77,7 +78,15 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		cr->op=op;
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
-	sal_text_send(op,identity,cr->peer,msg->message);
+	if (msg->external_body_url) {
+		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
+		sal_message_send(op,identity,cr->peer,content_type,NULL);
+		ms_free(content_type);
+	} else {
+		sal_text_send(op, identity, cr->peer, msg->message);
+	}
+	
+	
 }
 
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
@@ -89,16 +98,20 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
 	return FALSE;
 }
 
-void linphone_chat_room_text_received(LinphoneChatRoom *cr, LinphoneCore *lc, const LinphoneAddress *from, const char *msg){
-	if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, from, msg);
+void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
+	if (msg->message)
+		//legacy API
+		if (lc->vtable.text_received!=NULL) lc->vtable.text_received(lc, cr, msg->from, msg->message);
+	if (lc->vtable.message_received!=NULL) lc->vtable.message_received(lc, cr,msg);
+	
 }
 
-void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg){
+void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url){
 	MSList *elem;
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
 	char *cleanfrom;
-
+	LinphoneChatMessage* msg;
 	addr=linphone_address_new(from);
 	linphone_address_clean(addr);
 	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
@@ -113,9 +126,13 @@ void linphone_core_text_received(LinphoneCore *lc, const char *from, const char 
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
-
+	msg = linphone_chat_room_create_message(cr, raw_msg);
+	linphone_chat_message_set_from(msg, cr->peer_url);
+	if (external_url) {
+		linphone_chat_message_set_external_body_url(msg, external_url);
+	}
 	linphone_address_destroy(addr);
-	linphone_chat_room_text_received(cr,lc,cr->peer_url,msg);
+	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
 }
 
@@ -140,12 +157,14 @@ const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
 LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message) {
 	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
 	msg->chat_room=(LinphoneChatRoom*)cr;
-	msg->message=ms_strdup(message);
+	msg->message=message?ms_strdup(message):NULL;
 	return msg;
 }
 
 void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->message) ms_free(msg->message);
+	if (msg->external_body_url) ms_free(msg->external_body_url);
+	if (msg->from) linphone_address_destroy(msg->from);
 	ms_free(msg);
 }
 
@@ -185,4 +204,45 @@ void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void* ud) 
  */
 void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message) {
 	return message->message_userdata;
+}
+
+const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message) {
+	return message->external_body_url;
+}
+
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url) {
+	if (message->external_body_url) {
+		ms_free(message->external_body_url);
+	}
+	message->external_body_url=url?ms_strdup(url):NULL;
+}
+void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from) {
+	if(message->from) linphone_address_destroy(message->from);
+	message->from=linphone_address_clone(from);
+	
+}
+LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message) {
+	return message->from;
+}
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message) {
+	return message->message;
+}
+LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {
+	/*struct _LinphoneChatMessage {
+	 char* message;
+	 LinphoneChatRoom* chat_room;
+	 LinphoneChatMessageStateChangeCb cb;
+	 void* cb_ud;
+	 void* message_userdata;
+	 char* external_body_url;
+	 LinphoneAddress* from;
+	 };*/
+	LinphoneChatMessage* new_message = linphone_chat_room_create_message(msg->chat_room,msg->message);
+	if (msg->external_body_url) new_message->external_body_url=ms_strdup(msg->external_body_url);
+	new_message->cb=msg->cb;
+	new_message->cb_ud=msg->cb_ud;
+	new_message->message_userdata=msg->message_userdata;
+	new_message->cb=msg->cb;
+	if (msg->from) new_message->from=linphone_address_clone(msg->from);
+	return new_message;
 }

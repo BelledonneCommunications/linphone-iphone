@@ -732,9 +732,12 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 
 static void text_received(Sal *sal, const char *from, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	linphone_core_text_received(lc,from,msg);
+	linphone_core_message_received(lc,from,msg,NULL);
 }
-
+void message_external_body_received(Sal *sal, const char *from, const char *url) {
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
+	linphone_core_message_received(lc,from,NULL,url);
+}
 static void notify(SalOp *op, const char *from, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer (op);
@@ -840,6 +843,7 @@ SalCallbacks linphone_sal_callbacks={
 	dtmf_received,
 	refer_received,
 	text_received,
+	message_external_body_received,
 	text_delivery_update,
 	notify,
 	notify_presence,

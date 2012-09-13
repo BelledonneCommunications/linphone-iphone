@@ -96,6 +96,8 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageStateChangeCb cb;
 	void* cb_ud;
 	void* message_userdata;
+	char* external_body_url;
+	LinphoneAddress* from;
 };
 	
 struct _LinphoneCall
@@ -259,7 +261,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg);
+void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
