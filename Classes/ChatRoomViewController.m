@@ -292,12 +292,17 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (IBAction)onEditClick:(id)event {
     [tableController setEditing:![tableController isEditing] animated:TRUE];
+    [messageField resignFirstResponder];
 }
 
 - (IBAction)onSendClick:(id)event {
     if([self sendMessage:[messageField text]]) {
         [messageField setText:@""];
     }
+}
+
+- (IBAction)onListTap:(id)sender {
+    [messageField resignFirstResponder];
 }
 
 - (IBAction)onMessageChange:(id)sender {

@@ -49,5 +49,6 @@
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;
 - (IBAction)onSendClick:(id)event;
+- (IBAction)onListTap:(id)sender;
 
 @end
