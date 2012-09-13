@@ -34,7 +34,9 @@
 @synthesize headerView;
 @synthesize footerView;
 @synthesize chatView;
-@synthesize fieldBackgroundImage;
+@synthesize messageView;
+@synthesize messageBackgroundImage;
+@synthesize footerBackgroundImage;
 
 
 #pragma mark - Lifecycle Functions
@@ -58,7 +60,9 @@
     [avatarImage release];
     [headerView release];
     [footerView release];
-    [fieldBackgroundImage release];
+    [messageView release];
+    [messageBackgroundImage release];
+    [footerBackgroundImage release];
     [super dealloc];
 }
 
@@ -92,6 +96,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     // Set selected+over background: IB lack !
     [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    messageField.minNumberOfLines = 1;
+	messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad])?10:3;
+    messageField.delegate = self;
+	messageField.font = [UIFont systemFontOfSize:18.0f];
+    messageField.contentInset = UIEdgeInsetsZero;
+    messageField.backgroundColor = [UIColor clearColor];
 }
 
 
@@ -118,8 +129,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [editButton setOff];
     [[tableController tableView] reloadData];
     
-    [fieldBackgroundImage setImage:[TUNinePatchCache imageOfSize:[fieldBackgroundImage bounds].size
+    [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
                                                forNinePatchNamed:@"chat_field"]];
+    
+    [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
+                                               forNinePatchNamed:@"chat_background"]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -278,11 +292,24 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 #pragma mark - UITextFieldDelegate Functions
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
-    return YES;
+- (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
+    int diff = height - growingTextView.bounds.size.height;
+    
+    CGRect footerRect = [footerView frame];
+    footerRect.origin.y -= diff;
+    footerRect.size.height += diff;
+    [footerView setFrame:footerRect];
+    
+    CGRect tableRect = [tableController.view frame];
+    tableRect.size.height -= diff;
+    [tableController.view setFrame:tableRect];
+    
+    [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
+                                               forNinePatchNamed:@"chat_field"]];
+    
+    [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
+                                                forNinePatchNamed:@"chat_background"]];
 }
-
 
 #pragma mark - Action Functions
 

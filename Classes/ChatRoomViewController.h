@@ -22,11 +22,12 @@
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
+#import "HPGrowingTextView.h"
 #import "ChatModel.h"
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
+@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate, HPGrowingTextViewDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
 	NSString *_remoteAddress;
@@ -35,14 +36,16 @@
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet UITextView* messageField;
+@property (nonatomic, retain) IBOutlet HPGrowingTextView* messageField;
 @property (nonatomic, retain) IBOutlet UIButton* sendButton;
 @property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UIView *headerView;
 @property (nonatomic, retain) IBOutlet UIView *footerView;
 @property (nonatomic, retain) IBOutlet UIView *chatView;
-@property (nonatomic, retain) IBOutlet UIImageView *fieldBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIView *messageView;
+@property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIImageView *footerBackgroundImage;
 @property (nonatomic, copy) NSString *remoteAddress;
 
 - (IBAction)onBackClick:(id)event;
