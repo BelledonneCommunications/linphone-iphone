@@ -37,6 +37,7 @@
 @synthesize messageView;
 @synthesize messageBackgroundImage;
 @synthesize footerBackgroundImage;
+@synthesize listTapGestureRecognizer;
 
 
 #pragma mark - Lifecycle Functions
@@ -63,6 +64,7 @@
     [messageView release];
     [messageBackgroundImage release];
     [footerBackgroundImage release];
+    [listTapGestureRecognizer release];
     [super dealloc];
 }
 
@@ -292,6 +294,15 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (BOOL)growingTextViewShouldBeginEditing:(HPGrowingTextView *)growingTextView {
+    if(editButton.selected) {
+        [tableController setEditing:FALSE animated:TRUE];
+        [editButton setOff];
+        [listTapGestureRecognizer setEnabled:TRUE];
+    }
+    return TRUE;
+}
+
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
     int diff = height - growingTextView.bounds.size.height;
     
@@ -323,6 +334,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (IBAction)onEditClick:(id)event {
+    [listTapGestureRecognizer setEnabled:[tableController isEditing]];
     [tableController setEditing:![tableController isEditing] animated:TRUE];
     [messageField resignFirstResponder];
 }

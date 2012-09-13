@@ -205,7 +205,7 @@ static UIFont *CELL_FONT = nil;
 
 #pragma mark - Action Functions
 
-- (IBAction)onDeleteClick: (id) event {
+- (IBAction)onDeleteClick:(id)event {
     if(chat != NULL) {
         UIView *view = [self superview]; 
         // Find TableViewCell

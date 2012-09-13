@@ -46,6 +46,8 @@
 @property (nonatomic, retain) IBOutlet UIView *messageView;
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *footerBackgroundImage;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+
 @property (nonatomic, copy) NSString *remoteAddress;
 
 - (IBAction)onBackClick:(id)event;
