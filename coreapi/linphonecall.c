@@ -974,7 +974,7 @@ void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, Lin
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	AudioStream *audiostream;
-	int dscp=lp_config_get_int(lc->config,"rtp","audio_dscp",-1);
+	int dscp=linphone_core_get_audio_dscp(lc);
 
 	call->audiostream=audiostream=audio_stream_new(call->audio_port,call->audio_port+1,linphone_core_ipv6_enabled(lc));
 	if (dscp!=-1)
@@ -1028,7 +1028,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 	if ((lc->video_conf.display || lc->video_conf.capture) && call->params.has_video){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
-		int dscp=lp_config_get_int(lc->config,"rtp","video_dscp",-1);
+		int dscp=linphone_core_get_video_dscp(lc);
 		
 		call->videostream=video_stream_new(call->video_port,call->video_port+1,linphone_core_ipv6_enabled(lc));
 		if (dscp!=-1)

@@ -1131,3 +1131,55 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 void linphone_gtk_tunnel_cancel(GtkButton *button){
 
 }
+
+static void show_dscp(GtkWidget *entry, int val){
+	char tmp[20];
+	snprintf(tmp,sizeof(tmp),"0x%x",val);
+	gtk_entry_set_text(GTK_ENTRY(entry),tmp);
+	
+}
+
+static int read_dscp(GtkWidget *entry){
+	const char *val=gtk_entry_get_text(GTK_ENTRY(entry));
+	const char *begin;
+	int ret=0;
+	if (val==NULL || val[0]=='\0') return 0;
+	/*skip potential 0x*/
+	begin=strstr(val,"0x");
+	if (begin) begin+=2;
+	else begin=val;
+	if (sscanf(begin,"%x",&ret)==1)
+		return ret;
+	return -1;
+}
+
+void linphone_gtk_dscp_edit(){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *widget=linphone_gtk_create_window("dscp_settings");
+	show_dscp(linphone_gtk_get_widget(widget,"sip_dscp"),
+		  linphone_core_get_sip_dscp(lc));
+	show_dscp(linphone_gtk_get_widget(widget,"audio_dscp"),
+		  linphone_core_get_audio_dscp(lc));
+	show_dscp(linphone_gtk_get_widget(widget,"video_dscp"),
+		  linphone_core_get_video_dscp(lc));
+	gtk_widget_show(widget);
+}
+
+void linphone_gtk_dscp_edit_response(GtkWidget *dialog, guint response_id){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	switch(response_id){
+		case GTK_RESPONSE_OK:
+			linphone_core_set_sip_dscp(lc,
+				read_dscp(linphone_gtk_get_widget(dialog,"sip_dscp")));
+			linphone_core_set_audio_dscp(lc,
+				read_dscp(linphone_gtk_get_widget(dialog,"audio_dscp")));
+			linphone_core_set_video_dscp(lc,
+				read_dscp(linphone_gtk_get_widget(dialog,"video_dscp")));
+			
+		break;
+		default:
+		break;
+	}
+	gtk_widget_destroy(dialog);
+}
+

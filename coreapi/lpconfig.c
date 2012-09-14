@@ -273,7 +273,13 @@ const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const 
 
 int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, int default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
-	if (str!=NULL) return atoi(str);
+	if (str!=NULL) {
+		int ret=0;
+		if (strstr(str,"0x")==str){
+			sscanf(str,"%x",&ret);
+		}else ret=atoi(str);
+		return ret;
+	}
 	else return default_value;
 }
 
@@ -321,6 +327,12 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%i",value);
+	lp_config_set_string(lpconfig,section,key,tmp);
+}
+
+void lp_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value){
+	char tmp[30];
+	snprintf(tmp,sizeof(tmp),"0x%x",value);
 	lp_config_set_string(lpconfig,section,key,tmp);
 }
 

@@ -1389,6 +1389,15 @@ LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
+void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_sip_dscp(const LinphoneCore *lc);
+
+void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_audio_dscp(const LinphoneCore *lc);
+
+void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_video_dscp(const LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif

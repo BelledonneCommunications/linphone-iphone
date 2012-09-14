@@ -615,6 +615,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
+	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -5111,4 +5112,75 @@ void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id)
 }
 const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
 	return lc->device_id;
+}
+
+/**
+ * Set the DSCP field for SIP signaling channel.
+ * 
+ * @ingroup network_parameters
+ * * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp){
+	sal_set_dscp(lc->sal,dscp);
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"sip","dscp",dscp);
+}
+
+/**
+ * Get the DSCP field for SIP signaling channel.
+ * 
+ * @ingroup network_parameters
+ * * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_sip_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"sip","dscp",0x1a);
+}
+
+/**
+ * Set the DSCP field for outgoing audio streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp){
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"rtp","audio_dscp",dscp);
+}
+
+/**
+ * Get the DSCP field for outgoing audio streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_audio_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","audio_dscp",0x2e);
+}
+
+/**
+ * Set the DSCP field for outgoing video streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp){
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"rtp","video_dscp",dscp);
+	
+}
+
+/**
+ * Get the DSCP field for outgoing video streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_video_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","video_dscp",0x2e);
 }

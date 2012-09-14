@@ -283,6 +283,7 @@ Sal * sal_init(){
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
 	sal->expire_old_contact=FALSE;
+	sal->dscp=-1;
 	return sal;
 }
 
@@ -380,6 +381,12 @@ static void set_tls_options(Sal *ctx){
 #endif
 }
 
+void sal_set_dscp(Sal *ctx, int dscp){
+	ctx->dscp=dscp;
+	if (dscp!=-1)
+		eXosip_set_option(EXOSIP_OPT_SET_DSCP,&ctx->dscp);
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -406,6 +413,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
 	int dont_use_101 = !ctx->use_101; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_DONT_SEND_101,&dont_use_101);
+	sal_set_dscp(ctx,ctx->dscp);
 
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
