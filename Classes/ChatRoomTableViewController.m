@@ -45,7 +45,9 @@
         data = nil;
     }
 }
-
+- (void)viewWillAppear:(BOOL)animated {
+	[self loadData];
+}
 
 #pragma mark -
 
@@ -81,7 +83,7 @@
 		[LinphoneLogger logc:LinphoneLoggerWarning format:"chat entries diesn not exixt"];
 		return;
 	}
-	[[self tableView] reloadData]; //just reload
+	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE];; //just reload
 	return;
 }
 - (void)scrollToLastUnread:(BOOL)animated {
