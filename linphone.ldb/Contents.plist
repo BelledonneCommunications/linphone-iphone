@@ -12,7 +12,9 @@
 			<key>change date</key>
 			<date>2001-01-01T00:00:00Z</date>
 			<key>changed values</key>
-			<array/>
+			<array>
+				<string>fr</string>
+			</array>
 			<key>class</key>
 			<string>BLBundleObject</string>
 			<key>errors</key>
@@ -212,19 +214,21 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>11</key>
+							<key>12</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/11/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/12/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-13T16:01:39Z</date>
+					<date>2012-09-14T08:42:01Z</date>
 					<key>changed values</key>
-					<array/>
+					<array>
+						<string>fr</string>
+					</array>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
@@ -232,7 +236,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>1017e47ad2fcb46b91d384f53e88bb41
+					<string>fe17a7cc443845e0f73af8ee35e892e5
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -386,6 +390,60 @@
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>fr</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Pict"; ObjectID = "73";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>73.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Pict</string>
+								<key>fr</key>
+								<string>Img</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>fr</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "cancel"; ObjectID = "75";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>75.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>cancel</string>
+								<key>fr</key>
+								<string>Annuler</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array>
@@ -443,9 +501,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>11</string>
+						<string>12</string>
 						<key>fr</key>
-						<string>11</string>
+						<string>12</string>
 					</dict>
 				</dict>
 				<dict>
@@ -7135,7 +7193,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:28:55Z</date>
+					<date>2012-09-14T09:51:58Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7145,7 +7203,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>e6f2d74fc56bbbdbcee0adb3a997cc4c
+					<string>7fcce4bdc516e1d8f77ce093860a38dd
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -7268,11 +7326,64 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>%@
+Reason was: %s</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>%1$@
+Reason was: %2$s</string>
+								<key>fr</key>
+								<string>%1$@
+Raison: %2$s</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>'%@' not registered</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
 								<string>'%@' not registered</string>
+								<key>fr</key>
+								<string>'%@' n'est pas enregistré</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>'%@' not registered to Service</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>'%@' not registered to Service</string>
 								<key>fr</key>
 								<string>'%@' n'est pas enregistré</string>
 							</dict>
@@ -7518,6 +7629,31 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Camera</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Camera</string>
+								<key>fr</key>
+								<string>Appareil photo</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Can't create the account. Please try again.</string>
 							<key>localizations</key>
 							<dict>
@@ -7525,6 +7661,31 @@ La cause était: %2$@</string>
 								<string>Can't create the account. Please try again.</string>
 								<key>fr</key>
 								<string>Ne peux pas créer le compte. Veuillez réessayer.</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cancel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cancel</string>
+								<key>fr</key>
+								<string>Annuler</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -7575,6 +7736,81 @@ La cause était: %2$@</string>
 								<string>Cannot make call</string>
 								<key>fr</key>
 								<string>Appel impossible</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert  file from remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert  file from remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer depuis destinataire</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert file from remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert file from remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer depuis destinataire</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert file to remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert file to remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer au destinataire</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -7918,6 +8154,31 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Ignore</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Ignore</string>
+								<key>fr</key>
+								<string>Ignoner</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>IC_MSG</string>
 							<key>localizations</key>
 							<dict>
@@ -7968,6 +8229,31 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Image sent</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Image sent</string>
+								<key>fr</key>
+								<string>Image envoyé</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Incoming call</string>
 							<key>localizations</key>
 							<dict>
@@ -7993,6 +8279,56 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Incoming file</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming file</string>
+								<key>fr</key>
+								<string>Fichier entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Incoming file stored to your photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming file stored to your photo library</string>
+								<key>fr</key>
+								<string>Fichier entrant stocké</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Invalid SIP address</string>
 							<key>localizations</key>
 							<dict>
@@ -8000,6 +8336,31 @@ La cause était: %2$@</string>
 								<string>Invalid SIP address</string>
 								<key>fr</key>
 								<string>Adresse SIP invalide</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>It seems you have not configured any proxy server from settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>It seems you have not configured any proxy server from settings</string>
+								<key>fr</key>
+								<string>Il semble qu'il n'y est pas de serveur SIP configuré</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8116,6 +8477,31 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Never remind</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Never remind</string>
+								<key>fr</key>
+								<string>Ne pas me rappeler</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>No microphone</string>
 							<key>localizations</key>
 							<dict>
@@ -8166,31 +8552,6 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>No SIP account defined</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>No SIP account defined</string>
-								<key>fr</key>
-								<string>Aucun compte SIP défini</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>Not registered</string>
 							<key>localizations</key>
 							<dict>
@@ -8198,31 +8559,6 @@ La cause était: %2$@</string>
 								<string>Not registered</string>
 								<key>fr</key>
 								<string>Non enregistré</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>InAppSettingsKit</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>OK</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>OK</string>
-								<key>fr</key>
-								<string>OK</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8248,6 +8584,31 @@ La cause était: %2$@</string>
 								<string>Ok</string>
 								<key>fr</key>
 								<string>Ok</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>InAppSettingsKit</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>OK</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>OK</string>
+								<key>fr</key>
+								<string>OK</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8323,6 +8684,31 @@ La cause était: %2$@</string>
 								<string>Phone numbers</string>
 								<key>fr</key>
 								<string>Numéros de téléphone</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Photo library</string>
+								<key>fr</key>
+								<string>Photos</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8473,6 +8859,31 @@ La cause était: %2$@</string>
 								<string>Registration in progress</string>
 								<key>fr</key>
 								<string>Enregistrement en cours</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Select picture source</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Select picture source</string>
+								<key>fr</key>
+								<string>Selectionner une source d'image</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8797,6 +9208,56 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Tranfer error</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Tranfer error</string>
+								<key>fr</key>
+								<string>Erreur de transfert</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Transfer error</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Transfer error</string>
+								<key>fr</key>
+								<string>Erreur de transfert</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Unknown</string>
 							<key>localizations</key>
 							<dict>
@@ -8829,6 +9290,31 @@ La cause était: %2$@</string>
 								<string>Username already exists</string>
 								<key>fr</key>
 								<string>Le nom d'utilisateur existe déjà</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Warning</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Warning</string>
+								<key>fr</key>
+								<string>Attention</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -8935,6 +9421,31 @@ La cause était: %2$@</string>
 								<string>'%@' not registered to Service</string>
 								<key>fr</key>
 								<string>'%@' n'est pas enregistré</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>No SIP account defined</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>No SIP account defined</string>
+								<key>fr</key>
+								<string>Aucun compte SIP défini</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
