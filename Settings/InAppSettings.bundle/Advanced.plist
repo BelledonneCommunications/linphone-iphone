@@ -166,7 +166,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>sharing server</string>
+			<string>Sharing server</string>
 			<key>Key</key>
 			<string>file_upload_url_preference</string>
 		</dict>

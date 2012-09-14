@@ -27,14 +27,11 @@
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSURLConnectionDataDelegate,HPGrowingTextViewDelegate> {
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
-	NSString *_remoteAddress;
-	UIActionSheet* photoSourceSelector;
-	NSURLConnection* uploadCnx;
-	NSURLConnection* downloadCnx;
-	NSString* pendingFileUrl; /*Url received from the remote party to be downloaded*/
+	NSURLConnection* uploadContext;
+	NSURLConnection* downloadContext;
 	NSMutableData* downloadedData;
 	NSInteger totalBytesExpectedToRead;
 }
@@ -55,17 +52,17 @@
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
 
 @property (nonatomic, copy) NSString *remoteAddress;
-@property (nonatomic, retain) IBOutlet UIButton* pictButton;
-@property (nonatomic, retain) IBOutlet UIButton* cancelTransfertButton;
+@property (nonatomic, retain) IBOutlet UIButton* pictureButton;
+@property (nonatomic, retain) IBOutlet UIButton* cancelTransferButton;
 @property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
-@property (nonatomic, retain) IBOutlet UIView* transfertView;
+@property (nonatomic, retain) IBOutlet UIView* transferView;
 
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;
 - (IBAction)onSendClick:(id)event;
-- (IBAction)onPictClick:(id)event;
+- (IBAction)onPictureClick:(id)event;
 - (IBAction)onTransferCancelClick:(id)event;
 - (IBAction)onListTap:(id)sender;
 

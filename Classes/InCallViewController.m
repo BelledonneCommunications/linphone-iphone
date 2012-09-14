@@ -153,11 +153,17 @@ static UICompositeViewDescription *compositeDescription = nil;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];
-    [self orientationUpdate:[PhoneMainView instance].interfaceOrientation];
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [callTableController viewDidAppear:animated];
-    }  
+    }
+    
+    // Set windows (warn memory leaks)
+    linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
+    
+    // Enable tap
+    [singleFingerTap setEnabled:TRUE];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -169,15 +175,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [callTableController viewDidDisappear:animated];
-    }  
+    }
+    
+    // Disable tap
+    [singleFingerTap setEnabled:FALSE];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Set windows (warn memory leaks)
-    linphone_core_set_native_video_window_id([LinphoneManager getLc],(unsigned long)videoView);	
-    linphone_core_set_native_preview_window_id([LinphoneManager getLc],(unsigned long)videoPreview);
     
     [singleFingerTap setNumberOfTapsRequired:1];
     [singleFingerTap setCancelsTouchesInView: FALSE];
@@ -194,11 +199,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidUnload {
     [super viewDidUnload];
     [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    [self orientationUpdate:toInterfaceOrientation];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -225,35 +225,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark -
-
-- (void)orientationUpdate:(UIInterfaceOrientation)orientation {
-    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
-    int newRotation = 0;
-    switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-            newRotation = 0;
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            newRotation = 180;
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            newRotation = 270;
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            newRotation = 90;
-            break;
-        default:
-            newRotation = oldLinphoneOrientation;
-    }
-    if (oldLinphoneOrientation != newRotation) {
-        linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-            //Orientation has changed, must call update call
-            linphone_core_update_call([LinphoneManager getLc], call, NULL);
-        }
-    }
-}
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
     // Update table
@@ -409,7 +380,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [videoPreview setHidden:TRUE];
     }
     
-    if ([LinphoneManager instance].frontCamId !=nil) {
+    if ([LinphoneManager instance].frontCamId != nil) {
         // only show camera switch button if we have more than 1 camera
         [videoCameraSwitch setHidden:FALSE];
     }

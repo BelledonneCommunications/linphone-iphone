@@ -247,6 +247,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self orientationUpdate:toInterfaceOrientation];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -370,6 +371,35 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 
 #pragma mark - 
+
+- (void)orientationUpdate:(UIInterfaceOrientation)orientation {
+    int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+    int newRotation = 0;
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            newRotation = 0;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            newRotation = 180;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            newRotation = 270;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            newRotation = 90;
+            break;
+        default:
+            newRotation = oldLinphoneOrientation;
+    }
+    if (oldLinphoneOrientation != newRotation) {
+        linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
+        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+            //Orientation has changed, must call update call
+            linphone_core_update_call([LinphoneManager getLc], call, NULL);
+        }
+    }
+}
 
 - (void)startUp {   
     if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"]  == true) {

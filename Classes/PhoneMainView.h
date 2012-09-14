@@ -39,6 +39,7 @@
 #import "WizardViewController.h"
 #import "IncomingCallViewController.h"
 #import "ConsoleViewController.h"
+#import "ImageViewController.h"
 
 @interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
     @private

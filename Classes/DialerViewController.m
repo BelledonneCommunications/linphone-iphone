@@ -54,6 +54,9 @@
 @synthesize zeroButton;
 @synthesize sharpButton;
 
+@synthesize videoPreview;
+@synthesize videoCameraSwitch;
+
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -86,6 +89,8 @@
 	[zeroButton release];
 	[sharpButton release];
     
+    [videoPreview release];
+    [videoCameraSwitch release];
     
     // Remove all observers
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -130,6 +135,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
         [self callUpdate:call state:state];
     }
+    
+    if(videoPreview) {
+        linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
+    }
 } 
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -158,7 +167,47 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[sharpButton   setDigit:'#'];
     
     [addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
+    
+    if([LinphoneManager runningOnIpad]) {
+        linphone_core_enable_video_preview([LinphoneManager getLc], TRUE);
+        
+        if ([LinphoneManager instance].frontCamId != nil) {
+            // only show camera switch button if we have more than 1 camera
+            [videoCameraSwitch setHidden:FALSE];
+        }
+    }
 }
+
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    
+    if([LinphoneManager runningOnIpad]) {
+        linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
+    }
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    CGRect frame = [videoPreview frame];
+    switch (toInterfaceOrientation) {
+        case UIInterfaceOrientationPortrait:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(0)];
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            break;
+        default:
+            break;
+    }
+    [videoPreview setFrame:frame];
+}
+
 
 #pragma mark - Event Functions
 

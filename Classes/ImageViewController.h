@@ -1,4 +1,4 @@
-/* ImageViewerViewController.h
+/* ImageViewController.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -19,16 +19,16 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ImageViewerViewController : UIViewController {
+#import "UICompositeViewController.h"
+
+@interface ImageViewController : UIViewController<UICompositeViewDelegate> {
 	
 }
 
-
-
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
-@property (nonatomic, retain) UIImage  *imageToDisplay;
+@property (nonatomic, retain) UIImage  *image;
 @property (nonatomic, retain) IBOutlet UIButton *backButton;
 
-
 - (IBAction)onBackClick:(id)sender;
+
 @end

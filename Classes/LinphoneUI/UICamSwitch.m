@@ -82,15 +82,14 @@
         return;
     }
 	if (nextCamId != currentCamId) {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Switching from [%s] to [%s]",currentCamId,nextCamId];
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Switching from [%s] to [%s]", currentCamId, nextCamId];
 		linphone_core_set_video_device([LinphoneManager getLc], nextCamId);
-		nextCamId=currentCamId;
+		nextCamId = currentCamId;
 		currentCamId = linphone_core_get_video_device([LinphoneManager getLc]);
-		linphone_core_update_call([LinphoneManager getLc]
-								  , linphone_core_get_current_call([LinphoneManager getLc])
-								  , NULL);
-		/*linphone_core_set_native_preview_window_id([LinphoneManager getLc],
-                                                   (unsigned long)preview);*/
+        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if(call != NULL) {
+            linphone_core_update_call([LinphoneManager getLc], call, NULL);
+        }
 	}
 }
 
