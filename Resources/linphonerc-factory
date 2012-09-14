@@ -3,6 +3,9 @@ download_bw=380
 upload_bw=380
 firewall_policy=0
 mtu=1300
+activate_edge_workarounds=1
+edge_ping_time=200
+edge_bw=10
 
 [sip]
 guess_hostname=1
