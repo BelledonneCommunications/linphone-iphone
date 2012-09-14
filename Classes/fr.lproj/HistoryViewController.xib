@@ -109,11 +109,10 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<reference key="IBUINormalTitleShadowColor" ref="873246362"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage" id="739681638">
+								<object class="NSCustomResource" key="IBUIHighlightedImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">history_all_selected.png</string>
 								</object>
-								<reference key="IBUISelectedImage" ref="739681638"/>
 								<object class="NSCustomResource" key="IBUINormalImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">history_all_default.png</string>
@@ -181,7 +180,7 @@
 								<reference key="IBUIFont" ref="590723448"/>
 							</object>
 						</array>
-						<string key="NSFrameSize">{320, 58}</string>
+						<string key="NSFrameSize">{320, 44}</string>
 						<reference key="NSSuperview" ref="812520855"/>
 						<reference key="NSNextKeyView" ref="929072924"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>

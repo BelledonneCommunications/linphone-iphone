@@ -12,9 +12,7 @@
 			<key>change date</key>
 			<date>2001-01-01T00:00:00Z</date>
 			<key>changed values</key>
-			<array>
-				<string>fr</string>
-			</array>
+			<array/>
 			<key>class</key>
 			<string>BLBundleObject</string>
 			<key>errors</key>
@@ -214,21 +212,19 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>12</key>
+							<key>15</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/12/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/15/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T08:42:01Z</date>
+					<date>2012-09-14T14:45:49Z</date>
 					<key>changed values</key>
-					<array>
-						<string>fr</string>
-					</array>
+					<array/>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
@@ -236,7 +232,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>fe17a7cc443845e0f73af8ee35e892e5
+					<string>1f8683826a86cb2ad7e55cc5c9dcafaf
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -394,9 +390,32 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>fr</string>
-							</array>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Send picture"; ObjectID = "73";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>73.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Send picture</string>
+								<key>fr</key>
+								<string>Envoyer l'image</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -421,13 +440,61 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>fr</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Class = "IBUIButton"; normalTitle = "cancel"; ObjectID = "75";</string>
+							<string>Class = "IBUIProgressView"; accessibilityLabel = "Upload or download progression"; ObjectID = "74";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>74.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Upload or download progression</string>
+								<key>fr</key>
+								<string>Progression du téléversement/téléchargement</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Cancel"; ObjectID = "75";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>75.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cancel</string>
+								<key>fr</key>
+								<string>Annuler</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Cancel"; ObjectID = "75";</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
@@ -437,7 +504,7 @@
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>cancel</string>
+								<string>Cancel</string>
 								<key>fr</key>
 								<string>Annuler</string>
 							</dict>
@@ -501,9 +568,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>12</string>
+						<string>15</string>
 						<key>fr</key>
-						<string>12</string>
+						<string>15</string>
 					</dict>
 				</dict>
 				<dict>
@@ -511,17 +578,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>2</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/2/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/3/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-13T15:35:03Z</date>
+					<date>2012-09-14T12:06:16Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -531,7 +598,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>d02ecf8f1bacbfa8e5793231b6735940
+					<string>e5821f865fd72c1ed8f4c7762f6f37ea
 </string>
 					<key>name</key>
 					<string>ChatViewController.xib</string>
@@ -645,9 +712,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>2</string>
+						<string>3</string>
 					</dict>
 				</dict>
 				<dict>
@@ -2540,17 +2607,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>2</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/HistoryViewController/1/HistoryViewController.xib</string>
+								<string>Classes/HistoryViewController/2/HistoryViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-10T15:18:57Z</date>
+					<date>2012-09-14T12:14:28Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2560,7 +2627,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>298b795268cf5c06a0f890835be7ddb3
+					<string>186d9f6cd76ac4df197bc2a1eb51921e
 </string>
 					<key>name</key>
 					<string>HistoryViewController.xib</string>
@@ -2699,9 +2766,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>2</string>
 					</dict>
 				</dict>
 				<dict>
@@ -4207,6 +4274,75 @@
 						<string>2</string>
 						<key>fr</key>
 						<string>2</string>
+					</dict>
+				</dict>
+				<dict>
+					<key>attachments</key>
+					<dict>
+						<key>backup</key>
+						<dict>
+							<key>3</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/ImageViewController/3/ImageViewController.xib</string>
+							</dict>
+						</dict>
+					</dict>
+					<key>change date</key>
+					<date>2012-09-14T13:00:17Z</date>
+					<key>changed values</key>
+					<array/>
+					<key>class</key>
+					<string>BLNibFileObject</string>
+					<key>errors</key>
+					<array/>
+					<key>flags</key>
+					<integer>0</integer>
+					<key>hash</key>
+					<string>724a8c5069c0fbde9b1e56ef37a42cba
+</string>
+					<key>name</key>
+					<string>ImageViewController.xib</string>
+					<key>objects</key>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Back"; ObjectID = "7";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>7.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Back</string>
+								<key>fr</key>
+								<string>Retour</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
+					<key>old objects</key>
+					<array/>
+					<key>snapshots</key>
+					<dict/>
+					<key>versions</key>
+					<dict>
+						<key>en</key>
+						<string>3</string>
+						<key>fr</key>
+						<string>3</string>
 					</dict>
 				</dict>
 			</array>
@@ -7218,7 +7354,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T09:51:58Z</date>
+					<date>2012-09-14T11:57:58Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7228,7 +7364,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>7fcce4bdc516e1d8f77ce093860a38dd
+					<string>dcecc0eedf9132813ef8a938d07d7917
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -7351,64 +7487,11 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>%@
-Reason was: %s</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>%1$@
-Reason was: %2$s</string>
-								<key>fr</key>
-								<string>%1$@
-Raison: %2$s</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>'%@' not registered</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
 								<string>'%@' not registered</string>
-								<key>fr</key>
-								<string>'%@' n'est pas enregistré</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>'%@' not registered to Service</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>'%@' not registered to Service</string>
 								<key>fr</key>
 								<string>'%@' n'est pas enregistré</string>
 							</dict>
@@ -7779,13 +7862,13 @@ Raison: %2$s</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Cannot transfert  file from remote pary</string>
+							<string>Cannot transfer file from remote contact</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Cannot transfert  file from remote pary</string>
+								<string>Cannot transfer file from remote contact</string>
 								<key>fr</key>
-								<string>Impossible de transferer depuis destinataire</string>
+								<string>Impossible de transferer depuis le destinataire</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -7804,36 +7887,11 @@ Raison: %2$s</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Cannot transfert file from remote pary</string>
+							<string>Cannot transfer file to remote contact</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Cannot transfert file from remote pary</string>
-								<key>fr</key>
-								<string>Impossible de transferer depuis destinataire</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Cannot transfert file to remote pary</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Cannot transfert file to remote pary</string>
+								<string>Cannot transfer file to remote contact</string>
 								<key>fr</key>
 								<string>Impossible de transferer au destinataire</string>
 							</dict>
@@ -8379,31 +8437,6 @@ Raison: %2$s</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>It seems you have not configured any proxy server from settings</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>It seems you have not configured any proxy server from settings</string>
-								<key>fr</key>
-								<string>Il semble qu'il n'y est pas de serveur SIP configuré</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>Last name</string>
 							<key>localizations</key>
 							<dict>
@@ -8502,31 +8535,6 @@ Raison: %2$s</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Never remind</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Never remind</string>
-								<key>fr</key>
-								<string>Ne pas me rappeler</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>No microphone</string>
 							<key>localizations</key>
 							<dict>
@@ -8596,31 +8604,6 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Ok</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Ok</string>
-								<key>fr</key>
-								<string>Ok</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
 							<string>InAppSettingsKit</string>
 							<key>errors</key>
 							<array/>
@@ -8634,6 +8617,31 @@ Raison: %2$s</string>
 								<string>OK</string>
 								<key>fr</key>
 								<string>OK</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Ok</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Ok</string>
+								<key>fr</key>
+								<string>Ok</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -9233,31 +9241,6 @@ Raison: %2$s</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Tranfer error</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Tranfer error</string>
-								<key>fr</key>
-								<string>Erreur de transfert</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>Transfer error</string>
 							<key>localizations</key>
 							<dict>
@@ -9471,6 +9454,209 @@ Raison: %2$s</string>
 								<string>No SIP account defined</string>
 								<key>fr</key>
 								<string>Aucun compte SIP défini</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>%@
+Reason was: %s</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>%1$@
+Reason was: %2$s</string>
+								<key>fr</key>
+								<string>%1$@
+Raison: %2$s</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>'%@' not registered to Service</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>'%@' not registered to Service</string>
+								<key>fr</key>
+								<string>'%@' n'est pas enregistré</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert  file from remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert  file from remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer depuis destinataire</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert file from remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert file from remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer depuis destinataire</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Cannot transfert file to remote pary</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot transfert file to remote pary</string>
+								<key>fr</key>
+								<string>Impossible de transferer au destinataire</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>It seems you have not configured any proxy server from settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>It seems you have not configured any proxy server from settings</string>
+								<key>fr</key>
+								<string>Il semble qu'il n'y est pas de serveur SIP configuré</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Never remind</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Never remind</string>
+								<key>fr</key>
+								<string>Ne pas me rappeler</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Tranfer error</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Tranfer error</string>
+								<key>fr</key>
+								<string>Erreur de transfert</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -10112,7 +10298,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:05:14Z</date>
+					<date>2012-09-14T09:59:52Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10122,7 +10308,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>f72b15c7c0f7f2cba6c1df114414e788
+					<string>04783f5ae79079b4d782aa4842c5a054
 </string>
 					<key>name</key>
 					<string>Advanced.strings</string>
@@ -10392,6 +10578,31 @@ Raison: %2$s</string>
 								<string>Display name</string>
 								<key>fr</key>
 								<string>Nom d'affichage</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Sharing server</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Sharing server</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Sharing server</string>
+								<key>fr</key>
+								<string>Serveur de partage</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
