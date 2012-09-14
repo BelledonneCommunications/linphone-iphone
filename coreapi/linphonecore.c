@@ -3652,6 +3652,8 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
 	if (server)
 		lc->net_conf.stun_server=ms_strdup(server);
 	else lc->net_conf.stun_server=NULL;
+	if (linphone_core_ready(lc))
+		lp_config_set_string(lc->config,"net","stun_server",lc->net_conf.stun_server);
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
@@ -3716,6 +3718,8 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
 	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"net","firewall_policy",pol);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
@@ -4449,7 +4453,6 @@ void net_config_uninit(LinphoneCore *lc)
 	net_config_t *config=&lc->net_conf;
 
 	if (config->stun_server!=NULL){
-		lp_config_set_string(lc->config,"net","stun_server",config->stun_server);
 		ms_free(lc->net_conf.stun_server);
 	}
 	if (config->nat_address!=NULL){
@@ -4459,7 +4462,6 @@ void net_config_uninit(LinphoneCore *lc)
 	if (lc->net_conf.nat_address_ip !=NULL){
 		ms_free(lc->net_conf.nat_address_ip);
 	}
-	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
 }
 
