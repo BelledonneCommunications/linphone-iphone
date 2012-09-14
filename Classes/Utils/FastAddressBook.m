@@ -22,6 +22,8 @@
 
 @implementation FastAddressBook
 
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
+
 + (NSString*)getContactDisplayName:(ABRecordRef)contact {
     NSString *retString = nil;
     if (contact) {
@@ -74,6 +76,9 @@
             ret = [ret substringFromIndex:4];
         }
         ret = [@"sip:" stringByAppendingString:ret];
+        if([ret hasSuffix:@":5060"]) {
+            ret = [ret substringToIndex:[ret length] - 5];
+        }
     }
     return ret;
 }

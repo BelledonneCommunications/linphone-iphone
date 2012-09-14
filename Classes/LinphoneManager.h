@@ -33,7 +33,6 @@
 
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
-extern NSString *const kLinphoneTextReceivedSound;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;
@@ -79,8 +78,6 @@ typedef struct _LinphoneManagerSounds {
     time_t lastRemoteNotificationTime;
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
-    NSMutableArray *inhibitedEvent;
-	
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
@@ -112,12 +109,6 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)refreshRegisters;
 
-- (void)enableSpeaker:(BOOL)enable;
-- (BOOL)isSpeakerEnabled;
-
-- (void)addInhibitedEvent:(NSString*)event;
-- (BOOL)removeInhibitedEvent:(NSString*)event;
-
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
@@ -133,8 +124,6 @@ typedef struct _LinphoneManagerSounds {
 -(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
 -(BOOL)lpConfigBoolForKey:(NSString*) key;
 
-
-
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
@@ -143,6 +132,7 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, retain) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
+@property (nonatomic, assign) BOOL speakerEnabled;
 
 @end
 

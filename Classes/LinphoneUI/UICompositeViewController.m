@@ -425,11 +425,13 @@
             [contentView.layer removeAnimationForKey:@"transition"];
             [contentView.layer addAnimation:viewTransition forKey:@"transition"];
             if(oldViewDescription.stateBar != currentViewDescription.stateBar ||
+               oldViewDescription.stateBarEnabled != currentViewDescription.stateBarEnabled ||
                [stateBarView.layer animationForKey:@"transition"] != nil) {
                 [stateBarView.layer removeAnimationForKey:@"transition"];
                 [stateBarView.layer addAnimation:viewTransition forKey:@"transition"];
             }
             if(oldViewDescription.tabBar != currentViewDescription.tabBar ||
+               oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled ||
                [tabBarView.layer animationForKey:@"transition"] != nil) {
                 [tabBarView.layer removeAnimationForKey:@"transition"];
                 [tabBarView.layer addAnimation:viewTransition forKey:@"transition"];

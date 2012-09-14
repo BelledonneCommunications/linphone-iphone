@@ -45,6 +45,7 @@
     UIActionSheet *batteryActionSheet;
     int loadCount;
     NSMutableArray *viewStack;
+    NSMutableArray *inhibitedEvents;
 }
 
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
@@ -60,6 +61,9 @@
 - (void)startUp;
 
 + (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
+
+- (void)addInhibitedEvent:(id)event;
+- (BOOL)removeInhibitedEvent:(id)event;
 
 + (PhoneMainView*) instance;
 

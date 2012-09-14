@@ -180,7 +180,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_clear_proxy_config([LinphoneManager getLc]);
 		LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
 		/*default domain is supposed to be preset from linphonerc*/
-		NSString* identity = [NSString stringWithFormat:@"sip:%@@%@",usernameField.text,linphone_proxy_config_get_addr(proxyCfg)];
+		NSString* identity = [NSString stringWithFormat:@"sip:%@@%s",usernameField.text, linphone_proxy_config_get_addr(proxyCfg)];
 		linphone_proxy_config_set_identity(proxyCfg,[identity UTF8String]);
 		LinphoneAuthInfo* auth_info =linphone_auth_info_new([usernameField.text UTF8String]
 															,[usernameField.text UTF8String]

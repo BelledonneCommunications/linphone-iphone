@@ -35,12 +35,17 @@
 #include "lpconfig.h"
 
 
+static void audioRouteChangeListenerCallback (
+                                              void                   *inUserData,                                 // 1
+                                              AudioSessionPropertyID inPropertyID,                                // 2
+                                              UInt32                 inPropertyValueSize,                         // 3
+                                              const void             *inPropertyValue                             // 4
+                                              );
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
-NSString *const kLinphoneTextReceivedSound = @"LinphoneTextReceivedSound";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
@@ -78,6 +83,7 @@ extern  void libmsbcg729_init();
 @synthesize pushNotificationToken;
 @synthesize sounds;
 @synthesize logs;
+@synthesize speakerEnabled;
 
 struct codec_name_pref_table{
     const char *name;
@@ -179,8 +185,13 @@ struct codec_name_pref_table codec_pref_table[]={
 
 - (id)init {
     if ((self = [super init])) {
+        AudioSessionInitialize(NULL, NULL, NULL, NULL);
+        OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+        if (lStatus) {
+            [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
+        }
         
-        
+        // Sounds
         {
             NSString *path = [[NSBundle mainBundle] pathForResource:@"ring" ofType:@"wav"];
             sounds.call = 0;
@@ -197,12 +208,13 @@ struct codec_name_pref_table codec_pref_table[]={
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Can't set \"message\" system sound"];
             }
         }
-        inhibitedEvent = [[NSMutableArray alloc] init];
+        
         logs = [[NSMutableArray alloc] init];
         database = NULL;
+        speakerEnabled = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
-		lastRemoteNotificationTime=0;
+        lastRemoteNotificationTime=0;
     }
     return self;
 }
@@ -215,10 +227,14 @@ struct codec_name_pref_table codec_pref_table[]={
         AudioServicesDisposeSystemSoundID(sounds.message);
     }
     
-    [inhibitedEvent release];
     [fastAddressBook release];
     [self closeDatabase];
     [logs release];
+    
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+	if (lStatus) {
+		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
+	}
     
     [super dealloc];
 }
@@ -347,7 +363,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
-            [self enableSpeaker:FALSE];
+            [self setSpeakerEnabled:FALSE];
     }
     
     // Enable speaker when video
@@ -357,7 +373,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
        state == LinphoneCallStreamsRunning ||
        state == LinphoneCallUpdated) {
         if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-            [self enableSpeaker:TRUE];
+            [self setSpeakerEnabled:TRUE];
         }
     }
     
@@ -511,7 +527,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			} else if (proxy){
 				int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
 				if (defaultExpire>=0)
-				linphone_proxy_config_expires(proxy, defaultExpire);
+					linphone_proxy_config_expires(proxy, defaultExpire);
 				//else keep default value from linphonecore
 			}
 			
@@ -546,13 +562,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     
     proxyReachability = SCNetworkReachabilityCreateWithName(nil, nodeName);
     
-	//initial state is network off should be done as soon as possible
-	SCNetworkReachabilityFlags flags;
-	if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags: %s", SCErrorString(SCError())];
-		return;
-	}
-	networkReachabilityCallBack(proxyReachability, flags, ctx ? ctx->info : 0);
 
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register reachability cb: %s", SCErrorString(SCError())];
@@ -716,17 +725,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}	
 }
 
-
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
-#if 0
-    if (settingsStore != nil) {
-        [settingsStore release];
-        settingsStore = nil;
-    }
-#endif
+
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
@@ -740,16 +743,16 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)didReceiveRemoteNotification{
-	lastRemoteNotificationTime=time(NULL);
+    lastRemoteNotificationTime=time(NULL);
 }
 
 - (BOOL)shouldAutoAcceptCall{
-	if (lastRemoteNotificationTime!=0){
-		if ((time(NULL)-lastRemoteNotificationTime)<15)
-			return TRUE;
-		lastRemoteNotificationTime=0;
-	}
-	return FALSE;
+    if (lastRemoteNotificationTime!=0){
+        if ((time(NULL)-lastRemoteNotificationTime)<15)
+            return TRUE;
+        lastRemoteNotificationTime=0;
+    }
+    return FALSE;
 }
 
 - (BOOL)resignActive {
@@ -758,20 +761,21 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)waitForRegisterToArrive{
-	int i;
-	UIBackgroundTaskIdentifier bgid;
-	stopWaitingRegisters=FALSE;
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
-	bgid=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
-	}];
-	for(i=0;i<100 && (!stopWaitingRegisters);i++){
-		linphone_core_iterate(theLinphoneCore);
-		usleep(20000);
-	}
-	[LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
-	[[UIApplication sharedApplication] endBackgroundTask:bgid];
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
+        stopWaitingRegisters = FALSE;
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Starting long running task for registering"];
+        UIBackgroundTaskIdentifier bgid = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+            [LinphoneManager instance]->stopWaitingRegisters=TRUE;
+            [LinphoneLogger logc:LinphoneLoggerLog format:"Expiration handler called"];
+        }];
+        for(int i=0;i<100 && (!stopWaitingRegisters);i++){
+            linphone_core_iterate(theLinphoneCore);
+            usleep(20000);
+        }
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Ending long running task for registering"];
+        [[UIApplication sharedApplication] endBackgroundTask:bgid];
+    }
 }
 
 - (BOOL)enterBackgroundMode {
@@ -781,8 +785,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
 	if (proxyCfg && [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
 		//For registration register
-		linphone_core_refresh_registers(theLinphoneCore);
-		
+		[self refreshRegisters];
 		//wait for registration answer
 		int i=0;
 		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
@@ -842,21 +845,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)refreshRegisters{
-	/*first check if network is available*/
-	if (proxyReachability){
-		SCNetworkReachabilityFlags flags=0;
-		if (!SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"Cannot get reachability flags, re-creating reachability context."];
-			[self setupNetworkReachabilityCallback];
-		}else{
-			networkReachabilityCallBack(proxyReachability, flags, 0);
-			if (flags==0){
-				/*workaround iOS bug: reachability API cease to work after some time.*/
-				/*when flags==0, either we have no network, or the reachability object lies. To workaround, create a new one*/
-				[self setupNetworkReachabilityCallback];
-			}
-		}
-	}else [LinphoneLogger logc:LinphoneLoggerError format:"No proxy reachability context created !"];
+	if (connectivity==none){
+		//don't trust ios when he says there is no network. Create a new reachability context, the previous one might be mis-functionning.
+		[self setupNetworkReachabilityCallback];
+	}
 	linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
 }
 
@@ -867,10 +859,36 @@ static LinphoneCoreVTable linphonec_vtable = {
     [LinphoneManager copyFile:src destination:dst override:FALSE];
 }
 
+
 #pragma mark - Speaker Functions
 
-- (void)enableSpeaker:(BOOL)enable {
-    //redirect audio to speaker
+static void audioRouteChangeListenerCallback (
+                                              void                   *inUserData,                                 // 1
+                                              AudioSessionPropertyID inPropertyID,                                // 2
+                                              UInt32                 inPropertyValueSize,                         // 3
+                                              const void             *inPropertyValue                             // 4
+                                              ) {
+    if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
+    LinphoneManager* lm = (LinphoneManager*)inUserData;
+    
+    bool enabled = false;
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
+        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        CFRelease(lNewRoute);
+    }
+    
+    if(enabled != lm.speakerEnabled) { // Reforce value
+        lm.speakerEnabled = lm.speakerEnabled;
+    }
+}
+
+- (void)setSpeakerEnabled:(BOOL)enable {
+    speakerEnabled = enable;
     if(enable) {
         UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
@@ -883,21 +901,6 @@ static LinphoneCoreVTable linphonec_vtable = {
                                  , &audioRouteOverride);
     }
 }
-
-- (BOOL)isSpeakerEnabled {
-    bool enabled = false;
-    CFStringRef lNewRoute = CFSTR("Unknown");
-    UInt32 lNewRouteSize = sizeof(lNewRoute);
-    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
-    if (!lStatus && lNewRouteSize > 0) {
-        NSString *route = (NSString *) lNewRoute;
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
-        CFRelease(lNewRoute);
-    }
-    return enabled;
-}
-
 
 #pragma mark - Call Functions
 
@@ -946,8 +949,8 @@ static LinphoneCoreVTable linphonec_vtable = {
         }
         linphone_address_destroy(linphoneAddress);
 	} else if (proxyCfg==nil){
-		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid sip address",nil)
-														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid sip address (I.E sip:john@example.net)",nil) 
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
+														message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a call or use a valid SIP address (I.E sip:john@example.net)",nil)
 													   delegate:nil 
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 											  otherButtonTitles:nil];
@@ -1015,19 +1018,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
 		linphone_proxy_config_set_contact_parameters(proxyCfg, [params UTF8String]);
 	}
-}
-
-- (void)addInhibitedEvent:(NSString*)event {
-    [inhibitedEvent addObject:event];
-}
-
-- (BOOL)removeInhibitedEvent:(NSString*)event {
-    NSUInteger index = [inhibitedEvent indexOfObject:kLinphoneTextReceivedSound];
-    if(index != NSNotFound) {
-        [inhibitedEvent removeObjectAtIndex:index];
-        return TRUE;
-    }
-    return FALSE;
 }
 
 

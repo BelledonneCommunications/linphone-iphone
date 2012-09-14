@@ -29,8 +29,6 @@
 
 #pragma mark - Static Functions
 
-static AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
-
 static void audioRouteChangeListenerCallback (
                                        void                   *inUserData,                                 // 1
                                        AudioSessionPropertyID inPropertyID,                                // 2
@@ -38,27 +36,13 @@ static void audioRouteChangeListenerCallback (
                                        const void             *inPropertyValue                             // 4
                                        ) {
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
-    UISpeakerButton* button=(UISpeakerButton*)inUserData;
-	UInt32 routeSize = sizeof (CFStringRef);
-	CFStringRef route;
-	AudioSessionGetProperty (kAudioSessionProperty_AudioRoute,
-										  &routeSize,
-										  &route);
-	
-	if (route &&
-		button.selected  && 
-		!( [(NSString*)route isEqualToString: @"Speaker"] || [(NSString*)route isEqualToString: @"SpeakerAndMicrophone"])) {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Audio route change to [%s] rejected by speaker button", [(NSString*)route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-		// reject change
-		[button onOn];
-	} else
-		[(UISpeakerButton*)inUserData update];  
-   
+    UISpeakerButton* button = (UISpeakerButton*)inUserData;
+    [button update];
 }
 
 - (void)initUISpeakerButton {
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
-    OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
+    OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
     if (lStatus) {
         [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
     }
@@ -89,25 +73,26 @@ static void audioRouteChangeListenerCallback (
 }	
 
 - (void)dealloc {
-    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
 	if (lStatus) {
-		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]",lStatus];
+		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
 	}
 	[super dealloc];
 }
 
+
 #pragma mark - UIToggleButtonDelegate Functions
 
 - (void)onOn {
-	[[LinphoneManager instance] enableSpeaker:TRUE];
+	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
 }
 
 - (void)onOff {
-    [[LinphoneManager instance] enableSpeaker:FALSE];
+    [[LinphoneManager instance] setSpeakerEnabled:FALSE];
 }
 
 - (bool)onUpdate {
-    return [[LinphoneManager instance] isSpeakerEnabled];
+    return [[LinphoneManager instance] speakerEnabled];
 }
 
 @end

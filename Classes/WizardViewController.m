@@ -428,7 +428,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     if([errors length]) {
-        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error",nil)
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
                                                         message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
                                                        delegate:nil
                                               cancelButtonTitle:NSLocalizedString(@"Continue",nil)

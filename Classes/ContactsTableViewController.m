@@ -27,6 +27,9 @@
 
 @implementation ContactsTableViewController
 
+static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
+
+
 #pragma mark - Lifecycle Functions
 
 - (void)initContactsTableViewController {

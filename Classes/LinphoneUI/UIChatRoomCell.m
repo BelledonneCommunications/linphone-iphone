@@ -26,8 +26,9 @@
 @implementation UIChatRoomCell
 
 @synthesize innerView;
-@synthesize messageView;
+@synthesize bubbleView;
 @synthesize backgroundImage;
+@synthesize messageImageView;
 @synthesize messageLabel;
 @synthesize deleteButton;
 @synthesize dateLabel;
@@ -38,8 +39,10 @@ static const CGFloat CELL_MIN_HEIGHT = 40.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
-static const CGFloat CELL_MESSAGE_Y_MARGIN = 33.0f;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
+static const CGFloat CELL_IMAGE_HEIGHT = 50.0f;
+static const CGFloat CELL_IMAGE_WIDTH = 50.0f;
 static UIFont *CELL_FONT = nil;
 
 #pragma mark - Lifecycle Functions
@@ -57,8 +60,9 @@ static UIFont *CELL_FONT = nil;
 - (void)dealloc {
     [backgroundImage release];
     [innerView release];
-    [messageView release];
+    [bubbleView release];
     [messageLabel release];
+    [messageImageView release];
     [deleteButton release];
     [dateLabel release];
     [statusImage release];
@@ -88,7 +92,16 @@ static UIFont *CELL_FONT = nil;
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
         return;
     }
-    [messageLabel setText:[chat message]];
+    if(true/*Change when image will be supported */) {
+        [messageLabel setHidden:FALSE];
+        [messageLabel setText:[chat message]];
+        
+        [messageImageView setHidden:TRUE];
+    } else {
+        [messageLabel setHidden:TRUE];
+        
+        [messageImageView setHidden:FALSE];
+    }
     
     // Date
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -131,16 +144,21 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
-+ (CGSize)viewSize:(NSString*)message width:(int)width {
-    if(CELL_FONT == nil) {
-        CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
++ (CGSize)viewSize:(ChatModel*)chat width:(int)width {
+    CGSize messageSize;
+    if(true/*Change when image will be supported */) {
+        if(CELL_FONT == nil) {
+            CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
+        }
+        messageSize = [[chat message] sizeWithFont: CELL_FONT
+                                        constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
+                                            lineBreakMode: UILineBreakModeTailTruncation];
+    } else {
+        messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
     }
-    CGSize messageSize = [message sizeWithFont: CELL_FONT
-                           constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f) 
-                               lineBreakMode: UILineBreakModeTailTruncation]; 
     messageSize.height += CELL_MESSAGE_Y_MARGIN;
     if(messageSize.height < CELL_MIN_HEIGHT)
-         messageSize.height = CELL_MIN_HEIGHT;
+        messageSize.height = CELL_MIN_HEIGHT;
     messageSize.width += CELL_MESSAGE_X_MARGIN;
     if(messageSize.width < CELL_MIN_WIDTH)
         messageSize.width = CELL_MIN_WIDTH;
@@ -148,7 +166,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 + (CGFloat)height:(ChatModel*)chat width:(int)width {
-    return [UIChatRoomCell viewSize:[chat message] width:width].height;
+    return [UIChatRoomCell viewSize:chat width:width].height;
 }
 
 
@@ -159,7 +177,7 @@ static UIFont *CELL_FONT = nil;
     if(chat != nil) {
         // Resize inner
         CGRect innerFrame;
-        innerFrame.size = [UIChatRoomCell viewSize:[chat message] width:[self frame].size.width];
+        innerFrame.size = [UIChatRoomCell viewSize:chat width:[self frame].size.width];
         if([[chat direction] intValue]) { // Inverted
             innerFrame.origin.x = 0.0f;
             innerFrame.origin.y = 0.0f;
@@ -169,7 +187,7 @@ static UIFont *CELL_FONT = nil;
         }
         [innerView setFrame:innerFrame];
 
-        CGRect messageFrame = [messageView frame];
+        CGRect messageFrame = [bubbleView frame];
         messageFrame.origin.y = ([innerView frame].size.height - messageFrame.size.height)/2;
         if([[chat direction] intValue]) { // Inverted
             [backgroundImage setImage:[TUNinePatchCache imageOfSize:[backgroundImage bounds].size
@@ -180,7 +198,7 @@ static UIFont *CELL_FONT = nil;
                                                   forNinePatchNamed:@"chat_bubble_outgoing"]];
             messageFrame.origin.y -= 5;
         }
-        [messageView setFrame:messageFrame];
+        [bubbleView setFrame:messageFrame];
     }
 }
 

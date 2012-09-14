@@ -142,23 +142,17 @@ NSTimer *callSecurityTimer;
                 message =  NSLocalizedString(@"Registration failed", nil); break;
             case LinphoneRegistrationProgress: 
                 message =  NSLocalizedString(@"Registration in progress", nil); break;
-                //case LinphoneRegistrationCleared: m= @"No SIP account"; break;
             default: break;
         }
     }
 
     registrationStateLabel.hidden = NO;
     switch(state) {
-        case LinphoneRegistrationCleared:
-            /*            image.hidden = NO;
-             [image setImage:[UIImage imageNamed:@"status_orange.png"]];
-             [spinner stopAnimating];
-             [label setText:message != nil ? message : NSLocalizedString(@"No SIP account defined", nil)];*/
-            break;
         case LinphoneRegistrationFailed:
             registrationStateImage.hidden = NO;
             image = [UIImage imageNamed:@"led_error.png"];
             break;
+        case LinphoneRegistrationCleared:
         case LinphoneRegistrationNone:
             registrationStateImage.hidden = NO;
             image = [UIImage imageNamed:@"led_disconnected.png"];

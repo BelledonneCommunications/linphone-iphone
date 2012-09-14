@@ -8,7 +8,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Automatically start video</string>
+			<string>Automatically start</string>
 			<key>Key</key>
 			<string>start_video_preference</string>
 			<key>DefaultValue</key>
@@ -18,7 +18,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Automatically accept video</string>
+			<string>Automatically accept</string>
 			<key>Key</key>
 			<string>accept_video_preference</string>
 			<key>DefaultValue</key>

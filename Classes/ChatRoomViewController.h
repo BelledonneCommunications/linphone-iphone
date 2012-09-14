@@ -22,11 +22,12 @@
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
+#import "HPGrowingTextView.h"
 #import "ChatModel.h"
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSURLConnectionDataDelegate> {
+@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate,UIActionSheetDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSURLConnectionDataDelegate,HPGrowingTextViewDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
 	NSString *_remoteAddress;
@@ -41,18 +42,22 @@
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, retain) IBOutlet UITextView* messageField;
+@property (nonatomic, retain) IBOutlet HPGrowingTextView* messageField;
 @property (nonatomic, retain) IBOutlet UIButton* sendButton;
 @property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UIView *headerView;
 @property (nonatomic, retain) IBOutlet UIView *footerView;
 @property (nonatomic, retain) IBOutlet UIView *chatView;
-@property (nonatomic, retain) IBOutlet UIImageView *fieldBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIView *messageView;
+@property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIImageView *footerBackgroundImage;
 @property (nonatomic, copy) NSString *remoteAddress;
 @property (nonatomic, retain) IBOutlet UIButton* pictButton;
 @property (nonatomic, retain) IBOutlet UIButton* cancelTransfertButton;
 @property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
+@property (nonatomic, retain) IBOutlet UIView* transfertView;
+@property (nonatomic, retain) IBOutlet UIView* fieldBackgroundImage;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
@@ -60,5 +65,6 @@
 - (IBAction)onSendClick:(id)event;
 - (IBAction)onPictClick:(id)event;
 - (IBAction)onTransferCancelClick:(id)event;
+- (IBAction)onListTap:(id)sender;
 
 @end

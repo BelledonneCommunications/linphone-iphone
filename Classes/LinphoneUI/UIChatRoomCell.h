@@ -26,9 +26,10 @@
 
 @property (nonatomic, retain) ChatModel *chat;
 @property (nonatomic, retain) IBOutlet UIView *innerView;
-@property (nonatomic, retain) IBOutlet UIView *messageView;
+@property (nonatomic, retain) IBOutlet UIView *bubbleView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
 @property (nonatomic, retain) IBOutlet UILabel *messageLabel;
+@property (nonatomic, retain) IBOutlet UIImageView *messageImageView;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;

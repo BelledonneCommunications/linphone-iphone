@@ -188,6 +188,13 @@
     [contactDetailsDelegate onModification:nil];
 }
 
++ (NSString*)localizeLabel:(NSString*)str {
+    CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel((CFStringRef) str);
+    NSString * retStr = [NSString stringWithString:(NSString*) lLocalizedLabel];
+    CFRelease(lLocalizedLabel);
+    return retStr;
+}
+
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
