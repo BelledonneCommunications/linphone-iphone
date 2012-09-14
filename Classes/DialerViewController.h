@@ -22,6 +22,7 @@
 #import "UICompositeViewController.h"
 
 #import "UIEraseButton.h"
+#import "UICamSwitch.h"
 #import "UICallButton.h"
 #import "UITransferButton.h"
 #import "UIDigitButton.h"
@@ -55,6 +56,8 @@
 @property (nonatomic, retain) IBOutlet UIDigitButton* starButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* zeroButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* sharpButton;
+@property (nonatomic, retain) IBOutlet UIView* videoPreview;
+@property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
 
 - (IBAction)onAddContactClick: (id) event;
 - (IBAction)onBackClick: (id) event;

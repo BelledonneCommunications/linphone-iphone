@@ -39,6 +39,7 @@
     
     [tableController release];
     [editButton release];
+    [addressField release];
     
     [super dealloc];
 }

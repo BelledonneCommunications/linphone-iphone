@@ -778,6 +778,8 @@
 		D389363B15A6D53200A3A3AA /* chat_bubble_outgoing.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */; };
 		D38D14AF15A30B3D008497E8 /* cell_call_first_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */; };
 		D38D14B115A30B3D008497E8 /* cell_call_highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */; };
+		D3998D0416031937009DD22C /* background_alt.png in Resources */ = {isa = PBXBuildFile; fileRef = D3998D0316031937009DD22C /* background_alt.png */; };
+		D3998D0516031937009DD22C /* background_alt.png in Resources */ = {isa = PBXBuildFile; fileRef = D3998D0316031937009DD22C /* background_alt.png */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A55FBD15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A55FBF15877E69003FD403 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3A55FBE15877E69003FD403 /* UIContactCell.xib */; };
@@ -1807,6 +1809,7 @@
 		D389363815A6D53200A3A3AA /* chat_bubble_outgoing.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_bubble_outgoing.9.png; path = Resources/chat_bubble_outgoing.9.png; sourceTree = "<group>"; };
 		D38D14AD15A30B3D008497E8 /* cell_call_first_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_first_highlight.png; path = Resources/cell_call_first_highlight.png; sourceTree = "<group>"; };
 		D38D14AE15A30B3D008497E8 /* cell_call_highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cell_call_highlight.png; path = Resources/cell_call_highlight.png; sourceTree = "<group>"; };
+		D3998D0316031937009DD22C /* background_alt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = background_alt.png; path = Resources/background_alt.png; sourceTree = "<group>"; };
 		D3A55FBA15877E5E003FD403 /* UIContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactCell.h; sourceTree = "<group>"; };
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
 		D3A55FBE15877E69003FD403 /* UIContactCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactCell.xib; sourceTree = "<group>"; };
@@ -2735,6 +2738,7 @@
 				D3211BBD159CBFD60098460B /* back_over.png */,
 				D3A74E6615C69392001500B9 /* back_over~ipad.png */,
 				D3ED3E401585FB4A006C0DE4 /* background.png */,
+				D3998D0316031937009DD22C /* background_alt.png */,
 				D3A74E6715C69392001500B9 /* background_top~ipad.png */,
 				D3ED3E7615861B1B006C0DE4 /* backspace_default.png */,
 				D3A74E6815C69392001500B9 /* backspace_default~ipad.png */,
@@ -3845,6 +3849,7 @@
 				D381885615FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
 				D3ED40241602257400BF332B /* chat_background.9.png in Resources */,
 				D3ED40261602257400BF332B /* chat_background.9@2x.png in Resources */,
+				D3998D0416031937009DD22C /* background_alt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4295,6 +4300,7 @@
 				D381885715FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
 				D3ED40251602257400BF332B /* chat_background.9.png in Resources */,
 				D3ED40271602257400BF332B /* chat_background.9@2x.png in Resources */,
+				D3998D0516031937009DD22C /* background_alt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1285,17 +1285,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>2</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController~ipad/2/DialerViewController~ipad.xib</string>
+								<string>Classes/DialerViewController~ipad/3/DialerViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T07:20:16Z</date>
+					<date>2012-09-14T08:21:20Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1305,7 +1305,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>fc4e4cbece826acf96d8cbb7d692bf2f
+					<string>199b213a86204679336e2f627d919b3d
 </string>
 					<key>name</key>
 					<string>DialerViewController~ipad.xib</string>
@@ -1811,6 +1811,31 @@
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Switch camera"; ObjectID = "71";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>71.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Switch camera</string>
+								<key>fr</key>
+								<string>Changer de camera</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array/>
@@ -1819,9 +1844,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>2</string>
+						<string>3</string>
 					</dict>
 				</dict>
 				<dict>
