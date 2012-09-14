@@ -152,6 +152,7 @@ public:
 
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
+		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Lorg/linphone/core/LinphoneChatMessage;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -389,7 +390,7 @@ public:
 							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
 	}
-	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const LinphoneChatMessage *msg) {
+	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 			JNIEnv *env = 0;
 			jint result = jvm->AttachCurrentThread(&env,NULL);
 			if (result != 0) {
@@ -401,7 +402,7 @@ public:
 								,lcData->messageReceivedId
 								,lcData->core
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-								,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
+								,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)msg->from)
 								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
 		}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
