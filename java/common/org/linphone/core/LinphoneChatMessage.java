@@ -73,4 +73,18 @@ public interface LinphoneChatMessage {
 	 * @return LinphoneAddress peer address
 	 */
 	LinphoneAddress getPeerAddress();
+	
+	/**
+	 * Linphone message can carry external body as defined by rfc2017
+	 * @param message #LinphoneChatMessage
+	 * @return return external body url null if not present.
+	 */
+	String getExternalBodyUrl();
+	
+	/**
+	 * Linphone message can carry external body as defined by rfc2017
+	 * @param  #LinphoneChatMessage  
+	 * @param url ex: access-type=URL; URL="http://www.foo.com/file"
+	 */
+	void setExternalBodyUrl(String url);
 }
