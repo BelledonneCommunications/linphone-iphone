@@ -52,12 +52,14 @@
 @property (nonatomic, retain) IBOutlet UIView *messageView;
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *footerBackgroundImage;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
+
 @property (nonatomic, copy) NSString *remoteAddress;
 @property (nonatomic, retain) IBOutlet UIButton* pictButton;
 @property (nonatomic, retain) IBOutlet UIButton* cancelTransfertButton;
 @property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
 @property (nonatomic, retain) IBOutlet UIView* transfertView;
-@property (nonatomic, retain) IBOutlet UIView* fieldBackgroundImage;
+
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;

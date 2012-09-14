@@ -42,11 +42,11 @@
 @synthesize messageView;
 @synthesize messageBackgroundImage;
 @synthesize footerBackgroundImage;
+@synthesize listTapGestureRecognizer;
 @synthesize pictButton;
 @synthesize imageTransferProgressBar;
 @synthesize cancelTransfertButton;
 @synthesize transfertView;
-@synthesize fieldBackgroundImage;
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -71,6 +71,11 @@
     [messageView release];
     [messageBackgroundImage release];
     [footerBackgroundImage release];
+    [listTapGestureRecognizer release];
+	[transfertView release];
+	[pictButton release];
+	[imageTransferProgressBar release];
+	[cancelTransfertButton release];
     [super dealloc];
 }
 
@@ -148,7 +153,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 								&& [[[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"] length]>0 ;
 	[pictButton setHidden:!fileSharingEnabled];
 	
-	CGRect frame = transfertView.frame;
+	CGRect frame = messageView.frame;
 	if (fileSharingEnabled) {
 		frame.origin.x=61;
 		frame.size.width=175;
@@ -156,7 +161,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		frame.origin.x=0;
 		frame.size.width=175+61;
 	}
-	[transfertView setFrame:frame];
+	[messageView setFrame:frame];
+	
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -330,6 +336,15 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (BOOL)growingTextViewShouldBeginEditing:(HPGrowingTextView *)growingTextView {
+    if(editButton.selected) {
+        [tableController setEditing:FALSE animated:TRUE];
+        [editButton setOff];
+        [listTapGestureRecognizer setEnabled:TRUE];
+    }
+    return TRUE;
+}
+
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
     int diff = height - growingTextView.bounds.size.height;
     
@@ -361,6 +376,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (IBAction)onEditClick:(id)event {
+    [listTapGestureRecognizer setEnabled:[tableController isEditing]];
     [tableController setEditing:![tableController isEditing] animated:TRUE];
     [messageField resignFirstResponder];
 }
@@ -413,6 +429,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 		//[uploadCnx cancel];
 		
 	}
+	[transfertView setHidden:!isTranfer];
 	[imageTransferProgressBar setHidden:!isTranfer];
 	[cancelTransfertButton setHidden:!isTranfer];
 	[pictButton setHidden:isTranfer];
@@ -654,7 +671,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	 You might want to generate a random boundary.. this is just the same 
 	 as my output from wireshark on a valid html post
 	 */
-	NSString *boundary = [NSString stringWithString:@"---------------------------14737809831466499882746641449"];
+	NSString *boundary =@"---------------------------14737809831466499882746641449";
 	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
 	[request addValue:contentType forHTTPHeaderField: @"Content-Type"];
 	
@@ -664,7 +681,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	NSMutableData *body = [NSMutableData data];
 	[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];	
 	[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"userfile\"; filename=\"%@\"\r\n",name] dataUsingEncoding:NSUTF8StringEncoding]];
-	[body appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+	[body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
 	[body appendData:[NSData dataWithData:imageData]];
 	[body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	// setting the body of the post to the reqeust
