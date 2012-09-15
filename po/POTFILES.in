@@ -1,5 +1,4 @@
 # List of source files containing translatable strings.
-gtk/tunnel_config.ui
 gtk/calllogs.c
 gtk/conference.c
 gtk/logging.c
@@ -25,6 +24,8 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/parameters.ui
 [type: gettext/glade]gtk/buddylookup.ui
 [type: gettext/glade]gtk/waiting.ui
+[type: gettext/glade]gtk/dscp_settings.ui
+[type: gettext/glade]gtk/tunnel_config.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
