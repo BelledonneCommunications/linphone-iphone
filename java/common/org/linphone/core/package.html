@@ -159,7 +159,12 @@ Any subsequente modifications to {@link org.linphone.core.LinphoneFriend} must b
 	my_friend.enableSubscribes(true); /*disable subscription for this friend*/
 	my_friend.done(); /*commit changes triggering an UNSUBSCRIBE message*/
 </code>
-</pre>
+</pre>                  Do not display status messages
+-J<flag>                  Pass <flag> directly to the runtime system
+
+Provided by Standard doclet:
+-d <directory>                    Destination directory for output files
+-use             
 
 <b> Publishing presence status </b>
 <br>Local presence status can be changed using function {@link org.linphone.core.LinphoneCore#setPresenceInfo }.New status is propagated to all friends {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf)  previously added } to LinphoneCore. 

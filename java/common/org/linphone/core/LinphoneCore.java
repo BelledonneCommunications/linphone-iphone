@@ -373,7 +373,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -384,7 +384,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -395,7 +395,7 @@ public interface LinphoneCore {
 	 * Accept call modifications initiated by other end.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -407,7 +407,7 @@ public interface LinphoneCore {
 	 * Prevent LinphoneCore from performing an automatic answer
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
