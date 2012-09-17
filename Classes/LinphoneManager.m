@@ -44,6 +44,7 @@ static void audioRouteChangeListenerCallback (
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
+NSString *const kLinphoneCoreUpdate = @"kLinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
@@ -601,13 +602,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 - (void)startLibLinphone {
 	
 	//get default config from bundle
-	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory" ofType:nil] ;
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
-	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
-	const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	connectivity=none;
+	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
+	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
+	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
 	
@@ -633,17 +632,16 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-    
-	
+
 	fastAddressBook = [[FastAddressBook alloc] init];
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char* lRing = [[myBundle pathForResource:@"ring"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char* lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[LinphoneManager bundleFile:@"ring.wab"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ring(theLinphoneCore, lRing);
+	const char* lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-    const char* lPlay = [[myBundle pathForResource:@"hold"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    const char* lPlay = [[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -673,7 +671,7 @@ static LinphoneCoreVTable linphonec_vtable = {
         [error release];
 	}
     
-    NSString* path = [myBundle pathForResource:@"nowebcamCIF" ofType:@"jpg"];
+    NSString* path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
     if (path) {
         const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
         [LinphoneLogger logc:LinphoneLoggerLog format:"Using '%s' as source image for no webcam", imagePath];
@@ -722,7 +720,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
 		[self resignActive];
-	}	
+	}
+    
+    // Post event
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate object:[LinphoneManager instance] userInfo:dict];
 }
 
 - (void)destroyLibLinphone {
@@ -734,6 +736,11 @@ static LinphoneCoreVTable linphonec_vtable = {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
+        
+        // Post event
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate object:[LinphoneManager instance] userInfo:dict];
+        
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         if (proxyReachability)
             CFRelease(proxyReachability);

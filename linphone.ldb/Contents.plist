@@ -1410,17 +1410,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>7</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController~ipad/3/DialerViewController~ipad.xib</string>
+								<string>Classes/DialerViewController~ipad/7/DialerViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T08:21:20Z</date>
+					<date>2012-09-17T15:00:19Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1430,7 +1430,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>199b213a86204679336e2f627d919b3d
+					<string>2ba8580f9c2559276f0f27f8ec043517
 </string>
 					<key>name</key>
 					<string>DialerViewController~ipad.xib</string>
@@ -1969,9 +1969,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>7</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>7</string>
 					</dict>
 				</dict>
 				<dict>
@@ -2776,17 +2776,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>2</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/InCallViewController/1/InCallViewController.xib</string>
+								<string>Classes/InCallViewController/2/InCallViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-10T15:34:47Z</date>
+					<date>2012-09-17T15:00:02Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2796,7 +2796,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>ef39c975bbcbb80f09bc1b599428075d
+					<string>43dc274f749d7ce59719b7aff1ab2889
 </string>
 					<key>name</key>
 					<string>InCallViewController.xib</string>
@@ -2835,9 +2835,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>2</string>
 					</dict>
 				</dict>
 				<dict>
@@ -11155,7 +11155,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:16:55Z</date>
+					<date>2012-09-17T13:29:57Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -11165,7 +11165,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>ab1400cd24f02dacc6b2b98b0ce939b5
+					<string>b7297749603f255583f59fcea3174690
 </string>
 					<key>name</key>
 					<string>Video.strings</string>
@@ -11242,6 +11242,31 @@ Raison: %2$s</string>
 								<string>Show self view</string>
 								<key>fr</key>
 								<string>Se voir</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Show preview</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Show preview</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Show preview</string>
+								<key>fr</key>
+								<string>Activer prévisualisation</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

@@ -31,6 +31,7 @@
 
 #include "linphonecore.h"
 
+extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
 extern NSString *const kLinphoneCallUpdate;

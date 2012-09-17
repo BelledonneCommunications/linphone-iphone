@@ -54,6 +54,7 @@
 @synthesize zeroButton;
 @synthesize sharpButton;
 
+@synthesize backgroundView;
 @synthesize videoPreview;
 @synthesize videoCameraSwitch;
 
@@ -129,15 +130,27 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(callUpdateEvent:) 
                                                  name:kLinphoneCallUpdate
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(coreUpdateEvent:)
+                                                 name:kLinphoneCoreUpdate
+                                               object:nil];
     // Update on show
     if([LinphoneManager isLcReady]) {
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+        LinphoneCore* lc = [LinphoneManager getLc];
+        LinphoneCall* call = linphone_core_get_current_call(lc);
         LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
         [self callUpdate:call state:state];
-    }
-    
-    if(videoPreview) {
-        linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
+        
+        if([LinphoneManager runningOnIpad]) {
+            if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
+                linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
+                [backgroundView setHidden:FALSE];
+            } else {
+                linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+                [backgroundView setHidden:TRUE];
+            }
+        }
     }
 } 
 
@@ -148,6 +161,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneCallUpdate
                                                   object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneCoreUpdate
+                                                  object:nil];
+    
 }
 
 - (void)viewDidLoad {
@@ -169,8 +187,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
     
     if([LinphoneManager runningOnIpad]) {
-        linphone_core_enable_video_preview([LinphoneManager getLc], TRUE);
-        
         if ([LinphoneManager instance].frontCamId != nil) {
             // only show camera switch button if we have more than 1 camera
             [videoCameraSwitch setHidden:FALSE];
@@ -180,10 +196,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    
-    if([LinphoneManager runningOnIpad]) {
-        linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
-    }
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -197,10 +209,10 @@ static UICompositeViewDescription *compositeDescription = nil;
             [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
             break;
         case UIInterfaceOrientationLandscapeLeft:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
             break;
         case UIInterfaceOrientationLandscapeRight:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
             break;
         default:
             break;
@@ -217,6 +229,18 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self callUpdate:call state:state];
 }
 
+- (void)coreUpdateEvent:(NSNotification*)notif {
+    if([LinphoneManager isLcReady] && [LinphoneManager runningOnIpad]) {
+        LinphoneCore* lc = [LinphoneManager getLc];
+        if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
+            linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
+            [backgroundView setHidden:FALSE];
+        } else {
+            linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+            [backgroundView setHidden:TRUE];
+        }
+    }
+}
 
 #pragma mark -
 

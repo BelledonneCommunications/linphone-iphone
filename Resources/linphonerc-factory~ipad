@@ -30,12 +30,3 @@ dtmf_player_amp=0.007
 [misc]
 history_max_size=30
 max_calls=3
-
-[video]
-display=1
-capture=1
-show_local=0
-enabled=1
-size=vga
-display_filter_auto_rotate=1
-

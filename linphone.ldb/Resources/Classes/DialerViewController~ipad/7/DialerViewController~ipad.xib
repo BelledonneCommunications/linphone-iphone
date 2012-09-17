@@ -62,7 +62,7 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
-						<int key="IBUIContentMode">1</int>
+						<int key="IBUIContentMode">2</int>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
 					<object class="IBUIButton" id="857979271">
@@ -726,6 +726,7 @@
 								<string key="NSFrame">{{126, 0}, {186, 85}}</string>
 								<reference key="NSSuperview" ref="683359487"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -953,6 +954,14 @@
 						<reference key="destination" ref="820868226"/>
 					</object>
 					<int key="connectionID">75</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">backgroundView</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="887694290"/>
+					</object>
+					<int key="connectionID">77</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -1337,6 +1346,7 @@
 						<int key="objectID">76</int>
 						<reference key="object" ref="887694290"/>
 						<reference key="parent" ref="450916897"/>
+						<string key="objectName">backgroundView</string>
 					</object>
 				</array>
 			</object>
@@ -1416,7 +1426,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">76</int>
+			<int key="maxID">77</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1447,6 +1457,7 @@
 						<string key="addContactButton">UIButton</string>
 						<string key="addressField">UITextField</string>
 						<string key="backButton">UIButton</string>
+						<string key="backgroundView">UIView</string>
 						<string key="callButton">UICallButton</string>
 						<string key="eightButton">UIDigitButton</string>
 						<string key="eraseButton">UIEraseButton</string>
@@ -1481,6 +1492,10 @@
 						<object class="IBToOneOutletInfo" key="backButton">
 							<string key="name">backButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="backgroundView">
+							<string key="name">backgroundView</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="callButton">
 							<string key="name">callButton</string>

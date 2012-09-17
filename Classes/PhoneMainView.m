@@ -32,9 +32,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
 @synthesize mainViewController;
 @synthesize currentView;
 
-// TO READ
-// If a Controller set wantFullScreenLayout then DON'T set the autoresize!
-// So DON'T set autoresize for PhoneMainView
 
 #pragma mark - Lifecycle Functions
 
@@ -716,7 +713,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if (level < 0.1 && !appData->batteryWarningShown) {
             DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
             [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
-            [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil)  block:^() {
+            [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
                 LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
                 // stop video
                 linphone_call_params_enable_video(paramsCopy, FALSE);

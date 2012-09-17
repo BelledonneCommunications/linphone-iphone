@@ -56,6 +56,7 @@
 @property (nonatomic, retain) IBOutlet UIDigitButton* starButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* zeroButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* sharpButton;
+@property (nonatomic, retain) IBOutlet UIView* backgroundView;
 @property (nonatomic, retain) IBOutlet UIView* videoPreview;
 @property (nonatomic, retain) IBOutlet UICamSwitch* videoCameraSwitch;
 

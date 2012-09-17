@@ -372,7 +372,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [UIView commitAnimations];
     }
     
-    if([[LinphoneManager instance] lpConfigBoolForKey:@"self_video_preference"]) {
+    if(linphone_core_self_view_enabled([LinphoneManager getLc])) {
         [videoPreview setHidden:FALSE];
     } else {
         [videoPreview setHidden:TRUE];

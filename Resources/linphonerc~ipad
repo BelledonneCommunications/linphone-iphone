@@ -11,3 +11,11 @@ video_rtp_port=9078
 
 [net]
 firewall_policy=0
+
+[video]
+display=1
+capture=1
+show_local=1
+enabled=1
+size=vga
+display_filter_auto_rotate=1

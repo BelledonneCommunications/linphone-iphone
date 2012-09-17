@@ -218,7 +218,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		pol=linphone_core_get_video_policy(lc);
 		[self setBool:(pol->automatically_initiate) forKey:@"start_video_preference"];
         [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
-        [self setBool:lp_config_get_int(linphone_core_get_config(lc),"app","self_video_preference", 1) forKey:@"self_video_preference"];
+        [self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
+        [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
 	}
     {
         [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","sipinfo_dtmf_preference", 0) forKey:@"sipinfo_dtmf_preference"];
@@ -460,8 +461,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
     policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(lc, &policy);
-    lp_config_set_int(linphone_core_get_config(lc),"app","self_video_preference", [self boolForKey:@"self_video_preference"]);
-    
+    linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
+    linphone_core_enable_video_preview(lc, [self boolForKey:@"preview_preference"]);
     
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];

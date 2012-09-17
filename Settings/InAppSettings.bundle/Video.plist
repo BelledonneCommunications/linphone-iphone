@@ -33,6 +33,14 @@
 			<string>self_video_preference</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show preview</string>
+			<key>Key</key>
+			<string>preview_preference</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Codecs</string>
 			<key>Type</key>
