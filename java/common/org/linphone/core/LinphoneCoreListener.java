@@ -82,10 +82,9 @@ public interface LinphoneCoreListener {
 	 * invoked when a new linphone chat message is received
 	 * @param lc LinphoneCore
 	 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
-	 * @param from  	LinphoneAddress from
 	 * @param message 	incoming linphone chat message message
 	 */
-	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, LinphoneChatMessage message);
+	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
 	/**
 	 * Invoked when echo cancalation calibration is completed

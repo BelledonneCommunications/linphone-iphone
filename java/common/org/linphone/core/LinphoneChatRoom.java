@@ -40,12 +40,6 @@ public interface LinphoneChatRoom {
 	 * @param chat message
 	 */
 	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
-	/**
-	 * DEPRECATED
-	 * @param opaque
-	 * @param message
-	 */
-	void sendMessage(Object opaque, String message);
 	
 	/**
 	 * Create a LinphoneChatMessage
