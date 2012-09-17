@@ -19,10 +19,12 @@
 
 #import "ChatRoomViewController.h"
 #import "PhoneMainView.h"
+#import "DTActionSheet.h"
+
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <NinePatch.h>
 #import <AssetsLibrary/ALAssetsLibrary.h>
-#import "DTActionSheet.h"
+
 
 @implementation ChatRoomViewController
 
@@ -411,45 +413,24 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (IBAction)onPictureClick:(id)event {
 	[messageField resignFirstResponder];
     
-    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
-    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-	    [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
-            UIImagePickerController *mediaUI = [[UIImagePickerController alloc] init];
-            mediaUI.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
+        UICompositeViewDescription *description = [[[ImagePickerViewController compositeViewDescription] copy] autorelease];
+        description.tabBar = nil; // Disable default tarbar
+        description.tabBarEnabled = false;
+        ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerViewController);
+        if(controller != nil) {
+            controller.sourceType = type;
             
             // Displays a control that allows the user to choose picture or
             // movie capture, if both are available:
-            mediaUI.mediaTypes =
-            [UIImagePickerController availableMediaTypesForSourceType:
-             UIImagePickerControllerSourceTypeCamera];
+            controller.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:type];
             
             // Hides the controls for moving & scaling pictures, or for
             // trimming movies. To instead show the controls, use YES.
-            mediaUI.allowsEditing = NO;
-            mediaUI.delegate = self;
-            [self presentModalViewController: mediaUI animated: YES];
-        }];
-	}
-	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-	    [sheet addButtonWithTitle:NSLocalizedString(@"Photo library",nil) block:^(){
-            UIImagePickerController *mediaUI = [[UIImagePickerController alloc] init];
-            mediaUI.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            
-            // Displays saved pictures and movies, if both are available, from the
-            // Camera Roll album.
-            mediaUI.mediaTypes =
-            [UIImagePickerController availableMediaTypesForSourceType:
-             UIImagePickerControllerSourceTypePhotoLibrary];
-            
-            // Hides the controls for moving & scaling pictures, or for
-            // trimming movies. To instead show the controls, use YES.
-            mediaUI.allowsEditing = NO;
-            mediaUI.delegate = self;
-            [self presentModalViewController: mediaUI animated: YES];
-        }];
-	}
-    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
-    [sheet showInView:self.view];
+            controller.allowsEditing = NO;
+            controller.imagePickerDelegate = self;
+        }
+    }];
 }
 
 - (IBAction)onTransferCancelClick:(id)event {
@@ -663,35 +644,15 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	return [NSURLConnection connectionWithRequest:(NSURLRequest *)request delegate:self];
 }
 
-#pragma mark UIImagePickerControllerDelegate
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *) picker {
-    [self dismissModalViewControllerAnimated: YES];
-    [picker release];
-}
+#pragma mark ImpagePickerDelegate
 
-- (void)imagePickerController: (UIImagePickerController *) picker didFinishPickingMediaWithInfo: (NSDictionary *) info {
-    NSURL *imageURL = [info valueForKey: UIImagePickerControllerReferenceURL];
-    UIImage* imageToUse = (UIImage *) [info objectForKey: UIImagePickerControllerOriginalImage];
-    NSString* imageName;
-    if (imageURL) {
-        // extract id from asset-url ex: assets-library://asset/asset.JPG?id=1645156-6151-1513&ext=JPG
-        NSArray *parameters = [[imageURL query] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"=&"]];
-        for (int i = 0; i < [parameters count]; i=i+2) {
-            if ([(NSString*)[parameters objectAtIndex:i] isEqualToString:@"id"]) {
-                imageName=[NSString stringWithFormat:@"%@.jpg",(NSString*)[parameters objectAtIndex:i+1]];
-            }
-        }
-    } else {
-        // must be "unique"
-        imageName=[NSString stringWithFormat:@"%i.jpg",[imageToUse hash]];
-    }
-    uploadContext = [self uploadImage:imageToUse Named: imageName];
+- (void)imagePickerDelegateImage:(UIImage*)image {
+    NSString *imageName = [NSString stringWithFormat:@"%i.jpg", [image hash]];
+    uploadContext = [self uploadImage:image Named: imageName];
     [self startUpload];
-    
-    [picker.presentingViewController dismissModalViewControllerAnimated: YES];
-    [picker release];
 }
+
 
 #pragma mark - Keyboard Event Functions
 

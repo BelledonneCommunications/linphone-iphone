@@ -30,6 +30,7 @@
 @synthesize backButton;
 @synthesize image;
 
+
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -48,6 +49,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     return compositeDescription;
 }
+
 
 #pragma mark - Property Functions
 

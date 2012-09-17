@@ -19,15 +19,17 @@
 
 #import "UICompositeViewController.h"
 
-@protocol ContactDetailsImagePickerDelegate <NSObject>
+@protocol ImagePickerDelegate <NSObject>
 
-- (void)changeContactImage:(UIImage*)image;
+- (void)imagePickerDelegateImage:(UIImage*)image;
 
 @end
 
-@interface ContactDetailsImagePickerController : UIImagePickerController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
+@interface ImagePickerViewController : UIImagePickerController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
 }
 
-@property (nonatomic, retain) id<ContactDetailsImagePickerDelegate> imagePickerDelegate;
+@property (nonatomic, retain) id<ImagePickerDelegate> imagePickerDelegate;
+
++ (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block;
 
 @end

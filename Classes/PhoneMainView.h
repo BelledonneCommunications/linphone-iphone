@@ -30,7 +30,7 @@
 #import "ContactsViewController.h"
 #import "ContactDetailsViewController.h"
 #import "ContactDetailsLabelViewController.h"
-#import "ContactDetailsImagePickerController.h"
+#import "ImagePickerViewController.h"
 #import "HistoryViewController.h"
 #import "HistoryDetailsViewController.h"
 #import "InCallViewController.h"

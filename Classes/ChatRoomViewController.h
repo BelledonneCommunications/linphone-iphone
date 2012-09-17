@@ -24,10 +24,11 @@
 #import "ChatRoomTableViewController.h"
 #import "HPGrowingTextView.h"
 #import "ChatModel.h"
+#import "ImagePickerViewController.h"
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, NSURLConnectionDataDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, NSURLConnectionDataDelegate, ImagePickerDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
 	NSURLConnection* uploadContext;
