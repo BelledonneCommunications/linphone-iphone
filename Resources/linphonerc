@@ -20,6 +20,8 @@ display_filter_auto_rotate=1
 automatically_initiate=0
 automatically_accept=0
 
+[net]
+firewall_policy=0
 
 [default_values]
 reg_expires=600
