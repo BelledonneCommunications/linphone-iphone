@@ -3037,17 +3037,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>2</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViewController/2/WizardViewController.xib</string>
+								<string>Classes/WizardViewController/3/WizardViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T07:32:37Z</date>
+					<date>2012-09-17T09:57:03Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3057,7 +3057,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>6feda2909660b9c654e2bde3ba932af7
+					<string>ae1a75bdceef90126c40e63243b77c0c
 </string>
 					<key>name</key>
 					<string>WizardViewController.xib</string>
@@ -4271,9 +4271,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>2</string>
+						<string>3</string>
 					</dict>
 				</dict>
 				<dict>
