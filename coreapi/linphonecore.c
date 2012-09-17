@@ -3872,6 +3872,8 @@ const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
 **/
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 	lc->video_conf.show_local=val;
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"video","show_local",val);
 }
 
 /**
@@ -3896,6 +3898,9 @@ void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
 	lc->video_conf.selfview=val;
 	if (call && call->videostream){
 		video_stream_enable_self_view(call->videostream,val);
+	}
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"video","self_view",val);
 	}
 #endif
 }
@@ -4529,7 +4534,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","video_jitt_comp_enabled",config->video_adaptive_jitt_comp_enabled);
 }
 
-void sound_config_uninit(LinphoneCore *lc)
+static void sound_config_uninit(LinphoneCore *lc)
 {
 	sound_config_t *config=&lc->sound_conf;
 	ms_free(config->cards);
@@ -4541,13 +4546,11 @@ void sound_config_uninit(LinphoneCore *lc)
 	ms_snd_card_manager_destroy();
 }
 
-void video_config_uninit(LinphoneCore *lc)
+static void video_config_uninit(LinphoneCore *lc)
 {
 	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
-	lp_config_set_int(lc->config,"video","show_local",linphone_core_video_preview_enabled(lc));
-	lp_config_set_int(lc->config,"video","self_view",linphone_core_self_view_enabled(lc));
 	if (lc->video_conf.cams)
 		ms_free(lc->video_conf.cams);
 }
