@@ -23,6 +23,7 @@
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "DTActionSheet.h"
 
 static PhoneMainView* phoneMainViewInstance=nil;
 
@@ -704,7 +705,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)batteryLevelChanged:(NSNotification*)notif {
-	if (! [LinphoneManager isLcReady]) return;
+	if (![LinphoneManager isLcReady]) return;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
         return;
@@ -713,48 +714,17 @@ static PhoneMainView* phoneMainViewInstance=nil;
         float level = [UIDevice currentDevice].batteryLevel;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Video call is running. Battery level: %.2f", level];
         if (level < 0.1 && !appData->batteryWarningShown) {
-            // notify user
-            CallDelegate* cd = [[CallDelegate alloc] init];
-            cd.eventType = CD_STOP_VIDEO_ON_LOW_BATTERY;
-            cd.delegate = self;
-            cd.call = call;
-            
-            if (batteryActionSheet != nil) {
-                [batteryActionSheet dismissWithClickedButtonIndex:batteryActionSheet.cancelButtonIndex animated:TRUE];
-            }
-            NSString* title = NSLocalizedString(@"Battery is running low. Stop video ?",nil);
-            batteryActionSheet = [[UIActionSheet alloc] initWithTitle:title
-                                                             delegate:cd 
-                                                    cancelButtonTitle:NSLocalizedString(@"Continue video",nil) 
-                                               destructiveButtonTitle:NSLocalizedString(@"Stop video",nil) 
-                                                    otherButtonTitles:nil];
-            
-            batteryActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-            [batteryActionSheet showInView: self.view];
-            [batteryActionSheet release];
-            appData->batteryWarningShown = TRUE;
-        }
-    }
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type 
-                                   clickedButtonAtIndex:(NSInteger)buttonIndex 
-                                          withUserDatas:(void *)datas {
-    switch(type) {
-        case CD_STOP_VIDEO_ON_LOW_BATTERY: 
-        {
-            LinphoneCall* call = (LinphoneCall*)datas;
-            LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-            if (buttonIndex == [batteryActionSheet destructiveButtonIndex]) {
+            DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
+            [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
+            [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil)  block:^() {
+                LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
                 // stop video
                 linphone_call_params_enable_video(paramsCopy, FALSE);
                 linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
-            }
-            batteryActionSheet = nil;
-            break;
+            }];
+            [sheet showInView:self.view];
+            appData->batteryWarningShown = TRUE;
         }
-        default:
-            break;
     }
 }
 

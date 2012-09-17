@@ -29,6 +29,7 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UILinphone.h"
+#import "DTActionSheet.h"
 
 #include "linphonecore.h"
 
@@ -119,9 +120,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if (visibleActionSheet != nil) {
-        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:NO];
-    }
     if (hideControlsTimer != nil) {
         [hideControlsTimer invalidate];
         hideControlsTimer = nil;
@@ -464,13 +462,6 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
 
 #pragma mark - ActionSheet Functions
 
-- (void)dismissActionSheet: (id)o {
-    if (visibleActionSheet != nil) {
-        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
-        visibleActionSheet = nil;
-    }
-}
-
 - (void)displayAskToEnableVideoCall:(LinphoneCall*) call {
     if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept)
         return;
@@ -480,62 +471,29 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
     const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));        
 	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
     
-    // ask the user if he agrees
-    CallDelegate* cd = [[CallDelegate alloc] init];
-    cd.eventType = CD_VIDEO_UPDATE;
-    cd.delegate = self;
-    cd.call = call;
-    
-    if (visibleActionSheet != nil) {
-        [visibleActionSheet dismissWithClickedButtonIndex:visibleActionSheet.cancelButtonIndex animated:TRUE];
-    }
     NSString* title = [NSString stringWithFormat : NSLocalizedString(@"'%@' would like to enable video",nil), ([lDisplayName length] > 0)?lDisplayName:lUserName];
-    visibleActionSheet = [[UIActionSheet alloc] initWithTitle:title
-                                                    delegate:cd 
-                                           cancelButtonTitle:NSLocalizedString(@"Decline",nil) 
-                                      destructiveButtonTitle:NSLocalizedString(@"Accept",nil) 
-                                           otherButtonTitles:nil];
-    
-    visibleActionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    [visibleActionSheet showInView:[PhoneMainView instance].view];
-    
-    /* start cancel timer */
-    cd.timeout = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissActionSheet:) userInfo:nil repeats:NO];
-    [visibleActionSheet release];
+    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:title] autorelease];
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissVideoActionSheet:) userInfo:sheet repeats:NO];
+    [sheet addButtonWithTitle:NSLocalizedString(@"Accept", nil)  block:^() {
+        [LinphoneLogger logc:LinphoneLoggerLog format:"User accept video proposal"];
+        LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+        linphone_call_params_enable_video(paramsCopy, TRUE);
+        linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+        linphone_call_params_destroy(paramsCopy);
+        [timer invalidate];
+    }];
+    [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Decline", nil)  block:^() {
+        [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
+        linphone_core_accept_call_update([LinphoneManager getLc], call, NULL);
+        [timer invalidate];
+    }];
+    [sheet showInView:[PhoneMainView instance].view];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet ofType:(enum CallDelegateType)type clickedButtonAtIndex:(NSInteger)buttonIndex withUserDatas:(void *)datas {
-    LinphoneCall* call = (LinphoneCall*)datas;
-    // maybe we could verify call validity
-
-    switch (type) {
-        case CD_ZRTP: {
-            if (buttonIndex == 0)
-                linphone_call_set_authentication_token_verified(call, YES);
-            else if (buttonIndex == 1)
-                linphone_call_set_authentication_token_verified(call, NO);
-            visibleActionSheet = nil;
-            break;
-        }
-        case CD_VIDEO_UPDATE: {
-            LinphoneCall* call = (LinphoneCall*)datas;
-            LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-            if ([visibleActionSheet destructiveButtonIndex] == buttonIndex) {
-                // accept video
-                linphone_call_params_enable_video(paramsCopy, TRUE);
-                linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
-            } else {
-                // decline video
-                [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
-                linphone_core_accept_call_update([LinphoneManager getLc], call, NULL);
-            }
-            linphone_call_params_destroy(paramsCopy);
-            visibleActionSheet = nil;
-            break;
-        }
-        default:
-            [LinphoneLogger logc:LinphoneLoggerError format:"Unhandled CallDelegate event of type: %d received - ignoring", type];
-    }
+- (void)dismissVideoActionSheet:(NSTimer*)timer {
+     DTActionSheet *sheet = (DTActionSheet *)timer.userInfo;
+    [sheet dismissWithClickedButtonIndex:sheet.destructiveButtonIndex animated:TRUE];
 }
+
 
 @end

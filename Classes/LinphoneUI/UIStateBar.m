@@ -178,12 +178,12 @@ NSTimer *callSecurityTimer;
     BOOL security = true;
     
     if(![LinphoneManager isLcReady]) {
-        [callSecurityImage setHidden: true];
+        [callSecurityImage setHidden:true];
         return;
     }
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
     if(list == NULL) {
-        [callSecurityImage setHidden: true];
+        [callSecurityImage setHidden:true];
         return;
     }
     while(list != NULL) {
@@ -229,10 +229,10 @@ NSTimer *callSecurityTimer;
         }
     }
     if(image != nil) {
-        [callQualityImage setHidden: false];
-        [callQualityImage setImage: image];
+        [callQualityImage setHidden:false];
+        [callQualityImage setImage:image];
     } else {
-        [callQualityImage setHidden: true];
+        [callQualityImage setHidden:true];
     }
 }
 

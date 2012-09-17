@@ -192,6 +192,14 @@
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
+		<dict>
+			<key>Key</key>
+			<string>battery_alert_button</string>
+			<key>Title</key>
+			<string>Battery alert</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

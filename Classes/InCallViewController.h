@@ -21,20 +21,18 @@
 
 #import "VideoZoomHandler.h"
 #import "UICamSwitch.h"
-#import "CallDelegate.h"
 
 #import "UICompositeViewController.h"
 #import "InCallTableViewController.h"
 
 @class VideoViewController;
 
-@interface InCallViewController : UIViewController <CallActionSheetDelegate, UIGestureRecognizerDelegate, UICompositeViewDelegate> {
+@interface InCallViewController : UIViewController <UIGestureRecognizerDelegate, UICompositeViewDelegate> {
     @private
     UITapGestureRecognizer* singleFingerTap;
     NSTimer* hideControlsTimer;
     BOOL videoShown;
     VideoZoomHandler* videoZoomHandler;
-    UIActionSheet* visibleActionSheet;
 }
 
 @property (nonatomic, retain) IBOutlet InCallTableViewController* callTableController;

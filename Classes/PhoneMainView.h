@@ -41,9 +41,8 @@
 #import "ConsoleViewController.h"
 #import "ImageViewController.h"
 
-@interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
+@interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
     @private
-    UIActionSheet *batteryActionSheet;
     int loadCount;
     NSMutableArray *viewStack;
     NSMutableArray *inhibitedEvents;

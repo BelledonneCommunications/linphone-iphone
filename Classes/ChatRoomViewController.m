@@ -21,9 +21,7 @@
 #import "PhoneMainView.h"
 #import "DTActionSheet.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
 #import <NinePatch.h>
-#import <AssetsLibrary/ALAssetsLibrary.h>
 
 
 @implementation ChatRoomViewController
@@ -55,6 +53,7 @@
     if (self != nil) {
         self->chatRoom = NULL;
         self->imageSharing = NULL;
+        self->photoLibrary = [[ALAssetsLibrary alloc] init];
     }
     return self;
 }
@@ -80,6 +79,9 @@
 	[pictureButton release];
 	[imageTransferProgressBar release];
 	[cancelTransferButton release];
+    
+    [photoLibrary release];
+    
     [super dealloc];
 }
 
@@ -334,7 +336,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [transferView setHidden:FALSE];
             }];
             [sheet addCancelButtonWithTitle:NSLocalizedString(@"Ignore",nil)];
-            [sheet showInView:self.view];
+            [sheet showInView:[PhoneMainView instance].view];
 		}
 	} else {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Invalid textReceivedEvent"];
@@ -491,8 +493,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [footerView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     
-    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    [library writeImageToSavedPhotosAlbum:(CGImageRef)image
+    [photoLibrary writeImageToSavedPhotosAlbum:(CGImageRef)image
                                  metadata:nil
                           completionBlock:^(NSURL *assetURL, NSError *error){
                               if (error) {
@@ -505,9 +506,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                   [controller setImage:image];
                               }
                           }];
-    
-    
-    [library release];
     imageSharing = NULL;
 }
 

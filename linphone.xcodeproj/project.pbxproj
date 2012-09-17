@@ -18,8 +18,6 @@
 		220FAD3710765B400068D98F /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2E10765B400068D98F /* libosipparser2.a */; };
 		220FAD3810765B400068D98F /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2F10765B400068D98F /* libspeex.a */; };
 		220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD3010765B400068D98F /* libspeexdsp.a */; };
-		2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
-		2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2211DBBB14769C8200DEE054 /* CallDelegate.m */; };
 		2214783D1386A2030020F8B8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2214783B1386A2030020F8B8 /* Localizable.strings */; };
 		2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB7912F846B1002A5394 /* UICallButton.m */; };
 		2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 2214EB8812F84EBB002A5394 /* UIHangUpButton.m */; };
@@ -1352,7 +1350,6 @@
 		220FAD2F10765B400068D98F /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		220FAD3010765B400068D98F /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		2211DB911475562600DEE054 /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
-		2211DBBB14769C8200DEE054 /* CallDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallDelegate.m; sourceTree = "<group>"; };
 		2214783C1386A2030020F8B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2214EB7812F846B1002A5394 /* UICallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallButton.h; sourceTree = "<group>"; };
 		2214EB7912F846B1002A5394 /* UICallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallButton.m; sourceTree = "<group>"; };
@@ -1499,7 +1496,6 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
 		340751961506459A00B89C47 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		340751E4150E4D0200B89C47 /* CallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallDelegate.h; sourceTree = "<group>"; };
 		340751E5150F38FC00B89C47 /* UIVideoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIVideoButton.h; sourceTree = "<group>"; };
 		340751E6150F38FD00B89C47 /* UIVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIVideoButton.m; sourceTree = "<group>"; };
 		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
@@ -2224,8 +2220,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				340751E4150E4D0200B89C47 /* CallDelegate.h */,
-				2211DBBB14769C8200DEE054 /* CallDelegate.m */,
 				D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */,
 				D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */,
 				D3F795D315A582800077328B /* ChatRoomViewController.h */,
@@ -4396,7 +4390,6 @@
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22BB1A69132FF16A005CD7AA /* UIEraseButton.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
-				2211DBBE14769C8300DEE054 /* CallDelegate.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* InCallViewController.m in Sources */,
@@ -4491,7 +4484,6 @@
 				22D8F155147548E2008C97DB /* UIBluetoothButton.m in Sources */,
 				22D8F156147548E2008C97DB /* UIEraseButton.m in Sources */,
 				22D8F159147548E2008C97DB /* UICamSwitch.m in Sources */,
-				2211DBBF14769C8300DEE054 /* CallDelegate.m in Sources */,
 				340751E8150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F411547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EED1582021700336684 /* InCallViewController.m in Sources */,

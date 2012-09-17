@@ -18,6 +18,7 @@
  */ 
 
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/ALAssetsLibrary.h>
 
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
@@ -33,6 +34,7 @@
     @private
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
+    ALAssetsLibrary *photoLibrary;
 }
 
 
