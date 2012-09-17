@@ -655,8 +655,8 @@
 		D377BBFA15A19DA6002B696B /* video_on_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D377BBF915A19DA6002B696B /* video_on_disabled.png */; };
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378906615AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
-		D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */; };
-		D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */; };
+		D378AB2A15DCDB4A0098505D /* ImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ImagePickerViewController.m */; };
+		D378AB2B15DCDB4A0098505D /* ImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ImagePickerViewController.m */; };
 		D37B96B715A1A6F20005CCD2 /* call_state_delete_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */; };
 		D37B96B915A1A6F20005CCD2 /* call_state_delete_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */; };
 		D37C638E15AAD251009D0BAC /* contact_number_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D37C638C15AAD251009D0BAC /* contact_number_over.png */; };
@@ -1707,8 +1707,8 @@
 		D377BBF915A19DA6002B696B /* video_on_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_on_disabled.png; path = Resources/video_on_disabled.png; sourceTree = "<group>"; };
 		D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsLabelViewController.h; sourceTree = "<group>"; };
 		D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsLabelViewController.m; sourceTree = "<group>"; };
-		D378AB2815DCDB480098505D /* ContactDetailsImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsImagePickerController.h; sourceTree = "<group>"; };
-		D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsImagePickerController.m; sourceTree = "<group>"; };
+		D378AB2815DCDB480098505D /* ImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImagePickerViewController.h; sourceTree = "<group>"; };
+		D378AB2915DCDB490098505D /* ImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePickerViewController.m; sourceTree = "<group>"; };
 		D37B96B515A1A6F20005CCD2 /* call_state_delete_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_default.png; path = Resources/call_state_delete_default.png; sourceTree = "<group>"; };
 		D37B96B615A1A6F20005CCD2 /* call_state_delete_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_state_delete_over.png; path = Resources/call_state_delete_over.png; sourceTree = "<group>"; };
 		D37C638C15AAD251009D0BAC /* contact_number_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contact_number_over.png; path = Resources/contact_number_over.png; sourceTree = "<group>"; };
@@ -2236,8 +2236,6 @@
 				22E0A81F111C44E100B04932 /* ConsoleViewController.m */,
 				22E0A81E111C44E100B04932 /* ConsoleViewController.xib */,
 				D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */,
-				D378AB2815DCDB480098505D /* ContactDetailsImagePickerController.h */,
-				D378AB2915DCDB490098505D /* ContactDetailsImagePickerController.m */,
 				D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */,
 				D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */,
 				D38187B815FE341B00C3EDCA /* ContactDetailsLabelViewController.xib */,
@@ -2266,6 +2264,8 @@
 				D3ED3EB515873928006C0DE4 /* HistoryViewController.h */,
 				D3ED3EB615873929006C0DE4 /* HistoryViewController.m */,
 				D38187D415FE346B00C3EDCA /* HistoryViewController.xib */,
+				D378AB2815DCDB480098505D /* ImagePickerViewController.h */,
+				D378AB2915DCDB490098505D /* ImagePickerViewController.m */,
 				22405EFD1601C19000B92522 /* ImageViewController.h */,
 				22405EFE1601C19100B92522 /* ImageViewController.m */,
 				D37EE11016035793003608A6 /* ImageViewController.xib */,
@@ -4458,7 +4458,7 @@
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
-				D378AB2A15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
+				D378AB2A15DCDB4A0098505D /* ImagePickerViewController.m in Sources */,
 				22405F001601C19200B92522 /* ImageViewController.m in Sources */,
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
@@ -4552,7 +4552,7 @@
 				D380800315C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380800615C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801415C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
-				D378AB2B15DCDB4A0098505D /* ContactDetailsImagePickerController.m in Sources */,
+				D378AB2B15DCDB4A0098505D /* ImagePickerViewController.m in Sources */,
 				22405F011601C19200B92522 /* ImageViewController.m in Sources */,
 				D3ED401A1602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401C1602172200BF332B /* HPTextViewInternal.m in Sources */,

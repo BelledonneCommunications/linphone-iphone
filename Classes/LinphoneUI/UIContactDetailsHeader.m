@@ -243,19 +243,28 @@
 
 - (IBAction)onAvatarClick:(id)event {
     if(self.isEditing) {
-        ContactDetailsImagePickerController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsImagePickerController compositeViewDescription] push:TRUE], ContactDetailsImagePickerController);
-        if(controller != nil) {
-            [controller setAllowsEditing:TRUE];
-            [controller setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-            [controller setImagePickerDelegate:self];
-        }
+        [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
+            ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImagePickerViewController compositeViewDescription] push:TRUE], ImagePickerViewController);
+            if(controller != nil) {
+                controller.sourceType = type;
+                
+                // Displays a control that allows the user to choose picture or
+                // movie capture, if both are available:
+                controller.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:type];
+                
+                // Hides the controls for moving & scaling pictures, or for
+                // trimming movies. To instead show the controls, use YES.
+                controller.allowsEditing = NO;
+                controller.imagePickerDelegate = self;
+            }
+        }];
     }
 }
 
 
 #pragma mark - ContactDetailsImagePickerDelegate Functions
 
-- (void)changeContactImage:(UIImage*)image {
+- (void)imagePickerDelegateImage:(UIImage*)image {
     NSError* error = NULL;
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
         [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];

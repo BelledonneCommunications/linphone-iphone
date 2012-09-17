@@ -20,10 +20,10 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
-#import "ContactDetailsImagePickerController.h"
+#import "ImagePickerViewController.h"
 #import "ContactDetailsDelegate.h"
 
-@interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, ContactDetailsImagePickerDelegate> {
+@interface UIContactDetailsHeader : UIViewController<UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, ImagePickerDelegate> {
     @private
     NSArray *propertyList;
     BOOL editing;
