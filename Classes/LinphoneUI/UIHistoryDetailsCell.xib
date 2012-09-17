@@ -33,15 +33,14 @@
 			</object>
 			<object class="IBUIView" id="1038390791">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
+				<int key="NSvFlags">274</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIImageView" id="171265463">
 						<reference key="NSNextResponder" ref="1038390791"/>
-						<int key="NSvFlags">274</int>
+						<int key="NSvFlags">298</int>
 						<string key="NSFrame">{{5, 5}, {310, 100}}</string>
 						<reference key="NSSuperview" ref="1038390791"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>

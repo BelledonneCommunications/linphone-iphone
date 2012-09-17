@@ -118,15 +118,6 @@
     [endOrRejectCallButton setHidden:YES];
     [videoView setHidden:YES];
     
-    if (!chatRoom) {
-        NSString* s = [NSString stringWithFormat:@"sip:100000001@%@", [[NSUserDefaults standardUserDefaults] stringForKey:@"adapter_ip_preference"]];
-        const char* adapter = [s cStringUsingEncoding:[NSString defaultCStringEncoding]];
-        chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], adapter);
-        
-        //lights->chatRoom = chatRoom;
-        //openDoor->chatRoom = chatRoom;
-    }
-    
     User *usr = [[[LinphoneManager instance] configuration] getCurrentUser];
     /* init gradients for openDoorButton*/
     {

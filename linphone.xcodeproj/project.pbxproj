@@ -1825,6 +1825,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1836,7 +1837,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1892,6 +1893,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1903,7 +1905,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DistributionAdhoc;
 		};
@@ -2129,6 +2131,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2140,7 +2143,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -2196,6 +2199,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2207,7 +2211,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = buschjaeger;
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribution;
 		};

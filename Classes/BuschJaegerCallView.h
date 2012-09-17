@@ -29,7 +29,6 @@
 
 @interface BuschJaegerCallView : UIViewController {
 @private
-    LinphoneChatRoom * chatRoom;
     VideoZoomHandler* videoZoomHandler;
 }
 

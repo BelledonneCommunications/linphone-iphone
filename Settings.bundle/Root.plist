@@ -83,34 +83,6 @@
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Adapter IP</string>
-			<key>Key</key>
-			<string>adapter_ip_preference</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>KeyboardType</key>
-			<string>NumbersAndPunctuation</string>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>stun_preference</string>
-			<key>Title</key>
-			<string>Stun server</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-		</dict>
-		<dict>
 			<key>Title</key>
 			<string>Sounds</string>
 			<key>Type</key>
