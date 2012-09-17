@@ -19,6 +19,8 @@ size=qvga
 display_filter_auto_rotate=1
 
 
+[net]
+firewall_policy=0
 
 [default_values]
 reg_expires=600

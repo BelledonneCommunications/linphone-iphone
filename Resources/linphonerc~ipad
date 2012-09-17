@@ -8,3 +8,6 @@ keepalive_period=30000
 [rtp]
 audio_rtp_port=7076
 video_rtp_port=9078
+
+[net]
+firewall_policy=0

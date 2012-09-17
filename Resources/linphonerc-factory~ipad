@@ -1,7 +1,6 @@
 [net]
 download_bw=512
 upload_bw=512
-firewall_policy=0
 mtu=1300
 activate_edge_workarounds=1
 edge_ping_time=200
