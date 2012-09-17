@@ -844,6 +844,7 @@ static void video_config_read(LinphoneCore *lc){
 		ms_message("we are using a specific display:%s\n",lc->video_conf.displaytype);
 
 	linphone_core_enable_video(lc,capture,display);
+	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
 	linphone_core_enable_self_view(lc,self_view);
 	linphone_core_set_video_policy(lc,&vpol);
 #endif
