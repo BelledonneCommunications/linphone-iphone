@@ -677,6 +677,10 @@ public interface LinphoneCore {
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
 	void enableIpv6(boolean enable);
+	/**
+	 * @deprecated
+	 * @param i
+	 */
 	void adjustSoftwareVolume(int i);
 	
 	boolean pauseCall(LinphoneCall call);
