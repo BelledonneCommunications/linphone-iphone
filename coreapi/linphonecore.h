@@ -262,6 +262,24 @@ typedef struct _LinphoneCall LinphoneCall;
 #define LINPHONE_CALL_STATS_VIDEO 1
 
 /**
+ * Enum describing ICE states.
+ * @ingroup initializing
+**/
+enum _LinphoneIceState{
+	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateInProgress, /**< ICE process is in progress */
+	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
+	LinphoneIceStateReflexiveConnection, /**< ICE has established a connection to the remote host through one or several NATs */
+	LinphoneIceStateRelayConnection /**< ICE has established a connection through a relay */
+};
+
+/**
+ * Enum describing Ice states.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneIceState LinphoneIceState;
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
@@ -285,6 +303,7 @@ struct _LinphoneCallStats {
 	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+	LinphoneIceState	ice_state; /**< State of ICE processing. */
 };
 
 /**

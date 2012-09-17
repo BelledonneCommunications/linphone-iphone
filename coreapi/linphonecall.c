@@ -324,6 +324,7 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
 	stats->type = type;
 	stats->received_rtcp = NULL;
 	stats->sent_rtcp = NULL;
+	stats->ice_state = LinphoneIceStateNotActivated;
 }
 
 static void update_media_description_from_stun(SalMediaDescription *md, const StunCandidate *ac, const StunCandidate *vc){
@@ -1541,6 +1542,8 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 		call->ice_session = NULL;
 		if (call->audiostream != NULL) call->audiostream->ice_check_list = NULL;
 		if (call->videostream != NULL) call->videostream->ice_check_list = NULL;
+		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateNotActivated;
+		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateNotActivated;
 	}
 }
 
@@ -1766,6 +1769,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				if (ice_session_role(call->ice_session) == IR_Controlling) {
 					ice_session_select_candidates(call->ice_session);
 					linphone_core_update_call(call->core, call, &call->current_params);
+					linphone_core_update_ice_state_in_call_stats(call);
 				}
 				break;
 			case IS_Failed:
@@ -1774,6 +1778,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 						/* At least one ICE session has succeeded, so perform a call update. */
 						ice_session_select_candidates(call->ice_session);
 						linphone_core_update_call(call->core, call, &call->current_params);
+						linphone_core_update_ice_state_in_call_stats(call);
 					}
 				}
 				break;

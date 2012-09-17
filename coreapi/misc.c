@@ -624,15 +624,55 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	}
 	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
 	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	if (call->params.has_video && (video_check_list != NULL)) {
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 	}
 
 	ms_message("ICE: gathering candidate from [%s]",server);
 	/* Gather local srflx candidates. */
 	ice_session_gather_candidates(call->ice_session, ss, ss_len);
 	return 0;
+}
+
+void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
+{
+	IceCheckList *audio_check_list;
+	IceCheckList *video_check_list;
+
+	if (call->ice_session == NULL) return;
+	audio_check_list = ice_session_check_list(call->ice_session, 0);
+	video_check_list = ice_session_check_list(call->ice_session, 1);
+	if (audio_check_list == NULL) return;
+
+	switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
+		case ICT_HostCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
+			break;
+		case ICT_ServerReflexiveCandidate:
+		case ICT_PeerReflexiveCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
+			break;
+		case ICT_RelayedCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
+			break;
+	}
+	if (call->params.has_video && (video_check_list != NULL)) {
+		switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+			case ICT_HostCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+				break;
+			case ICT_ServerReflexiveCandidate:
+			case ICT_PeerReflexiveCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+				break;
+			case ICT_RelayedCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+				break;
+		}
+	}
 }
 
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)
