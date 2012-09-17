@@ -52,6 +52,14 @@ void usleep(int waitTime) {
 #define LICENCE_COMMERCIAL
 #endif
 
+const char * const ice_state_str[] = {
+	"Not activated",	/* LinphoneIceStateNotActivated */
+	"In progress",	/* LinphoneIceStateInProgress */
+	"Host connection",	/* LinphoneIceStateHostConnection */
+	"Reflexive connection",	/* LinphoneIceStateReflexiveConnection */
+	"Relayed connection"	/* LinphoneIceStateRelayConnection */
+};
+
 void *Daemon::iterateThread(void *arg) {
 	Daemon *daemon = (Daemon *) arg;
 	while (daemon->mRunning) {
@@ -102,6 +110,7 @@ CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const L
 		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
 	}
 
+	ostr << prefix << "ICE state: " << ice_state_str[stats->ice_state] << "\n";
 	ostr << prefix << "RoundTripDelay: " << stats->round_trip_delay << "\n";
 	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
 //	ostr << prefix << "MaxJitter: " << stats->jitter_stats.max_jitter << "\n";
