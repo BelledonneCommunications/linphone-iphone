@@ -9,7 +9,8 @@ UI_FILES=	about.ui \
 		log.ui \
 		buddylookup.ui \
 		tunnel_config.ui \
-		waiting.ui
+		waiting.ui \
+		dscp_settings.ui
 
 PIXMAPS=	\
 		stock_people.png 

@@ -81,7 +81,7 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
-int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
 
 	if(op->cid == -1)
@@ -97,8 +97,8 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
-			osip_message_set_content_type(sip,"text/plain");
-			osip_message_set_body(sip,msg,strlen(msg));
+			osip_message_set_content_type(sip,content_type);
+			if (msg) osip_message_set_body(sip,msg,strlen(msg));
 			sal_add_other(op->base.root,op,sip);
 			eXosip_message_send_request(sip);
 		}else{
@@ -118,14 +118,16 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg){
 			eXosip_unlock();
 			return -1;
 		}
-		osip_message_set_content_type(sip,"text/plain");
-		osip_message_set_body(sip,msg,strlen(msg));
+		osip_message_set_content_type(sip,content_type);
+		if (msg) osip_message_set_body(sip,msg,strlen(msg));
 		eXosip_call_send_request(op->did,sip);
 		eXosip_unlock();
 	}
 	return 0;
 }
-
+int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
+	return sal_message_send(op,from,to,"text/plain",msg);
+}
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	osip_message_t *msg=NULL;

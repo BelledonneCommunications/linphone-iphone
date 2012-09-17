@@ -69,8 +69,12 @@ struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
 	LinphoneMediaEncryption media_encryption;
-	PayloadType *audio_codec;
-	PayloadType *video_codec;
+	PayloadType *audio_codec; /*audio codec currently in use */
+	PayloadType *video_codec; /*video codec currently in use */
+	int down_bw;
+	int up_bw;
+	int down_ptime;
+	int up_ptime;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
@@ -87,11 +91,13 @@ typedef struct _CallCallbackObj
 static const int linphone_call_magic=0x3343;
 
 struct _LinphoneChatMessage {
-	const char* message;
+	char* message;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessageStateChangeCb cb;
 	void* cb_ud;
 	void* message_userdata;
+	char* external_body_url;
+	LinphoneAddress* from;
 };
 	
 struct _LinphoneCall
@@ -179,10 +185,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
-int do_registration(LinphoneCore *lc, bool_t doit);
-void check_for_registration(LinphoneCore *lc);
 void check_sound_device(LinphoneCore *lc);
-void linphone_core_verify_codecs(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *to, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
@@ -229,8 +232,16 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFri
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
-void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
+
+typedef struct StunCandidate{
+	char addr[64];
+	int port;
+}StunCandidate;
+
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc);
+void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md);
@@ -251,7 +262,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_text_received(LinphoneCore *lc, const char *from, const char *msg);
+void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -386,6 +397,7 @@ typedef struct rtp_config
                               /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
 	bool_t video_adaptive_jitt_comp_enabled;
+	bool_t pad;
 }rtp_config_t;
 
 
@@ -400,7 +412,6 @@ typedef struct net_config
 	int upload_bw;
 	int firewall_policy;
 	int mtu;
-	int down_ptime;
 	bool_t nat_sdp_only;
 }net_config_t;
 
@@ -413,10 +424,10 @@ typedef struct sound_config
 	struct _MSSndCard * lsd_card; /* dummy playback card for Linphone Sound Daemon extension */
 	const char **cards;
 	int latency;	/* latency in samples of the current used sound device */
+	float soft_play_lev; /*playback gain in db.*/
 	char rec_lev;
 	char play_lev;
 	char ring_lev;
-	char soft_play_lev;
 	char source;
 	char *local_ring;
 	char *remote_ring;
@@ -539,6 +550,7 @@ struct _LinphoneCore
 	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
+	char* device_id;
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);

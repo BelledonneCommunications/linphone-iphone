@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "sal_eXosip2.h"
-#include "private.h"
 #include "offeranswer.h"
 
 #ifdef ANDROID
@@ -98,12 +97,12 @@ static void sal_remove_register(Sal *sal, int rid){
 	}
 }
 
-static SalOp * sal_find_other(Sal *sal, osip_message_t *response){
+static SalOp * sal_find_other(Sal *sal, osip_message_t *message){
 	const MSList *elem;
 	SalOp *op;
-	osip_call_id_t *callid=osip_message_get_call_id(response);
+	osip_call_id_t *callid=osip_message_get_call_id(message);
 	if (callid==NULL) {
-		ms_error("There is no call-id in this response !");
+		ms_error("There is no call-id in this message !");
 		return NULL;
 	}
 	for(elem=sal->other_transactions;elem!=NULL;elem=elem->next){
@@ -284,6 +283,7 @@ Sal * sal_init(){
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
 	sal->expire_old_contact=FALSE;
+	sal->dscp=-1;
 	return sal;
 }
 
@@ -342,6 +342,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
+	if (ctx->callbacks.message_external_body==NULL)
+		ctx->callbacks.message_external_body=(SalOnMessageExternalBodyReceived)unimplemented_stub;
 }
 
 int sal_unlisten_ports(Sal *ctx){
@@ -379,6 +381,12 @@ static void set_tls_options(Sal *ctx){
 #endif
 }
 
+void sal_set_dscp(Sal *ctx, int dscp){
+	ctx->dscp=dscp;
+	if (dscp!=-1)
+		eXosip_set_option(EXOSIP_OPT_SET_DSCP,&ctx->dscp);
+}
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
 	int err;
 	bool_t ipv6;
@@ -405,6 +413,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	eXosip_set_option(EXOSIP_OPT_USE_RPORT,&use_rports);
 	int dont_use_101 = !ctx->use_101; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_DONT_SEND_101,&dont_use_101);
+	sal_set_dscp(ctx,ctx->dscp);
 
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
@@ -931,9 +940,9 @@ void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
 }
 void sal_op_cancel_authentication(SalOp *h) {
 	if (h->rid >0) {
-		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"));
+		sal_op_get_sal(h)->callbacks.register_failure(h,SalErrorFailure, SalReasonForbidden,"Authentication failure");
 	} else if (h->cid >0) {
-		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,_("Authentication failure"),0);
+		sal_op_get_sal(h)->callbacks.call_failure(h,SalErrorFailure, SalReasonForbidden,"Authentication failure",0);
 	} else {
 		ms_warning("Auth failure not handled");
 	}
@@ -999,6 +1008,7 @@ static SalOp *find_op(Sal *sal, eXosip_event_t *ev){
 		return sal_find_in_subscribe(sal,ev->nid);
 	}
 	if (ev->response) return sal_find_other(sal,ev->response);
+	else if (ev->request) return sal_find_other(sal,ev->request);
 	return NULL;
 }
 
@@ -1701,15 +1711,44 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg;
+	osip_content_type_t* content_type;
+	osip_uri_param_t* external_body_url; 
+	char unquoted_external_body_url [256];
+	int external_body_size=0;
 	
+	content_type= osip_message_get_content_type(ev->request);
+	if (!content_type) {
+		ms_error("Could not get message because no content type");
+		return;
+	}
+	osip_from_to_str(ev->request->from,&from);
+	if (content_type->type 
+		&& strcmp(content_type->type, "text")==0 
+		&& content_type->subtype
+		&& strcmp(content_type->subtype, "plain")==0 ) {
 	osip_message_get_body(ev->request,0,&body);
 	if (body==NULL){
 		ms_error("Could not get text message from SIP body");
 		return;
 	}
 	msg=body->body;
-	osip_from_to_str(ev->request->from,&from);
 	sal->callbacks.text_received(sal,from,msg);
+	} if (content_type->type 
+		  && strcmp(content_type->type, "message")==0 
+		  && content_type->subtype
+		  && strcmp(content_type->subtype, "external-body")==0 ) {
+		
+		osip_content_type_param_get_byname(content_type, "URL", &external_body_url);
+		/*remove both first and last character*/
+		strncpy(unquoted_external_body_url
+				,&external_body_url->gvalue[1]
+				,external_body_size=MIN(strlen(external_body_url->gvalue)-1,sizeof(unquoted_external_body_url)));
+		unquoted_external_body_url[external_body_size-1]='\0';
+		sal->callbacks.message_external_body(sal,from,unquoted_external_body_url);
+		
+	} else {
+		ms_warning("Unsupported content type [%s/%s]",content_type->type,content_type->subtype);
+	}
 	osip_free(from);
 }
 
@@ -1953,26 +1992,27 @@ static bool_t registration_failure(Sal *sal, eXosip_event_t *ev){
 
 static void other_request_reply(Sal *sal,eXosip_event_t *ev){
 	SalOp *op=find_op(sal,ev);
-	LinphoneChatMessage* chat_msg;
-	ms_message("Processing reponse status [%i] for method [%s]",ev->response->status_code,osip_message_get_method(ev->request));
 	if (op==NULL){
 		ms_warning("other_request_reply(): Receiving response to unknown request.");
 		return;
 	}
 	if (ev->response){
+		ms_message("Processing reponse status [%i] for method [%s]",ev->response->status_code,osip_message_get_method(ev->request));
 		update_contact_from_response(op,ev->response);
 		if (ev->request && strcmp(osip_message_get_method(ev->request),"OPTIONS")==0)
 			sal->callbacks.ping_reply(op);
-		else if (ev->request && strcmp(osip_message_get_method(ev->request),"MESSAGE")==0) {
-			/*out of call message acknolegment*/
-			chat_msg=(LinphoneChatMessage* )op->base.user_pointer;
-			if (chat_msg->cb) {
-				chat_msg->cb(chat_msg
-							 ,(ev->response->status_code==200?LinphoneChatMessageStateDelivered:LinphoneChatMessageStateNotDelivered)
-							 ,chat_msg->cb_ud);
+	}
+	if (ev->request && strcmp(osip_message_get_method(ev->request),"MESSAGE")==0) {
+		/*out of call message acknolegment*/
+		SalTextDeliveryStatus status=SalTextDeliveryFailed;
+		if (ev->response){
+			if (ev->response->status_code<200){
+				status=SalTextDeliveryInProgress;
+			}else if (ev->response->status_code<300 && ev->response->status_code>=200){
+				status=SalTextDeliveryDone;
 			}
-			linphone_chat_message_destroy(chat_msg);
 		}
+		sal->callbacks.text_delivery_update(op,status);
 	}
 }
 
@@ -2081,8 +2121,8 @@ static bool_t process_event(Sal *sal, eXosip_event_t *ev){
 			if (ev->response && (ev->response->status_code == 407 || ev->response->status_code == 401)){
 				return process_authentication(sal,ev);
 			}
-    	case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
-   		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
+		case EXOSIP_SUBSCRIPTION_SERVERFAILURE:
+		case EXOSIP_SUBSCRIPTION_GLOBALFAILURE:
 			sal_exosip_subscription_closed(sal,ev);
 			break;
 		case EXOSIP_REGISTRATION_FAILURE:
@@ -2221,12 +2261,28 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 int sal_register_refresh(SalOp *op, int expires){
 	osip_message_t *msg=NULL;
 	const char *contact=sal_op_get_contact(op);
-
+	
 	if (op->rid==-1){
 		ms_error("Unexistant registration context, not possible to refresh.");
 		return -1;
 	}
+#ifdef HAVE_EXOSIP_TRYLOCK
+	{
+		int tries=0;
+		/*iOS hack: in the keep alive handler, we have no more than 10 seconds to refresh registers, otherwise the application is suspended forever.
+		* In order to prevent this case that can occur when the exosip thread is busy with DNS while network isn't in a good shape, we try to take
+		* the exosip lock in a non blocking way, and give up if it takes too long*/
+		while (eXosip_trylock()!=0){
+			ms_usleep(100000);
+			if (tries>30) {/*after 3 seconds, give up*/
+				ms_warning("Could not obtain exosip lock in a reasonable time, giving up.");
+				return -1;
+			}
+		}
+	}
+#else
 	eXosip_lock();
+#endif
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);

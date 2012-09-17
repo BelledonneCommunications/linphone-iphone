@@ -41,6 +41,7 @@ struct Sal{
 	int keepalive_period;
 	void *up; /*user pointer*/
 	char* rootCa; /* File _or_ folder containing root CA */
+	int dscp;
 	bool_t one_matching_codec;
 	bool_t double_reg;
 	bool_t use_rports;

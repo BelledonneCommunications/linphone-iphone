@@ -41,14 +41,18 @@ Liblinphone is a high level library for bringing SIP video call functionnality i
 
 LibLinphone package is organized in submodules.
 <ul>
-  <li><a href="#proxy">Managing proxies</a>
+  <li><a href="#proxy">Managing proxies</a></li>
 </ul>
 <ul>
-  <li><a href="#buddy">Managing Buddies and buddy list and presence</a>
+  <li><a href="#buddy">Managing Buddies and buddy list and presence</a></li>
 </ul>
 <ul>
-  <li><a href="#chat">Chat room and Messaging</a>
+  <li><a href="#chat">Chat room and Messaging</a></li>
 </ul>
+<ul>
+  <li><a href="#echo">Sound and echo cancellation settings</a></li>
+</ul>
+
 
 <h2>Related Documentation</h2>
 
@@ -155,7 +159,12 @@ Any subsequente modifications to {@link org.linphone.core.LinphoneFriend} must b
 	my_friend.enableSubscribes(true); /*disable subscription for this friend*/
 	my_friend.done(); /*commit changes triggering an UNSUBSCRIBE message*/
 </code>
-</pre>
+</pre>                  Do not display status messages
+-J<flag>                  Pass <flag> directly to the runtime system
+
+Provided by Standard doclet:
+-d <directory>                    Destination directory for output files
+-use             
 
 <b> Publishing presence status </b>
 <br>Local presence status can be changed using function {@link org.linphone.core.LinphoneCore#setPresenceInfo }.New status is propagated to all friends {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf)  previously added } to LinphoneCore. 
@@ -189,6 +198,80 @@ from a peer sip uri.
 		System.out.println("Message ["+message+"] received from ["+from+"] ");
 	}
 </code>
+</pre>
+
+<h3>
+<a name="echo">Sound and echo cancellation settings</a>
+</h3>
+<b>Sound levels</b>
+<br> 
+It is possible to tune the microphone input gain and speaker/receiver output gain by setting parameters into the linphonerc factory config file loaded when instanciating the {@link org.linphone.core.LinphoneCore LinphoneCore}. These gains are liblinphone's internal software gains and are unrelated to volume levels managed by the operating system. For example: <br>
 <pre>
+<code>
+[sound]
+#set the speaker or receiver playback gain in dbm0 (0 db = no change). 
+playback_gain_db=-3
+#set the microphone gain in linear scale:
+mic_gain=0.1
+</code>
+</pre>
+
+<br>
+
+<b>Echo cancellation</b>
+<br>
+On Android devices, echo is a problem, especially with low-end devices. The root cause is the unpredictable latency of Android's sound system. The liblinphone software {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} that is operating well on desktop platforms (Mac, Linux, Windows) is unable to operate under Android platform. The situation is very heterogenous:<br>
+<ul>
+	<li>On new (after 2011) high end devices, manufacturers often include a hardware echo cancellation. If available, liblinphone will make use of it and no software correction is required. 
+	Source file linphone-android/submodules/linphone/mediastreamer2/java/src/org/linphone/mediastream/video/capture/hwconf/Hacks.java contains a method hasBuiltInEchoCanceller() that returns true if an hardware echo canceller is available, based on device model identifier. The current list is incomplete.
+	</li>
+	<li>On former models with decent CPU power (armv7), sound system behaves in a nearly predictive way so that it is possible to use {@link org.linphone.core.LinphoneCore#enableEchoLimiter echo limiter}. Echo limiter is a simple echo attenuation technique which consists in strongly attenuating the microphone input when speaker is playing voice, in order to cut the echo. The main drawback of echo limiter is that the conversation is perceived as half duplex by users, because they won't hear background noise from the remote side while they are speaking.
+	</li>
+	<li>On low class android devices or very old models (armv5 processor), no solution works.
+	</li>
+</ul>
+
+<br>
+In order to benefit from the best echo cancellation solution, we recommend applications to run the following algorithm, when it is run for the first time:<br>
+First of {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} should not be used, in any case.
+<ul>
+	<li>Use the Hacks.hasBuiltInEchoCanceller() method to first check if the device has hardware echo canceller. If yes, then echo limiter must be turned off.</li>
+	<li>If no the hasBuiltInEchoCanceller() returned false, then it is possible to use the echo calibration procedure. If the calibration procedure fails, it means that
+	probably the phone performs hardware echo cancellation, so in this case echo limiter must be turned off.</li>
+	<li>If the echo calibration succeeded, then echo is present, so it is recommended to enable echo limiter.
+</ul>
+
+<br>
+<b>Echo calibration procedure</b>
+<br>
+The echo calibration procedure is a five second test which consists in playing small beeps to the speaker while the microphone input is recorded.
+If the device is subject to echo (or doesn't have hardware echo cancellation), then beeps recorded by the microphone will be detected and a measurement of echo delay can be computed.
+Echo calibration procedure can be started by calling {@link org.linphone.core.LinphoneCore#startEchoCalibration LinphoneCore.startEchoCalibration}.
+
+<br><br>
+<b>Echo limiter settings</b><br>
+Echo limiter requires settings to be defined in linphonerc factory config file for correction operation.
+Typical settings are:
+<pre>
+<code>
+[sound]
+el_type=mic
+#speaker energy threshold (linear scale) above which echo limiter decreases mic gain.
+el_thres=0.03
+#attenuation applied to mic gain (linear scale)
+el_force=100000
+#minimum time in milliseconds during which attenuation is applied
+el_sustain=600
+#double talk detection: threshold of ratio mic-energy/speaker-energy above which mic input is sent anyway.
+el_transmit_thres=1.7
+#noise gate floorgain (gain applied when no voice is detected).
+ng_floorgain=0.01
+</code>
+</pre>
+
+Up to date settings must be found from linphone-android/res/raw/linphonerc file.
+
+<br>
+
 </body>
 </html>

@@ -375,21 +375,33 @@ bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg
  */
 typedef struct dial_plan{
 	const char *country;
+	const char* iso_country_code; /* ISO 3166-1 alpha-2 code, ex: FR for France*/
 	char  ccc[8]; /*country calling code*/
 	int nnl; /*maximum national number length*/
 	const char * icp; /*international call prefix, ex: 00 in europe*/
+	
 }dial_plan_t;
 
 /* TODO: fill with information for all countries over the world*/
 static dial_plan_t const dial_plans[]={
-	{"France"	, "33"	, 9	, "00"	},
-	{"United States", "1"	, 10	, "011" },
-	{"Turkey"	, "90"	, 10	, "00"	},
-	{"Switzerland"	, "41"	, 9	, "00"	},
-	{NULL		, ""	, 0	, NULL	}
+	{"France"			,"FR"		, "33"	, 9		, "00"	},
+	{"United States"	,"US"		, "1"	, 10	, "011" },
+	{"Turkey"			,"TR"		, "90"	, 10	, "00"	},
+	{"Switzerland"		,"XK"		, "41"	, 9		, "00"	},
+	{NULL		,NULL,""	, 0	, NULL	}
 };
 
-static dial_plan_t most_common_dialplan={ "generic" , "", 10, "00"};
+static dial_plan_t most_common_dialplan={ "generic" ,"", "", 10, "00"};
+
+int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
+	dial_plan_t* dial_plan;
+	for (dial_plan=(dial_plan_t*)dial_plans; dial_plan->country!=NULL; dial_plan++) {
+		if (strcmp(iso, dial_plan->iso_country_code)==0) {
+			return atoi(dial_plan->ccc);
+		}
+	}
+	return -1;
+}
 
 static void lookup_dial_plan(const char *ccc, dial_plan_t *plan){
 	int i;
@@ -728,6 +740,9 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (obj->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
+	if (obj->contact_params!=NULL){
+		lp_config_set_string(config,key,"contact_params",obj->contact_params);
+	}
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
 	lp_config_set_int(config,key,"publish",obj->publish);
@@ -762,6 +777,8 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"reg_route",NULL);
 	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
 
+	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
+	
 	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",DEFAULT_INT(config,reg_expires,600)));
 	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
 	

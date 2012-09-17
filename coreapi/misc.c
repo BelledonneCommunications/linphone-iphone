@@ -466,12 +466,13 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 	return len;
 }
 
-void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
+/* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc){
 	const char *server=linphone_core_get_stun_server(lc);
-
+	
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
-		return;
+		return -1;
 	}
 	if (server!=NULL){
 		struct sockaddr_storage ss;
@@ -482,30 +483,28 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		bool_t got_audio,got_video;
 		bool_t cone_audio=FALSE,cone_video=FALSE;
 		struct timeval init,cur;
-		SalEndpointCandidate *ac,*vc;
-		
-		ac=&call->localdesc->streams[0].candidates[0];
-		vc=&call->localdesc->streams[1].candidates[0];
+		double elapsed;
+		int ret=0;
 		
 		if (parse_hostname_to_addr(server,&ss,&ss_len)<0){
 			ms_error("Fail to parser stun server address: %s",server);
-			return;
+			return -1;
 		}
 		if (lc->vtable.display_status!=NULL)
 			lc->vtable.display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
 		sock1=create_socket(call->audio_port);
-		if (sock1==-1) return;
+		if (sock1==-1) return -1;
 		if (video_enabled){
 			sock2=create_socket(call->video_port);
-			if (sock2==-1) return ;
+			if (sock2==-1) return -1;
 		}
 		got_audio=FALSE;
 		got_video=FALSE;
 		gettimeofday(&init,NULL);
 		do{
-			double elapsed;
+			
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
@@ -544,10 +543,12 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  {
 				ms_message("Stun responses timeout, going ahead.");
+				ret=-1;
 				break;
 			}
 			loops++;
 		}while(!(got_audio && (got_video||sock2==-1)  ) );
+		if (ret==0) ret=(int)elapsed;
 		if (!got_audio){
 			ms_error("No stun server response for audio port.");
 		}else{
@@ -564,14 +565,31 @@ void linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				}
 			}
 		}
-		if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0)
-		    || sock2==-1){
-			strcpy(call->localdesc->addr,ac->addr);
-		}
 		close_socket(sock1);
 		if (sock2!=-1) close_socket(sock2);
+		return ret;
+	}
+	return -1;
+}
+
+void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
+	if (lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
+		ms_message("Stun server ping time is %i ms",ping_time_ms);
+		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
+		
+		if (ping_time_ms>threshold){
+			int edge_ptime=lp_config_get_int(lc->config,"net","edge_ptime",100);
+			int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",20);
+			/* we are in a 2G network*/
+			params->up_bw=params->down_bw=edge_bw;
+			params->up_ptime=params->down_ptime=edge_ptime;
+			params->has_video=FALSE;
+			
+		}/*else use default settings */
 	}
 }
+
+
 
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
@@ -606,14 +624,55 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	}
 	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
 	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+	call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	if (call->params.has_video && (video_check_list != NULL)) {
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
 	}
 
+	ms_message("ICE: gathering candidate from [%s]",server);
 	/* Gather local srflx candidates. */
 	ice_session_gather_candidates(call->ice_session, ss, ss_len);
 	return 0;
+}
+
+void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
+{
+	IceCheckList *audio_check_list;
+	IceCheckList *video_check_list;
+
+	if (call->ice_session == NULL) return;
+	audio_check_list = ice_session_check_list(call->ice_session, 0);
+	video_check_list = ice_session_check_list(call->ice_session, 1);
+	if (audio_check_list == NULL) return;
+
+	switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
+		case ICT_HostCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
+			break;
+		case ICT_ServerReflexiveCandidate:
+		case ICT_PeerReflexiveCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
+			break;
+		case ICT_RelayedCandidate:
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
+			break;
+	}
+	if (call->params.has_video && (video_check_list != NULL)) {
+		switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+			case ICT_HostCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+				break;
+			case ICT_ServerReflexiveCandidate:
+			case ICT_PeerReflexiveCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+				break;
+			case ICT_RelayedCandidate:
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+				break;
+		}
+	}
 }
 
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session)

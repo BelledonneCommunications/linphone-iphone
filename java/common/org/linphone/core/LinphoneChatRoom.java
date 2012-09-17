@@ -35,5 +35,23 @@ public interface LinphoneChatRoom {
 	* @param  	message to be sent
 	*/
 	void sendMessage(String message);
-
+	/**
+	 * Send a message to peer member of this chat room.
+	 * @param chat message
+	 */
+	void sendMessage(LinphoneChatMessage message, LinphoneChatMessage.StateListener listener);
+	/**
+	 * DEPRECATED
+	 * @param opaque
+	 * @param message
+	 */
+	void sendMessage(Object opaque, String message);
+	
+	/**
+	 * Create a LinphoneChatMessage
+	 * @param chatRoom chat room associated to the message
+	 * @param message message to send
+	 * @return LinphoneChatMessage object
+	 */
+	LinphoneChatMessage createLinphoneChatMessage(String message);
 }

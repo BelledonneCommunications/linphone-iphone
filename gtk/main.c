@@ -65,8 +65,9 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
-static void linphone_gtk_status_icon_set_blinking(gboolean val);
+void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
+
 
 
 static gboolean verbose=0;
@@ -1028,18 +1029,20 @@ static void make_notification(const char *title, const char *body){
 
 #endif
 
-static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
+void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 #ifdef HAVE_NOTIFY
 	if (!notify_is_initted())
 		if (!notify_init ("Linphone")) ms_error("Libnotify failed to init.");
 #endif
 	if (!call) {
+	  
 #ifdef HAVE_NOTIFY
 		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
 #ifdef HAVE_NOTIFY1
 	,NULL
 #endif
 ),NULL))
+	 
 				ms_error("Failed to send notification.");
 #else
 		linphone_gtk_show_main_window();
@@ -1347,7 +1350,7 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 
 #endif
 
-static void linphone_gtk_status_icon_set_blinking(gboolean val){
+void linphone_gtk_status_icon_set_blinking(gboolean val){
 #ifdef HAVE_GTK_OSX
 	static gint attention_id;
 	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);

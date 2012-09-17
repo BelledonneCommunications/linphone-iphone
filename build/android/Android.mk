@@ -26,11 +26,13 @@ include $(CLEAR_VARS)
 
 include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
+ifeq ($(LINPHONE_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
 	libavcodec \
 	libswscale \
 	libavcore \
 	libavutil
+endif
 
 LOCAL_MODULE := liblinphone
 

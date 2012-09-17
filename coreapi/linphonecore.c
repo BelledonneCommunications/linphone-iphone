@@ -615,6 +615,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
+	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
@@ -967,14 +968,14 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
  * Set audio packetization time linphone expects to receive from peer
  */
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
-	lc->net_conf.down_ptime=ptime;
+	lp_config_set_int(lc->config,"rtp","download_ptime",ptime);
 }
 
 /**
  * Get audio packetization time linphone expects to receive from peer
  */
 int linphone_core_get_download_ptime(LinphoneCore *lc) {
-	return lc->net_conf.down_ptime;
+	return lp_config_get_int(lc->config,"rtp","download_ptime",0);
 }
 
 /**
@@ -1903,7 +1904,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
-				/* ICE candidates gathering has not finished yet, proceed with the call without ICE anyway. */
+				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
+						,linphone_core_get_stun_server(lc));
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
@@ -3650,6 +3652,8 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
 	if (server)
 		lc->net_conf.stun_server=ms_strdup(server);
 	else lc->net_conf.stun_server=NULL;
+	if (linphone_core_ready(lc))
+		lp_config_set_string(lc->config,"net","stun_server",lc->net_conf.stun_server);
 }
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
@@ -3714,6 +3718,8 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
 	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"net","firewall_policy",pol);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
@@ -3866,6 +3872,8 @@ const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
 **/
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 	lc->video_conf.show_local=val;
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"video","show_local",val);
 }
 
 /**
@@ -3890,6 +3898,9 @@ void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
 	lc->video_conf.selfview=val;
 	if (call && call->videostream){
 		video_stream_enable_self_view(call->videostream,val);
+	}
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"video","self_view",val);
 	}
 #endif
 }
@@ -4447,7 +4458,6 @@ void net_config_uninit(LinphoneCore *lc)
 	net_config_t *config=&lc->net_conf;
 
 	if (config->stun_server!=NULL){
-		lp_config_set_string(lc->config,"net","stun_server",config->stun_server);
 		ms_free(lc->net_conf.stun_server);
 	}
 	if (config->nat_address!=NULL){
@@ -4457,7 +4467,6 @@ void net_config_uninit(LinphoneCore *lc)
 	if (lc->net_conf.nat_address_ip !=NULL){
 		ms_free(lc->net_conf.nat_address_ip);
 	}
-	lp_config_set_int(lc->config,"net","firewall_policy",config->firewall_policy);
 	lp_config_set_int(lc->config,"net","mtu",config->mtu);
 }
 
@@ -4525,7 +4534,7 @@ void rtp_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"rtp","video_jitt_comp_enabled",config->video_adaptive_jitt_comp_enabled);
 }
 
-void sound_config_uninit(LinphoneCore *lc)
+static void sound_config_uninit(LinphoneCore *lc)
 {
 	sound_config_t *config=&lc->sound_conf;
 	ms_free(config->cards);
@@ -4537,13 +4546,11 @@ void sound_config_uninit(LinphoneCore *lc)
 	ms_snd_card_manager_destroy();
 }
 
-void video_config_uninit(LinphoneCore *lc)
+static void video_config_uninit(LinphoneCore *lc)
 {
 	lp_config_set_string(lc->config,"video","size",video_size_get_name(linphone_core_get_preferred_video_size(lc)));
 	lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
 	lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
-	lp_config_set_int(lc->config,"video","show_local",linphone_core_video_preview_enabled(lc));
-	lp_config_set_int(lc->config,"video","self_view",linphone_core_self_view_enabled(lc));
 	if (lc->video_conf.cams)
 		ms_free(lc->video_conf.cams);
 }
@@ -5104,3 +5111,81 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
+void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
+	if (lc->device_id) ms_free(lc->device_id);
+	lc->device_id=ms_strdup(device_id);
+}
+const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
+	return lc->device_id;
+}
+
+/**
+ * Set the DSCP field for SIP signaling channel.
+ * 
+ * @ingroup network_parameters
+ * * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp){
+	sal_set_dscp(lc->sal,dscp);
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"sip","dscp",dscp);
+}
+
+/**
+ * Get the DSCP field for SIP signaling channel.
+ * 
+ * @ingroup network_parameters
+ * * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_sip_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"sip","dscp",0x1a);
+}
+
+/**
+ * Set the DSCP field for outgoing audio streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp){
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"rtp","audio_dscp",dscp);
+}
+
+/**
+ * Get the DSCP field for outgoing audio streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_audio_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","audio_dscp",0x2e);
+}
+
+/**
+ * Set the DSCP field for outgoing video streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp){
+	if (linphone_core_ready(lc))
+		lp_config_set_int_hex(lc->config,"rtp","video_dscp",dscp);
+	
+}
+
+/**
+ * Get the DSCP field for outgoing video streams.
+ *
+ * @ingroup network_parameters
+ * The DSCP defines the quality of service in IP packets.
+ * 
+**/
+int linphone_core_get_video_dscp(const LinphoneCore *lc){
+	return lp_config_get_int(lc->config,"rtp","video_dscp",0x2e);
+}

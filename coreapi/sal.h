@@ -105,11 +105,6 @@ typedef enum{
 	SalStreamInactive
 }SalStreamDir;
 
-typedef struct SalEndpointCandidate{
-	char addr[64];
-	int port;
-}SalEndpointCandidate;
-
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
@@ -159,7 +154,6 @@ typedef struct SalStreamDescription{
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;
-	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
 	SalStreamDir dir;
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
@@ -259,6 +253,12 @@ typedef enum SalSubscribeStatus{
 	SalSubscribeTerminated
 }SalSubscribeStatus;
 
+typedef enum SalTextDeliveryStatus{
+	SalTextDeliveryInProgress,
+	SalTextDeliveryDone,
+	SalTextDeliveryFailed
+}SalTextDeliveryStatus;
+
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
@@ -275,6 +275,8 @@ typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
+typedef void (*SalOnMessageExternalBodyReceived)(Sal *sal, const char *from, const char *url);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
@@ -299,6 +301,8 @@ typedef struct SalCallbacks{
 	SalOnDtmfReceived dtmf_received;
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
+	SalOnMessageExternalBodyReceived message_external_body;
+	SalOnTextDeliveryUpdate text_delivery_update;
 	SalOnNotify notify;
 	SalOnNotifyPresence notify_presence;
 	SalOnNotifyRefer notify_refer;
@@ -321,6 +325,7 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info);
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
+void sal_set_dscp(Sal *ctx, int dscp);
 int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
@@ -400,6 +405,7 @@ int sal_unregister(SalOp *h);
 
 /*Messaging */
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to);

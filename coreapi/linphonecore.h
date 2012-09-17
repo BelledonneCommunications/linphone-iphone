@@ -262,6 +262,24 @@ typedef struct _LinphoneCall LinphoneCall;
 #define LINPHONE_CALL_STATS_VIDEO 1
 
 /**
+ * Enum describing ICE states.
+ * @ingroup initializing
+**/
+enum _LinphoneIceState{
+	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateInProgress, /**< ICE process is in progress */
+	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
+	LinphoneIceStateReflexiveConnection, /**< ICE has established a connection to the remote host through one or several NATs */
+	LinphoneIceStateRelayConnection /**< ICE has established a connection through a relay */
+};
+
+/**
+ * Enum describing Ice states.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneIceState LinphoneIceState;
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
@@ -285,6 +303,7 @@ struct _LinphoneCallStats {
 	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+	LinphoneIceState	ice_state; /**< State of ICE processing. */
 };
 
 /**
@@ -617,7 +636,6 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr);
  */
 LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message);
 
-	
 
 /**
  * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
@@ -641,18 +659,61 @@ typedef enum _LinphoneChatMessageStates {
 	LinphoneChatMessageStateNotDelivered /** message was not delivered*/
 }LinphoneChatMessageState;
 
+	
 /**
  * to string function
  */
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
+
+/**
+ * clone a chat message 
+ *@param message #LinphoneChatMessage obj
+ *@return #LinphoneChatMessage
+ */
+LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
+/**
+ * set origine of the message
+ *@param message #LinphoneChatMessage obj
+ *@param from #LinphoneAddress origin of this message (copied)
+ */
+void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
+
+/**
+ * get origine of the message 
+ *@param message #LinphoneChatMessage obj
+ *@return #LinphoneAddress
+ */
+LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
+	
+/**
+ * Linphone message can carry external body as defined by rfc2017
+ * @param message #LinphoneChatMessage
+ * @return return external body url null if not present.
+ */
+const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+	
+/**
+ * Linphone message can carry external body as defined by rfc2017
+ * 
+ * @param  #LinphoneChatMessage  
+ * @param url ex: access-type=URL; URL="http://www.foo.com/file"
+ */
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+
+/**
+ * get text part of this message
+ *@return text or NULL if no text.
+ */
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
+/**
+ * user pointer get function
+ */
+
+void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 /**
  * user pointer set function
  */
 void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
-/**
- * user pointer get function
- */
-void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 	
 /**
  * Call back used to notify message delivery status
@@ -669,7 +730,10 @@ typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,Linpho
  * @param ud user data for the status cb.
  */
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
-
+LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
+char* linphone_chat_message_get_message(LinphoneChatMessage *msg);
+const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
@@ -741,6 +805,7 @@ typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, c
 typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
 /**
  * Callback prototype
+ * @deprecated use #MessageReceived instead.
  *
  * @param lc #LinphoneCore object
  * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
@@ -748,6 +813,15 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
  * @param message incoming message
  *  */
 typedef void (*TextMessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+/**
+ * Chat message callback prototype
+ *
+ * @param lc #LinphoneCore object
+ * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
+ * @param LinphoneChatMessage incoming message
+ * */
+typedef void (*MessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+	
 /** Callback prototype */
 typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
@@ -771,7 +845,8 @@ typedef struct _LinphoneVTable{
 	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending subscription request */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
-	TextMessageReceived text_received; /**< A text message has been received */
+	TextMessageReceived text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
+	MessageReceived message_received; /** a message is received, can be text or external body*/
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
@@ -827,6 +902,24 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 
 /* function to be periodically called in a main loop */
 void linphone_core_iterate(LinphoneCore *lc);
+#if 0 /*not implemented yet*/
+/**
+ * @ingroup initializing
+ * Provide Linphone Core with an unique identifier. This be later used to identified contact address coming from this device.
+ * Value is not saved.
+ * @param lc object
+ * @param string identifying the device, can be EMEI or UDID
+ *
+ */
+void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id);
+/**
+ * @ingroup initializing
+ * get Linphone unique identifier
+ *
+ */
+const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
+
+#endif
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
@@ -1249,6 +1342,8 @@ void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTran
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
+int linphone_core_get_calls_nb(const LinphoneCore *lc);
+
 const MSList *linphone_core_get_calls(LinphoneCore *lc);
 
 LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
@@ -1312,6 +1407,15 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
+
+void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_sip_dscp(const LinphoneCore *lc);
+
+void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_audio_dscp(const LinphoneCore *lc);
+
+void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
+int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 #ifdef __cplusplus
 }
