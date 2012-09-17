@@ -4096,6 +4096,8 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call!=NULL && call->videostream){
 		video_stream_set_native_preview_window_id(call->videostream,id);
+	}else if (lc->previewstream){
+		video_preview_set_native_window_id(lc->previewstream,id);
 	}
 #endif
 }
