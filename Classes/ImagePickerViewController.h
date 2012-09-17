@@ -1,4 +1,4 @@
-/* ContactDetailsImagePickerController.h
+/* ImagePickerViewController.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *

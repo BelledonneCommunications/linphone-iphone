@@ -54,6 +54,7 @@
     self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
     if (self != nil) {
         self->chatRoom = NULL;
+        self->imageSharing = NULL;
     }
     return self;
 }
@@ -83,7 +84,6 @@
 }
 
 
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -106,7 +106,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -120,7 +119,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	messageField.font = [UIFont systemFontOfSize:18.0f];
     messageField.contentInset = UIEdgeInsetsZero;
     messageField.backgroundColor = [UIColor clearColor];
-	[self enableTransferView:FALSE];
     [sendButton setEnabled:FALSE];
 }
 
@@ -331,9 +329,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             
 			DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Incoming file stored to your photo library",nil)] autorelease];
             [sheet addButtonWithTitle:NSLocalizedString(@"Accept",nil) block:^(){
-                [downloadContext release];
-                downloadContext = [self downloadImageFrom:pendingFileUrl];
-                [self startDownload];
+                imageSharing = [ImageSharing imageSharingDownload:[NSURL URLWithString:pendingFileUrl] delegate:self];
+                [footerView setHidden:TRUE];
+                [transferView setHidden:FALSE];
             }];
             [sheet addCancelButtonWithTitle:NSLocalizedString(@"Ignore",nil)];
             [sheet showInView:self.view];
@@ -378,6 +376,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
                                                 forNinePatchNamed:@"chat_background"]];
 }
+
 
 #pragma mark - Action Functions
 
@@ -434,223 +433,92 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (IBAction)onTransferCancelClick:(id)event {
-    if(uploadContext) {
-        [uploadContext cancel];
-        [self stopUpload];
+    if(imageSharing) {
+        [imageSharing cancel];
     }
-    if(downloadContext) {
-    	[downloadContext cancel];
-        [self stopDownload];
-    }
-	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer interrupted by user"];
-}
-
-- (void)enableTransferView:(BOOL)isTranfer {
-	if (isTranfer) {
-		[imageTransferProgressBar setProgress:0.0];
-	} else {
-		//[uploadContext cancel];
-	}
-    [footerView setHidden:isTranfer];
-	[transferView setHidden:!isTranfer];
-	[imageTransferProgressBar setHidden:!isTranfer];
-	[cancelTransferButton setHidden:!isTranfer];
-	[sendButton setEnabled:!isTranfer];
-}
-
-- (void)startUpload {
-	[self enableTransferView:TRUE];
-}
-
-- (void)stopUpload {
-	[self enableTransferView:FALSE];
-}
-
-- (void)startDownload {
-	[self enableTransferView:TRUE];
-}
-
-- (void)stopDownload {
-	[self enableTransferView:FALSE];
 }
 
 
-#pragma mark - NSURLConnectionDelegate
+#pragma mark ImageSharingDelegate
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	if (connection == uploadContext) {
-		[self stopUpload];
-        NSString *serverUrl = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url"];
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot upload file to server [%@] because [%@]", serverUrl, [error localizedDescription]];
-        	UIAlertView* errorAlert = [UIAlertView alloc];
+- (void)imageSharingProgress:(ImageSharing*)aimageSharing progress:(float)progress {
+    [imageTransferProgressBar setProgress:progress animated:FALSE];
+}
+
+- (void)imageSharingAborted:(ImageSharing*)aimageSharing {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    imageSharing = NULL;
+}
+
+- (void)imageSharingError:(ImageSharing*)aimageSharing error:(NSError *)error {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    NSString *url = [aimageSharing.connection.currentRequest.URL absoluteString];
+    if (aimageSharing.upload) {
+		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot upload file to server [%@] because [%@]", url, [error localizedDescription]];
+        UIAlertView* errorAlert = [UIAlertView alloc];
 		[errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
-						  message:NSLocalizedString(@"Cannot transfer file to remote contact", nil) 
-						 delegate:nil 
-				cancelButtonTitle:NSLocalizedString(@"Ok",nil) 
+						  message:NSLocalizedString(@"Cannot transfer file to remote contact", nil)
+						 delegate:nil
+				cancelButtonTitle:NSLocalizedString(@"Ok",nil)
 				otherButtonTitles:nil ,nil];
 		[errorAlert show];
         [errorAlert release];
-	}else if (connection == downloadContext) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot dowanlod file from [%@] because [%@]", [connection.currentRequest.URL absoluteString], [error localizedDescription]];
-        	UIAlertView* errorAlert = [UIAlertView alloc];
+	} else {
+		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot dowanlod file from [%@] because [%@]", url, [error localizedDescription]];
+        UIAlertView* errorAlert = [UIAlertView alloc];
 		[errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
 						  message:NSLocalizedString(@"Cannot transfer file from remote contact", nil)
-						 delegate:nil 
-				cancelButtonTitle:NSLocalizedString(@"Continue", nil) 
-				otherButtonTitles:nil, nil];		
+						 delegate:nil
+				cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+				otherButtonTitles:nil, nil];
 		[errorAlert show];
         [errorAlert release];
-	} else {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Invalid file transfer connection", connection];
 	}
+    imageSharing = NULL;
 }
 
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	[imageTransferProgressBar setProgress:(float)((float)totalBytesWritten/(float)totalBytesExpectedToWrite) animated:FALSE];
-	
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	if (connection == uploadContext) {
-		NSString* imageRemoteUrl=[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		[LinphoneLogger log:LinphoneLoggerLog format:@"File can be downloaded from [%@]", imageRemoteUrl];
-		[self sendMessage:NSLocalizedString(@"Image sent",nil) withExterlBodyUrl:imageRemoteUrl];
-	} else if (connection == downloadContext) {
-		if (downloadedData == nil) downloadedData = [[NSMutableData alloc] initWithCapacity:[data length]];
-		[downloadedData appendData:data];
-		[imageTransferProgressBar setProgress:((float)downloadedData.length/(float)totalBytesExpectedToRead) animated:FALSE];
-	} else {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Invalid file transfer connection", connection];
-	}
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-	NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *) response;
-	int statusCode = httpResponse.statusCode;;	
-	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer status code [%i]",statusCode];
+- (void)imageSharingUploadDone:(ImageSharing*)aimageSharing url:(NSURL*)url{
+    [self sendMessage:NSLocalizedString(@"Image sent", nil) withExterlBodyUrl:[url absoluteString]];
     
-	if (connection == uploadContext) {
-		if (statusCode == 200) {
-			//nop
-		} else if (statusCode >= 400) {
-            UIAlertView* errorAlert = [UIAlertView alloc];
-			[errorAlert initWithTitle:NSLocalizedString(@"Transfer error",nil)
-													message:NSLocalizedString(@"Cannot transfer file to remote contact",nil) 
-												   delegate:nil 
-										  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-										  otherButtonTitles:nil ,nil];
-			[errorAlert show];
-            [errorAlert release];
-		}
-	} else if (connection == downloadContext) {
-		if (statusCode == 200) {
-			totalBytesExpectedToRead = [response expectedContentLength];
-		} else if (statusCode >= 400) {
-            UIAlertView* errorAlert = [UIAlertView alloc];
-			[errorAlert	initWithTitle:NSLocalizedString(@"Transfer error",nil)
-													message:NSLocalizedString(@"Cannot transfer file from remote contact",nil)
-												   delegate:nil 
-										  cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-										  otherButtonTitles:nil ,nil];	
-			[errorAlert show];
-            [errorAlert release];
-		} 
-	} else {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Invalid file transfer connection", connection];
-	}
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    imageSharing = NULL;
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	if (connection == uploadContext) {
-		[self stopUpload];
-		uploadContext = nil;
-	} else if (connection == downloadContext) {
-		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-		[library writeImageDataToSavedPhotosAlbum:downloadedData
-										 metadata:nil
-								  completionBlock:^(NSURL *assetURL, NSError *error){
-									  if (error) {
-										  [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]",[error localizedDescription]];
-									  } else {
-										  [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]",[assetURL absoluteString]];
-									  }
-                                      ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
-                                      if(controller != nil) {
-                                          [controller setImage:[UIImage imageWithData:downloadedData]];
-                                      }
-									  [downloadedData release];
-									  downloadedData = nil;
-								  }];
-		
-		
-		[library release];
-		[self stopDownload];
-		downloadContext = nil;
-	} else {
-        [LinphoneLogger log:LinphoneLoggerError format:@"Invalid file transfer connection", connection];
-	}
-}
-
-- (NSURLConnection*)downloadImageFrom:(NSString*)address {
-	[LinphoneLogger log:LinphoneLoggerLog format:@"downloading [%@]", address];
-	NSURL* url = [NSURL URLWithString: address ];
-	NSURLRequest* request = [NSURLRequest requestWithURL:url
-											 cachePolicy:NSURLRequestUseProtocolCachePolicy
-										 timeoutInterval:60.0];
-	
-	return [[NSURLConnection alloc] initWithRequest:request delegate: self];
+- (void)imageSharingDownloadDone:(ImageSharing*)aimageSharing image:(UIImage *)image {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    [library writeImageToSavedPhotosAlbum:(CGImageRef)image
+                                 metadata:nil
+                          completionBlock:^(NSURL *assetURL, NSError *error){
+                              if (error) {
+                                  [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]",[error localizedDescription]];
+                              } else {
+                                  [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]",[assetURL absoluteString]];
+                              }
+                              ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
+                              if(controller != nil) {
+                                  [controller setImage:image];
+                              }
+                          }];
+    
+    
+    [library release];
+    imageSharing = NULL;
 }
 
 
-- (NSURLConnection*)uploadImage:(UIImage*)image Named:(NSString*)name {
-	/*
-	 turning the image into a NSData object
-	 getting the image back out of the UIImageView
-	 setting the quality to 90
-	 */
-	NSData *imageData = UIImageJPEGRepresentation(image, 80);
-	// setting up the URL to post to
-	NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"];
-	
-	// setting up the request object now
-	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-	[request setURL:[NSURL URLWithString:urlString]];
-	[request setHTTPMethod:@"POST"];
-	
-	/*
-	 add some header info now
-	 we always need a boundary when we post a file
-	 also we need to set the content type
-	 
-	 You might want to generate a random boundary.. this is just the same 
-	 as my output from wireshark on a valid html post
-	 */
-	NSString *boundary = @"---------------------------14737809831466499882746641449";
-	NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-	[request addValue:contentType forHTTPHeaderField: @"Content-Type"];
-	
-	/*
-	 now lets create the body of the post
-	 */
-	NSMutableData *body = [NSMutableData data];
-	[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];	
-	[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"userfile\"; filename=\"%@\"\r\n",name] dataUsingEncoding:NSUTF8StringEncoding]];
-	[body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-	[body appendData:[NSData dataWithData:imageData]];
-	[body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-	// setting the body of the post to the reqeust
-	[request setHTTPBody:body];
-	
-	return [NSURLConnection connectionWithRequest:(NSURLRequest *)request delegate:self];
-}
-
-
-#pragma mark ImpagePickerDelegate
+#pragma mark ImagePickerDelegate
 
 - (void)imagePickerDelegateImage:(UIImage*)image {
-    NSString *imageName = [NSString stringWithFormat:@"%i.jpg", [image hash]];
-    uploadContext = [self uploadImage:image Named: imageName];
-    [self startUpload];
+    NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"];
+    imageSharing = [ImageSharing imageSharingUpload:[NSURL URLWithString:urlString] image:image delegate:self];
+    [footerView setHidden:TRUE];
+	[transferView setHidden:FALSE];
 }
 
 
