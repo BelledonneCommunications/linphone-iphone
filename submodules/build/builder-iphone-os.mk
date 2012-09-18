@@ -20,7 +20,7 @@
 #
 ############################################################################
  
-host?=armv6-apple-darwin
+host?=armv7-apple-darwin
 config_site:=iphone-config.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
@@ -301,13 +301,17 @@ multi-arch:
 	cp -rf $(prefix)/include  $(prefix)/../apple-darwin/. ; \
 	cp -rf $(prefix)/share  $(prefix)/../apple-darwin/. ; \
 	for archive in $$arm_archives ; do \
-	        i386_path=`echo $$archive | sed -e "s/armv6/i386/"` ;\
-	        armv7_path=`echo $$archive | sed -e "s/armv6/armv7/"` ;\
-        	destpath=`echo $$archive | sed -e "s/armv6-//"` ;\
+	        i386_path=`echo $$archive | sed -e "s/armv7/i386/"` ;\
+	        armv6_path=`echo $$archive | sed -e "s/armv7/armv6/"` ;\
+        	if  test ! -f "$$armv6_path"; then \
+			armv6_path= ; \
+		fi; \
+	        armv7s_path=`echo $$archive | sed -e "s/armv7/armv7s/"` ;\
+        	destpath=`echo $$archive | sed -e "s/armv7-//"` ;\
         	if test -f "$$i386_path"; then \
-                	echo "Mixing $$archive and $$i386_path into $$destpath"; \
+                	echo "Mixing $$archive into $$destpath"; \
                 	mkdir -p `dirname $$destpath` ; \
-                	lipo -create $$archive $$armv7_path $$i386_path -output $$destpath; \
+                	lipo -create $$archive $$armv7s_path $$armv6_path $$i386_path -output $$destpath; \
         	else \
                 	echo "WARNING: archive `basename $$archive` exists in arm tree but does not exists in i386 tree."; \
         	fi \
