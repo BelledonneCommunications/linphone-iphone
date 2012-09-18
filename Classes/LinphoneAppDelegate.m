@@ -159,6 +159,11 @@
     NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
     
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+//    NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+//    NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+        
     NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"YES", @"debugenable_preference",
                                  @"YES", @"enable_video_preference",
@@ -175,13 +180,15 @@
                                  @"ringtone_01_1600", @"ringtone_preference",
                                  @"ringtone_01_1600", @"level_ringtone_preference",
                                  @"NO", @"lockdoors_preference",
+                                 majorVersion, @"version_preference",
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
     [defaultsToRegister release];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    
+
+    [[NSUserDefaults standardUserDefaults] setValue:majorVersion forKey:@"version_preference"];
 }
 
 /**/
