@@ -307,6 +307,9 @@ multi-arch:
 			armv6_path= ; \
 		fi; \
 	        armv7s_path=`echo $$archive | sed -e "s/armv7/armv7s/"` ;\
+        	if  test ! -f "$$armv7s_path"; then \
+			armv7s_path= ; \
+		fi; \
         	destpath=`echo $$archive | sed -e "s/armv7-//"` ;\
         	if test -f "$$i386_path"; then \
                 	echo "Mixing $$archive into $$destpath"; \

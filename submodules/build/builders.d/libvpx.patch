@@ -1,5 +1,5 @@
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 0426f92..d1f4760 100755
+index 0426f92..38fdcb2 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
 @@ -624,6 +624,9 @@ process_common_toolchain() {
@@ -27,7 +27,7 @@ index 0426f92..d1f4760 100755
              CC=${TOOLCHAIN_PATH}/gcc
              AR=${TOOLCHAIN_PATH}/ar
 -            LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
-+            LD=${TOOLCHAIN_PATH}/ld
++            LD=${TOOLCHAIN_PATH}/gcc
              AS=${TOOLCHAIN_PATH}/as
              STRIP=${TOOLCHAIN_PATH}/strip
              NM=${TOOLCHAIN_PATH}/nm
