@@ -1,5 +1,5 @@
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 0426f92..24fa04e 100755
+index 0426f92..d1f4760 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
 @@ -624,6 +624,9 @@ process_common_toolchain() {
@@ -12,7 +12,7 @@ index 0426f92..24fa04e 100755
  
      case ${toolchain} in
          *-darwin8-*)
-@@ -743,6 +746,14 @@ process_common_toolchain() {
+@@ -743,9 +746,17 @@ process_common_toolchain() {
          darwin*)
              SDK_PATH=/Developer/Platforms/iPhoneOS.platform/Developer
              TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
@@ -26,10 +26,17 @@ index 0426f92..24fa04e 100755
 +            fi
              CC=${TOOLCHAIN_PATH}/gcc
              AR=${TOOLCHAIN_PATH}/ar
-             LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
-@@ -759,10 +770,10 @@ process_common_toolchain() {
+-            LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
++            LD=${TOOLCHAIN_PATH}/ld
+             AS=${TOOLCHAIN_PATH}/as
+             STRIP=${TOOLCHAIN_PATH}/strip
+             NM=${TOOLCHAIN_PATH}/nm
+@@ -757,12 +768,12 @@ process_common_toolchain() {
+             ASFLAGS="-version -arch ${tgt_isa} -g"
+ 
              add_cflags -arch ${tgt_isa}
-             add_ldflags -arch_only ${tgt_isa}
+-            add_ldflags -arch_only ${tgt_isa}
++            add_ldflags -arch ${tgt_isa}
  
 -            add_cflags  "-isysroot ${SDK_PATH}/SDKs/iPhoneOS5.0.sdk"
 +            add_cflags  "-isysroot $SDK_FULL_PATH"
@@ -40,3 +47,23 @@ index 0426f92..24fa04e 100755
  
              # Add the paths for the alternate libc
              for d in usr/include; do
+diff --git a/configure b/configure
+index 6f20c6b..4638ea2 100755
+--- a/configure
++++ b/configure
+@@ -94,6 +94,7 @@ all_platforms="${all_platforms} iwmmxt-linux-gcc"
+ all_platforms="${all_platforms} iwmmxt2-linux-rvct"
+ all_platforms="${all_platforms} iwmmxt2-linux-gcc"
+ all_platforms="${all_platforms} armv7-darwin-gcc"    #neon Cortex-A8
++all_platforms="${all_platforms} armv7s-darwin-gcc"    #neon Cortex-A8
+ all_platforms="${all_platforms} armv7-linux-rvct"    #neon Cortex-A8
+ all_platforms="${all_platforms} armv7-linux-gcc"     #neon Cortex-A8
+ all_platforms="${all_platforms} armv7-none-rvct"     #neon Cortex-A8
+@@ -198,6 +199,7 @@ ARCH_EXT_LIST="
+     armv5te
+     armv6
+     armv7
++    armv7s
+     iwmmxt
+     iwmmxt2
+ 
