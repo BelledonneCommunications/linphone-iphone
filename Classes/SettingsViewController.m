@@ -564,7 +564,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([key isEqual:@"console_button"]) {
         [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
     } else if([key isEqual:@"wizard_button"]) {
-        [[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]];
+        WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+        if(controller != nil) {
+            [controller reset];
+        }
     }
 }
 @end

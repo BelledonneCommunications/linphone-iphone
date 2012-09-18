@@ -42,6 +42,8 @@
 @property (nonatomic, retain) IBOutlet UIButton *backButton;
 @property (nonatomic, retain) IBOutlet UIButton *startButton;
 
+- (void)reset;
+
 - (IBAction)onStartClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onCancelClick:(id)sender;

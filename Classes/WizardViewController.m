@@ -109,12 +109,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self resetWizard];
-}
-
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -161,7 +155,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)resetWizard {
+- (void)reset {
     [self clearProxyConfig];
     [WizardViewController cleanTextField:welcomeView];
     [WizardViewController cleanTextField:choiceView];

@@ -409,7 +409,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if(list != NULL) {
             [self changeCurrentView: [DialerViewController compositeViewDescription]];
         } else {
-            [self changeCurrentView: [WizardViewController compositeViewDescription]];
+            WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+            if(controller != nil) {
+                [controller reset];
+            }
         }
     }
     
