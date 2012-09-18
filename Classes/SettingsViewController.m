@@ -390,7 +390,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
 	
 	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
-	[settingsStore transformLinphoneCoreToKeys];
 	
     settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
@@ -416,6 +415,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [settingsStore transformLinphoneCoreToKeys]; // Sync settings with linphone core settings
+    [settingsController.tableView reloadData];	
+    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(appSettingChanged:) 
@@ -560,6 +563,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
     if([key isEqual:@"console_button"]) {
         [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
+    } else if([key isEqual:@"wizard_button"]) {
+        [[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]];
     }
 }
 @end

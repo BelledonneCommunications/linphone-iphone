@@ -44,6 +44,8 @@ static void audioRouteChangeListenerCallback (
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
+const char *const LINPHONERC_APPLICATION_KEY = "app";
+
 NSString *const kLinphoneCoreUpdate = @"kLinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
@@ -514,7 +516,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","wifi_only_preference",FALSE);
+			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
@@ -1007,9 +1009,9 @@ static void audioRouteChangeListenerCallback (
     }
 }
 
-- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)proxyCfg{
+- (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
 	NSData *tokenData =  pushNotificationToken;
-	if(tokenData != nil) {
+	if(tokenData != nil && [self lpConfigBoolForKey:@"pusnotification_preference"]) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
 		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
 		for(int i = 0; i < [tokenData length]; ++i) {
@@ -1068,35 +1070,62 @@ static void audioRouteChangeListenerCallback (
 }
 
 
+#pragma mark - LPConfig Functions
 
-
-
--(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
-	if (!key) return;
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value?[value UTF8String]:NULL);
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key {
+    [self lpConfigSetString:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
--(NSString*)lpConfigStringForKey:(NSString*) key {
-	if (!theLinphoneCore) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"cannot read configuration because linphone core not ready yet"];
-		return nil;
-	};
-	const char* value=lp_config_get_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],NULL);	
-	if (value) 
-		return [NSString stringWithCString:value encoding:[NSString defaultCStringEncoding]];
+
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString *)section {
+	if (!key) return;
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value?[value UTF8String]:NULL);
+}
+
+- (NSString*)lpConfigStringForKey:(NSString*)key {
+    return [self lpConfigStringForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return nil;
+	const char* value = lp_config_get_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], NULL);
+	if (value)
+		return [NSString stringWithUTF8String:value];
 	else
 		return nil;
 }
--(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key {
-	lp_config_set_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value );
-}
--(NSInteger)lpConfigIntForKey:(NSString*) key {
-	return lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],-1);
+
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key {
+    [self lpConfigSetInt:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
 
--(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key {
-	return [self lpConfigSetInt:(NSInteger)(value==TRUE) forKey:key];
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return;
+	lp_config_set_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value );
 }
--(BOOL)lpConfigBoolForKey:(NSString*) key {
-	return [self lpConfigIntForKey:key] == 1;		
+
+- (NSInteger)lpConfigIntForKey:(NSString*)key {
+    return [self lpConfigIntForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
+
+- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return -1;
+	return lp_config_get_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], -1);
+}
+
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key {
+    [self lpConfigSetBool:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString *)section {
+	return [self lpConfigSetInt:(NSInteger)(value == TRUE) forKey:key forSection:section];
+}
+
+- (BOOL)lpConfigBoolForKey:(NSString*)key {
+    return [self lpConfigBoolForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
+	return [self lpConfigIntForKey:key forSection:section] == 1;
+}
+
 @end

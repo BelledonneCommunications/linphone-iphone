@@ -1,6 +1,9 @@
 /* SIP account */
 "SIP account" = "Compte SIP";
 
+/* Wizard */
+"Wizard" = "Assistant";
+
 /* User name */
 "User name" = "Nom d'utilisateur";
 

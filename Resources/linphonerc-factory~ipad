@@ -30,3 +30,13 @@ dtmf_player_amp=0.007
 [misc]
 history_max_size=30
 max_calls=3
+
+[wizard]
+service_url=https://www.linphone.org/wizard.php
+domain=sip.linphone.org
+proxy=sip.linphone.org:5223
+password_length=6
+username_length=4
+expires=600
+push_notification=1
+transport=tls

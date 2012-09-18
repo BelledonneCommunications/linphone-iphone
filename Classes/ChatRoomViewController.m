@@ -175,6 +175,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    if(imageSharing) {
+        [imageSharing cancel];
+    }
+    
     [messageField resignFirstResponder];
     
     if(chatRoom != NULL) {

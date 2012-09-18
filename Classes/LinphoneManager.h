@@ -31,6 +31,8 @@
 
 #include "linphonecore.h"
 
+extern const char *const LINPHONERC_APPLICATION_KEY;
+
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
@@ -116,14 +118,18 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
--(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key; 
--(NSString*)lpConfigStringForKey:(NSString*) key;
-
--(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key; 
--(NSInteger)lpConfigIntForKey:(NSString*) key;
-
--(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key; 
--(BOOL)lpConfigBoolForKey:(NSString*) key;
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
+- (NSString*)lpConfigStringForKey:(NSString*)key;
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;
+- (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString*)section;
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key;
+- (NSInteger)lpConfigIntForKey:(NSString*)key;
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString*)section;
+- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString*)section;
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key; 
+- (BOOL)lpConfigBoolForKey:(NSString*)key;
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
+- (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;

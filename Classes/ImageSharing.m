@@ -34,7 +34,7 @@
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
         imgs->upload = TRUE;
-        imgs->delegate = delegate;
+        imgs->delegate = [delegate retain];
         imgs->data = [[NSMutableData alloc] init];
         if(delegate) {
             [delegate imageSharingProgress:imgs progress:0];
@@ -48,7 +48,7 @@
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
         imgs->upload = FALSE;
-        imgs->delegate = delegate;
+        imgs->delegate = [delegate retain];
         imgs->data = [[NSMutableData alloc] init];
         if(delegate) {
             [delegate imageSharingProgress:imgs progress:0];
@@ -61,6 +61,7 @@
 - (void)dealloc {
     [connection release];
     [data release];
+    [delegate release];
     [super dealloc];
 }
 
