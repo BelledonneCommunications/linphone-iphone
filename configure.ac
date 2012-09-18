@@ -61,7 +61,7 @@ case $target in
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
 	;;
-       armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin)
+       armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
                 CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
                 build_tests=no
                 ios_found=yes
