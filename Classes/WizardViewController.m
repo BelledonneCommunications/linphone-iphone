@@ -283,6 +283,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
 		}
 	}
+    
+    NSString* sharing_server = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server" forSection:@"wizard"];
+    [[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
+    
+    BOOL ice = [[LinphoneManager instance] lpConfigBoolForKey:@"ice" forSection:@"wizard"];
+    [[LinphoneManager instance] lpConfigSetBool:ice forKey:@"ice_preference"];
+    
+    NSString* stun = [[LinphoneManager instance] lpConfigStringForKey:@"stun" forSection:@"wizard"];
+    [[LinphoneManager instance] lpConfigSetString:stun forKey:@"stun_preference"];
+    
+    if ([stun length] > 0){
+        linphone_core_set_stun_server(lc, [stun UTF8String]);
+        if(ice) {
+            linphone_core_set_firewall_policy(lc, LinphonePolicyUseIce);
+        } else {
+            linphone_core_set_firewall_policy(lc, LinphonePolicyUseStun);
+        }
+    } else {
+        linphone_core_set_stun_server(lc, NULL);
+        linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
+    }
 }
 
 - (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {

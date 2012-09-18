@@ -194,7 +194,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", 1) forKey:@"animations_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", 0) forKey:@"wifi_only_preference"];
-	[self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "file_upload_url_preference", NULL) forKey:@"file_upload_url_preference"];
+	[self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "sharing_server_preference", NULL) forKey:@"sharing_server_preference"];
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = TRUE;
@@ -448,7 +448,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
     NSString* stun_server = [self stringForKey:@"stun_preference"];
     if ([stun_server length] > 0){
-        linphone_core_set_stun_server(lc,[stun_server cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        linphone_core_set_stun_server(lc, [stun_server UTF8String]);
         BOOL ice_preference = [self boolForKey:@"ice_preference"];
         if(ice_preference) {
             linphone_core_set_firewall_policy(lc, LinphonePolicyUseIce);
@@ -512,8 +512,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
-	NSString*  file_upload_url= [self stringForKey:@"file_upload_url_preference"];
-	[[LinphoneManager instance] lpConfigSetString:file_upload_url forKey:@"file_upload_url_preference"];
+	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
+	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
 	
 
 	

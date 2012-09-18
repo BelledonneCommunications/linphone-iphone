@@ -40,4 +40,7 @@ username_length=4
 expires=600
 push_notification=1
 transport=tls
+sharing_server=https://www.linphone.org:444/upload.php
+ice=1
+stun=stun.linphone.org
 

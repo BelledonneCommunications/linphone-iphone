@@ -1,8 +1,8 @@
 /* Wifi only */
 "Wifi only" = "Wifi only";
 
-/* Stun server */
-"Stun server" = "Stun server";
+/* Stun Server */
+"Stun Server" = "Stun Server";
 
 /* ICE */
 "ICE" = "ICE";
@@ -31,14 +31,14 @@
 /* Transport */
 "Transport" = "Transport";
 
-/* udp */
-"udp" = "udp";
+/* UDP */
+"UDP" = "UDP";
 
-/* tcp */
-"tcp" = "tcp";
+/* TCP */
+"TCP" = "TCP";
 
-/* tls */
-"tls" = "tls";
+/* TLS */
+"TLS" = "TLS";
 
 /* None */
 "None" = "None";

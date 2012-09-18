@@ -4281,17 +4281,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ImageViewController/4/ImageViewController.xib</string>
+								<string>Classes/ImageViewController/6/ImageViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T12:55:28Z</date>
+					<date>2012-09-18T15:26:33Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -4301,7 +4301,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>cf8736251f03474edd9a8c46b942ae63
+					<string>b3e155c6a9c76213208e70d8dc9bd3df
 </string>
 					<key>name</key>
 					<string>ImageViewController.xib</string>
@@ -4340,9 +4340,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>6</string>
 					</dict>
 				</dict>
 			</array>
@@ -11500,7 +11500,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T09:18:41Z</date>
+					<date>2012-09-18T15:13:17Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -11510,7 +11510,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>3c3bd8331f174699330a8cffb2875fa5
+					<string>f5919fdebddf11e613578ee7ff05f05e
 </string>
 					<key>name</key>
 					<string>Network.strings</string>
@@ -11549,17 +11549,17 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Stun server</string>
+							<string>Stun Server</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Stun server</string>
+							<string>Stun Server</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Stun server</string>
+								<string>Stun Server</string>
 								<key>fr</key>
 								<string>Serveur Stun</string>
 							</dict>
@@ -11774,17 +11774,17 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>udp</string>
+							<string>UDP</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>2</integer>
 							<key>key</key>
-							<string>udp</string>
+							<string>UDP</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>udp</string>
+								<string>UDP</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -11797,17 +11797,17 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>tcp</string>
+							<string>TCP</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>2</integer>
 							<key>key</key>
-							<string>tcp</string>
+							<string>TCP</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>tcp</string>
+								<string>TCP</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -11820,17 +11820,17 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>tls</string>
+							<string>TLS</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>2</integer>
 							<key>key</key>
-							<string>tls</string>
+							<string>TLS</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>tls</string>
+								<string>TLS</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -11908,7 +11908,102 @@ Raison: %2$s</string>
 						</dict>
 					</array>
 					<key>old objects</key>
-					<array/>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>udp</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>udp</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>udp</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>tcp</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>tcp</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>tcp</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>tls</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>tls</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>tls</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Stun server</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Stun server</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Stun server</string>
+								<key>fr</key>
+								<string>Serveur Stun</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
 					<key>plist file</key>
 					<false/>
 					<key>snapshots</key>

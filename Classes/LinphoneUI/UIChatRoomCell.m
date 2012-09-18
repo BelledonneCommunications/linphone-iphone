@@ -47,8 +47,8 @@ static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
-static const CGFloat CELL_IMAGE_HEIGHT = 50.0f;
-static const CGFloat CELL_IMAGE_WIDTH = 50.0f;
+static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
+static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 static UIFont *CELL_FONT = nil;
 
 #pragma mark - Lifecycle Functions

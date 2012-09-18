@@ -394,7 +394,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
     settingsController.showCreditsFooter = FALSE;
-    settingsController.hiddenKeys = [self findHiddenKeys];
     settingsController.settingsStore = settingsStore;
     
     [navigationController.view setBackgroundColor:[UIColor clearColor]];
@@ -417,6 +416,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillAppear:animated];
     
     [settingsStore transformLinphoneCoreToKeys]; // Sync settings with linphone core settings
+    settingsController.hiddenKeys = [self findHiddenKeys];
     [settingsController.tableView reloadData];	
     
     // Set observer

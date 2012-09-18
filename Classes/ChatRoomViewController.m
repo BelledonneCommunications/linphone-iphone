@@ -156,8 +156,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [transferBackgroundImage setImage:[TUNinePatchCache imageOfSize:[transferBackgroundImage bounds].size
                                                    forNinePatchNamed:@"chat_background"]];
     
-	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"] != NULL 
-								&& [[[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"] length]>0;
+	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] != NULL 
+								&& [[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] length]>0;
     
     CGRect pictureFrame = pictureButton.frame;
 	CGRect messageframe = messageView.frame;
@@ -457,7 +457,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url{
     if(imageSharing == nil) {
-        NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"];
+        NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"];
         imageSharing = [ImageSharing imageSharingUpload:[NSURL URLWithString:urlString] image:image delegate:self userInfo:url];
         [footerView setHidden:TRUE];
         [transferView setHidden:FALSE];
@@ -615,6 +615,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         // Always stay at bottom
         CGPoint contentPt = [tableController.tableView contentOffset];
         contentPt.y -= diff;
+        if(contentPt.y + tableFrame.size.height > tableController.tableView.contentSize.height)
+             contentPt.y += diff;
         [tableController.tableView setContentOffset:contentPt animated:FALSE];
     }
     

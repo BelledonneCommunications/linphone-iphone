@@ -46,7 +46,7 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
-						<int key="IBUIContentMode">4</int>
+						<int key="IBUIContentMode">1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -71,7 +71,7 @@
 							<object class="IBUIButton" id="771824371">
 								<reference key="NSNextResponder" ref="350805517"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{80, 44}</string>
+								<string key="NSFrameSize">{160, 44}</string>
 								<reference key="NSSuperview" ref="350805517"/>
 								<reference key="NSNextKeyView" ref="170933358"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -82,6 +82,8 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
 								<int key="IBUIContentVerticalAlignment">0</int>
+								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 								<object class="NSColor" key="IBUIHighlightedTitleColor">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
@@ -94,13 +96,13 @@
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MC41AA</bytes>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">chat_back_default.png</string>
+									<string key="NSResourceName">image_back_over.png</string>
 								</object>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">chat_back_over.png</string>
+									<string key="NSResourceName">image_back_default.png</string>
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription">
 									<int key="type">2</int>
@@ -212,11 +214,13 @@
 						<int key="objectID">7</int>
 						<reference key="object" ref="771824371"/>
 						<reference key="parent" ref="350805517"/>
+						<string key="objectName">backButton</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
 						<reference key="object" ref="714444944"/>
 						<reference key="parent" ref="350805517"/>
+						<string key="objectName">background</string>
 					</object>
 				</array>
 			</object>
@@ -230,6 +234,7 @@
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="7.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -283,8 +288,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="chat_back_default.png">{320, 88}</string>
-			<string key="chat_back_over.png">{320, 88}</string>
+			<string key="image_back_default.png">{320, 88}</string>
+			<string key="image_back_over.png">{320, 88}</string>
 			<string key="toolsbar_background.png">{5, 117}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">933</string>

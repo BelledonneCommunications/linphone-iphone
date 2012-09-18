@@ -18,7 +18,7 @@
 			<key>Key</key>
 			<string>stun_preference</string>
 			<key>Title</key>
-			<string>Stun server</string>
+			<string>Stun Server</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>AutocapitalizationType</key>
@@ -113,9 +113,9 @@
 			<string>Transport</string>
 			<key>Titles</key>
 			<array>
-				<string>udp</string>
-				<string>tcp</string>
-				<string>tls</string>
+				<string>UDP</string>
+				<string>TCP</string>
+				<string>TLS</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
