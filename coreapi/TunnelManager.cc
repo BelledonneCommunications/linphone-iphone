@@ -246,7 +246,8 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 	linphone_core_get_default_proxy(mCore, &lProxy);
 
 	if (mEnabled && mTunnelClient->isReady()){
-		ms_message("Tunnel is up, registering now");		
+		ms_message("Tunnel is up, registering now");
+		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
 		eXosip_transport_hook_register(&mExosipTransport);
 		//force transport to udp
@@ -295,8 +296,9 @@ void TunnelManager::enable(bool isEnable) {
 	ms_message("Turning tunnel [%s]",(isEnable?"on":"off"));
 	if (isEnable && !mEnabled){
 		mEnabled=true;
-		//1 save transport 
+		//1 save transport and firewall policy
 		linphone_core_get_sip_transports(mCore, &mRegularTransport);
+		mPreviousFirewallPolicy=linphone_core_get_firewall_policy(mCore);
 		//2 unregister
 		waitUnRegistration();
 		//3 insert tunnel
@@ -311,8 +313,9 @@ void TunnelManager::enable(bool isEnable) {
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
 		eXosip_transport_hook_register(NULL);
-		//Restore transport
+		//Restore transport and firewall policy
 		linphone_core_set_sip_transports(mCore, &mRegularTransport);
+		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
 		//register
 		LinphoneProxyConfig* lProxy;
 		linphone_core_get_default_proxy(mCore, &lProxy);

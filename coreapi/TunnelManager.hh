@@ -178,6 +178,7 @@ class UdpMirrorClient;
 		std::string mHttpPasswd;
 		std::string mHttpProxyHost;
 		int mHttpProxyPort;
+		LinphoneFirewallPolicy mPreviousFirewallPolicy;
 	};
 
 /**
