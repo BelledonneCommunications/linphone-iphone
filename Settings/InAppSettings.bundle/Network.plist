@@ -27,6 +27,8 @@
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -63,6 +65,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>5060</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Key</key>
@@ -79,6 +83,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>7076</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Key</key>
@@ -95,6 +101,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>9078</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
