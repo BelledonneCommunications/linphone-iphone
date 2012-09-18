@@ -110,7 +110,11 @@
     [avatarImage setImage:image];
     
     // Message
-    [chatContentLabel setText:[chat message]];
+    if([chat isExternalImage] || [chat isInternalImage]) {
+        [chatContentLabel setText:@""];
+    } else {
+        [chatContentLabel setText:[chat message]];
+    }
     
     linphone_address_destroy(linphoneAddress);
 }

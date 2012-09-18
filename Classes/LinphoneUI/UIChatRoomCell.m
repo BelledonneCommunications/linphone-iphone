@@ -59,6 +59,7 @@ static UIFont *CELL_FONT = nil;
                                       owner:self
                                     options:nil];
         [self addSubview:innerView];
+        [deleteButton setAlpha:0.0f];
     }
     return self;
 }
@@ -101,14 +102,14 @@ static UIFont *CELL_FONT = nil;
         return;
     }
     
-    if([UIChatRoomCell isExternalImage:[chat message]]) {
+    if([chat isExternalImage]) {
         [messageLabel setHidden:TRUE];
         
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
         
         [downloadButton setHidden:FALSE];
-    } else if([UIChatRoomCell isInternalImage:[chat message]]) {
+    } else if([chat isInternalImage]) {
         [messageLabel setHidden:TRUE];
         
         [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
@@ -176,17 +177,9 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
-+ (BOOL)isExternalImage:(NSString *)message {
-    return [message hasPrefix:@"http:"] || [message hasPrefix:@"https:"];
-}
-
-+ (BOOL)isInternalImage:(NSString *)message {
-    return [message hasPrefix:@"assets-library:"];
-}
-
 + (CGSize)viewSize:(ChatModel*)chat width:(int)width {
     CGSize messageSize;
-    if(!([UIChatRoomCell isExternalImage:[chat message]] || [UIChatRoomCell isInternalImage:[chat message]])) {
+    if(!([chat isExternalImage] || [chat isInternalImage])) {
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
         }

@@ -61,6 +61,15 @@
 }
 
 
+- (BOOL)isExternalImage {
+    return [message hasPrefix:@"http:"] || [message hasPrefix:@"https:"];
+}
+
+- (BOOL)isInternalImage {
+    return [message hasPrefix:@"assets-library:"];
+}
+
+
 #pragma mark - CRUD Functions
 
 - (void)create {

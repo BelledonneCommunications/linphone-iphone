@@ -212,17 +212,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>16</key>
+							<key>17</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/16/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/17/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T13:03:28Z</date>
+					<date>2012-09-18T15:40:57Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -232,7 +232,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>fb9acb898a88e8d219dfd663e9b8eb19
+					<string>0d54842000213c11a77cc9d1e2698245
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -568,9 +568,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>16</string>
+						<string>17</string>
 						<key>fr</key>
-						<string>16</string>
+						<string>17</string>
 					</dict>
 				</dict>
 				<dict>

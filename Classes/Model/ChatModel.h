@@ -41,6 +41,9 @@
 @property (copy) NSNumber *read;
 @property (copy) NSNumber *state;
 
+- (BOOL)isExternalImage;
+- (BOOL)isInternalImage;
+
 - (void)create;
 + (ChatModel*)read:(NSNumber*)id;
 - (void)update;
