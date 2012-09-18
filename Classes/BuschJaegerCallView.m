@@ -121,7 +121,7 @@
     User *usr = [[[LinphoneManager instance] configuration] getCurrentUser];
     /* init gradients for openDoorButton*/
     {
-        bool enabled = (usr != nil && usr.opendoor);
+        bool enabled = (usr != nil && usr.opendoor && ![[NSUserDefaults standardUserDefaults] boolForKey:@"lockdoors_preference"]);
         UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
         UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
         

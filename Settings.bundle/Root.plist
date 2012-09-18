@@ -87,8 +87,6 @@
 			<string>Sounds</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Welcome must be restarted for changes to take effect</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -141,6 +139,34 @@
 				<string>ringtone_04_1600</string>
 				<string>ringtone_05_1600</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Advanced</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Welcome must be restarted for changes to take effect</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>lockdoors_preference</string>
+			<key>Title</key>
+			<string>Lock doors</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>backgroundmode_preference</string>
+			<key>Title</key>
+			<string>Background mode</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

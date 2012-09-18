@@ -174,6 +174,7 @@
                                  @"YES", @"outbound_proxy_preference",
                                  @"ringtone_01_1600", @"ringtone_preference",
                                  @"ringtone_01_1600", @"level_ringtone_preference",
+                                 @"NO", @"lockdoors_preference",
                                  nil];
     
     [defaultsToRegister addEntriesFromDictionary:appDefaults];
