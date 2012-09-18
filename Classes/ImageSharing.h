@@ -38,10 +38,12 @@
     int statusCode;
 }
 
-+ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate;
-+ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate;
++ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
++ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)userInfo;
 
 - (void)cancel;
+
+@property (nonatomic, retain) id userInfo;
 
 @property (nonatomic, readonly) BOOL upload;
 @property (nonatomic, readonly) NSMutableData* data;

@@ -18,7 +18,6 @@
  */ 
 
 #import <UIKit/UIKit.h>
-#import <AssetsLibrary/ALAssetsLibrary.h>
 
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
@@ -30,13 +29,10 @@
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate> {
-    @private
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
-    ALAssetsLibrary *photoLibrary;
 }
-
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, retain) IBOutlet UIToggleButton *editButton;
@@ -50,6 +46,7 @@
 @property (nonatomic, retain) IBOutlet UIView *messageView;
 @property (nonatomic, retain) IBOutlet UIImageView *messageBackgroundImage;
 @property (nonatomic, retain) IBOutlet UIImageView *footerBackgroundImage;
+@property (nonatomic, retain) IBOutlet UIImageView *transferBackgroundImage;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
 
 @property (nonatomic, copy) NSString *remoteAddress;

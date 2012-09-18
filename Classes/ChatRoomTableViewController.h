@@ -21,12 +21,20 @@
 #import <UIKit/UIKit.h>
 #import "ChatModel.h"
 
+@protocol ChatRoomDelegate <NSObject>
+
+- (BOOL)chatRoomStartImageDownload:(NSURL*)url userInfo:(id)userInfo;
+- (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url;
+
+@end
+
 @interface ChatRoomTableViewController : UITableViewController {
 @private
     NSMutableArray *data;
 }
 
 @property (nonatomic, copy) NSString *remoteAddress;
+@property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
 
 - (void)addChatEntry:(ChatModel*)chat;
 - (void)updateChatEntry:(ChatModel*)chat;

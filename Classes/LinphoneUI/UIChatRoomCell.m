@@ -19,7 +19,11 @@
 
 #import "UIChatRoomCell.h"
 #import "Utils.h"
+#import "LinphoneManager.h"
+#import "PhoneMainView.h"
 
+#import <AssetsLibrary/ALAsset.h>
+#import <AssetsLibrary/ALAssetRepresentation.h>
 #import <NinePatch.h>
 #include "linphonecore.h"
 
@@ -34,6 +38,8 @@
 @synthesize dateLabel;
 @synthesize chat;
 @synthesize statusImage;
+@synthesize downloadButton;
+@synthesize chatRoomDelegate;
 
 static const CGFloat CELL_MIN_HEIGHT = 40.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
@@ -58,6 +64,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (void)dealloc {
+    [chatRoomDelegate release];
     [backgroundImage release];
     [innerView release];
     [bubbleView release];
@@ -67,6 +74,7 @@ static UIFont *CELL_FONT = nil;
     [dateLabel release];
     [statusImage release];
     [chat release];
+    [downloadButton release];
     
     [super dealloc];
 }
@@ -92,15 +100,39 @@ static UIFont *CELL_FONT = nil;
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room cell: null chat"];
         return;
     }
-    if(true/*Change when image will be supported */) {
+    
+    if([UIChatRoomCell isExternalImage:[chat message]]) {
+        [messageLabel setHidden:TRUE];
+        
+        [messageImageView setImage:nil];
+        [messageImageView setHidden:TRUE];
+        
+        [downloadButton setHidden:FALSE];
+    } else if([UIChatRoomCell isInternalImage:[chat message]]) {
+        [messageLabel setHidden:TRUE];
+        
+        [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+                ALAssetRepresentation* representation = [asset defaultRepresentation];
+                UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [messageImageView setImage:image];
+                });
+            });
+        } failureBlock:^(NSError *error) {
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't read image"];
+        }];
+        
+        [messageImageView setHidden:FALSE];
+        [downloadButton setHidden:TRUE];
+    } else {
         [messageLabel setHidden:FALSE];
         [messageLabel setText:[chat message]];
         
+        [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
-    } else {
-        [messageLabel setHidden:TRUE];
         
-        [messageImageView setHidden:FALSE];
+        [downloadButton setHidden:TRUE];
     }
     
     // Date
@@ -112,16 +144,16 @@ static UIFont *CELL_FONT = nil;
     [dateLabel setText:[dateFormatter stringFromDate:[chat time]]];
     [dateFormatter release];
 	if ([chat.state intValue] == LinphoneChatMessageStateInProgress) {
-		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"] ];
-		statusImage.hidden=FALSE;
+		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"]];
+		statusImage.hidden = FALSE;
 	} else if ([chat.state intValue] == LinphoneChatMessageStateDelivered) {
-		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"] ];
-		statusImage.hidden=FALSE;
+		[statusImage setImage:[UIImage imageNamed:@"chat_message_delivered.png"]];
+		statusImage.hidden = FALSE;
 	} else if ([chat.state intValue] == LinphoneChatMessageStateNotDelivered) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_not_delivered.png"]];
-		statusImage.hidden=FALSE;
+		statusImage.hidden = FALSE;
 	} else {
-		statusImage.hidden=TRUE;
+		statusImage.hidden = TRUE;
 	}
 }
 
@@ -144,9 +176,17 @@ static UIFont *CELL_FONT = nil;
     }
 }
 
++ (BOOL)isExternalImage:(NSString *)message {
+    return [message hasPrefix:@"http:"] || [message hasPrefix:@"https:"];
+}
+
++ (BOOL)isInternalImage:(NSString *)message {
+    return [message hasPrefix:@"assets-library:"];
+}
+
 + (CGSize)viewSize:(ChatModel*)chat width:(int)width {
     CGSize messageSize;
-    if(true/*Change when image will be supported */) {
+    if(!([UIChatRoomCell isExternalImage:[chat message]] || [UIChatRoomCell isInternalImage:[chat message]])) {
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
         }
@@ -215,6 +255,17 @@ static UIFont *CELL_FONT = nil;
             NSIndexPath *indexPath = [tableView indexPathForCell:self];
             [[tableView dataSource] tableView:tableView commitEditingStyle:UITableViewCellEditingStyleDelete forRowAtIndexPath:indexPath];
         }
+    }
+}
+
+- (IBAction)onDownloadClick:(id)event {
+    [chatRoomDelegate chatRoomStartImageDownload:[NSURL URLWithString:chat.message] userInfo:chat];
+}
+
+- (IBAction)onImageClick:(id)event {
+    ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
+    if(controller != nil) {
+        [controller setImage:messageImageView.image];
     }
 }
 

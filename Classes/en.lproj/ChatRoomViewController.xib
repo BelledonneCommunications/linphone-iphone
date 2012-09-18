@@ -156,7 +156,7 @@
 							</object>
 							<object class="IBUIView" id="229066993">
 								<reference key="NSNextResponder" ref="715329044"/>
-								<int key="NSvFlags">-2147483356</int>
+								<int key="NSvFlags">-2147483382</int>
 								<array class="NSMutableArray" key="NSSubviews">
 									<object class="IBUIImageView" id="661332796">
 										<reference key="NSNextResponder" ref="229066993"/>
@@ -166,10 +166,7 @@
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="164391443"/>
 										<string key="NSReuseIdentifierKey">_NS:9</string>
-										<object class="NSColor" key="IBUIBackgroundColor">
-											<int key="NSColorSpace">1</int>
-											<bytes key="NSRGB">MSAwLjI4MzE1ODM3MjYgMC4wNTY3ODY4OTE2MQA</bytes>
-										</object>
+										<reference key="IBUIBackgroundColor" ref="460939904"/>
 										<bool key="IBUIUserInteractionEnabled">NO</bool>
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<object class="NSCustomResource" key="IBUIImage" id="172588711">
@@ -179,7 +176,7 @@
 									</object>
 									<object class="IBUIButton" id="391057061">
 										<reference key="NSNextResponder" ref="229066993"/>
-										<int key="NSvFlags">292</int>
+										<int key="NSvFlags">297</int>
 										<string key="NSFrame">{{250, 0}, {70, 59}}</string>
 										<reference key="NSSuperview" ref="229066993"/>
 										<reference key="NSWindow"/>
@@ -214,7 +211,7 @@
 									</object>
 									<object class="IBUIProgressView" id="164391443">
 										<reference key="NSNextResponder" ref="229066993"/>
-										<int key="NSvFlags">292</int>
+										<int key="NSvFlags">298</int>
 										<string key="NSFrame">{{20, 25}, {213, 9}}</string>
 										<reference key="NSSuperview" ref="229066993"/>
 										<reference key="NSWindow"/>
@@ -274,6 +271,7 @@
 										<string key="NSFrame">{{250, 0}, {70, 59}}</string>
 										<reference key="NSSuperview" ref="833509359"/>
 										<reference key="NSWindow"/>
+										<reference key="NSNextKeyView"/>
 										<string key="NSReuseIdentifierKey">_NS:9</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -641,6 +639,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">transferBackgroundImage</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="661332796"/>
+					</object>
+					<int key="connectionID">88</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dataSource</string>
 						<reference key="source" ref="879615756"/>
 						<reference key="destination" ref="926385140"/>
@@ -930,7 +936,7 @@
 						<int key="objectID">83</int>
 						<reference key="object" ref="661332796"/>
 						<reference key="parent" ref="229066993"/>
-						<string key="objectName">footerBackgroundImage</string>
+						<string key="objectName">transfertBackgroundImage</string>
 					</object>
 				</array>
 			</object>
@@ -976,7 +982,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">87</int>
+			<int key="maxID">88</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1047,6 +1053,7 @@
 						<string key="pictureButton">UIButton</string>
 						<string key="sendButton">UIButton</string>
 						<string key="tableController">ChatRoomTableViewController</string>
+						<string key="transferBackgroundImage">UIImageView</string>
 						<string key="transferView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -1113,6 +1120,10 @@
 						<object class="IBToOneOutletInfo" key="tableController">
 							<string key="name">tableController</string>
 							<string key="candidateClassName">ChatRoomTableViewController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="transferBackgroundImage">
+							<string key="name">transferBackgroundImage</string>
+							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="transferView">
 							<string key="name">transferView</string>

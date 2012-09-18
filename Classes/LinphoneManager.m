@@ -87,6 +87,7 @@ extern  void libmsbcg729_init();
 @synthesize sounds;
 @synthesize logs;
 @synthesize speakerEnabled;
+@synthesize photoLibrary;
 
 struct codec_name_pref_table{
     const char *name;
@@ -218,6 +219,7 @@ struct codec_name_pref_table codec_pref_table[]={
         [self openDatabase];
         [self copyDefaultSettings];
         lastRemoteNotificationTime=0;
+        photoLibrary = [[ALAssetsLibrary alloc] init];
     }
     return self;
 }
@@ -239,6 +241,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
 	}
     
+    [photoLibrary release];
     [super dealloc];
 }
 
@@ -433,7 +436,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat setLocalContact:@""];
     [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
     if (linphone_chat_message_get_external_body_url(msg)) {
-		[chat setMessage:NSLocalizedString(@"Incoming file",nil)];
+		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(msg)]];
 	} else {
 		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
     }
@@ -443,17 +446,12 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat create];
     
     ms_free(fromStr);
-    NSString* ext_body_url=nil;
-	if (linphone_chat_message_get_external_body_url(msg)) {
-		ext_body_url=[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(msg)];
-	}
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSValue valueWithPointer:room], @"room", 
 							[NSValue valueWithPointer:linphone_chat_message_get_from(msg)], @"from",
 							chat.message, @"message", 
 							chat, @"chat",
-							ext_body_url,@"external_body_url",
                            nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
     [chat release];

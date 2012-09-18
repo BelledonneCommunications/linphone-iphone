@@ -21,15 +21,25 @@
 #import "ChatRoomTableViewController.h"
 #import "UIChatRoomCell.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
 
 #import <NinePatch.h>
 
 @implementation ChatRoomTableViewController
 
 @synthesize remoteAddress;
+@synthesize chatRoomDelegate;
 
+#pragma mark - Lifecycle Functions
 
-#pragma mark - ViewController
+- (void)dealloc {
+    [remoteAddress release];
+    [chatRoomDelegate release];
+    
+    [super dealloc];
+}
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -73,6 +83,7 @@
     [self.tableView endUpdates];
     [self scrollToLastUnread:true];
 }
+
 - (void)updateChatEntry:(ChatModel*)chat {
     if(data == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update entry: null data"];
@@ -86,6 +97,7 @@
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE];; //just reload
 	return;
 }
+
 - (void)scrollToLastUnread:(BOOL)animated {
     if(data == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot add entry: null data"];
@@ -145,7 +157,7 @@
     }
     
     [cell setChat:[data objectAtIndex:[indexPath row]]];
-    
+    [cell setChatRoomDelegate:chatRoomDelegate];
     return cell;
 }
 

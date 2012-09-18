@@ -212,17 +212,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>15</key>
+							<key>16</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/15/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/16/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T14:45:49Z</date>
+					<date>2012-09-18T13:03:28Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -232,7 +232,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>1f8683826a86cb2ad7e55cc5c9dcafaf
+					<string>fb9acb898a88e8d219dfd663e9b8eb19
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -568,9 +568,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>15</string>
+						<string>16</string>
 						<key>fr</key>
-						<string>15</string>
+						<string>16</string>
 					</dict>
 				</dict>
 				<dict>
@@ -4281,17 +4281,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>4</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ImageViewController/3/ImageViewController.xib</string>
+								<string>Classes/ImageViewController/4/ImageViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T13:00:17Z</date>
+					<date>2012-09-18T12:55:28Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -4301,7 +4301,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>724a8c5069c0fbde9b1e56ef37a42cba
+					<string>cf8736251f03474edd9a8c46b942ae63
 </string>
 					<key>name</key>
 					<string>ImageViewController.xib</string>
@@ -4340,9 +4340,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>4</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>4</string>
 					</dict>
 				</dict>
 			</array>
@@ -7354,7 +7354,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-14T11:57:58Z</date>
+					<date>2012-09-18T14:20:34Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7364,7 +7364,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>dcecc0eedf9132813ef8a938d07d7917
+					<string>9801969515d6fafb3f05d8b036f9e80d
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -7912,6 +7912,31 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Cannot write image to photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Cannot write image to photo library</string>
+								<key>fr</key>
+								<string>Impossible d'enregistrer l'image dans l'album photo</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Check error(s)</string>
 							<key>localizations</key>
 							<dict>
@@ -8387,31 +8412,6 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Incoming file stored to your photo library</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Incoming file stored to your photo library</string>
-								<key>fr</key>
-								<string>Fichier entrant stocké</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>Invalid SIP address</string>
 							<key>localizations</key>
 							<dict>
@@ -8717,31 +8717,6 @@ La cause était: %2$@</string>
 								<string>Phone numbers</string>
 								<key>fr</key>
 								<string>Numéros de téléphone</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Photo library</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Photo library</string>
-								<key>fr</key>
-								<string>Photos</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -9657,6 +9632,56 @@ Raison: %2$s</string>
 								<string>Tranfer error</string>
 								<key>fr</key>
 								<string>Erreur de transfert</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Incoming file stored to your photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming file stored to your photo library</string>
+								<key>fr</key>
+								<string>Fichier entrant stocké</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Photo library</string>
+								<key>fr</key>
+								<string>Photos</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

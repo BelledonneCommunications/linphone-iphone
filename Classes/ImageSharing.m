@@ -26,13 +26,14 @@
 @synthesize connection;
 @synthesize data;
 @synthesize upload;
-
+@synthesize userInfo;
 
 #pragma mark - Lifecycle Functions
 
-+ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate {
++ (id)imageSharingUpload:(NSURL*)url image:(UIImage*)image delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
+        imgs.userInfo = auserInfo;
         imgs->upload = TRUE;
         imgs->delegate = [delegate retain];
         imgs->data = [[NSMutableData alloc] init];
@@ -44,9 +45,10 @@
     return imgs;
 }
 
-+ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate {
++ (id)imageSharingDownload:(NSURL*)url delegate:(id<ImageSharingDelegate>)delegate userInfo:(id)auserInfo{
     ImageSharing *imgs = [[ImageSharing alloc] init];
     if(imgs != nil) {
+        imgs.userInfo = auserInfo;
         imgs->upload = FALSE;
         imgs->delegate = [delegate retain];
         imgs->data = [[NSMutableData alloc] init];
@@ -62,6 +64,7 @@
     [connection release];
     [data release];
     [delegate release];
+    [userInfo release];
     [super dealloc];
 }
 

@@ -24,6 +24,30 @@
 @implementation ImagePickerViewController
 
 @synthesize imagePickerDelegate;
+@synthesize sourceType;
+@synthesize mediaTypes;
+@synthesize allowsEditing;
+
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    self = [super init];
+    if (self != nil) {
+        pickerController = [[UIImagePickerController alloc] init];
+        if([LinphoneManager runningOnIpad]) {
+            popoverController = [[UIPopoverController alloc] initWithContentViewController:pickerController];
+        }
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [pickerController release];
+    [popoverController release];
+    
+    [super dealloc];
+}
 
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -50,7 +74,55 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setDelegate:self];
+    
+    [self.view setAutoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+    if(popoverController == nil) {
+        [pickerController.view setFrame:[self.view bounds]];
+        [self.view addSubview:[pickerController view]];
+    } else {
+        [popoverController setDelegate:self];
+    }
+    [pickerController setDelegate:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if(popoverController != nil) {
+        [popoverController presentPopoverFromRect:CGRectZero inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if(popoverController != nil) {
+        [popoverController dismissPopoverAnimated: NO];
+    }
+}
+
+#pragma mark - Property Functions
+
+- (BOOL)allowsEditing {
+    return pickerController.allowsEditing;
+}
+
+- (void)setAllowsEditing:(BOOL)aallowsEditing {
+    pickerController.allowsEditing = aallowsEditing;
+}
+
+- (UIImagePickerControllerSourceType)sourceType {
+    return pickerController.sourceType;
+}
+
+- (void)setSourceType:(UIImagePickerControllerSourceType)asourceType {
+    pickerController.sourceType = asourceType;
+}
+
+- (NSArray *)mediaTypes {
+    return pickerController.mediaTypes;
+}
+
+- (void)setMediaTypes:(NSArray *)amediaTypes {
+    pickerController.mediaTypes = amediaTypes;
 }
 
 
@@ -88,13 +160,18 @@ static UICompositeViewDescription *compositeDescription = nil;
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     if(image != nil && imagePickerDelegate != nil) {
-        [imagePickerDelegate imagePickerDelegateImage:image];
+        [imagePickerDelegate imagePickerDelegateImage:image info:info];
     }
     [self dismiss];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [self dismiss];
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)apopoverController {
+    [self dismiss];
+    return TRUE;
 }
 
 @end

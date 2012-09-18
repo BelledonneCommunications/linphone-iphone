@@ -21,6 +21,8 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <AssetsLibrary/ALAssetsLibrary.h>
+
 #import <sqlite3.h>
 
 #import "IASKSettingsReader.h"
@@ -140,6 +142,7 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL speakerEnabled;
+@property (readonly) ALAssetsLibrary *photoLibrary;
 
 @end
 

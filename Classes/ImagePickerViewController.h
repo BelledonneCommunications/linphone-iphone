@@ -21,14 +21,20 @@
 
 @protocol ImagePickerDelegate <NSObject>
 
-- (void)imagePickerDelegateImage:(UIImage*)image;
+- (void)imagePickerDelegateImage:(UIImage*)image info:(NSDictionary *)info;
 
 @end
 
-@interface ImagePickerViewController : UIImagePickerController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
+@interface ImagePickerViewController : UIViewController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIPopoverControllerDelegate> {
+    @private
+    UIImagePickerController *pickerController;
+    UIPopoverController *popoverController;
 }
 
-@property (nonatomic, retain) id<ImagePickerDelegate> imagePickerDelegate;
+@property(nonatomic, retain) id<ImagePickerDelegate> imagePickerDelegate;
+@property(nonatomic)           UIImagePickerControllerSourceType     sourceType;
+@property(nonatomic,copy)      NSArray                              *mediaTypes;
+@property(nonatomic)           BOOL                                  allowsEditing;
 
 + (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block;
 

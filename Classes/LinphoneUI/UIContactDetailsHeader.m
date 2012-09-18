@@ -264,7 +264,7 @@
 
 #pragma mark - ContactDetailsImagePickerDelegate Functions
 
-- (void)imagePickerDelegateImage:(UIImage*)image {
+- (void)imagePickerDelegateImage:(UIImage*)image info:(NSDictionary *)info{
     NSError* error = NULL;
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
         [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];

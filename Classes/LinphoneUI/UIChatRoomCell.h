@@ -20,6 +20,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ChatModel.h"
+#import "ChatRoomTableViewController.h"
+
 
 @interface UIChatRoomCell : UITableViewCell {
 }
@@ -33,10 +35,15 @@
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;
+@property (nonatomic, retain) IBOutlet UIButton* downloadButton;
+
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat width:(int)width;
 
+@property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
 
 - (IBAction)onDeleteClick:(id)event;
+- (IBAction)onDownloadClick:(id)event;
+- (IBAction)onImageClick:(id)event;
 
 @end
