@@ -1,0 +1,51 @@
+/* Wifi only */
+"Wifi only" = "Wifi only";
+
+/* Stun server */
+"Stun server" = "Stun server";
+
+/* ICE */
+"ICE" = "ICE";
+
+/* Random Port */
+"Random Port" = "Random Port";
+
+/* Port */
+"Port" = "Port";
+
+/* Audio Port */
+"Audio Port" = "Audio Port";
+
+/* Video Port */
+"Video Port" = "Video Port";
+
+/* Transport */
+"Transport" = "Transport";
+
+/* Media Encryption */
+"Media Encryption" = "Media Encryption";
+
+/* Push Notifications */
+"Push Notification" = "Push Notification";
+
+/* Transport */
+"Transport" = "Transport";
+
+/* udp */
+"udp" = "udp";
+
+/* tcp */
+"tcp" = "tcp";
+
+/* tls */
+"tls" = "tls";
+
+/* None */
+"None" = "None";
+
+/* SRTP */
+"SRTP" = "SRTP";
+
+/* ZRTP */
+"ZRTP" = "ZRTP";
+

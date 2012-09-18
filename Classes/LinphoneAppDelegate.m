@@ -248,12 +248,12 @@
 #pragma mark - PushNotification Functions
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Token %@", deviceToken];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Token %@", deviceToken];
     [[LinphoneManager instance] setPushNotificationToken:deviceToken];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Error %@", error];
+    [LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: Error %@", [error localizedDescription]];
     [[LinphoneManager instance] setPushNotificationToken:nil];
 }
 

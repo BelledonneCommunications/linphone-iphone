@@ -52,11 +52,6 @@ typedef enum _ViewElement {
 @synthesize backButton;
 @synthesize startButton;
 
-static int LINPHONE_WIZARD_MIN_PASSWORD_LENGTH = 6;
-static int LINPHONE_WIZARD_MIN_USERNAME_LENGTH = 4;
-static NSString *LINPHONE_WIZARD_URL = @"https://www.linphone.org/wizard.php";
-static NSString *LINPHONE_WIZARD_DOMAIN = @"sip.linphone.org";
-
 
 #pragma mark - Lifecycle Functions
 
@@ -114,12 +109,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self resetWizard];
-}
-
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -166,7 +155,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)resetWizard {
+- (void)reset {
     [self clearProxyConfig];
     [WizardViewController cleanTextField:welcomeView];
     [WizardViewController cleanTextField:choiceView];
@@ -258,23 +247,69 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
 }
 
-- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain {
-	const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] UTF8String];
+- (void)setDefaultSettings:(LinphoneProxyConfig*)proxyCfg {
+    BOOL pushnotification = [[LinphoneManager instance] lpConfigBoolForKey:@"push_notification" forSection:@"wizard"];
+    [[LinphoneManager instance] lpConfigSetBool:pushnotification forKey:@"pushnotification_preference"];
+    if(pushnotification) {
+        [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
+    }
+    int expires = [[LinphoneManager instance] lpConfigIntForKey:@"expires" forSection:@"wizard"];
+    linphone_proxy_config_expires(proxyCfg, expires);
+    
+    NSString* transport = [[LinphoneManager instance] lpConfigStringForKey:@"transport" forSection:@"wizard"];
+    LinphoneCore *lc = [LinphoneManager getLc];
+    LCSipTransports transportValue={0};
+	if (transport!=nil) {
+		if (linphone_core_get_sip_transports(lc, &transportValue)) {
+			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
+		}
+		// Only one port can be set at one time, the others's value is 0
+		if ([transport isEqualToString:@"tcp"]) {
+			transportValue.tcp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
+			transportValue.udp_port=0;
+            transportValue.tls_port=0;
+		} else if ([transport isEqualToString:@"udp"]){
+			transportValue.udp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
+			transportValue.tcp_port=0;
+            transportValue.tls_port=0;
+		} else if ([transport isEqualToString:@"tls"]){
+			transportValue.tls_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
+			transportValue.tcp_port=0;
+            transportValue.udp_port=0;
+		} else {
+			[LinphoneLogger logc:LinphoneLoggerError format:"unexpected transport [%s]",[transport cStringUsingEncoding:[NSString defaultCStringEncoding]]];
+		}
+		if (linphone_core_set_sip_transports(lc, &transportValue)) {
+			[LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+		}
+	}
+}
+
+- (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {
+    if(server == nil) {
+        server = domain;
+    }
+	const char* identity = [[NSString stringWithFormat:@"sip:%@@%@", username, domain] UTF8String];
 	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
-	LinphoneAuthInfo* info=linphone_auth_info_new([username UTF8String],NULL,[password UTF8String],NULL,NULL);
-	linphone_proxy_config_set_identity(proxyCfg,identity);
-	linphone_proxy_config_set_server_addr(proxyCfg,[domain UTF8String]);
-	linphone_proxy_config_enable_register(proxyCfg,true);
-	linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
+	LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL);
+	linphone_proxy_config_set_identity(proxyCfg, identity);
+	linphone_proxy_config_set_server_addr(proxyCfg, [server UTF8String]);
+    if([server compare:domain options:NSCaseInsensitiveSearch] != 0) {
+        linphone_proxy_config_set_route(proxyCfg, [server UTF8String]);
+    }
+	linphone_proxy_config_enable_register(proxyCfg, true);
+    if([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0) {
+        [self setDefaultSettings:proxyCfg];
+    }
+    linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
-	linphone_core_add_auth_info([LinphoneManager getLc],info)
-	;
+	linphone_core_add_auth_info([LinphoneManager getLc], info);
 }
 
 - (void)checkUserExist:(NSString*)username {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC check_account %@", username];
     
-    NSURL *URL = [NSURL URLWithString: LINPHONE_WIZARD_URL];
+    NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"check_account" withParameters:[NSArray arrayWithObjects:username, nil]];
     
@@ -289,7 +324,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *useragent = [LinphoneManager getUserAgent];
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent];
     
-    NSURL *URL = [NSURL URLWithString: LINPHONE_WIZARD_URL];
+    NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"create_account_with_useragent" withParameters:[NSArray arrayWithObjects:identity, password, email, useragent, nil]];
     
@@ -303,7 +338,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)checkAccountValidation:(NSString*)identity {
     [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC check_account_validated %@", identity];
     
-    NSURL *URL = [NSURL URLWithString: LINPHONE_WIZARD_URL];
+    NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
     [request setMethod: @"check_account_validated" withParameters:[NSArray arrayWithObjects:identity, nil]];
     
@@ -384,7 +419,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCheckValidationClick:(id)sender {
     NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
-    [self checkAccountValidation:[NSString stringWithFormat:@"%@@%@", username, LINPHONE_WIZARD_DOMAIN]];
+    [self checkAccountValidation:[NSString stringWithFormat:@"%@@%@", username, [[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]]];
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
@@ -392,14 +427,16 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *domain = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
-    [self addProxyConfig:username password:password domain:domain];
+    [self addProxyConfig:username password:password domain:domain server:nil];
 }
 
 - (IBAction)onSignInClick:(id)sender {
     [self.waitView setHidden:false];
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
-    [self addProxyConfig:username password:password domain:LINPHONE_WIZARD_DOMAIN];
+    [self addProxyConfig:username password:password
+                  domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
+                  server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
 }
 
 - (IBAction)onRegisterClick:(id)sender {
@@ -409,13 +446,16 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
     NSMutableString *errors = [NSMutableString string];
     
-    if ([username length] < LINPHONE_WIZARD_MIN_USERNAME_LENGTH) {
+    int username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
+    int password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
+    
+    if ([username length] < username_length) {
         
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), LINPHONE_WIZARD_MIN_USERNAME_LENGTH]];
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
     }
     
-    if ([password length] < LINPHONE_WIZARD_MIN_PASSWORD_LENGTH) {
-        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), LINPHONE_WIZARD_MIN_PASSWORD_LENGTH]];
+    if ([password length] < password_length) {
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The password is too short (minimum %d characters).\n", nil), password_length]];
     }
     
     if (![password2 isEqualToString:password]) {
@@ -446,6 +486,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdateEvent:(NSNotification*)notif {
     [self registrationUpdate:[[notif.userInfo objectForKey: @"state"] intValue]];
 }
+
 
 #pragma mark - Keyboard Event Functions
 
@@ -533,7 +574,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                 NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
                 NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
-                [self createAccount:[NSString stringWithFormat:@"%@@%@", username, LINPHONE_WIZARD_DOMAIN] password:password email:email];
+                [self createAccount:[NSString stringWithFormat:@"%@@%@", username, [[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]] password:password email:email];
             }
         } else if([[request method] isEqualToString:@"create_account_with_useragent"]) {
             if([response object] == [NSNumber numberWithInt:0]) {
@@ -555,7 +596,9 @@ static UICompositeViewDescription *compositeDescription = nil;
              if([response object] == [NSNumber numberWithInt:1]) {
                  NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                  NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
-                [self addProxyConfig:username password:password domain:LINPHONE_WIZARD_DOMAIN];
+                [self addProxyConfig:username password:password
+                              domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
+                              server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
              } else {
                  UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue",nil)
                                                                      message:NSLocalizedString(@"Your account is not validate yet.", nil)

@@ -43,9 +43,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		changedDict=[[NSMutableDictionary alloc] init];
 		[self transformLinphoneCoreToKeys];
         LinphoneCore *lc=[LinphoneManager getLc];
-		if (lp_config_get_int(linphone_core_get_config(lc),"app","config_migrated",0) == 0) {
+		if (lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY,"config_migrated",0) == 0) {
 			[self handleMigration];
-			lp_config_set_int(linphone_core_get_config(lc),"app","config_migrated",1);
+			lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY,"config_migrated",1);
 		}
 	}
 	return self;
@@ -103,7 +103,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
             [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
-			[self setString:linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
+			[self setString: linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
 				|| port!=NULL){
 				char tmp[256]={0};
@@ -120,8 +120,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			
 		}
 	} else {
-		[self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires",600) forKey:@"expire_preference"];
+		[self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires", 600) forKey:@"expire_preference"];
 	}
+    
+    [self setBool:lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "pushnotification_preference", 0) forKey:@"pushnotification_preference"];
     {
         LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
         if(parsed != NULL) {
@@ -187,21 +189,20 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
-    [self setString: lp_config_get_string(linphone_core_get_config(lc),"app","rotation_preference", "auto") forKey:@"rotation_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference", 0) forKey:@"debugenable_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","animations_preference", 1) forKey:@"animations_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","check_config_disable_preference", 0) forKey:@"check_config_disable_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","wifi_only_preference", 0) forKey:@"wifi_only_preference"];
-	[self setString: lp_config_get_string(linphone_core_get_config(lc),"app","file_upload_url_preference",NULL) forKey:@"file_upload_url_preference"];
+    [self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rotation_preference", "auto") forKey:@"rotation_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", 0) forKey:@"debugenable_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", 1) forKey:@"animations_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", 0) forKey:@"wifi_only_preference"];
+	[self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "file_upload_url_preference", NULL) forKey:@"file_upload_url_preference"];
 	
 	/*keep this one also in the standardUserDefaults so that it can be read before starting liblinphone*/
 	BOOL start_at_boot = TRUE;
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"]!=Nil)
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"start_at_boot_preference"] != Nil)
         start_at_boot = [[NSUserDefaults standardUserDefaults]  boolForKey:@"start_at_boot_preference"];
 	[self setBool: start_at_boot forKey:@"start_at_boot_preference"];
 	BOOL background_mode = TRUE;
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"backgroundmode_preference"]!=Nil)
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"backgroundmode_preference"] != Nil)
         background_mode =[[NSUserDefaults standardUserDefaults]  boolForKey:@"backgroundmode_preference"];
 	[self setBool: background_mode forKey:@"backgroundmode_preference"];
 	
@@ -218,14 +219,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		pol=linphone_core_get_video_policy(lc);
 		[self setBool:(pol->automatically_initiate) forKey:@"start_video_preference"];
         [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
-        [self setBool:lp_config_get_int(linphone_core_get_config(lc),"app","self_video_preference", 1) forKey:@"self_video_preference"];
+        [self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
+        [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
 	}
     {
-        [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","sipinfo_dtmf_preference", 0) forKey:@"sipinfo_dtmf_preference"];
-        [self setBool: lp_config_get_int(linphone_core_get_config(lc),"app","rfc_dtmf_preference", 1) forKey:@"rfc_dtmf_preference"];
+        [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "sipinfo_dtmf_preference", 0) forKey:@"sipinfo_dtmf_preference"];
+        [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rfc_dtmf_preference", 1) forKey:@"rfc_dtmf_preference"];
     }
     
-	if (lp_config_get_int(linphone_core_get_config(lc),"app","debugenable_preference",0))
+	if (lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference",0))
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	
 	[changedDict release];
@@ -352,9 +354,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		
 		// configure proxy entries
-		linphone_proxy_config_set_identity(proxyCfg,identity);
-		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
-		linphone_proxy_config_enable_register(proxyCfg,true);
+		linphone_proxy_config_set_identity(proxyCfg, identity);
+		linphone_proxy_config_set_server_addr(proxyCfg, proxy);
+		linphone_proxy_config_enable_register(proxyCfg, true);
 		
 
 		int expire = [self integerForKey:@"expire_preference"];
@@ -365,11 +367,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (isWifiOnly && lLinphoneMgr.connectivity == wwan) {
 			linphone_proxy_config_expires(proxyCfg, 0);
 		} else {
-            linphone_proxy_config_expires(proxyCfg,expire);
+            linphone_proxy_config_expires(proxyCfg, expire);
 		}
 		
 		if (isOutboundProxy)
-			linphone_proxy_config_set_route(proxyCfg,proxy);
+			linphone_proxy_config_set_route(proxyCfg, proxy);
 		
 		if ([self objectForKey:@"prefix_preference"]) {		
 			NSString* prefix = [self stringForKey:@"prefix_preference"];
@@ -382,8 +384,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
 		}
 		
+        BOOL pushnotification = [self boolForKey:@"pushnotification_preference"];
+        lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "pushnotification_preference", pushnotification);
         
-        [[LinphoneManager instance ]addPushTokenToProxyConfig : proxyCfg ];
+        [[LinphoneManager instance] addPushTokenToProxyConfig:proxyCfg];
         
 		linphone_core_add_proxy_config(lc,proxyCfg);
 		//set to default proxy
@@ -460,8 +464,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
     policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(lc, &policy);
-    lp_config_set_int(linphone_core_get_config(lc),"app","self_video_preference", [self boolForKey:@"self_video_preference"]);
-    
+    linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
+    linphone_core_enable_video_preview(lc, [self boolForKey:@"preview_preference"]);
     
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];
@@ -493,21 +497,21 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	} else {
 		isbackgroundModeEnabled = false;
 	}
-	lp_config_set_int(linphone_core_get_config(lc),"app","backgroundmode_preference", isbackgroundModeEnabled);
+	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "backgroundmode_preference", isbackgroundModeEnabled);
 	
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
-    lp_config_set_int(linphone_core_get_config(lc),"app","enable_first_login_view_preference", firstloginview);
+    lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", firstloginview);
     
     NSString *landscape = [self stringForKey:@"rotation_preference"];
-    lp_config_set_string(linphone_core_get_config(lc),"app","rotation_preference", [landscape UTF8String]);
+    lp_config_set_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rotation_preference", [landscape UTF8String]);
     
 	BOOL debugmode = [self boolForKey:@"debugenable_preference"];
-	lp_config_set_int(linphone_core_get_config(lc),"app","debugenable_preference", debugmode);
+	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
 	if (debugmode) linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	else linphone_core_disable_logs();
     
     BOOL animations = [self boolForKey:@"animations_preference"];
-	lp_config_set_int(linphone_core_get_config(lc),"app","animations_preference", animations);
+	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
 	NSString*  file_upload_url= [self stringForKey:@"file_upload_url_preference"];
 	[[LinphoneManager instance] lpConfigSetString:file_upload_url forKey:@"file_upload_url_preference"];
 	

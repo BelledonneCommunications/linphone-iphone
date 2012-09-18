@@ -30,7 +30,7 @@
 #import "ContactsViewController.h"
 #import "ContactDetailsViewController.h"
 #import "ContactDetailsLabelViewController.h"
-#import "ContactDetailsImagePickerController.h"
+#import "ImagePickerViewController.h"
 #import "HistoryViewController.h"
 #import "HistoryDetailsViewController.h"
 #import "InCallViewController.h"
@@ -39,10 +39,10 @@
 #import "WizardViewController.h"
 #import "IncomingCallViewController.h"
 #import "ConsoleViewController.h"
+#import "ImageViewController.h"
 
-@interface PhoneMainView : UIViewController<CallActionSheetDelegate, IncomingCallViewDelegate> {
+@interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
     @private
-    UIActionSheet *batteryActionSheet;
     int loadCount;
     NSMutableArray *viewStack;
     NSMutableArray *inhibitedEvents;

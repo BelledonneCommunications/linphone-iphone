@@ -1,4 +1,4 @@
-/* ContactDetailsImagePickerController.m
+/* ImagePickerViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,10 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "ContactDetailsImagePickerController.h"
+#import "ImagePickerViewController.h"
 #import "PhoneMainView.h"
+#import "DTActionSheet.h"
 
-@implementation ContactDetailsImagePickerController
+@implementation ImagePickerViewController
 
 @synthesize imagePickerDelegate;
 
@@ -31,8 +32,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
     if(compositeDescription == nil) {
-        compositeDescription = [[UICompositeViewDescription alloc] init:@"ContactDetailsImage"
-                                                                content:@"ContactDetailsImagePickerController"
+        compositeDescription = [[UICompositeViewDescription alloc] init:@"ImagePicker"
+                                                                content:@"ImagePickerViewController"
                                                                stateBar:nil
                                                         stateBarEnabled:false
                                                                  tabBar:@"UIMainBar"
@@ -56,9 +57,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)dismiss {
-    if([[[PhoneMainView instance] currentView] equal:[ContactDetailsImagePickerController compositeViewDescription]]) {
+    if([[[PhoneMainView instance] currentView] equal:[ImagePickerViewController compositeViewDescription]]) {
         [[PhoneMainView instance] popCurrentView];
     }
+}
+
++ (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block {
+    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+	    [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
+            block(UIImagePickerControllerSourceTypeCamera);
+        }];
+	}
+	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+	    [sheet addButtonWithTitle:NSLocalizedString(@"Photo library",nil) block:^(){
+            block(UIImagePickerControllerSourceTypePhotoLibrary);
+        }];
+	}
+    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+    
+    [sheet showInView:[PhoneMainView instance].view];
 }
 
 
@@ -69,8 +87,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(image == nil) {
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
-    if(image != nil) {
-        [imagePickerDelegate changeContactImage:image];
+    if(image != nil && imagePickerDelegate != nil) {
+        [imagePickerDelegate imagePickerDelegateImage:image];
     }
     [self dismiss];
 }

@@ -111,6 +111,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>600</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -137,6 +139,8 @@
 			<string>Display name</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>AutocapitalizationType</key>
@@ -155,6 +159,24 @@
 			<string>Username</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Sharing server</string>
+			<key>Key</key>
+			<string>file_upload_url_preference</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 	</array>
 </dict>

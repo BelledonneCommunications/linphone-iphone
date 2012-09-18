@@ -63,7 +63,14 @@
 #pragma mark - Property Funcitons
 
 - (void)setChat:(ChatModel *)achat {
-    chat = achat;
+    if(chat == achat)
+        return;
+    if(chat != nil) {
+        [chat release];
+    }
+    if(achat) {
+        chat = [achat retain];
+    }
     [self update];
 }
 

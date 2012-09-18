@@ -44,6 +44,9 @@ static void audioRouteChangeListenerCallback (
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
+const char *const LINPHONERC_APPLICATION_KEY = "app";
+
+NSString *const kLinphoneCoreUpdate = @"kLinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
@@ -419,9 +422,9 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 #pragma mark - Text Received Functions
 
-- (void)onTextReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room from:(const LinphoneAddress *)from message:(const char *)message {
+- (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room  message:(LinphoneChatMessage*)msg {
     
-    char *fromStr = linphone_address_as_string_uri_only(from);
+    char *fromStr = linphone_address_as_string_uri_only(linphone_chat_message_get_from(msg));
     if(fromStr == NULL)
         return;
     
@@ -429,27 +432,35 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     ChatModel *chat = [[ChatModel alloc] init];
     [chat setLocalContact:@""];
     [chat setRemoteContact:[NSString stringWithUTF8String:fromStr]];
-    [chat setMessage:[NSString stringWithUTF8String:message]];
-    [chat setDirection:[NSNumber numberWithInt:1]];
+    if (linphone_chat_message_get_external_body_url(msg)) {
+		[chat setMessage:NSLocalizedString(@"Incoming file",nil)];
+	} else {
+		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
+    }
+	[chat setDirection:[NSNumber numberWithInt:1]];
     [chat setTime:[NSDate date]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
     ms_free(fromStr);
-    
+    NSString* ext_body_url=nil;
+	if (linphone_chat_message_get_external_body_url(msg)) {
+		ext_body_url=[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(msg)];
+	}
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                           [NSValue valueWithPointer:room], @"room", 
-                           [NSValue valueWithPointer:from], @"from",
-                           [NSString stringWithUTF8String:message], @"message", 
-                           chat, @"chat", 
+							[NSValue valueWithPointer:room], @"room", 
+							[NSValue valueWithPointer:linphone_chat_message_get_from(msg)], @"from",
+							chat.message, @"message", 
+							chat, @"chat",
+							ext_body_url,@"external_body_url",
                            nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
     [chat release];
 }
 
-static void linphone_iphone_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
-    [(LinphoneManager*)linphone_core_get_user_data(lc) onTextReceived:lc room:room from:from message:message];
+static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
+    [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
 }
 
 
@@ -505,7 +516,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]),"app","wifi_only_preference",FALSE);
+			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
@@ -579,7 +590,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_message=linphone_iphone_log,
 	.display_warning=linphone_iphone_log,
 	.display_url=NULL,
-	.text_received=linphone_iphone_text_received,
+	.text_received=NULL,
+	.message_received=linphone_iphone_message_received,
 	.dtmf_received=NULL,
     .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
@@ -592,13 +604,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 - (void)startLibLinphone {
 	
 	//get default config from bundle
-	NSBundle* myBundle = [NSBundle mainBundle];
-	NSString* factoryConfig = [myBundle pathForResource:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory" ofType:nil] ;
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *confiFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/.linphonerc"];
-	NSString *zrtpSecretsFileName = [[paths objectAtIndex:0] stringByAppendingString:@"/zrtp_secrets"];
-	const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	connectivity=none;
+	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
+	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
+	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
+	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
 	
@@ -624,17 +634,16 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-    
-	
+
 	fastAddressBook = [[FastAddressBook alloc] init];
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char* lRing = [[myBundle pathForResource:@"ring"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_ring(theLinphoneCore, lRing );
-	const char* lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[LinphoneManager bundleFile:@"ring.wab"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	linphone_core_set_ring(theLinphoneCore, lRing);
+	const char* lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-    const char* lPlay = [[myBundle pathForResource:@"hold"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+    const char* lPlay = [[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 	
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -664,7 +673,7 @@ static LinphoneCoreVTable linphonec_vtable = {
         [error release];
 	}
     
-    NSString* path = [myBundle pathForResource:@"nowebcamCIF" ofType:@"jpg"];
+    NSString* path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
     if (path) {
         const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
         [LinphoneLogger logc:LinphoneLoggerLog format:"Using '%s' as source image for no webcam", imagePath];
@@ -713,7 +722,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground) {
 		//go directly to bg mode
 		[self resignActive];
-	}	
+	}
+    
+    // Post event
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate object:[LinphoneManager instance] userInfo:dict];
 }
 
 - (void)destroyLibLinphone {
@@ -725,6 +738,11 @@ static LinphoneCoreVTable linphonec_vtable = {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Destroy linphonecore"];
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;
+        
+        // Post event
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate object:[LinphoneManager instance] userInfo:dict];
+        
         SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
         if (proxyReachability)
             CFRelease(proxyReachability);
@@ -991,9 +1009,9 @@ static void audioRouteChangeListenerCallback (
     }
 }
 
-- (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)proxyCfg{
+- (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
 	NSData *tokenData =  pushNotificationToken;
-	if(tokenData != nil) {
+	if(tokenData != nil && [self lpConfigBoolForKey:@"pusnotification_preference"]) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
 		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
 		for(int i = 0; i < [tokenData length]; ++i) {
@@ -1052,34 +1070,62 @@ static void audioRouteChangeListenerCallback (
 }
 
 
+#pragma mark - LPConfig Functions
 
-
-
--(void)lpConfigSetString:(NSString*) value forKey:(NSString*) key {
-	lp_config_set_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value?[value UTF8String]:NULL);
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key {
+    [self lpConfigSetString:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
--(NSString*)lpConfigStringForKey:(NSString*) key {
-	if (!theLinphoneCore) {
-		[LinphoneLogger log:LinphoneLoggerError format:@"cannot read configuration because linphone core not ready yet"];
-		return nil;
-	};
-	const char* value=lp_config_get_string(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],NULL);	
-	if (value) 
-		return [NSString stringWithCString:value encoding:[NSString defaultCStringEncoding]];
+
+- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString *)section {
+	if (!key) return;
+	lp_config_set_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value?[value UTF8String]:NULL);
+}
+
+- (NSString*)lpConfigStringForKey:(NSString*)key {
+    return [self lpConfigStringForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return nil;
+	const char* value = lp_config_get_string(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], NULL);
+	if (value)
+		return [NSString stringWithUTF8String:value];
 	else
 		return nil;
 }
--(void)lpConfigSetInt:(NSInteger) value forKey:(NSString*) key {
-	lp_config_set_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String], value );
-}
--(NSInteger)lpConfigIntForKey:(NSString*) key {
-	return lp_config_get_int(linphone_core_get_config(theLinphoneCore),"app",[key UTF8String],-1);
+
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key {
+    [self lpConfigSetInt:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
 
--(void)lpConfigSetBool:(BOOL) value forKey:(NSString*) key {
-	return [self lpConfigSetInt:(NSInteger)(value==TRUE) forKey:key];
+- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return;
+	lp_config_set_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], value );
 }
--(BOOL)lpConfigBoolForKey:(NSString*) key {
-	return [self lpConfigIntForKey:key] == 1;		
+
+- (NSInteger)lpConfigIntForKey:(NSString*)key {
+    return [self lpConfigIntForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
+
+- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString *)section {
+    if (!key) return -1;
+	return lp_config_get_int(linphone_core_get_config(theLinphoneCore), [section UTF8String], [key UTF8String], -1);
+}
+
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key {
+    [self lpConfigSetBool:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString *)section {
+	return [self lpConfigSetInt:(NSInteger)(value == TRUE) forKey:key forSection:section];
+}
+
+- (BOOL)lpConfigBoolForKey:(NSString*)key {
+    return [self lpConfigBoolForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+}
+
+- (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
+	return [self lpConfigIntForKey:key forSection:section] == 1;
+}
+
 @end

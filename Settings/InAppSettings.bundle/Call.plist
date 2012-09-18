@@ -19,6 +19,8 @@
 			<string>Prefix</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>

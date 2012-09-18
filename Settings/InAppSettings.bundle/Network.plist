@@ -27,6 +27,8 @@
 			<string>No</string>
 			<key>DefaultValue</key>
 			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -63,6 +65,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>5060</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Key</key>
@@ -79,6 +83,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>7076</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Key</key>
@@ -95,6 +101,8 @@
 			<string>NumberPad</string>
 			<key>DefaultValue</key>
 			<integer>9078</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -139,6 +147,16 @@
 				<string>SRTP</string>
 				<string>ZRTP</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Push Notification</string>
+			<key>Key</key>
+			<string>pushnotification_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 	</array>
 </dict>

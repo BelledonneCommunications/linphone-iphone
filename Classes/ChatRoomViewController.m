@@ -19,8 +19,10 @@
 
 #import "ChatRoomViewController.h"
 #import "PhoneMainView.h"
+#import "DTActionSheet.h"
 
 #import <NinePatch.h>
+
 
 @implementation ChatRoomViewController
 
@@ -28,7 +30,7 @@
 @synthesize sendButton;
 @synthesize messageField;
 @synthesize editButton;
-@synthesize remoteAddress = _remoteAddress;
+@synthesize remoteAddress;
 @synthesize addressLabel;
 @synthesize avatarImage;
 @synthesize headerView;
@@ -38,6 +40,10 @@
 @synthesize messageBackgroundImage;
 @synthesize footerBackgroundImage;
 @synthesize listTapGestureRecognizer;
+@synthesize pictureButton;
+@synthesize imageTransferProgressBar;
+@synthesize cancelTransferButton;
+@synthesize transferView;
 
 
 #pragma mark - Lifecycle Functions
@@ -46,6 +52,8 @@
     self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
     if (self != nil) {
         self->chatRoom = NULL;
+        self->imageSharing = NULL;
+        self->photoLibrary = [[ALAssetsLibrary alloc] init];
     }
     return self;
 }
@@ -56,7 +64,7 @@
     [messageField release];
     [sendButton release];
     [editButton release];
-    [_remoteAddress release];
+    [remoteAddress release];
     [addressLabel release];
     [avatarImage release];
     [headerView release];
@@ -64,7 +72,16 @@
     [messageView release];
     [messageBackgroundImage release];
     [footerBackgroundImage release];
+    
     [listTapGestureRecognizer release];
+    
+	[transferView release];
+	[pictureButton release];
+	[imageTransferProgressBar release];
+	[cancelTransferButton release];
+    
+    [photoLibrary release];
+    
     [super dealloc];
 }
 
@@ -91,7 +108,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -105,6 +121,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	messageField.font = [UIFont systemFontOfSize:18.0f];
     messageField.contentInset = UIEdgeInsetsZero;
     messageField.backgroundColor = [UIColor clearColor];
+    [sendButton setEnabled:FALSE];
 }
 
 
@@ -136,10 +153,31 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
                                                forNinePatchNamed:@"chat_background"]];
+	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"] != NULL 
+								&& [[[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"] length]>0;
+    
+    CGRect pictureFrame = pictureButton.frame;
+	CGRect messageframe = messageView.frame;
+    CGRect sendFrame = sendButton.frame;
+	if (fileSharingEnabled) {
+        [pictureButton setHidden:FALSE];
+        messageframe.origin.x = pictureFrame.origin.x + pictureFrame.size.width;
+        messageframe.size.width = sendFrame.origin.x - messageframe.origin.x;
+	} else {
+        [pictureButton setHidden:TRUE];
+        messageframe.origin.x = pictureFrame.origin.x;
+        messageframe.size.width = sendFrame.origin.x - messageframe.origin.x;
+	}
+	[messageView setFrame:messageframe];
+	
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    if(imageSharing) {
+        [imageSharing cancel];
+    }
     
     [messageField resignFirstResponder];
     
@@ -169,24 +207,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - 
 
 - (void)setRemoteAddress:(NSString*)aRemoteAddress {
-    if(_remoteAddress != nil) {
-        [_remoteAddress release];
+    if(remoteAddress != nil) {
+        [remoteAddress release];
     }
-    _remoteAddress = [aRemoteAddress copy];
+    remoteAddress = [aRemoteAddress copy];
     [messageField setText:@""];
     [self update];
-	[tableController setRemoteAddress: _remoteAddress];
+	[tableController setRemoteAddress: remoteAddress];
 }
 
 - (void)update {
-    if(_remoteAddress == NULL) {
+    if(remoteAddress == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update chat room header: null contact"];
         return;
     }
     
     NSString *displayName = nil;
     UIImage *image = nil;
-	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [_remoteAddress UTF8String]);
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [remoteAddress UTF8String]);
 	if (linphoneAddress == NULL) {
         [[PhoneMainView instance] popCurrentView];
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
@@ -207,8 +245,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         displayName = [FastAddressBook getContactDisplayName:acontact];
         image = [FastAddressBook getContactImage:acontact thumbnail:true];
     }
-	[_remoteAddress release];
-    _remoteAddress = [normalizedSipAddress retain];
+	[remoteAddress release];
+    remoteAddress = [normalizedSipAddress retain];
     
     // Display name
     if(displayName == nil) {
@@ -229,28 +267,28 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
 	ChatModel *chat = (ChatModel *)linphone_chat_message_get_user_data(msg); 
 	[LinphoneLogger log:LinphoneLoggerLog 
-				 format:@"Delivery status for [%@] is [%s]", chat.message, linphone_chat_message_state_to_string(state)];
+				 format:@"Delivery status for [%@] is [%s]",(chat.message?chat.message:@""),linphone_chat_message_state_to_string(state)];
 	[chat setState:[NSNumber numberWithInt:state]];
 	[chat update];
 	[thiz.tableController updateChatEntry:chat];
 }
 
-- (BOOL)sendMessage:(NSString *)message {
+- (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSString*) url{
     if(![LinphoneManager isLcReady]) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Linphone core not ready"];
         return FALSE;
     }
-    if(_remoteAddress == nil) {
+    if(remoteAddress == nil) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot send message: Null remoteAddress"];
         return FALSE;
     }
     if(chatRoom == NULL) {
-		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [_remoteAddress UTF8String]);
+		chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], [remoteAddress UTF8String]);
     }
     
     // Save message in database
     ChatModel *chat = [[ChatModel alloc] init];
-    [chat setRemoteContact:_remoteAddress];
+    [chat setRemoteContact:remoteAddress];
     [chat setLocalContact:@""];
     [chat setMessage:message];
     [chat setDirection:[NSNumber numberWithInt:0]];
@@ -260,9 +298,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [chat create];
     [tableController addChatEntry:chat];
     [chat release];
+    
     LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
 	linphone_chat_message_set_user_data(msg, chat);
-    linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
+    if (url) {
+		linphone_chat_message_set_external_body_url(msg, [url UTF8String]);
+	} 
+	linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
     return TRUE;
 }
 
@@ -273,12 +315,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     //LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
     //NSString *message = [[notif userInfo] objectForKey:@"message"];
     LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
-    ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
+    
+	ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
     if(from != NULL && chat != NULL) {
         char *fromStr = linphone_address_as_string_uri_only(from);
         if(fromStr != NULL) {
             if([[NSString stringWithUTF8String:fromStr] 
-                caseInsensitiveCompare:_remoteAddress] == NSOrderedSame) {
+                caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
                 [chat setRead:[NSNumber numberWithInt:1]];
                 [chat update];
                 [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
@@ -286,7 +329,20 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             }
             ms_free(fromStr);
         }
-    } else {
+
+		if ([[notif userInfo] objectForKey:@"external_body_url"]) {
+			NSString *pendingFileUrl = [[[notif userInfo] objectForKey:@"external_body_url"] retain];
+            
+			DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Incoming file stored to your photo library",nil)] autorelease];
+            [sheet addButtonWithTitle:NSLocalizedString(@"Accept",nil) block:^(){
+                imageSharing = [ImageSharing imageSharingDownload:[NSURL URLWithString:pendingFileUrl] delegate:self];
+                [footerView setHidden:TRUE];
+                [transferView setHidden:FALSE];
+            }];
+            [sheet addCancelButtonWithTitle:NSLocalizedString(@"Ignore",nil)];
+            [sheet showInView:[PhoneMainView instance].view];
+		}
+	} else {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Invalid textReceivedEvent"];
     }
 }
@@ -327,6 +383,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                 forNinePatchNamed:@"chat_background"]];
 }
 
+
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
@@ -340,8 +397,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (IBAction)onSendClick:(id)event {
-    if([self sendMessage:[messageField text]]) {
+    if([self sendMessage:[messageField text] withExterlBodyUrl:nil]) {
         [messageField setText:@""];
+        [self onMessageChange:nil];
     }
 }
 
@@ -355,6 +413,114 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     } else {
         [sendButton setEnabled:FALSE];
     }
+}
+
+- (IBAction)onPictureClick:(id)event {
+	[messageField resignFirstResponder];
+    
+    [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
+        UICompositeViewDescription *description = [[[ImagePickerViewController compositeViewDescription] copy] autorelease];
+        description.tabBar = nil; // Disable default tarbar
+        description.tabBarEnabled = false;
+        ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerViewController);
+        if(controller != nil) {
+            controller.sourceType = type;
+            
+            // Displays a control that allows the user to choose picture or
+            // movie capture, if both are available:
+            controller.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:type];
+            
+            // Hides the controls for moving & scaling pictures, or for
+            // trimming movies. To instead show the controls, use YES.
+            controller.allowsEditing = NO;
+            controller.imagePickerDelegate = self;
+        }
+    }];
+}
+
+- (IBAction)onTransferCancelClick:(id)event {
+    if(imageSharing) {
+        [imageSharing cancel];
+    }
+}
+
+
+#pragma mark ImageSharingDelegate
+
+- (void)imageSharingProgress:(ImageSharing*)aimageSharing progress:(float)progress {
+    [imageTransferProgressBar setProgress:progress animated:FALSE];
+}
+
+- (void)imageSharingAborted:(ImageSharing*)aimageSharing {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    imageSharing = NULL;
+}
+
+- (void)imageSharingError:(ImageSharing*)aimageSharing error:(NSError *)error {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    NSString *url = [aimageSharing.connection.currentRequest.URL absoluteString];
+    if (aimageSharing.upload) {
+		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot upload file to server [%@] because [%@]", url, [error localizedDescription]];
+        UIAlertView* errorAlert = [UIAlertView alloc];
+		[errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
+						  message:NSLocalizedString(@"Cannot transfer file to remote contact", nil)
+						 delegate:nil
+				cancelButtonTitle:NSLocalizedString(@"Ok",nil)
+				otherButtonTitles:nil ,nil];
+		[errorAlert show];
+        [errorAlert release];
+	} else {
+		[LinphoneLogger log:LinphoneLoggerError format:@"Cannot dowanlod file from [%@] because [%@]", url, [error localizedDescription]];
+        UIAlertView* errorAlert = [UIAlertView alloc];
+		[errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
+						  message:NSLocalizedString(@"Cannot transfer file from remote contact", nil)
+						 delegate:nil
+				cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+				otherButtonTitles:nil, nil];
+		[errorAlert show];
+        [errorAlert release];
+	}
+    imageSharing = NULL;
+}
+
+- (void)imageSharingUploadDone:(ImageSharing*)aimageSharing url:(NSURL*)url{
+    [self sendMessage:NSLocalizedString(@"Image sent", nil) withExterlBodyUrl:[url absoluteString]];
+    
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    imageSharing = NULL;
+}
+
+- (void)imageSharingDownloadDone:(ImageSharing*)aimageSharing image:(UIImage *)image {
+    [footerView setHidden:FALSE];
+	[transferView setHidden:TRUE];
+    
+    [photoLibrary writeImageToSavedPhotosAlbum:(CGImageRef)image
+                                 metadata:nil
+                          completionBlock:^(NSURL *assetURL, NSError *error){
+                              if (error) {
+                                  [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]",[error localizedDescription]];
+                              } else {
+                                  [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]",[assetURL absoluteString]];
+                              }
+                              ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
+                              if(controller != nil) {
+                                  [controller setImage:image];
+                              }
+                          }];
+    imageSharing = NULL;
+}
+
+
+#pragma mark ImagePickerDelegate
+
+- (void)imagePickerDelegateImage:(UIImage*)image {
+    NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"file_upload_url_preference"];
+    imageSharing = [ImageSharing imageSharingUpload:[NSURL URLWithString:urlString] image:image delegate:self];
+    [footerView setHidden:TRUE];
+	[transferView setHidden:FALSE];
 }
 
 

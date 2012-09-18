@@ -1,8 +1,10 @@
 [net]
 download_bw=512
 upload_bw=512
-firewall_policy=0
 mtu=1300
+activate_edge_workarounds=1
+edge_ping_time=200
+edge_bw=10
 
 [sip]
 guess_hostname=1
@@ -29,11 +31,12 @@ dtmf_player_amp=0.007
 history_max_size=30
 max_calls=3
 
-[video]
-display=1
-capture=1
-show_local=0
-enabled=1
-size=vga
-display_filter_auto_rotate=1
-
+[wizard]
+service_url=https://www.linphone.org/wizard.php
+domain=sip.linphone.org
+proxy=sip.linphone.org:5223
+password_length=6
+username_length=4
+expires=600
+push_notification=1
+transport=tls

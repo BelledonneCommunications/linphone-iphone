@@ -18,19 +18,23 @@
  */ 
 
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/ALAssetsLibrary.h>
 
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
 #import "HPGrowingTextView.h"
 #import "ChatModel.h"
+#import "ImagePickerViewController.h"
+#import "ImageSharing.h"
 
 #include "linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate, HPGrowingTextViewDelegate> {
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate> {
     @private
     LinphoneChatRoom *chatRoom;
-	NSString *_remoteAddress;
+    ImageSharing *imageSharing;
+    ALAssetsLibrary *photoLibrary;
 }
 
 
@@ -49,11 +53,18 @@
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
 
 @property (nonatomic, copy) NSString *remoteAddress;
+@property (nonatomic, retain) IBOutlet UIButton* pictureButton;
+@property (nonatomic, retain) IBOutlet UIButton* cancelTransferButton;
+@property (nonatomic, retain) IBOutlet UIProgressView* imageTransferProgressBar;
+@property (nonatomic, retain) IBOutlet UIView* transferView;
+
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;
 - (IBAction)onSendClick:(id)event;
+- (IBAction)onPictureClick:(id)event;
+- (IBAction)onTransferCancelClick:(id)event;
 - (IBAction)onListTap:(id)sender;
 
 @end

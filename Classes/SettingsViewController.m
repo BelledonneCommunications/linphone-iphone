@@ -31,6 +31,15 @@
 #import "IASKTextField.h"
 #include "lpconfig.h"
 
+#ifdef DEBUG
+@interface UIDevice (debug)
+
+- (void)_setBatteryLevel:(float)level;
+- (void)_setBatteryState:(int)state;
+
+@end
+#endif
+
 #pragma mark - IASKSwitchEx Class
 
 @interface IASKSwitchEx : DCRoundSwitch {
@@ -381,7 +390,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
 	
 	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
-	[settingsStore transformLinphoneCoreToKeys];
 	
     settingsController.showDoneButton = FALSE;
     settingsController.delegate = self;
@@ -407,6 +415,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [settingsStore transformLinphoneCoreToKeys]; // Sync settings with linphone core settings
+    [settingsController.tableView reloadData];	
+    
     // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self 
                                              selector:@selector(appSettingChanged:) 
@@ -478,6 +490,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #ifndef DEBUG
     [hiddenKeys addObject:@"release_button"];
     [hiddenKeys addObject:@"clear_cache_button"];
+    [hiddenKeys addObject:@"battery_alert_button"];
 #endif
     
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
@@ -520,9 +533,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"console_button"];
     }
     
+    if(![LinphoneManager runningOnIpad]) {
+        [hiddenKeys addObject:@"preview_preference"];
+    }
+    
     return hiddenKeys;
 }
-
 
 #pragma mark - IASKSettingsDelegate Functions
 
@@ -539,10 +555,19 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneManager instanceRelease];
     } else  if([key isEqual:@"clear_cache_button"]) {
         [[PhoneMainView instance].mainViewController clearCache];
+    } else  if([key isEqual:@"battery_alert_button"]) {
+        [[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
+        [[UIDevice currentDevice] _setBatteryLevel:0.09f];
+        [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
     }
 #endif
     if([key isEqual:@"console_button"]) {
         [[PhoneMainView instance] changeCurrentView:[ConsoleViewController compositeViewDescription] push:TRUE];
+    } else if([key isEqual:@"wizard_button"]) {
+        WizardViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]], WizardViewController);
+        if(controller != nil) {
+            [controller reset];
+        }
     }
 }
 @end
