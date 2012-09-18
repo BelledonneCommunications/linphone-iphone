@@ -53,6 +53,7 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
+bool_t sal_is_transport_enabled(Sal *sal, SalTransport transport);
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/

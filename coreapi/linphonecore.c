@@ -529,6 +529,10 @@ static void sip_config_read(LinphoneCore *lc)
 		random_port=(0xDFFF&random())+1024;
 	else random_port=0;
 	
+	if (!sal_is_transport_enabled(lc->sal, SalTransportTLS)) {
+		tr.tls_port=0;
+	}
+
 	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
 		tr.udp_port=5060;
 	}	
@@ -1686,6 +1690,17 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 **/
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *tr){
 	memcpy(tr,&lc->sip_conf.transports,sizeof(*tr));
+	return 0;
+}
+
+/**
+ * Set a non null value to the enabled transports.
+**/
+int linphone_core_get_transports_supported(LinphoneCore *lc, LCSipTransports *transports) {
+	transports->udp_port=sal_is_transport_enabled(lc->sal, SalTransportUDP);
+	transports->tcp_port=sal_is_transport_enabled(lc->sal, SalTransportTCP);
+	transports->tls_port=sal_is_transport_enabled(lc->sal, SalTransportTLS);
+	transports->dtls_port=sal_is_transport_enabled(lc->sal, SalTransportDTLS);
 	return 0;
 }
 

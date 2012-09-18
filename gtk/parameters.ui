@@ -321,13 +321,14 @@
                               <object class="GtkComboBox" id="proto_combo">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="model">model8</property>
+<!--                                <property name="model">model8</property>
                                 <child>
                                   <object class="GtkCellRendererText" id="renderer1"/>
                                   <attributes>
                                     <attribute name="text">0</attribute>
                                   </attributes>
                                 </child>
+-->
                               </object>
                             </child>
                             <child>
