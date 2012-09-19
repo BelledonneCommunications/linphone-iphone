@@ -54,6 +54,7 @@ void usleep(int waitTime) {
 
 const char * const ice_state_str[] = {
 	"Not activated",	/* LinphoneIceStateNotActivated */
+	"Failed",	/* LinphoneIceStateFailed */
 	"In progress",	/* LinphoneIceStateInProgress */
 	"Host connection",	/* LinphoneIceStateHostConnection */
 	"Reflexive connection",	/* LinphoneIceStateReflexiveConnection */
