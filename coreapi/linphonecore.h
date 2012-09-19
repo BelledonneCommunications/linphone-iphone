@@ -267,6 +267,7 @@ typedef struct _LinphoneCall LinphoneCall;
 **/
 enum _LinphoneIceState{
 	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateFailed, /**< ICE processing has failed */
 	LinphoneIceStateInProgress, /**< ICE process is in progress */
 	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
 	LinphoneIceStateReflexiveConnection, /**< ICE has established a connection to the remote host through one or several NATs */
