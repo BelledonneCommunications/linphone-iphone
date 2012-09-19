@@ -130,9 +130,21 @@ class UdpMirrorClient;
 		LinphoneCore *getLinphoneCore();
 		virtual void setHttpProxy(const char *host,int port, const char *username, const char *passwd);
 	private:
+		enum EventType{
+			UdpMirrorClientEvent,
+			TunnelEvent,
+		};
+		struct Event{
+			EventType mType;
+			union EventData{
+				bool mConnected;
+				bool mHaveUdp;
+			}mData;
+		};
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
 		virtual bool isStarted();
 		virtual bool isReady() const;
+		void onIterate();
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 		static int customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
 		static int eXosipSendto(int fd,const void *buf, size_t len, int flags, const struct sockaddr *to, socklen_t tolen,void* userdata);
@@ -140,9 +152,11 @@ class UdpMirrorClient;
 		static int eXosipSelect(int nfds, fd_set *s1, fd_set *s2, fd_set *s3, struct timeval *tv,void* userdata);
 		static void tunnelCallback(bool connected, TunnelManager *zis);
 		static void sOnIterate(TunnelManager *zis);
-		static void UdpMirrorClientListener(bool result, void* data);
+		static void sUdpMirrorClientCallback(bool result, void* data);
 		void waitUnRegistration();
-		void processTunnelEvent();
+		void processTunnelEvent(const Event &ev);
+		void processUdpMirrorEvent(const Event &ev);
+		void postEvent(const Event &ev);
 		LinphoneCore* mCore;
 		LCSipTransports mRegularTransport;
 		TunnelSocket *mSipSocket;
@@ -150,19 +164,21 @@ class UdpMirrorClient;
 		StateCallback mCallback;
 		void * mCallbackData;
 		bool mEnabled;
-		bool mStateChanged;
+		std::queue<Event> mEvq;
 		std::list <ServerAddr> mServerAddrs;
 		UdpMirrorClientList mUdpMirrorClients;
 		UdpMirrorClientList::iterator mCurrentUdpMirrorClient;
 		TunnelClient* mTunnelClient;
 		void stopClient();
+		Mutex mMutex;
 		static Mutex sMutex;
 		bool mAutoDetectStarted;
 		LinphoneRtpTransportFactories mTransportFactories;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;
 		std::string mHttpProxyHost;
-		int mHttpProxyPort;		
+		int mHttpProxyPort;
+		LinphoneFirewallPolicy mPreviousFirewallPolicy;
 	};
 
 /**

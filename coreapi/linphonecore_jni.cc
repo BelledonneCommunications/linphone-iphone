@@ -152,7 +152,7 @@ public:
 
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
-		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Lorg/linphone/core/LinphoneChatMessage;)V");
+		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -161,7 +161,7 @@ public:
 		callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
 
 		chatMessageClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessageImpl"));
-		chatMessageCtrId = env->GetMethodID(chatMessageClass,"<init>", "(J)V");
+		if (chatMessageClass) chatMessageCtrId = env->GetMethodID(chatMessageClass,"<init>", "(J)V");
 
 		chatRoomClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatRoomImpl"));
 		chatRoomCtrId = env->GetMethodID(chatRoomClass,"<init>", "(J)V");
@@ -402,7 +402,6 @@ public:
 								,lcData->messageReceivedId
 								,lcData->core
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-								,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)msg->from)
 								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
 		}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
@@ -1426,10 +1425,15 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setExternalBodyUr
 	linphone_chat_message_set_external_body_url((LinphoneChatMessage *)ptr, url);
 	env->ReleaseStringUTFChars(jurl, url);
 }
-extern "C" long Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(JNIEnv*  env
+extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getFrom(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	return (long) linphone_chat_message_get_peer_address((LinphoneChatMessage*)ptr);
+	return (jlong) linphone_chat_message_get_from((LinphoneChatMessage*)ptr);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong) linphone_chat_message_get_peer_address((LinphoneChatMessage*)ptr);
 }
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz

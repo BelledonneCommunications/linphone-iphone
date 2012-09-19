@@ -267,6 +267,7 @@ typedef struct _LinphoneCall LinphoneCall;
 **/
 enum _LinphoneIceState{
 	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateFailed, /**< ICE processing has failed */
 	LinphoneIceStateInProgress, /**< ICE process is in progress */
 	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
 	LinphoneIceStateReflexiveConnection, /**< ICE has established a connection to the remote host through one or several NATs */
@@ -304,6 +305,8 @@ struct _LinphoneCallStats {
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
 	LinphoneIceState	ice_state; /**< State of ICE processing. */
+	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 };
 
 /**

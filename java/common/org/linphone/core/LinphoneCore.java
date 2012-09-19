@@ -491,11 +491,17 @@ public interface LinphoneCore {
 	 */
 	void clearCallLogs();
 	/***
-	 * get payload type  from mime type an clock rate
+	 * get payload type  from mime type, clock rate, and number of channels.-
 	 * 
 	 * return null if not found
 	 */
 	PayloadType findPayloadType(String mime, int clockRate, int channels); 
+	/***
+	 * get payload type  from mime type and clock rate..
+	 * 
+	 * return null if not found
+	 */
+	PayloadType findPayloadType(String mime, int clockRate); 
 	/**
 	 * not implemented yet
 	 * @param pt
@@ -677,6 +683,10 @@ public interface LinphoneCore {
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
 	void enableIpv6(boolean enable);
+	/**
+	 * @deprecated
+	 * @param i
+	 */
 	void adjustSoftwareVolume(int i);
 	
 	boolean pauseCall(LinphoneCall call);

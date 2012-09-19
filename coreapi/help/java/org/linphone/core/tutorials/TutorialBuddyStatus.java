@@ -20,6 +20,7 @@ package org.linphone.core.tutorials;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
@@ -229,6 +230,12 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	private void write(String s) {
 		TutorialNotifier.notify(s);
+	}
+
+	@Override
+	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

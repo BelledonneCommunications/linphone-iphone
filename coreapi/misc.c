@@ -641,36 +641,45 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 {
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
+	IceSessionState session_state;
 
 	if (call->ice_session == NULL) return;
 	audio_check_list = ice_session_check_list(call->ice_session, 0);
 	video_check_list = ice_session_check_list(call->ice_session, 1);
 	if (audio_check_list == NULL) return;
 
-	switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
-		case ICT_HostCandidate:
-			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
-			break;
-		case ICT_ServerReflexiveCandidate:
-		case ICT_PeerReflexiveCandidate:
-			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
-			break;
-		case ICT_RelayedCandidate:
-			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
-			break;
-	}
-	if (call->params.has_video && (video_check_list != NULL)) {
-		switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+	session_state = ice_session_state(call->ice_session);
+	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
+		switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
 			case ICT_HostCandidate:
-				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
 				break;
 			case ICT_ServerReflexiveCandidate:
 			case ICT_PeerReflexiveCandidate:
-				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
 				break;
 			case ICT_RelayedCandidate:
-				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
 				break;
+		}
+		if (call->params.has_video && (video_check_list != NULL)) {
+			switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+				case ICT_HostCandidate:
+					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+					break;
+				case ICT_ServerReflexiveCandidate:
+				case ICT_PeerReflexiveCandidate:
+					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+					break;
+				case ICT_RelayedCandidate:
+					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+					break;
+			}
+		}
+	} else {
+		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
+		if (call->params.has_video && (video_check_list != NULL)) {
+			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}
 }
@@ -685,8 +694,12 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 
 	if (session_state == IS_Completed) {
 		desc->ice_completed = TRUE;
-		ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
-		strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		if (result == TRUE) {
+			strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+		} else {
+			ms_warning("If ICE has completed successfully, rtp_addr should be set!");
+		}
 	}
 	else {
 		desc->ice_completed = FALSE;
@@ -879,6 +892,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
 		}
 		ice_session_check_mismatch(call->ice_session);
+	} else {
+		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
+		linphone_call_delete_ice_session(call);
+		return;
 	}
 	if (ice_session_nb_check_lists(call->ice_session) == 0) {
 		linphone_call_delete_ice_session(call);

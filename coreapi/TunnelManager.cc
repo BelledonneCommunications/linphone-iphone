@@ -212,7 +212,6 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 	mExosipTransport.recvfrom=eXosipRecvfrom;
 	mExosipTransport.sendto=eXosipSendto;
 	mExosipTransport.select=eXosipSelect;
-	mStateChanged=false;
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
 	mTransportFactories.audio_rtcp_func_data=this;
@@ -242,12 +241,13 @@ void TunnelManager::stopClient(){
 	}
 }
 
-void TunnelManager::processTunnelEvent(){
+void TunnelManager::processTunnelEvent(const Event &ev){
 	LinphoneProxyConfig* lProxy;
 	linphone_core_get_default_proxy(mCore, &lProxy);
 
 	if (mEnabled && mTunnelClient->isReady()){
-		ms_message("Tunnel is up, registering now");		
+		ms_message("Tunnel is up, registering now");
+		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
 		eXosip_transport_hook_register(&mExosipTransport);
 		//force transport to udp
@@ -296,8 +296,9 @@ void TunnelManager::enable(bool isEnable) {
 	ms_message("Turning tunnel [%s]",(isEnable?"on":"off"));
 	if (isEnable && !mEnabled){
 		mEnabled=true;
-		//1 save transport 
+		//1 save transport and firewall policy
 		linphone_core_get_sip_transports(mCore, &mRegularTransport);
+		mPreviousFirewallPolicy=linphone_core_get_firewall_policy(mCore);
 		//2 unregister
 		waitUnRegistration();
 		//3 insert tunnel
@@ -312,8 +313,9 @@ void TunnelManager::enable(bool isEnable) {
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
 		eXosip_transport_hook_register(NULL);
-		//Restore transport
+		//Restore transport and firewall policy
 		linphone_core_set_sip_transports(mCore, &mRegularTransport);
+		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);
 		//register
 		LinphoneProxyConfig* lProxy;
 		linphone_core_get_default_proxy(mCore, &lProxy);
@@ -325,15 +327,31 @@ void TunnelManager::enable(bool isEnable) {
 }
 
 void TunnelManager::tunnelCallback(bool connected, TunnelManager *zis){
-	zis->mStateChanged=true;
+	Event ev;
+	ev.mType=TunnelEvent;
+	ev.mData.mConnected=connected;
+	zis->postEvent(ev);
+}
+
+void TunnelManager::onIterate(){
+	mMutex.lock();
+	while(!mEvq.empty()){
+		Event ev=mEvq.front();
+		mEvq.pop();
+		mMutex.unlock();
+		if (ev.mType==TunnelEvent)
+			processTunnelEvent(ev);
+		else if (ev.mType==UdpMirrorClientEvent){
+			processUdpMirrorEvent(ev);
+		}
+		mMutex.lock();
+	}
+	mMutex.unlock();
 }
 
 /*invoked from linphone_core_iterate() */
 void TunnelManager::sOnIterate(TunnelManager *zis){
-	if (zis->mStateChanged){
-		zis->mStateChanged=false;
-		zis->processTunnelEvent();
-	}
+	zis->onIterate();
 }
 
 #ifdef ANDROID
@@ -374,26 +392,39 @@ void TunnelManager::enableLogs(bool isEnabled,LogHandler logHandler) {
 bool TunnelManager::isEnabled() {
 	return mEnabled;
 }
-void TunnelManager::UdpMirrorClientListener(bool isUdpAvailable, void* data) {
-	TunnelManager* thiz = (TunnelManager*)data;
-	if (isUdpAvailable) {
+
+void TunnelManager::processUdpMirrorEvent(const Event &ev){
+	if (ev.mData.mHaveUdp) {
 		LOGI("Tunnel is not required, disabling");
-		thiz->enable(false);
-		thiz->mAutoDetectStarted = false;
+		enable(false);
+		mAutoDetectStarted = false;
 	} else {
-		if (++thiz->mCurrentUdpMirrorClient !=thiz->mUdpMirrorClients.end()) {
-			//1 enable tunnable but also try backup server
+		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
+			// enable tunnel but also try backup server
 			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
 			
-			UdpMirrorClient &lUdpMirrorClient=*thiz->mCurrentUdpMirrorClient;
-			lUdpMirrorClient.start(TunnelManager::UdpMirrorClientListener,(void*)thiz);
+			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
+			lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 		} else {
 			LOGI("Tunnel is required, enabling; no backup udp mirror available");
-			thiz->mAutoDetectStarted = false;
+			mAutoDetectStarted = false;
 		}
-		thiz->enable(true);
+		enable(true);
 	}
-	return;
+}
+
+void TunnelManager::postEvent(const Event &ev){
+	mMutex.lock();
+	mEvq.push(ev);
+	mMutex.unlock();
+}
+
+void TunnelManager::sUdpMirrorClientCallback(bool isUdpAvailable, void* data) {
+	TunnelManager* thiz = (TunnelManager*)data;
+	Event ev;
+	ev.mType=UdpMirrorClientEvent;
+	ev.mData.mHaveUdp=isUdpAvailable;
+	thiz->postEvent(ev);
 }
 
 void TunnelManager::autoDetect() {
@@ -409,7 +440,7 @@ void TunnelManager::autoDetect() {
 	mAutoDetectStarted=true;
 	mCurrentUdpMirrorClient =mUdpMirrorClients.begin();
 	UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
-	lUdpMirrorClient.start(TunnelManager::UdpMirrorClientListener,(void*)this);
+	lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 	
 }
 

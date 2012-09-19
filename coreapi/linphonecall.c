@@ -1732,12 +1732,17 @@ const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call)
  * @}
 **/
 
-static void display_bandwidth(RtpSession *as, RtpSession *vs){
+static void report_bandwidth(LinphoneCall *call, RtpSession *as, RtpSession *vs){
+	call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth=(as!=NULL) ? (rtp_session_compute_recv_bandwidth(as)*1e-3) : 0;
+	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as!=NULL) ? (rtp_session_compute_send_bandwidth(as)*1e-3) : 0;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs!=NULL) ? (rtp_session_compute_recv_bandwidth(vs)*1e-3) : 0;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth=(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0;
 	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
-	(as!=NULL) ? (rtp_session_compute_recv_bandwidth(as)*1e-3) : 0,
-	(as!=NULL) ? (rtp_session_compute_send_bandwidth(as)*1e-3) : 0,
-	(vs!=NULL) ? (rtp_session_compute_recv_bandwidth(vs)*1e-3) : 0,
-	(vs!=NULL) ? (rtp_session_compute_send_bandwidth(vs)*1e-3) : 0);
+		call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
+		call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth ,
+		call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,
+		call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth
+	);
 }
 
 static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
@@ -1769,7 +1774,6 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				if (ice_session_role(call->ice_session) == IR_Controlling) {
 					ice_session_select_candidates(call->ice_session);
 					linphone_core_update_call(call->core, call, &call->current_params);
-					linphone_core_update_ice_state_in_call_stats(call);
 				}
 				break;
 			case IS_Failed:
@@ -1778,13 +1782,13 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 						/* At least one ICE session has succeeded, so perform a call update. */
 						ice_session_select_candidates(call->ice_session);
 						linphone_core_update_call(call->core, call, &call->current_params);
-						linphone_core_update_ice_state_in_call_stats(call);
 					}
 				}
 				break;
 			default:
 				break;
 		}
+		linphone_core_update_ice_state_in_call_stats(call);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
 		int ping_time = -1;
 		if (evd->info.ice_processing_successful==TRUE) {
@@ -1848,7 +1852,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				video_load=ms_ticker_get_average_load(call->videostream->ticker);
 			vs=call->videostream->session;
 		}
-		display_bandwidth(as,vs);
+		report_bandwidth(call,as,vs);
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
 	}
 #ifdef VIDEO_ENABLED
