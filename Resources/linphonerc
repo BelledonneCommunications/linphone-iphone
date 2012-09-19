@@ -17,8 +17,15 @@ show_local=0
 enabled=1
 size=qvga
 display_filter_auto_rotate=1
+automatically_initiate=0
+automatically_accept=0
 
+[net]
+firewall_policy=0
 
+[app]
+rotation_preference=auto
+animations_preference=1
 
 [default_values]
 reg_expires=600

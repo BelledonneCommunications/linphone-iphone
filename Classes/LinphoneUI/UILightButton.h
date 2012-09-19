@@ -27,7 +27,7 @@
     
 }
 
--(void) send;
+- (void)send;
 
 @end
 

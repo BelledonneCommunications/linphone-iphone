@@ -26,9 +26,11 @@
 @end
 
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
-    UIWindow *window;
+    @private
+	UIWindow *window;
     CTCallCenter* callCenter;
     BOOL started;
+	int savedMaxCall;
 }
 
 @property (assign) BOOL started;

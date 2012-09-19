@@ -30,6 +30,8 @@ Link host's strings to simulator SDK
 	For newer XCode:
 	$ sudo ln -s  /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
 
+ImageMagick & Optipng
+	sudo port install ImageMagick optipng
 
 BUILDING THE SDK
 ****************
@@ -50,6 +52,8 @@ BUILDING THE SDK
 	$ cd submodules/build
 	$ make all enable_gpl_third_parties=no
 
+xcode 4.5i/ios6 beta do:
+	$ make -f Makefile.ios6-beta
  * ZRTP support
 
  You can enable ZRTP support in GPL mode only, by adding "enable_zrtp=yes" to the make command, for example:
@@ -73,6 +77,12 @@ After the SDK is built, just open the linphone xcode project with Xcode, and pre
 The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and  X264 codecs.
 Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_X264 positioned in xcode project.
 Before embeding these 4 codecs in the final application, make sure to have the right to do so.
+
+TRANSLATER THE APPLICATION
+**************************
+
+You have to download the application Localization Suite(http://www.loc-suite.org/)
+Each modification in a xib have to be scanned and synchronized
 
 
 LIMITATIONS, KNOWN BUGS
