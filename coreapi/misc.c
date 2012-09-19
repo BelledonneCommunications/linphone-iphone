@@ -694,8 +694,12 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 
 	if (session_state == IS_Completed) {
 		desc->ice_completed = TRUE;
-		ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
-		strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
+		if (result == TRUE) {
+			strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
+		} else {
+			ms_warning("If ICE has completed successfully, rtp_addr should be set!");
+		}
 	}
 	else {
 		desc->ice_completed = FALSE;
