@@ -879,6 +879,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
 		}
 		ice_session_check_mismatch(call->ice_session);
+	} else {
+		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
+		linphone_call_delete_ice_session(call);
+		return;
 	}
 	if (ice_session_nb_check_lists(call->ice_session) == 0) {
 		linphone_call_delete_ice_session(call);
