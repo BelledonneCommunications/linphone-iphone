@@ -193,6 +193,100 @@ void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value){
 	}
 }
 
+static void show_used_codecs(GtkWidget *callstats, LinphoneCall *call){
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	if (params){
+		const PayloadType *acodec=linphone_call_params_get_used_audio_codec(params);
+		const PayloadType *vcodec=linphone_call_params_get_used_video_codec(params);
+		GtkWidget *acodec_ui=linphone_gtk_get_widget(callstats,"audio_codec");
+		GtkWidget *vcodec_ui=linphone_gtk_get_widget(callstats,"video_codec");
+		if (acodec){
+			
+			char tmp[64]={0};
+			snprintf(tmp,sizeof(tmp)-1,"%s/%i/%i",acodec->mime_type,acodec->clock_rate,acodec->channels);
+			gtk_label_set_label(GTK_LABEL(acodec_ui),tmp);
+		}else gtk_label_set_label(GTK_LABEL(acodec_ui),_("Not used"));
+		if (vcodec){
+			gtk_label_set_label(GTK_LABEL(vcodec_ui),vcodec->mime_type);
+		}else gtk_label_set_label(GTK_LABEL(vcodec_ui),_("Not used"));
+	}
+}
+
+static const char *ice_state_to_string(LinphoneIceState ice_state){
+	switch(ice_state){
+		case LinphoneIceStateNotActivated:
+			return _("Ice not activated");
+		case LinphoneIceStateInProgress:
+			return _("ICE in progress");
+		case LinphoneIceStateReflexiveConnection:
+			return _("Going through one or more NATs");
+		case LinphoneIceStateHostConnection:
+			return _("Direct");
+		case LinphoneIceStateRelayConnection:
+			return _("Through a relay server");
+	}
+	return "invalid";
+}
+
+static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
+	const LinphoneCallStats *as=linphone_call_get_audio_stats(call);
+	const LinphoneCallStats *vs=linphone_call_get_video_stats(call);
+	LinphoneIceState ice_state=as->ice_state;
+	gchar *tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
+		as->download_bandwidth,as->upload_bandwidth);
+	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
+	g_free(tmp);
+	tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
+		vs->download_bandwidth,vs->upload_bandwidth);
+	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_bandwidth_usage")),tmp);
+	g_free(tmp);
+	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"media_connectivity")),ice_state_to_string(ice_state));
+}
+
+static gboolean refresh_call_stats(GtkWidget *callstats){
+	LinphoneCall *call=(LinphoneCall*)g_object_get_data(G_OBJECT(callstats),"call");
+	switch (linphone_call_get_state(call)){
+		case LinphoneCallError:
+		case LinphoneCallEnd:
+		case LinphoneCallReleased:
+			gtk_widget_destroy(callstats);
+			return FALSE;
+		break;
+		case LinphoneCallStreamsRunning:
+			_refresh_call_stats(callstats,call);
+		break;
+		default:
+		break;
+	}
+	return TRUE;
+}
+
+static void on_call_stats_destroyed(GtkWidget *call_view){
+	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(call_view),"call_stats");
+	LinphoneCall *call=(LinphoneCall*)g_object_get_data(G_OBJECT(call_stats),"call");
+	g_source_remove(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(call_stats),"tid")));
+	g_object_set_data(G_OBJECT(call_view),"call_stats",NULL);
+	linphone_call_unref(call);
+}
+
+static void linphone_gtk_show_call_stats(LinphoneCall *call){
+	GtkWidget *w=(GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(w),"call_stats");
+	if (call_stats==NULL){
+		guint tid;
+		call_stats=linphone_gtk_create_window("call_statistics");
+		g_object_set_data(G_OBJECT(w),"call_stats",call_stats);
+		g_object_set_data(G_OBJECT(call_stats),"call",linphone_call_ref(call));
+		tid=g_timeout_add(1000,(GSourceFunc)refresh_call_stats,call_stats);
+		g_object_set_data(G_OBJECT(call_stats),"tid",GINT_TO_POINTER(tid));
+		g_signal_connect_swapped(G_OBJECT(call_stats),"destroy",(GCallback)on_call_stats_destroyed,(gpointer)w);
+		show_used_codecs(call_stats,call);
+		refresh_call_stats(call_stats);
+		gtk_widget_show(call_stats);
+	}
+	
+}
+
 void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	GtkWidget *call_view=linphone_gtk_create_widget("main","in_call_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
@@ -217,6 +311,7 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	linphone_gtk_enable_hold_button (call,FALSE,TRUE);
 	linphone_gtk_enable_mute_button(
 					GTK_BUTTON(linphone_gtk_get_widget(call_view,"incall_mute")),FALSE);
+	g_signal_connect_swapped(G_OBJECT(linphone_gtk_get_widget(call_view,"quality_indicator")),"button-press-event",(GCallback)linphone_gtk_show_call_stats,call);
 }
 
 static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
@@ -506,6 +601,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	gboolean in_conf=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
+	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 	
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
@@ -524,6 +620,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	linphone_gtk_in_call_view_enable_audio_view(call, !in_conf);
 	linphone_gtk_in_call_view_show_encryption(call);
 	if (in_conf) linphone_gtk_set_in_conference(call);
+	if (call_stats) show_used_codecs(call_stats,call);
 }
 
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
@@ -676,3 +773,8 @@ void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gbo
 	gtk_widget_set_visible(GTK_WIDGET(button),sensitive);
 	linphone_gtk_draw_hold_button(GTK_BUTTON(button),!holdon);
 }
+
+void linphone_gtk_call_statistics_closed(GtkWidget *call_stats){
+	gtk_widget_destroy(call_stats);
+}
+
