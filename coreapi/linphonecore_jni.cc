@@ -112,6 +112,7 @@ public:
 		vTable.message_received = message_received;
 		vTable.new_subscription_request = new_subscription_request;
 		vTable.notify_presence_recv = notify_presence_recv;
+		vTable.call_stats_updated = callStatsUpdated;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -132,6 +133,9 @@ public:
 		callStateId = env->GetMethodID(listenerClass,"callState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;Ljava/lang/String;)V");
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
+
+		/*callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);*/
+		callStatsUpdatedId = env->GetMethodID(listenerClass, "callStatsUpdated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCallStats;)V");
 
 		chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
 		chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
@@ -172,6 +176,10 @@ public:
 		addressClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAddressImpl"));
 		addressCtrId =env->GetMethodID(addressClass,"<init>", "(J)V");
 
+		callStatsClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCallStatsImpl"));
+		callStatsId = env->GetMethodID(callStatsClass, "<init>", "(JJ)V");
+		callSetAudioStatsId = env->GetMethodID(callClass, "setAudioStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
+		callSetVideoStatsId = env->GetMethodID(callClass, "setVideoStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
 	}
 
 	~LinphoneCoreData() {
@@ -184,6 +192,7 @@ public:
 		env->DeleteGlobalRef(globalStateClass);
 		env->DeleteGlobalRef(registrationStateClass);
 		env->DeleteGlobalRef(callStateClass);
+		env->DeleteGlobalRef(callStatsClass);
 		env->DeleteGlobalRef(chatMessageStateClass);
 		env->DeleteGlobalRef(proxyClass);
 		env->DeleteGlobalRef(callClass);
@@ -202,6 +211,7 @@ public:
 	jmethodID notifyPresenceReceivedId;
 	jmethodID textReceivedId;
 	jmethodID messageReceivedId;
+	jmethodID callStatsUpdatedId;
 
 	jclass globalStateClass;
 	jmethodID globalStateId;
@@ -214,6 +224,11 @@ public:
 	jclass callStateClass;
 	jmethodID callStateId;
 	jmethodID callStateFromIntId;
+
+	jclass callStatsClass;
+	jmethodID callStatsId;
+	jmethodID callSetAudioStatsId;
+	jmethodID callSetVideoStatsId;
 
 	jclass chatMessageStateClass;
 	jmethodID chatMessageStateFromIntId;
@@ -423,6 +438,24 @@ public:
 			env->DeleteGlobalRef((jobject)data);
 		}
 
+	}
+	static void callStatsUpdated(LinphoneCore *lc, LinphoneCall* call, const LinphoneCallStats *stats) {
+		JNIEnv *env = 0;
+		jobject statsobj;
+		jobject callobj;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		statsobj = env->NewObject(lcData->callStatsClass, lcData->callStatsId, (jlong)call, (jlong)stats);
+		callobj = lcData->getCall(env, call);
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+			env->CallVoidMethod(callobj, lcData->callSetAudioStatsId, statsobj);
+		else
+			env->CallVoidMethod(callobj, lcData->callSetVideoStatsId, statsobj);
+		env->CallVoidMethod(lcData->listener, lcData->callStatsUpdatedId, lcData->core, callobj, statsobj);
 	}
 
 
@@ -1209,6 +1242,113 @@ extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEn
 																		,jobject  thiz
 																		,jlong ptr) {
 	return ((LinphoneCallLog*)ptr)->duration;
+}
+
+/* CallStats */
+extern "C" int Java_org_linphone_core_LinphoneCallStatsImpl_getMediaType(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (int)((LinphoneCallStats *)stats_ptr)->type;
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	const report_block_t *srb = NULL;
+
+	if (!stats->sent_rtcp)
+		return (jfloat)0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->sent_rtcp->b_cont != NULL)
+		msgpullup(stats->sent_rtcp, -1);
+	if (rtcp_is_SR(stats->sent_rtcp))
+		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+	else if (rtcp_is_RR(stats->sent_rtcp))
+		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+	if (!srb)
+		return (jfloat)0.0;
+	return (jfloat)(100.0 * report_block_get_fraction_lost(srb) / 256.0);
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	const report_block_t *rrb = NULL;
+
+	if (!stats->received_rtcp)
+		return (jfloat)0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->received_rtcp->b_cont != NULL)
+		msgpullup(stats->received_rtcp, -1);
+	if (rtcp_is_RR(stats->received_rtcp))
+		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+	else if (rtcp_is_SR(stats->received_rtcp))
+		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+	if (!rrb)
+		return (jfloat)0.0;
+	return (jfloat)(100.0 * report_block_get_fraction_lost(rrb) / 256.0);
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	const LinphoneCall *call = (LinphoneCall *)call_ptr;
+	const LinphoneCallParams *params = linphone_call_get_current_params(call);
+	const PayloadType *pt;
+	const report_block_t *srb = NULL;
+
+	if (!stats->sent_rtcp)
+		return (jfloat)0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->sent_rtcp->b_cont != NULL)
+		msgpullup(stats->sent_rtcp, -1);
+	if (rtcp_is_SR(stats->sent_rtcp))
+		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
+	else if (rtcp_is_RR(stats->sent_rtcp))
+		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
+	if (!srb)
+		return (jfloat)0.0;
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		pt = linphone_call_params_get_used_audio_codec(params);
+	else
+		pt = linphone_call_params_get_used_video_codec(params);
+	return (jfloat)((float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate);
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	const LinphoneCall *call = (LinphoneCall *)call_ptr;
+	const LinphoneCallParams *params = linphone_call_get_current_params(call);
+	const PayloadType *pt;
+	const report_block_t *rrb = NULL;
+
+	if (!stats->received_rtcp)
+		return (jfloat)0.0;
+	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
+	if (stats->received_rtcp->b_cont != NULL)
+		msgpullup(stats->received_rtcp, -1);
+	if (rtcp_is_SR(stats->received_rtcp))
+		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
+	else if (rtcp_is_RR(stats->received_rtcp))
+		rrb = rtcp_RR_get_report_block(stats->received_rtcp, 0);
+	if (!rrb)
+		return (jfloat)0.0;
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		pt = linphone_call_params_get_used_audio_codec(params);
+	else
+		pt = linphone_call_params_get_used_video_codec(params);
+	return (jfloat)((float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate);
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (jfloat)((LinphoneCallStats *)stats_ptr)->round_trip_delay;
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCallStatsImpl_getLatePacketsCumulativeNumber(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
+	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	LinphoneCall *call = (LinphoneCall *)call_ptr;
+	rtp_stats_t rtp_stats;
+
+	memset(&rtp_stats, 0, sizeof(rtp_stats));
+	if (stats->type == LINPHONE_CALL_STATS_AUDIO)
+		audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
+#ifdef VIDEO_ENABLED
+	else
+		video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
+#endif
+	return (jlong)rtp_stats.outoftime;
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getJitterBufferSize(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (jfloat)((LinphoneCallStats *)stats_ptr)->jitter_stats.jitter_buffer_size_ms;
 }
 
 /*payloadType*/

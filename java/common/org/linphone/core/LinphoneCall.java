@@ -159,6 +159,30 @@ public interface LinphoneCall {
 	 * @Return LinphoneCallLog
 	**/
 	LinphoneCallLog getCallLog();
+
+	/**
+	 * Set the audio statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	void setAudioStats(LinphoneCallStats stats);
+
+	/**
+	 * Set the video statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	void setVideoStats(LinphoneCallStats stats);
+
+	/**
+	 * Get the audio statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	LinphoneCallStats getAudioStats();
+
+	/**
+	 * Get the video statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	LinphoneCallStats getVideoStats();
 	
 	LinphoneCallParams getRemoteParams();
 
