@@ -34,6 +34,9 @@ clean-libvpx:
 
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
+	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
+	&& git checkout build/make/configure.sh configure\
+	&& rm -f patched.stamp 
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
