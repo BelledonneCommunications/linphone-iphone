@@ -99,7 +99,13 @@ struct _LinphoneChatMessage {
 	char* external_body_url;
 	LinphoneAddress* from;
 };
-	
+
+typedef struct StunCandidate{
+	char addr[64];
+	int port;
+}StunCandidate;
+
+
 struct _LinphoneCall
 {
 	int magic; /*used to distinguish from proxy config*/
@@ -123,6 +129,7 @@ struct _LinphoneCall
 	void * user_pointer;
 	int audio_port;
 	int video_port;
+	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
@@ -233,12 +240,7 @@ MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFri
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 
-typedef struct StunCandidate{
-	char addr[64];
-	int port;
-}StunCandidate;
-
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc);
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);

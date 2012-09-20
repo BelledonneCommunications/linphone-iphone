@@ -193,6 +193,22 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 	return l;
 }
 
+static void update_media_description_from_stun(SalMediaDescription *md, const StunCandidate *ac, const StunCandidate *vc){
+	if (ac->port!=0){
+		strcpy(md->streams[0].rtp_addr,ac->addr);
+		md->streams[0].rtp_port=ac->port;
+		if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0) || md->nstreams==1){
+			strcpy(md->addr,ac->addr);
+		}
+	}
+	if (vc->port!=0){
+		strcpy(md->streams[1].rtp_addr,vc->addr);
+		md->streams[1].rtp_port=vc->port;
+	}
+	
+}
+
+
 static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, LinphoneCall *call, unsigned int session_id, unsigned int session_ver){
 	MSList *l;
 	PayloadType *pt;
@@ -257,7 +273,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 			ice_session_add_check_list(call->ice_session, ice_check_list_new());
 		}
 	}
-	
+	update_media_description_from_stun(md,&call->ac,&call->vc);
 	linphone_address_destroy(addr);
 	return md;
 }
@@ -327,20 +343,6 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
 	stats->ice_state = LinphoneIceStateNotActivated;
 }
 
-static void update_media_description_from_stun(SalMediaDescription *md, const StunCandidate *ac, const StunCandidate *vc){
-	if (ac->port!=0){
-		strcpy(md->streams[0].rtp_addr,ac->addr);
-		md->streams[0].rtp_port=ac->port;
-		if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0) || md->nstreams==1){
-			strcpy(md->addr,ac->addr);
-		}
-	}
-	if (vc->port!=0){
-		strcpy(md->streams[1].rtp_addr,vc->addr);
-		md->streams[1].rtp_port=vc->port;
-	}
-	
-}
 
 static void discover_mtu(LinphoneCore *lc, const char *remote){
 	int mtu;
@@ -355,12 +357,9 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 	}
 }
 
-#define STUN_CANDIDATE_INIT {{0},0}
-
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	StunCandidate ac=STUN_CANDIDATE_INIT,vc=STUN_CANDIDATE_INIT;
 	int ping_time=-1;
 	call->dir=LinphoneCallOutgoing;
 	call->op=sal_op_new(lc->sal);
@@ -374,13 +373,12 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 		ice_session_set_role(call->ice_session, IR_Controlling);
 	}
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
-		ping_time=linphone_core_run_stun_tests(call->core,call,&ac, &vc);
+		ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 	if (ping_time>=0) {
 		linphone_core_adapt_to_network(lc,ping_time,&call->params);
 	}
 	call->localdesc=create_local_media_description(lc,call);
-	update_media_description_from_stun(call->localdesc,&ac,&vc);
 	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -395,7 +393,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
 	int ping_time=-1;
-	StunCandidate ac=STUN_CANDIDATE_INIT,vc=STUN_CANDIDATE_INIT;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -434,7 +431,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			}
 			break;
 		case LinphonePolicyUseStun:
-			ping_time=linphone_core_run_stun_tests(call->core,call,&ac, &vc);
+			ping_time=linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
 		default:
 			break;
@@ -443,7 +440,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		linphone_core_adapt_to_network(lc,ping_time,&call->params);
 	};
 	call->localdesc=create_local_media_description(lc,call);
-	update_media_description_from_stun(call->localdesc,&ac,&vc);
 	call->camera_active=call->params.has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain(from));

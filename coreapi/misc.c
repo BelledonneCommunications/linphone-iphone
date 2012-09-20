@@ -467,8 +467,10 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 }
 
 /* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc){
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
+	StunCandidate *ac=&call->ac;
+	StunCandidate *vc=&call->vc;
 	
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
