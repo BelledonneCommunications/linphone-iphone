@@ -43,6 +43,7 @@ extern NSString *const kLinphoneMainViewChange;
 /* MODIFICATION: Add buschjaeger configuration event */
 extern NSString *const kLinphoneConfigurationUpdate;
 extern NSString *const kLinphoneConfigurationPath;
+extern NSString *const kLinphonePEMPath;
 /**/
 extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
@@ -146,8 +147,9 @@ typedef struct _LinphoneManagerSounds {
 /* MODIFICATION: Add NSUSerdefault settings */
 - (BOOL)reconfigureLinphone;
 /**/
-
+/* MODIFICATION: Disable addressbook
 @property (readonly) FastAddressBook* fastAddressBook;
+*/
 @property Connectivity connectivity;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;

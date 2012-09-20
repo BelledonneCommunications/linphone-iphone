@@ -69,10 +69,11 @@
 - (void)touchUp:(id) sender {
     NSString *address = [addressField text];
     NSString *displayName = nil;
+    /* MODIFICATION: Disable addressbook
     ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
     if(contact) {
         displayName = [FastAddressBook getContactDisplayName:contact];
-    }
+    }*/
     [[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
 }
 

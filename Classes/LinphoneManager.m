@@ -52,6 +52,7 @@ NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 /* MODIFICATION: Add buschjaeger configuration event */
 NSString *const kLinphoneConfigurationUpdate = @"LinphoneConfigurationUpdate";
 NSString *const kLinphoneConfigurationPath = @"buschjaeger.ini";
+NSString *const kLinphonePEMPath = @"certificates";
 /**/
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
@@ -87,7 +88,9 @@ extern  void libmsbcg729_init();
 @synthesize configuration;
 /**/
 @synthesize database;
+/* MODIFICATION: Disable addressbook
 @synthesize fastAddressBook;
+ */
 @synthesize pushNotificationToken;
 @synthesize sounds;
 @synthesize logs;
@@ -244,8 +247,9 @@ struct codec_name_pref_table codec_pref_table[]={
     if(sounds.message) {
         AudioServicesDisposeSystemSoundID(sounds.message);
     }
-    
+    /* MODIFICATION: Disable addressbook
     [fastAddressBook release];
+    */
     [self closeDatabase];
     [logs release];
 
@@ -661,7 +665,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
 
-	fastAddressBook = [[FastAddressBook alloc] init];
+    /* MODIFICATION: Disable addressbook
+    fastAddressBook = [[FastAddressBook alloc] init];
+    */
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
