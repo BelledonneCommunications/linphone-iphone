@@ -215,7 +215,9 @@ static void show_used_codecs(GtkWidget *callstats, LinphoneCall *call){
 static const char *ice_state_to_string(LinphoneIceState ice_state){
 	switch(ice_state){
 		case LinphoneIceStateNotActivated:
-			return _("Ice not activated");
+			return _("ICE not activated");
+		case LinphoneIceStateFailed:
+			return _("ICE failed");
 		case LinphoneIceStateInProgress:
 			return _("ICE in progress");
 		case LinphoneIceStateReflexiveConnection:
