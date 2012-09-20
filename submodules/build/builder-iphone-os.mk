@@ -115,7 +115,7 @@ veryclean: veryclean-linphone veryclean-msbcg729
 clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264 
+veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
