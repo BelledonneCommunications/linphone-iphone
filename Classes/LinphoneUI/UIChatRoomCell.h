@@ -36,6 +36,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;
 @property (nonatomic, retain) IBOutlet UIButton* downloadButton;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer* imageTapGestureRecognizer;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(ChatModel*)chat width:(int)width;

@@ -146,9 +146,11 @@ static UICompositeViewDescription *compositeDescription = nil;
             if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
                 [backgroundView setHidden:FALSE];
+                [videoCameraSwitch setHidden:FALSE];
             } else {
                 linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
                 [backgroundView setHidden:TRUE];
+                [videoCameraSwitch setHidden:TRUE];
             }
         }
     }
@@ -235,9 +237,11 @@ static UICompositeViewDescription *compositeDescription = nil;
         if(linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
             linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
             [backgroundView setHidden:FALSE];
+            [videoCameraSwitch setHidden:FALSE];
         } else {
             linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
             [backgroundView setHidden:TRUE];
+            [videoCameraSwitch setHidden:TRUE];
         }
     }
 }

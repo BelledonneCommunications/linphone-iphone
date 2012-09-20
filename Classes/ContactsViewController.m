@@ -154,12 +154,18 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self changeView:History_All];
     
     // Set selected+over background: IB lack !
-    [linphoneButton setImage:[UIImage imageNamed:@"contacts_linphone_selected.png"] 
+    [linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
+    [LinphoneUtils buttonFixStates:linphoneButton];
+    
     // Set selected+over background: IB lack !
-    [allButton setImage:[UIImage imageNamed:@"contacts_all_selected.png"] 
+    [allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"] 
                     forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [LinphoneUtils buttonFixStates:allButton];
+    
+    [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 

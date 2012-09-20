@@ -41,11 +41,6 @@
 
 #pragma mark - ViewController Functions
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [TUNinePatchCache flushCache]; // Clear cache

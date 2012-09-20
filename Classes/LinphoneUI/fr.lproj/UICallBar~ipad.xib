@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1296</int>
+		<int key="IBDocument.SystemTarget">1536</int>
 		<string key="IBDocument.SystemVersion">11E53</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1938</string>
 		<string key="IBDocument.AppKitVersion">1138.47</string>
@@ -411,24 +411,46 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">28</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Transfert</string>
+								<object class="NSColor" key="IBUIHighlightedTitleColor" id="868233705">
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC44MTE3NjQ3MDU5IDAuMjk4MDM5MjE1NyAwLjE2MDc4NDMxMzcAA</bytes>
+								</object>
+								<object class="NSColor" key="IBUIDisabledTitleColor" id="913172130">
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC42NTA5ODAzOTIyIDAuNzAxOTYwNzg0MyAwLjc0OTAxOTYwNzgAA</bytes>
+								</object>
+								<object class="NSColor" key="IBUISelectedTitleColor" id="539686128">
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC4yNTQ5MDE5NjA4IDAuMjgyMzUyOTQxMiAwLjMwOTgwMzkyMTYAA</bytes>
+								</object>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_default_landscape~ipad.png</string>
 								</object>
-								<object class="IBUIFontDescription" key="IBUIFontDescription" id="471709701">
-									<int key="type">2</int>
-									<double key="pointSize">15</double>
+								<object class="IBUIFontDescription" key="IBUIFontDescription" id="131951655">
+									<int key="type">1</int>
+									<double key="pointSize">13</double>
 								</object>
-								<reference key="IBUIFont" ref="464267941"/>
+								<object class="NSFont" key="IBUIFont" id="702035207">
+									<string key="NSName">Helvetica</string>
+									<double key="NSSize">13</double>
+									<int key="NSfFlags">16</int>
+								</object>
 							</object>
 							<object class="IBUIButton" id="619376100">
 								<reference key="NSNextResponder" ref="795334868"/>
@@ -446,21 +468,30 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">28</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Ajouter appel</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_add_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_add_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_add_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 						</array>
 						<string key="NSFrame">{{239, 552}, {81, 133}}</string>
@@ -506,25 +537,34 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Vidéo</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_on_default_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIActivityIndicatorView" id="987891698">
 								<reference key="NSNextResponder" ref="903086503"/>
@@ -555,25 +595,34 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Micro</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_off_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_off_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_on_default_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_off_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="1050159511">
 								<reference key="NSNextResponder" ref="903086503"/>
@@ -592,25 +641,35 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUIDisabledTitle">Haut parleur</string>
+								<string key="IBUINormalTitle">Haut parleur</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_on_default_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="107706693">
 								<reference key="NSNextResponder" ref="903086503"/>
@@ -629,25 +688,34 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Options</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_over_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_disabled_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_selected_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="354328241">
 								<reference key="NSNextResponder" ref="903086503"/>
@@ -679,7 +747,10 @@
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">pause_off_default_landscape~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
+								<object class="IBUIFontDescription" key="IBUIFontDescription" id="471709701">
+									<int key="type">2</int>
+									<double key="pointSize">15</double>
+								</object>
 								<reference key="IBUIFont" ref="464267941"/>
 							</object>
 							<object class="IBUIButton" id="781407337">
@@ -762,14 +833,15 @@
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">dialer_alt_over_landscape~ipad.png</string>
 								</object>
+								<object class="NSCustomResource" key="IBUIDisabledImage" id="541639400">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">dialer_alt_default_landscape~ipad.png</string>
+								</object>
 								<object class="NSCustomResource" key="IBUISelectedImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">dialer_alt_back_default_landscape~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">dialer_alt_default_landscape~ipad.png</string>
-								</object>
+								<reference key="IBUINormalImage" ref="541639400"/>
 								<reference key="IBUIFontDescription" ref="471709701"/>
 								<reference key="IBUIFont" ref="464267941"/>
 							</object>
@@ -1118,21 +1190,30 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">28</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Transfert</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_disabled~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_transfer_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="654716057">
 								<reference key="NSNextResponder" ref="872004960"/>
@@ -1150,21 +1231,26 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">28</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Ajouter appel</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_add_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">options_add_disabled~ipad.png</string>
-								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_add_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 						</array>
 						<string key="NSFrame">{{239, 809}, {81, 133}}</string>
@@ -1210,25 +1296,34 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Vidéo</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_disabled~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_on_default~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">video_off_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIActivityIndicatorView" id="323535233">
 								<reference key="NSNextResponder" ref="993183053"/>
@@ -1259,25 +1354,30 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Micro</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_off_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">micro_off_disabled~ipad.png</string>
-								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_on_default~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">micro_off_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="702766396">
 								<reference key="NSNextResponder" ref="993183053"/>
@@ -1296,25 +1396,35 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUIDisabledTitle">Haut parleur</string>
+								<string key="IBUINormalTitle">Haut parleur</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_disabled~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_on_default~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">speaker_off_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="807609449">
 								<reference key="NSNextResponder" ref="993183053"/>
@@ -1333,25 +1443,34 @@
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 								<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
+								<double key="IBUITitleEdgeInsets.top">54</double>
+								<double key="IBUITitleEdgeInsets.bottom">0.0</double>
+								<double key="IBUITitleEdgeInsets.left">0.0</double>
+								<double key="IBUITitleEdgeInsets.right">0.0</double>
+								<string key="IBUINormalTitle">Options</string>
+								<reference key="IBUIHighlightedTitleColor" ref="868233705"/>
+								<reference key="IBUIDisabledTitleColor" ref="913172130"/>
+								<reference key="IBUISelectedTitleColor" ref="539686128"/>
+								<reference key="IBUINormalTitleColor" ref="539686128"/>
 								<reference key="IBUINormalTitleShadowColor" ref="552666198"/>
-								<object class="NSCustomResource" key="IBUIHighlightedImage">
+								<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_over~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUIDisabledImage">
+								<object class="NSCustomResource" key="IBUIDisabledBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_disabled~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUISelectedImage">
+								<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_selected~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
+								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">options_default~ipad.png</string>
 								</object>
-								<reference key="IBUIFontDescription" ref="471709701"/>
-								<reference key="IBUIFont" ref="464267941"/>
+								<reference key="IBUIFontDescription" ref="131951655"/>
+								<reference key="IBUIFont" ref="702035207"/>
 							</object>
 							<object class="IBUIButton" id="1029091480">
 								<reference key="NSNextResponder" ref="993183053"/>
@@ -1466,14 +1585,15 @@
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">dialer_alt_over~ipad.png</string>
 								</object>
+								<object class="NSCustomResource" key="IBUIDisabledImage" id="250971001">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">dialer_alt_default~ipad.png</string>
+								</object>
 								<object class="NSCustomResource" key="IBUISelectedImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">dialer_alt_back_default~ipad.png</string>
 								</object>
-								<object class="NSCustomResource" key="IBUINormalImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">dialer_alt_default~ipad.png</string>
-								</object>
+								<reference key="IBUINormalImage" ref="250971001"/>
 								<reference key="IBUIFontDescription" ref="471709701"/>
 								<reference key="IBUIFont" ref="464267941"/>
 							</object>
@@ -2237,7 +2357,7 @@
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="10.CustomClassName">UIToggleButton</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="11.CustomClassName">UIHangUpButton</string>
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="11.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -2248,16 +2368,20 @@
 				<real value="0.0" key="13.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="14.CustomClassName">UIToggleButton</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="14.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="3" key="14.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="15.CustomClassName">UISpeakerButton</string>
 				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="15.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="15.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="15.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="16.CustomClassName">UIMicroButton</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="16.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="16.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="16.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="17.CustomClassName">UIVideoButton</string>
 				<string key="17.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="17.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="17.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="17.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="18.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="19.CustomClassName">UIDigitButton</string>
 				<string key="19.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -2300,9 +2424,11 @@
 				<string key="30.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="30.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="31.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="31.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="31.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="31.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="32.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="32.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="32.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="35.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -2310,23 +2436,27 @@
 				<string key="37.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="38.CustomClassName">UIToggleButton</string>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="38.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="38.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="39.CustomClassName">UIToggleButton</string>
 				<string key="39.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="39.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="39.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="39.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="40.CustomClassName">UIVideoButton</string>
 				<string key="40.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="40.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="3" key="40.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="41.CustomClassName">UIMicroButton</string>
 				<string key="41.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="41.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="3" key="41.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="42.CustomClassName">UISpeakerButton</string>
 				<string key="42.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="42.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="3" key="42.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="43.CustomClassName">UIPauseButton</string>
 				<string key="43.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="3" key="43.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="43.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="44.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="3" key="44.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="45.CustomClassName">UIHangUpButton</string>
@@ -2373,8 +2503,10 @@
 				<string key="59.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="60.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="60.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="1" key="60.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
+				<real value="3" key="60.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="61.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="1" key="61.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="3" key="61.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -2671,7 +2803,7 @@
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaTouchPlugin.iPhoneOS</string>
-			<real value="1296" key="NS.object.0"/>
+			<real value="1536" key="NS.object.0"/>
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
@@ -2694,7 +2826,6 @@
 			<string key="micro_off_default_landscape~ipad.png">{159, 170}</string>
 			<string key="micro_off_default~ipad.png">{159, 170}</string>
 			<string key="micro_off_disabled_landscape~ipad.png">{159, 170}</string>
-			<string key="micro_off_disabled~ipad.png">{159, 170}</string>
 			<string key="micro_off_over_landscape~ipad.png">{159, 170}</string>
 			<string key="micro_off_over~ipad.png">{159, 170}</string>
 			<string key="micro_on_default_landscape~ipad.png">{159, 170}</string>
@@ -2726,7 +2857,6 @@
 			<string key="options_add_default_landscape~ipad.png">{162, 137}</string>
 			<string key="options_add_default~ipad.png">{162, 137}</string>
 			<string key="options_add_disabled_landscape~ipad.png">{162, 137}</string>
-			<string key="options_add_disabled~ipad.png">{162, 137}</string>
 			<string key="options_add_over_landscape~ipad.png">{162, 137}</string>
 			<string key="options_add_over~ipad.png">{162, 137}</string>
 			<string key="options_default_landscape~ipad.png">{162, 170}</string>

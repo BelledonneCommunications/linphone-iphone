@@ -189,6 +189,15 @@
     [targetViewController release];
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    UIEdgeInsets inset = {0, 0, 10, 0};
+    UIScrollView *scrollView = self.tableView;
+    [scrollView setContentInset:inset];
+    [scrollView setScrollIndicatorInsets:inset];
+}
+
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if(self != nil) {

@@ -117,7 +117,6 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     [super viewDidLoad];
     [headerController view]; // Force view load
     [footerController view]; // Force view load
-    [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

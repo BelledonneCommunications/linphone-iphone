@@ -50,8 +50,12 @@
     [super viewDidLoad];
     
     // Set selected+over background: IB lack !
-    [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
+    [editButton setBackgroundImage:[UIImage imageNamed:@"chat_ok_over.png"]
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [LinphoneUtils buttonFixStates:editButton];
+
+    [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewWillAppear:(BOOL)animated {

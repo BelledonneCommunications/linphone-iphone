@@ -34,11 +34,9 @@
 @synthesize addressLabel;
 @synthesize avatarImage;
 @synthesize headerView;
-@synthesize footerView;
 @synthesize chatView;
 @synthesize messageView;
 @synthesize messageBackgroundImage;
-@synthesize footerBackgroundImage;
 @synthesize transferBackgroundImage;
 @synthesize listTapGestureRecognizer;
 @synthesize pictureButton;
@@ -54,6 +52,7 @@
     if (self != nil) {
         self->chatRoom = NULL;
         self->imageSharing = NULL;
+        self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
     }
     return self;
 }
@@ -68,10 +67,8 @@
     [addressLabel release];
     [avatarImage release];
     [headerView release];
-    [footerView release];
     [messageView release];
     [messageBackgroundImage release];
-    [footerBackgroundImage release];
     [transferBackgroundImage release];
     
     [listTapGestureRecognizer release];
@@ -98,7 +95,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                  tabBar:/*@"UIMainBar"*/nil
                                                           tabBarEnabled:false /*to keep room for chat*/
                                                              fullscreen:false
-                                                          landscapeMode:[LinphoneManager runningOnIpad]
+                                                          landscapeMode:true
                                                            portraitMode:true];
     }
     return compositeDescription;
@@ -112,17 +109,24 @@ static UICompositeViewDescription *compositeDescription = nil;
     [tableController setChatRoomDelegate:self];
     
     // Set selected+over background: IB lack !
-    [editButton setImage:[UIImage imageNamed:@"chat_ok_over.png"] 
+    [editButton setBackgroundImage:[UIImage imageNamed:@"chat_ok_over.png"]
                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [LinphoneUtils buttonFixStates:editButton];
     
     messageField.minNumberOfLines = 1;
 	messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad])?10:3;
     messageField.delegate = self;
 	messageField.font = [UIFont systemFontOfSize:18.0f];
-    messageField.contentInset = UIEdgeInsetsZero;
+    messageField.contentInset = UIEdgeInsetsMake(1, 1, 0, 0);
     messageField.backgroundColor = [UIColor clearColor];
     [sendButton setEnabled:FALSE];
+    
+    [listTapGestureRecognizer addTarget:self action:@selector(onListTap:)];
+    [tableController.tableView addGestureRecognizer:listTapGestureRecognizer];
     [listTapGestureRecognizer setEnabled:FALSE];
+    
+    [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 
@@ -150,29 +154,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[tableController tableView] reloadData];
     
     [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-                                               forNinePatchNamed:@"chat_field"]];
-    [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
-                                               forNinePatchNamed:@"chat_background"]];
-    [transferBackgroundImage setImage:[TUNinePatchCache imageOfSize:[transferBackgroundImage bounds].size
-                                                   forNinePatchNamed:@"chat_background"]];
+                                               forNinePatchNamed:@"chat_message_background"]];
     
 	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] != NULL 
 								&& [[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] length]>0;
-    
-    CGRect pictureFrame = pictureButton.frame;
-	CGRect messageframe = messageView.frame;
-    CGRect sendFrame = sendButton.frame;
-	if (fileSharingEnabled) {
-        [pictureButton setHidden:FALSE];
-        messageframe.origin.x = pictureFrame.origin.x + pictureFrame.size.width;
-        messageframe.size.width = sendFrame.origin.x - messageframe.origin.x;
-	} else {
-        [pictureButton setHidden:TRUE];
-        messageframe.origin.x = pictureFrame.origin.x;
-        messageframe.size.width = sendFrame.origin.x - messageframe.origin.x;
-	}
-	[messageView setFrame:messageframe];
-	
+    [pictureButton setEnabled:fileSharingEnabled];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -200,6 +186,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:UITextViewTextDidChangeNotification
 												  object:nil];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
+                                                 forNinePatchNamed:@"chat_message_background"]];
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+
 }
 
 -(void)didReceiveMemoryWarning {
@@ -361,10 +358,10 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
     int diff = height - growingTextView.bounds.size.height;
     
-    CGRect footerRect = [footerView frame];
-    footerRect.origin.y -= diff;
-    footerRect.size.height += diff;
-    [footerView setFrame:footerRect];
+    CGRect messageRect = [messageView frame];
+    messageRect.origin.y -= diff;
+    messageRect.size.height += diff;
+    [messageView setFrame:messageRect];
     
     // Always stay at bottom
     CGPoint contentPt = [tableController.tableView contentOffset];
@@ -376,10 +373,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [tableController.view setFrame:tableRect];
     
     [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-                                               forNinePatchNamed:@"chat_field"]];
-    
-    [footerBackgroundImage setImage:[TUNinePatchCache imageOfSize:[footerBackgroundImage bounds].size
-                                                forNinePatchNamed:@"chat_background"]];
+                                               forNinePatchNamed:@"chat_message_background"]];
 }
 
 
@@ -448,7 +442,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (BOOL)chatRoomStartImageDownload:(NSURL*)url userInfo:(id)userInfo {
     if(imageSharing == nil) {
         imageSharing = [ImageSharing imageSharingDownload:url delegate:self userInfo:userInfo];
-        [footerView setHidden:TRUE];
+        [messageView setHidden:TRUE];
         [transferView setHidden:FALSE];
         return TRUE;
     }
@@ -459,7 +453,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     if(imageSharing == nil) {
         NSString *urlString = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"];
         imageSharing = [ImageSharing imageSharingUpload:[NSURL URLWithString:urlString] image:image delegate:self userInfo:url];
-        [footerView setHidden:TRUE];
+        [messageView setHidden:TRUE];
         [transferView setHidden:FALSE];
         return TRUE;
     }
@@ -474,13 +468,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)imageSharingAborted:(ImageSharing*)aimageSharing {
-    [footerView setHidden:FALSE];
+    [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     imageSharing = NULL;
 }
 
 - (void)imageSharingError:(ImageSharing*)aimageSharing error:(NSError *)error {
-    [footerView setHidden:FALSE];
+    [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     NSString *url = [aimageSharing.connection.currentRequest.URL absoluteString];
     if (aimageSharing.upload) {
@@ -512,13 +506,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     
     [self sendMessage:nil withExterlBodyUrl:url withInternalUrl:imageURL];
     
-    [footerView setHidden:FALSE];
+    [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     imageSharing = NULL;
 }
 
 - (void)imageSharingDownloadDone:(ImageSharing*)aimageSharing image:(UIImage *)image {
-    [footerView setHidden:FALSE];
+    [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
     
     ChatModel *chat = (ChatModel *)[imageSharing userInfo];
@@ -608,7 +602,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect tableFrame = [tableController.view frame];
         tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
         double diff = tableFrame.size.height;
-        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y;
         diff = tableFrame.size.height - diff;
         [tableController.view setFrame:tableFrame];
         
@@ -663,7 +657,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     {
         CGRect tableFrame = [tableController.view frame];
         tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
-        tableFrame.size.height = [footerView frame].origin.y - tableFrame.origin.y;
+        tableFrame.size.height = [messageView frame].origin.y - tableFrame.origin.y;
         [tableController.view setFrame:tableFrame];
     }
     

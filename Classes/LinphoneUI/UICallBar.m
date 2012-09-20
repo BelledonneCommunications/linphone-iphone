@@ -125,73 +125,95 @@
 	[sharpButton  setDigit:'#'];
     [sharpButton setDtmf:true];
     
-    // Set selected+disabled background: IB lack !
-    [videoButton setImage:[UIImage imageNamed:@"video_on_disabled.png"] 
-                           forState:(UIControlStateDisabled | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[videoButton tag]] 
-                 setImage:[UIImage imageNamed:@"video_on_disabled_landscape.png"] 
-                           forState:(UIControlStateDisabled | UIControlStateSelected)];
+    {
+        UIButton *videoButtonLandscape = (UIButton*)[landscapeView viewWithTag:[videoButton tag]];
+        // Set selected+disabled background: IB lack !
+        [videoButton setBackgroundImage:[UIImage imageNamed:@"video_on_disabled.png"]
+                               forState:(UIControlStateDisabled | UIControlStateSelected)];
+        [videoButtonLandscape setBackgroundImage:[UIImage imageNamed:@"video_on_disabled_landscape.png"]
+                                        forState:(UIControlStateDisabled | UIControlStateSelected)];
+        
+        // Set selected+over background: IB lack !
+        [videoButton setBackgroundImage:[UIImage imageNamed:@"video_on_over.png"]
+                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [videoButtonLandscape setBackgroundImage:[UIImage imageNamed:@"video_on_over_landscape.png"]
+                                        forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:videoButton];
+        [LinphoneUtils buttonFixStates:videoButtonLandscape];
+    }
     
-    // Set selected+over background: IB lack !
-    [videoButton setImage:[UIImage imageNamed:@"video_on_over.png"] 
-                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[videoButton tag]] 
-                 setImage:[UIImage imageNamed:@"video_on_over_landscape.png"] 
-                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    {
+        UIButton *speakerButtonLandscape = (UIButton*) [landscapeView viewWithTag:[speakerButton tag]];
+        // Set selected+disabled background: IB lack !
+        [speakerButton setBackgroundImage:[UIImage imageNamed:@"speaker_on_disabled.png"]
+                                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+        [speakerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"speaker_on_disabled_landscape.png"]
+                                          forState:(UIControlStateDisabled | UIControlStateSelected)];
+        
+        // Set selected+over background: IB lack !
+        [speakerButton setBackgroundImage:[UIImage imageNamed:@"speaker_on_over.png"]
+                                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [speakerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"sspeaker_on_over_landscape.png"]
+                                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:speakerButton];
+        [LinphoneUtils buttonFixStates:speakerButtonLandscape];
+    }
     
+    {
+        UIButton *microButtonLandscape = (UIButton*) [landscapeView viewWithTag:[microButton tag]];
+        // Set selected+disabled background: IB lack !
+        [microButton setBackgroundImage:[UIImage imageNamed:@"micro_on_disabled.png"]
+                               forState:(UIControlStateDisabled | UIControlStateSelected)];
+        [microButtonLandscape setBackgroundImage:[UIImage imageNamed:@"micro_on_disabled_landscape.png"]
+                                        forState:(UIControlStateDisabled | UIControlStateSelected)];
+        
+        // Set selected+over background: IB lack !
+        [microButton setBackgroundImage:[UIImage imageNamed:@"micro_on_over.png"]
+                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [microButtonLandscape setBackgroundImage:[UIImage imageNamed:@"micro_on_over_landscape.png"]
+                                        forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:microButton];
+        [LinphoneUtils buttonFixStates:microButtonLandscape];
+    }
     
-    // Set selected+disabled background: IB lack !
-    [speakerButton setImage:[UIImage imageNamed:@"speaker_on_disabled.png"] 
-                   forState:(UIControlStateDisabled | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[speakerButton tag]] 
-                   setImage:[UIImage imageNamed:@"speaker_on_disabled_landscape.png"] 
-                   forState:(UIControlStateDisabled | UIControlStateSelected)];
+    {
+        UIButton *optionsButtonLandscape = (UIButton*) [landscapeView viewWithTag:[optionsButton tag]];
+        // Set selected+over background: IB lack !
+        [optionsButton setBackgroundImage:[UIImage imageNamed:@"options_over.png"]
+                                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [optionsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"options_over_landscape.png"]
+                                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:optionsButton];
+        [LinphoneUtils buttonFixStates:optionsButtonLandscape];
+    }
     
-    // Set selected+over background: IB lack !
-    [speakerButton setImage:[UIImage imageNamed:@"speaker_on_over.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[speakerButton tag]] 
-                   setImage:[UIImage imageNamed:@"sspeaker_on_over_landscape.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    {
+        UIButton *pauseButtonLandscape = (UIButton*) [landscapeView viewWithTag:[pauseButton tag]];
+        // Set selected+over background: IB lack !
+        [pauseButton setBackgroundImage:[UIImage imageNamed:@"pause_on_over.png"]
+                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [pauseButtonLandscape setBackgroundImage:[UIImage imageNamed:@"pause_on_over_landscape.png"]
+                                        forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:pauseButton];
+        [LinphoneUtils buttonFixStates:pauseButtonLandscape];
+    }
     
-    
-    // Set selected+disabled background: IB lack !
-    [microButton setImage:[UIImage imageNamed:@"micro_on_disabled.png"] 
-                 forState:(UIControlStateDisabled | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[microButton tag]] 
-                 setImage:[UIImage imageNamed:@"micro_on_disabled_landscape.png"] 
-                 forState:(UIControlStateDisabled | UIControlStateSelected)];
-    
-    // Set selected+over background: IB lack !
-    [microButton setImage:[UIImage imageNamed:@"micro_on_over.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[microButton tag]] 
-                 setImage:[UIImage imageNamed:@"micro_on_over_landscape.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
-    
-    // Set selected+over background: IB lack !
-    [pauseButton setImage:[UIImage imageNamed:@"pause_on_over.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[pauseButton tag]] 
-                 setImage:[UIImage imageNamed:@"pause_on_over_landscape.png"] 
-                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
-    
-    // Set selected+over background: IB lack !
-    [optionsButton setImage:[UIImage imageNamed:@"options_over.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[optionsButton tag]] 
-                   setImage:[UIImage imageNamed:@"options_over_landscape.png"] 
-                   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    
-    
-    // Set selected+over background: IB lack !
-    [dialerButton setImage:[UIImage imageNamed:@"dialer_alt_back_over.png"] 
-                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-    [(UIButton*) [landscapeView viewWithTag:[dialerButton tag]] 
-                  setImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
-                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    {
+        UIButton *dialerButtonLandscape = (UIButton*) [landscapeView viewWithTag:[dialerButton tag]] ;
+        // Set selected+over background: IB lack !
+        [dialerButton setBackgroundImage:[UIImage imageNamed:@"dialer_alt_back_over.png"]
+                                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [dialerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"dialer_alt_back_over_landscape.png"] 
+                                        forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:dialerButton];
+        [LinphoneUtils buttonFixStates:dialerButtonLandscape];
+    }
     
     [super viewDidLoad];
 }
@@ -422,21 +444,7 @@
     [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;    
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected] key:@"image-selected"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
-        
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected] key:@"background-selected"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"background-disabled-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"background-selected-highlighted"];
-        [UICallBar addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateDisabled] key:@"background-selected-disabled"];
+        [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
     }
     [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
 
@@ -448,36 +456,9 @@
     view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
     if([view isKindOfClass:[UIButton class]]) {
         UIButton *button = (UIButton *)view;
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-normal"] forState:UIControlStateNormal];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-highlighted"] forState:UIControlStateHighlighted];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-disabled"] forState:UIControlStateDisabled];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected"] forState:UIControlStateSelected];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
-        [button setImage:[UICallBar getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
-        
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected"] forState:UIControlStateSelected];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
-        [button setBackgroundImage:[UICallBar getDictEntry:attributes key:@"background-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+        [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
     }
     view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
-}
-
-+ (void)addDictEntry:(NSMutableDictionary*)dict item:(id)item key:(id)key {
-    if(item != nil && key != nil) {
-        [dict setObject:item forKey:key];
-    }
-}
-
-+ (id)getDictEntry:(NSDictionary*)dict key:(id)key {
-    if(key != nil) {
-        return [dict objectForKey:key];
-    }
-    return nil;
 }
 
 @end

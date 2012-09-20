@@ -101,9 +101,10 @@
     [super layoutSubviews];
     
 	CGRect r = self.bounds;
-	r.origin.y = 0;
-	r.origin.x = contentInset.left;
+    r.origin.y = contentInset.top;
+    r.origin.x = contentInset.left;
     r.size.width -= contentInset.left + contentInset.right;
+    r.size.height -= contentInset.top + contentInset.bottom;
     
     internalTextView.frame = r;
 }
@@ -113,9 +114,10 @@
     contentInset = inset;
     
     CGRect r = self.frame;
-    r.origin.y = inset.top - inset.bottom;
-    r.origin.x = inset.left;
-    r.size.width -= inset.left + inset.right;
+    r.origin.y = contentInset.top;
+    r.origin.x = contentInset.left;
+    r.size.width -= contentInset.left + contentInset.right;
+    r.size.height -= contentInset.top + contentInset.bottom;
     
     internalTextView.frame = r;
     

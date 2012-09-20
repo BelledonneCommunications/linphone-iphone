@@ -378,10 +378,10 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Release;
 		};
@@ -409,10 +409,10 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Debug;
 		};
@@ -441,10 +441,10 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Distribution;
 		};
@@ -472,10 +472,10 @@
 					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7";
 			};
 			name = DistributionAdhoc;
 		};

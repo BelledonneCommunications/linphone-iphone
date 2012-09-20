@@ -83,8 +83,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         [tableController viewWillAppear:animated];
     }
     
-    if([tableController isEditing])
+    if([tableController isEditing]) {
         [tableController setEditing:FALSE animated:FALSE];
+    }
+    [deleteButton setHidden:TRUE];
     [editButton setOff];
     [self changeView: History_All];
     
@@ -120,16 +122,24 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self changeView: History_All];
     
     // Set selected+over background: IB lack !
-    [editButton setImage:[UIImage imageNamed:@"history_ok_over.png"] 
+    [editButton setBackgroundImage:[UIImage imageNamed:@"history_ok_over.png"]
                           forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
-    // Set selected+over background: IB lack !
-    [allButton setImage:[UIImage imageNamed:@"history_all_selected.png"] 
-                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    [LinphoneUtils buttonFixStates:editButton];
     
     // Set selected+over background: IB lack !
-    [missedButton setImage:[UIImage imageNamed:@"history_missed_selected.png"] 
+    [allButton setBackgroundImage:[UIImage imageNamed:@"history_all_selected.png"] 
+                    forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [LinphoneUtils buttonFixStatesForTabs:allButton];
+    
+    // Set selected+over background: IB lack !
+    [missedButton setBackgroundImage:[UIImage imageNamed:@"history_missed_selected.png"] 
                forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    [LinphoneUtils buttonFixStatesForTabs:missedButton];
+    
+    [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 }
 
 

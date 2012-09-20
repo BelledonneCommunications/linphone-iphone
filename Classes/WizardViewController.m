@@ -58,6 +58,9 @@ typedef enum _ViewElement {
 - (id)init {
     self = [super initWithNibName:@"WizardViewController" bundle:[NSBundle mainBundle]];
     if (self != nil) {
+        [[NSBundle mainBundle] loadNibNamed:@"WizardViews"
+                                      owner:self
+                                    options:nil];
         self->historyViews = [[NSMutableArray alloc] init];
         self->currentView = nil;
     }
@@ -143,7 +146,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [WizardViewController adjustFontSize:self.view mult:2.0f];
+}
+
+
 #pragma mark -
+
++ (void)adjustFontSize:(UIView*)view mult:(float)mult{
+    if([view isKindOfClass:[UILabel class]]) {
+        UILabel *label = (UILabel*)view;
+        [label setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
+    } else {
+        for(UIView *subView in [view subviews]) {
+            [WizardViewController adjustFontSize:subView mult:mult];
+        }
+    }
+}
 
 + (void)cleanTextField:(UIView*)view {
     if([view isKindOfClass:[UITextField class]]) {
@@ -522,7 +542,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [UIView setAnimationBeginsFromCurrentState:TRUE];
     
     // Move view
-    UIEdgeInsets inset = {0,0,0,0};
+    UIEdgeInsets inset = {0, 0, 0, 0};
     [contentView setContentInset:inset];
     [contentView setScrollIndicatorInsets:inset];
     [contentView setShowsVerticalScrollIndicator:FALSE];
@@ -655,6 +675,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
+}
+
+
+#pragma mark - TPMultiLayoutViewController Functions
+
+- (NSDictionary*)attributesForView:(UIView*)view {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
+    [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
+    }
+    [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
+    return attributes;
+}
+
+- (void)applyAttributes:(NSDictionary*)attributes toView:(UIView*)view {
+    view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
+    view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
+    }
+    view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
 }
 
 @end

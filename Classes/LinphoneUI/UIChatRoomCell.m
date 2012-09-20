@@ -40,6 +40,7 @@
 @synthesize statusImage;
 @synthesize downloadButton;
 @synthesize chatRoomDelegate;
+@synthesize imageTapGestureRecognizer;
 
 static const CGFloat CELL_MIN_HEIGHT = 40.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
@@ -58,6 +59,8 @@ static UIFont *CELL_FONT = nil;
         [[NSBundle mainBundle] loadNibNamed:@"UIChatRoomCell"
                                       owner:self
                                     options:nil];
+        imageTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onImageClick:)];
+        [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
     }
@@ -76,6 +79,7 @@ static UIFont *CELL_FONT = nil;
     [statusImage release];
     [chat release];
     [downloadButton release];
+    [imageTapGestureRecognizer release];
     
     [super dealloc];
 }

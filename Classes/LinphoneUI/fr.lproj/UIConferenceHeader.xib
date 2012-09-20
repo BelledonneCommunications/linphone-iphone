@@ -34,11 +34,11 @@
 			</object>
 			<object class="IBUIView" id="232140160">
 				<nil key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
+				<int key="NSvFlags">290</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIImageView" id="1047549470">
 						<reference key="NSNextResponder" ref="232140160"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">290</int>
 						<string key="NSFrameSize">{320, 68}</string>
 						<reference key="NSSuperview" ref="232140160"/>
 						<reference key="NSNextKeyView" ref="735354432"/>
@@ -57,7 +57,7 @@
 					</object>
 					<object class="IBUIImageView" id="242054672">
 						<reference key="NSNextResponder" ref="232140160"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">289</int>
 						<string key="NSFrame">{{224, 14}, {25, 25}}</string>
 						<reference key="NSSuperview" ref="232140160"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -66,7 +66,7 @@
 					</object>
 					<object class="IBUIButton" id="735354432">
 						<reference key="NSNextResponder" ref="232140160"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">289</int>
 						<string key="NSFrame">{{216, 6}, {41, 41}}</string>
 						<reference key="NSSuperview" ref="232140160"/>
 						<reference key="NSNextKeyView" ref="242054672"/>

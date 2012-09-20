@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1296</int>
+		<int key="IBDocument.SystemTarget">1536</int>
 		<string key="IBDocument.SystemVersion">11E53</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1938</string>
 		<string key="IBDocument.AppKitVersion">1138.47</string>
@@ -37,6 +37,21 @@
 				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
+					<object class="IBUIImageView" id="422247190">
+						<reference key="NSNextResponder" ref="450916897"/>
+						<int key="NSvFlags">301</int>
+						<string key="NSFrame">{{127, 150}, {510, 460}}</string>
+						<reference key="NSSuperview" ref="450916897"/>
+						<reference key="NSNextKeyView" ref="811328787"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<int key="IBUIContentMode">1</int>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<object class="NSCustomResource" key="IBUIImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">logo_linphone_trame_background.png</string>
+						</object>
+					</object>
 					<object class="IBUIView" id="887694290">
 						<reference key="NSNextResponder" ref="450916897"/>
 						<int key="NSvFlags">301</int>
@@ -66,9 +81,9 @@
 					<object class="IBUIButton" id="857979271">
 						<reference key="NSNextResponder" ref="450916897"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{0, 77}, {85, 33}}</string>
+						<string key="NSFrame">{{20, 90}, {85, 33}}</string>
 						<reference key="NSSuperview" ref="450916897"/>
-						<reference key="NSNextKeyView" ref="811328787"/>
+						<reference key="NSNextKeyView" ref="422247190"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -1126,6 +1141,7 @@
 							<reference ref="820868226"/>
 							<reference ref="857979271"/>
 							<reference ref="887694290"/>
+							<reference ref="422247190"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1295,12 +1311,6 @@
 						<string key="objectName">backspaceButton</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">70</int>
-						<reference key="object" ref="820868226"/>
-						<reference key="parent" ref="450916897"/>
-						<string key="objectName">preview</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">71</int>
 						<reference key="object" ref="857979271"/>
 						<reference key="parent" ref="450916897"/>
@@ -1315,8 +1325,21 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">76</int>
 						<reference key="object" ref="887694290"/>
+						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="450916897"/>
 						<string key="objectName">backgroundView</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">78</int>
+						<reference key="object" ref="422247190"/>
+						<reference key="parent" ref="450916897"/>
+						<string key="objectName">backgroundImage</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">70</int>
+						<reference key="object" ref="820868226"/>
+						<reference key="parent" ref="450916897"/>
+						<string key="objectName">preview</string>
 					</object>
 				</array>
 			</object>
@@ -1385,6 +1408,7 @@
 				<real value="1" key="71.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="76.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="78.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.CustomClassName">UIDigitButton</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -1396,7 +1420,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">77</int>
+			<int key="maxID">78</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1658,7 +1682,7 @@
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaTouchPlugin.iPhoneOS</string>
-			<real value="1296" key="NS.object.0"/>
+			<real value="1536" key="NS.object.0"/>
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
@@ -1680,6 +1704,7 @@
 			<string key="call_disabled~ipad.png">{371, 170}</string>
 			<string key="call_over~ipad.png">{371, 170}</string>
 			<string key="dialer_address_background.png">{640, 135}</string>
+			<string key="logo_linphone_trame_background.png">{1019, 920}</string>
 			<string key="numpad_eight_default.png">{220, 113}</string>
 			<string key="numpad_eight_over.png">{220, 113}</string>
 			<string key="numpad_five_default.png">{220, 113}</string>
@@ -1704,8 +1729,8 @@
 			<string key="numpad_two_over.png">{220, 113}</string>
 			<string key="numpad_zero_default.png">{220, 113}</string>
 			<string key="numpad_zero_over.png">{220, 113}</string>
-			<string key="switch_camera_default.png">{170, 65}</string>
-			<string key="switch_camera_over.png">{170, 65}</string>
+			<string key="switch_camera_default.png">{151, 51}</string>
+			<string key="switch_camera_over.png">{151, 51}</string>
 			<string key="transfer_call_default~ipad.png">{371, 170}</string>
 			<string key="transfer_call_disabled~ipad.png">{371, 170}</string>
 			<string key="transfer_call_over~ipad.png">{371, 170}</string>

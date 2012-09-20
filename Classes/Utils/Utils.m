@@ -60,3 +60,130 @@
 }
 
 @end
+
+@implementation LinphoneUtils
+
++ (void)buttonFixStates:(UIButton*)button {
+    // Set selected+over title: IB lack !
+    [button setTitle:[button titleForState:UIControlStateSelected]
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over titleColor: IB lack !
+    [button setTitleColor:[button titleColorForState:UIControlStateHighlighted]
+                      forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+disabled title: IB lack !
+    [button setTitle:[button titleForState:UIControlStateSelected]
+                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+    
+    // Set selected+disabled titleColor: IB lack !
+    [button setTitleColor:[button titleColorForState:UIControlStateDisabled]
+                      forState:(UIControlStateDisabled | UIControlStateSelected)];
+}
+
++ (void)buttonFixStatesForTabs:(UIButton*)button {
+    // Set selected+over title: IB lack !
+    [button setTitle:[button titleForState:UIControlStateSelected]
+            forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+over titleColor: IB lack !
+    [button setTitleColor:[button titleColorForState:UIControlStateSelected]
+                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+    
+    // Set selected+disabled title: IB lack !
+    [button setTitle:[button titleForState:UIControlStateSelected]
+            forState:(UIControlStateDisabled | UIControlStateSelected)];
+    
+    // Set selected+disabled titleColor: IB lack !
+    [button setTitleColor:[button titleColorForState:UIControlStateDisabled]
+                 forState:(UIControlStateDisabled | UIControlStateSelected)];
+}
+
++ (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button {
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateNormal] key:@"title-normal"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateHighlighted] key:@"title-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateDisabled] key:@"title-disabled"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateSelected] key:@"title-selected"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"title-disabled-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateSelected | UIControlStateHighlighted] key:@"title-selected-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleForState:UIControlStateSelected | UIControlStateDisabled] key:@"title-selected-disabled"];
+    
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateNormal] key:@"title-color-normal"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateHighlighted] key:@"title-color-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateDisabled] key:@"title-color-disabled"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateSelected] key:@"title-color-selected"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"title-color-disabled-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateSelected | UIControlStateHighlighted] key:@"title-color-selected-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button titleColorForState:UIControlStateSelected | UIControlStateDisabled] key:@"title-color-selected-disabled"];
+    
+    [LinphoneUtils addDictEntry:attributes item:NSStringFromUIEdgeInsets([button titleEdgeInsets]) key:@"title-edge"];
+    
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateNormal] key:@"image-normal"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateHighlighted] key:@"image-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateDisabled] key:@"image-disabled"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateSelected] key:@"image-selected"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"image-disabled-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"image-selected-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button imageForState:UIControlStateSelected | UIControlStateDisabled] key:@"image-selected-disabled"];
+    
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateNormal] key:@"background-normal"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateHighlighted] key:@"background-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled] key:@"background-disabled"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected] key:@"background-selected"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateDisabled | UIControlStateHighlighted] key:@"background-disabled-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateHighlighted] key:@"background-selected-highlighted"];
+    [LinphoneUtils addDictEntry:attributes item:[button backgroundImageForState:UIControlStateSelected | UIControlStateDisabled] key:@"background-selected-disabled"];
+}
+
++ (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button {
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-normal"] forState:UIControlStateNormal];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-highlighted"] forState:UIControlStateHighlighted];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-disabled"] forState:UIControlStateDisabled];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-selected"] forState:UIControlStateSelected];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+    [button setTitle:[LinphoneUtils getDictEntry:attributes key:@"title-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-normal"] forState:UIControlStateNormal];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-highlighted"] forState:UIControlStateHighlighted];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-disabled"] forState:UIControlStateDisabled];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-selected"] forState:UIControlStateSelected];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+    [button setTitleColor:[LinphoneUtils getDictEntry:attributes key:@"title-color-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    
+    [button setTitleEdgeInsets:UIEdgeInsetsFromString([LinphoneUtils getDictEntry:attributes key:@"title-edge"])];
+    
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-normal"] forState:UIControlStateNormal];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-highlighted"] forState:UIControlStateHighlighted];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-disabled"] forState:UIControlStateDisabled];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-selected"] forState:UIControlStateSelected];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+    [button setImage:[LinphoneUtils getDictEntry:attributes key:@"image-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+    
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-normal"] forState:UIControlStateNormal];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-highlighted"] forState:UIControlStateHighlighted];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-disabled"] forState:UIControlStateDisabled];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-selected"] forState:UIControlStateSelected];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-disabled-highlighted"] forState:UIControlStateDisabled | UIControlStateHighlighted];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-selected-highlighted"] forState:UIControlStateSelected | UIControlStateHighlighted];
+    [button setBackgroundImage:[LinphoneUtils getDictEntry:attributes key:@"background-selected-disabled"] forState:UIControlStateSelected | UIControlStateDisabled];
+}
+
+
++ (void)addDictEntry:(NSMutableDictionary*)dict item:(id)item key:(id)key {
+    if(item != nil && key != nil) {
+        [dict setObject:item forKey:key];
+    }
+}
+
++ (id)getDictEntry:(NSDictionary*)dict key:(id)key {
+    if(key != nil) {
+        return [dict objectForKey:key];
+    }
+    return nil;
+}
+
+
+@end

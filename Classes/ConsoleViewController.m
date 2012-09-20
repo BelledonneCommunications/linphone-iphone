@@ -83,11 +83,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [logsView setDelegate:self];
     
+    UIScrollView *scrollView = [ConsoleViewController defaultScrollView:logsView];
     UIEdgeInsets inset = {0, 0, 10, 0};
-    [logsView.scrollView setContentInset:inset];
-    [logsView.scrollView setScrollIndicatorInsets:inset];
+    [scrollView setContentInset:inset];
+    [scrollView setScrollIndicatorInsets:inset];
     
-    [logsView.scrollView setBounces:FALSE];
+    [scrollView setBounces:FALSE];
 }
 
 
@@ -114,6 +115,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark - 
+
++ (UIScrollView *)defaultScrollView:(UIWebView *)webView {
+    UIScrollView *scrollView = nil;
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
+        return webView.scrollView;
+    }  else {
+        for (UIView *subview in [webView subviews]) {
+            if ([subview isKindOfClass:[UIScrollView class]]) {
+                scrollView = (UIScrollView *)subview;
+            }
+        }
+    }
+    return scrollView;
+}
 
 - (void)clear {
     NSString *js = @"document.getElementById('content').innerHTML += ''";
