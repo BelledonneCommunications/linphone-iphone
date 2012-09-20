@@ -637,7 +637,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char* lRing = [[LinphoneManager bundleFile:@"ring.wab"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing);
 	const char* lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
