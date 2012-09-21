@@ -1017,7 +1017,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
 	NSData *tokenData =  pushNotificationToken;
-	if(tokenData != nil && [self lpConfigBoolForKey:@"pusnotification_preference"]) {
+	if(tokenData != nil && [self lpConfigBoolForKey:@"pushnotification_preference"]) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
 		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
 		for(int i = 0; i < [tokenData length]; ++i) {

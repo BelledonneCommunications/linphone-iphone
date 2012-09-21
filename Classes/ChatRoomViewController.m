@@ -273,6 +273,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[chat setState:[NSNumber numberWithInt:state]];
 	[chat update];
 	[thiz.tableController updateChatEntry:chat];
+	linphone_chat_message_set_user_data(msg, NULL);
+	[chat release]; // no longuer need to keep reference
+	
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL*)externalUrl withInternalUrl:(NSURL*)internalUrl {
@@ -306,7 +309,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [chat release];
     
     LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
-	linphone_chat_message_set_user_data(msg, chat);
+	linphone_chat_message_set_user_data(msg, [chat retain]);
     if(externalUrl) {
         linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
     }
