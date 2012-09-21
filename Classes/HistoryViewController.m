@@ -140,6 +140,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [LinphoneUtils buttonFixStatesForTabs:missedButton];
     
     [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 

@@ -212,6 +212,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [LinphoneUtils buttonFixStates:editButton];
 
     [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -22,6 +22,7 @@
 #import "LinphoneManager.h"
 #import "UICompositeViewController.h"
 
+#import "AboutViewController.h"
 #import "FirstLoginViewController.h"
 #import "IncomingCallViewController.h"
 #import "ChatRoomViewController.h"

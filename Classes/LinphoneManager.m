@@ -34,6 +34,7 @@
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
 
+#define LINPHONE_LOGS_MAX_ENTRY 5000
 
 static void audioRouteChangeListenerCallback (
                                               void                   *inUserData,                                 // 1
@@ -56,6 +57,7 @@ NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kContactSipField = @"SIP";
+
 
 extern void libmsilbc_init();
 #ifdef HAVE_AMR
@@ -304,6 +306,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+        }
         [[LinphoneManager instance].logs addObject:formatedString];
         
         // Post event
@@ -321,6 +326,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 	NSLog(log, NULL);
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+        }
         [[LinphoneManager instance].logs addObject:log];
         
         // Post event

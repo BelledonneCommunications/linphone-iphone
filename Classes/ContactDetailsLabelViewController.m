@@ -48,6 +48,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 

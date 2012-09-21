@@ -168,6 +168,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return NO;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return 0;
+}
+
 + (UIView*)findFirstResponder:(UIView*)view {
     if (view.isFirstResponder) {
         return view;

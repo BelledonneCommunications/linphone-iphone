@@ -803,17 +803,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>10</key>
+							<key>11</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/10/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/11/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T16:15:28Z</date>
+					<date>2012-09-21T09:50:33Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -823,7 +823,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>e0afb50675144133f9d15d4e1145a053
+					<string>85daf0828bc846574f82f88cdfcf5873
 </string>
 					<key>name</key>
 					<string>ChatViewController.xib</string>
@@ -1038,9 +1038,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>10</string>
+						<string>11</string>
 						<key>fr</key>
-						<string>10</string>
+						<string>11</string>
 					</dict>
 				</dict>
 				<dict>
@@ -1048,17 +1048,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>11</key>
+							<key>12</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ContactsViewController/11/ContactsViewController.xib</string>
+								<string>Classes/ContactsViewController/12/ContactsViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:21:49Z</date>
+					<date>2012-09-21T08:19:54Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1068,7 +1068,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>1a4d8e84ad8a21cabafe3ef48710b34b
+					<string>bda616bf70739869c9bbce01c4de1324
 </string>
 					<key>name</key>
 					<string>ContactsViewController.xib</string>
@@ -1358,9 +1358,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>11</string>
+						<string>12</string>
 						<key>fr</key>
-						<string>11</string>
+						<string>12</string>
 					</dict>
 				</dict>
 				<dict>
@@ -3689,17 +3689,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>12</key>
+							<key>13</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViewController/12/WizardViewController.xib</string>
+								<string>Classes/WizardViewController/13/WizardViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:24:01Z</date>
+					<date>2012-09-21T07:38:47Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3709,7 +3709,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>e1fc10096ab7b22c55089d5dccdf2015
+					<string>ffb9c46d3e8e64cc27d0fd3aa5063f41
 </string>
 					<key>name</key>
 					<string>WizardViewController.xib</string>
@@ -4999,9 +4999,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>12</string>
+						<string>13</string>
 						<key>fr</key>
-						<string>12</string>
+						<string>13</string>
 					</dict>
 				</dict>
 				<dict>
@@ -5103,17 +5103,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>10</key>
+							<key>12</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViews/10/WizardViews.xib</string>
+								<string>Classes/WizardViews/12/WizardViews.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:29:36Z</date>
+					<date>2012-09-21T09:50:14Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -5123,7 +5123,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>030aa3527c7b0ff2fd4cb7911bd7dcac
+					<string>723b14414271e081b00e312017bf06fb
 </string>
 					<key>name</key>
 					<string>WizardViews.xib</string>
@@ -6555,9 +6555,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>10</string>
+						<string>12</string>
 						<key>fr</key>
-						<string>10</string>
+						<string>12</string>
 					</dict>
 				</dict>
 				<dict>
@@ -6565,17 +6565,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>8</key>
+							<key>9</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViewController~ipad/8/WizardViewController~ipad.xib</string>
+								<string>Classes/WizardViewController~ipad/9/WizardViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:24:02Z</date>
+					<date>2012-09-21T07:48:15Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -6585,7 +6585,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>950141adce6aab34f1068654a47edf3c
+					<string>a61bb43ff4eaf2a60eb5be26760190f5
 </string>
 					<key>name</key>
 					<string>WizardViewController~ipad.xib</string>
@@ -6899,9 +6899,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>8</string>
+						<string>9</string>
 						<key>fr</key>
-						<string>8</string>
+						<string>9</string>
 					</dict>
 				</dict>
 			</array>
@@ -10870,7 +10870,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T12:25:53Z</date>
+					<date>2012-09-21T09:33:54Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10880,7 +10880,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>9801969515d6fafb3f05d8b036f9e80d
+					<string>3b7db2782a575d521f2505fe1d391964
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -11035,6 +11035,31 @@ La cause était: %2$@</string>
 								<string>'%@' would like to enable video</string>
 								<key>fr</key>
 								<string>'%@' voudrait activer la video</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>About</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>About</string>
+								<key>fr</key>
+								<string>À propos</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

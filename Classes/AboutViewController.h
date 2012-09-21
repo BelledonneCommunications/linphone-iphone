@@ -1,4 +1,4 @@
-/* MoreViewController.h
+/* AboutViewController.h
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -19,18 +19,17 @@
 
 #import <UIKit/UIKit.h>
 
-@class ConsoleViewController;
-@interface MoreViewController : UITableViewController {
-    @private
-	bool isLogViewEnabled;
-	ConsoleViewController *consoleViewController;
-	bool isDebug;
+#import "UICompositeViewController.h"
+
+@interface AboutViewController : UIViewController<UICompositeViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet UITableViewCell* web;
-@property (nonatomic, retain) IBOutlet UITableViewCell* credit;
-@property (nonatomic, retain) IBOutlet UITableViewCell* console;
-@property (nonatomic, retain) IBOutlet UITextView *creditText;
-@property (nonatomic, retain) IBOutlet UILabel *weburi;
+@property (nonatomic, retain) IBOutlet UILabel *linphoneIphoneVersionLabel;
+@property (nonatomic, retain) IBOutlet UILabel *linphoneCoreVersionLabel;
+@property (nonatomic, retain) IBOutlet UIView *contentView;
+@property (nonatomic, retain) IBOutlet UILabel *linkLabel;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
+
+- (IBAction)onLinkTap:(id)sender;
 
 @end

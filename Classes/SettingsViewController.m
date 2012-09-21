@@ -196,6 +196,9 @@
     UIScrollView *scrollView = self.tableView;
     [scrollView setContentInset:inset];
     [scrollView setScrollIndicatorInsets:inset];
+    
+    [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [self.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 - (id)initWithStyle:(UITableViewStyle)style {
@@ -204,6 +207,14 @@
         [self initIASKAppSettingsViewControllerEx];
     }
     return self;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", nil) style:UIBarButtonItemStyleBordered target:self action:@selector(onAboutClick:)];
+    self.navigationItem.rightBarButtonItem = buttonItem;
+    [buttonItem release];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -221,6 +232,10 @@
     cell.selectedBackgroundView = selectedBackgroundView;
     [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     return cell;
+}
+
+- (IBAction)onAboutClick: (id)sender {
+    [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
 }
 
 @end
@@ -309,7 +324,6 @@
     labelTitleView.text = viewController.title;
     [labelTitleView sizeToFit];
     viewController.navigationItem.titleView = labelTitleView;
-    
     [super pushViewController:viewController animated:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [self.topViewController viewDidAppear:animated];
@@ -579,4 +593,5 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
     }
 }
+
 @end

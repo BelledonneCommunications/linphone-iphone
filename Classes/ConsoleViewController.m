@@ -95,7 +95,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - UIWebViewDelegate Functions
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    NSString *logs = [[LinphoneManager instance].logs componentsJoinedByString:@"\\n"];
+    NSString *logs = [[LinphoneManager instance].logs componentsJoinedByString:@"\n"];
     [self addLog:logs scroll:TRUE];
     
     // Set observer
@@ -137,7 +137,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)addLog:(NSString*)log scroll:(BOOL)scroll {
-    NSMutableString *js = [NSMutableString stringWithFormat:@"document.getElementById('content').innerHTML += \"%@\\n\";", [log stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]];
+    log = [log stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+    log = [log stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+    log = [log stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    log = [log stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
+    log = [log stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
+    log = [log stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
+    NSMutableString *js = [NSMutableString stringWithFormat:@"document.getElementById('content').innerHTML += \"%@\\n\";", log];
     if(scroll) {
         [js appendString:@"window.scrollTo(0, document.body.scrollHeight);"];
     }

@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UILaunchImageFile~iphone</key>
-	<string>linphone-splashscreen</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
@@ -61,7 +59,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.3</string>
+	<string>2.0</string>
 	<key>NSMainNibFile</key>
 	<string>LinphoneApp</string>
 	<key>NSMainNibFile~ipad</key>
@@ -73,6 +71,8 @@
 		<string>voip</string>
 		<string>audio</string>
 	</array>
+	<key>UILaunchImageFile~iphone</key>
+	<string>linphone-splashscreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>wifi</string>

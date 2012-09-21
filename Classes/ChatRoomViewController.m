@@ -127,6 +127,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [listTapGestureRecognizer setEnabled:FALSE];
     
     [tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [tableController.tableView setBackgroundView:nil];
 }
 
 
