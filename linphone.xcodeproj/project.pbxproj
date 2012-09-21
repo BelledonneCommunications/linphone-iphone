@@ -775,12 +775,6 @@
 		D381881615FE3F7F00C3EDCA /* UIContactDetailsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881815FE3F7F00C3EDCA /* UIContactDetailsHeader.xib */; };
 		D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* InCallViewController.xib */; };
 		D381881A15FE3FCA00C3EDCA /* InCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* InCallViewController.xib */; };
-		D381884415FE447200C3EDCA /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B415FE340500C3EDCA /* ChatViewController.xib */; };
-		D381884515FE447200C3EDCA /* ChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187B415FE340500C3EDCA /* ChatViewController.xib */; };
-		D381885415FE448400C3EDCA /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E415FE349700C3EDCA /* UICallBar.xib */; };
-		D381885515FE448400C3EDCA /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E415FE349700C3EDCA /* UICallBar.xib */; };
-		D381885615FE448400C3EDCA /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */; };
-		D381885715FE448400C3EDCA /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */; };
 		D38327F31580FE3A00FA0D23 /* contacts_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EB1580FE3A00FA0D23 /* contacts_default.png */; };
 		D38327F41580FE3A00FA0D23 /* contacts_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327EC1580FE3A00FA0D23 /* contacts_selected.png */; };
 		D38327F51580FE3A00FA0D23 /* dialer_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D38327ED1580FE3A00FA0D23 /* dialer_default.png */; };
@@ -3532,7 +3526,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "linphone" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -4023,9 +4017,6 @@
 				D37EE10D16035793003608A6 /* ImageViewController.xib in Resources */,
 				D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
-				D381884415FE447200C3EDCA /* ChatViewController.xib in Resources */,
-				D381885415FE448400C3EDCA /* UICallBar.xib in Resources */,
-				D381885615FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
 				D3998D0416031937009DD22C /* background_alt.png in Resources */,
 				D3866C281608CA1600830F95 /* image_back_default.png in Resources */,
 				D3866C2A1608CA1600830F95 /* image_back_over.png in Resources */,
@@ -4510,9 +4501,6 @@
 				D37EE10E16035793003608A6 /* ImageViewController.xib in Resources */,
 				D381881215FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				D381881A15FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
-				D381884515FE447200C3EDCA /* ChatViewController.xib in Resources */,
-				D381885515FE448400C3EDCA /* UICallBar.xib in Resources */,
-				D381885715FE448400C3EDCA /* UICallBar~ipad.xib in Resources */,
 				D3998D0516031937009DD22C /* background_alt.png in Resources */,
 				D3866C291608CA1600830F95 /* image_back_default.png in Resources */,
 				D3866C2B1608CA1600830F95 /* image_back_over.png in Resources */,
