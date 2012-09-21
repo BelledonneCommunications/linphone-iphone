@@ -149,7 +149,7 @@
     internalTextView.hidden = NO;
     internalTextView.delegate = self;
     
-    [self sizeToFit];
+    //[self sizeToFit];
     
     maxNumberOfLines = n;
 }
@@ -178,7 +178,7 @@
     internalTextView.hidden = NO;
     internalTextView.delegate = self;
     
-    [self sizeToFit];
+    //[self sizeToFit];
     
     minNumberOfLines = m;
 }

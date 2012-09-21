@@ -337,17 +337,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>27</key>
+							<key>32</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/27/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/32/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:39:51Z</date>
+					<date>2012-09-21T15:04:45Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -357,7 +357,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>627c45d39e108a9f3439b16112541cf7
+					<string>f3544e098ca4aed56e114bf9cb69da01
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -793,9 +793,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>27</string>
+						<string>32</string>
 						<key>fr</key>
-						<string>27</string>
+						<string>32</string>
 					</dict>
 				</dict>
 				<dict>
@@ -803,17 +803,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>11</key>
+							<key>14</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/11/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/14/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T09:50:33Z</date>
+					<date>2012-09-21T14:10:39Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -823,7 +823,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>85daf0828bc846574f82f88cdfcf5873
+					<string>8c14eaa11baf171c54e5b5e4111cf584
 </string>
 					<key>name</key>
 					<string>ChatViewController.xib</string>
@@ -1038,9 +1038,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>11</string>
+						<string>14</string>
 						<key>fr</key>
-						<string>11</string>
+						<string>14</string>
 					</dict>
 				</dict>
 				<dict>
@@ -1368,17 +1368,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>4</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController/3/DialerViewController.xib</string>
+								<string>Classes/DialerViewController/4/DialerViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:21:49Z</date>
+					<date>2012-09-21T12:30:11Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1388,7 +1388,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>964fdf71f31dffd3f6cc28ead8aa2d3e
+					<string>8a2a96826784d150101b877d3d22c6a1
 </string>
 					<key>name</key>
 					<string>DialerViewController.xib</string>
@@ -1902,9 +1902,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>4</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>4</string>
 					</dict>
 				</dict>
 				<dict>
@@ -1912,17 +1912,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>9</key>
+							<key>11</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController~ipad/9/DialerViewController~ipad.xib</string>
+								<string>Classes/DialerViewController~ipad/11/DialerViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:21:48Z</date>
+					<date>2012-09-21T12:43:40Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1932,7 +1932,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>9e024b6bdd4eea1304fefc8b28855794
+					<string>75e89e01d452e053bea070cc7ec8e9bc
 </string>
 					<key>name</key>
 					<string>DialerViewController~ipad.xib</string>
@@ -2471,9 +2471,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>9</string>
+						<string>11</string>
 						<key>fr</key>
-						<string>9</string>
+						<string>11</string>
 					</dict>
 				</dict>
 				<dict>
@@ -3689,17 +3689,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>13</key>
+							<key>14</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViewController/13/WizardViewController.xib</string>
+								<string>Classes/WizardViewController/14/WizardViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T07:38:47Z</date>
+					<date>2012-09-21T13:03:03Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3709,7 +3709,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>ffb9c46d3e8e64cc27d0fd3aa5063f41
+					<string>e1fc10096ab7b22c55089d5dccdf2015
 </string>
 					<key>name</key>
 					<string>WizardViewController.xib</string>
@@ -4999,9 +4999,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>13</string>
+						<string>14</string>
 						<key>fr</key>
-						<string>13</string>
+						<string>14</string>
 					</dict>
 				</dict>
 				<dict>
@@ -5103,17 +5103,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>12</key>
+							<key>15</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViews/12/WizardViews.xib</string>
+								<string>Classes/WizardViews/15/WizardViews.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T09:50:14Z</date>
+					<date>2012-09-21T14:23:27Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -5123,7 +5123,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>723b14414271e081b00e312017bf06fb
+					<string>28b7a6024bd7d81255243ef32288a7d6
 </string>
 					<key>name</key>
 					<string>WizardViews.xib</string>
@@ -6555,9 +6555,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>12</string>
+						<string>15</string>
 						<key>fr</key>
-						<string>12</string>
+						<string>15</string>
 					</dict>
 				</dict>
 				<dict>
@@ -6565,17 +6565,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>9</key>
+							<key>10</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViewController~ipad/9/WizardViewController~ipad.xib</string>
+								<string>Classes/WizardViewController~ipad/10/WizardViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T07:48:15Z</date>
+					<date>2012-09-21T13:03:02Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -6585,7 +6585,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>a61bb43ff4eaf2a60eb5be26760190f5
+					<string>950141adce6aab34f1068654a47edf3c
 </string>
 					<key>name</key>
 					<string>WizardViewController~ipad.xib</string>
@@ -6899,9 +6899,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>9</string>
+						<string>10</string>
 						<key>fr</key>
-						<string>9</string>
+						<string>10</string>
 					</dict>
 				</dict>
 			</array>
@@ -9440,17 +9440,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>6</key>
+							<key>7</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIMainBar/6/UIMainBar.xib</string>
+								<string>LinphoneUI/UIMainBar/7/UIMainBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:02:25Z</date>
+					<date>2012-09-21T12:33:09Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -9460,7 +9460,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>188f1463d35316609315281b42709088
+					<string>3673d2d68bd62db4ac766f71230406cb
 </string>
 					<key>name</key>
 					<string>UIMainBar.xib</string>
@@ -9795,9 +9795,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>6</string>
+						<string>7</string>
 						<key>fr</key>
-						<string>6</string>
+						<string>7</string>
 					</dict>
 				</dict>
 				<dict>
@@ -9805,17 +9805,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>6</key>
+							<key>7</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIMainBar~ipad/6/UIMainBar~ipad.xib</string>
+								<string>LinphoneUI/UIMainBar~ipad/7/UIMainBar~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:02:34Z</date>
+					<date>2012-09-21T12:33:08Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -9825,7 +9825,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>0573baad5d18951a19a8f58c27eb183b
+					<string>7515bfc55761e951edeabce40676d625
 </string>
 					<key>name</key>
 					<string>UIMainBar~ipad.xib</string>
@@ -10441,9 +10441,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>6</string>
+						<string>7</string>
 						<key>fr</key>
-						<string>6</string>
+						<string>7</string>
 					</dict>
 				</dict>
 				<dict>

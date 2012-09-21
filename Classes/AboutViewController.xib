@@ -36,7 +36,7 @@
 				<string key="IBProxiedObjectIdentifier">IBFirstResponder</string>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
-			<object class="IBUIScrollView" id="219194068">
+			<object class="IBUIScrollView" id="457997634">
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<string key="NSFrameSize">{320, 460}</string>
@@ -49,18 +49,18 @@
 				<bool key="IBUIAlwaysBounceVertical">YES</bool>
 				<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
 			</object>
-			<object class="IBUIView" id="421185651">
+			<object class="IBUIView" id="775128611">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
+				<int key="NSvFlags">274</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="IBUIImageView" id="913505980">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">301</int>
+					<object class="IBUIImageView" id="97290309">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{124, 20}, {72, 72}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="908257632"/>
+						<reference key="NSNextKeyView" ref="945733244"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -69,13 +69,13 @@
 							<string key="NSResourceName">linphone_icon_72.png</string>
 						</object>
 					</object>
-					<object class="IBUILabel" id="908257632">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="945733244">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 100}, {280, 50}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="874908727"/>
+						<reference key="NSNextKeyView" ref="966549235"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -83,7 +83,7 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">Linphone</string>
-						<object class="NSColor" key="IBUITextColor" id="540727998">
+						<object class="NSColor" key="IBUITextColor" id="549716735">
 							<int key="NSColorSpace">2</int>
 							<bytes key="NSRGB">MC4zNTY4NjI3NTM2IDAuMzk2MDc4NDM3NiAwLjQzNTI5NDEyMTUAA</bytes>
 						</object>
@@ -101,13 +101,13 @@
 						</object>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 					</object>
-					<object class="IBUILabel" id="457670017">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="55823705">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 187}, {280, 44}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="95691842"/>
+						<reference key="NSNextKeyView" ref="697092436"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -124,19 +124,19 @@
 							<int key="type">1</int>
 							<double key="pointSize">17</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="1015475260">
+						<object class="NSFont" key="IBUIFont" id="901921461">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">17</double>
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUILabel" id="874908727">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="966549235">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 138}, {280, 21}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="876685434"/>
+						<reference key="NSNextKeyView" ref="132342957"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -144,28 +144,28 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">Linphone iPhone 1.0</string>
-						<reference key="IBUITextColor" ref="540727998"/>
+						<reference key="IBUITextColor" ref="549716735"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<int key="IBUITextAlignment">1</int>
-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="813822661">
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="741880680">
 							<int key="type">1</int>
 							<double key="pointSize">13</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="543522899">
+						<object class="NSFont" key="IBUIFont" id="141611231">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">13</double>
 							<int key="NSfFlags">16</int>
 						</object>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 					</object>
-					<object class="IBUILabel" id="876685434">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="132342957">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 158}, {280, 21}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="457670017"/>
+						<reference key="NSNextKeyView" ref="55823705"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -173,19 +173,19 @@
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBUIText">Linphone Core 1.0</string>
-						<reference key="IBUITextColor" ref="540727998"/>
+						<reference key="IBUITextColor" ref="549716735"/>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<int key="IBUITextAlignment">1</int>
-						<reference key="IBUIFontDescription" ref="813822661"/>
-						<reference key="IBUIFont" ref="543522899"/>
+						<reference key="IBUIFontDescription" ref="741880680"/>
+						<reference key="IBUIFont" ref="141611231"/>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 					</object>
-					<object class="IBUILabel" id="680581417">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="28600489">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 269}, {280, 21}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -203,15 +203,15 @@
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUITextAlignment">1</int>
 						<reference key="IBUIFontDescription" ref="151194520"/>
-						<reference key="IBUIFont" ref="1015475260"/>
+						<reference key="IBUIFont" ref="901921461"/>
 					</object>
-					<object class="IBUILabel" id="95691842">
-						<reference key="NSNextResponder" ref="421185651"/>
-						<int key="NSvFlags">292</int>
+					<object class="IBUILabel" id="697092436">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">293</int>
 						<string key="NSFrame">{{20, 225}, {280, 36}}</string>
-						<reference key="NSSuperview" ref="421185651"/>
+						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="680581417"/>
+						<reference key="NSNextKeyView" ref="28600489"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -224,7 +224,7 @@
 						<int key="IBUINumberOfLines">0</int>
 						<int key="IBUITextAlignment">1</int>
 						<reference key="IBUIFontDescription" ref="151194520"/>
-						<reference key="IBUIFont" ref="1015475260"/>
+						<reference key="IBUIFont" ref="901921461"/>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 						<double key="preferredMaxLayoutWidth">280</double>
 					</object>
@@ -232,7 +232,7 @@
 				<string key="NSFrameSize">{320, 310}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="913505980"/>
+				<reference key="NSNextKeyView" ref="97290309"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -248,7 +248,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">linkLabel</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="457670017"/>
+						<reference key="destination" ref="55823705"/>
 					</object>
 					<int key="connectionID">60</int>
 				</object>
@@ -256,7 +256,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">view</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="219194068"/>
+						<reference key="destination" ref="457997634"/>
 					</object>
 					<int key="connectionID">63</int>
 				</object>
@@ -264,7 +264,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">contentView</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="421185651"/>
+						<reference key="destination" ref="775128611"/>
 					</object>
 					<int key="connectionID">64</int>
 				</object>
@@ -272,7 +272,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">linphoneCoreVersionLabel</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="876685434"/>
+						<reference key="destination" ref="132342957"/>
 					</object>
 					<int key="connectionID">67</int>
 				</object>
@@ -280,7 +280,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">linphoneIphoneVersionLabel</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="874908727"/>
+						<reference key="destination" ref="966549235"/>
 					</object>
 					<int key="connectionID">68</int>
 				</object>
@@ -309,7 +309,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">62</int>
-						<reference key="object" ref="219194068"/>
+						<reference key="object" ref="457997634"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
@@ -317,59 +317,59 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">51</int>
-						<reference key="object" ref="421185651"/>
+						<reference key="object" ref="775128611"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="913505980"/>
-							<reference ref="908257632"/>
-							<reference ref="876685434"/>
-							<reference ref="457670017"/>
-							<reference ref="680581417"/>
-							<reference ref="874908727"/>
-							<reference ref="95691842"/>
+							<reference ref="97290309"/>
+							<reference ref="945733244"/>
+							<reference ref="132342957"/>
+							<reference ref="55823705"/>
+							<reference ref="28600489"/>
+							<reference ref="966549235"/>
+							<reference ref="697092436"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">61</int>
-						<reference key="object" ref="95691842"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="697092436"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">licenceLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">58</int>
-						<reference key="object" ref="680581417"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="28600489"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">copyrightLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">57</int>
-						<reference key="object" ref="457670017"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="55823705"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">linkLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">56</int>
-						<reference key="object" ref="908257632"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="945733244"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">linphoneLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">55</int>
-						<reference key="object" ref="913505980"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="97290309"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">iconImageView</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">65</int>
-						<reference key="object" ref="874908727"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="966549235"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">linphoneIphoneVersionLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">66</int>
-						<reference key="object" ref="876685434"/>
-						<reference key="parent" ref="421185651"/>
+						<reference key="object" ref="132342957"/>
+						<reference key="parent" ref="775128611"/>
 						<string key="objectName">linphoneCoreVersionLabel</string>
 					</object>
 				</object>

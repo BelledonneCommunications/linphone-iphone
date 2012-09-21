@@ -145,10 +145,17 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                object:nil];
 }
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [WizardViewController adjustFontSize:self.view mult:2.0f];
+    if([LinphoneManager runningOnIpad]) {
+        
+        [WizardViewController adjustFontSize:welcomeView mult:2.22f];
+        [WizardViewController adjustFontSize:choiceView mult:2.22f];
+        [WizardViewController adjustFontSize:createAccountView mult:2.22f];
+        [WizardViewController adjustFontSize:connectAccountView mult:2.22f];
+        [WizardViewController adjustFontSize:externalAccountView mult:2.22f];
+        [WizardViewController adjustFontSize:validateAccountView mult:2.22f];
+    }
 }
 
 
@@ -157,7 +164,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (void)adjustFontSize:(UIView*)view mult:(float)mult{
     if([view isKindOfClass:[UILabel class]]) {
         UILabel *label = (UILabel*)view;
-        [label setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
+        UIFont *font = [label font];
+        [label setFont:[UIFont fontWithName:font.fontName size:font.pointSize * mult]];
+    } else if([view isKindOfClass:[UITextField class]]) {
+        UITextField *label = (UITextField*)view;
+        UIFont *font = [label font];
+        [label setFont:[UIFont fontWithName:font.fontName size:font.pointSize * mult]];
     } else {
         for(UIView *subView in [view subviews]) {
             [WizardViewController adjustFontSize:subView mult:mult];

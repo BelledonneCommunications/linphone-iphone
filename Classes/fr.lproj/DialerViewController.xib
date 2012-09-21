@@ -53,6 +53,10 @@
 								<reference key="NSSuperview" ref="312750714"/>
 								<reference key="NSNextKeyView" ref="751637181"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<object class="NSColor" key="IBUIBackgroundColor" id="377660437">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MCAwAA</bytes>
+								</object>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
@@ -66,10 +70,7 @@
 								<string key="NSFrameSize">{320, 60}</string>
 								<reference key="NSSuperview" ref="312750714"/>
 								<reference key="NSNextKeyView" ref="242430033"/>
-								<object class="NSColor" key="IBUIBackgroundColor">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MSAwAA</bytes>
-								</object>
+								<reference key="IBUIBackgroundColor" ref="377660437"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -106,13 +107,7 @@
 						<reference key="NSSuperview" ref="542426306"/>
 						<reference key="NSNextKeyView" ref="874403835"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MSAwAA</bytes>
-							<object class="NSColorSpace" key="NSCustomColorSpace" id="415406112">
-								<int key="NSID">2</int>
-							</object>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="377660437"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -454,10 +449,7 @@
 						<reference key="NSSuperview" ref="542426306"/>
 						<reference key="NSNextKeyView" ref="201618948"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="377660437">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="377660437"/>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIView" id="32193173">
@@ -672,7 +664,9 @@
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MSAwAA</bytes>
-							<reference key="NSCustomColorSpace" ref="415406112"/>
+							<object class="NSColorSpace" key="NSCustomColorSpace">
+								<int key="NSID">2</int>
+							</object>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -1362,7 +1356,341 @@
 			<nil key="sourceID"/>
 			<int key="maxID">254</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">DialerViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onAddContactClick:</string>
+							<string>onAddressChange:</string>
+							<string>onBackClick:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>onAddContactClick:</string>
+							<string>onAddressChange:</string>
+							<string>onBackClick:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">onAddContactClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onAddressChange:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">onBackClick:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addCallButton</string>
+							<string>addContactButton</string>
+							<string>addressField</string>
+							<string>backButton</string>
+							<string>backgroundView</string>
+							<string>callButton</string>
+							<string>eightButton</string>
+							<string>eraseButton</string>
+							<string>fiveButton</string>
+							<string>fourButton</string>
+							<string>nineButton</string>
+							<string>oneButton</string>
+							<string>sevenButton</string>
+							<string>sharpButton</string>
+							<string>sixButton</string>
+							<string>starButton</string>
+							<string>threeButton</string>
+							<string>transferButton</string>
+							<string>twoButton</string>
+							<string>videoCameraSwitch</string>
+							<string>videoPreview</string>
+							<string>zeroButton</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UICallButton</string>
+							<string>UIButton</string>
+							<string>UITextField</string>
+							<string>UIButton</string>
+							<string>UIView</string>
+							<string>UICallButton</string>
+							<string>UIDigitButton</string>
+							<string>UIEraseButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UIDigitButton</string>
+							<string>UITransferButton</string>
+							<string>UIDigitButton</string>
+							<string>UICamSwitch</string>
+							<string>UIView</string>
+							<string>UIDigitButton</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addCallButton</string>
+							<string>addContactButton</string>
+							<string>addressField</string>
+							<string>backButton</string>
+							<string>backgroundView</string>
+							<string>callButton</string>
+							<string>eightButton</string>
+							<string>eraseButton</string>
+							<string>fiveButton</string>
+							<string>fourButton</string>
+							<string>nineButton</string>
+							<string>oneButton</string>
+							<string>sevenButton</string>
+							<string>sharpButton</string>
+							<string>sixButton</string>
+							<string>starButton</string>
+							<string>threeButton</string>
+							<string>transferButton</string>
+							<string>twoButton</string>
+							<string>videoCameraSwitch</string>
+							<string>videoPreview</string>
+							<string>zeroButton</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addCallButton</string>
+								<string key="candidateClassName">UICallButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addContactButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addressField</string>
+								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">backButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">backgroundView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">callButton</string>
+								<string key="candidateClassName">UICallButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">eightButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">eraseButton</string>
+								<string key="candidateClassName">UIEraseButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">fiveButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">fourButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">nineButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">oneButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">sevenButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">sharpButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">sixButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">starButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">threeButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">transferButton</string>
+								<string key="candidateClassName">UITransferButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">twoButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoCameraSwitch</string>
+								<string key="candidateClassName">UICamSwitch</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">videoPreview</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">zeroButton</string>
+								<string key="candidateClassName">UIDigitButton</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/DialerViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIAddressTextField</string>
+					<string key="superclassName">UITextField</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIAddressTextField.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UICallButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UICallButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UICamSwitch</string>
+					<string key="superclassName">UIButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">preview</string>
+						<string key="NS.object.0">UIView</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">preview</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">preview</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UICamSwitch.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIDigitButton</string>
+					<string key="superclassName">UILongTouchButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIDigitButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIEraseButton</string>
+					<string key="superclassName">UILongTouchButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIEraseButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UILongTouchButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UILongTouchButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UITransferButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UITransferButton.h</string>
+					</object>
+				</object>
+			</object>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencies">

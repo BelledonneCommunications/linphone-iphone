@@ -118,7 +118,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad])?10:3;
     messageField.delegate = self;
 	messageField.font = [UIFont systemFontOfSize:18.0f];
-    messageField.contentInset = UIEdgeInsetsMake(1, 1, 0, 0);
+    messageField.contentInset = UIEdgeInsetsMake(0, -5, -2, -5);
+    messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
     messageField.backgroundColor = [UIColor clearColor];
     [sendButton setEnabled:FALSE];
     

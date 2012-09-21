@@ -43,7 +43,7 @@
 						<int key="NSvFlags">311</int>
 						<string key="NSFrame">{{60, 80}, {201, 129}}</string>
 						<reference key="NSSuperview" ref="741268807"/>
-						<reference key="NSNextKeyView" ref="265601557"/>
+						<reference key="NSNextKeyView" ref="225959176"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -59,10 +59,10 @@
 					</object>
 					<object class="IBUILabel" id="225959176">
 						<reference key="NSNextResponder" ref="741268807"/>
-						<int key="NSvFlags">311</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{31, 230}, {258, 40}}</string>
 						<reference key="NSSuperview" ref="741268807"/>
-						<reference key="NSNextKeyView" ref="462684684"/>
+						<reference key="NSNextKeyView" ref="265601557"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -127,7 +127,7 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{320, 394}</string>
-				<reference key="NSNextKeyView" ref="225959176"/>
+				<reference key="NSNextKeyView" ref="462684684"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor" id="981989056">
 					<int key="NSColorSpace">3</int>
@@ -300,7 +300,7 @@
 					</object>
 					<object class="IBUILabel" id="696113137">
 						<reference key="NSNextResponder" ref="183617546"/>
-						<int key="NSvFlags">298</int>
+						<int key="NSvFlags">314</int>
 						<string key="NSFrame">{{39, 80}, {240, 44}}</string>
 						<reference key="NSSuperview" ref="183617546"/>
 						<reference key="NSNextKeyView" ref="832238181"/>
@@ -529,7 +529,7 @@
 					</object>
 					<object class="IBUILabel" id="391450353">
 						<reference key="NSNextResponder" ref="101753691"/>
-						<int key="NSvFlags">298</int>
+						<int key="NSvFlags">314</int>
 						<string key="NSFrame">{{40, 80}, {240, 44}}</string>
 						<reference key="NSSuperview" ref="101753691"/>
 						<reference key="NSNextKeyView" ref="280076734"/>
@@ -676,7 +676,7 @@
 					</object>
 					<object class="IBUILabel" id="923226743">
 						<reference key="NSNextResponder" ref="71390966"/>
-						<int key="NSvFlags">298</int>
+						<int key="NSvFlags">314</int>
 						<string key="NSFrame">{{40, 80}, {240, 44}}</string>
 						<reference key="NSSuperview" ref="71390966"/>
 						<reference key="NSNextKeyView" ref="709333986"/>
@@ -854,7 +854,7 @@
 					</object>
 					<object class="IBUILabel" id="100756849">
 						<reference key="NSNextResponder" ref="611643284"/>
-						<int key="NSvFlags">298</int>
+						<int key="NSvFlags">314</int>
 						<string key="NSFrame">{{40, 80}, {240, 44}}</string>
 						<reference key="NSSuperview" ref="611643284"/>
 						<reference key="NSNextKeyView" ref="948938816"/>
@@ -1457,10 +1457,13 @@
 				<string key="-2.CustomClassName">UIResponder</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="101.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="103.CustomClassName">UILinphoneButton</string>
 				<string key="103.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="103.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="104.CustomClassName">UILinphoneTextField</string>
 				<string key="104.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="105.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="106.CustomClassName">UILinphoneTextField</string>
 				<string key="106.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="117.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="122.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1472,32 +1475,46 @@
 				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="33.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="36.CustomClassName">UILinphoneButton</string>
 				<string key="36.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="36.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="38.CustomClassName">UILinphoneButton</string>
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="38.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="39.CustomClassName">UILinphoneButton</string>
 				<string key="39.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="1" key="39.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="44.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="52.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="56.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="58.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="59.CustomClassName">UILinphoneTextField</string>
 				<string key="59.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="60.CustomClassName">UILinphoneTextField</string>
 				<string key="60.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="61.CustomClassName">UILinphoneTextField</string>
 				<string key="61.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="62.CustomClassName">UILinphoneButton</string>
 				<string key="62.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="62.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="64.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="64.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="66.CustomClassName">UILinphoneTextField</string>
 				<string key="66.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="67.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="68.CustomClassName">UILinphoneTextField</string>
 				<string key="68.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="74.CustomClassName">UILinphoneTextField</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="75.CustomClassName">UILinphoneTextField</string>
 				<string key="75.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="76.CustomClassName">UILinphoneTextField</string>
 				<string key="76.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="77.CustomClassName">UILinphoneButton</string>
 				<string key="77.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="77.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<string key="79.CustomClassName">UILinphoneTextField</string>
 				<string key="79.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
@@ -1528,6 +1545,55 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/TPMultiLayoutViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">TUNinePatch</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/TUNinePatch.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UILinphoneButton</string>
+					<string key="superclassName">UIButton</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="backgroundNinePatch">TUNinePatch</string>
+						<string key="backgroundOverNinePatch">TUNinePatch</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="backgroundNinePatch">
+							<string key="name">backgroundNinePatch</string>
+							<string key="candidateClassName">TUNinePatch</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="backgroundOverNinePatch">
+							<string key="name">backgroundOverNinePatch</string>
+							<string key="candidateClassName">TUNinePatch</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UILinphoneButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UILinphoneTextField</string>
+					<string key="superclassName">UITextField</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">backgroundNinePatch</string>
+						<string key="NS.object.0">TUNinePatch</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">backgroundNinePatch</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">backgroundNinePatch</string>
+							<string key="candidateClassName">TUNinePatch</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UILinphoneTextField.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

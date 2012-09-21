@@ -198,8 +198,8 @@
 					</object>
 					<object class="IBUITextField" id="585481821">
 						<reference key="NSNextResponder" ref="1010501960"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{25, 44}, {271, 35}}</string>
+						<int key="NSvFlags">290</int>
+						<string key="NSFrame">{{2, 44}, {316, 35}}</string>
 						<reference key="NSSuperview" ref="1010501960"/>
 						<reference key="NSNextKeyView" ref="69932958"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -228,7 +228,7 @@
 						</object>
 						<object class="NSCustomResource" key="IBUIBackground">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">chat_address.png</string>
+							<string key="NSResourceName">field_background.png</string>
 						</object>
 						<int key="IBUIClearButtonMode">1</int>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
@@ -431,6 +431,7 @@
 				<real value="1" key="10.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="1" key="10.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="23.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="25.CustomClassName">UILinphoneTextField</string>
 				<string key="25.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.CustomClassName">ChatTableViewController</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -500,6 +501,33 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">TUNinePatch</string>
+					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/TUNinePatch.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UILinphoneTextField</string>
+					<string key="superclassName">UITextField</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">backgroundNinePatch</string>
+						<string key="NS.object.0">TUNinePatch</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">backgroundNinePatch</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">backgroundNinePatch</string>
+							<string key="candidateClassName">TUNinePatch</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UILinphoneTextField.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">UIToggleButton</string>
 					<string key="superclassName">UIButton</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -520,10 +548,10 @@
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="chat_add_default.png">{320, 88}</string>
 			<string key="chat_add_over.png">{320, 88}</string>
-			<string key="chat_address.png">{542, 70}</string>
 			<string key="chat_edit_default.png">{320, 88}</string>
 			<string key="chat_edit_over.png">{320, 88}</string>
 			<string key="chat_ok_default.png">{320, 88}</string>
+			<string key="field_background.png">{542, 88}</string>
 			<string key="toolsbar_background.png">{5, 88}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">933</string>

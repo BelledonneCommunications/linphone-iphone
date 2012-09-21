@@ -191,7 +191,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [videoCameraSwitch setPreview:videoPreview];
     
-    removeTableBackground([callTableController view]);
+    [callTableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+    [callTableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
 }
 
 - (void)viewDidUnload {

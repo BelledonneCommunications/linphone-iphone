@@ -34,4 +34,3 @@
 
 @end
 
-void removeTableBackground(UIView* view);

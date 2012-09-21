@@ -92,15 +92,3 @@
 }
 
 @end
-
-void removeTableBackground(UIView*view) {
-    if([view isKindOfClass:[UITableView class]]) {
-        [view setBackgroundColor:[UIColor clearColor]];
-    }
-    if([view isKindOfClass:[UIImageView class]] && [[view superview] isKindOfClass:[UITableView class]]) {
-        [(UIImageView*)view setImage:nil];
-    }
-    for(UIView *subview in [view subviews]) {
-        removeTableBackground(subview);
-    }
-}

@@ -613,8 +613,6 @@
 		D354944D160B615A0027E44E /* linphone-splashscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944A160B615A0027E44E /* linphone-splashscreen.png */; };
 		D354944E160B615A0027E44E /* linphone-splashscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944B160B615A0027E44E /* linphone-splashscreen@2x.png */; };
 		D354944F160B615A0027E44E /* linphone-splashscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944B160B615A0027E44E /* linphone-splashscreen@2x.png */; };
-		D354946C160B75B70027E44E /* chat_address.png in Resources */ = {isa = PBXBuildFile; fileRef = D354946B160B75B70027E44E /* chat_address.png */; };
-		D354946D160B75B70027E44E /* chat_address.png in Resources */ = {isa = PBXBuildFile; fileRef = D354946B160B75B70027E44E /* chat_address.png */; };
 		D35497FE15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
 		D35497FF15875372000081D8 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35497FC15875372000081D8 /* ContactsViewController.m */; };
 		D354980615875534000081D8 /* contacts_all_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D354980215875534000081D8 /* contacts_all_selected.png */; };
@@ -642,6 +640,22 @@
 		D35E7598159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
 		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
 		D35E75A0159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
+		D35E91EA160CA0BD0023116B /* field_background.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91E9160CA0BD0023116B /* field_background.9@2x.png */; };
+		D35E91EB160CA0BD0023116B /* field_background.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91E9160CA0BD0023116B /* field_background.9@2x.png */; };
+		D35E91EE160CA0C70023116B /* button_background_default.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91EC160CA0C70023116B /* button_background_default.9@2x.png */; };
+		D35E91EF160CA0C70023116B /* button_background_default.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91EC160CA0C70023116B /* button_background_default.9@2x.png */; };
+		D35E91F0160CA0C70023116B /* button_background_over.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91ED160CA0C70023116B /* button_background_over.9@2x.png */; };
+		D35E91F1160CA0C70023116B /* button_background_over.9@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E91ED160CA0C70023116B /* button_background_over.9@2x.png */; };
+		D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F3160CA10B0023116B /* UILinphoneTextField.m */; };
+		D35E91F5160CA10B0023116B /* UILinphoneTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F3160CA10B0023116B /* UILinphoneTextField.m */; };
+		D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F7160CA4FF0023116B /* UILinphoneButton.m */; };
+		D35E91F9160CA4FF0023116B /* UILinphoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F7160CA4FF0023116B /* UILinphoneButton.m */; };
+		D35E9209160CAA1F0023116B /* field_background.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E9208160CAA1F0023116B /* field_background.9.png */; };
+		D35E920A160CAA1F0023116B /* field_background.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E9208160CAA1F0023116B /* field_background.9.png */; };
+		D35E920D160CABD70023116B /* button_background_default.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E920B160CABD70023116B /* button_background_default.9.png */; };
+		D35E920E160CABD70023116B /* button_background_default.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E920B160CABD70023116B /* button_background_default.9.png */; };
+		D35E920F160CABD70023116B /* button_background_over.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E920C160CABD70023116B /* button_background_over.9.png */; };
+		D35E9210160CABD70023116B /* button_background_over.9.png in Resources */ = {isa = PBXBuildFile; fileRef = D35E920C160CABD70023116B /* button_background_over.9.png */; };
 		D35EA76315A2DF8D003E025D /* micro_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35EA76115A2DF8D003E025D /* micro_off_disabled.png */; };
 		D35EA76515A2DF8D003E025D /* micro_on_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D35EA76215A2DF8D003E025D /* micro_on_disabled.png */; };
 		D365AA7B15A2DE7500CAFE3F /* speaker_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D365AA7915A2DE7500CAFE3F /* speaker_off_disabled.png */; };
@@ -1726,7 +1740,6 @@
 		D35406F615A47E9E007E7E81 /* button_background_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_background_over.png; path = Resources/button_background_over.png; sourceTree = "<group>"; };
 		D354944A160B615A0027E44E /* linphone-splashscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-splashscreen.png"; path = "Resources/linphone-splashscreen.png"; sourceTree = "<group>"; };
 		D354944B160B615A0027E44E /* linphone-splashscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone-splashscreen@2x.png"; path = "Resources/linphone-splashscreen@2x.png"; sourceTree = "<group>"; };
-		D354946B160B75B70027E44E /* chat_address.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_address.png; path = Resources/chat_address.png; sourceTree = "<group>"; };
 		D35497FB15875372000081D8 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		D35497FC15875372000081D8 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ContactsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D354980215875534000081D8 /* contacts_all_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contacts_all_selected.png; path = Resources/contacts_all_selected.png; sourceTree = "<group>"; };
@@ -1754,6 +1767,16 @@
 		D35E7595159460560066B1C1 /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
 		D35E759C159460B50066B1C1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D35E759D159460B50066B1C1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		D35E91E9160CA0BD0023116B /* field_background.9@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "field_background.9@2x.png"; path = "Resources/field_background.9@2x.png"; sourceTree = "<group>"; };
+		D35E91EC160CA0C70023116B /* button_background_default.9@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "button_background_default.9@2x.png"; path = "Resources/button_background_default.9@2x.png"; sourceTree = "<group>"; };
+		D35E91ED160CA0C70023116B /* button_background_over.9@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "button_background_over.9@2x.png"; path = "Resources/button_background_over.9@2x.png"; sourceTree = "<group>"; };
+		D35E91F2160CA10B0023116B /* UILinphoneTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneTextField.h; sourceTree = "<group>"; };
+		D35E91F3160CA10B0023116B /* UILinphoneTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneTextField.m; sourceTree = "<group>"; };
+		D35E91F6160CA4FF0023116B /* UILinphoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneButton.h; sourceTree = "<group>"; };
+		D35E91F7160CA4FF0023116B /* UILinphoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneButton.m; sourceTree = "<group>"; };
+		D35E9208160CAA1F0023116B /* field_background.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = field_background.9.png; path = Resources/field_background.9.png; sourceTree = "<group>"; };
+		D35E920B160CABD70023116B /* button_background_default.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_background_default.9.png; path = Resources/button_background_default.9.png; sourceTree = "<group>"; };
+		D35E920C160CABD70023116B /* button_background_over.9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_background_over.9.png; path = Resources/button_background_over.9.png; sourceTree = "<group>"; };
 		D35EA76115A2DF8D003E025D /* micro_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro_off_disabled.png; path = Resources/micro_off_disabled.png; sourceTree = "<group>"; };
 		D35EA76215A2DF8D003E025D /* micro_on_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = micro_on_disabled.png; path = Resources/micro_on_disabled.png; sourceTree = "<group>"; };
 		D365AA7915A2DE7500CAFE3F /* speaker_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = speaker_off_disabled.png; path = Resources/speaker_off_disabled.png; sourceTree = "<group>"; };
@@ -2663,6 +2686,10 @@
 				D31AC4AF158A29C600C2638B /* UIHistoryCell.xib */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
 				D380800415C28A7A005BE9BC /* UILinphone.m */,
+				D35E91F6160CA4FF0023116B /* UILinphoneButton.h */,
+				D35E91F7160CA4FF0023116B /* UILinphoneButton.m */,
+				D35E91F2160CA10B0023116B /* UILinphoneTextField.h */,
+				D35E91F3160CA10B0023116B /* UILinphoneTextField.m */,
 				D32409C1158B49A600C8C119 /* UILongTouchButton.h */,
 				D32409C2158B49A600C8C119 /* UILongTouchButton.m */,
 				D3ED3E841586291B006C0DE4 /* UIMainBar.h */,
@@ -2881,7 +2908,11 @@
 				D3F5F8D91609A86700D3DA1A /* bubble.png */,
 				D32D5AA515ADE5D9008593F3 /* button_alert_background_default.png */,
 				D32D5AA615ADE5D9008593F3 /* button_alert_background_over.png */,
+				D35E920B160CABD70023116B /* button_background_default.9.png */,
+				D35E91EC160CA0C70023116B /* button_background_default.9@2x.png */,
 				D35406F515A47E9E007E7E81 /* button_background_default.png */,
+				D35E920C160CABD70023116B /* button_background_over.9.png */,
+				D35E91ED160CA0C70023116B /* button_background_over.9@2x.png */,
 				D35406F615A47E9E007E7E81 /* button_background_over.png */,
 				D3ED3E7015861ABD006C0DE4 /* call_default.png */,
 				D3A74E6B15C69392001500B9 /* call_default~ipad.png */,
@@ -2913,7 +2944,6 @@
 				D36C43CD158F2F370048BA40 /* cell_conference.png */,
 				D3EA5401159852080037DC6B /* chat_add_default.png */,
 				D3EA5402159852080037DC6B /* chat_add_over.png */,
-				D354946B160B75B70027E44E /* chat_address.png */,
 				D3F795DB15A5831C0077328B /* chat_back_default.png */,
 				D3F795DC15A5831C0077328B /* chat_back_over.png */,
 				D389363715A6D53200A3A3AA /* chat_bubble_incoming.9.png */,
@@ -3013,6 +3043,8 @@
 				D38327ED1580FE3A00FA0D23 /* dialer_default.png */,
 				D38327EE1580FE3A00FA0D23 /* dialer_over.png */,
 				D3C2814A15A2D38D0098AA42 /* dialer_selected.png */,
+				D35E9208160CAA1F0023116B /* field_background.9.png */,
+				D35E91E9160CA0BD0023116B /* field_background.9@2x.png */,
 				D350F21715A43D3400149E54 /* field_background.png */,
 				D3F5F8E01609A86700D3DA1A /* form_invalid.png */,
 				D3F5F8E11609A86700D3DA1A /* form_valid.png */,
@@ -4062,8 +4094,13 @@
 				D332864C160B5BC300E6435D /* dialer_alt_disabled~ipad.png in Resources */,
 				D354944C160B615A0027E44E /* linphone-splashscreen.png in Resources */,
 				D354944E160B615A0027E44E /* linphone-splashscreen@2x.png in Resources */,
-				D354946C160B75B70027E44E /* chat_address.png in Resources */,
 				D38F46F2160C5CC8002D4C4A /* linphone-splashscreen-568h@2x.png in Resources */,
+				D35E91EA160CA0BD0023116B /* field_background.9@2x.png in Resources */,
+				D35E91EE160CA0C70023116B /* button_background_default.9@2x.png in Resources */,
+				D35E91F0160CA0C70023116B /* button_background_over.9@2x.png in Resources */,
+				D35E9209160CAA1F0023116B /* field_background.9.png in Resources */,
+				D35E920D160CABD70023116B /* button_background_default.9.png in Resources */,
+				D35E920F160CABD70023116B /* button_background_over.9.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4547,8 +4584,13 @@
 				D332864D160B5BC300E6435D /* dialer_alt_disabled~ipad.png in Resources */,
 				D354944D160B615A0027E44E /* linphone-splashscreen.png in Resources */,
 				D354944F160B615A0027E44E /* linphone-splashscreen@2x.png in Resources */,
-				D354946D160B75B70027E44E /* chat_address.png in Resources */,
 				D38F46F3160C5CC8002D4C4A /* linphone-splashscreen-568h@2x.png in Resources */,
+				D35E91EB160CA0BD0023116B /* field_background.9@2x.png in Resources */,
+				D35E91EF160CA0C70023116B /* button_background_default.9@2x.png in Resources */,
+				D35E91F1160CA0C70023116B /* button_background_over.9@2x.png in Resources */,
+				D35E920A160CAA1F0023116B /* field_background.9.png in Resources */,
+				D35E920E160CABD70023116B /* button_background_default.9.png in Resources */,
+				D35E9210160CABD70023116B /* button_background_over.9.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4675,6 +4717,8 @@
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
 				D374D3FD16071762003D25FF /* ImageSharing.m in Sources */,
+				D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */,
+				D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4769,6 +4813,8 @@
 				D3ED401C1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE163160377D7003608A6 /* DTActionSheet.m in Sources */,
 				D374D3FE16071762003D25FF /* ImageSharing.m in Sources */,
+				D35E91F5160CA10B0023116B /* UILinphoneTextField.m in Sources */,
+				D35E91F9160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

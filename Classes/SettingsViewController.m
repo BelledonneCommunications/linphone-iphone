@@ -191,11 +191,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    UIEdgeInsets inset = {0, 0, 10, 0};
-    UIScrollView *scrollView = self.tableView;
-    [scrollView setContentInset:inset];
-    [scrollView setScrollIndicatorInsets:inset];
+
     
     [self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
     [self.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
@@ -207,6 +203,16 @@
         [self initIASKAppSettingsViewControllerEx];
     }
     return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    
+    UIEdgeInsets inset = {0, 0, 10, 0};
+    UIScrollView *scrollView = self.tableView;
+    [scrollView setContentInset:inset];
+    [scrollView setScrollIndicatorInsets:inset];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -304,7 +310,6 @@
 
 + (void)removeBackground:(UIView*)view {
     [view setBackgroundColor:[UIColor clearColor]];
-    removeTableBackground(view);
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {

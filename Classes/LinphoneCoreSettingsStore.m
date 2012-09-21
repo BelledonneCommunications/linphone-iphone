@@ -412,7 +412,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
                 || [self valueChangedForKey:@"port_preference"]
                 || [self valueChangedForKey:@"random_port_preference"]
 				|| [self valueChangedForKey:@"prefix_preference"]
-				|| [self valueChangedForKey:@"substitute_+_by_00_preference"];
+				|| [self valueChangedForKey:@"substitute_+_by_00_preference"]
+                || [self valueChangedForKey:@"pushnotification_preference"];
 	
 	if (account_changed)
 		[self synchronizeAccount];
