@@ -148,7 +148,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     if([LinphoneManager runningOnIpad]) {
-        
         [LinphoneUtils adjustFontSize:welcomeView mult:2.22f];
         [LinphoneUtils adjustFontSize:choiceView mult:2.22f];
         [LinphoneUtils adjustFontSize:createAccountView mult:2.22f];

@@ -247,7 +247,13 @@
 - (IBAction)onAvatarClick:(id)event {
     if(self.isEditing) {
         [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
-            ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImagePickerViewController compositeViewDescription] push:TRUE], ImagePickerViewController);
+            UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
+            ImagePickerViewController *controller;
+            if([LinphoneManager runningOnIpad]) {
+                controller = DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerViewController);
+            } else {
+                controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerViewController);
+            }
             if(controller != nil) {
                 controller.sourceType = type;
                 
@@ -259,6 +265,10 @@
                 // trimming movies. To instead show the controls, use YES.
                 controller.allowsEditing = NO;
                 controller.imagePickerDelegate = self;
+                
+                if([LinphoneManager runningOnIpad]) {
+                    [controller.popoverController presentPopoverFromRect:[avatarImage frame] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
+                }
             }
         }];
     }
@@ -268,6 +278,14 @@
 #pragma mark - ContactDetailsImagePickerDelegate Functions
 
 - (void)imagePickerDelegateImage:(UIImage*)image info:(NSDictionary *)info{
+    // Dismiss popover on iPad
+    if([LinphoneManager runningOnIpad]) {
+        UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
+        ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerViewController);
+        if(controller != nil) {
+            [controller.popoverController dismissPopoverAnimated:TRUE];
+        }
+    }
     NSError* error = NULL;
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
         [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];

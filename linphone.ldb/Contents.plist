@@ -337,17 +337,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>34</key>
+							<key>36</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/34/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/36/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-24T12:35:35Z</date>
+					<date>2012-09-24T14:48:31Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -357,7 +357,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>721bad8bcdaf6bd6dabf3d41eaf915d4
+					<string>c57c7e4815f8a5c1d2b7c5200f742dd5
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -793,9 +793,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>34</string>
+						<string>36</string>
 						<key>fr</key>
-						<string>34</string>
+						<string>36</string>
 					</dict>
 				</dict>
 				<dict>
@@ -803,17 +803,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>14</key>
+							<key>15</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/14/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/15/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T14:10:39Z</date>
+					<date>2012-09-24T14:43:23Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1038,9 +1038,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>14</string>
+						<string>15</string>
 						<key>fr</key>
-						<string>14</string>
+						<string>15</string>
 					</dict>
 				</dict>
 				<dict>
@@ -2481,17 +2481,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>4</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/FirstLoginViewController/3/FirstLoginViewController.xib</string>
+								<string>Classes/FirstLoginViewController/4/FirstLoginViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:21:48Z</date>
+					<date>2012-09-24T14:43:15Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2501,7 +2501,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>683cfa0503d04d09dd67daf0e7a58035
+					<string>40d122862f8d0146f59a09192ffbcffe
 </string>
 					<key>name</key>
 					<string>FirstLoginViewController.xib</string>
@@ -2665,9 +2665,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>4</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>4</string>
 					</dict>
 				</dict>
 				<dict>
@@ -10451,17 +10451,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>2</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIContactDetailsHeader/2/UIContactDetailsHeader.xib</string>
+								<string>LinphoneUI/UIContactDetailsHeader/3/UIContactDetailsHeader.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:24:01Z</date>
+					<date>2012-09-24T14:05:12Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10471,7 +10471,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>5c771336b97589e59711a5c00dc7d3bc
+					<string>e226222023500a3518ea1b00959f6716
 </string>
 					<key>name</key>
 					<string>UIContactDetailsHeader.xib</string>
@@ -10558,9 +10558,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>2</string>
+						<string>3</string>
 					</dict>
 				</dict>
 				<dict>

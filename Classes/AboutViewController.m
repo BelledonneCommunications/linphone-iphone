@@ -68,7 +68,9 @@
 
     [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"Linphone Core %s", linphone_core_get_version()]];
     
-    [LinphoneUtils adjustFontSize:self.view mult:2.22f];
+    if([LinphoneManager runningOnIpad]) {
+        [LinphoneUtils adjustFontSize:self.view mult:2.22f];
+    }
 }
 
 

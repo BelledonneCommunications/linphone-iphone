@@ -45,7 +45,7 @@
 @synthesize imageTransferProgressBar;
 @synthesize cancelTransferButton;
 @synthesize transferView;
-
+@synthesize waitView;
 
 #pragma mark - Lifecycle Functions
 
@@ -86,6 +86,7 @@
 	[cancelTransferButton release];
     
     [imageQualities release];
+    [waitView release];
     
     [super dealloc];
 }
@@ -170,6 +171,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] != NULL 
 								&& [[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] length]>0;
     [pictureButton setEnabled:fileSharingEnabled];
+    [waitView setHidden:TRUE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -329,21 +331,34 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the compression", nil)];
-    for(NSString *key in [imageQualities allKeys]) {
-        NSAutoreleasePool *p = [[NSAutoreleasePool alloc] init];
-        NSNumber *number = [imageQualities objectForKey:key];
-        NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
-        NSNumber *size = [NSNumber numberWithInteger:[data length]];
-        
-        NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
-        [sheet addButtonWithTitle:text block:^(){
+    [waitView setHidden:FALSE];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for(NSString *key in [imageQualities allKeys]) {
+            NSAutoreleasePool *p = [[NSAutoreleasePool alloc] init];
+            NSNumber *number = [imageQualities objectForKey:key];
             NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
-            [self chatRoomStartImageUpload:[UIImage imageWithData:data] url:url];
-        }];
-        
-        [p drain];
-    }
-    [sheet showInView:[PhoneMainView instance].view];
+            NSNumber *size = [NSNumber numberWithInteger:[data length]];
+            
+            NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
+            [sheet addButtonWithTitle:text block:^(){
+                [waitView setHidden:FALSE];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [waitView setHidden:TRUE];
+                        [self chatRoomStartImageUpload:[UIImage imageWithData:data] url:url];
+                    });
+                });
+            }];
+            
+            [p drain];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [waitView setHidden:TRUE];
+            [sheet showInView:[PhoneMainView instance].view];
+        });
+    });
 }
 
 
@@ -455,10 +470,13 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[messageField resignFirstResponder];
     
     [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
-        UICompositeViewDescription *description = [[[ImagePickerViewController compositeViewDescription] copy] autorelease];
-        description.tabBar = nil; // Disable default tarbar
-        description.tabBarEnabled = false;
-        ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerViewController);
+        UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
+        ImagePickerViewController *controller;
+        if([LinphoneManager runningOnIpad]) {
+            controller = DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerViewController);
+        } else {
+            controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerViewController);
+        }
         if(controller != nil) {
             controller.sourceType = type;
             
@@ -470,6 +488,11 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             // trimming movies. To instead show the controls, use YES.
             controller.allowsEditing = NO;
             controller.imagePickerDelegate = self;
+            
+            if([LinphoneManager runningOnIpad]) {
+                CGRect rect = [self.messageView convertRect:[pictureButton frame] toView:self.view];
+                [controller.popoverController presentPopoverFromRect:rect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
+            }
         }
     }];
 }
@@ -588,6 +611,15 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark ImagePickerDelegate
 
 - (void)imagePickerDelegateImage:(UIImage*)image info:(NSDictionary *)info {
+    // Dismiss popover on iPad
+    if([LinphoneManager runningOnIpad]) {
+        UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
+        ImagePickerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerViewController);
+        if(controller != nil) {
+            [controller.popoverController dismissPopoverAnimated:TRUE];
+        }
+    }
+    
     image = [image normalizedImage];
     NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
     if(url != nil) {

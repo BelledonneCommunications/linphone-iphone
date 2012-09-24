@@ -237,6 +237,7 @@
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view
+        [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
         if(controller != nil) {
             [controller setRemoteAddress:remoteContact];

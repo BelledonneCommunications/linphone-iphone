@@ -73,7 +73,7 @@
 
 - (void)cancel {
     [connection cancel];
-    [LinphoneLogger log:LinphoneLoggerLog format:@"File transfer [%@] interrupted by user", [connection.currentRequest.URL absoluteString]];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"File transfer interrupted by user"];
     if(delegate) {
         [delegate imageSharingAborted:self];
     }
@@ -152,7 +152,7 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *) response;
 	statusCode = httpResponse.statusCode;
-	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer status code [%i]",statusCode];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"File transfer status code [%i]", statusCode];
     
     if (statusCode == 200 && !upload) {
         totalBytesExpectedToRead = [response expectedContentLength];

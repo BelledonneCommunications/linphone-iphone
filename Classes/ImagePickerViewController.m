@@ -21,12 +21,14 @@
 #import "PhoneMainView.h"
 #import "DTActionSheet.h"
 
+
 @implementation ImagePickerViewController
 
 @synthesize imagePickerDelegate;
 @synthesize sourceType;
 @synthesize mediaTypes;
 @synthesize allowsEditing;
+@synthesize popoverController;
 
 
 #pragma mark - Lifecycle Functions
@@ -99,6 +101,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [pickerController viewDidAppear:animated];
     }
+    [[UIApplication sharedApplication] setStatusBarHidden:NO]; //Fix UIImagePickerController status bar hide
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque]; //Fix UIImagePickerController status bar style change
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -197,8 +201,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                     animated:(BOOL)animated {
     
     if ([navigationController isKindOfClass:[UIImagePickerController class]]) {
-        [[UIApplication sharedApplication] setStatusBarHidden:NO];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO]; //Fix UIImagePickerController status bar hide
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque]; //Fix UIImagePickerController status bar style change
     }
 }
+
 
 @end

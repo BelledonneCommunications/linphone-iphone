@@ -28,14 +28,13 @@
 @interface ImagePickerViewController : UIViewController <UICompositeViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIPopoverControllerDelegate> {
     @private
     UIImagePickerController *pickerController;
-    UIPopoverController *popoverController;
 }
 
 @property(nonatomic, retain) id<ImagePickerDelegate> imagePickerDelegate;
 @property(nonatomic)           UIImagePickerControllerSourceType     sourceType;
 @property(nonatomic,copy)      NSArray                              *mediaTypes;
 @property(nonatomic)           BOOL                                  allowsEditing;
-
+@property(nonatomic, readonly) UIPopoverController *popoverController;
 + (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block;
 
 @end
