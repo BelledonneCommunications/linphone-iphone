@@ -269,11 +269,11 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 				md->streams[i].crypto[1].algo = 0;
 			md->streams[i].crypto[2].algo = 0;
 		}
-		if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, i) == NULL)) {
-			ice_session_add_check_list(call->ice_session, ice_check_list_new());
-		}
 	}
 	update_media_description_from_stun(md,&call->ac,&call->vc);
+	if (call->ice_session != NULL) {
+		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
+	}
 	linphone_address_destroy(addr);
 	return md;
 }
@@ -378,7 +378,6 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (ping_time>=0) {
 		linphone_core_adapt_to_network(lc,ping_time,&call->params);
 	}
-	call->localdesc=create_local_media_description(lc,call);
 	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -439,7 +438,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	if (ping_time>=0) {
 		linphone_core_adapt_to_network(lc,ping_time,&call->params);
 	};
-	call->localdesc=create_local_media_description(lc,call);
 	call->camera_active=call->params.has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain(from));
@@ -1011,6 +1009,9 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		rtp_session_set_pktinfo(audiostream->session, TRUE);
 		rtp_session_set_symmetric_rtp(audiostream->session, FALSE);
+		if (ice_session_check_list(call->ice_session, 0) == NULL) {
+			ice_session_add_check_list(call->ice_session, ice_check_list_new());
+		}
 		audiostream->ice_check_list = ice_session_check_list(call->ice_session, 0);
 		ice_check_list_set_rtp_session(audiostream->ice_check_list, audiostream->session);
 	}
@@ -1044,6 +1045,9 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, 1))){
 			rtp_session_set_pktinfo(call->videostream->session, TRUE);
 			rtp_session_set_symmetric_rtp(call->videostream->session, FALSE);
+			if (ice_session_check_list(call->ice_session, 1) == NULL) {
+				ice_session_add_check_list(call->ice_session, ice_check_list_new());
+			}
 			call->videostream->ice_check_list = ice_session_check_list(call->ice_session, 1);
 			ice_check_list_set_rtp_session(call->videostream->ice_check_list, call->videostream->session);
 		}
