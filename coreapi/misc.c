@@ -971,10 +971,15 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 	if (getifaddrs(&ifpstart) < 0) {
 		return -1;
 	}
-
+#ifndef __linux
+	#define UP_FLAG IFF_UP /* interface is up */
+#else
+	#define UP_FLAG IFF_RUNNING /* resources allocated */
+#endif
+	
 	for (ifp = ifpstart; ifp != NULL; ifp = ifp->ifa_next) {
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
-			&& (ifp->ifa_flags & IFF_RUNNING) && !(ifp->ifa_flags & IFF_LOOPBACK))
+			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
 		{
 			getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
