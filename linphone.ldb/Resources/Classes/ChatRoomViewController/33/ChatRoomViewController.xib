@@ -170,7 +170,7 @@
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<object class="NSCustomResource" key="IBUIImage">
 											<string key="NSClassName">NSImage</string>
-											<string key="NSResourceName">chat_background.png</string>
+											<string key="NSResourceName">chat_progressbar_background.png</string>
 										</object>
 									</object>
 									<object class="IBUIButton" id="391057061">
@@ -267,6 +267,7 @@
 										<string key="NSFrame">{{262, 0}, {58, 57}}</string>
 										<reference key="NSSuperview" ref="833509359"/>
 										<reference key="NSWindow"/>
+										<reference key="NSNextKeyView"/>
 										<string key="NSReuseIdentifierKey">_NS:9</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
@@ -1108,7 +1109,6 @@
 			<string key="avatar_unknown_small.png">{131, 131}</string>
 			<string key="chat_back_default.png">{320, 88}</string>
 			<string key="chat_back_over.png">{320, 88}</string>
-			<string key="chat_background.png">{16, 16}</string>
 			<string key="chat_cancel_default.png">{116, 115}</string>
 			<string key="chat_cancel_over.png">{116, 115}</string>
 			<string key="chat_edit_default.png">{320, 88}</string>
@@ -1118,6 +1118,7 @@
 			<string key="chat_photo_default.png">{71, 115}</string>
 			<string key="chat_photo_disabled.png">{71, 115}</string>
 			<string key="chat_photo_over.png">{71, 115}</string>
+			<string key="chat_progressbar_background.png">{524, 115}</string>
 			<string key="chat_send_default.png">{117, 115}</string>
 			<string key="chat_send_disabled.png">{117, 115}</string>
 			<string key="chat_send_over.png">{117, 115}</string>

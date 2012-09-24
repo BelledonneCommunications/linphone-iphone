@@ -33,7 +33,7 @@
 @synthesize bubbleView;
 @synthesize backgroundImage;
 @synthesize messageImageView;
-@synthesize messageLabel;
+@synthesize messageText;
 @synthesize deleteButton;
 @synthesize dateLabel;
 @synthesize chat;
@@ -63,6 +63,7 @@ static UIFont *CELL_FONT = nil;
         [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
+        [messageText setContentInset:UIEdgeInsetsMake(-11, -8, 0, 0)];
     }
     return self;
 }
@@ -72,7 +73,7 @@ static UIFont *CELL_FONT = nil;
     [backgroundImage release];
     [innerView release];
     [bubbleView release];
-    [messageLabel release];
+    [messageText release];
     [messageImageView release];
     [deleteButton release];
     [dateLabel release];
@@ -107,14 +108,14 @@ static UIFont *CELL_FONT = nil;
     }
     
     if([chat isExternalImage]) {
-        [messageLabel setHidden:TRUE];
+        [messageText setHidden:TRUE];
         
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];
         
         [downloadButton setHidden:FALSE];
     } else if([chat isInternalImage]) {
-        [messageLabel setHidden:TRUE];
+        [messageText setHidden:TRUE];
         
         [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
@@ -131,8 +132,8 @@ static UIFont *CELL_FONT = nil;
         [messageImageView setHidden:FALSE];
         [downloadButton setHidden:TRUE];
     } else {
-        [messageLabel setHidden:FALSE];
-        [messageLabel setText:[chat message]];
+        [messageText setHidden:FALSE];
+        [messageText setText:[chat message]];
         
         [messageImageView setImage:nil];
         [messageImageView setHidden:TRUE];

@@ -42,6 +42,7 @@
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<bool key="IBUIClipsSubviews">YES</bool>
 				<bool key="IBUIMultipleTouchEnabled">YES</bool>
@@ -56,7 +57,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUIImageView" id="97290309">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">311</int>
 						<string key="NSFrame">{{124, 20}, {72, 72}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -66,12 +67,12 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">linphone_icon_72.png</string>
+							<string key="NSResourceName">linphone_logo.png</string>
 						</object>
 					</object>
 					<object class="IBUILabel" id="945733244">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 100}, {280, 50}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -103,7 +104,7 @@
 					</object>
 					<object class="IBUILabel" id="55823705">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 187}, {280, 44}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -132,7 +133,7 @@
 					</object>
 					<object class="IBUILabel" id="966549235">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 138}, {280, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -161,7 +162,7 @@
 					</object>
 					<object class="IBUILabel" id="132342957">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 158}, {280, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -183,10 +184,11 @@
 					</object>
 					<object class="IBUILabel" id="28600489">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 269}, {280, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
@@ -207,7 +209,7 @@
 					</object>
 					<object class="IBUILabel" id="697092436">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">293</int>
+						<int key="NSvFlags">319</int>
 						<string key="NSFrame">{{20, 225}, {280, 36}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
 						<reference key="NSWindow"/>
@@ -517,8 +519,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">linphone_icon_72.png</string>
-			<string key="NS.object.0">{72, 72}</string>
+			<string key="NS.key.0">linphone_logo.png</string>
+			<string key="NS.object.0">{512, 512}</string>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">1926</string>
 	</data>

@@ -63,6 +63,22 @@
 
 @implementation LinphoneUtils
 
++ (void)adjustFontSize:(UIView*)view mult:(float)mult{
+    if([view isKindOfClass:[UILabel class]]) {
+        UILabel *label = (UILabel*)view;
+        UIFont *font = [label font];
+        [label setFont:[UIFont fontWithName:font.fontName size:font.pointSize * mult]];
+    } else if([view isKindOfClass:[UITextField class]]) {
+        UITextField *label = (UITextField*)view;
+        UIFont *font = [label font];
+        [label setFont:[UIFont fontWithName:font.fontName size:font.pointSize * mult]];
+    } else {
+        for(UIView *subView in [view subviews]) {
+            [LinphoneUtils adjustFontSize:subView mult:mult];
+        }
+    }
+}
+
 + (void)buttonFixStates:(UIButton*)button {
     // Set selected+over title: IB lack !
     [button setTitle:[button titleForState:UIControlStateSelected]
@@ -185,5 +201,23 @@
     return nil;
 }
 
+@end
+
+@implementation NSNumber (HumanReadableSize)
+
+- (NSString*)toHumanReadableSize {
+    float floatSize = [self floatValue];
+	if (floatSize < 1023)
+		return([NSString stringWithFormat:@"%1.0f bytes",floatSize]);
+	floatSize = floatSize / 1024;
+	if (floatSize < 1023)
+		return([NSString stringWithFormat:@"%1.1f KB",floatSize]);
+	floatSize = floatSize / 1024;
+	if (floatSize < 1023)
+		return([NSString stringWithFormat:@"%1.1f MB",floatSize]);
+	floatSize = floatSize / 1024;
+    
+	return([NSString stringWithFormat:@"%1.1f GB",floatSize]);
+}
 
 @end

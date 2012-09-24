@@ -337,17 +337,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>32</key>
+							<key>33</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/32/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/33/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T15:04:45Z</date>
+					<date>2012-09-24T07:54:14Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -357,7 +357,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>f3544e098ca4aed56e114bf9cb69da01
+					<string>9cea2c5bb3cda145b0c819b0f48baf7c
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -793,9 +793,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>32</string>
+						<string>33</string>
 						<key>fr</key>
-						<string>32</string>
+						<string>33</string>
 					</dict>
 				</dict>
 				<dict>
@@ -5103,17 +5103,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>15</key>
+							<key>16</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/WizardViews/15/WizardViews.xib</string>
+								<string>Classes/WizardViews/16/WizardViews.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T14:23:27Z</date>
+					<date>2012-09-24T07:27:30Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -5123,7 +5123,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>28b7a6024bd7d81255243ef32288a7d6
+					<string>b68ffd1e89d760c822e0a9f66e9caa06
 </string>
 					<key>name</key>
 					<string>WizardViews.xib</string>
@@ -6555,9 +6555,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>15</string>
+						<string>16</string>
 						<key>fr</key>
-						<string>15</string>
+						<string>16</string>
 					</dict>
 				</dict>
 				<dict>
@@ -9440,17 +9440,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>7</key>
+							<key>8</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIMainBar/7/UIMainBar.xib</string>
+								<string>LinphoneUI/UIMainBar/8/UIMainBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T12:33:09Z</date>
+					<date>2012-09-24T09:24:19Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -9460,7 +9460,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>3673d2d68bd62db4ac766f71230406cb
+					<string>3f33781c8e9039686dc8bbece53c3962
 </string>
 					<key>name</key>
 					<string>UIMainBar.xib</string>
@@ -9795,9 +9795,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>7</string>
+						<string>8</string>
 						<key>fr</key>
-						<string>7</string>
+						<string>8</string>
 					</dict>
 				</dict>
 				<dict>
@@ -10568,17 +10568,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>4</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallCell/3/UICallCell.xib</string>
+								<string>LinphoneUI/UICallCell/4/UICallCell.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-20T15:21:45Z</date>
+					<date>2012-09-24T09:24:18Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10588,7 +10588,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>00d461a22aedf4b4195a0d82fe11becb
+					<string>e86bebbcdf5309f743354e41c3fdd8c3
 </string>
 					<key>name</key>
 					<string>UICallCell.xib</string>
@@ -10823,9 +10823,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>4</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>4</string>
 					</dict>
 				</dict>
 			</array>
@@ -10870,7 +10870,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T09:33:54Z</date>
+					<date>2012-09-24T08:35:08Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10880,7 +10880,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>3b7db2782a575d521f2505fe1d391964
+					<string>aaac1683c5a04165fb53e6ece2921dbe
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -11185,6 +11185,31 @@ La cause était: %2$@</string>
 								<string>Answer</string>
 								<key>fr</key>
 								<string>Répondre</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Average</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Average</string>
+								<key>fr</key>
+								<string>Moyen</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -11510,6 +11535,31 @@ La cause était: %2$@</string>
 								<string>Check issue</string>
 								<key>fr</key>
 								<string>Problème de vérification</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Choose the compression</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Choose the compression</string>
+								<key>fr</key>
+								<string>Choisissez la compression</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -12008,6 +12058,56 @@ La cause était: %2$@</string>
 							<dict>
 								<key>en</key>
 								<string>Mail not configured</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Maximum</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Maximum</string>
+								<key>fr</key>
+								<string>Maximum</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Minimum</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Minimum</string>
+								<key>fr</key>
+								<string>Minimum</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

@@ -28,12 +28,12 @@
 @property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
-@property (nonatomic, retain) IBOutlet UIButton *detailsButton;
 @property (nonatomic, retain) IBOutlet UIButton * deleteButton;
+@property (nonatomic, retain) IBOutlet UIView * unreadMessageView;
+@property (nonatomic, retain) IBOutlet UILabel * unreadMessageLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 
-- (IBAction)onDetailsClick:(id)event;
 - (IBAction)onDeleteClick:(id)event;
 
 @end

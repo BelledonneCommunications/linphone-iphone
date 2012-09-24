@@ -72,7 +72,7 @@
 		<string>audio</string>
 	</array>
 	<key>UILaunchImageFile~iphone</key>
-	<string>linphone-splashscreen</string>
+	<string>linphone_splashscreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>wifi</string>

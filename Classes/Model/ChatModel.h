@@ -53,6 +53,7 @@
 + (NSMutableArray *)listMessages:(NSString *)contact;
 + (void)removeConversation:(NSString *)contact;
 + (int)unreadMessages;
++ (int)unreadMessages:(NSString *)contact;
 + (void)readConversation:(NSString *)contact;
 
 @end

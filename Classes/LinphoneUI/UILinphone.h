@@ -34,3 +34,9 @@
 
 @end
 
+
+@interface UIImage (NormalizedImage)
+
+- (UIImage *)normalizedImage;
+
+@end

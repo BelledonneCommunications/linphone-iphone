@@ -26,12 +26,14 @@
 #import "ChatModel.h"
 #import "ImagePickerViewController.h"
 #import "ImageSharing.h"
+#import "OrderedDictionary.h"
 
 #include "linphonecore.h"
 
 @interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
+    OrderedDictionary *imageQualities;
 }
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;

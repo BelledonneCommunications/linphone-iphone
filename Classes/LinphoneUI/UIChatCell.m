@@ -27,8 +27,9 @@
 @synthesize avatarImage;
 @synthesize addressLabel;
 @synthesize chatContentLabel;
-@synthesize detailsButton;
 @synthesize deleteButton;
+@synthesize unreadMessageLabel;
+@synthesize unreadMessageView;
 
 @synthesize chat;
 
@@ -51,8 +52,9 @@
     [addressLabel release];
     [chatContentLabel release];
     [avatarImage release];
-    [detailsButton release];
     [deleteButton release];
+    [unreadMessageLabel release];
+    [unreadMessageView release];
     
     [chat release];
     
@@ -116,6 +118,14 @@
         [chatContentLabel setText:[chat message]];
     }
     
+    int count = [ChatModel unreadMessages:[chat remoteContact]];
+    if(count > 0) {
+        [unreadMessageView setHidden:FALSE];
+        [unreadMessageLabel setText:[NSString stringWithFormat:@"%i", count]];
+    } else {
+        [unreadMessageView setHidden:TRUE];
+    }
+    
     linphone_address_destroy(linphoneAddress);
 }
 
@@ -160,9 +170,7 @@
     }
     if(editing) {
         [deleteButton setAlpha:1.0f];
-        [detailsButton setAlpha:0.0f]; 
     } else {
-        [detailsButton setAlpha:1.0f];
         [deleteButton setAlpha:0.0f];    
     }
     if(animated) {
@@ -170,15 +178,8 @@
     }
 }
 
-#pragma mark - Action Functions
 
-- (IBAction)onDetailsClick: (id) event {
-    // Go to Chat room view
-    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]  push:TRUE], ChatRoomViewController);
-    if(controller !=nil) {
-        [controller setRemoteAddress:[chat remoteContact]];
-    }
-}
+#pragma mark - Action Functions
 
 - (IBAction)onDeleteClick: (id) event {
     if(chat != NULL) {

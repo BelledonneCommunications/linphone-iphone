@@ -320,6 +320,36 @@
     return count;
 }
 
++ (int)unreadMessages:(NSString *)contact {
+    int count = -1;
+    sqlite3* database = [[LinphoneManager instance] database];
+    if(database == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"Database not ready"];
+        return count;
+    }
+    
+    const char *sql = "SELECT count(*) FROM chat WHERE read=0 AND remoteContact=@REMOTECONTACT";
+    sqlite3_stmt *sqlStatement;
+    if (sqlite3_prepare_v2(database, sql, -1, &sqlStatement, NULL) != SQLITE_OK) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"Can't prepare the query: %s (%s)", sql, sqlite3_errmsg(database)];
+        return count;
+    }
+    
+    // Prepare statement
+    sqlite3_bind_text(sqlStatement, 1, [contact UTF8String], -1, SQLITE_STATIC);
+    
+    if (sqlite3_step(sqlStatement) != SQLITE_ROW) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"Error during execution of query: %s (%s)", sql, sqlite3_errmsg(database)];
+        sqlite3_finalize(sqlStatement);
+        return count;
+    }
+    
+    count = sqlite3_column_int(sqlStatement, 0);
+    
+    sqlite3_finalize(sqlStatement);
+    return count;
+}
+
 + (void)readConversation:(NSString *)contact {
     sqlite3* database = [[LinphoneManager instance] database];
     if(database == NULL) {
