@@ -57,7 +57,7 @@
         self->imageSharing = NULL;
         self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
         self->imageQualities = [[OrderedDictionary alloc] initWithObjectsAndKeys:
-                                [NSNumber numberWithFloat:1.0], NSLocalizedString(@"Minimum", nil),
+                                [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Minimum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
                                 [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Maximum", nil), nil];
     }
@@ -329,30 +329,53 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     return TRUE;
 }
 
-- (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the compression", nil)];
+- (void)saveAndSend:(UIImage*)image url:(NSURL*)url {
+    if(url == nil) {
+        [waitView setHidden:FALSE];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
+                                                                         metadata:nil
+                                                                  completionBlock:^(NSURL *assetURL, NSError *error){
+                                                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                                                          [waitView setHidden:TRUE];
+                                                                          if (error) {
+                                                                              [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
+                                                                              
+                                                                              UIAlertView* errorAlert = [UIAlertView alloc];
+                                                                              [errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
+                                                                                                message:NSLocalizedString(@"Cannot write image to photo library", nil)
+                                                                                               delegate:nil
+                                                                                      cancelButtonTitle:NSLocalizedString(@"Ok",nil)
+                                                                                      otherButtonTitles:nil ,nil];
+                                                                              [errorAlert show];
+                                                                              [errorAlert release];
+                                                                              return;
+                                                                          }
+                                                                          [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
+                                                                          [self chatRoomStartImageUpload:image url:assetURL];
+                                                                      });
+                                                                  }];
+        });
+    } else {
+        [self chatRoomStartImageUpload:image url:url];
+    }
+}
+
+- (void)chooseImageQuality:(UIImage*)original_image url:(NSURL*)url {
     [waitView setHidden:FALSE];
     
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the compression", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *image = [original_image normalizedImage];
         for(NSString *key in [imageQualities allKeys]) {
-            NSAutoreleasePool *p = [[NSAutoreleasePool alloc] init];
             NSNumber *number = [imageQualities objectForKey:key];
             NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
             NSNumber *size = [NSNumber numberWithInteger:[data length]];
             
             NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
             [sheet addButtonWithTitle:text block:^(){
-                [waitView setHidden:FALSE];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [waitView setHidden:TRUE];
-                        [self chatRoomStartImageUpload:[UIImage imageWithData:data] url:url];
-                    });
-                });
+                [self saveAndSend:[UIImage imageWithData:data] url:url];
             }];
-            
-            [p drain];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [waitView setHidden:TRUE];
@@ -620,31 +643,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         }
     }
     
-    image = [image normalizedImage];
     NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
-    if(url != nil) {
-        [self chooseImageQuality:image url:url];
-    } else {
-        [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
-                                                                     metadata:nil
-                                                              completionBlock:^(NSURL *assetURL, NSError *error){
-                                                                  if (error) {
-                                                                      [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];
-                                                                      
-                                                                      UIAlertView* errorAlert = [UIAlertView alloc];
-                                                                      [errorAlert	initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                                                        message:NSLocalizedString(@"Cannot write image to photo library", nil)
-                                                                                       delegate:nil
-                                                                              cancelButtonTitle:NSLocalizedString(@"Ok",nil)
-                                                                              otherButtonTitles:nil ,nil];
-                                                                      [errorAlert show];
-                                                                      [errorAlert release];
-                                                                      return;
-                                                                  }
-                                                                  [LinphoneLogger log:LinphoneLoggerLog format:@"Image saved to [%@]", [assetURL absoluteString]];
-                                                                  [self chooseImageQuality:image url:assetURL];
-                                                              }];
-    }
+    [self chooseImageQuality:image url:url];
 }
 
 

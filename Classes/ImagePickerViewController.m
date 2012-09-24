@@ -177,6 +177,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - UIImagePickerControllerDelegate Functions
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    [self dismiss];
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if(image == nil) {
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
@@ -184,7 +185,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(image != nil && imagePickerDelegate != nil) {
         [imagePickerDelegate imagePickerDelegateImage:image info:info];
     }
-    [self dismiss];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
