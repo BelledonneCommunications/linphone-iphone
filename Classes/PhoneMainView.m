@@ -190,7 +190,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 + (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     UIView *firstResponder = nil;
     for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
-        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"]) {
+        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"] ||
+           [NSStringFromClass(window.class) isEqualToString:@"_UIAlertOverlayWindow"] ) {
             continue;
         }
         UIView *view = window;

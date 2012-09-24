@@ -337,17 +337,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>33</key>
+							<key>34</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatRoomViewController/33/ChatRoomViewController.xib</string>
+								<string>Classes/ChatRoomViewController/34/ChatRoomViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-24T07:54:14Z</date>
+					<date>2012-09-24T12:35:35Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -357,7 +357,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>9cea2c5bb3cda145b0c819b0f48baf7c
+					<string>721bad8bcdaf6bd6dabf3d41eaf915d4
 </string>
 					<key>name</key>
 					<string>ChatRoomViewController.xib</string>
@@ -793,9 +793,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>33</string>
+						<string>34</string>
 						<key>fr</key>
-						<string>33</string>
+						<string>34</string>
 					</dict>
 				</dict>
 				<dict>
@@ -10870,7 +10870,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-24T08:35:08Z</date>
+					<date>2012-09-24T09:53:58Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10880,7 +10880,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>aaac1683c5a04165fb53e6ece2921dbe
+					<string>660159e85a578aec4e5cdc047a29f686
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -12308,6 +12308,31 @@ La cause était: %2$@</string>
 								<string>Outgoing call</string>
 								<key>fr</key>
 								<string>Appel sortant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Photo library</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Photo library</string>
+								<key>fr</key>
+								<string>Album photos</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

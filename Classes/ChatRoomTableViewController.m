@@ -76,7 +76,6 @@
     [data insertObject:chat atIndex:pos];
     [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView endUpdates];
-    [self scrollToLastUnread:true];
 }
 
 - (void)updateChatEntry:(ChatModel*)chat {
@@ -91,6 +90,13 @@
 	}
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:FALSE];; //just reload
 	return;
+}
+
+- (void)scrollToBottom:(BOOL)animated {
+    CGSize size = [self.tableView contentSize];
+    CGRect bounds = [self.tableView bounds];
+    bounds.origin.y = size.height - bounds.size.height;
+    [self.tableView scrollRectToVisible:bounds animated:animated];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -116,7 +122,7 @@
     // Scroll to unread
     if(index >= 0) {
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] 
-                              atScrollPosition:UITableViewScrollPositionMiddle 
+                              atScrollPosition:UITableViewScrollPositionTop
                                       animated:animated];
     }
 }

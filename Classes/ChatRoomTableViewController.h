@@ -37,6 +37,8 @@
 @property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
 
 - (void)addChatEntry:(ChatModel*)chat;
+- (void)scrollToBottom:(BOOL)animated;
+- (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateChatEntry:(ChatModel*)chat;
 
 @end

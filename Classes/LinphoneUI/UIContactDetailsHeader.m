@@ -24,6 +24,8 @@
 #import "UILinphone.h"
 #import "PhoneMainView.h"
 
+#import <MobileCoreServices/UTCoreTypes.h>
+
 @implementation UIContactDetailsHeader
 
 @synthesize avatarImage;
@@ -251,7 +253,7 @@
                 
                 // Displays a control that allows the user to choose picture or
                 // movie capture, if both are available:
-                controller.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:type];
+                controller.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
                 
                 // Hides the controls for moving & scaling pictures, or for
                 // trimming movies. To instead show the controls, use YES.
@@ -268,9 +270,9 @@
 - (void)imagePickerDelegateImage:(UIImage*)image info:(NSDictionary *)info{
     NSError* error = NULL;
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+        [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];
     }
-    NSData *dataRef = UIImagePNGRepresentation(image); 
+    NSData *dataRef = UIImagePNGRepresentation([image normalizedImage]); 
     CFDataRef cfdata = CFDataCreate(NULL,[dataRef bytes], [dataRef length]);
                                     
     if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)error)) {

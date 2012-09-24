@@ -34,6 +34,7 @@
     LinphoneChatRoom *chatRoom;
     ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
+    BOOL scrollOnGrowingEnabled;
 }
 
 @property (nonatomic, retain) IBOutlet ChatRoomTableViewController* tableController;

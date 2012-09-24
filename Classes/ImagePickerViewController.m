@@ -60,10 +60,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                                 content:@"ImagePickerViewController"
                                                                stateBar:nil
                                                         stateBarEnabled:false
-                                                                 tabBar:@"UIMainBar"
-                                                          tabBarEnabled:true
+                                                                 tabBar:nil
+                                                          tabBarEnabled:false
                                                              fullscreen:false
-                                                          landscapeMode:false
+                                                          landscapeMode:[LinphoneManager runningOnIpad]
                                                            portraitMode:true];
     }
     return compositeDescription;
@@ -85,10 +85,26 @@ static UICompositeViewDescription *compositeDescription = nil;
     [pickerController setDelegate:self];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [pickerController viewWillAppear:animated];
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if(popoverController != nil) {
         [popoverController presentPopoverFromRect:CGRectZero inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
+    } else if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [pickerController viewDidAppear:animated];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [pickerController viewDidDisappear:animated];
     }
 }
 
@@ -96,6 +112,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillDisappear:animated];
     if(popoverController != nil) {
         [popoverController dismissPopoverAnimated: NO];
+    } else if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [pickerController viewWillDisappear:animated];
     }
 }
 
@@ -172,6 +190,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)apopoverController {
     [self dismiss];
     return TRUE;
+}
+
+- (void)navigationController:(UINavigationController *)navigationController
+      willShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animated {
+    
+    if ([navigationController isKindOfClass:[UIImagePickerController class]]) {
+        [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    }
 }
 
 @end

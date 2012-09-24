@@ -52,6 +52,7 @@
 - (id)init {
     self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
     if (self != nil) {
+        self->scrollOnGrowingEnabled = TRUE;
         self->chatRoom = NULL;
         self->imageSharing = NULL;
         self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
@@ -314,6 +315,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[chat setState:[NSNumber numberWithInt:1]]; //INPROGRESS
     [chat create];
     [tableController addChatEntry:chat];
+    [tableController scrollToBottom:TRUE];
     [chat release];
     
     LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
@@ -362,6 +364,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [chat update];
                 [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
                 [tableController addChatEntry:chat];
+                [tableController scrollToLastUnread:TRUE];
             }
             ms_free(fromStr);
         }
@@ -390,22 +393,29 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
     int diff = height - growingTextView.bounds.size.height;
     
-    CGRect messageRect = [messageView frame];
-    messageRect.origin.y -= diff;
-    messageRect.size.height += diff;
-    [messageView setFrame:messageRect];
-    
-    // Always stay at bottom
-    CGPoint contentPt = [tableController.tableView contentOffset];
-    contentPt.y += diff;
-    [tableController.tableView setContentOffset:contentPt animated:FALSE];
-    
-    CGRect tableRect = [tableController.view frame];
-    tableRect.size.height -= diff;
-    [tableController.view setFrame:tableRect];
-    
-    [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-                                               forNinePatchNamed:@"chat_message_background"]];
+    if(diff != 0) {
+        CGRect messageRect = [messageView frame];
+        messageRect.origin.y -= diff;
+        messageRect.size.height += diff;
+        [messageView setFrame:messageRect];
+        
+        // Always stay at bottom
+        if(scrollOnGrowingEnabled) {
+            CGRect tableFrame = [tableController.view frame];
+            CGPoint contentPt = [tableController.tableView contentOffset];
+            contentPt.y += diff;
+            if(contentPt.y + tableFrame.size.height > tableController.tableView.contentSize.height)
+                contentPt.y += diff;
+            [tableController.tableView setContentOffset:contentPt animated:FALSE];
+        }
+        
+        CGRect tableRect = [tableController.view frame];
+        tableRect.size.height -= diff;
+        [tableController.view setFrame:tableRect];
+        
+        [messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
+                                                     forNinePatchNamed:@"chat_message_background"]];
+    }
 }
 
 
@@ -422,7 +432,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (IBAction)onSendClick:(id)event {
     if([self sendMessage:[messageField text] withExterlBodyUrl:nil withInternalUrl:nil]) {
+        scrollOnGrowingEnabled = FALSE;
         [messageField setText:@""];
+        scrollOnGrowingEnabled = TRUE;
         [self onMessageChange:nil];
     }
 }
@@ -496,7 +508,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark ImageSharingDelegate
 
 - (void)imageSharingProgress:(ImageSharing*)aimageSharing progress:(float)progress {
-    [imageTransferProgressBar setProgress:progress animated:FALSE];
+    [imageTransferProgressBar setProgress:progress];
 }
 
 - (void)imageSharingAborted:(ImageSharing*)aimageSharing {

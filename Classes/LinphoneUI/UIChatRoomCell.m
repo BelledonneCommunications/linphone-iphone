@@ -42,7 +42,7 @@
 @synthesize chatRoomDelegate;
 @synthesize imageTapGestureRecognizer;
 
-static const CGFloat CELL_MIN_HEIGHT = 40.0f;
+static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
