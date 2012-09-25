@@ -3,11 +3,6 @@ SECTION = "libs"
 PRIORITY = "optional"
 LICENSE = "GPLv2"
 DEPENDS = "linphone libilbc-rfc3951"
-PR = "r0"
-
-SRC_URI = "git://git.linphone.org/msilbc.git;protocol=git"
-SRCREV = "HEAD"
-S = "${WORKDIR}/git"
 
 FILES_${PN} = "${libdir}/mediastreamer/plugins/*.so.*"
 FILES_${PN}-dev = "${libdir}/mediastreamer/plugins/*.la ${libdir}/mediastreamer/plugins/*.so"
