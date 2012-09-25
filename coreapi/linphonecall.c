@@ -217,6 +217,10 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	LinphoneAddress *addr=linphone_address_new(me);
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
+	
+	if (call->ping_time>0) {
+		linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
+	}
 
 	md->session_id=session_id;
 	md->session_ver=session_ver;
@@ -360,7 +364,6 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
 {
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	int ping_time=-1;
 	call->dir=LinphoneCallOutgoing;
 	call->op=sal_op_new(lc->sal);
 	sal_op_set_user_pointer(call->op,call);
@@ -373,10 +376,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 		ice_session_set_role(call->ice_session, IR_Controlling);
 	}
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
-		ping_time=linphone_core_run_stun_tests(call->core,call);
-	}
-	if (ping_time>=0) {
-		linphone_core_adapt_to_network(lc,ping_time,&call->params);
+		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
 	call->camera_active=params->has_video;
 	
@@ -391,7 +391,6 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call=ms_new0(LinphoneCall,1);
 	char *from_str;
-	int ping_time=-1;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -430,14 +429,11 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			}
 			break;
 		case LinphonePolicyUseStun:
-			ping_time=linphone_core_run_stun_tests(call->core,call);
+			call->ping_time=linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
 		default:
 			break;
 	}
-	if (ping_time>=0) {
-		linphone_core_adapt_to_network(lc,ping_time,&call->params);
-	};
 	call->camera_active=call->params.has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain(from));
@@ -1767,6 +1763,7 @@ static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
 static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
+	int ping_time;
 
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 		switch (ice_session_state(call->ice_session)) {
@@ -1790,7 +1787,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		}
 		linphone_core_update_ice_state_in_call_stats(call);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
-		int ping_time = -1;
+
 		if (evd->info.ice_processing_successful==TRUE) {
 			ice_session_compute_candidates_foundations(call->ice_session);
 			ice_session_eliminate_redundant_candidates(call->ice_session);
@@ -1798,6 +1795,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			ping_time = ice_session_gathering_duration(call->ice_session);
 			if (ping_time >=0) {
 				ping_time /= ice_session_nb_check_lists(call->ice_session);
+				call->ping_time=ping_time;
 			}
 		} else {
 			ms_warning("No STUN answer from [%s], disabling ICE",linphone_core_get_stun_server(call->core));
@@ -1811,16 +1809,10 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_core_start_accept_call_update(call->core, call);
 				break;
 			case LinphoneCallOutgoingInit:
-				if (ping_time >= 0) {
-					linphone_core_adapt_to_network(call->core, ping_time, &call->params);
-				}
 				linphone_call_stop_media_streams(call);
 				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
 			default:
-				if (ping_time >= 0) {
-					linphone_core_adapt_to_network(call->core, ping_time, &call->params);
-				}
 				linphone_call_stop_media_streams(call);
 				linphone_core_notify_incoming_call(call->core, call);
 				break;

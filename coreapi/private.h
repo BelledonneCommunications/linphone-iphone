@@ -125,6 +125,7 @@ struct _LinphoneCall
 	LinphoneCallState	state;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneReason reason;
+	LinphoneProxyConfig *dest_proxy;
 	int refcnt;
 	void * user_pointer;
 	int audio_port;
@@ -139,27 +140,31 @@ struct _LinphoneCall
 	LinphoneCallParams remote_params;
 	int up_bw; /*upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
 	int audio_bw;	/*upload bandwidth used by audio */
-	bool_t refer_pending;
-	bool_t media_pending;
-	bool_t audio_muted;
-	bool_t camera_active;
-	bool_t all_muted; /*this flag is set during early medias*/
-	bool_t playing_ringbacktone;
-	bool_t owns_call_log;
-	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
 	OrtpEvQueue *audiostream_app_evq;
 	char *auth_token;
 	OrtpEvQueue *videostream_app_evq;
-	bool_t videostream_encrypted;
-	bool_t audiostream_encrypted;
-	bool_t auth_token_verified;
-	bool_t defer_update;
-	bool_t was_automatically_paused;
-	bool_t ping_replied;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
+	int ping_time;
+	bool_t refer_pending;
+	bool_t media_pending;
+	bool_t audio_muted;
+	bool_t camera_active;
+	
+	bool_t all_muted; /*this flag is set during early medias*/
+	bool_t playing_ringbacktone;
+	bool_t owns_call_log;
+	bool_t ringing_beep; /* whether this call is ringing through an already existent current call*/
+	
+	bool_t videostream_encrypted;
+	bool_t audiostream_encrypted;
+	bool_t auth_token_verified;
+	bool_t defer_update;
+	
+	bool_t was_automatically_paused;
+	bool_t ping_replied;
 };
 
 
@@ -285,7 +290,7 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
 int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
-int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
+int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);

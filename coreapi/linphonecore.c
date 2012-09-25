@@ -1910,7 +1910,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams(call);
 			}
-			linphone_core_start_invite(lc,call,NULL);
+			linphone_core_start_invite(lc,call);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
 			elapsed=curtime-call->start_time;
@@ -2174,16 +2174,17 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	}
 
 	if ((ice_ready == TRUE) && (ping_ready == TRUE)) {
-		return linphone_core_start_invite(lc, call, dest_proxy);
+		return linphone_core_start_invite(lc, call);
 	}
 	return 0;
 }
 
-int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
+int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	int err;
 	char *contact;
 	char *real_url,*barmsg;
 	char *from;
+	LinphoneProxyConfig *dest_proxy=call->dest_proxy;
 
 	/*try to be best-effort in giving real local or routable contact address */
 	contact=get_fixed_contact(lc,call,dest_proxy);
@@ -2315,10 +2316,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 {
 	const char *route=NULL;
 	const char *from=NULL;
-	LinphoneProxyConfig *proxy=NULL;
+	LinphoneProxyConfig *proxy=NULL,*dest_proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
 	char *real_url=NULL;
-	LinphoneProxyConfig *dest_proxy=NULL;
 	LinphoneCall *call;
 	bool_t use_ice = FALSE;
 
@@ -2351,6 +2351,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	parsed_url2=linphone_address_new(from);
 
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
+	call->dest_proxy=dest_proxy;
 	sal_op_set_route(call->op,route);
 
 	if(linphone_core_add_call(lc,call)!= 0)
@@ -2376,7 +2377,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		}
 	}
 
-	if (dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
+	if (call->dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
 		/*defer the start of the call after the OPTIONS ping*/
 		call->ping_replied=FALSE;
 		call->ping_op=sal_op_new(lc->sal);
@@ -2384,7 +2385,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
 	}else{
-		if (use_ice==FALSE) linphone_core_start_invite(lc,call,dest_proxy);
+		if (use_ice==FALSE) linphone_core_start_invite(lc,call);
 	}
 
 	if (real_url!=NULL) ms_free(real_url);
@@ -2718,7 +2719,7 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
 {
-	LinphoneProxyConfig *cfg=NULL,*dest_proxy=NULL;
+	LinphoneProxyConfig *cfg=NULL;
 	const char *contact=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
@@ -2766,15 +2767,15 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 
 	linphone_core_get_default_proxy(lc,&cfg);
-	dest_proxy=cfg;
-	dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
+	call->dest_proxy=cfg;
+	call->dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
 
-	if (cfg!=dest_proxy && dest_proxy!=NULL) {
+	if (cfg!=call->dest_proxy && call->dest_proxy!=NULL) {
 		ms_message("Overriding default proxy setting for this call:");
-		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(dest_proxy));
+		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(call->dest_proxy));
 	}
 	/*try to be best-effort in giving real local or routable contact address*/
-	contact=get_fixed_contact(lc,call,dest_proxy);
+	contact=get_fixed_contact(lc,call,call->dest_proxy);
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 
@@ -5084,7 +5085,7 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
-	params->media_encryption=linphone_core_get_media_encryption(lc);	
+	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 }
 
