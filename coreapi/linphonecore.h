@@ -904,6 +904,7 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
 
 /* function to be periodically called in a main loop */
+/* For ICE to work properly it should be called every 20ms */
 void linphone_core_iterate(LinphoneCore *lc);
 #if 0 /*not implemented yet*/
 /**
