@@ -668,7 +668,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     [self setupNetworkReachabilityCallback];
 	
 	// start scheduler
-	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
+	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
 													 target:self 
 												   selector:@selector(iterate) 
 												   userInfo:nil 
