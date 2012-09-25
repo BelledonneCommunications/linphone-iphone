@@ -360,7 +360,18 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
-    if(state == LinphoneCallReleased) {
+    
+	CTCallCenter* ct = [[CTCallCenter alloc] init];
+    
+    int callCount = [ct.currentCalls count];
+    if (callCount>0 && state==LinphoneCallIncomingReceived) {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+		linphone_core_terminate_call([LinphoneManager getLc], call);
+		return;
+	}
+	[ct release];
+	
+	if(state == LinphoneCallReleased) {
         if(linphone_call_get_user_pointer(call) != NULL) {
             free (linphone_call_get_user_pointer(call));
             linphone_call_set_user_pointer(call, NULL);
