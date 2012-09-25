@@ -51,12 +51,74 @@ public interface LinphoneCallStats {
 			return mStringValue;
 		}
 	}
+	static public class IceState {
+		static private Vector values = new Vector();
+		/**
+		 * Not activated
+		 */
+		static public IceState NotActivated = new IceState(0, "Not activated");
+		/**
+		 * Failed
+		 */
+		static public IceState Failed = new IceState(1, "Failed");
+		/**
+		 * In progress
+		 */
+		static public IceState InProgress = new IceState(2, "In progress");
+		/**
+		 * Host connection
+		 */
+		static public IceState HostConnection = new IceState(3, "Host connection");
+		/**
+		 * Reflexive connection
+		 */
+		static public IceState ReflexiveConnection = new IceState(4, "Reflexive connection");
+		/**
+		 * Relay connection
+		 */
+		static public IceState RelayConnection = new IceState(5, "Relay connection");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private IceState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static IceState fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				IceState mstate = (IceState) values.elementAt(i);
+				if (mstate.mValue == value) return mstate;
+			}
+			throw new RuntimeException("IceState not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
 
 	/**
 	 * Get the stats media type
 	 * @return MediaType
 	 */
 	public MediaType getMediaType();
+
+	/**
+	 * Get the ICE state
+	 */
+	public IceState getIceState();
+
+	/**
+	 * Get the download bandwidth in kbit/s
+	 * @return The download bandwidth
+	 */
+	public float getDownloadBandwidth();
+
+	/**
+	 * Get the upload bandwidth in kbit/s
+	 * @return The upload bandwidth
+	 */
+	public float getUploadBandwidth();
 
 	/**
 	 * Get the sender loss rate since last report

@@ -1254,6 +1254,15 @@ extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEn
 extern "C" int Java_org_linphone_core_LinphoneCallStatsImpl_getMediaType(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (int)((LinphoneCallStats *)stats_ptr)->type;
 }
+extern "C" int Java_org_linphone_core_LinphoneCallStatsImpl_getIceState(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (int)((LinphoneCallStats *)stats_ptr)->ice_state;
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getDownloadBandwidth(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (jfloat)((LinphoneCallStats *)stats_ptr)->download_bandwidth;
+}
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getUploadBandwidth(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	return (jfloat)((LinphoneCallStats *)stats_ptr)->upload_bandwidth;
+}
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderLossRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
 	const report_block_t *srb = NULL;
