@@ -1038,7 +1038,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			RtpTransport *vrtcp=lc->rtptf->video_rtcp_func(lc->rtptf->video_rtcp_func_data, call->video_port+1);
 			rtp_session_set_transports(call->videostream->session,vrtp,vrtcp);
 		}
-		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL) && (ice_session_check_list(call->ice_session, 1))){
+		if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 			rtp_session_set_pktinfo(call->videostream->session, TRUE);
 			rtp_session_set_symmetric_rtp(call->videostream->session, FALSE);
 			if (ice_session_check_list(call->ice_session, 1) == NULL) {
