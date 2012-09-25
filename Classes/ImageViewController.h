@@ -21,10 +21,11 @@
 
 #import "UICompositeViewController.h"
 
-@interface ImageViewController : UIViewController<UICompositeViewDelegate> {
+@interface ImageViewController : UIViewController<UICompositeViewDelegate, UIScrollViewDelegate> {
 	
 }
 
+@property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
 @property (nonatomic, retain) UIImage  *image;
 @property (nonatomic, retain) IBOutlet UIButton *backButton;

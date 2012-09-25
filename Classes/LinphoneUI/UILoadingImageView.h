@@ -23,6 +23,7 @@
 
 
 - (void)startLoading;
+- (BOOL)isLoading;
 - (void)stopLoading;
 
 @property (nonatomic, readonly) IBOutlet UIActivityIndicatorView *waitIndicatorView;

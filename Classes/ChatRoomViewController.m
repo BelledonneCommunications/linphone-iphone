@@ -57,9 +57,9 @@
         self->imageSharing = NULL;
         self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
         self->imageQualities = [[OrderedDictionary alloc] initWithObjectsAndKeys:
-                                [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Minimum", nil),
+                                [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
-                                [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Maximum", nil), nil];
+                                [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
     }
     return self;
 }
@@ -364,7 +364,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
     [waitView setHidden:FALSE];
     
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the compression", nil)];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         //UIImage *image = [original_image normalizedImage];
         for(NSString *key in [imageQualities allKeys]) {

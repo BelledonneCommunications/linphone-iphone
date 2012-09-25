@@ -26,9 +26,26 @@
 
 @implementation ImageViewController
 
+@synthesize scrollView;
 @synthesize imageView;
 @synthesize backButton;
 @synthesize image;
+
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    return [super initWithNibName:@"ImageViewController" bundle:[NSBundle mainBundle]];
+}
+
+- (void)dealloc {
+    [scrollView release];
+    [imageView release];
+    [backButton release];
+    [image release];
+    
+    [super dealloc];
+}
 
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -51,10 +68,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
+#pragma mark - ViewController Functions
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [scrollView setDelegate:self];
+}
+
+
 #pragma mark - Property Functions
 
 - (void)setImage:(UIImage *)aimage {
     imageView.image = aimage;
+    imageView.frame = CGRectMake(0, 0, aimage.size.width, aimage.size.height);
+    scrollView.contentSize = aimage.size;
+    [scrollView zoomToRect:imageView.bounds animated:FALSE];
+    scrollView.minimumZoomScale = scrollView.zoomScale;
 }
 
 - (UIImage *)image {
@@ -68,6 +98,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([[[PhoneMainView instance] currentView] equal:[ImageViewController compositeViewDescription]]) {
         [[PhoneMainView instance] popCurrentView];
     }
+}
+
+
+#pragma mark - UIScrollViewDelegate Functions
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return self.imageView;
 }
 
 @end

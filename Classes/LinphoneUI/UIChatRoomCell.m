@@ -277,9 +277,11 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (IBAction)onImageClick:(id)event {
-    ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
-    if(controller != nil) {
-        [controller setImage:messageImageView.image];
+    if(![messageImageView isLoading]) {
+        ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
+        if(controller != nil) {
+            [controller setImage:messageImageView.image];
+        }
     }
 }
 

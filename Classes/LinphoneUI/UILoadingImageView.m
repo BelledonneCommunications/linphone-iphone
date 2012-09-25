@@ -93,5 +93,8 @@
     [waitIndicatorView stopAnimating];
 }
 
+- (BOOL)isLoading {
+    return [waitIndicatorView isAnimating];
+}
 
 @end
