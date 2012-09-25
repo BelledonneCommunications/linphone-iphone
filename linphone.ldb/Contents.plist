@@ -11607,7 +11607,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T10:39:02Z</date>
+					<date>2012-09-25T15:18:35Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -11617,7 +11617,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>1221a18069179e955b6cb15b1bb69337
+					<string>0c45914787431042e161c1a4d7ec2229
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -12290,13 +12290,13 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Choose the compression</string>
+							<string>Choose the image size</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Choose the compression</string>
+								<string>Choose the image size</string>
 								<key>fr</key>
-								<string>Choisissez la compression</string>
+								<string>Choisissez la taille de l'image</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -14585,6 +14585,31 @@ Raison: %2$s</string>
 								<string>Warning</string>
 								<key>fr</key>
 								<string>Attention</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Choose the compression</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Choose the compression</string>
+								<key>fr</key>
+								<string>Choisissez la compression</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
