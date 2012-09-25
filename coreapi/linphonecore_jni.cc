@@ -1074,7 +1074,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhone
 	env->ReleaseStringUTFChars(jnumber, number);
 	return normalizedNumber;
 }
-extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(JNIEnv* env, jobject thiz, jstring jiso) {
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(JNIEnv* env, jobject thiz, jlong proxyCfg, jstring jiso) {
 	const char* iso = env->GetStringUTFChars(jiso, NULL);
 	int prefix = linphone_dial_plan_lookup_ccc_from_iso(iso);
 	env->ReleaseStringUTFChars(jiso, iso);
