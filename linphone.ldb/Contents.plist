@@ -3497,17 +3497,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/IncomingCallViewController/4/IncomingCallViewController.xib</string>
+								<string>Classes/IncomingCallViewController/6/IncomingCallViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:20Z</date>
+					<date>2012-09-25T14:18:43Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3517,7 +3517,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>b540fdc804ad4e5382cd8c8e57936e4b
+					<string>e42cdcfa6dd0a955773c32c95c8bb4f7
 </string>
 					<key>name</key>
 					<string>IncomingCallViewController.xib</string>
@@ -3629,13 +3629,38 @@
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Class = "IBUIImageView"; accessibilityLabel = "Incoming call"; ObjectID = "12";</string>
+							<string>Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "19";</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>12.accessibilityLabel</string>
+							<string>19.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Contact's avatar</string>
+								<key>fr</key>
+								<string>Avatar du contact</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Incoming call"; ObjectID = "31";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>31.accessibilityLabel</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
@@ -3654,34 +3679,62 @@
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "19";</string>
+							<string>Class = "IBUILabel"; text = "Incoming call"; ObjectID = "31";</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>19.accessibilityLabel</string>
+							<string>31.text</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Contact's avatar</string>
+								<string>Incoming call</string>
 								<key>fr</key>
-								<string>Avatar du contact</string>
+								<string>Appel entrant</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
 					</array>
 					<key>old objects</key>
-					<array/>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIImageView"; accessibilityLabel = "Incoming call"; ObjectID = "12";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>12.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call</string>
+								<key>fr</key>
+								<string>Appel entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
 					<key>snapshots</key>
 					<dict/>
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>6</string>
 					</dict>
 				</dict>
 				<dict>
