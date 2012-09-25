@@ -18,6 +18,7 @@
  */  
 
 #import "UIChatRoomCell.h"
+#import "UILinphone.h"
 #import "Utils.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
@@ -85,20 +86,27 @@ static UIFont *CELL_FONT = nil;
     [super dealloc];
 }
 
+- (void)prepareForReuse {
+    
+}
+
 
 #pragma mark - 
 
 - (void)setChat:(ChatModel *)achat {
+    if(chat == achat) {
+        return;
+    }
+    
     if(chat != nil) {
         [chat release];
+        chat = nil;
     }
-    chat = [achat retain];
-    [self update];
-}
-
-- (void)prepareForReuse {
-    [super prepareForReuse];
-    chat = nil;
+    
+    if(achat != nil) {
+        chat = [achat retain];
+        [self update];
+    }
 }
 
 - (void)update {
@@ -116,14 +124,22 @@ static UIFont *CELL_FONT = nil;
         [downloadButton setHidden:FALSE];
     } else if([chat isInternalImage]) {
         [messageText setHidden:TRUE];
-        
+        [messageImageView setImage:nil];
+        [messageImageView startLoading];
+        ChatModel *achat = chat;
         [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (unsigned long)NULL), ^(void) {
                 ALAssetRepresentation* representation = [asset defaultRepresentation];
-                UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [messageImageView setImage:image];
-                });
+                UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]
+                                                     scale:representation.scale
+                                               orientation:(UIImageOrientation)representation.orientation];
+                [image forceDecompression];
+                if(achat == self->chat) { //Avoid glitch and scrolling
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [messageImageView setImage:image];
+                        [messageImageView stopLoading];
+                    });
+                }
             });
         } failureBlock:^(NSError *error) {
             [LinphoneLogger log:LinphoneLoggerError format:@"Can't read image"];

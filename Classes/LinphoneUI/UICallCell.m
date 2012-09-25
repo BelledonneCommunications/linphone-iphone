@@ -30,6 +30,7 @@
     self = [super init];
     if(self != nil) {
         self->minimize = false;
+        self->view = UICallCellOtherView_Avatar;
         self->call = acall;
     }
     return self;
@@ -53,10 +54,35 @@
 @synthesize headerView;
 @synthesize avatarView;
 
+@synthesize audioStatsView;
+
+@synthesize audioCodecLabel;
+@synthesize audioCodecHeaderLabel;
+@synthesize audioUploadBandwidthLabel;
+@synthesize audioUploadBandwidthHeaderLabel;
+@synthesize audioDownloadBandwidthLabel;
+@synthesize audioDownloadBandwidthHeaderLabel;
+@synthesize audioIceConnectivityLabel;
+@synthesize audioIceConnectivityHeaderLabel;
+
+@synthesize videoStatsView;
+
+@synthesize videoCodecLabel;
+@synthesize videoCodecHeaderLabel;
+@synthesize videoUploadBandwidthLabel;
+@synthesize videoUploadBandwidthHeaderLabel;
+@synthesize videoDownloadBandwidthLabel;
+@synthesize videoDownloadBandwidthHeaderLabel;
+@synthesize videoIceConnectivityLabel;
+@synthesize videoIceConnectivityHeaderLabel;
+
+@synthesize otherView;
+
 @synthesize firstCell;
 @synthesize conferenceCell;
 @synthesize currentCall;
-
+@synthesize detailsLeftSwipeGestureRecognizer;
+@synthesize detailsRightSwipeGestureRecognizer;
 
 #pragma mark - Lifecycle Functions
 
@@ -74,53 +100,106 @@
                               forState:(UIControlStateHighlighted | UIControlStateSelected)];
         
         self->currentCall = FALSE;
+        
+        self->detailsRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
+        [detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
+        [otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
+        
+        self->detailsRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
+        [detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+        [otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
+        
+        [self->avatarView setHidden:TRUE];
+        [self->audioStatsView setHidden:TRUE];
+        [self->videoStatsView setHidden:TRUE];
+        
+        [UICallCell adaptSize:audioCodecHeaderLabel field:audioCodecLabel];
+        [UICallCell adaptSize:audioDownloadBandwidthHeaderLabel field:audioDownloadBandwidthLabel];
+        [UICallCell adaptSize:audioUploadBandwidthHeaderLabel field:audioUploadBandwidthLabel];
+        [UICallCell adaptSize:audioIceConnectivityHeaderLabel field:audioIceConnectivityLabel];
+        
+        [UICallCell adaptSize:videoCodecHeaderLabel field:videoCodecLabel];
+        [UICallCell adaptSize:videoDownloadBandwidthHeaderLabel field:videoDownloadBandwidthLabel];
+        [UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
+        [UICallCell adaptSize:videoIceConnectivityHeaderLabel field:videoIceConnectivityLabel];
     }
     return self;
 }
 
 - (void)dealloc {
     [headerBackgroundImage release];
+    [headerBackgroundHighlightImage release];
+    
     [addressLabel release];
     [stateLabel release];
     [stateImage release];
     [avatarImage release];
+    [pauseButton release];
+    [removeButton release];
+    
     [headerView release];
+    [avatarView release];
+    
+    [audioStatsView release];
+    
+    [audioCodecLabel release];
+    [audioCodecHeaderLabel release];
+    [audioUploadBandwidthLabel release];
+    [audioUploadBandwidthHeaderLabel release];
+    [audioDownloadBandwidthLabel release];
+    [audioDownloadBandwidthHeaderLabel release];
+    [audioIceConnectivityLabel release];
+    [audioIceConnectivityHeaderLabel release];
+    
+    [videoStatsView release];
+    
+    [videoCodecLabel release];
+    [videoCodecHeaderLabel release];
+    [videoUploadBandwidthLabel release];
+    [videoUploadBandwidthHeaderLabel release];
+    [videoDownloadBandwidthLabel release];
+    [videoDownloadBandwidthHeaderLabel release];
+    [videoIceConnectivityLabel release];
+    [videoIceConnectivityHeaderLabel release];
+    
+    [otherView release];
+    
     [data release];
+    
+    [detailsLeftSwipeGestureRecognizer release];
+    [detailsRightSwipeGestureRecognizer release];
+    
     [super dealloc];
 }
 
 
 - (void)prepareForReuse {
-    [super prepareForReuse];
-    currentCall = FALSE;
-    [headerBackgroundHighlightImage setAlpha:0.0f];
-    [data release];
-    data = nil;
+    
 }
-
 
 #pragma mark - Properties Functions
 
 - (void)setData:(UICallCellData *)adata {
-    if(data !=nil) {
+    if(adata == data) {
+        return;
+    }
+    if(data != nil) {
         [data release];
         data = nil;
     }
-    if(adata !=nil) {
+    if(adata != nil) {
         data = [adata retain];
+        [self updateContact];
     }
-    [self update];
 }
 
 - (void)setCurrentCall:(BOOL) val {
-    BOOL oldVal = currentCall;
     currentCall = val;
-    if(oldVal != val) {
-        if (currentCall) {
-            [self startBlinkAnimation:@"Blink" target:headerBackgroundHighlightImage];
-        } else {
-            [self stopBlinkAnimation:@"Blink" target:headerBackgroundHighlightImage];
-        }
+    if (currentCall && ![self isBlinkAnimationRunning:@"blink" target:headerBackgroundHighlightImage]) {
+        [self startBlinkAnimation:@"blink" target:headerBackgroundHighlightImage];
+    }
+    if (!currentCall && [self isBlinkAnimationRunning:@"blink" target:headerBackgroundHighlightImage]) {
+        [self stopBlinkAnimation:@"blink" target:headerBackgroundHighlightImage];
     }
 }
 
@@ -135,19 +214,70 @@
     return 54;
 }
 
-- (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {   
-    [UIView animateWithDuration:1.0
-                          delay: 0.0
-                        options: UIViewAnimationOptionRepeat | 
-                                 UIViewAnimationOptionAutoreverse | 
-                                 UIViewAnimationOptionAllowUserInteraction | 
-                                 UIViewAnimationOptionCurveEaseIn
-                     animations:^{
-                             [target setAlpha:1.0f];
-                     }
-                     completion:^(BOOL finished){
-                     }];
++ (void)adaptSize:(UILabel*)label field:(UIView*)field {
+    //
+    // Adapt size
+    //
+    CGRect labelFrame = [label frame];
+    CGRect fieldFrame = [field frame];
+    
+    fieldFrame.origin.x -= labelFrame.size.width;
+    
+    // Compute firstName size
+    CGSize contraints;
+    contraints.height = [label frame].size.height;
+    contraints.width = ([field frame].size.width + [field frame].origin.x) - [label frame].origin.x;
+    CGSize firstNameSize = [[label text] sizeWithFont:[label font] constrainedToSize: contraints];
+    labelFrame.size.width = firstNameSize.width;
+    
+    // Compute lastName size & position
+    fieldFrame.origin.x += labelFrame.size.width;
+    fieldFrame.size.width = (contraints.width + [label frame].origin.x) - fieldFrame.origin.x;
+    
+    [label setFrame: labelFrame];
+    [field setFrame: fieldFrame];
+}
 
+
++ (NSString*)iceToString:(LinphoneIceState)state {
+    switch (state) {
+        case LinphoneIceStateNotActivated:
+            return NSLocalizedString(@"Not activated", @"ICE has not been activated for this call");
+            break;
+        case LinphoneIceStateFailed:
+            return NSLocalizedString(@"Failed", @"ICE processing has failed");
+            break;
+        case LinphoneIceStateInProgress:
+            return NSLocalizedString(@"In progress", @"ICE process is in progress");
+            break;
+        case LinphoneIceStateHostConnection:
+            return NSLocalizedString(@"Direct connection", @"ICE has established a direct connection to the remote host");
+            break;
+        case LinphoneIceStateReflexiveConnection:
+            return NSLocalizedString(@"NAT(s) connection", @"ICE has established a connection to the remote host through one or several NATs");
+            break;
+        case LinphoneIceStateRelayConnection:
+            return NSLocalizedString(@"Relay connection", @"ICE has established a connection through a relay");
+            break;
+    }
+}
+
+
+#pragma mark - Animation Functions
+
+- (void)startBlinkAnimation:(NSString *)animationID  target:(UIView *)target {
+    CABasicAnimation *blink = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    blink.duration = 1.0;
+    blink.fromValue = [NSNumber numberWithDouble:0.0f];
+    blink.toValue = [NSNumber numberWithDouble:1.0f];
+    blink.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    blink.autoreverses = TRUE;
+    blink.repeatCount = HUGE_VALF;
+    [target.layer addAnimation:blink forKey:animationID];
+}
+
+- (BOOL)isBlinkAnimationRunning:(NSString *)animationID target:(UIView *)target {
+    return [target.layer animationForKey:animationID] != nil;
 }
 
 - (void)stopBlinkAnimation:(NSString *)animationID target:(UIView *)target {
@@ -156,9 +286,9 @@
 }
 
          
-#pragma mark - 
+#pragma mark -
 
-- (void)update {
+- (void)updateContact {
     if(data == nil || data->call == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
         return;
@@ -170,7 +300,7 @@
     NSString* address  = nil;
     if(addr != NULL) {
         BOOL useLinphoneAddress = true;
-        // contact name 
+        // contact name
         char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress) {
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
@@ -185,9 +315,9 @@
         if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
             const char* lUserName = linphone_address_get_username(addr);
-            if (lDisplayName) 
+            if (lDisplayName)
                 address = [NSString stringWithUTF8String:lDisplayName];
-            else if(lUserName) 
+            else if(lUserName)
                 address = [NSString stringWithUTF8String:lUserName];
         }
     }
@@ -203,6 +333,14 @@
         address = @"Unknown";
     }
     [addressLabel setText:address];
+}
+
+- (void)update {
+    if(data == nil || data->call == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        return;
+    }
+    LinphoneCall *call = data->call;
     
     LinphoneCallState state = linphone_call_get_state(call);
     if(!conferenceCell) {
@@ -239,16 +377,85 @@
     
     if(!data->minimize) {
         CGRect frame = [self frame];
-        frame.size.height = [avatarView frame].size.height;
+        frame.size.height = [otherView frame].size.height;
         [self setFrame:frame];
-        [avatarView setHidden:false];
+        [otherView setHidden:false];
     } else {
         CGRect frame = [self frame];
         frame.size.height = [headerView frame].size.height;
         [self setFrame:frame];
-        [avatarView setHidden:true];
+        [otherView setHidden:true];
     }
     [pauseButton setType:UIPauseButtonType_Call call:call];
+    
+    [self updateStats];
+    
+    [self updateDetailsView];
+}
+
+- (void)updateStats {
+    if(data == nil || data->call == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        return;
+    }
+    LinphoneCall *call = data->call;
+    
+    const LinphoneCallParams *params = linphone_call_get_current_params(call);
+    {
+        const PayloadType* payload = linphone_call_params_get_used_audio_codec(params);
+        if(payload != NULL) {
+            [audioCodecLabel setText:[NSString stringWithFormat:@"%s/%i/%i", payload->mime_type, payload->clock_rate, payload->channels]];
+        } else {
+            [audioCodecLabel setText:NSLocalizedString(@"No codec", nil)];
+        }
+        const LinphoneCallStats *stats = linphone_call_get_audio_stats(call);
+        if(stats != NULL) {
+            [audioUploadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->upload_bandwidth]];
+            [audioDownloadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->download_bandwidth]];
+            [audioIceConnectivityLabel setText:[UICallCell iceToString:stats->ice_state]];
+        } else {
+            [audioUploadBandwidthLabel setText:@""];
+            [audioDownloadBandwidthLabel setText:@""];
+            [audioIceConnectivityLabel setText:@""];
+        }
+    }
+    
+    {
+        const PayloadType* payload = linphone_call_params_get_used_video_codec(params);
+        if(payload != NULL) {
+            [videoCodecLabel setText:[NSString stringWithFormat:@"%s/%i", payload->mime_type, payload->clock_rate]];
+        } else {
+            [videoCodecLabel setText:NSLocalizedString(@"No codec", nil)];
+        }
+        
+        const LinphoneCallStats *stats = linphone_call_get_video_stats(call);
+        if(stats != NULL) {
+            [videoUploadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->upload_bandwidth]];
+            [videoDownloadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->download_bandwidth]];
+            [videoIceConnectivityLabel setText:[UICallCell iceToString:stats->ice_state]];
+        } else {
+            [videoUploadBandwidthLabel setText:@""];
+            [videoDownloadBandwidthLabel setText:@""];
+            [videoIceConnectivityLabel setText:@""];
+        }
+    }
+}
+
+
+- (void)updateDetailsView {
+    if(data->view == UICallCellOtherView_Avatar && avatarView.isHidden) {
+        [self->avatarView setHidden:FALSE];
+        [self->audioStatsView setHidden:TRUE];
+        [self->videoStatsView setHidden:TRUE];
+    } else if(data->view == UICallCellOtherView_AudioStats && audioStatsView.isHidden) {
+        [self->avatarView setHidden:TRUE];
+        [self->audioStatsView setHidden:FALSE];
+        [self->videoStatsView setHidden:TRUE];
+    } else if(data->view == UICallCellOtherView_VideoStats && videoStatsView.isHidden) {
+        [self->avatarView setHidden:TRUE];
+        [self->audioStatsView setHidden:TRUE];
+        [self->videoStatsView setHidden:FALSE];
+    }
 }
 
 - (void)selfUpdate {
@@ -274,6 +481,38 @@
 - (IBAction)doRemoveClick:(id)sender {
     if(data != nil && data->call != NULL) {
         linphone_core_remove_from_conference([LinphoneManager getLc], data->call);
+    }
+}
+
+- (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender {
+    CATransition* trans = nil;
+    if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+        if(data->view == UICallCellOtherView_MAX - 1) {
+            data->view = 0;
+        } else {
+            ++data->view;
+        }
+        trans = [CATransition animation];
+        [trans setType:kCATransitionPush];
+        [trans setDuration:0.35];
+        [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+        [trans setSubtype:kCATransitionFromRight];
+    } else if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+        if(data->view == 0) {
+            data->view = UICallCellOtherView_MAX - 1;
+        } else {
+            --data->view;
+        }
+        trans = [CATransition animation];
+        [trans setType:kCATransitionPush];
+        [trans setDuration:0.35];
+        [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+        [trans setSubtype:kCATransitionFromLeft];
+    }
+    if(trans) {
+        [otherView.layer removeAnimationForKey:@"transition"];
+        [otherView.layer addAnimation:trans forKey:@"transition"];
+        [self updateDetailsView];
     }
 }
 

@@ -37,6 +37,6 @@
 
 @interface UIImage (NormalizedImage)
 
-- (UIImage *)normalizedImage;
+- (void)forceDecompression;
 
 @end

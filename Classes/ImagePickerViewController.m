@@ -156,23 +156,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-+ (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block {
-    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
-    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-	    [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
-            block(UIImagePickerControllerSourceTypeCamera);
-        }];
-	}
-	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-	    [sheet addButtonWithTitle:NSLocalizedString(@"Photo library",nil) block:^(){
-            block(UIImagePickerControllerSourceTypePhotoLibrary);
-        }];
-	}
-    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
-    
-    [sheet showInView:[PhoneMainView instance].view];
-}
-
 
 #pragma mark - UIImagePickerControllerDelegate Functions
 

@@ -35,6 +35,5 @@
 @property(nonatomic,copy)      NSArray                              *mediaTypes;
 @property(nonatomic)           BOOL                                  allowsEditing;
 @property(nonatomic, readonly) UIPopoverController *popoverController;
-+ (void)promptSelectSource:(void (^)(UIImagePickerControllerSourceType))block;
 
 @end

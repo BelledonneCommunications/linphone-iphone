@@ -22,9 +22,17 @@
 #include "linphonecore.h"
 #include "UIPauseButton.h"
 
+typedef enum _UICallCellOtherView {
+    UICallCellOtherView_Avatar = 0,
+    UICallCellOtherView_AudioStats,
+    UICallCellOtherView_VideoStats,
+    UICallCellOtherView_MAX
+} UICallCellOtherView;
+
 @interface UICallCellData : NSObject {
     @public
     bool minimize;
+    UICallCellOtherView view;
     LinphoneCall *call;
 }   
 
@@ -50,6 +58,33 @@
 @property (nonatomic, retain) IBOutlet UIView* headerView;
 @property (nonatomic, retain) IBOutlet UIView* avatarView;
 
+@property (nonatomic, retain) IBOutlet UIView* audioStatsView;
+
+@property (nonatomic, retain) IBOutlet UILabel* audioCodecLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioCodecHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioUploadBandwidthLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioUploadBandwidthHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioDownloadBandwidthLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioDownloadBandwidthHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioIceConnectivityLabel;
+@property (nonatomic, retain) IBOutlet UILabel* audioIceConnectivityHeaderLabel;
+
+@property (nonatomic, retain) IBOutlet UIView* videoStatsView;
+
+@property (nonatomic, retain) IBOutlet UILabel* videoCodecLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoCodecHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoDownloadBandwidthLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoDownloadBandwidthHeaderLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoIceConnectivityLabel;
+@property (nonatomic, retain) IBOutlet UILabel* videoIceConnectivityHeaderLabel;
+
+@property (nonatomic, retain) IBOutlet UIView* otherView;
+
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsLeftSwipeGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsRightSwipeGestureRecognizer;
+
 @property (assign) BOOL firstCell;
 @property (assign) BOOL conferenceCell;
 @property (nonatomic, assign) BOOL currentCall;
@@ -60,7 +95,8 @@
 
 - (IBAction)doHeaderClick:(id)sender;
 - (IBAction)doRemoveClick:(id)sender;
-
+- (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender;
+    
 + (int)getMaximizedHeight;
 + (int)getMinimizedHeight;
 

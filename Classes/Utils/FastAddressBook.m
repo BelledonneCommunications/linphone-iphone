@@ -41,8 +41,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if (contact && ABPersonHasImageData(contact)) {
         CFDataRef imgData = ABPersonCopyImageDataWithFormat(contact, thumbnail? 
                                                             kABPersonImageFormatThumbnail: kABPersonImageFormatOriginalSize);
+        
         retImage = [UIImage imageWithData:(NSData *)imgData];
-        CFRelease(imgData);    
+        if(imgData != NULL) {
+            CFRelease(imgData);
+        }
     }
     return retImage;
 }

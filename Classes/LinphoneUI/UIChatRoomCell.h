@@ -21,6 +21,7 @@
 
 #import "ChatModel.h"
 #import "ChatRoomTableViewController.h"
+#import "UILoadingImageView.h"
 
 
 @interface UIChatRoomCell : UITableViewCell {
@@ -31,7 +32,7 @@
 @property (nonatomic, retain) IBOutlet UIView *bubbleView;
 @property (nonatomic, retain) IBOutlet UIImageView* backgroundImage;
 @property (nonatomic, retain) IBOutlet UITextView *messageText;
-@property (nonatomic, retain) IBOutlet UIImageView *messageImageView;
+@property (nonatomic, retain) IBOutlet UILoadingImageView *messageImageView;
 @property (nonatomic, retain) IBOutlet UIButton *deleteButton;
 @property (nonatomic, retain) IBOutlet UILabel *dateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* statusImage;

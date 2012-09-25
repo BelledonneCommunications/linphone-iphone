@@ -95,14 +95,14 @@
 
 @implementation UIImage (NormalizedImage)
 
-- (UIImage *)normalizedImage {
-    if (self.imageOrientation == UIImageOrientationUp) return self;
-    
-    UIGraphicsBeginImageContextWithOptions(self.size, NO, self.scale);
-    [self drawInRect:(CGRect){0, 0, self.size}];
-    UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return normalizedImage;
+- (void)forceDecompression {
+    CGImageRef imageRef = [self CGImage];
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(NULL, CGImageGetWidth(imageRef), CGImageGetHeight(imageRef), 8, CGImageGetWidth(imageRef) * 4, colorSpace,kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+    CGColorSpaceRelease(colorSpace);
+    if (!context) { NSLog(@"Could not create context for image decompression"); return; }
+    CGContextDrawImage(context, (CGRect){{0.0f, 0.0f}, {CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}}, imageRef);
+    CFRelease(context);
 }
 
 @end

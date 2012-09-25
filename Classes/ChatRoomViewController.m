@@ -332,9 +332,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)saveAndSend:(UIImage*)image url:(NSURL*)url {
     if(url == nil) {
         [waitView setHidden:FALSE];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
-                                                                         metadata:nil
+                                                                      orientation:(ALAssetOrientation)[image imageOrientation]
                                                                   completionBlock:^(NSURL *assetURL, NSError *error){
                                                                       dispatch_async(dispatch_get_main_queue(), ^{
                                                                           [waitView setHidden:TRUE];
@@ -361,12 +361,12 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     }
 }
 
-- (void)chooseImageQuality:(UIImage*)original_image url:(NSURL*)url {
+- (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
     [waitView setHidden:FALSE];
     
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the compression", nil)];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *image = [original_image normalizedImage];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        //UIImage *image = [original_image normalizedImage];
         for(NSString *key in [imageQualities allKeys]) {
             NSNumber *number = [imageQualities objectForKey:key];
             NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);
@@ -492,7 +492,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (IBAction)onPictureClick:(id)event {
 	[messageField resignFirstResponder];
     
-    [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
+    void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
         UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
         ImagePickerViewController *controller;
         if([LinphoneManager runningOnIpad]) {
@@ -517,7 +517,22 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [controller.popoverController presentPopoverFromRect:rect inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
             }
         }
-    }];
+    };
+    
+    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+	    [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
+            block(UIImagePickerControllerSourceTypeCamera);
+        }];
+	}
+	if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+	    [sheet addButtonWithTitle:NSLocalizedString(@"Photo library",nil) block:^(){
+            block(UIImagePickerControllerSourceTypePhotoLibrary);
+        }];
+	}
+    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+    
+    [sheet showInView:[PhoneMainView instance].view];
 }
 
 - (IBAction)onTransferCancelClick:(id)event {
@@ -607,7 +622,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     
     ChatModel *chat = (ChatModel *)[imageSharing userInfo];
     [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
-                                                                 metadata:nil
+                                                              orientation:(ALAssetOrientation)[image imageOrientation]
                                                           completionBlock:^(NSURL *assetURL, NSError *error){
                                                               if (error) {
                                                                   [LinphoneLogger log:LinphoneLoggerError format:@"Cannot save image data downloaded [%@]", [error localizedDescription]];

@@ -23,6 +23,7 @@
 #import "FastAddressBook.h"
 #import "UILinphone.h"
 #import "PhoneMainView.h"
+#import "DTActionSheet.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
@@ -246,7 +247,7 @@
 
 - (IBAction)onAvatarClick:(id)event {
     if(self.isEditing) {
-        [ImagePickerViewController promptSelectSource:^(UIImagePickerControllerSourceType type) {
+        void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
             UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
             ImagePickerViewController *controller;
             if([LinphoneManager runningOnIpad]) {
@@ -270,7 +271,30 @@
                     [controller.popoverController presentPopoverFromRect:[avatarImage frame] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:FALSE];
                 }
             }
-        }];
+        };
+        DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
+        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
+                block(UIImagePickerControllerSourceTypeCamera);
+            }];
+        }
+        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+            [sheet addButtonWithTitle:NSLocalizedString(@"Photo library",nil) block:^(){
+                block(UIImagePickerControllerSourceTypePhotoLibrary);
+            }];
+        }
+        if([FastAddressBook getContactImage:contact thumbnail:true] != nil) {
+            [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) block:^(){
+                NSError* error = NULL;
+                if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];
+                }
+                [self update];
+            }];
+        }
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+        
+        [sheet showInView:[PhoneMainView instance].view];
     }
 }
 
@@ -290,7 +314,7 @@
     if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
         [LinphoneLogger log:LinphoneLoggerLog format:@"Can't remove entry: %@", [error localizedDescription]];
     }
-    NSData *dataRef = UIImagePNGRepresentation([image normalizedImage]); 
+    NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
     CFDataRef cfdata = CFDataCreate(NULL,[dataRef bytes], [dataRef length]);
                                     
     if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)error)) {
