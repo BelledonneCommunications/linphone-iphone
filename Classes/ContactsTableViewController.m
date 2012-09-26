@@ -225,4 +225,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     }
 }
 
+
+#pragma mark - UITableViewDelegate Functions
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Detemine if it's in editing mode
+    if (self.editing) {
+        return UITableViewCellEditingStyleDelete;
+    }
+    return UITableViewCellEditingStyleNone;
+}
+
 @end
