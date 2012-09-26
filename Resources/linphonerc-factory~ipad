@@ -14,6 +14,7 @@ use_ipv6=0
 register_only_when_network_is_up=1
 auto_net_state_mon=0
 keepalive_period=30000
+ping_with_options=0
 
 [rtp]
 audio_jitt_comp=60
@@ -37,7 +38,7 @@ domain=sip.linphone.org
 proxy=sip.linphone.org:5223
 password_length=6
 username_length=4
-expires=600
+expires=604800
 push_notification=1
 transport=tls
 sharing_server=https://www.linphone.org:444/upload.php
