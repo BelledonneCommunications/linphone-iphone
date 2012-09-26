@@ -96,6 +96,8 @@
     CGSize size = [self.tableView contentSize];
     CGRect bounds = [self.tableView bounds];
     bounds.origin.y = size.height - bounds.size.height;
+    
+    [self.tableView.layer removeAllAnimations];
     [self.tableView scrollRectToVisible:bounds animated:animated];
 }
 
@@ -121,6 +123,7 @@
     
     // Scroll to unread
     if(index >= 0) {
+        [self.tableView.layer removeAllAnimations];
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] 
                               atScrollPosition:UITableViewScrollPositionTop
                                       animated:animated];
