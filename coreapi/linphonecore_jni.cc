@@ -946,6 +946,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMediaEncryption(JNIEn
 	linphone_core_set_media_encryption((LinphoneCore*)lc,(LinphoneMediaEncryption)menc);
 }
 
+extern "C" long Java_org_linphone_core_LinphoneCallParamsImpl_getUsedAudioCodec(JNIEnv *env, jobject thiz, jlong cp) {
+	return (long)linphone_call_params_get_used_audio_codec((LinphoneCallParams *)cp);
+}
+
+extern "C" long Java_org_linphone_core_LinphoneCallParamsImpl_getUsedVideoCodec(JNIEnv *env, jobject thiz, jlong cp) {
+	return (long)linphone_call_params_get_used_video_codec((LinphoneCallParams *)cp);
+}
+
 extern "C" int Java_org_linphone_core_LinphoneCallParamsImpl_getMediaEncryption(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong cp
