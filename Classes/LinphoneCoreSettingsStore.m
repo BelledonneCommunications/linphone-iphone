@@ -121,6 +121,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 	} else {
 		[self setInteger: lp_config_get_int(linphone_core_get_config(lc),"default_values","reg_expires", 600) forKey:@"expire_preference"];
+        [self setObject:@"" forKey:@"username_preference"];
+        [self setObject:@"" forKey:@"domain_preference"];
+        [self setObject:@"" forKey:@"proxy_preference"];
+        [self setBool:FALSE forKey:@"outbound_proxy_preference"];
 	}
     
     [self setBool:lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "pushnotification_preference", 0) forKey:@"pushnotification_preference"];
