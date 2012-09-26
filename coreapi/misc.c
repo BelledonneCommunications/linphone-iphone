@@ -904,6 +904,17 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
+bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md)
+{
+	int i;
+
+	for (i = 0; i < md->nstreams; i++) {
+		if ((md->streams[i].type == SalVideo) && (md->streams[i].rtp_port != 0))
+			return TRUE;
+	}
+	return FALSE;
+}
+
 void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md)
 {
 	int i;

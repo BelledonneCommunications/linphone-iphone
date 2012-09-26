@@ -413,6 +413,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(op));
 	switch (linphone_core_get_firewall_policy(call->core)) {
 		case LinphonePolicyUseIce:
 			call->ice_session = ice_session_new();
@@ -424,7 +425,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 				if (linphone_core_gather_ice_candidates(call->core,call)<0) {
 					/* Ice candidates gathering failed, proceed with the call anyway. */
 					linphone_call_delete_ice_session(call);
-					linphone_call_stop_media_streams(call);
+					linphone_call_stop_media_streams_for_ice_gathering(call);
 				}
 			}
 			break;
@@ -965,9 +966,11 @@ void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, Lin
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	AudioStream *audiostream;
-	int dscp=linphone_core_get_audio_dscp(lc);
+	int dscp;
 
+	if (call->audiostream != NULL) return;
 	call->audiostream=audiostream=audio_stream_new(call->audio_port,call->audio_port+1,linphone_core_ipv6_enabled(lc));
+	dscp=linphone_core_get_audio_dscp(lc);
 	if (dscp!=-1)
 		audio_stream_set_dscp(audiostream,dscp);
 	if (linphone_core_echo_limiter_enabled(lc)){
@@ -1020,6 +1023,11 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
 
+	if (!call->params.has_video) {
+		linphone_call_stop_video_stream(call);
+		return;
+	}
+	if (call->videostream != NULL) return;
 	if ((lc->video_conf.display || lc->video_conf.capture) && call->params.has_video){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
 		int dscp=linphone_core_get_video_dscp(lc);
@@ -1535,6 +1543,15 @@ void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call){
 #endif
 }
 
+void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
+	audio_stream_unprepare_sound(call->audiostream);
+#ifdef VIDEO_ENABLED
+	if (call->videostream) {
+		video_stream_unprepare_video(call->videostream);
+	}
+#endif
+}
+
 void linphone_call_delete_ice_session(LinphoneCall *call){
 	if (call->ice_session != NULL) {
 		ice_session_destroy(call->ice_session);
@@ -1551,7 +1568,7 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	log->quality=audio_stream_get_average_quality_rating(st);
 }
 
-void linphone_call_stop_media_streams(LinphoneCall *call){
+void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
 		call->audiostream->ice_check_list = NULL;
 		rtp_session_unregister_event_queue(call->audiostream->session,call->audiostream_app_evq);
@@ -1574,8 +1591,9 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
 	}
+}
 
-
+void linphone_call_stop_video_stream(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
 		call->videostream->ice_check_list = NULL;
@@ -1587,6 +1605,11 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		call->videostream=NULL;
 	}
 #endif
+}
+
+void linphone_call_stop_media_streams(LinphoneCall *call){
+	linphone_call_stop_audio_stream(call);
+	linphone_call_stop_video_stream(call);
 	ms_event_queue_skip(call->core->msevq);
 	
 	if (call->audio_profile){
@@ -1812,11 +1835,11 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_core_start_accept_call_update(call->core, call);
 				break;
 			case LinphoneCallOutgoingInit:
-				linphone_call_stop_media_streams(call);
+				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
 			default:
-				linphone_call_stop_media_streams(call);
+				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_notify_incoming_call(call->core, call);
 				break;
 		}
