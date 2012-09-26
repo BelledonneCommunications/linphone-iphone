@@ -1596,6 +1596,14 @@ void linphone_core_set_user_agent(const char *name, const char *ver){
 	strncpy(_ua_version,ver,sizeof(_ua_version));
 }
 
+const char *linphone_core_get_user_agent_name(void){
+	return _ua_name;
+}
+
+const char *linphone_core_get_user_agent_version(void){
+	return _ua_version;
+}
+
 static void transport_error(LinphoneCore *lc, const char* transport, int port){
 	char *msg=ortp_strdup_printf("Could not start %s transport on port %i, maybe this port is already used.",transport,port);
 	ms_warning("%s",msg);
@@ -2662,6 +2670,10 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}else
 		call->params=*params;
 
+	if (call->params.has_video && !linphone_core_video_enabled(lc)){
+		ms_warning("linphone_core_accept_call_update(): requested video but video support is globally disabled. Refusing video.");
+		call->params.has_video=FALSE;
+	}
 	if (call->current_params.in_conference) {
 		ms_warning("Video isn't supported in conference");
 		call->params.has_video = FALSE;

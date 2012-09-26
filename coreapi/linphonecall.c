@@ -1231,8 +1231,6 @@ static void setup_ring_player(LinphoneCore *lc, LinphoneCall *call){
 	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 }
 
-#define LINPHONE_RTCP_SDES_TOOL "Linphone-" LINPHONE_VERSION
-
 static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	LinphoneCall *current=linphone_core_get_current_call(lc);
@@ -1251,6 +1249,8 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
+	char rtcp_tool[128]={0};
+	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 	/* look for savp stream first */
 	const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
 	    					SalProtoRtpSavp,SalAudio);
@@ -1336,7 +1336,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (send_ringbacktone){
 				setup_ring_player(lc,call);
 			}
-			audio_stream_set_rtcp_information(call->audiostream, cname, LINPHONE_RTCP_SDES_TOOL);
+			audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 			
             /* valid local tags are > 0 */
 			if (stream->proto == SalProtoRtpSavp) {
@@ -1373,6 +1373,9 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 	/* look for savp stream first */
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 	    					SalProtoRtpSavp,SalVideo);
+	char rtcp_tool[128]={0};
+	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
+	
 	/* no savp audio stream, use avp */
 	if (!vstream)
 		vstream=sal_media_description_find_stream(call->resultdesc,
@@ -1436,7 +1439,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 					call->video_profile, rtp_addr, vstream->rtp_port,
 					rtcp_addr, linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
 					used_pt, linphone_core_get_video_jittcomp(lc), cam);
-				video_stream_set_rtcp_information(call->videostream, cname,LINPHONE_RTCP_SDES_TOOL);
+				video_stream_set_rtcp_information(call->videostream, cname,rtcp_tool);
 			}
 			
 			if (vstream->proto == SalProtoRtpSavp) {
