@@ -64,7 +64,6 @@ static UIFont *CELL_FONT = nil;
         [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
-        [messageText setContentInset:UIEdgeInsetsMake(-11, -8, 0, 0)];
     }
     return self;
 }

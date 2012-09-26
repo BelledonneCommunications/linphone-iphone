@@ -67,7 +67,7 @@
 										<string key="NSFrameSize">{294, 104}</string>
 										<reference key="NSSuperview" ref="773132586"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="796660967"/>
+										<reference key="NSNextKeyView" ref="872109847"/>
 										<string key="NSReuseIdentifierKey">_NS:9</string>
 										<int key="IBUIContentMode">1</int>
 										<array key="IBUIGestureRecognizers" id="0"/>
@@ -76,10 +76,10 @@
 									<object class="IBUITextView" id="796660967">
 										<reference key="NSNextResponder" ref="773132586"/>
 										<int key="NSvFlags">274</int>
-										<string key="NSFrameSize">{294, 104}</string>
+										<string key="NSFrame">{{-8, -11}, {310, 126}}</string>
 										<reference key="NSSuperview" ref="773132586"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="872109847"/>
+										<reference key="NSNextKeyView" ref="546512518"/>
 										<string key="NSReuseIdentifierKey">_NS:9</string>
 										<object class="NSColor" key="IBUIBackgroundColor" id="765717609">
 											<int key="NSColorSpace">3</int>
@@ -151,7 +151,7 @@
 								<string key="NSFrameSize">{294, 104}</string>
 								<reference key="NSSuperview" ref="456806949"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="546512518"/>
+								<reference key="NSNextKeyView" ref="796660967"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<reference key="IBUIBackgroundColor" ref="765717609"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -553,7 +553,7 @@
 						<string key="downloadButton">UIButton</string>
 						<string key="imageTapGestureRecognizer">UITapGestureRecognizer</string>
 						<string key="innerView">UIView</string>
-						<string key="messageImageView">UIImageView</string>
+						<string key="messageImageView">UILoadingImageView</string>
 						<string key="messageText">UITextView</string>
 						<string key="statusImage">UIImageView</string>
 					</dictionary>
@@ -588,7 +588,7 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="messageImageView">
 							<string key="name">messageImageView</string>
-							<string key="candidateClassName">UIImageView</string>
+							<string key="candidateClassName">UILoadingImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="messageText">
 							<string key="name">messageText</string>
