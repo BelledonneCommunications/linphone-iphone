@@ -49,7 +49,6 @@ struct Sal{
 	bool_t reuse_authorization;
 	bool_t verify_server_certs;
 	bool_t expire_old_contact;
-	bool_t exosip_has_ssl;
 };
 
 struct SalOp{

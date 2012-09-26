@@ -1132,8 +1132,6 @@ int linphone_core_get_sip_port(LinphoneCore *lc);
 int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
 
 int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
-
-int linphone_core_get_transports_supported(LinphoneCore *lc, LCSipTransports *transports);
 /**
  *
  * Give access to the UDP sip socket. Can be useful to configure this socket as persistent I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP)

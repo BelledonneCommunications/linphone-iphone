@@ -284,7 +284,6 @@ Sal * sal_init(){
 	sal->verify_server_certs=TRUE;
 	sal->expire_old_contact=FALSE;
 	sal->dscp=-1;
-	sal->exosip_has_ssl=eXosip_tls_verify_certificate(0) != -1;
 	return sal;
 }
 
@@ -2521,11 +2520,4 @@ int sal_call_update(SalOp *h, const char *subject){
 }
 void sal_reuse_authorization(Sal *ctx, bool_t value) {
 	ctx->reuse_authorization=value;
-}
-
-bool_t sal_is_transport_enabled(Sal *sal, SalTransport transport) {
-	if (transport == SalTransportTLS || transport == SalTransportDTLS) {
-		return sal->exosip_has_ssl;
-	}
-	return TRUE;
 }
