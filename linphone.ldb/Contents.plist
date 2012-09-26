@@ -5062,17 +5062,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>10</key>
+							<key>11</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ImageViewController/10/ImageViewController.xib</string>
+								<string>Classes/ImageViewController/11/ImageViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T15:43:59Z</date>
+					<date>2012-09-26T09:40:46Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -5082,7 +5082,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>a6f92c4f1f39135867bae2c55aab1d43
+					<string>32d1e1b03fac80638e7b7a220e1bc52f
 </string>
 					<key>name</key>
 					<string>ImageViewController.xib</string>
@@ -5146,9 +5146,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>10</string>
+						<string>11</string>
 						<key>fr</key>
-						<string>10</string>
+						<string>11</string>
 					</dict>
 				</dict>
 				<dict>

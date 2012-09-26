@@ -20,14 +20,103 @@
 #import "ImageViewController.h"
 #import "PhoneMainView.h"
 
-@interface ImageViewController ()
+@implementation UIImageScrollView
+
+@synthesize image;
+@synthesize imageView;
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUIImageScrollView {
+    imageView = [[UIImageView alloc] init];
+    self.delegate = self; 
+    [self addSubview:imageView];
+}
+
+- (id)init {
+    self = [super init];
+    if(self != nil) {
+        [self initUIImageScrollView];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self != nil) {
+        [self initUIImageScrollView];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if(self != nil) {
+        [self initUIImageScrollView];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [image release];
+    [imageView dealloc];
+    
+    [super dealloc];
+}
+
+
+#pragma mark - ViewController Functions
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    // center the image as it becomes smaller than the size of the screen
+    CGSize boundsSize = self.bounds.size;
+    CGRect frameToCenter = imageView.frame;
+    
+    // center horizontally
+    if (frameToCenter.size.width < boundsSize.width)
+        frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2;
+    else
+        frameToCenter.origin.x = 0;
+    
+    // center vertically
+    if (frameToCenter.size.height < boundsSize.height)
+        frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
+    else
+        frameToCenter.origin.y = 0;
+    
+    imageView.frame = frameToCenter;
+}
+
+
+#pragma mark - Property Functions
+
+- (void)setImage:(UIImage *)aimage {
+    imageView.image = aimage;
+    imageView.frame = CGRectMake(0, 0, aimage.size.width, aimage.size.height);
+    self.contentSize = aimage.size;
+    [self zoomToRect:imageView.bounds animated:FALSE];
+    self.minimumZoomScale = self.zoomScale;
+}
+
+- (UIImage *)image {
+    return imageView.image;
+}
+
+
+#pragma mark - UIScrollViewDelegate Functions
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return imageView;
+}
 
 @end
 
 @implementation ImageViewController
 
 @synthesize scrollView;
-@synthesize imageView;
 @synthesize backButton;
 @synthesize image;
 
@@ -40,7 +129,6 @@
 
 - (void)dealloc {
     [scrollView release];
-    [imageView release];
     [backButton release];
     [image release];
     
@@ -68,27 +156,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
-#pragma mark - ViewController Functions
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [scrollView setDelegate:self];
-}
-
-
 #pragma mark - Property Functions
 
 - (void)setImage:(UIImage *)aimage {
-    imageView.image = aimage;
-    imageView.frame = CGRectMake(0, 0, aimage.size.width, aimage.size.height);
-    scrollView.contentSize = aimage.size;
-    [scrollView zoomToRect:imageView.bounds animated:FALSE];
-    scrollView.minimumZoomScale = scrollView.zoomScale;
+    scrollView.image = aimage;
 }
 
 - (UIImage *)image {
-    return imageView.image;
+    return scrollView.image;
 }
 
 
@@ -98,13 +173,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([[[PhoneMainView instance] currentView] equal:[ImageViewController compositeViewDescription]]) {
         [[PhoneMainView instance] popCurrentView];
     }
-}
-
-
-#pragma mark - UIScrollViewDelegate Functions
-
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
-    return self.imageView;
 }
 
 @end
