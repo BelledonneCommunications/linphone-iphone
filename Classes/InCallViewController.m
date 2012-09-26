@@ -226,6 +226,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
+	LinphoneCore *lc = [LinphoneManager getLc];
     // Update table
     [callTableView reloadData];  
     
@@ -245,7 +246,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		case LinphoneCallIncomingReceived: 
 		case LinphoneCallOutgoingInit: 
         {
-            if(linphone_core_get_calls_nb([LinphoneManager getLc]) > 1) {
+            if(linphone_core_get_calls_nb(lc) > 1) {
                 [callTableController minimizeAll];
             }
         }
@@ -267,10 +268,10 @@ static UICompositeViewDescription *compositeDescription = nil;
             const LinphoneCallParams* remote = linphone_call_get_remote_params(call);
             
             /* remote wants to add video */
-            if (!linphone_call_params_video_enabled(current) && 
+            if (linphone_core_video_enabled(lc) && !linphone_call_params_video_enabled(current) &&
                 linphone_call_params_video_enabled(remote) && 
-                !linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept) {
-                linphone_core_defer_call_update([LinphoneManager getLc], call);
+                !linphone_core_get_video_policy(lc)->automatically_accept) {
+                linphone_core_defer_call_update(lc, call);
                 [self displayAskToEnableVideoCall:call];
             } else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
                 [self displayTableCall:animated];
@@ -287,7 +288,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         case LinphoneCallEnd:
         case LinphoneCallError:
         {
-            if(linphone_core_get_calls_nb([LinphoneManager getLc]) <= 2) {
+            if(linphone_core_get_calls_nb(lc) <= 2) {
                 [callTableController maximizeAll];
             }
             break;
