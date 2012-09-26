@@ -32,6 +32,7 @@
 #include "linphonecore_utils.h"
 #include "lpconfig.h"
 
+#define LINPHONE_LOGS_MAX_ENTRY 5000
 
 static void audioRouteChangeListenerCallback (
                                               void                   *inUserData,                                 // 1
@@ -59,6 +60,7 @@ NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kContactSipField = @"SIP";
+
 
 extern void libmsilbc_init();
 #ifdef HAVE_AMR
@@ -327,6 +329,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+        }
         [[LinphoneManager instance].logs addObject:formatedString];
         
         // Post event
@@ -344,6 +349,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 	NSLog(log, NULL);
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        if([[LinphoneManager instance].logs count] >= LINPHONE_LOGS_MAX_ENTRY) {
+            [[LinphoneManager instance].logs removeObjectAtIndex:0];
+        }
         [[LinphoneManager instance].logs addObject:log];
         
         // Post event
@@ -375,7 +383,18 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
-    if(state == LinphoneCallReleased) {
+    
+	CTCallCenter* ct = [[CTCallCenter alloc] init];
+    
+    int callCount = [ct.currentCalls count];
+    if (callCount>0 && state==LinphoneCallIncomingReceived) {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+		linphone_core_terminate_call([LinphoneManager getLc], call);
+		return;
+	}
+	[ct release];
+	
+	if(state == LinphoneCallReleased) {
         if(linphone_call_get_user_pointer(call) != NULL) {
             free (linphone_call_get_user_pointer(call));
             linphone_call_set_user_pointer(call, NULL);
@@ -671,7 +690,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char* lRing = [[LinphoneManager bundleFile:@"ring.wab"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char* lRing = [[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing);
 	const char* lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
@@ -685,7 +704,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     [self reconfigureLinphoneIfNeeded:nil];
 	
 	// start scheduler
-	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 
+	mIterateTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
 													 target:self 
 												   selector:@selector(iterate) 
 												   userInfo:nil 
@@ -1046,7 +1065,7 @@ static void audioRouteChangeListenerCallback (
 - (void)addPushTokenToProxyConfig:(LinphoneProxyConfig*)proxyCfg{
 	/* MODIFICATION: Disable pushnotification
 	NSData *tokenData =  pushNotificationToken;
-	if(tokenData != nil && [self lpConfigBoolForKey:@"pusnotification_preference"]) {
+	if(tokenData != nil && [self lpConfigBoolForKey:@"pushnotification_preference"]) {
 		const unsigned char *tokenBuffer = [tokenData bytes];
 		NSMutableString *tokenString = [NSMutableString stringWithCapacity:[tokenData length]*2];
 		for(int i = 0; i < [tokenData length]; ++i) {

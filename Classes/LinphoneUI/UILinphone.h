@@ -34,4 +34,9 @@
 
 @end
 
-void removeTableBackground(UIView* view);
+
+@interface UIImage (NormalizedImage)
+
+- (void)forceDecompression;
+
+@end

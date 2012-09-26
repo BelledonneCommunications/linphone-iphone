@@ -101,9 +101,10 @@
     [super layoutSubviews];
     
 	CGRect r = self.bounds;
-	r.origin.y = 0;
-	r.origin.x = contentInset.left;
+    r.origin.y = contentInset.top;
+    r.origin.x = contentInset.left;
     r.size.width -= contentInset.left + contentInset.right;
+    r.size.height -= contentInset.top + contentInset.bottom;
     
     internalTextView.frame = r;
 }
@@ -113,9 +114,10 @@
     contentInset = inset;
     
     CGRect r = self.frame;
-    r.origin.y = inset.top - inset.bottom;
-    r.origin.x = inset.left;
-    r.size.width -= inset.left + inset.right;
+    r.origin.y = contentInset.top;
+    r.origin.x = contentInset.left;
+    r.size.width -= contentInset.left + contentInset.right;
+    r.size.height -= contentInset.top + contentInset.bottom;
     
     internalTextView.frame = r;
     
@@ -147,7 +149,7 @@
     internalTextView.hidden = NO;
     internalTextView.delegate = self;
     
-    [self sizeToFit];
+    //[self sizeToFit];
     
     maxNumberOfLines = n;
 }
@@ -176,7 +178,7 @@
     internalTextView.hidden = NO;
     internalTextView.delegate = self;
     
-    [self sizeToFit];
+    //[self sizeToFit];
     
     minNumberOfLines = m;
 }
@@ -192,7 +194,7 @@
 	//size of content, so we can set the frame of self
 	NSInteger newSizeH = internalTextView.contentSize.height;
 	if(newSizeH < minHeight || !internalTextView.hasText) newSizeH = minHeight; //not smalles than minHeight
-  if (internalTextView.frame.size.height > maxHeight) newSizeH = maxHeight; // not taller than maxHeight
+    if(newSizeH > maxHeight) newSizeH = maxHeight; // not taller than maxHeight
 
 	if (internalTextView.frame.size.height != newSizeH)
 	{

@@ -57,19 +57,12 @@
     CTCallCenter* ct = (CTCallCenter*) cCenter;
     
     int callCount = [ct.currentCalls count];
-    if (!callCount) {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"No GSM call -> enabling SIP calls"];
-        linphone_core_set_max_calls([LinphoneManager getLc], 3);
-    } else {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"%d GSM call(s) -> disabling SIP calls", callCount];
-        /* pause current call, if any */
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (call) {
-            [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
-            linphone_core_pause_call([LinphoneManager getLc], call);
-        }
-        linphone_core_set_max_calls([LinphoneManager getLc], 0);
-    }
+     /* pause current call, if any */
+     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
+     if (callCount>0 && call) {
+          [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
+          linphone_core_pause_call([LinphoneManager getLc], call);
+      }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
@@ -293,6 +286,7 @@
         /* MODIFICATION: Remove chat local notificaiton
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view
+        [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
         ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
         if(controller != nil) {
             [controller setRemoteAddress:remoteContact];

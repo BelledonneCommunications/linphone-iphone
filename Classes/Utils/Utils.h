@@ -43,4 +43,22 @@ typedef enum _LinphoneLoggerSeverity {
 
 @end
 
+@interface LinphoneUtils : NSObject {
+
+}
+
++ (void)adjustFontSize:(UIView*)view mult:(float)mult;
++ (void)buttonFixStates:(UIButton*)button;
++ (void)buttonFixStatesForTabs:(UIButton*)button;
++ (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
++ (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
+
+@end
+
+@interface NSNumber (HumanReadableSize)
+
+- (NSString*)toHumanReadableSize;
+
+@end
+
 #endif

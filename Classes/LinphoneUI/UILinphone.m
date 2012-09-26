@@ -93,14 +93,16 @@
 
 @end
 
-void removeTableBackground(UIView*view) {
-    if([view isKindOfClass:[UITableView class]]) {
-        [view setBackgroundColor:[UIColor clearColor]];
-    }
-    if([view isKindOfClass:[UIImageView class]] && [[view superview] isKindOfClass:[UITableView class]]) {
-        [(UIImageView*)view setImage:nil];
-    }
-    for(UIView *subview in [view subviews]) {
-        removeTableBackground(subview);
-    }
+@implementation UIImage (NormalizedImage)
+
+- (void)forceDecompression {
+    CGImageRef imageRef = [self CGImage];
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(NULL, CGImageGetWidth(imageRef), CGImageGetHeight(imageRef), 8, CGImageGetWidth(imageRef) * 4, colorSpace,kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+    CGColorSpaceRelease(colorSpace);
+    if (!context) { NSLog(@"Could not create context for image decompression"); return; }
+    CGContextDrawImage(context, (CGRect){{0.0f, 0.0f}, {CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}}, imageRef);
+    CFRelease(context);
 }
+
+@end

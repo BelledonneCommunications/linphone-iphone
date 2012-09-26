@@ -1520,7 +1520,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "linphone" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1847,7 +1847,6 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1916,7 +1915,6 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
