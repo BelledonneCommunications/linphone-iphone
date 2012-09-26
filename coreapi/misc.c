@@ -620,7 +620,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
 
 	/* Gather local host candidates. */
-	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
+	if (linphone_core_get_local_ip_for(AF_INET, server, local_addr) < 0) {
 		ms_error("Fail to get local ip");
 		return -1;
 	}
