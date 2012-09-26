@@ -104,6 +104,7 @@
 - (bool)onUpdate {
     if([LinphoneManager isLcReady]) {
         bool val = false;
+#ifdef VIDEO_ENABLED
         if(linphone_core_video_enabled([LinphoneManager getLc])) {
             LinphoneCall* currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
             if (currentCall) {
@@ -141,6 +142,9 @@
             [self setEnabled:FALSE];
             [waitView stopAnimating];
         }
+#else //VIDEO_ENABLED
+        [self setEnabled:FALSE];
+#endif //VIDEO_ENABLED
         return val;
     } else {
 		[LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update video button: Linphone core not ready"];

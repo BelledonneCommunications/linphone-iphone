@@ -25,6 +25,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 @implementation LinphoneCoreSettingsStore
 
+
 - (void)handleMigration {
 	NSUserDefaults *oldconfig=[NSUserDefaults standardUserDefaults];
 	NSArray *allkeys=[[oldconfig dictionaryRepresentation] allKeys];
@@ -39,8 +40,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 - (id)init {
 	self = [super init];
 	if (self){
-		dict=[[NSMutableDictionary alloc] init];
-		changedDict=[[NSMutableDictionary alloc] init];
+		dict = [[NSMutableDictionary alloc] init];
+		changedDict = [[NSMutableDictionary alloc] init];
 		[self transformLinphoneCoreToKeys];
         LinphoneCore *lc=[LinphoneManager getLc];
 		if (lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY,"config_migrated",0) == 0) {
