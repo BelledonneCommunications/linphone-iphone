@@ -39,15 +39,16 @@
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIView" id="735497316">
 						<reference key="NSNextResponder" ref="311908381"/>
-						<int key="NSvFlags">290</int>
+						<int key="NSvFlags">306</int>
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUIImageView" id="131610915">
 								<reference key="NSNextResponder" ref="735497316"/>
 								<int key="NSvFlags">290</int>
 								<string key="NSFrame">{{0, 49}, {320, 63}}</string>
 								<reference key="NSSuperview" ref="735497316"/>
-								<reference key="NSNextKeyView" ref="651495339"/>
+								<reference key="NSNextKeyView" ref="1040531505"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<int key="IBUITag">2</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
@@ -60,8 +61,9 @@
 								<int key="NSvFlags">290</int>
 								<string key="NSFrameSize">{320, 68}</string>
 								<reference key="NSSuperview" ref="735497316"/>
-								<reference key="NSNextKeyView" ref="1040531505"/>
+								<reference key="NSNextKeyView" ref="131610915"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<int key="IBUITag">3</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel"/>
@@ -78,11 +80,12 @@
 								<int key="NSvFlags">290</int>
 								<string key="NSFrame">{{20, 0}, {280, 50}}</string>
 								<reference key="NSSuperview" ref="735497316"/>
-								<reference key="NSNextKeyView" ref="131610915"/>
+								<reference key="NSNextKeyView" ref="651495339"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<int key="IBUIContentMode">7</int>
+								<int key="IBUITag">4</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel">Appel entrant</string>
@@ -108,7 +111,7 @@
 							</object>
 							<object class="IBUILabel" id="402572557">
 								<reference key="NSNextResponder" ref="735497316"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">290</int>
 								<string key="NSFrame">{{10, 53}, {300, 51}}</string>
 								<reference key="NSSuperview" ref="735497316"/>
 								<reference key="NSNextKeyView" ref="632401698"/>
@@ -116,6 +119,7 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIAutoresizesSubviews">NO</bool>
 								<int key="IBUIContentMode">7</int>
+								<int key="IBUITag">5</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel">Nom du contact</string>
@@ -4536,6 +4540,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="NSSuperview" ref="735497316"/>
 								<reference key="NSNextKeyView" ref="402572557"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<int key="IBUITag">6</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<object class="NSCustomResource" key="IBUIImage">
@@ -4550,6 +4555,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="NSSuperview" ref="735497316"/>
 								<reference key="NSNextKeyView" ref="442322210"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<int key="IBUITag">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel">Avatar du contact</string>
@@ -4568,6 +4574,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="NSNextKeyView" ref="1023112121"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="84179139"/>
+						<int key="IBUITag">1</int>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIView" id="442322210">
@@ -4600,6 +4607,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="NSNextKeyView" ref="299451957"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
+								<int key="IBUITag">11</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel">Accepter</string>
 								</object>
@@ -4635,6 +4643,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="NSSuperview" ref="442322210"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
+								<int key="IBUITag">12</int>
 								<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
 									<string key="IBUIAccessibilityLabel">Refuser</string>
 								</object>
@@ -4659,10 +4668,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="NSNextKeyView" ref="908036430"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="84179139"/>
+						<int key="IBUITag">10</int>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</array>
 				<string key="NSFrameSize">{320, 460}</string>
+				<reference key="NSNextKeyView" ref="735497316"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<reference key="IBUIBackgroundColor" ref="84179139"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -4693,6 +4704,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="destination" ref="311908381"/>
 					</object>
 					<int key="connectionID">26</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">portraitView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="311908381"/>
+					</object>
+					<int key="connectionID">32</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -4845,13 +4864,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">31</int>
+			<int key="maxID">32</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">IncomingCallViewController</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">TPMultiLayoutViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="onAcceptClick:">id</string>
 						<string key="onDeclineClick:">id</string>
@@ -4883,6 +4902,28 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/IncomingCallViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">TPMultiLayoutViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="landscapeView">UIView</string>
+						<string key="portraitView">UIView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="landscapeView">
+							<string key="name">landscapeView</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="portraitView">
+							<string key="name">portraitView</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/TPMultiLayoutViewController.h</string>
 					</object>
 				</object>
 			</array>

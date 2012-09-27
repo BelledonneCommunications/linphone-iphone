@@ -113,7 +113,7 @@
 					</object>
 					<object class="IBUIView" id="242430033">
 						<reference key="NSNextResponder" ref="542426306"/>
-						<int key="NSvFlags">288</int>
+						<int key="NSvFlags">298</int>
 						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIButton" id="201618948">
@@ -454,7 +454,7 @@
 					</object>
 					<object class="IBUIView" id="32193173">
 						<reference key="NSNextResponder" ref="542426306"/>
-						<int key="NSvFlags">288</int>
+						<int key="NSvFlags">266</int>
 						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIButton" id="657970815">
@@ -671,7 +671,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</object>
-				<string key="NSFrameSize">{320, 460}</string>
+				<string key="NSFrameSize">{320, 374}</string>
 				<reference key="NSNextKeyView" ref="312750714"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<reference key="IBUIBackgroundColor" ref="377660437"/>

@@ -36,7 +36,7 @@
 - (id)init {
     self = [super initWithNibName:@"AboutViewController" bundle:[NSBundle mainBundle]];
     if (self != nil) {
-        self->linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+        self->linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
     }
     return self;
 }
@@ -57,7 +57,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [linkTapGestureRecognizer addTarget:self action:@selector(onLinkTap:)];
     [linkLabel addGestureRecognizer:linkTapGestureRecognizer];
     
     UIScrollView *scrollView = (UIScrollView *)self.view;

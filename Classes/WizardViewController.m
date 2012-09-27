@@ -52,6 +52,8 @@ typedef enum _ViewElement {
 @synthesize backButton;
 @synthesize startButton;
 
+@synthesize viewTapGestureRecognizer;
+
 
 #pragma mark - Lifecycle Functions
 
@@ -63,6 +65,7 @@ typedef enum _ViewElement {
                                     options:nil];
         self->historyViews = [[NSMutableArray alloc] init];
         self->currentView = nil;
+        self->viewTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onViewTap:)];
     }
     return self;
 }
@@ -85,6 +88,8 @@ typedef enum _ViewElement {
     [startButton release];
     
     [historyViews release];
+    
+    [viewTapGestureRecognizer release];
     
     [super dealloc];
 }
@@ -147,6 +152,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [viewTapGestureRecognizer setCancelsTouchesInView:FALSE];
+    [contentView addGestureRecognizer:viewTapGestureRecognizer];
+    
     if([LinphoneManager runningOnIpad]) {
         [LinphoneUtils adjustFontSize:welcomeView mult:2.22f];
         [LinphoneUtils adjustFontSize:choiceView mult:2.22f];
@@ -514,6 +523,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else {
         [self checkUserExist:username];
     }
+}
+
+- (IBAction)onViewTap:(id)sender {
+    [LinphoneUtils findAndResignFirstResponder:currentView];
 }
 
 

@@ -1368,17 +1368,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
+							<key>5</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController/4/DialerViewController.xib</string>
+								<string>Classes/DialerViewController/5/DialerViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-21T12:30:11Z</date>
+					<date>2012-09-26T14:58:35Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1388,7 +1388,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>8a2a96826784d150101b877d3d22c6a1
+					<string>9e26a5888ff9dabd85d7cca675540636
 </string>
 					<key>name</key>
 					<string>DialerViewController.xib</string>
@@ -1902,9 +1902,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>5</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>5</string>
 					</dict>
 				</dict>
 				<dict>
@@ -3497,17 +3497,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>7</key>
+							<key>8</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/IncomingCallViewController/7/IncomingCallViewController.xib</string>
+								<string>Classes/IncomingCallViewController/8/IncomingCallViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-26T14:28:27Z</date>
+					<date>2012-09-27T08:46:32Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3517,7 +3517,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>2b69f488ef4f2f7efc50f2d15639f7d0
+					<string>c9def09966914f8e085b0d06ba3af8a4
 </string>
 					<key>name</key>
 					<string>IncomingCallViewController.xib</string>
@@ -3732,9 +3732,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>7</string>
+						<string>8</string>
 						<key>fr</key>
-						<string>7</string>
+						<string>8</string>
 					</dict>
 				</dict>
 				<dict>
@@ -6957,6 +6957,396 @@
 						<string>11</string>
 					</dict>
 				</dict>
+				<dict>
+					<key>attachments</key>
+					<dict>
+						<key>backup</key>
+						<dict>
+							<key>3</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/IncomingCallViewController~ipad/3/IncomingCallViewController~ipad.xib</string>
+							</dict>
+						</dict>
+					</dict>
+					<key>change date</key>
+					<date>2012-09-27T09:37:07Z</date>
+					<key>changed values</key>
+					<array/>
+					<key>class</key>
+					<string>BLNibFileObject</string>
+					<key>errors</key>
+					<array/>
+					<key>flags</key>
+					<integer>0</integer>
+					<key>hash</key>
+					<string>313a649f8ff1d14d828648af3463428c
+</string>
+					<key>name</key>
+					<string>IncomingCallViewController~ipad.xib</string>
+					<key>objects</key>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Decline"; ObjectID = "6";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>6.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Decline</string>
+								<key>fr</key>
+								<string>Refuser</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Accept"; ObjectID = "7";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>7.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Accept</string>
+								<key>fr</key>
+								<string>Accepter</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "9";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>9.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Contact's name</string>
+								<key>fr</key>
+								<string>Nom du contact</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "0102030405"; ObjectID = "9";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>9.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>0102030405</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "19";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>19.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Contact's avatar</string>
+								<key>fr</key>
+								<string>Avatar du contact</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Incoming call"; ObjectID = "31";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>31.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call</string>
+								<key>fr</key>
+								<string>Appel entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Incoming call"; ObjectID = "31";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>31.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call</string>
+								<key>fr</key>
+								<string>Appel entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Accept"; ObjectID = "64";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>64.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Accept</string>
+								<key>fr</key>
+								<string>Accepter</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Decline"; ObjectID = "65";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>65.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Decline</string>
+								<key>fr</key>
+								<string>Refuser</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Incoming call"; ObjectID = "67";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>67.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call</string>
+								<key>fr</key>
+								<string>Appel entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Incoming call"; ObjectID = "67";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>67.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call</string>
+								<key>fr</key>
+								<string>Appel entrant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Contact's name"; ObjectID = "69";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>69.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Contact's name</string>
+								<key>fr</key>
+								<string>Nom du contact</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "0102030405"; ObjectID = "69";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>69.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>0102030405</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIImageView"; accessibilityLabel = "Contact's avatar"; ObjectID = "71";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>71.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Contact's avatar</string>
+								<key>fr</key>
+								<string>Avatar du contact</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
+					<key>old objects</key>
+					<array/>
+					<key>snapshots</key>
+					<dict/>
+					<key>versions</key>
+					<dict>
+						<key>en</key>
+						<string>3</string>
+						<key>fr</key>
+						<string>3</string>
+					</dict>
+				</dict>
 			</array>
 			<key>flags</key>
 			<integer>0</integer>
@@ -6989,17 +7379,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>9</key>
+							<key>10</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar/9/UICallBar.xib</string>
+								<string>LinphoneUI/UICallBar/10/UICallBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T10:19:35Z</date>
+					<date>2012-09-27T09:31:07Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7009,7 +7399,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>9749cf40e44f80d8f216e5ea70f90e8c
+					<string>c5958759098558a4f8f5d1c18abc0e21
 </string>
 					<key>name</key>
 					<string>UICallBar.xib</string>
@@ -8111,9 +8501,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>9</string>
+						<string>10</string>
 						<key>fr</key>
-						<string>9</string>
+						<string>10</string>
 					</dict>
 				</dict>
 				<dict>
@@ -8121,17 +8511,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>7</key>
+							<key>8</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar~ipad/7/UICallBar~ipad.xib</string>
+								<string>LinphoneUI/UICallBar~ipad/8/UICallBar~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:23Z</date>
+					<date>2012-09-27T08:55:48Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -8141,7 +8531,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>3d366e4bfeac691f39183968a6d63579
+					<string>0c3d52411af8eb72686e8ac031090592
 </string>
 					<key>name</key>
 					<string>UICallBar~ipad.xib</string>
@@ -9286,9 +9676,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>7</string>
+						<string>8</string>
 						<key>fr</key>
-						<string>7</string>
+						<string>8</string>
 					</dict>
 				</dict>
 				<dict>
@@ -10621,17 +11011,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>9</key>
+							<key>10</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallCell/9/UICallCell.xib</string>
+								<string>LinphoneUI/UICallCell/10/UICallCell.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T13:25:00Z</date>
+					<date>2012-09-27T08:55:47Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -10641,7 +11031,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>4ec34c73102f4cc78c2fa16666a0d1e3
+					<string>3f93690358cedc72a913d6a3fab20fe0
 </string>
 					<key>name</key>
 					<string>UICallCell.xib</string>
@@ -11560,9 +11950,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>9</string>
+						<string>10</string>
 						<key>fr</key>
-						<string>9</string>
+						<string>10</string>
 					</dict>
 				</dict>
 			</array>

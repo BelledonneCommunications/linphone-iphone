@@ -134,20 +134,6 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     [contactDetailsDelegate onModification:nil];
 }
 
-
-+ (BOOL)findAndResignFirstResponder:(UIView*)view {
-    if (view.isFirstResponder) {
-        [view resignFirstResponder];
-        return YES;     
-    }
-    for (UIView *subView in view.subviews) {
-        if ([ContactDetailsTableViewController findAndResignFirstResponder:subView])
-            return YES;
-    }
-    return NO;
-}
-
-
 - (NSMutableArray*)getSectionData:(int)section {
     if(contactSections[section] == ContactSections_Number) {
         return [dataCache objectAtIndex:0];
@@ -534,7 +520,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
-    [ContactDetailsTableViewController findAndResignFirstResponder:[self tableView]];
+    [LinphoneUtils findAndResignFirstResponder:[self tableView]];
     if (editingStyle == UITableViewCellEditingStyleInsert) {
         [tableView beginUpdates];
 		[self addEntry:tableView section:[indexPath section] animated:TRUE];
@@ -552,7 +538,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated { 
     // Resign keyboard
     if(!editing) {
-        [ContactDetailsTableViewController findAndResignFirstResponder:[self tableView]];
+        [LinphoneUtils findAndResignFirstResponder:[self tableView]];
     }
 
     [headerController setEditing:editing animated:animated];

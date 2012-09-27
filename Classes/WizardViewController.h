@@ -42,6 +42,8 @@
 @property (nonatomic, retain) IBOutlet UIButton *backButton;
 @property (nonatomic, retain) IBOutlet UIButton *startButton;
 
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
+
 - (void)reset;
 
 - (IBAction)onStartClick:(id)sender;

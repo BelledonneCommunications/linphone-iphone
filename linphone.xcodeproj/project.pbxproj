@@ -1073,6 +1073,24 @@
 		D3D5126D160B3A8E00946DF8 /* WizardViews.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126A160B3A8E00946DF8 /* WizardViews.xib */; };
 		D3D51270160B3AD400946DF8 /* WizardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126E160B3AD400946DF8 /* WizardViewController~ipad.xib */; };
 		D3D51271160B3AD400946DF8 /* WizardViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126E160B3AD400946DF8 /* WizardViewController~ipad.xib */; };
+		D3D52A731614480700DEB00A /* IncomingCallViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A711614480700DEB00A /* IncomingCallViewController~ipad.xib */; };
+		D3D52A741614480700DEB00A /* IncomingCallViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A711614480700DEB00A /* IncomingCallViewController~ipad.xib */; };
+		D3D52A7D1614495300DEB00A /* accept_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A751614495300DEB00A /* accept_default_landscape~ipad.png */; };
+		D3D52A7E1614495300DEB00A /* accept_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A751614495300DEB00A /* accept_default_landscape~ipad.png */; };
+		D3D52A7F1614495300DEB00A /* accept_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A761614495300DEB00A /* accept_default~ipad.png */; };
+		D3D52A801614495300DEB00A /* accept_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A761614495300DEB00A /* accept_default~ipad.png */; };
+		D3D52A811614495300DEB00A /* accept_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A771614495300DEB00A /* accept_over_landscape~ipad.png */; };
+		D3D52A821614495300DEB00A /* accept_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A771614495300DEB00A /* accept_over_landscape~ipad.png */; };
+		D3D52A831614495300DEB00A /* accept_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A781614495300DEB00A /* accept_over~ipad.png */; };
+		D3D52A841614495300DEB00A /* accept_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A781614495300DEB00A /* accept_over~ipad.png */; };
+		D3D52A851614495300DEB00A /* decline_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A791614495300DEB00A /* decline_default_landscape~ipad.png */; };
+		D3D52A861614495300DEB00A /* decline_default_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A791614495300DEB00A /* decline_default_landscape~ipad.png */; };
+		D3D52A871614495300DEB00A /* decline_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7A1614495300DEB00A /* decline_default~ipad.png */; };
+		D3D52A881614495300DEB00A /* decline_default~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7A1614495300DEB00A /* decline_default~ipad.png */; };
+		D3D52A891614495300DEB00A /* decline_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7B1614495300DEB00A /* decline_over_landscape~ipad.png */; };
+		D3D52A8A1614495300DEB00A /* decline_over_landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7B1614495300DEB00A /* decline_over_landscape~ipad.png */; };
+		D3D52A8B1614495300DEB00A /* decline_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7C1614495300DEB00A /* decline_over~ipad.png */; };
+		D3D52A8C1614495300DEB00A /* decline_over~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D52A7C1614495300DEB00A /* decline_over~ipad.png */; };
 		D3D6A39E159B0EEF005F692C /* add_call_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A39B159B0EEF005F692C /* add_call_default.png */; };
 		D3D6A3A0159B0EEF005F692C /* add_call_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A39C159B0EEF005F692C /* add_call_disabled.png */; };
 		D3D6A3A2159B0EEF005F692C /* add_call_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D6A39D159B0EEF005F692C /* add_call_over.png */; };
@@ -2097,6 +2115,16 @@
 		D3D5126F160B3AD400946DF8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "en.lproj/WizardViewController~ipad.xib"; sourceTree = "<group>"; };
 		D3D51272160B3E5000946DF8 /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = "fr.lproj/WizardViewController~ipad.xib"; sourceTree = "<group>"; };
 		D3D51273160B3E5000946DF8 /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = fr.lproj/WizardViews.xib; sourceTree = "<group>"; };
+		D3D52A721614480700DEB00A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = "en.lproj/IncomingCallViewController~ipad.xib"; sourceTree = "<group>"; };
+		D3D52A751614495300DEB00A /* accept_default_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "accept_default_landscape~ipad.png"; path = "Resources/accept_default_landscape~ipad.png"; sourceTree = "<group>"; };
+		D3D52A761614495300DEB00A /* accept_default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "accept_default~ipad.png"; path = "Resources/accept_default~ipad.png"; sourceTree = "<group>"; };
+		D3D52A771614495300DEB00A /* accept_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "accept_over_landscape~ipad.png"; path = "Resources/accept_over_landscape~ipad.png"; sourceTree = "<group>"; };
+		D3D52A781614495300DEB00A /* accept_over~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "accept_over~ipad.png"; path = "Resources/accept_over~ipad.png"; sourceTree = "<group>"; };
+		D3D52A791614495300DEB00A /* decline_default_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "decline_default_landscape~ipad.png"; path = "Resources/decline_default_landscape~ipad.png"; sourceTree = "<group>"; };
+		D3D52A7A1614495300DEB00A /* decline_default~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "decline_default~ipad.png"; path = "Resources/decline_default~ipad.png"; sourceTree = "<group>"; };
+		D3D52A7B1614495300DEB00A /* decline_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "decline_over_landscape~ipad.png"; path = "Resources/decline_over_landscape~ipad.png"; sourceTree = "<group>"; };
+		D3D52A7C1614495300DEB00A /* decline_over~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "decline_over~ipad.png"; path = "Resources/decline_over~ipad.png"; sourceTree = "<group>"; };
+		D3D52A8D16144C0B00DEB00A /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = "fr.lproj/IncomingCallViewController~ipad.xib"; sourceTree = "<group>"; };
 		D3D6A39B159B0EEF005F692C /* add_call_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_call_default.png; path = Resources/add_call_default.png; sourceTree = "<group>"; };
 		D3D6A39C159B0EEF005F692C /* add_call_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_call_disabled.png; path = Resources/add_call_disabled.png; sourceTree = "<group>"; };
 		D3D6A39D159B0EEF005F692C /* add_call_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_call_over.png; path = Resources/add_call_over.png; sourceTree = "<group>"; };
@@ -2419,6 +2447,7 @@
 				D3F26BEE15986B71005F9CAB /* IncomingCallViewController.h */,
 				D3F26BEF15986B71005F9CAB /* IncomingCallViewController.m */,
 				D38187DC15FE347700C3EDCA /* IncomingCallViewController.xib */,
+				D3D52A711614480700DEB00A /* IncomingCallViewController~ipad.xib */,
 				D3F83F9115824D3500336684 /* LinphoneApp.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
@@ -2884,7 +2913,11 @@
 			isa = PBXGroup;
 			children = (
 				D3F83F741582253100336684 /* accept_default.png */,
+				D3D52A751614495300DEB00A /* accept_default_landscape~ipad.png */,
+				D3D52A761614495300DEB00A /* accept_default~ipad.png */,
 				D3F83F751582253100336684 /* accept_over.png */,
+				D3D52A771614495300DEB00A /* accept_over_landscape~ipad.png */,
+				D3D52A781614495300DEB00A /* accept_over~ipad.png */,
 				D3D6A39B159B0EEF005F692C /* add_call_default.png */,
 				D3A74E5E15C69391001500B9 /* add_call_default~ipad.png */,
 				D3D6A39C159B0EEF005F692C /* add_call_disabled.png */,
@@ -3026,7 +3059,11 @@
 				D3A74E7A15C69392001500B9 /* contacts_selected_landscape~ipad.png */,
 				D3A74E7B15C69392001500B9 /* contacts_selected~ipad.png */,
 				D3F83F761582253100336684 /* decline_default.png */,
+				D3D52A791614495300DEB00A /* decline_default_landscape~ipad.png */,
+				D3D52A7A1614495300DEB00A /* decline_default~ipad.png */,
 				D3F83F771582253100336684 /* decline_over.png */,
+				D3D52A7B1614495300DEB00A /* decline_over_landscape~ipad.png */,
+				D3D52A7C1614495300DEB00A /* decline_over~ipad.png */,
 				D3ED3E441585FB8C006C0DE4 /* dialer_address_background.png */,
 				D3A74E7C15C69392001500B9 /* dialer_address_background_landscape~ipad.png */,
 				D3A74E7D15C69392001500B9 /* dialer_address_background~ipad.png */,
@@ -4115,6 +4152,15 @@
 				D35E920F160CABD70023116B /* button_background_over.9.png in Resources */,
 				D3012CC41610467D007CD926 /* linphone_logo.png in Resources */,
 				D3012CC616105ECF007CD926 /* bubble.png in Resources */,
+				D3D52A731614480700DEB00A /* IncomingCallViewController~ipad.xib in Resources */,
+				D3D52A7D1614495300DEB00A /* accept_default_landscape~ipad.png in Resources */,
+				D3D52A7F1614495300DEB00A /* accept_default~ipad.png in Resources */,
+				D3D52A811614495300DEB00A /* accept_over_landscape~ipad.png in Resources */,
+				D3D52A831614495300DEB00A /* accept_over~ipad.png in Resources */,
+				D3D52A851614495300DEB00A /* decline_default_landscape~ipad.png in Resources */,
+				D3D52A871614495300DEB00A /* decline_default~ipad.png in Resources */,
+				D3D52A891614495300DEB00A /* decline_over_landscape~ipad.png in Resources */,
+				D3D52A8B1614495300DEB00A /* decline_over~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4607,6 +4653,15 @@
 				D35E9210160CABD70023116B /* button_background_over.9.png in Resources */,
 				D3012CC51610467D007CD926 /* linphone_logo.png in Resources */,
 				D3012CC716105ECF007CD926 /* bubble.png in Resources */,
+				D3D52A741614480700DEB00A /* IncomingCallViewController~ipad.xib in Resources */,
+				D3D52A7E1614495300DEB00A /* accept_default_landscape~ipad.png in Resources */,
+				D3D52A801614495300DEB00A /* accept_default~ipad.png in Resources */,
+				D3D52A821614495300DEB00A /* accept_over_landscape~ipad.png in Resources */,
+				D3D52A841614495300DEB00A /* accept_over~ipad.png in Resources */,
+				D3D52A861614495300DEB00A /* decline_default_landscape~ipad.png in Resources */,
+				D3D52A881614495300DEB00A /* decline_default~ipad.png in Resources */,
+				D3D52A8A1614495300DEB00A /* decline_over_landscape~ipad.png in Resources */,
+				D3D52A8C1614495300DEB00A /* decline_over~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5085,6 +5140,15 @@
 				D3D51272160B3E5000946DF8 /* fr */,
 			);
 			name = "WizardViewController~ipad.xib";
+			sourceTree = "<group>";
+		};
+		D3D52A711614480700DEB00A /* IncomingCallViewController~ipad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D3D52A721614480700DEB00A /* en */,
+				D3D52A8D16144C0B00DEB00A /* fr */,
+			);
+			name = "IncomingCallViewController~ipad.xib";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

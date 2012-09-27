@@ -47,6 +47,7 @@ typedef enum _LinphoneLoggerSeverity {
 
 }
 
++ (BOOL)findAndResignFirstResponder:(UIView*)view;
 + (void)adjustFontSize:(UIView*)view mult:(float)mult;
 + (void)buttonFixStates:(UIButton*)button;
 + (void)buttonFixStatesForTabs:(UIButton*)button;

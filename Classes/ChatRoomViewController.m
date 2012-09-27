@@ -55,7 +55,7 @@
         self->scrollOnGrowingEnabled = TRUE;
         self->chatRoom = NULL;
         self->imageSharing = NULL;
-        self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+        self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
         self->imageQualities = [[OrderedDictionary alloc] initWithObjectsAndKeys:
                                 [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
                                 [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -133,7 +133,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     messageField.backgroundColor = [UIColor clearColor];
     [sendButton setEnabled:FALSE];
     
-    [listTapGestureRecognizer addTarget:self action:@selector(onListTap:)];
     [tableController.tableView addGestureRecognizer:listTapGestureRecognizer];
     [listTapGestureRecognizer setEnabled:FALSE];
     

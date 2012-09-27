@@ -145,23 +145,11 @@
     }
 }
 
-+ (BOOL)findAndResignFirstResponder:(UIView*)view {
-    if (view.isFirstResponder) {
-        [view resignFirstResponder];
-        return YES;     
-    }
-    for (UIView *subView in view.subviews) {
-        if ([UIContactDetailsHeader findAndResignFirstResponder:subView])
-            return YES;
-    }
-    return NO;
-}
-
 - (void)setEditing:(BOOL)aediting animated:(BOOL)animated {
     editing = aediting;
     // Resign keyboard
     if(!editing) {
-        [UIContactDetailsHeader findAndResignFirstResponder:[self tableView]];
+        [LinphoneUtils findAndResignFirstResponder:[self tableView]];
         [self update];
     } 
     if(animated) {

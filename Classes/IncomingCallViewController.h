@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 
 #import "UICompositeViewController.h"
+#import "TPMultiLayoutViewController.h"
 #include "linphonecore.h"
 
 @protocol IncomingCallViewDelegate <NSObject>
@@ -30,7 +31,7 @@
 
 @end
 
-@interface IncomingCallViewController : UIViewController <UICompositeViewDelegate> {
+@interface IncomingCallViewController : TPMultiLayoutViewController <UICompositeViewDelegate> {
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* addressLabel;

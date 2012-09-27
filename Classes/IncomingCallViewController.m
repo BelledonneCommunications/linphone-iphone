@@ -175,4 +175,32 @@ static UICompositeViewDescription *compositeDescription = nil;
     [delegate incomingCallDeclined:call];
 }
 
+
+#pragma mark - TPMultiLayoutViewController Functions
+
+- (NSDictionary*)attributesForView:(UIView*)view {
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    
+    [attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
+    [attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [LinphoneUtils buttonMultiViewAddAttributes:attributes button:button];
+    }
+    [attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
+    
+    return attributes;
+}
+
+- (void)applyAttributes:(NSDictionary*)attributes toView:(UIView*)view {
+    view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
+    view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
+    if([view isKindOfClass:[UIButton class]]) {
+        UIButton *button = (UIButton *)view;
+        [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
+    }
+    view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
+}
+
+
 @end
