@@ -152,6 +152,7 @@ public:
 	LinphoneCall *findCall(int id);
 	LinphoneProxyConfig *findProxy(int id);
 	AudioStream *findAudioStream(int id);
+	void removeAudioStream(int id);
 	bool pullEvent();
 	int updateCallId(LinphoneCall *call);
 	int updateProxyId(LinphoneProxyConfig *proxy);

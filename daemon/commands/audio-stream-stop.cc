@@ -14,6 +14,7 @@ void AudioStreamStopCommand::exec(Daemon *app, const char *args) {
 			return;
 		}
 		audio_stream_stop(stream);
+		app->removeAudioStream(id);
 		app->sendResponse(Response());
 	} else {
 		app->sendResponse(Response("Missing/Incorrect parameter(s)."));

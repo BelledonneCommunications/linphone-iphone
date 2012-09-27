@@ -319,6 +319,12 @@ AudioStream *Daemon::findAudioStream(int id) {
 	return NULL;
 }
 
+void Daemon::removeAudioStream(int id) {
+	std::map<int, AudioStream*>::iterator it = mAudioStreams.find(id);
+	if (it != mAudioStreams.end())
+		mAudioStreams.erase(it);
+}
+
 void Daemon::initCommands() {
 	mCommands.push_back(new RegisterCommand());
 	mCommands.push_back(new RegisterStatusCommand());
