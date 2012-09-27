@@ -11997,7 +11997,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T15:18:35Z</date>
+					<date>2012-09-27T16:22:23Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12007,7 +12007,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>0c45914787431042e161c1a4d7ec2229
+					<string>6b28bbe0cc4362b29f1a00eec7d9ad2d
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -13037,6 +13037,31 @@ La cause était: %2$@</string>
 								<string>Incoming call from %@</string>
 								<key>fr</key>
 								<string>Appel entrant de %@</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>IM_MSG</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming message from %@</string>
+								<key>fr</key>
+								<string>Message entrant de %@</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
