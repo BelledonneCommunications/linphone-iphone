@@ -25,9 +25,10 @@ fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
 
 #new path with Xcode 4.3:
-if test -d /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
-	SDK_PATH_LIST=`ls -drt /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-	SDK_BIN_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+XCODE_ROOT=/Applications/Xcode.app
+if test -d ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
+	SDK_PATH_LIST=`ls -drt ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
+	SDK_BIN_PATH=${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
 else
 	SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
 	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  

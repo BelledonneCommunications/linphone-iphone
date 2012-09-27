@@ -75,7 +75,7 @@
 			<array>
 				<string>udp</string>
 				<string>tcp</string>
-				<string>tls</string>
+				<!--string>tls</string-->
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -83,10 +83,10 @@
 			<array>
 				<string>udp</string>
 				<string>tcp</string>
-				<string>tls</string>
+				<!--string>tls</string-->
 			</array>
 		</dict>
-		<dict>
+		<!--dict>
 			<key>DefaultValue</key>
 			<string>None</string>
 			<key>Key</key>
@@ -107,7 +107,7 @@
 				<string>SRTP</string>
 				<string>ZRTP</string>
 			</array>
-		</dict>
+		</dict-->
 	</array>
 </dict>
 </plist>
