@@ -84,6 +84,7 @@
 @synthesize detailsLeftSwipeGestureRecognizer;
 @synthesize detailsRightSwipeGestureRecognizer;
 
+
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString*)identifier {
@@ -122,11 +123,21 @@
         [UICallCell adaptSize:videoDownloadBandwidthHeaderLabel field:videoDownloadBandwidthLabel];
         [UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
         [UICallCell adaptSize:videoIceConnectivityHeaderLabel field:videoIceConnectivityLabel];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillEnterForeground:)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillEnterForegroundNotification
+                                                  object:nil];
+    
+    
     [headerBackgroundImage release];
     [headerBackgroundHighlightImage release];
     
@@ -176,6 +187,7 @@
 - (void)prepareForReuse {
     
 }
+
 
 #pragma mark - Properties Functions
 
@@ -259,6 +271,15 @@
         case LinphoneIceStateRelayConnection:
             return NSLocalizedString(@"Relay connection", @"ICE has established a connection through a relay");
             break;
+    }
+}
+
+
+#pragma mark - Event Functions
+
+- (void)applicationWillEnterForeground:(NSNotification*)notif {
+    if (currentCall) {
+        [self startBlinkAnimation:@"blink" target:headerBackgroundHighlightImage];
     }
 }
 
