@@ -142,9 +142,13 @@
     CGSize chatContentSize = [[chatContentLabel text] sizeWithFont:[chatContentLabel font]];
     float sum = displayNameSize.width + 5 + chatContentSize.width;
     float limit = self.bounds.size.width - 5 - displayNameFrame.origin.x;
-    if(sum >limit) {
+    if(sum > limit) {
         displayNameSize.width *= limit/sum;
         chatContentSize.width *= limit/sum;
+        if(displayNameSize.width > limit/2) {
+            displayNameSize.width = limit/2;
+            chatContentSize.width = limit/2;
+        }
     }
     
     displayNameFrame.size.width = displayNameSize.width;
