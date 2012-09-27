@@ -809,15 +809,19 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
 	
 	
-	if (proxyCfg && [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
-		//For registration register
-		[self refreshRegisters];
-		//wait for registration answer
-		int i=0;
-		while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
-			linphone_core_iterate(theLinphoneCore);
-			usleep(100000);
-		}
+	if ((proxyCfg || linphone_core_get_calls_nb(theLinphoneCore) > 0) &&
+        [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"]) {
+        
+        if(proxyCfg != NULL) {
+            //For registration register
+            [self refreshRegisters];
+            //wait for registration answer
+            int i=0;
+            while (!linphone_proxy_config_is_registered(proxyCfg) && i++<40 ) {
+                linphone_core_iterate(theLinphoneCore);
+                usleep(100000);
+            }
+        }
 		//register keepalive
 		if ([[UIApplication sharedApplication] setKeepAliveTimeout:600/*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/ 
 														   handler:^{
