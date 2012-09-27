@@ -652,30 +652,38 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 
 	session_state = ice_session_state(call->ice_session);
 	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
-		switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
-			case ICT_HostCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
-				break;
-			case ICT_ServerReflexiveCandidate:
-			case ICT_PeerReflexiveCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
-				break;
-			case ICT_RelayedCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
-				break;
-		}
-		if (call->params.has_video && (video_check_list != NULL)) {
-			switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+		if (ice_check_list_state(audio_check_list) == ICL_Completed) {
+			switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
 				case ICT_HostCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
 					break;
 				case ICT_ServerReflexiveCandidate:
 				case ICT_PeerReflexiveCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
 					break;
 				case ICT_RelayedCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
 					break;
+			}
+		} else {
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
+		}
+		if (call->params.has_video && (video_check_list != NULL)) {
+			if (ice_check_list_state(video_check_list) == ICL_Completed) {
+				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+					case ICT_HostCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+						break;
+					case ICT_ServerReflexiveCandidate:
+					case ICT_PeerReflexiveCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+						break;
+					case ICT_RelayedCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+						break;
+				}
+			} else {
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 			}
 		}
 	} else {
