@@ -25,29 +25,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 @implementation LinphoneCoreSettingsStore
 
-
-- (void)handleMigration {
-	NSUserDefaults *oldconfig=[NSUserDefaults standardUserDefaults];
-	NSArray *allkeys=[[oldconfig dictionaryRepresentation] allKeys];
-    for(NSString* key in allkeys){
-        [LinphoneLogger log:LinphoneLoggerLog format:@"Migrating old config item %@ to in app settings.",key];
-        [self setObject:[oldconfig objectForKey:key] forKey:key];
-    }
-    [self synchronize];
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Migration done"];
-}
-
 - (id)init {
 	self = [super init];
 	if (self){
 		dict = [[NSMutableDictionary alloc] init];
 		changedDict = [[NSMutableDictionary alloc] init];
 		[self transformLinphoneCoreToKeys];
-        LinphoneCore *lc=[LinphoneManager getLc];
-		if (lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY,"config_migrated",0) == 0) {
-			[self handleMigration];
-			lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY,"config_migrated",1);
-		}
 	}
 	return self;
 }
@@ -125,6 +108,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setObject:@"" forKey:@"username_preference"];
         [self setObject:@"" forKey:@"domain_preference"];
         [self setObject:@"" forKey:@"proxy_preference"];
+        [self setObject:@"" forKey:@"password_preference"];
         [self setBool:FALSE forKey:@"outbound_proxy_preference"];
 	}
     

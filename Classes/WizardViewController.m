@@ -181,6 +181,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)reset {
     [self clearProxyConfig];
+    [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
+    
+    LinphoneCore *lc = [LinphoneManager getLc];
+    LCSipTransports transportValue={0};
+    if (linphone_core_get_sip_transports(lc, &transportValue)) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
+    }
+    transportValue.tls_port=0;
+    transportValue.tcp_port=0;
+    transportValue.udp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
+    if (linphone_core_set_sip_transports(lc, &transportValue)) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot set transport"];
+    }
+    
+    [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"sharing_server_preference"];
+    [[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"ice_preference"];
+    [[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
+    linphone_core_set_stun_server(lc, NULL);
+    linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
     [WizardViewController cleanTextField:welcomeView];
     [WizardViewController cleanTextField:choiceView];
     [WizardViewController cleanTextField:createAccountView];
@@ -342,10 +361,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([server compare:domain options:NSCaseInsensitiveSearch] != 0) {
         linphone_proxy_config_set_route(proxyCfg, [server UTF8String]);
     }
-	linphone_proxy_config_enable_register(proxyCfg, true);
+    int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
+    if (defaultExpire >= 0)
+        linphone_proxy_config_expires(proxyCfg, defaultExpire);
     if([domain compare:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] options:NSCaseInsensitiveSearch] == 0) {
         [self setDefaultSettings:proxyCfg];
     }
+    linphone_proxy_config_enable_register(proxyCfg, true);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
 	linphone_core_add_auth_info([LinphoneManager getLc], info);
