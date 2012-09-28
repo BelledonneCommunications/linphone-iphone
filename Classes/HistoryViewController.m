@@ -181,8 +181,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onDeleteClick:(id) event {
 	linphone_core_clear_call_logs([LinphoneManager getLc]);
 	[tableController loadData];
-	[editButton toggle];
-	[self onEditClick:nil];
+    if([editButton isSelected]) {
+        [editButton toggle];
+        [self onEditClick:nil];
+    }
 }
 
 @end

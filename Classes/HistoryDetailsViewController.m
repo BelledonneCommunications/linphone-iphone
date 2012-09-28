@@ -115,7 +115,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(update:) 
                                                  name:kLinphoneAddressBookUpdate
                                                object:nil];
-    [self update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -155,11 +154,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)update {
     // Don't update if callLog is null
-    if(callLog==NULL) {
+    if(callLog == NULL) {
         return;
     }
     
-	LinphoneAddress* addr; 
+	LinphoneAddress* addr = NULL;
 	if (callLog->dir == LinphoneCallIncoming) {
 		addr = callLog->from;
 	} else {
