@@ -154,6 +154,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
     
     [viewTapGestureRecognizer setCancelsTouchesInView:FALSE];
+    [viewTapGestureRecognizer setDelegate:self];
     [contentView addGestureRecognizer:viewTapGestureRecognizer];
     
     if([LinphoneManager runningOnIpad]) {
@@ -490,20 +491,59 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
-    [self.waitView setHidden:false];
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *domain = [WizardViewController findTextField:ViewElement_Domain  view:contentView].text;
-    [self addProxyConfig:username password:password domain:domain server:nil];
+    
+    
+    NSMutableString *errors = [NSMutableString string];
+    if ([username length] == 0) {
+        
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+    }
+    
+    if ([domain length] == 0) {
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a domain.\n", nil)]];
+    }
+    
+    if([errors length]) {
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                  otherButtonTitles:nil,nil];
+        [errorView show];
+        [errorView release];
+    } else {
+        [self.waitView setHidden:false];
+        [self addProxyConfig:username password:password domain:domain server:nil];
+    }
 }
 
 - (IBAction)onSignInClick:(id)sender {
-    [self.waitView setHidden:false];
     NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
-    [self addProxyConfig:username password:password
-                  domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-                  server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+    
+    NSMutableString *errors = [NSMutableString string];
+    if ([username length] == 0) {
+        
+        [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a username.\n", nil)]];
+    }
+    
+    if([errors length]) {
+        UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
+                                                            message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                  otherButtonTitles:nil,nil];
+        [errorView show];
+        [errorView release];
+    } else {
+        [self.waitView setHidden:false];
+        [self addProxyConfig:username password:password
+                      domain:[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
+                      server:[[LinphoneManager instance] lpConfigStringForKey:@"proxy" forSection:@"wizard"]];
+    }
 }
 
 - (IBAction)onRegisterClick:(id)sender {
@@ -730,6 +770,17 @@ static UICompositeViewDescription *compositeDescription = nil;
         [LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
     }
     view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
+}
+
+
+#pragma mark - UIGestureRecognizerDelegate Functions
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if ([touch.view isKindOfClass:[UIButton class]]) { //Avoid tap gesture on Button
+        [LinphoneUtils findAndResignFirstResponder:currentView];
+        return NO;
+    }
+    return YES;
 }
 
 @end

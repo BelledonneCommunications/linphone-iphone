@@ -21,7 +21,7 @@
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
 
-@interface WizardViewController : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate> {
+@interface WizardViewController : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate, UIGestureRecognizerDelegate> {
     @private
     UITextField *activeTextField;
     UIView *currentView;

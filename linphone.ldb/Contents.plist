@@ -11997,7 +11997,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-27T16:22:23Z</date>
+					<date>2012-09-28T08:39:17Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12007,7 +12007,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>6b28bbe0cc4362b29f1a00eec7d9ad2d
+					<string>974d882db652398dc5678a38298fec69
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -13585,6 +13585,62 @@ La cause était: %2$@</string>
 								<string>Photo library</string>
 								<key>fr</key>
 								<string>Album photos</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Please enter a doamin.
+</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Please enter a domain.
+</string>
+								<key>fr</key>
+								<string>Entrez un nom de domaine.
+</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Please enter a username.
+</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Please enter a username.
+</string>
+								<key>fr</key>
+								<string>Entrez un nom d'utilisateur.
+</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
