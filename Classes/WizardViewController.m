@@ -351,6 +351,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {
+    [self clearProxyConfig];
     if(server == nil) {
         server = domain;
     }
@@ -777,8 +778,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if ([touch.view isKindOfClass:[UIButton class]]) { //Avoid tap gesture on Button
-        [LinphoneUtils findAndResignFirstResponder:currentView];
-        return NO;
+        if([LinphoneUtils findAndResignFirstResponder:currentView]) {
+            [(UIButton*)touch.view sendActionsForControlEvents:UIControlEventTouchUpInside];
+            return NO;
+        }
     }
     return YES;
 }

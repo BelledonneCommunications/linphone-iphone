@@ -283,12 +283,15 @@ static PhoneMainView* phoneMainViewInstance=nil;
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
     // Show error
     if (state == LinphoneRegistrationFailed) {
-		NSString* lErrorMessage=nil;
-		if (linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
-			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings",nil);
-		} else if (linphone_proxy_config_get_error(cfg) == LinphoneReasonNoResponse) {
-			lErrorMessage = NSLocalizedString(@"SIP server unreachable",nil);
-		} 
+		NSString* lErrorMessage = nil;
+        LinphoneReason reason = linphone_proxy_config_get_error(cfg);
+		if (reason == LinphoneReasonBadCredentials) {
+			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings", nil);
+		} else if (reason == LinphoneReasonNoResponse) {
+			lErrorMessage = NSLocalizedString(@"SIP server unreachable", nil);
+		} else {
+            lErrorMessage = NSLocalizedString(@"Unknown error", nil);
+        }
 		
 		if (lErrorMessage != nil && linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { 
             //do not report network connection issue on registration

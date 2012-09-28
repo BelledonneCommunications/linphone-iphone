@@ -11997,7 +11997,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-28T08:39:17Z</date>
+					<date>2012-09-28T09:53:17Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12007,7 +12007,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>974d882db652398dc5678a38298fec69
+					<string>301ca0dd125a814aec815b3dce0b61e4
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -14222,6 +14222,31 @@ La cause était: %2$@</string>
 								<string>Unknown</string>
 								<key>fr</key>
 								<string>Inconnu</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Unknown error</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Unknown error</string>
+								<key>fr</key>
+								<string>Erreur inconnue</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

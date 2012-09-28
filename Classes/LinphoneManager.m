@@ -423,7 +423,7 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore* lc, LinphoneCal
 
 #pragma mark - Registration State Functions
 
--(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
+- (void)onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
     [LinphoneLogger logc:LinphoneLoggerLog format:"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message];
 	if (state==LinphoneRegistrationOk)
 		[LinphoneManager instance]->stopWaitingRegisters=TRUE;
