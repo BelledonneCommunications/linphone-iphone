@@ -22,7 +22,7 @@
 #import "UICompositeViewController.h"
 
 @interface UIImageScrollView : UIScrollView<UIScrollViewDelegate>
-
+    
 @property (nonatomic, retain) UIImage  *image;
 @property (readonly) IBOutlet UIImageView *imageView;
 

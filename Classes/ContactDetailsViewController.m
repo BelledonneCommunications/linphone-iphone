@@ -299,6 +299,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onBackClick:(id)event {
+    if([ContactSelection getSelectionMode] == ContactSelectionModeEdit) {
+        [ContactSelection setSelectionMode:ContactSelectionModeNone];
+    }
     [[PhoneMainView instance] popCurrentView];
 }
 

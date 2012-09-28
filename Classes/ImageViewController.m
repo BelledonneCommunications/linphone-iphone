@@ -30,7 +30,7 @@
 
 - (void)initUIImageScrollView {
     imageView = [[UIImageView alloc] init];
-    self.delegate = self; 
+    self.delegate = self;
     [self addSubview:imageView];
 }
 
@@ -70,10 +70,10 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
     // center the image as it becomes smaller than the size of the screen
     CGSize boundsSize = self.bounds.size;
     CGRect frameToCenter = imageView.frame;
+    
     
     // center horizontally
     if (frameToCenter.size.width < boundsSize.width)
@@ -87,6 +87,7 @@
     else
         frameToCenter.origin.y = 0;
     
+    
     imageView.frame = frameToCenter;
 }
 
@@ -94,10 +95,14 @@
 #pragma mark - Property Functions
 
 - (void)setImage:(UIImage *)aimage {
+    self.minimumZoomScale = 0;
+    self.zoomScale = 1;
+    
+    CGRect rect = CGRectMake(0, 0, aimage.size.width, aimage.size.height);
     imageView.image = aimage;
-    imageView.frame = CGRectMake(0, 0, aimage.size.width, aimage.size.height);
-    self.contentSize = aimage.size;
-    [self zoomToRect:imageView.bounds animated:FALSE];
+    imageView.frame = rect;
+    self.contentSize = rect.size;
+    [self zoomToRect:rect animated:FALSE];
     self.minimumZoomScale = self.zoomScale;
 }
 

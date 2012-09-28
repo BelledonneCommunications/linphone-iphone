@@ -217,7 +217,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     // Go to Contact details view
     ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
     if(controller != nil) {
-        if([ContactSelection getAddAddress] == nil) {
+        if([ContactSelection getSelectionMode] != ContactSelectionModeEdit) {
             [controller setContact:lPerson];
         } else {
             [controller editContact:lPerson address:[ContactSelection getAddAddress]];
