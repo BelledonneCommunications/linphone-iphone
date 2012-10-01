@@ -17,6 +17,7 @@
 			<string>IBUILabel</string>
 			<string>IBUIScrollView</string>
 			<string>IBUIView</string>
+			<string>IBUIWebView</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -38,15 +39,25 @@
 			</object>
 			<object class="IBUIScrollView" id="457997634">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">268</int>
+				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{320, 460}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<bool key="IBUIClipsSubviews">YES</bool>
 				<bool key="IBUIMultipleTouchEnabled">YES</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<double key="IBUIContentInset.top">0.0</double>
+				<double key="IBUIContentInset.bottom">10</double>
+				<double key="IBUIContentInset.left">0.0</double>
+				<double key="IBUIContentInset.right">0.0</double>
 				<bool key="IBUIAlwaysBounceVertical">YES</bool>
 				<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
+				<double key="IBUIScrollIndicatorInsets.top">0.0</double>
+				<double key="IBUIScrollIndicatorInsets.bottom">10</double>
+				<double key="IBUIScrollIndicatorInsets.left">0.0</double>
+				<double key="IBUIScrollIndicatorInsets.right">0.0</double>
 			</object>
 			<object class="IBUIView" id="775128611">
 				<reference key="NSNextResponder"/>
@@ -58,6 +69,7 @@
 						<int key="NSvFlags">311</int>
 						<string key="NSFrame">{{124, 20}, {72, 72}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="945733244"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">1</int>
@@ -70,9 +82,10 @@
 					</object>
 					<object class="IBUILabel" id="945733244">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 100}, {280, 50}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 100}, {300, 50}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="966549235"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
@@ -101,9 +114,10 @@
 					</object>
 					<object class="IBUILabel" id="55823705">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 200}, {280, 44}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 200}, {300, 44}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="697092436"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -129,9 +143,10 @@
 					</object>
 					<object class="IBUILabel" id="966549235">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 150}, {280, 21}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 150}, {300, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="132342957"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
@@ -157,9 +172,10 @@
 					</object>
 					<object class="IBUILabel" id="132342957">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 172}, {280, 21}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 172}, {300, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="55823705"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
@@ -178,15 +194,17 @@
 					</object>
 					<object class="IBUILabel" id="28600489">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 300}, {280, 21}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 300}, {300, 21}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="364833627"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">© 2010 Belledonne Communications </string>
+						<string key="IBUIText">© 2010-2012 Belledonne Communications </string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -201,9 +219,10 @@
 					</object>
 					<object class="IBUILabel" id="697092436">
 						<reference key="NSNextResponder" ref="775128611"/>
-						<int key="NSvFlags">319</int>
-						<string key="NSFrame">{{20, 244}, {280, 36}}</string>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 244}, {300, 36}}</string>
 						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="28600489"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
@@ -219,11 +238,23 @@
 						<reference key="IBUIFontDescription" ref="151194520"/>
 						<reference key="IBUIFont" ref="901921461"/>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
-						<double key="preferredMaxLayoutWidth">280</double>
+						<double key="preferredMaxLayoutWidth">300</double>
+					</object>
+					<object class="IBUIWebView" id="364833627">
+						<reference key="NSNextResponder" ref="775128611"/>
+						<int key="NSvFlags">314</int>
+						<string key="NSFrame">{{10, 380}, {300, 210}}</string>
+						<reference key="NSSuperview" ref="775128611"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIDataDetectorTypes">2</int>
 					</object>
 				</object>
-				<string key="NSFrameSize">{320, 341}</string>
+				<string key="NSFrameSize">{320, 600}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="97290309"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
@@ -276,6 +307,14 @@
 					</object>
 					<int key="connectionID">68</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">licensesView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="364833627"/>
+					</object>
+					<int key="connectionID">70</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -316,9 +355,10 @@
 							<reference ref="945733244"/>
 							<reference ref="132342957"/>
 							<reference ref="55823705"/>
-							<reference ref="28600489"/>
 							<reference ref="966549235"/>
 							<reference ref="697092436"/>
+							<reference ref="28600489"/>
+							<reference ref="364833627"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -326,7 +366,7 @@
 						<int key="objectID">61</int>
 						<reference key="object" ref="697092436"/>
 						<reference key="parent" ref="775128611"/>
-						<string key="objectName">licenceLabel</string>
+						<string key="objectName">licenseLabel</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">58</int>
@@ -364,6 +404,12 @@
 						<reference key="parent" ref="775128611"/>
 						<string key="objectName">linphoneCoreVersionLabel</string>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">69</int>
+						<reference key="object" ref="364833627"/>
+						<reference key="parent" ref="775128611"/>
+						<string key="objectName">licenseView</string>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -383,12 +429,14 @@
 					<string>62.IBPluginDependency</string>
 					<string>65.IBPluginDependency</string>
 					<string>66.IBPluginDependency</string>
+					<string>69.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>AboutViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIResponder</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -413,9 +461,92 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">68</int>
+			<int key="maxID">70</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">AboutViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">onLinkTap:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">onLinkTap:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">onLinkTap:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>contentView</string>
+							<string>licensesView</string>
+							<string>linkLabel</string>
+							<string>linkTapGestureRecognizer</string>
+							<string>linphoneCoreVersionLabel</string>
+							<string>linphoneIphoneVersionLabel</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIView</string>
+							<string>UIWebView</string>
+							<string>UILabel</string>
+							<string>UITapGestureRecognizer</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>contentView</string>
+							<string>licensesView</string>
+							<string>linkLabel</string>
+							<string>linkTapGestureRecognizer</string>
+							<string>linphoneCoreVersionLabel</string>
+							<string>linphoneIphoneVersionLabel</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">contentView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">licensesView</string>
+								<string key="candidateClassName">UIWebView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">linkLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">linkTapGestureRecognizer</string>
+								<string key="candidateClassName">UITapGestureRecognizer</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">linphoneCoreVersionLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">linphoneIphoneVersionLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/AboutViewController.h</string>
+					</object>
+				</object>
+			</object>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencies">

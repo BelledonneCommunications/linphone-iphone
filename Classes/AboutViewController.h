@@ -21,13 +21,14 @@
 
 #import "UICompositeViewController.h"
 
-@interface AboutViewController : UIViewController<UICompositeViewDelegate> {
+@interface AboutViewController : UIViewController<UICompositeViewDelegate, UIWebViewDelegate> {
 }
 
 @property (nonatomic, retain) IBOutlet UILabel *linphoneIphoneVersionLabel;
 @property (nonatomic, retain) IBOutlet UILabel *linphoneCoreVersionLabel;
 @property (nonatomic, retain) IBOutlet UIView *contentView;
 @property (nonatomic, retain) IBOutlet UILabel *linkLabel;
+@property (nonatomic, retain) IBOutlet UIWebView *licensesView;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
 
 - (IBAction)onLinkTap:(id)sender;

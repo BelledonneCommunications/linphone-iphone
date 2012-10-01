@@ -29,6 +29,7 @@
 @synthesize contentView;
 @synthesize linkTapGestureRecognizer;
 @synthesize linkLabel;
+@synthesize licensesView;
 
 
 #pragma mark - Lifecycle Functions
@@ -47,6 +48,7 @@
     [contentView release];
     [linkTapGestureRecognizer release];
     [linkLabel release];
+    [licensesView release];
     
     [super dealloc];
 }
@@ -70,6 +72,15 @@
     if([LinphoneManager runningOnIpad]) {
         [LinphoneUtils adjustFontSize:self.view mult:2.22f];
     }
+    
+    [AboutViewController removeBackground:licensesView];
+    
+    // Create a request to the resource
+    NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:[LinphoneManager bundleFile:@"licenses.html"]]] ;
+    // Load the resource using the request
+    [licensesView setDelegate:self];
+    [licensesView loadRequest:request];
+    [[AboutViewController defaultScrollView:licensesView] setScrollEnabled:FALSE];
 }
 
 
@@ -93,10 +104,66 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 
+#pragma mark -
+
++ (void)removeBackground:(UIView *)view {
+    for (UIView *subview in [view subviews]) {
+        [subview setOpaque:NO];
+        [subview setBackgroundColor:[UIColor clearColor]];
+    }
+    [view setOpaque:NO];
+    [view setBackgroundColor:[UIColor clearColor]];
+}
+
++ (UIScrollView *)defaultScrollView:(UIWebView *)webView {
+    UIScrollView *scrollView = nil;
+    
+    if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
+        return webView.scrollView;
+    }  else {
+        for (UIView *subview in [webView subviews]) {
+            if ([subview isKindOfClass:[UIScrollView class]]) {
+                scrollView = (UIScrollView *)subview;
+            }
+        }
+    }
+    return scrollView;
+}
+
+
 #pragma mark - Action Functions
 
 - (IBAction)onLinkTap:(id)sender {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:linkLabel.text]];
 }
+
+
+#pragma mark - UIWebViewDelegate Functions
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    CGSize size = [webView sizeThatFits:CGSizeMake(self.view.bounds.size.width, 10000.0f)];
+    float diff = size.height - webView.bounds.size.height;
+    
+    UIScrollView *scrollView = (UIScrollView *)self.view;
+    CGRect contentFrame = [contentView bounds];
+    contentFrame.size.height += diff;
+    [contentView setAutoresizesSubviews:FALSE];
+    [contentView setFrame:contentFrame];
+    [contentView setAutoresizesSubviews:TRUE];
+    [scrollView setContentSize:contentFrame.size];
+    CGRect licensesViewFrame = [licensesView frame];
+    licensesViewFrame.size.height += diff;
+    [licensesView setFrame:licensesViewFrame];
+}
+
+- (BOOL)webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+    if (inType == UIWebViewNavigationTypeLinkClicked) {
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+    }
+    
+    return YES;
+}
+
 
 @end

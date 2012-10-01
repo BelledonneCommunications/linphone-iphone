@@ -703,6 +703,8 @@
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
 		D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
+		D37E3ED01619DCC50087659A /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = D37E3ECF1619DCC50087659A /* licenses.html */; };
+		D37E3ED11619DCC50087659A /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = D37E3ECF1619DCC50087659A /* licenses.html */; };
 		D37EE10916032DA4003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
 		D37EE10A16032DA4003608A6 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
 		D37EE10B16032DC2003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
@@ -1846,6 +1848,7 @@
 		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CAAnimation+Blocks.h"; sourceTree = "<group>"; };
 		D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CAAnimation+Blocks.m"; sourceTree = "<group>"; };
+		D37E3ECF1619DCC50087659A /* licenses.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = licenses.html; path = Resources/licenses.html; sourceTree = "<group>"; };
 		D37EE10F16035793003608A6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ImageViewController.xib; sourceTree = "<group>"; };
 		D37EE11116036197003608A6 /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = fr.lproj/ImageViewController.xib; sourceTree = "<group>"; };
 		D37EE160160377D7003608A6 /* DTActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTActionSheet.h; sourceTree = "<group>"; };
@@ -3141,6 +3144,7 @@
 				D3432A70158A45AF001C6B0B /* led_disconnected.png */,
 				D3432A5D158A4446001C6B0B /* led_error.png */,
 				D3432A6F158A45AF001C6B0B /* led_inprogress.png */,
+				D37E3ECF1619DCC50087659A /* licenses.html */,
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
 				22058C70116E305000B08DDD /* linphone_icon_57.png */,
@@ -4176,6 +4180,7 @@
 				D3D52A871614495300DEB00A /* decline_default~ipad.png in Resources */,
 				D3D52A891614495300DEB00A /* decline_over_landscape~ipad.png in Resources */,
 				D3D52A8B1614495300DEB00A /* decline_over~ipad.png in Resources */,
+				D37E3ED01619DCC50087659A /* licenses.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4677,6 +4682,7 @@
 				D3D52A881614495300DEB00A /* decline_default~ipad.png in Resources */,
 				D3D52A8A1614495300DEB00A /* decline_over_landscape~ipad.png in Resources */,
 				D3D52A8C1614495300DEB00A /* decline_over~ipad.png in Resources */,
+				D37E3ED11619DCC50087659A /* licenses.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
