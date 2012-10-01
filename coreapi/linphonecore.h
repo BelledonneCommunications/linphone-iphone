@@ -343,7 +343,7 @@ typedef enum _LinphoneCallState{
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
 	LinphoneCallUpdatedByRemote, /**<The call's parameters change is requested by remote end, used for example when video is added by remote */
 	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
-	LinphoneCallUpdated, /**<The remote accepted the call update initiated by us */
+	LinphoneCallUpdating, /**<A call update has been initiated by us */
 	LinphoneCallReleased /**< The call object is no more retained by the core */
 } LinphoneCallState;
 

@@ -520,8 +520,8 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallUpdatedByRemote";
 		case LinphoneCallIncomingEarlyMedia:
 			return "LinphoneCallIncomingEarlyMedia";
-		case LinphoneCallUpdated:
-			return "LinphoneCallUpdated";
+		case LinphoneCallUpdating:
+			return "LinphoneCallUpdating";
 		case LinphoneCallReleased:
 			return "LinphoneCallReleased";
 	}
@@ -1828,7 +1828,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			linphone_call_delete_ice_session(call);
 		}
 		switch (call->state) {
-			case LinphoneCallStreamsRunning:
+			case LinphoneCallUpdating:
 				linphone_core_start_update_call(call->core, call);
 				break;
 			case LinphoneCallUpdatedByRemote:
@@ -1838,9 +1838,11 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
-			default:
+			case LinphoneCallIdle:
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_notify_incoming_call(call->core, call);
+				break;
+			default:
 				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
