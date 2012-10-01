@@ -624,10 +624,13 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ms_error("Fail to get local ip");
 		return -1;
 	}
-	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
-	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
-	call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
-	if (call->params.has_video && (video_check_list != NULL)) {
+	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
+	}
+	if (call->params.has_video && (video_check_list != NULL)
+		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
