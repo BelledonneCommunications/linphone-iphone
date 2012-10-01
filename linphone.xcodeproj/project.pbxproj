@@ -701,6 +701,8 @@
 		D37DC6C21594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */; };
 		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
+		D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
+		D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
 		D37EE10916032DA4003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
 		D37EE10A16032DA4003608A6 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
 		D37EE10B16032DC2003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
@@ -1842,6 +1844,8 @@
 		D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneCoreSettingsStore.h; sourceTree = "<group>"; };
 		D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneCoreSettingsStore.m; sourceTree = "<group>"; };
 		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CAAnimation+Blocks.h"; sourceTree = "<group>"; };
+		D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CAAnimation+Blocks.m"; sourceTree = "<group>"; };
 		D37EE10F16035793003608A6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ImageViewController.xib; sourceTree = "<group>"; };
 		D37EE11116036197003608A6 /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = fr.lproj/ImageViewController.xib; sourceTree = "<group>"; };
 		D37EE160160377D7003608A6 /* DTActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTActionSheet.h; sourceTree = "<group>"; };
@@ -3390,6 +3394,7 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D37E3ECA1619C27A0087659A /* CAAnimationBlocks */,
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
 				D3807FB615C28940005BE9BC /* DCRoundSwitch */,
@@ -3425,6 +3430,16 @@
 				D3554ED115CA79AA00478841 /* libXMLRPC.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D37E3ECA1619C27A0087659A /* CAAnimationBlocks */ = {
+			isa = PBXGroup;
+			children = (
+				D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */,
+				D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */,
+			);
+			name = CAAnimationBlocks;
+			path = Utils/CAAnimationBlocks;
 			sourceTree = "<group>";
 		};
 		D37EE15F160377D7003608A6 /* DTFoundation */ = {
@@ -4791,6 +4806,7 @@
 				D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */,
 				D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
+				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4888,6 +4904,7 @@
 				D35E91F5160CA10B0023116B /* UILinphoneTextField.m in Sources */,
 				D35E91F9160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 				D306459F1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
+				D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

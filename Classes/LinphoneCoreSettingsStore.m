@@ -521,7 +521,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
     // Post event
     NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
     
     return YES;
 }

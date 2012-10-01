@@ -20,8 +20,14 @@
 #import "UIMainBar.h"
 #import "PhoneMainView.h"
 #import "ChatModel.h"
+#import "CAAnimation+Blocks.h"
 
 @implementation UIMainBar
+
+
+static NSString * const kBounceAnimation = @"bounce";
+static NSString * const kAppearAnimation = @"appear";
+static NSString * const kDisappearAnimation = @"disappear";
 
 @synthesize historyButton;
 @synthesize contactsButton;
@@ -73,6 +79,10 @@
                                              selector:@selector(textReceived:) 
                                                  name:kLinphoneTextReceived
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsUpdate:)
+                                                 name:kLinphoneSettingsUpdate
+                                               object:nil];
     [self update:FALSE];
 }
 
@@ -88,6 +98,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneTextReceived
                                                   object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                 name:kLinphoneSettingsUpdate
+                                               object:nil];
 }
 
 - (void)viewDidLoad {
@@ -213,7 +226,23 @@
     [self updateView:[[PhoneMainView instance] firstView]];
 }
 
-- (void)textReceived:(NSNotification*)notif {  
+- (void)settingsUpdate:(NSNotification*)notif {
+    if([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == false) {
+        [self stopBounceAnimation:kBounceAnimation target:chatNotificationView];
+        chatNotificationView.layer.transform = CATransform3DIdentity;
+        [self stopBounceAnimation:kBounceAnimation target:historyNotificationView];
+        historyNotificationView.layer.transform = CATransform3DIdentity;
+    } else {
+        if(![chatNotificationView isHidden] && [chatNotificationView.layer animationForKey:kBounceAnimation] == nil) {
+            [self startBounceAnimation:kBounceAnimation target:chatNotificationView];
+        }
+        if(![historyNotificationView isHidden] && [historyNotificationView.layer animationForKey:kBounceAnimation] == nil) {
+            [self startBounceAnimation:kBounceAnimation target:historyNotificationView];
+        }
+    }
+}
+
+- (void)textReceived:(NSNotification*)notif {
     [self updateUnreadMessage:[ChatModel unreadMessages] appear:TRUE];
 }
 
@@ -234,21 +263,25 @@
     if (unreadMessage > 0) {
         if([chatNotificationView isHidden]) {
             [chatNotificationView setHidden:FALSE];
-            if(appear) {
-                [self appearAnimation:@"appear" target:chatNotificationView completion:^(BOOL finished){
-                    [self startBounceAnimation:@"bounce" target:chatNotificationView];
-                }];
-            } else {
-                [self startBounceAnimation:@"bounce" target:chatNotificationView];
+            if([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+                if(appear) {
+                    [self appearAnimation:kAppearAnimation target:chatNotificationView completion:^(BOOL finished){
+                        [self startBounceAnimation:kBounceAnimation target:chatNotificationView];
+                        [chatNotificationView.layer removeAnimationForKey:kAppearAnimation];
+                    }];
+                } else {
+                    [self startBounceAnimation:kBounceAnimation target:chatNotificationView];
+                }
             }
         }
         [chatNotificationLabel setText:[NSString stringWithFormat:@"%i", unreadMessage]];
     } else {
         if(![chatNotificationView isHidden]) {
-            [self stopBounceAnimation:@"bounce" target:chatNotificationView];
+            [self stopBounceAnimation:kBounceAnimation target:chatNotificationView];
             if(appear) {
-                [self disappearAnimation:@"disappear" target:chatNotificationView completion:^(BOOL finished){
+                [self disappearAnimation:kDisappearAnimation target:chatNotificationView completion:^(BOOL finished){
                     [chatNotificationView setHidden:TRUE];
+                    [chatNotificationView.layer removeAnimationForKey:kDisappearAnimation];
                 }];
             } else {
                 [chatNotificationView setHidden:TRUE];
@@ -261,21 +294,25 @@
     if (missedCall > 0) {
         if([historyNotificationView isHidden]) {
             [historyNotificationView setHidden:FALSE];
-            if(appear) {
-                [self appearAnimation:@"appear" target:historyNotificationView completion:^(BOOL finished){
-                    [self startBounceAnimation:@"bounce" target:historyNotificationView];
-                }];
-            } else {
-                [self startBounceAnimation:@"bounce" target:historyNotificationView];
+            if([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+                if(appear) {
+                    [self appearAnimation:kAppearAnimation target:historyNotificationView completion:^(BOOL finished){
+                        [self startBounceAnimation:kBounceAnimation target:historyNotificationView];
+                        [historyNotificationView.layer removeAnimationForKey:kAppearAnimation];
+                    }];
+                } else {
+                    [self startBounceAnimation:kBounceAnimation target:historyNotificationView];
+                }
             }
         }
         [historyNotificationLabel setText:[NSString stringWithFormat:@"%i", missedCall]];
     } else {
         if(![historyNotificationView isHidden]) {
-            [self stopBounceAnimation:@"bounce" target:historyNotificationView];
+            [self stopBounceAnimation:kBounceAnimation target:historyNotificationView];
             if(appear) {
-                [self disappearAnimation:@"disappear" target:historyNotificationView completion:^(BOOL finished){
-                    
+                [self disappearAnimation:kDisappearAnimation target:historyNotificationView completion:^(BOOL finished){
+                    [historyNotificationView setHidden:TRUE];
+                    [historyNotificationView.layer removeAnimationForKey:kDisappearAnimation];
                 }];
             } else {
                 [historyNotificationView setHidden:TRUE];
@@ -285,40 +322,38 @@
 }
 
 - (void)appearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
-    target.layer.transform = CATransform3DMakeScale(0.01f, 0.01f, 1.0f);
-    [UIView animateWithDuration:0.4 
-                          delay:0 
-                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
-                     animations:^{
-                         target.layer.transform = CATransform3DIdentity;
-                     }
-                     completion:completion];
+    CABasicAnimation *appear = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    appear.duration = 0.4;
+    appear.fromValue = [NSNumber numberWithDouble:0.0f];
+    appear.toValue = [NSNumber numberWithDouble:1.0f];
+    appear.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+    appear.fillMode = kCAFillModeForwards;
+    appear.removedOnCompletion = NO;
+    [appear setCompletion:completion];
+    [target.layer addAnimation:appear forKey:animationID];
 }
 
 - (void)disappearAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
-    CATransform3D startCGA = target.layer.transform;
-    [UIView animateWithDuration:0.4 
-                          delay:0 
-                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
-                     animations:^{
-                         target.layer.transform = CATransform3DConcat(startCGA, CATransform3DMakeScale(0.01f, 0.01f, 1.0f));
-                     }
-                     completion:completion];
+    CABasicAnimation *disappear = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    disappear.duration = 0.4;
+    disappear.fromValue = [NSNumber numberWithDouble:1.0f];
+    disappear.toValue = [NSNumber numberWithDouble:0.0f];
+    disappear.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+    disappear.fillMode = kCAFillModeForwards;
+    disappear.removedOnCompletion = NO;
+    [disappear setCompletion:completion];
+    [target.layer addAnimation:disappear forKey:animationID];
 }
 
-- (void)startBounceAnimation:(NSString *)animationID target:(UIView *)target { 
-    CATransform3D startCGA = target.layer.transform;
-    [UIView animateWithDuration: 0.3
-                          delay: 0
-                        options: UIViewAnimationOptionRepeat | 
-     UIViewAnimationOptionAutoreverse |
-     UIViewAnimationOptionAllowUserInteraction | 
-     UIViewAnimationOptionCurveEaseIn
-                     animations:^{
-                         target.layer.transform = CATransform3DConcat(startCGA, CATransform3DMakeTranslation(0, 8, 0));
-                     }
-                     completion:^(BOOL finished){
-                     }];
+- (void)startBounceAnimation:(NSString *)animationID target:(UIView *)target {
+    CABasicAnimation *bounce = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
+    bounce.duration = 0.3;
+    bounce.fromValue = [NSNumber numberWithDouble:0.0f];
+    bounce.toValue = [NSNumber numberWithDouble:8.0f];
+    bounce.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    bounce.autoreverses = TRUE;
+    bounce.repeatCount = HUGE_VALF;
+    [target.layer addAnimation:bounce forKey:animationID];
     
 }
 
