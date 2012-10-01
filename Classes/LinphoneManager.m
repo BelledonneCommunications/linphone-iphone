@@ -372,7 +372,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 	[ct release];
 	
 	if(state == LinphoneCallReleased) {
-        if(linphone_call_get_user_pointer(call) != NULL) {
+        LinphoneCallAppData* data = linphone_call_get_user_pointer(call);
+        if(data != NULL) {
+            [data->userInfos release];
             free (linphone_call_get_user_pointer(call));
             linphone_call_set_user_pointer(call, NULL);
         }
