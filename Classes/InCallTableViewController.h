@@ -25,13 +25,9 @@
 
 @interface InCallTableViewController : UITableViewController {
     @private
-    NSMutableDictionary* callCellData;
     NSTimer *updateTime;
 }
 
-- (void)removeCallData:(LinphoneCall*) call;
-- (UICallCellData*)addCallData:(LinphoneCall*) call;
-- (UICallCellData*)getCallData:(LinphoneCall*) call;
 - (void)minimizeAll;
 - (void)maximizeAll;
 

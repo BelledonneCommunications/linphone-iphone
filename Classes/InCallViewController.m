@@ -234,14 +234,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(call == NULL) {
         return;
     }
-    
-    // Handle data associated with the call
-    if(state == LinphoneCallReleased) {
-        [callTableController removeCallData: call];
-    } else {
-        [callTableController addCallData: call];
-    }
-    
+
 	switch (state) {					
 		case LinphoneCallIncomingReceived: 
 		case LinphoneCallOutgoingInit: 

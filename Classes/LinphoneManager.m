@@ -47,7 +47,7 @@ static LinphoneManager* theLinphoneManager = nil;
 
 const char *const LINPHONERC_APPLICATION_KEY = "app";
 
-NSString *const kLinphoneCoreUpdate = @"kLinphoneCoreUpdate";
+NSString *const kLinphoneCoreUpdate = @"LinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
@@ -376,12 +376,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             free (linphone_call_get_user_pointer(call));
             linphone_call_set_user_pointer(call, NULL);
         }
-        return;
     }
     if (!linphone_call_get_user_pointer(call)) {
         LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
         data->batteryWarningShown = FALSE;
         data->notification = nil;
+        data->userInfos = [[NSMutableDictionary alloc] init];
         linphone_call_set_user_pointer(call, data);
     }
     

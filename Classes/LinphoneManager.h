@@ -67,6 +67,7 @@ struct NetworkReachabilityContext {
 typedef struct _LinphoneCallAppData {
     bool_t batteryWarningShown;
     UILocalNotification *notification;
+    NSMutableDictionary *userInfos;
 } LinphoneCallAppData;
 
 typedef struct _LinphoneManagerSounds {

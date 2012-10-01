@@ -23,8 +23,9 @@
 #import "LinphoneManager.h"
 
 
-
 @implementation InCallTableViewController
+
+static NSString *const kLinphoneInCallCellData = @"LinphoneInCallCellData";
 
 enum TableSection {
     ConferenceSection = 0,
@@ -34,7 +35,6 @@ enum TableSection {
 #pragma mark - Lifecycle Functions
 
 - (void)initInCallTableViewController {
-    callCellData = [[NSMutableDictionary alloc] init];
 }
 
 - (id)init{
@@ -62,8 +62,6 @@ enum TableSection {
 }	
 
 - (void)dealloc {
-    [callCellData removeAllObjects];
-    [callCellData release];
     [super dealloc];
 }
 
@@ -134,10 +132,9 @@ enum TableSection {
 - (void)removeCallData:(LinphoneCall*) call {
     // Remove data associated with the call
     if(call != NULL) {
-        NSValue *value = [NSValue valueWithPointer:call];
-        UICallCellData * data = [callCellData objectForKey:value];
-        if(data == nil) {
-            [callCellData removeObjectForKey:value];
+        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        if(appData != NULL) {
+            [appData->userInfos removeObjectForKey:kLinphoneInCallCellData];
         }
     }
 }
@@ -146,11 +143,10 @@ enum TableSection {
     // Handle data associated with the call
     UICallCellData * data = nil;
     if(call != NULL) {
-        NSValue *value = [NSValue valueWithPointer:call];
-        data = [callCellData objectForKey:value];
-        if(data == nil) {
+        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        if(appData != NULL) {
             data = [[UICallCellData alloc] init:call];
-            [callCellData setObject:data forKey:value];
+            [appData->userInfos setObject:data forKey:kLinphoneInCallCellData];
         }
     }
     return data;
@@ -160,8 +156,10 @@ enum TableSection {
     // Handle data associated with the call
     UICallCellData * data = nil;
     if(call != NULL) {
-        NSValue *value = [NSValue valueWithPointer:call];
-        data = [callCellData objectForKey:value];
+        LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        if(appData != NULL) {
+            data = [appData->userInfos objectForKey:kLinphoneInCallCellData];
+        }
     }
     return data;
 }
@@ -178,17 +176,21 @@ enum TableSection {
 }
 
 - (void)minimizeAll {
-    for(id key in callCellData) {
-        UICallCellData *data = [callCellData objectForKey:key];
+    const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+    while(list != NULL) {
+        UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
         data->minimize = true;
+        list = list->next;
     }
     [[self tableView] reloadData];
 }
 
 - (void)maximizeAll {
-    for(id key in callCellData) {
-        UICallCellData *data = [callCellData objectForKey:key];
+    const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+    while(list != NULL) {
+        UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
         data->minimize = false;
+        list = list->next;
     }
     [[self tableView] reloadData];
 }
@@ -308,7 +310,7 @@ enum TableSection {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     bool inConference = indexPath.section == ConferenceSection;
     LinphoneCall* call = [InCallTableViewController retrieveCallAtIndex:indexPath.row inConference:inConference];
-    UICallCellData* data = [callCellData objectForKey:[NSValue valueWithPointer:call]];
+    UICallCellData* data = [self getCallData:call];
     if(data != nil &&data->minimize)
         return [UICallCell getMinimizedHeight];
     return [UICallCell getMaximizedHeight];
