@@ -145,7 +145,8 @@ enum TableSection {
     if(call != NULL) {
         LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
         if(appData != NULL && [appData->userInfos objectForKey:kLinphoneInCallCellData] == nil) {
-            [appData->userInfos setObject:[[UICallCellData alloc] init:call] forKey:kLinphoneInCallCellData];
+            data = [[UICallCellData alloc] init:call];
+            [appData->userInfos setObject:data forKey:kLinphoneInCallCellData];
         }
     }
     return data;
