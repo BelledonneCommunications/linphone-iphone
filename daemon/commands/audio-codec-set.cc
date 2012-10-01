@@ -1,6 +1,7 @@
 #include "audio-codec-set.h"
 
 /*hack, until this function comes to linphonecore*/
+#define _payload_type_get_number(pt)	((long)(pt)->user_data)
 #define _payload_type_set_number(pt,n)	(pt)->user_data=(void*)(long)(n)
 
 using namespace std;
@@ -71,7 +72,11 @@ void AudioCodecSetCommand::exec(Daemon *app, const char *args) {
 				if (conflict) {
 					app->sendResponse(Response("New payload type number is already used.", Response::Error));
 				} else {
-					_payload_type_set_number(payload, atoi(value.c_str()));
+					int idx = atoi(value.c_str());
+					long old_idx = _payload_type_get_number(payload);
+					_payload_type_set_number(payload, idx);
+					rtp_profile_set_payload(&av_profile, idx, payload);
+					rtp_profile_clear_payload(&av_profile, old_idx);
 					app->sendResponse(PayloadTypeResponse(app->getCore(), payload, index));
 				}
 				return;
