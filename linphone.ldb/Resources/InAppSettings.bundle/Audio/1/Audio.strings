@@ -1,6 +1,9 @@
 /* Codecs */
 "Codecs" = "Codecs";
 
+/* AMR */
+"AMR" = "AMR";
+
 /* Speex 16Khz */
 "Speex 16Khz" = "Speex 16Khz";
 
@@ -15,6 +18,9 @@
 
 /* G722 */
 "G722" = "G722";
+
+/* G729 */
+"G729" = "G729";
 
 /* GSM */
 "GSM" = "GSM";

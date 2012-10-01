@@ -16209,7 +16209,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:05:26Z</date>
+					<date>2012-10-01T10:31:40Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -16217,9 +16217,9 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
-					<string>e3ec0c0a4b3e250fec1852916b6b69ac
+					<string>d07bfbef0b1c424572d4ab830553e0d6
 </string>
 					<key>name</key>
 					<string>Audio.strings</string>
@@ -16246,6 +16246,29 @@ Raison: %2$s</string>
 								<string>Codecs</string>
 								<key>fr</key>
 								<string>Codecs</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>AMR</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>AMR</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>AMR</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -16361,6 +16384,29 @@ Raison: %2$s</string>
 							<dict>
 								<key>en</key>
 								<string>G722</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>G729</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>G729</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>G729</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
