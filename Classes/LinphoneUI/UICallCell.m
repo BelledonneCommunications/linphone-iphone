@@ -464,6 +464,10 @@
 
 
 - (void)updateDetailsView {
+    if(data == nil || data->call == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        return;
+    }
     if(data->view == UICallCellOtherView_Avatar && avatarView.isHidden) {
         [self->avatarView setHidden:FALSE];
         [self->audioStatsView setHidden:TRUE];
@@ -507,33 +511,35 @@
 
 - (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender {
     CATransition* trans = nil;
-    if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
-        if(data->view == UICallCellOtherView_MAX - 1) {
-            data->view = 0;
-        } else {
-            ++data->view;
+    if(data != nil) {
+        if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+            if(data->view == UICallCellOtherView_MAX - 1) {
+                data->view = 0;
+            } else {
+                ++data->view;
+            }
+            trans = [CATransition animation];
+            [trans setType:kCATransitionPush];
+            [trans setDuration:0.35];
+            [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+            [trans setSubtype:kCATransitionFromRight];
+        } else if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+            if(data->view == 0) {
+                data->view = UICallCellOtherView_MAX - 1;
+            } else {
+                --data->view;
+            }
+            trans = [CATransition animation];
+            [trans setType:kCATransitionPush];
+            [trans setDuration:0.35];
+            [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+            [trans setSubtype:kCATransitionFromLeft];
         }
-        trans = [CATransition animation];
-        [trans setType:kCATransitionPush];
-        [trans setDuration:0.35];
-        [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-        [trans setSubtype:kCATransitionFromRight];
-    } else if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
-        if(data->view == 0) {
-            data->view = UICallCellOtherView_MAX - 1;
-        } else {
-            --data->view;
+        if(trans) {
+            [otherView.layer removeAnimationForKey:@"transition"];
+            [otherView.layer addAnimation:trans forKey:@"transition"];
+            [self updateDetailsView];
         }
-        trans = [CATransition animation];
-        [trans setType:kCATransitionPush];
-        [trans setDuration:0.35];
-        [trans setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-        [trans setSubtype:kCATransitionFromLeft];
-    }
-    if(trans) {
-        [otherView.layer removeAnimationForKey:@"transition"];
-        [otherView.layer addAnimation:trans forKey:@"transition"];
-        [self updateDetailsView];
     }
 }
 
