@@ -20,6 +20,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 		AudioStream *stream = audio_stream_new(local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
 		if (audio_stream_start_now(stream, &av_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller) != 0) {
 			app->sendResponse(Response("Error during audio stream creation."));
+			return;
 		}
 		ostringstream ostr;
 		ostr << "Id: " << app->updateAudioStreamId(stream) << "\n";
