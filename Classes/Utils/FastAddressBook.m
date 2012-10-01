@@ -111,8 +111,16 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     if ((self = [super init]) != nil) {
         addressBookMap  = [[NSMutableDictionary alloc] init];
         addressBook = ABAddressBookCreate();
-        ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
-        [self loadData];
+		ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+		if (ABAddressBookGetAuthorizationStatus && ABAddressBookGetAuthorizationStatus() !=  kABAuthorizationStatusNotDetermined) {
+			ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+				if (granted) [self loadData];
+			});
+		} else {
+			[self loadData];
+		}
+       
+        
     }
     return self;
 }
