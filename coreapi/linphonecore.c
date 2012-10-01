@@ -1916,7 +1916,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
 						,linphone_core_get_stun_server(lc));
 				linphone_call_delete_ice_session(call);
-				linphone_call_stop_media_streams(call);
+				linphone_call_stop_media_streams_for_ice_gathering(call);
 			}
 			linphone_core_start_invite(lc,call);
 		}
@@ -2379,7 +2379,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		if (linphone_core_gather_ice_candidates(lc,call)<0) {
 			/* Ice candidates gathering failed, proceed with the call anyway. */
 			linphone_call_delete_ice_session(call);
-			linphone_call_stop_media_streams(call);
+			linphone_call_stop_media_streams_for_ice_gathering(call);
 		} else {
 			use_ice = TRUE;
 		}
@@ -2678,6 +2678,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		ms_warning("Video isn't supported in conference");
 		call->params.has_video = FALSE;
 	}
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
 	call->camera_active=call->params.has_video;
 	update_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
@@ -2791,19 +2792,20 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	if (contact)
 		sal_op_set_contact(call->op,contact);
 
+	if (params){
+		call->params=*params;
+		call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
+		call->camera_active=call->params.has_video;
+		update_local_media_description(lc,call);
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+	
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
 	if (!was_ringing && call->audiostream->ticker==NULL){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
-	if (params){
-		call->params=*params;
-		call->camera_active=call->params.has_video;
-		update_local_media_description(lc,call);
-		sal_call_set_local_media_description(call->op,call->localdesc);
-	}
-	
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
