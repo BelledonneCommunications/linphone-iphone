@@ -79,7 +79,7 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
-	
+	bool_t low_bandwidth;
 };
     
 typedef struct _CallCallbackObj

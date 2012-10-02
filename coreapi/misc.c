@@ -586,7 +586,7 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 			params->up_bw=params->down_bw=edge_bw;
 			params->up_ptime=params->down_ptime=edge_ptime;
 			params->has_video=FALSE;
-			
+			params->low_bandwidth=TRUE;
 		}/*else use default settings */
 	}
 }

@@ -854,6 +854,9 @@ const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallP
 	return cp->video_codec;
 }
 
+bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
+	return cp->low_bandwidth;
+}
 /**
  * Returns whether video is enabled.
 **/
