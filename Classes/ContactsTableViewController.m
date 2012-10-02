@@ -37,6 +37,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     avatarMap = [[NSMutableDictionary alloc] init];
     
     addressBook = ABAddressBookCreate();
+	
     ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
 }
 
@@ -134,7 +135,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     CFRelease(lFirstName);
             }
         }
-        CFRelease(lContacts);
+        if (lContacts) CFRelease(lContacts);
     }
     [self.tableView reloadData];
 }
