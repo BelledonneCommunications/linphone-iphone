@@ -384,38 +384,6 @@
     return UIInterfaceOrientationPortrait;
 }
 
-- (void)updateInterfaceOrientation:(UIInterfaceOrientation)correctOrientation {
-    UIInterfaceOrientation orientation;
-    
-    orientation = self.interfaceOrientation;
-    if(orientation != correctOrientation) {
-        [super willRotateToInterfaceOrientation:correctOrientation duration:0];
-        [super willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-        [super didRotateFromInterfaceOrientation:orientation];
-    }
-    
-    orientation = self.contentViewController.interfaceOrientation;
-    if(orientation != correctOrientation) {
-        [self.contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-        [self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-        [self.contentViewController didRotateFromInterfaceOrientation:orientation];
-    }
-    
-    orientation = self.tabBarViewController.interfaceOrientation;
-    if(orientation != correctOrientation) {
-        [self.tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-        [self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-        [self.tabBarViewController didRotateFromInterfaceOrientation:orientation];
-    }
-    
-    orientation = self.stateBarViewController.interfaceOrientation;
-    if(orientation != correctOrientation) {
-        [self.stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-        [self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-        [self.stateBarViewController didRotateFromInterfaceOrientation:orientation];
-    }
-}
-
 #define IPHONE_STATUSBAR_HEIGHT 20
 
 - (void)update: (UICompositeViewDescription*) description tabBar:(NSNumber*)tabBar  stateBar:(NSNumber*)stateBar fullscreen:(NSNumber*)fullscreen {
@@ -469,7 +437,24 @@
         if(currentOrientation != correctOrientation) {
             [PhoneMainView setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
         } else {
-            [self updateInterfaceOrientation:correctOrientation];
+            if(oldContentViewController != newContentViewController) {
+                UIInterfaceOrientation oldOrientation = self.contentViewController.interfaceOrientation;
+                [self.contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+                [self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+                [self.contentViewController didRotateFromInterfaceOrientation:oldOrientation];
+            }
+            if(oldTabBarViewController != newTabBarViewController) {
+                UIInterfaceOrientation oldOrientation = self.tabBarViewController.interfaceOrientation;
+                [self.tabBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+                [self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+                [self.tabBarViewController didRotateFromInterfaceOrientation:oldOrientation];
+            }
+            if(oldStateBarViewController != newStateBarViewController) {
+                UIInterfaceOrientation oldOrientation = self.stateBarViewController.interfaceOrientation;
+                [self.stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+                [self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+                [self.stateBarViewController didRotateFromInterfaceOrientation:oldOrientation];
+            }
         }
     } else {
        oldViewDescription = (currentViewDescription != nil)? [currentViewDescription copy]: nil;

@@ -20,11 +20,14 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "UICallCell.h"
-
+#import "UILinphone.h"
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 
 @implementation UICallCellData
+
+@synthesize address;
+@synthesize image;
 
 - (id)init:(LinphoneCall*) acall {
     self = [super init];
@@ -32,9 +35,58 @@
         self->minimize = false;
         self->view = UICallCellOtherView_Avatar;
         self->call = acall;
+        image = [[UIImage imageNamed:@"avatar_unknown.png"] retain];
+        address = [@"Unknown" retain];
+        [self update];
     }
     return self;
 }
+
+- (void)update {
+    if(call == NULL) {
+        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
+        return;
+    }
+    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+    
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name
+        char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+            if(contact) {
+                useLinphoneAddress = false;
+                self.address = [FastAddressBook getContactDisplayName:contact];
+                UIImage *tmpImage = [FastAddressBook getContactImage:contact thumbnail:false];
+                if(tmpImage != nil) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (unsigned long)NULL), ^(void) {
+                        [tmpImage forceDecompression];
+                        self.image = tmpImage;
+                    });
+                }
+            }
+            ms_free(lAddress);
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName)
+                self.address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName)
+                self.address = [NSString stringWithUTF8String:lUserName];
+        }
+    }
+}
+
+- (void)dealloc {
+    [address release];
+    [image release];
+    
+    [super dealloc];
+}
+
 @end
 
 @implementation UICallCell
@@ -201,7 +253,6 @@
     }
     if(adata != nil) {
         data = [adata retain];
-        [self updateContact];
     }
 }
 
@@ -309,59 +360,17 @@
          
 #pragma mark -
 
-- (void)updateContact {
-    if(data == nil || data->call == NULL) {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
-        return;
-    }
-    LinphoneCall *call = data->call;
-    const LinphoneAddress* addr = linphone_call_get_remote_address(call);
-    
-    UIImage *image = nil;
-    NSString* address  = nil;
-    if(addr != NULL) {
-        BOOL useLinphoneAddress = true;
-        // contact name
-        char* lAddress = linphone_address_as_string_uri_only(addr);
-        if(lAddress) {
-            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-            ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-            if(contact) {
-                image = [FastAddressBook getContactImage:contact thumbnail:false];
-                address = [FastAddressBook getContactDisplayName:contact];
-                useLinphoneAddress = false;
-            }
-            ms_free(lAddress);
-        }
-        if(useLinphoneAddress) {
-            const char* lDisplayName = linphone_address_get_display_name(addr);
-            const char* lUserName = linphone_address_get_username(addr);
-            if (lDisplayName)
-                address = [NSString stringWithUTF8String:lDisplayName];
-            else if(lUserName)
-                address = [NSString stringWithUTF8String:lUserName];
-        }
-    }
-    
-    // Set Image
-    if(image == nil) {
-        image = [UIImage imageNamed:@"avatar_unknown.png"];
-    }
-    [avatarImage setImage:image];
-    
-    // Set Address
-    if(address == nil) {
-        address = @"Unknown";
-    }
-    [addressLabel setText:address];
-}
-
 - (void)update {
     if(data == nil || data->call == NULL) {
         [LinphoneLogger logc:LinphoneLoggerWarning format:"Cannot update call cell: null call or data"];
         return;
     }
     LinphoneCall *call = data->call;
+    
+    [pauseButton setType:UIPauseButtonType_Call call:call];
+    
+    [addressLabel setText:data.address];
+    [avatarImage setImage:data.image];
     
     LinphoneCallState state = linphone_call_get_state(call);
     if(!conferenceCell) {
@@ -407,7 +416,6 @@
         [self setFrame:frame];
         [otherView setHidden:true];
     }
-    [pauseButton setType:UIPauseButtonType_Call call:call];
     
     [self updateStats];
     

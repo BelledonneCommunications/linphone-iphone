@@ -182,7 +182,9 @@ enum TableSection {
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
     while(list != NULL) {
         UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
-        data->minimize = true;
+        if(data) {
+            data->minimize = true;
+        }
         list = list->next;
     }
     [[self tableView] reloadData];
@@ -192,7 +194,9 @@ enum TableSection {
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
     while(list != NULL) {
         UICallCellData *data = [self getCallData:(LinphoneCall*)list->data];
-        data->minimize = false;
+        if(data) {
+            data->minimize = false;
+        }
         list = list->next;
     }
     [[self tableView] reloadData];
