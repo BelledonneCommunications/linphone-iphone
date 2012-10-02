@@ -1131,11 +1131,17 @@ extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo
 		, jstring jrealm) {
 
 	const char* username = env->GetStringUTFChars(jusername, NULL);
+	const char* userid = env->GetStringUTFChars(juserid, NULL);
 	const char* password = env->GetStringUTFChars(jpassword, NULL);
-	jlong auth = (jlong)linphone_auth_info_new(username,NULL,password,NULL,NULL);
+	const char* ha1 = env->GetStringUTFChars(jha1, NULL);
+	const char* realm = env->GetStringUTFChars(jrealm, NULL);
+	jlong auth = (jlong)linphone_auth_info_new(username,userid,password,ha1,realm);
 
 	env->ReleaseStringUTFChars(jusername, username);
+	env->ReleaseStringUTFChars(juserid, userid);
 	env->ReleaseStringUTFChars(jpassword, password);
+	env->ReleaseStringUTFChars(jha1, ha1);
+	env->ReleaseStringUTFChars(jrealm, realm);
 	return auth;
 
 }
