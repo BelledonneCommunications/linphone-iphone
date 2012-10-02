@@ -110,6 +110,7 @@ public:
 		vTable.call_encryption_changed = callEncryptionChange;
 		vTable.text_received = text_received;
 		vTable.message_received = message_received;
+		vTable.dtmf_received = dtmf_received;
 		vTable.new_subscription_request = new_subscription_request;
 		vTable.notify_presence_recv = notify_presence_recv;
 		vTable.call_stats_updated = callStatsUpdated;
@@ -157,6 +158,7 @@ public:
 		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
+		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -211,6 +213,7 @@ public:
 	jmethodID notifyPresenceReceivedId;
 	jmethodID textReceivedId;
 	jmethodID messageReceivedId;
+	jmethodID dtmfReceivedId;
 	jmethodID callStatsUpdatedId;
 
 	jclass globalStateClass;
@@ -389,6 +392,20 @@ public:
 							,lcData->core
 							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)my_friend)
 							,url ? env->NewStringUTF(url) : NULL);
+	}
+	static void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->dtmfReceivedId
+							,lcData->core
+							,lcData->getCall(env,call)
+							,dtmf);
 	}
 	static void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
 		JNIEnv *env = 0;
