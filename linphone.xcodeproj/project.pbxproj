@@ -106,8 +106,6 @@
 		344ABDE81484E723007420B6 /* libzrtpcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDE71484E723007420B6 /* libzrtpcpp.a */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
 		344ABDF214850AE9007420B6 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDF014850AE9007420B6 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
-		570B130115FE44AF00DE62B6 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 570B130015FE44AF00DE62B6 /* libmediastreamer_voip.a */; };
-		570B130315FE44ED00DE62B6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 570B130215FE44ED00DE62B6 /* libmediastreamer_base.a */; };
 		57F005C415EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
 		57F005C515EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
@@ -159,6 +157,8 @@
 		D35E7582159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D36FB2D61589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
+		D37490841612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D37490831612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m */; };
+		D37490851612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D37490831612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m */; };
 		D376EAE1160082A4007C8226 /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE0160082A4007C8226 /* trash.png */; };
 		D376EAE2160082A4007C8226 /* trash.png in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE0160082A4007C8226 /* trash.png */; };
 		D376EAE816008454007C8226 /* ringtone_01_1600.wav in Resources */ = {isa = PBXBuildFile; fileRef = D376EAE316008454007C8226 /* ringtone_01_1600.wav */; };
@@ -257,12 +257,6 @@
 		D37CD3A215E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */; };
 		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
-		D37EE10916032DA4003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
-		D37EE10A16032DA4003608A6 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
-		D37EE10B16032DC2003608A6 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
-		D37EE10C16032DC2003608A6 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
-		D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = D37EE161160377D7003608A6 /* DTActionSheet.m */; };
-		D37EE163160377D7003608A6 /* DTActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = D37EE161160377D7003608A6 /* DTActionSheet.m */; };
 		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380800615C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
@@ -289,6 +283,8 @@
 		D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
 		D3EA53FE159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
+		D3F5F9801609C1F000D3DA1A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744043106F33FC006EC466 /* Security.framework */; };
+		D3F5F9821609C1FF00D3DA1A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744043106F33FC006EC466 /* Security.framework */; };
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F7998215BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
@@ -578,8 +574,6 @@
 		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
-		570B130015FE44AF00DE62B6 /* libmediastreamer_voip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_voip.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_voip.a"; sourceTree = "<group>"; };
-		570B130215FE44ED00DE62B6 /* libmediastreamer_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_base.a; path = "liblinphone-sdk/apple-darwin/lib/libmediastreamer_base.a"; sourceTree = "<group>"; };
 		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -617,6 +611,8 @@
 		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
+		D37490821612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSURLConnection+SynchronousDelegate.h"; path = "Classes/Utils/NSURLConnection+SynchronousDelegate.h"; sourceTree = SOURCE_ROOT; };
+		D37490831612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSURLConnection+SynchronousDelegate.m"; path = "Classes/Utils/NSURLConnection+SynchronousDelegate.m"; sourceTree = SOURCE_ROOT; };
 		D376EAE0160082A4007C8226 /* trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = trash.png; path = Resources/trash.png; sourceTree = "<group>"; };
 		D376EAE316008454007C8226 /* ringtone_01_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_01_1600.wav; path = Resources/ringtone_01_1600.wav; sourceTree = "<group>"; };
 		D376EAE416008454007C8226 /* ringtone_02_1600.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringtone_02_1600.wav; path = Resources/ringtone_02_1600.wav; sourceTree = "<group>"; };
@@ -755,6 +751,7 @@
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
+				D3F5F9821609C1FF00D3DA1A /* Security.framework in Frameworks */,
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
@@ -813,6 +810,7 @@
 				D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */,
 				22D8F15D147548E2008C97DB /* OpenGLES.framework in Frameworks */,
 				22D8F15C147548E2008C97DB /* QuartzCore.framework in Frameworks */,
+				D3F5F9801609C1F000D3DA1A /* Security.framework in Frameworks */,
 				22D8F173147548E2008C97DB /* SystemConfiguration.framework in Frameworks */,
 				22D8F166147548E2008C97DB /* UIKit.framework in Frameworks */,
 				22D8F178147548E2008C97DB /* libresolv.dylib in Frameworks */,
@@ -1228,8 +1226,6 @@
 				220FAD2910765B400068D98F /* libgsm.a */,
 				223148E31178A08200637D6A /* libilbc.a */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
-				22405EE916006F0700B92522 /* libmediastreamer_base.a */,
-				22405EEA16006F0700B92522 /* libmediastreamer_voip.a */,
 				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
 				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
 				223148E51178A09900637D6A /* libmsilbc.a */,
@@ -1352,6 +1348,8 @@
 				D37EE15F160377D7003608A6 /* DTFoundation */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
+				D37490821612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.h */,
+				D37490831612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m */,
 				D326483615887D5200930C67 /* OrderedDictionary.h */,
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
 				D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */,
@@ -1389,16 +1387,6 @@
 			);
 			name = ZBarSDK;
 			path = Utils/ZBarSDK;
-			sourceTree = "<group>";
-		};
-		D37EE15F160377D7003608A6 /* DTFoundation */ = {
-			isa = PBXGroup;
-			children = (
-				D37EE160160377D7003608A6 /* DTActionSheet.h */,
-				D37EE161160377D7003608A6 /* DTActionSheet.m */,
-			);
-			name = DTFoundation;
-			path = Utils/DTFoundation;
 			sourceTree = "<group>";
 		};
 		D37CD35615E22B0C0028869A /* Headers */ = {
@@ -1453,6 +1441,16 @@
 				D37CD37215E22B0C0028869A /* zbar-samples.png */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D37EE15F160377D7003608A6 /* DTFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				D37EE160160377D7003608A6 /* DTActionSheet.h */,
+				D37EE161160377D7003608A6 /* DTActionSheet.m */,
+			);
+			name = DTFoundation;
+			path = Utils/DTFoundation;
 			sourceTree = "<group>";
 		};
 		D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */ = {
@@ -1745,6 +1743,7 @@
 				D3FE9F4B15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 				D376EAF416008DF1007C8226 /* User.m in Sources */,
 				D32EDD9B1600C450009A84C7 /* LevelPushButton.m in Sources */,
+				D37490841612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1799,6 +1798,7 @@
 				D3FE9F4C15E790D80024F3E4 /* UIHistoryDetailsCell.m in Sources */,
 				D376EAF516008DF1007C8226 /* User.m in Sources */,
 				D32EDD9C1600C450009A84C7 /* LevelPushButton.m in Sources */,
+				D37490851612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1847,6 +1847,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1915,6 +1916,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1958,6 +1960,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -1969,7 +1972,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -2000,6 +2003,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2011,7 +2015,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -2043,6 +2047,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2054,7 +2059,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribution;
 		};
@@ -2086,6 +2091,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2097,7 +2103,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "buschjaeger-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = DistributionAdhoc;
 		};
@@ -2154,7 +2160,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",
@@ -2224,7 +2230,7 @@
 					submodules/externals/speex/include,
 				);
 				INFOPLIST_FILE = "buschjaeger-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins\"",

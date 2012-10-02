@@ -28,7 +28,7 @@
 @synthesize globalAddress;
 @synthesize localHistory;
 @synthesize globalHistory;
-
+@synthesize tlsCertificate;
 /*
  domain=abb
  
@@ -39,6 +39,8 @@
  local-history=http://192.168.1.1:8080/history.ini
  
  global-history=http://welcome.dyndns.org:8080/history.ini
+ 
+ tls-certificate=http://192.168.1.1:8080/cert.pem
  */
 
 - (void)dealloc {
@@ -47,6 +49,7 @@
     [globalAddress release];
     [localHistory release];
     [globalHistory release];
+    [tlsCertificate release];
     
     [super dealloc];
 }
@@ -59,6 +62,7 @@
     [str appendString:[NSString stringWithFormat:@"global-address=%@\n", globalAddress]];
     [str appendString:[NSString stringWithFormat:@"local-history=%@\n", localHistory]];
     [str appendString:[NSString stringWithFormat:@"global-history=%@\n", globalHistory]];
+    [str appendString:[NSString stringWithFormat:@"tls-certificate=%@\n", tlsCertificate]];
     return str;
 }
 
@@ -79,6 +83,8 @@
                 net.localHistory = param;
             } else if((param = [BuschJaegerConfiguration getRegexValue:@"^global-history=(.*)$" data:entry]) != nil) {
                 net.globalHistory = param;
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^tls-certificate=(.*)$" data:entry]) != nil) {
+                net.tlsCertificate = param;
             } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in %@ section: %@", section, entry];
             }

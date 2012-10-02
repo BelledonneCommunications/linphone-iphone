@@ -20,6 +20,7 @@
 #import "BuschJaegerConfiguration.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
+#import "NSURLConnection+SynchronousDelegate.h"
 
 @implementation BuschJaegerConfiguration
 
@@ -28,6 +29,7 @@
 @synthesize network;
 @synthesize history;
 @synthesize levelPushButton;
+@synthesize certificates;
 
 /********
  [outdoorstation_0]
@@ -94,6 +96,8 @@
         history = [[NSMutableSet alloc] init];
         network = [[Network alloc] init];
         levelPushButton = [[LevelPushButton alloc] init];
+        certificates = NULL;
+        [self reloadCertificates];
     }
     return self;
 }
@@ -104,6 +108,9 @@
     [history release];
     [network release];
     [levelPushButton release];
+    if(certificates != NULL) {
+        CFRelease(certificates);
+    }
     [super dealloc];
 }
 
@@ -172,6 +179,7 @@
                 last_section = subStr;
                 last_index = i + 1;
             } else {
+                [self reset];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigurationError:NSLocalizedString(@"Invalid configuration file", nil)];
                 });
@@ -185,6 +193,84 @@
     }
     
     return TRUE;
+}
+
+- (BOOL)downloadCertificates:(id<BuschJaegerConfigurationDelegate>)delegate {
+    if(network.tlsCertificate && [network.tlsCertificate length] > 0) {
+        NSURL *url = [NSURL URLWithString:network.tlsCertificate];
+        if(url != nil) {
+            NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+            if(request != nil) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+                    NSURLResponse *response = nil;
+                    NSError *error = nil;
+                    NSData *data  = nil;
+                    data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
+                    if(data == nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate buschJaegerConfigurationError:[error localizedDescription]];
+                        });
+                    } else {
+                        NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+                        if(urlResponse.statusCode == 200) {
+                            if([data writeToFile:[LinphoneManager documentFile:kLinphonePEMPath] atomically:TRUE]) {
+                                [self reloadCertificates];
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [delegate buschJaegerConfigurationSuccess];
+                                });
+                            } else {
+                                [self reset];
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [delegate buschJaegerConfigurationError:NSLocalizedString(@"Unknown issue when saving configuration", nil)];
+                                });
+                            }
+                        } else {
+                            [self reset];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
+                            });
+                        }
+                    }
+                });
+                return TRUE;
+            }
+        } else {
+            [self reset];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate buschJaegerConfigurationError:NSLocalizedString(@"Invalid configuration file", nil)];
+            });
+        }
+    } 
+    return FALSE;
+}
+
+- (void)unloadCertificates {
+}
+
+- (void)reloadCertificates {
+    [self unloadCertificates];
+    [self loadCertificates];
+}
+
+- (void)loadCertificates {
+    
+    if(certificates != NULL) {
+        CFRelease(certificates);
+        certificates = NULL;
+    }
+    NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager documentFile:kLinphonePEMPath]];
+    if(data != NULL) {
+        SecCertificateRef rootcert = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)data);
+        if(rootcert) {
+            const void *certs[] = { rootcert };
+            certificates = CFArrayCreate(NULL, (const void**)certs, sizeof(certs) / sizeof(certs[0]), &kCFTypeArrayCallBacks);
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Certificates loaded"];
+        } else {
+            [LinphoneLogger log:LinphoneLoggerError format:@"Can't load certificates"];
+        }
+    } else {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Certificates file doesn't exist"];
+    }
 }
 
 - (void)reset {
@@ -212,9 +298,7 @@
     [data appendString:[network write]];
     [data appendString:[levelPushButton write]];
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsPath = [paths objectAtIndex:0];
-    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:file];
+    NSString *databaseDocumentPath = [LinphoneManager documentFile:file];
     
     NSError *error;
     if(![data writeToFile:databaseDocumentPath atomically:FALSE encoding:NSUTF8StringEncoding error:&error]) {
@@ -228,9 +312,7 @@
     [self reset];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsPath = [paths objectAtIndex:0];
-    NSString *databaseDocumentPath = [documentsPath stringByAppendingPathComponent:file];
+    NSString *databaseDocumentPath = [LinphoneManager documentFile:file];
     if ([fileManager fileExistsAtPath:databaseDocumentPath] == NO) {
         [LinphoneLogger log:LinphoneLoggerError format:@"BuschJaeger ini file doesn't exist: %@", file];
         return FALSE;
@@ -241,7 +323,7 @@
         [LinphoneLogger log:LinphoneLoggerError format:@"Can't read BuschJaeger ini file: %@", [error localizedDescription]];
         return FALSE;
     }
-    return [self parseConfig:data delegate:nil];;
+    return [self parseConfig:data delegate:nil];
 }
 
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
@@ -257,7 +339,7 @@
                 NSURLResponse *response = nil;
                 NSError *error = nil;
                 NSData *data  = nil;
-                data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+                data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
                 if(data == nil) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [delegate buschJaegerConfigurationError:[error localizedDescription]];
@@ -270,11 +352,14 @@
                             [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
                             [[LinphoneManager instance] reconfigureLinphone];
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [delegate buschJaegerConfigurationSuccess];
-                            });
+                            if(![self downloadCertificates:delegate]) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [delegate buschJaegerConfigurationSuccess];
+                                });
+                            }
                         }
                     } else {
+                        [self reset];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                         });
@@ -296,7 +381,7 @@
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
-            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
             if(data == nil) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigurationError:[error localizedDescription]];
@@ -331,7 +416,7 @@
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
-            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
             if(data == nil) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigurationError:[error localizedDescription]];
@@ -381,6 +466,35 @@
         }
     }
     return nil;
+}
+
+
+#pragma mark - NSURLConnectionDelegate Function
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+    return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecTrustRef trust = [challenge.protectionSpace serverTrust];
+        NSArray *anchors = (NSArray*)certificates;
+        SecTrustSetAnchorCertificates(trust, (CFArrayRef)anchors);
+        SecTrustSetAnchorCertificatesOnly(trust, YES);
+        
+        SecTrustResultType result = kSecTrustResultInvalid;
+        OSStatus sanityChesk = SecTrustEvaluate(trust, &result);
+        
+        if (sanityChesk == noErr) {
+            if(result == kSecTrustResultConfirm || result == kSecTrustResultProceed || result == kSecTrustResultUnspecified) {
+                [[challenge sender] useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+                return;
+            } 
+        }
+        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+    } else {
+        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+    }
 }
 
 @end

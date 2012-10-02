@@ -25,11 +25,15 @@
 #import "BuschJaegerHistoryView.h"
 #import "BuschJaegerHistoryDetailsView.h"
 
+@interface UINavigationControllerEx : UINavigationController
+
+@end
+
 @interface BuschJaegerMainView : UIViewController {
     
 }
 
-@property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, retain) IBOutlet UINavigationControllerEx *navigationController;
 @property (nonatomic, retain) IBOutlet BuschJaegerCallView *callView;
 @property (nonatomic, retain) IBOutlet BuschJaegerSettingsView *settingsView;
 @property (nonatomic, retain) IBOutlet BuschJaegerWelcomeView *welcomeView;

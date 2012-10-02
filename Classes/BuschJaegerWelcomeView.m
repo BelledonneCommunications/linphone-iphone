@@ -45,7 +45,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self updateConfiguration:[LinphoneManager instance].configuration];
     [tableController.view setBackgroundColor:[UIColor clearColor]];
 }
 
@@ -56,9 +55,10 @@
                                              selector:@selector(configurationUpdateEvent:)
                                                  name:kLinphoneConfigurationUpdate
                                                object:nil];
+    [self updateConfiguration:[LinphoneManager instance].configuration];
 }
 
-- (void)vieWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     
     // Remove observer

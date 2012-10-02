@@ -32,7 +32,7 @@
 
 @end
 
-@interface BuschJaegerConfiguration : NSObject {
+@interface BuschJaegerConfiguration : NSObject<NSURLConnectionDelegate> {
 }
 
 typedef enum _BuschJaegerConfigurationRequestType{
@@ -45,6 +45,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
 @property (readonly) NSMutableSet *outdoorStations;
 @property (readonly) Network *network;
 @property (readonly) LevelPushButton *levelPushButton;
+@property (readonly) CFArrayRef certificates;
 
 - (void)reset;
 

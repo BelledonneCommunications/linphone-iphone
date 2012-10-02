@@ -19,6 +19,42 @@
 
 #import "BuschJaegerMainView.h"
 
+@implementation UINavigationControllerEx
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [viewController view];
+    UIViewController *oldTopViewController = self.topViewController;
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [oldTopViewController viewWillDisappear:animated];
+    }
+    [viewController viewWillAppear:animated];
+    [super pushViewController:viewController animated:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [self.topViewController viewDidAppear:animated];
+        [oldTopViewController viewDidDisappear:animated];
+    }
+}
+
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [self.topViewController viewWillDisappear:animated];
+        UIViewController *nextView = nil;
+        int count = [self.viewControllers count];
+        if(count > 1) {
+            nextView = [self.viewControllers objectAtIndex:count - 2];
+        }
+        [nextView viewWillAppear:animated];
+    }
+    UIViewController * ret = [super popViewControllerAnimated:animated];
+    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+        [ret viewDidDisappear:animated];
+        [self.topViewController viewDidAppear:animated];
+    }
+    return ret;
+}
+
+@end
+
 @implementation BuschJaegerMainView
 
 @synthesize navigationController;
@@ -29,6 +65,7 @@
 @synthesize historyDetailsView;
 
 static BuschJaegerMainView* mainViewInstance=nil;
+
 
 
 #pragma mark - Lifecycle Functions
@@ -87,7 +124,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
     UIView *view = navigationController.view;
     [view setFrame:[self.view bounds]];
     [self.view addSubview:view];
-    [navigationController setViewControllers:[NSArray arrayWithObject:welcomeView]];
+    [navigationController pushViewController:welcomeView animated:FALSE];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -118,6 +155,10 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneTextReceived
                                                   object:nil];
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortraitUpsideDown | UIInterfaceOrientationMaskPortrait;
 }
 
 

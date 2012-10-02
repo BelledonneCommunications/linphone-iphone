@@ -1,4 +1,4 @@
-/* Network.h
+/* NSURLConnection+SynchronousDelegate.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -17,18 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface Network : NSObject
+@interface NSURLConnection (SynchronousDelegate)
 
-@property (copy) NSString* domain;
-@property (copy) NSString* localAddress;
-@property (copy) NSString* globalAddress;
-@property (copy) NSString* localHistory;
-@property (copy) NSString* globalHistory;
-@property (copy) NSString* tlsCertificate;
-
-- (NSString*)write;
-+ (id)parse:(NSString*)section array:(NSArray*)array;
++ (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error delegate:(id) delegate;
 
 @end
