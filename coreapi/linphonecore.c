@@ -2659,7 +2659,9 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
  * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+#ifdef VIDEO_ENABLED
 	bool_t old_has_video = call->params.has_video;
+#endif
 	if (call->state!=LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
