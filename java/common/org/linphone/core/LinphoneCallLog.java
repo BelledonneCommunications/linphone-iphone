@@ -104,4 +104,8 @@ public interface LinphoneCallLog {
 	 * @return the call duration, in seconds
 	 */
 	public int getCallDuration();
+	/**
+	 * @return the call id from signaling
+	 */
+	public int getCallId();
 }

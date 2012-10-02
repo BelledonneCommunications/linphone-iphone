@@ -146,7 +146,7 @@ typedef struct _LinphoneCallLog{
 	LinphoneCallStatus status; /**< The status of the call*/
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
-	char start_date[128]; /**<Human readable string containg the start date*/
+	char start_date[128]; /**<Human readable string containing the start date*/
 	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
 	void *user_pointer;
@@ -156,6 +156,7 @@ typedef struct _LinphoneCallLog{
     int video_enabled;
 	struct _LinphoneCore *lc;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	const char* call_id; /**unique id of a call*/
 } LinphoneCallLog;
 
 

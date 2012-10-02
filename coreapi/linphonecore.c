@@ -139,6 +139,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 		if (cl->refkey) lp_config_set_string(cfg,logsection,"refkey",cl->refkey);
 		lp_config_set_float(cfg,logsection,"quality",cl->quality);
 		lp_config_set_int(cfg,logsection,"video_enabled", cl->video_enabled);
+		lp_config_set_string(cfg,logsection,"call_id",cl->call_id);
 	}
 	for(;i<lc->max_call_logs;++i){
 		snprintf(logsection,sizeof(logsection),"call_log_%i",i);
@@ -189,6 +190,8 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
 			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
+			cl->call_id=lp_config_get_string(cfg,logsection,"call_id",NULL);
+			if(cl->call_id) cl->call_id=ms_strdup(cl->call_id);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
@@ -296,6 +299,7 @@ void linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->from!=NULL) linphone_address_destroy(cl->from);
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
+	if (cl->call_id) ms_free((void*)cl->call_id);
 	ms_free(cl);
 }
 
@@ -2212,6 +2216,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	real_url=linphone_address_as_string(call->log->to);
 	from=linphone_address_as_string(call->log->from);
 	err=sal_call(call->op,from,real_url);
+	call->log->call_id=ms_strdup(sal_op_get_call_id(call->op)); /*must be known at that time*/
 
 	if (lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;

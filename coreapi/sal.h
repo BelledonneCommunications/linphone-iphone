@@ -207,6 +207,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
+	const char* call_id;
 } SalOpBase;
 
 
@@ -373,6 +374,7 @@ const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
+const char* sal_op_get_call_id(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
