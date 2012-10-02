@@ -132,7 +132,7 @@ static UIFont *CELL_FONT = nil;
                 UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]
                                                      scale:representation.scale
                                                orientation:(UIImageOrientation)representation.orientation];
-                [image forceDecompression];
+                image = [UIImage decodedImageWithImage:image];
                 if(achat == self->chat) { //Avoid glitch and scrolling
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [messageImageView setImage:image];

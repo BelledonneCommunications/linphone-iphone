@@ -3497,17 +3497,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>8</key>
+							<key>9</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/IncomingCallViewController/8/IncomingCallViewController.xib</string>
+								<string>Classes/IncomingCallViewController/9/IncomingCallViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-27T08:46:32Z</date>
+					<date>2012-10-02T09:37:04Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3517,7 +3517,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>c9def09966914f8e085b0d06ba3af8a4
+					<string>f0effe06bb21bef9fecdd2569208839f
 </string>
 					<key>name</key>
 					<string>IncomingCallViewController.xib</string>
@@ -3732,9 +3732,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>8</string>
+						<string>9</string>
 						<key>fr</key>
-						<string>8</string>
+						<string>9</string>
 					</dict>
 				</dict>
 				<dict>
@@ -6962,17 +6962,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>3</key>
+							<key>4</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/IncomingCallViewController~ipad/3/IncomingCallViewController~ipad.xib</string>
+								<string>Classes/IncomingCallViewController~ipad/4/IncomingCallViewController~ipad.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-27T09:37:07Z</date>
+					<date>2012-10-02T09:37:05Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -6982,7 +6982,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>313a649f8ff1d14d828648af3463428c
+					<string>018c47f78a17f0dc34ef27eaac216fa4
 </string>
 					<key>name</key>
 					<string>IncomingCallViewController~ipad.xib</string>
@@ -7342,9 +7342,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>4</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>4</string>
 					</dict>
 				</dict>
 			</array>
@@ -9693,17 +9693,17 @@
 								<key>name</key>
 								<string>LinphoneUI/UIConferenceHeader/1/UIConferenceHeader.xib</string>
 							</dict>
-							<key>3</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIConferenceHeader/3/UIConferenceHeader.xib</string>
+								<string>LinphoneUI/UIConferenceHeader/6/UIConferenceHeader.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:22Z</date>
+					<date>2012-10-02T09:50:56Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -9713,37 +9713,12 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>6b2fc885020930eed8cc187bf1383346
+					<string>babefbbde2a145648dcdf274fe3429a9
 </string>
 					<key>name</key>
 					<string>UIConferenceHeader.xib</string>
 					<key>objects</key>
 					<array>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>Class = "IBUIImageView"; accessibilityLabel = "Conference"; ObjectID = "7";</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>7.accessibilityLabel</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Conference</string>
-								<key>fr</key>
-								<string>Conférence</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
 						<dict>
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
@@ -9769,17 +9744,95 @@
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Conference"; ObjectID = "15";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>1</integer>
+							<key>key</key>
+							<string>15.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Conference</string>
+								<key>fr</key>
+								<string>Conférence</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Conference"; ObjectID = "15";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>15.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Conference</string>
+								<key>fr</key>
+								<string>Conférence</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
-					<array/>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIImageView"; accessibilityLabel = "Conference"; ObjectID = "7";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>7.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Conference</string>
+								<key>fr</key>
+								<string>Conférence</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
 					<key>snapshots</key>
 					<dict/>
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>3</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>3</string>
+						<string>6</string>
 						<key>fr_FR</key>
 						<string>1</string>
 					</dict>

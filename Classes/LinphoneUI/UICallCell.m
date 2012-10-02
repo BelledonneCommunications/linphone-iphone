@@ -62,8 +62,8 @@
                 UIImage *tmpImage = [FastAddressBook getContactImage:contact thumbnail:false];
                 if(tmpImage != nil) {
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (unsigned long)NULL), ^(void) {
-                        [tmpImage forceDecompression];
-                        self.image = tmpImage;
+                        UIImage *tmpImage2 = [UIImage decodedImageWithImage:tmpImage];
+                        self.image = tmpImage2;
                     });
                 }
             }
@@ -261,7 +261,7 @@
     if (currentCall && ![self isBlinkAnimationRunning:@"blink" target:headerBackgroundHighlightImage]) {
         [self startBlinkAnimation:@"blink" target:headerBackgroundHighlightImage];
     }
-    if (!currentCall && [self isBlinkAnimationRunning:@"blink" target:headerBackgroundHighlightImage]) {
+    if (!currentCall) {
         [self stopBlinkAnimation:@"blink" target:headerBackgroundHighlightImage];
     }
 }
