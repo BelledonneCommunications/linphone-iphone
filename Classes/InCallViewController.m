@@ -245,7 +245,6 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning:
-        case LinphoneCallUpdated:
         {
 			//check video
 			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {

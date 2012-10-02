@@ -398,8 +398,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     if(state == LinphoneCallIncomingReceived ||
        state == LinphoneCallOutgoingInit ||
        state == LinphoneCallConnected ||
-       state == LinphoneCallStreamsRunning ||
-       state == LinphoneCallUpdated) {
+       state == LinphoneCallStreamsRunning) {
         if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
             [self setSpeakerEnabled:TRUE];
         }

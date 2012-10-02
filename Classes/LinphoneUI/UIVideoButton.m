@@ -110,12 +110,9 @@
             if (currentCall) {
                 LinphoneCallState state = linphone_call_get_state(currentCall);
                 switch (state) {
-                    case LinphoneCallUpdated:
-                    {
-                        [waitView stopAnimating];
-                    }
                     case LinphoneCallStreamsRunning:
                     {
+                        [waitView stopAnimating];
                         [self setEnabled:TRUE];
                         if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
                             val = true;

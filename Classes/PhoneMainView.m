@@ -335,7 +335,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
         case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
         case LinphoneCallStreamsRunning:
-        case LinphoneCallUpdated:
         {
             [self changeCurrentView:[InCallViewController compositeViewDescription]];
             break;
