@@ -2569,6 +2569,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
 	if (params!=NULL){
+		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #ifdef VIDEO_ENABLED
 		bool_t has_video = call->params.has_video;
 		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
@@ -2576,7 +2577,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			call->videostream->ice_check_list = NULL;
 		}
 		call->params = *params;
-		if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed) && !has_video && params->has_video) {
+		if ((call->ice_session != NULL) && !has_video && params->has_video) {
 			/* Defer call update until the ICE candidates gathering process has finished. */
 			ms_message("Defer call update to gather ICE candidates");
 			update_local_media_description(lc, call);
@@ -5035,7 +5036,7 @@ bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 			case LinphoneCallConnected:
 			case LinphoneCallRefered:
 			case LinphoneCallIncomingEarlyMedia:
-			case LinphoneCallUpdated:
+			case LinphoneCallUpdating:
 				return TRUE;
 			default:
 				break;

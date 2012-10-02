@@ -302,11 +302,7 @@ static void call_accepted(SalOp *op){
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call,LinphoneCallPausedByRemote,"Call paused by remote");
 		}else{
-			if (call->state==LinphoneCallStreamsRunning){
-				/*media was running before, the remote as acceted a call modification (that is
-					a reinvite made by us. We must notify the application this reinvite was accepted*/
-				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
-			}else{
+			if (call->state!=LinphoneCallUpdating){
 				if (call->state==LinphoneCallResuming){
 					if (lc->vtable.display_status){
 						lc->vtable.display_status(lc,_("Call resumed."));
@@ -343,11 +339,6 @@ static void call_ack(SalOp *op){
 	if (call->media_pending){
 		SalMediaDescription *md=sal_call_get_final_media_description(op);
 		if (md && !sal_media_description_empty(md)){
-			if (call->state==LinphoneCallStreamsRunning){
-				/*media was running before, the remote as acceted a call modification (that is
-					a reinvite made by us. We must notify the application this reinvite was accepted*/
-				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
-			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
