@@ -467,8 +467,10 @@ static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id
 }
 
 /* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call, StunCandidate *ac, StunCandidate *vc){
+int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
+	StunCandidate *ac=&call->ac;
+	StunCandidate *vc=&call->vc;
 	
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
@@ -618,14 +620,17 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		lc->vtable.display_status(lc, _("ICE local candidates gathering in progress..."));
 
 	/* Gather local host candidates. */
-	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
+	if (linphone_core_get_local_ip_for(AF_INET, server, local_addr) < 0) {
 		ms_error("Fail to get local ip");
 		return -1;
 	}
-	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
-	ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
-	call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
-	if (call->params.has_video && (video_check_list != NULL)) {
+	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->audio_port + 1, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
+	}
+	if (call->params.has_video && (video_check_list != NULL)
+		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port, 1, NULL);
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->video_port + 1, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
@@ -650,30 +655,38 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 
 	session_state = ice_session_state(call->ice_session);
 	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
-		switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
-			case ICT_HostCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
-				break;
-			case ICT_ServerReflexiveCandidate:
-			case ICT_PeerReflexiveCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
-				break;
-			case ICT_RelayedCandidate:
-				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
-				break;
-		}
-		if (call->params.has_video && (video_check_list != NULL)) {
-			switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+		if (ice_check_list_state(audio_check_list) == ICL_Completed) {
+			switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
 				case ICT_HostCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
 					break;
 				case ICT_ServerReflexiveCandidate:
 				case ICT_PeerReflexiveCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
 					break;
 				case ICT_RelayedCandidate:
-					call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
 					break;
+			}
+		} else {
+			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
+		}
+		if (call->params.has_video && (video_check_list != NULL)) {
+			if (ice_check_list_state(video_check_list) == ICL_Completed) {
+				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
+					case ICT_HostCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateHostConnection;
+						break;
+					case ICT_ServerReflexiveCandidate:
+					case ICT_PeerReflexiveCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateReflexiveConnection;
+						break;
+					case ICT_RelayedCandidate:
+						call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateRelayConnection;
+						break;
+				}
+			} else {
+				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 			}
 		}
 	} else {
@@ -770,10 +783,14 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
 			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-			strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
-			stream->ice_remote_candidates[0].port = rtp_port;
-			strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
-			stream->ice_remote_candidates[1].port = rtcp_port;
+			if ((rtp_addr != NULL) && (rtcp_addr != NULL)) {
+				strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
+				stream->ice_remote_candidates[0].port = rtp_port;
+				strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
+				stream->ice_remote_candidates[1].port = rtcp_port;
+			} else {
+				ms_error("ice: Selected valid remote candidates should be present if the check list is in the Completed state");
+			}
 		}
 	}
 }
@@ -902,6 +919,17 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 	}
 }
 
+bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md)
+{
+	int i;
+
+	for (i = 0; i < md->nstreams; i++) {
+		if ((md->streams[i].type == SalVideo) && (md->streams[i].rtp_port != 0))
+			return TRUE;
+	}
+	return FALSE;
+}
+
 void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md)
 {
 	int i;
@@ -969,10 +997,15 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 	if (getifaddrs(&ifpstart) < 0) {
 		return -1;
 	}
-
+#ifndef __linux
+	#define UP_FLAG IFF_UP /* interface is up */
+#else
+	#define UP_FLAG IFF_RUNNING /* resources allocated */
+#endif
+	
 	for (ifp = ifpstart; ifp != NULL; ifp = ifp->ifa_next) {
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
-			&& (ifp->ifa_flags & IFF_RUNNING) && !(ifp->ifa_flags & IFF_LOOPBACK))
+			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
 		{
 			getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?

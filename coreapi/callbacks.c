@@ -184,7 +184,6 @@ static void call_received(SalOp *h){
 	}
 	
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
-	sal_call_set_local_media_description(h,call->localdesc);
 	
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
@@ -535,7 +534,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 							call->localdesc->streams[i].proto = SalProtoRtpAvp;
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 						}
-						linphone_core_start_invite(lc, call, NULL);
+						linphone_core_start_invite(lc, call);
 					}
 					return;
 				}

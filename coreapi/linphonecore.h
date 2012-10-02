@@ -899,11 +899,14 @@ void linphone_core_disable_logs(void);
 /*sets the user-agent string in sip messages, must be set before linphone_core_new() or linphone_core_init() */
 void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
+const char *linphone_core_get_user_agent_name(void);
+const char *linphone_core_get_user_agent_version(void);
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
 
 /* function to be periodically called in a main loop */
+/* For ICE to work properly it should be called every 20ms */
 void linphone_core_iterate(LinphoneCore *lc);
 #if 0 /*not implemented yet*/
 /**
@@ -1419,6 +1422,8 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
+
+
 
 #ifdef __cplusplus
 }

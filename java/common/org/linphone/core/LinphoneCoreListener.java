@@ -41,6 +41,11 @@ public interface LinphoneCoreListener {
 	void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);
 
 	/**
+	 * Call stats notification
+	 */
+	void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);
+
+	/**
 	 * Callback to display change in encryption state.
 	 * @param encrypted true if all streams of the call are encrypted
 	 * @param authenticationToken token like ZRTP SAS that may be displayed to user

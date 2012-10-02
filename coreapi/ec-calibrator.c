@@ -29,7 +29,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void ecc_init_filters(EcCalibrator *ecc){
 	unsigned int rate;
-	ecc->ticker=ms_ticker_new();
+	MSTickerParams params={0};
+	params.name="Echo calibrator";
+	params.prio=MS_TICKER_PRIO_HIGH;
+	ecc->ticker=ms_ticker_new_with_params(&params);
 
 	ecc->sndread=ms_snd_card_create_reader(ecc->play_card);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
