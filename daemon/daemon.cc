@@ -579,7 +579,7 @@ void Daemon::quit() {
 Daemon::~Daemon() {
 	uninitCommands();
 
-	for (std::map<int, AudioStream *>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end();) {
+	for (std::map<int, AudioStream *>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
 		audio_stream_stop(it->second);
 	}
 
