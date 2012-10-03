@@ -898,6 +898,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						int componentID = j + 1;
 						if (candidate->addr[0] == '\0') break;
 						get_default_addr_and_port(componentID, md, stream, &addr, &port);
+						if (j == 0) {
+							/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
+							ice_check_list_unselect_valid_pairs(cl);
+						}
 						ice_add_losing_pair(cl, j + 1, candidate->addr, candidate->port, addr, port);
 						losing_pairs_added = TRUE;
 					}
