@@ -2537,7 +2537,6 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
 	call->camera_active=call->params.has_video;
-	update_local_media_description(lc,call);
 	if (call->ice_session != NULL)
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 
@@ -2577,10 +2576,10 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			call->videostream->ice_check_list = NULL;
 		}
 		call->params = *params;
+		update_local_media_description(lc, call);
 		if ((call->ice_session != NULL) && !has_video && params->has_video) {
 			/* Defer call update until the ICE candidates gathering process has finished. */
 			ms_message("Defer call update to gather ICE candidates");
-			update_local_media_description(lc, call);
 			linphone_call_init_video_stream(call);
 			video_stream_prepare_video(call->videostream);
 			if (linphone_core_gather_ice_candidates(lc,call)<0) {
