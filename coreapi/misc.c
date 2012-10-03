@@ -871,8 +871,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						break;
 				}
 			}
-			if ((stream->ice_mismatch == TRUE) || (stream->rtp_port == 0)) {
+			if (stream->ice_mismatch == TRUE) {
 				ice_check_list_set_state(cl, ICL_Failed);
+			} else if (stream->rtp_port == 0) {
+				ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i));
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
@@ -940,7 +942,9 @@ void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *ca
 	for (i = 0; i < md->nstreams; i++) {
 		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 		if (cl && (md->streams[i].rtp_port == 0)) {
-			if (ice_check_list_state(cl) != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
+			if (ice_check_list_state(cl) != ICL_Completed) {
+				ice_session_remove_check_list(call->ice_session, cl);
+			}
 		}
 	}
 }
