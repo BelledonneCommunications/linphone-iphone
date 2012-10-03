@@ -162,10 +162,10 @@
         }
     
     [self startApplication];
-	NSDictionary *aps=[launchOptions objectForKey:@"aps"];
-    if (aps){
+	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotif){
 		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
-		[self processRemoteNotification:launchOptions];
+		[self processRemoteNotification:remoteNotif];
 	}
     return YES;
 }
