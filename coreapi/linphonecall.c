@@ -277,6 +277,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	update_media_description_from_stun(md,&call->ac,&call->vc);
 	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
+		linphone_core_update_ice_state_in_call_stats(call);
 	}
 	linphone_address_destroy(addr);
 	return md;
@@ -1850,6 +1851,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		}
 	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
 		linphone_core_start_accept_call_update(call->core, call);
+		linphone_core_update_ice_state_in_call_stats(call);
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
 		ice_session_restart(call->ice_session);
 		ice_session_set_role(call->ice_session, IR_Controlling);
