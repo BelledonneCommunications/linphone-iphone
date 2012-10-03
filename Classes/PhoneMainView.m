@@ -654,6 +654,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
     LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+	LinphoneCallLog* callLog=linphone_call_get_call_log(call);
+	NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
 	if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
         
@@ -684,7 +686,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
         if(address == nil) {
             address = @"Unknown";
         }
-        if (![[LinphoneManager instance] shouldAutoAcceptCall]){
+        
+		if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
 			// case where a remote notification is not already received
 			// Create a new local notification
 			appData->notification = [[UILocalNotification alloc] init];
@@ -695,11 +698,12 @@ static PhoneMainView* phoneMainViewInstance=nil;
 				appData->notification.soundName = @"ring.caf";
 				appData->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
 			
-			[[UIApplication sharedApplication] presentLocalNotificationNow:appData->notification];
+				[[LinphoneManager instance] enableAutoAnswerForCallId:callId];
+				[[UIApplication sharedApplication] presentLocalNotificationNow:appData->notification];
 			}
 		}
 	} else {
-		if ([[LinphoneManager instance] shouldAutoAcceptCall]){
+		if ([[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
 			linphone_core_accept_call(linphone_call_get_core(call),call);
 		}else{
 			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);

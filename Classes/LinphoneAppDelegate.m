@@ -146,6 +146,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
     
+	//work around until we can access lpconfig without linphonecore
+	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"YES", @"start_at_boot_preference",
+								 @"YES", @"backgroundmode_preference",
+                                 nil];
+	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+	
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
         && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
@@ -194,7 +201,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
@@ -211,7 +218,10 @@
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
                 } else if([loc_key isEqualToString:@"IC_MSG"]) {
                     //it's a call
-                    [[LinphoneManager instance] didReceiveRemoteNotification];
+                    if ([alert objectForKey:@"call-id"])
+						[[LinphoneManager instance] enableAutoAnswerForCallId:[alert objectForKey:@"call-id"]];
+					else
+						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
                 }
             }
         }
