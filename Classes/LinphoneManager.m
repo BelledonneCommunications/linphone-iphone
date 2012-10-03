@@ -738,10 +738,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
     
-    if ([LinphoneManager runningOnIpad])
-        ms_set_cpu_count(2);
-    else
-        ms_set_cpu_count(1);
     
 
     
