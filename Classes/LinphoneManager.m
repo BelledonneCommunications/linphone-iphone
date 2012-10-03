@@ -77,7 +77,22 @@ extern void libmssilk_init();
 #if HAVE_G729
 extern  void libmsbcg729_init();
 #endif
+@implementation LinphoneCallAppData
+- (id)init {
+    if ((self = [super init])) {
+		self->batteryWarningShown = FALSE;
+        self->notification = nil;
+		self->videoRequested=FALSE;
+        self->userInfos = [[NSMutableDictionary alloc] init];
+	}
+	return self;
+}
 
+- (void)dealloc {
+	[self->userInfos release];
+	[super dealloc];
+}
+@end
 @implementation LinphoneManager
 
 @synthesize connectivity;
@@ -376,16 +391,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 	if(state == LinphoneCallReleased) {
         LinphoneCallAppData* data = linphone_call_get_user_pointer(call);
         if(data != NULL) {
-            [data->userInfos release];
-            free (linphone_call_get_user_pointer(call));
+            [data release];
             linphone_call_set_user_pointer(call, NULL);
         }
     }
     if (!linphone_call_get_user_pointer(call)) {
-        LinphoneCallAppData* data = (LinphoneCallAppData*) malloc(sizeof(LinphoneCallAppData));
-        data->batteryWarningShown = FALSE;
-        data->notification = nil;
-        data->userInfos = [[NSMutableDictionary alloc] init];
+        LinphoneCallAppData* data = [[LinphoneCallAppData alloc] init];
         linphone_call_set_user_pointer(call, data);
     }
     
@@ -982,7 +993,8 @@ static void audioRouteChangeListenerCallback (
 	//get default proxy
 	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
 	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
-
+	LinphoneCall* call=NULL;
+	
 	if ([address length] == 0) return; //just return
 	if ([address hasPrefix:@"sip:"]) {
         LinphoneAddress* linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);  
@@ -992,7 +1004,7 @@ static void audioRouteChangeListenerCallback (
         if(transfer) {
             linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         } else {
-            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
+            call=linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
         }
         linphone_address_destroy(linphoneAddress);
 	} else if (proxyCfg==nil){
@@ -1014,9 +1026,14 @@ static void audioRouteChangeListenerCallback (
         if(transfer) {
             linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
         } else {
-            linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
+            call=linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
         }
         linphone_address_destroy(linphoneAddress);
+	}
+	if (call) {
+		LinphoneCallAppData* data = [[LinphoneCallAppData alloc] init];
+        data->videoRequested = linphone_call_params_video_enabled(lcallParams); /* will be used later to notify user if video was not activated because of the linphone core*/
+		linphone_call_set_user_pointer(call, data);
 	}
 	linphone_call_params_destroy(lcallParams);
 }

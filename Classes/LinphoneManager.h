@@ -64,11 +64,14 @@ struct NetworkReachabilityContext {
     void (*networkStateChanged) (Connectivity newConnectivity);
 };
 
-typedef struct _LinphoneCallAppData {
-    bool_t batteryWarningShown;
+@interface LinphoneCallAppData :NSObject {
+    @public
+	bool_t batteryWarningShown;
     UILocalNotification *notification;
     NSMutableDictionary *userInfos;
-} LinphoneCallAppData;
+	bool_t videoRequested; /*set when user has requested for video*/
+};
+@end
 
 typedef struct _LinphoneManagerSounds {
     SystemSoundID call;

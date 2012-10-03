@@ -250,7 +250,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				[self displayVideoCall:animated];
 			} else {
-                [self displayTableCall:animated];
+				[self displayTableCall:animated];
+                const LinphoneCallParams* param = linphone_call_get_current_params(call);
+				const LinphoneCallAppData* callAppData = linphone_call_get_user_pointer(call);
+				if(state == LinphoneCallStreamsRunning
+				   && callAppData->videoRequested
+				   && linphone_call_params_low_bandwidth_enabled(param)) {
+					//too bad video was not enabled because low bandwidth
+					UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Low bandwidth", nil)
+																	message:NSLocalizedString(@"Video cannot be activated because of low bandwidth condition, only audio is available", nil)
+																   delegate:nil
+														  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+														  otherButtonTitles:nil];
+					[alert show];
+					[alert release];
+					callAppData->videoRequested=FALSE; /*reset field*/
+				}
             }
 			break;
         }
