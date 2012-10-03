@@ -216,7 +216,8 @@ NSTimer *callSecurityTimer;
     if([LinphoneManager isLcReady]) {
         LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
         if(call != NULL) {
-            float quality = linphone_call_get_average_quality(call);
+            //FIXME double check call state before computing, may cause core dump
+			float quality = linphone_call_get_average_quality(call);
             if(quality < 1) {
                 image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
             } else if (quality < 2) {

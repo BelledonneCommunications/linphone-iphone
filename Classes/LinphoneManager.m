@@ -221,7 +221,7 @@ struct codec_name_pref_table codec_pref_table[]={
         speakerEnabled = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
-        lastRemoteNotificationTime=0;
+        pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
         photoLibrary = [[ALAssetsLibrary alloc] init];
     }
     return self;
@@ -245,6 +245,7 @@ struct codec_name_pref_table codec_pref_table[]={
 	}
     
     [photoLibrary release];
+	[pendindCallIdFromRemoteNotif release];
     [super dealloc];
 }
 
@@ -769,16 +770,30 @@ static LinphoneCoreVTable linphonec_vtable = {
         
     }
 }
-
-- (void)didReceiveRemoteNotification{
-    lastRemoteNotificationTime=time(NULL);
+static int comp_call_id  (const LinphoneCall* call , const char *callid) {
+	return strcmp(linphone_call_get_call_log(call)->call_id, callid) == 0;
+}
+- (void)enableAutoAnswerForCallId:(NSString*) callid{
+    //first, make sure this callid is not already involved in a call
+	if ([LinphoneManager isLcReady]) {
+		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
+		if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
+			[LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handle",callid];
+			return;
+		};
+	}
+	if ([pendindCallIdFromRemoteNotif count] > 10 /*max number of pending notif*/)
+		[pendindCallIdFromRemoteNotif removeObjectAtIndex:0];
+	[pendindCallIdFromRemoteNotif addObject:callid];
+	
 }
 
-- (BOOL)shouldAutoAcceptCall{
-    if (lastRemoteNotificationTime!=0){
-        if ((time(NULL)-lastRemoteNotificationTime)<15)
-            return TRUE;
-        lastRemoteNotificationTime=0;
+- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId{
+    for (NSString* pendingNotif in pendindCallIdFromRemoteNotif) {
+		if ([pendingNotif  compare:callId] == NSOrderedSame) {
+			[pendindCallIdFromRemoteNotif removeObject:pendingNotif];
+			return TRUE;
+		}
     }
     return FALSE;
 }

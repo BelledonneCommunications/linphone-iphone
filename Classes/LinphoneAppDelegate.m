@@ -201,7 +201,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
@@ -218,7 +218,10 @@
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
                 } else if([loc_key isEqualToString:@"IC_MSG"]) {
                     //it's a call
-                    [[LinphoneManager instance] didReceiveRemoteNotification];
+                    if ([alert objectForKey:@"call-id"])
+						[[LinphoneManager instance] enableAutoAnswerForCallId:[alert objectForKey:@"call-id"]];
+					else
+						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
                 }
             }
         }

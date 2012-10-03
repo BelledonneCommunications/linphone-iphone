@@ -81,7 +81,7 @@ typedef struct _LinphoneManagerSounds {
     
 @private
 	NSTimer* mIterateTimer;
-    time_t lastRemoteNotificationTime;
+    NSMutableArray*  pendindCallIdFromRemoteNotif;
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
     
@@ -105,9 +105,9 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
-- (void)didReceiveRemoteNotification;
+- (void)enableAutoAnswerForCallId:(NSString*) callid;
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
-- (BOOL)shouldAutoAcceptCall;
+- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
 - (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;
