@@ -162,7 +162,11 @@
         }
     
     [self startApplication];
-    
+	NSDictionary *aps=[launchOptions objectForKey:@"aps"];
+    if (aps){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
+		[self processRemoteNotification:launchOptions];
+	}
     return YES;
 }
 
@@ -184,6 +188,7 @@
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
@@ -200,9 +205,8 @@
 	return YES;
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
-    NSDictionary *aps = [userInfo objectForKey:@"aps"];
+- (void)processRemoteNotification:(NSDictionary*)userInfo{
+	NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if(aps != nil) {
         NSDictionary *alert = [aps objectForKey:@"alert"];
         if(alert != nil) {
@@ -218,14 +222,20 @@
                     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
                 } else if([loc_key isEqualToString:@"IC_MSG"]) {
                     //it's a call
-                    if ([alert objectForKey:@"call-id"])
-						[[LinphoneManager instance] enableAutoAnswerForCallId:[alert objectForKey:@"call-id"]];
+					NSString *callid=[userInfo objectForKey:@"call-id"];
+                    if (callid)
+						[[LinphoneManager instance] enableAutoAnswerForCallId:callid];
 					else
 						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
                 }
             }
         }
     }
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
+	[self processRemoteNotification:userInfo];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {

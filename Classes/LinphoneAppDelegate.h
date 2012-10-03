@@ -33,7 +33,10 @@
     CTCallCenter* callCenter;
     BOOL started;
 	int savedMaxCall;
+	
 }
+
+- (void)processRemoteNotification:(NSDictionary*)userInfo;
 
 @property (assign) BOOL started;
 
