@@ -110,6 +110,11 @@
             if (currentCall) {
                 LinphoneCallState state = linphone_call_get_state(currentCall);
                 switch (state) {
+                    case LinphoneCallUpdating:
+                    {
+                        [self setEnabled:FALSE];
+                        break;
+                    }
                     case LinphoneCallStreamsRunning:
                     {
                         [waitView stopAnimating];

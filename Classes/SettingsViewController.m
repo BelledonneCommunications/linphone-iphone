@@ -40,6 +40,13 @@
 @end
 #endif
 
+@interface SettingsViewController (private)
+
++ (IASKSpecifier*)filterSpecifier:(IASKSpecifier *)specifier;
+
+@end
+
+
 #pragma mark - IASKSwitchEx Class
 
 @interface IASKSwitchEx : DCRoundSwitch {
@@ -187,6 +194,25 @@
     [newItemDict setObject:targetViewController forKey:@"viewController"];
     [_viewList replaceObjectAtIndex:kIASKSpecifierValuesViewControllerIndex withObject:newItemDict];
     [targetViewController release];
+}
+
+- (IASKSettingsReader*)settingsReader {
+    IASKSettingsReader *r = [super settingsReader];
+    NSMutableArray *dataSource = [NSMutableArray arrayWithArray:[r dataSource]];
+    for (int i = 0; i < [dataSource count]; ++i) {
+        NSMutableArray *specifiers = [NSMutableArray arrayWithArray:[dataSource objectAtIndex:i]];
+        for (int j = 0; j < [specifiers count]; ++j) {
+            id sp = [specifiers objectAtIndex:j];
+            if ([sp isKindOfClass:[IASKSpecifier class]]) {
+                sp = [SettingsViewController filterSpecifier:sp];
+            }
+            [specifiers replaceObjectAtIndex:j withObject:sp];
+        }
+        
+        [dataSource replaceObjectAtIndex:i withObject:specifiers];
+    }
+    [r setDataSource:dataSource];
+    return r;
 }
 
 - (void)viewDidLoad {
@@ -416,7 +442,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+    
 	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
 	
     settingsController.showDoneButton = FALSE;
@@ -508,6 +534,33 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 #pragma mark - 
+
++ (IASKSpecifier*)filterSpecifier:(IASKSpecifier *)specifier {
+#ifndef HAVE_SSL
+    if ([[specifier key] isEqualToString:@"transport_preference"]) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+        NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+        [titles removeObject:@"TLS"];
+        [dict setObject:titles forKey:@"Titles"];
+        NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+        [values removeObject:@"tls"];
+        [dict setObject:values forKey:@"Values"];
+        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+    } else if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+        NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+        [titles removeObject:@"ZRTP"];
+        [titles removeObject:@"SRTP"];
+        [dict setObject:titles forKey:@"Titles"];
+        NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+        [values removeObject:@"ZRTP"];
+        [values removeObject:@"SRTP"];
+        [dict setObject:values forKey:@"Values"];
+        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+    }
+#endif //HAVE_SSL
+    return specifier;
+}
 
 - (NSSet*)findHiddenKeys {
     if(![LinphoneManager isLcReady]) {

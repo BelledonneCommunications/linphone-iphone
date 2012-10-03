@@ -137,6 +137,8 @@
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>call_menu</string>
 			<key>File</key>
 			<string>Call</string>
 			<key>Title</key>
@@ -145,6 +147,8 @@
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>network_menu</string>
 			<key>File</key>
 			<string>Network</string>
 			<key>Title</key>
