@@ -1374,6 +1374,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				linphone_call_add_to_conf(call, mute);
 			}
 			call->current_params.in_conference=call->params.in_conference;
+			call->current_params.low_bandwidth=call->params.low_bandwidth;
 		}else ms_warning("No audio stream accepted ?");
 	}
 }
