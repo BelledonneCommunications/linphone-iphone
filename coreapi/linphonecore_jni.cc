@@ -53,6 +53,9 @@ static JavaVM *jvm=0;
 #ifdef ANDROID
 static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 	int prio;
+ 	char str[4096];
+	char *current;
+	char *next;
 	switch(lev){
 	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
 	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
@@ -61,7 +64,19 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
 	default:		prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	__android_log_vprint(prio, LOG_DOMAIN, fmt, args);
+ 	vsnprintf(str, sizeof(str) - 1, fmt, args);
+ 	str[sizeof(str) - 1] = '\0';
+ 	if (strlen(str) < 512) {
+		__android_log_write(prio, LOG_DOMAIN, str);
+	} else {
+		current = str;
+		while ((next = strchr(current, '\n')) != NULL) {
+			*next = '\0';
+			__android_log_write(prio, LOG_DOMAIN, current);
+			current = next + 1;
+		}
+		__android_log_write(prio, LOG_DOMAIN, current);
+	}
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
