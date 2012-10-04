@@ -87,6 +87,7 @@ typedef struct _LinphoneManagerSounds {
     NSMutableArray*  pendindCallIdFromRemoteNotif;
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
+	UIBackgroundTaskIdentifier pausedCallBgTask;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;

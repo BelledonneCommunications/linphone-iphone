@@ -778,14 +778,14 @@ static LinphoneCoreVTable linphonec_vtable = {
     }
 }
 static int comp_call_id  (const LinphoneCall* call , const char *callid) {
-	return strcmp(linphone_call_get_call_log(call)->call_id, callid) == 0;
+	return strcmp(linphone_call_get_call_log(call)->call_id, callid);
 }
 - (void)enableAutoAnswerForCallId:(NSString*) callid{
     //first, make sure this callid is not already involved in a call
 	if ([LinphoneManager isLcReady]) {
 		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
 		if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
-			[LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handle",callid];
+			[LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handled",callid];
 			return;
 		};
 	}
@@ -828,6 +828,10 @@ static int comp_call_id  (const LinphoneCall* call , const char *callid) {
     }
 }
 
+static int comp_call_state_paused  (const LinphoneCall* call, const void* param) {
+	return linphone_call_get_state(call) != LinphoneCallPaused;
+}
+
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
@@ -866,10 +870,18 @@ static int comp_call_id  (const LinphoneCall* call , const char *callid) {
 		} else {
 			[LinphoneLogger logc:LinphoneLoggerLog format:"keepalive handler cannot be registered"];
 		}
-		LCSipTransports transportValue;
-		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
-			[LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];	
+		LinphoneCall* currentCall = linphone_core_get_current_call(theLinphoneCore);
+		const MSList* callList = linphone_core_get_calls(theLinphoneCore);
+		if (!currentCall //no active call
+			&& callList // at least one call in a non active state
+			&& ms_list_find_custom((MSList*)callList, (MSCompareFunc) comp_call_state_paused, NULL)) {
+			pausedCallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+				[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot be paused any more, too late"];
+			}];
+			[LinphoneLogger log:LinphoneLoggerLog format:@"Long running task started, remaining [%fs] because at least one call is paused"
+			 ,[[UIApplication  sharedApplication] backgroundTimeRemaining]];
 		}
+		
 		return YES;
 	}
 	else {
@@ -881,7 +893,10 @@ static int comp_call_id  (const LinphoneCall* call , const char *callid) {
 
 - (void)becomeActive {
     [self refreshRegisters];
-    
+    if (pausedCallBgTask) {
+		[[UIApplication sharedApplication]  endBackgroundTask:pausedCallBgTask];
+		pausedCallBgTask=0;
+	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
 }
