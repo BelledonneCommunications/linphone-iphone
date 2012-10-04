@@ -1,0 +1,13 @@
+linphone-iphone-2.0.0 -- October 4, 2012
+	* Wizard
+	* Enhanced history
+	* New UI
+	* Chat
+	* Image transfert in chat
+	* Contact list: iPhone contact book with SIP addresses
+	* Contact edition
+	* Internationalization
+	* Settings in application
+	* ICE: Using stun server
+	* Push notifications (with linphone.org) 
+
