@@ -704,25 +704,28 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 }
 
 #define RANK_END 10000
-static const char *codec_pref_order[]={
-	"SILK",
-	"speex",
-	"iLBC",
-	"amr",
-	"gsm",
-	"pcmu",
-	"pcma",
-	"VP8",
-	"H264",
-	"MP4V-ES",
-	"H263-1998",
-	NULL,
+
+typedef struct codec_desc{
+	const char *name;
+	int rate;
+}codec_desc_t;
+
+static codec_desc_t codec_pref_order[]={
+	{"SILK", 16000},
+	{"speex", 16000},
+	{"speex", 8000},
+	{"pcmu",8000},
+	{"pcma",8000},
+	{"VP8",90000},
+	{"H264",90000},
+	{"MP4V-ES",90000},
+	{NULL,0}
 };
 
-static int find_codec_rank(const char *mime){
+static int find_codec_rank(const char *mime, int clock_rate){
 	int i;
-	for(i=0;codec_pref_order[i]!=NULL;++i){
-		if (strcasecmp(codec_pref_order[i],mime)==0)
+	for(i=0;codec_pref_order[i].name!=NULL;++i){
+		if (strcasecmp(codec_pref_order[i].name,mime)==0 && clock_rate==codec_pref_order[i].rate)
 			return i;
 	}
 	return RANK_END;
@@ -730,8 +733,8 @@ static int find_codec_rank(const char *mime){
 
 static int codec_compare(const PayloadType *a, const PayloadType *b){
 	int ra,rb;
-	ra=find_codec_rank(a->mime_type);
-	rb=find_codec_rank(b->mime_type);
+	ra=find_codec_rank(a->mime_type,a->clock_rate);
+	rb=find_codec_rank(b->mime_type,b->clock_rate);
 	if (ra>rb) return 1;
 	if (ra<rb) return -1;
 	return 0;
@@ -751,7 +754,7 @@ static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
 			if (pt && ms_filter_codec_supported(pt->mime_type)){
 				if (ms_list_find(l,pt)==NULL){
 					/*unranked codecs are disabled by default*/
-					if (find_codec_rank(pt->mime_type)!=RANK_END){
+					if (find_codec_rank(pt->mime_type, pt->clock_rate)!=RANK_END){
 						payload_type_set_flag(pt,PAYLOAD_TYPE_ENABLED);
 					}
 					ms_message("Adding new codec %s/%i with fmtp %s",
