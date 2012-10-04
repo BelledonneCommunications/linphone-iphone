@@ -22,6 +22,7 @@
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AssetsLibrary/ALAssetsLibrary.h>
+#import <CoreTelephony/CTCallCenter.h>
 
 #import <sqlite3.h>
 
@@ -88,6 +89,7 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
+	CTCallCenter* callCenter;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;

@@ -56,17 +56,7 @@
 
 #pragma mark - 
 
-- (void)handleGSMCallInteration: (id) cCenter {
-    CTCallCenter* ct = (CTCallCenter*) cCenter;
-    
-    int callCount = [ct.currentCalls count];
-     /* pause current call, if any */
-     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-     if (callCount>0 && call) {
-          [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
-          linphone_core_pause_call([LinphoneManager getLc], call);
-      }
-}
+
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
@@ -94,13 +84,7 @@
 	}
     
     if (![[LinphoneManager instance] resignActive]) {
-        // destroying eventHandler if app cannot go in background.
-        // Otherwise if a GSM call happen and Linphone is resumed,
-        // the handler will be called before LinphoneCore is built.
-        // Then handler will be restored in appDidBecomeActive cb
-        callCenter.callEventHandler = nil;
-        [callCenter release];
-        callCenter = nil;
+
     }
     
 }
@@ -111,8 +95,6 @@
     
 	[[LinphoneManager instance] becomeActive];
     
-    // check call state at startup
-    [self handleGSMCallInteration:callCenter];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
@@ -131,17 +113,7 @@
 	}
 }
 
-- (void)setupGSMInteraction {
-    if (callCenter == nil) {
-        callCenter = [[CTCallCenter alloc] init];
-        callCenter.callEventHandler = ^(CTCall* call) {
-            // post on main thread
-            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-                               withObject:callCenter
-                            waitUntilDone:YES];
-        };    
-    }
-}
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
@@ -176,7 +148,7 @@
         [[LinphoneManager instance]	startLibLinphone];
     }
     if([LinphoneManager isLcReady]) {
-        [self setupGSMInteraction];
+        
         
         // Only execute one time at application start
         if(!started) {

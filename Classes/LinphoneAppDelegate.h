@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#import <CoreTelephony/CTCallCenter.h>
+
 
 #import "LinphoneCoreSettingsStore.h"
 
@@ -30,7 +30,6 @@
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate,UIAlertViewDelegate> {
     @private
 	UIWindow *window;
-    CTCallCenter* callCenter;
     BOOL started;
 	int savedMaxCall;
 	

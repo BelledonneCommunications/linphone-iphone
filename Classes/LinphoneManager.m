@@ -378,15 +378,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
     
-	CTCallCenter* ct = [[CTCallCenter alloc] init];
-    
-    int callCount = [ct.currentCalls count];
-    if (callCount>0 && state==LinphoneCallIncomingReceived) {
+    if ([callCenter currentCalls]!=nil && state==LinphoneCallIncomingReceived) {
 		[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
 		linphone_core_terminate_call([LinphoneManager getLc], call);
 		return;
 	}
-	[ct release];
 	
 	if(state == LinphoneCallReleased) {
         LinphoneCallAppData* data = linphone_call_get_user_pointer(call);
@@ -657,8 +653,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 #if HAVE_G729
 	libmsbcg729_init(); // load g729 plugin
 #endif
+	[self setupGSMInteraction];
 	/* Initialize linphone core*/
-	
     [LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
 	linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
@@ -758,6 +754,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
+	// destroying eventHandler if app cannot go in background.
+	// Otherwise if a GSM call happen and Linphone is resumed,
+	// the handler will be called before LinphoneCore is built.
+	// Then handler will be restored in appDidBecomeActive cb
+	callCenter.callEventHandler = nil;
+	[callCenter release];
+	callCenter = nil;
+	
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
 
@@ -807,6 +811,7 @@ static int comp_call_id  (const LinphoneCall* call , const char *callid) {
 
 - (BOOL)resignActive {
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
+
     return YES;
 }
 
@@ -985,8 +990,8 @@ static void audioRouteChangeListenerCallback (
 		return;
 	}
     
-    CTCallCenter* ct = [[CTCallCenter alloc] init];
-    if ([ct.currentCalls count] > 0) {
+    
+    if ([callCenter currentCalls]!=nil) {
         [LinphoneLogger logc:LinphoneLoggerError format:"GSM call in progress, cancelling outgoing SIP call request"];
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot make call",nil)
 														message:NSLocalizedString(@"Please terminate GSM call",nil) 
@@ -995,10 +1000,8 @@ static void audioRouteChangeListenerCallback (
 											  otherButtonTitles:nil];
 		[error show];
         [error release];
-        [ct release];
 		return;
     }
-    [ct release];
     
 	LinphoneProxyConfig* proxyCfg;	
 	//get default proxy
@@ -1194,4 +1197,27 @@ static void audioRouteChangeListenerCallback (
 	return [self lpConfigIntForKey:key forSection:section] == 1;
 }
 
+#pragma GSM management
+
+- (void)setupGSMInteraction {
+    if (callCenter == nil) {
+        callCenter = [[CTCallCenter alloc] init];
+        callCenter.callEventHandler = ^(CTCall* call) {
+            // post on main thread
+            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+								   withObject:callCenter
+								waitUntilDone:YES];
+        };
+    }
+}
+
+- (void)handleGSMCallInteration: (id) cCenter {
+    CTCallCenter* ct = (CTCallCenter*) cCenter;
+	/* pause current call, if any */
+	LinphoneCall* call = linphone_core_get_current_call(theLinphoneCore);
+	if ([ct currentCalls]!=nil && call) {
+		[LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
+		linphone_core_pause_call(theLinphoneCore, call);
+	}
+}
 @end
