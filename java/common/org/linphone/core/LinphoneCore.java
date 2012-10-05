@@ -20,9 +20,6 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallParams;
-
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
@@ -802,4 +799,14 @@ public interface LinphoneCore {
 	 * return the version code of linphone core
 	 */
 	public String getVersion();
+	
+	/**
+	 * remove a linphone friend from linphone core and linphonerc
+	 */
+	void removeFriend(LinphoneFriend lf);
+	
+	/**
+	 * return a linphone friend (if exists) that matches the sip address
+	 */
+	LinphoneFriend findFriendByAddress(String sipUri);
 }

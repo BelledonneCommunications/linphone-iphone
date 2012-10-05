@@ -1592,6 +1592,21 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_done(JNIEnv*  env
 																		,jlong ptr) {
 	 linphone_friend_done((LinphoneFriend*)ptr);
 }
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeFriend(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jlong lf) {
+	linphone_core_remove_friend((LinphoneCore*)ptr, (LinphoneFriend*)lf);
+}
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jaddress) {
+	const char* address = env->GetStringUTFChars(jaddress, NULL);
+	LinphoneFriend *lf = linphone_core_get_friend_by_address((LinphoneCore*)ptr, address);
+	env->ReleaseStringUTFChars(jaddress, address);
+	return (jlong) lf;
+}
 //LinphoneChatRoom
 extern "C" long Java_org_linphone_core_LinphoneChatRoomImpl_getPeerAddress(JNIEnv*  env
 																		,jobject  thiz
