@@ -12050,7 +12050,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-28T09:53:17Z</date>
+					<date>2012-10-05T12:13:58Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12060,7 +12060,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>301ca0dd125a814aec815b3dce0b61e4
+					<string>1a73bb401d656923b7ded3d958f5bb5b
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -13227,17 +13227,19 @@ La cause était: %2$@</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>InAppSettingsKit</string>
+							<string>No comment provided by engineer.</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
-							<integer>2</integer>
+							<integer>0</integer>
 							<key>key</key>
-							<string>Mail not configured</string>
+							<string>Low bandwidth</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Mail not configured</string>
+								<string>Low bandwidth</string>
+								<key>fr</key>
+								<string>Bande passante faible</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -13525,31 +13527,6 @@ La cause était: %2$@</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>InAppSettingsKit</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>OK</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>OK</string>
-								<key>fr</key>
-								<string>OK</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
 							<string>No comment provided by engineer.</string>
 							<key>errors</key>
 							<array/>
@@ -13656,7 +13633,7 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Please enter a doamin.
+							<string>Please enter a domain.
 </string>
 							<key>localizations</key>
 							<dict>
@@ -13937,31 +13914,6 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Settings</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Settings</string>
-								<key>fr</key>
-								<string>Options</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
 							<string>Show</string>
 							<key>localizations</key>
 							<dict>
@@ -14214,29 +14166,6 @@ La cause était: %2$@</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>InAppSettingsKit</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>2</integer>
-							<key>key</key>
-							<string>This device is not configured for sending Email. Please configure the Mail settings in the Settings app.</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>This device is not configured for sending Email. Please configure the Mail settings in the Settings app.</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
 							<string>No comment provided by engineer.</string>
 							<key>errors</key>
 							<array/>
@@ -14325,6 +14254,31 @@ La cause était: %2$@</string>
 								<string>Username already exists</string>
 								<key>fr</key>
 								<string>Le nom d'utilisateur existe déjà</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Video cannot be activated because of low bandwidth condition, only audio is available</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Video cannot be activated because of low bandwidth condition, only audio is available</string>
+								<key>fr</key>
+								<string>L'appel video ne peut pas aboutir car les conditions réseaux sont inssufisantent. </string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -15159,6 +15113,130 @@ Raison: %2$s</string>
 								<string>Choose the compression</string>
 								<key>fr</key>
 								<string>Choisissez la compression</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>InAppSettingsKit</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>Mail not configured</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Mail not configured</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>InAppSettingsKit</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>OK</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>OK</string>
+								<key>fr</key>
+								<string>OK</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Please enter a doamin.
+</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Please enter a domain.
+</string>
+								<key>fr</key>
+								<string>Entrez un nom de domaine.
+</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Settings</string>
+								<key>fr</key>
+								<string>Options</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>InAppSettingsKit</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>This device is not configured for sending Email. Please configure the Mail settings in the Settings app.</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>This device is not configured for sending Email. Please configure the Mail settings in the Settings app.</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
