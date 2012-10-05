@@ -582,6 +582,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
+	linphone_call_delete_ice_session(obj);
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
@@ -604,9 +605,6 @@ static void linphone_call_destroy(LinphoneCall *obj)
 		linphone_call_log_destroy(obj->log);
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
-	}
-	if (obj->ice_session) {
-		ice_session_destroy(obj->ice_session);
 	}
 
 	ms_free(obj);
