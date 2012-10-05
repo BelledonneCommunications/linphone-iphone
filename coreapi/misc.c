@@ -795,6 +795,11 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 			} else {
 				ms_error("ice: Selected valid remote candidates should be present if the check list is in the Completed state");
 			}
+		} else {
+			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+				stream->ice_remote_candidates[j].addr[0] = '\0';
+				stream->ice_remote_candidates[j].port = 0;
+			}
 		}
 	}
 }
