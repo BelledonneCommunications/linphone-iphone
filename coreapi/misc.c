@@ -787,8 +787,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
-			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-			if ((rtp_addr != NULL) && (rtcp_addr != NULL)) {
+			if (ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port) == TRUE) {
 				strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
 				stream->ice_remote_candidates[0].port = rtp_port;
 				strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
