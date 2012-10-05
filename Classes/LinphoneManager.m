@@ -378,13 +378,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     // Handling wrapper
     
-    if ([callCenter currentCalls]!=nil && state==LinphoneCallIncomingReceived) {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
-		linphone_core_terminate_call([LinphoneManager getLc], call);
-		return;
-	}
-	
-	if(state == LinphoneCallReleased) {
+ 	if(state == LinphoneCallReleased) {
         LinphoneCallAppData* data = linphone_call_get_user_pointer(call);
         if(data != NULL) {
             [data release];
@@ -908,6 +902,16 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
+	
+	
+	//call center is unrelialable on the long run, so we change it each time the application is resumed. To avoid zombie GSM call
+	[self setupGSMInteraction];
+	
+	//to make sure presence status is correct
+	if ([callCenter currentCalls]==nil)
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+	
+
 }
 
 - (void)beginInterruption {
@@ -1204,24 +1208,31 @@ static void audioRouteChangeListenerCallback (
 #pragma GSM management
 
 - (void)setupGSMInteraction {
-    if (callCenter == nil) {
-        callCenter = [[CTCallCenter alloc] init];
-        callCenter.callEventHandler = ^(CTCall* call) {
-            // post on main thread
-            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-								   withObject:callCenter
-								waitUntilDone:YES];
-        };
-    }
+    
+	if (callCenter != nil)
+		[callCenter release];
+	
+    callCenter = [[CTCallCenter alloc] init];
+    callCenter.callEventHandler = ^(CTCall* call) {
+		// post on main thread
+		[self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+							   withObject:callCenter
+							waitUntilDone:YES];
+	};
+    
 }
 
 - (void)handleGSMCallInteration: (id) cCenter {
     CTCallCenter* ct = (CTCallCenter*) cCenter;
 	/* pause current call, if any */
 	LinphoneCall* call = linphone_core_get_current_call(theLinphoneCore);
-	if ([ct currentCalls]!=nil && call) {
-		[LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
-		linphone_core_pause_call(theLinphoneCore, call);
-	}
+	if ([ct currentCalls]!=nil) {
+		if (call) {[LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
+			linphone_core_pause_call(theLinphoneCore, call);
+		}
+		//set current status to busy
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusBusy);
+	} else
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
 }
 @end
