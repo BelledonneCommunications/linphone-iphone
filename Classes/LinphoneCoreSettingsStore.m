@@ -216,8 +216,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rfc_dtmf_preference", 1) forKey:@"rfc_dtmf_preference"];
     }
     
-	if (lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference",0))
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+
 	
 	[changedDict release];
 	changedDict = [[NSMutableDictionary alloc] init];
@@ -499,7 +498,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", debugmode);
 	if (debugmode) linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	else linphone_core_disable_logs();
-    
+    [[NSUserDefaults standardUserDefaults]  setBool:debugmode forKey:@"debugenable_preference"]; //to be used at linphone core startup
+	
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];

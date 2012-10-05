@@ -655,8 +655,12 @@ static LinphoneCoreVTable linphonec_vtable = {
 #endif
 	[self setupGSMInteraction];
 	/* Initialize linphone core*/
-    [LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
-	linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+    
+	/*to make sure we don't loose debug trace*/
+	if ([[NSUserDefaults standardUserDefaults]  boolForKey:@"debugenable_preference"]) {
+		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+	}
+	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
