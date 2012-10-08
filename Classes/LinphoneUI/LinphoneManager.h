@@ -23,6 +23,7 @@
 #include "linphonecore.h"
 #import "LogView.h"
 #import "LinphoneUIDelegates.h"
+#import "CoreTelephony/CTCallCenter.h"
 
 typedef enum _Connectivity {
 	wifi,
@@ -66,6 +67,7 @@ typedef struct _LinphoneCallAppData {
 	const char*  backCamId;
     
     NSDictionary* currentSettings;
+    CTCallCenter* callCenter;
     
 @public
     CallContext currentCallContextBeforeGoingBackground;
