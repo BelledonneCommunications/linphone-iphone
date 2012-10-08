@@ -266,6 +266,7 @@ static void call_accepted(SalOp *op){
 	}
 
 	md=sal_call_get_final_media_description(op);
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||
 	    call->state==LinphoneCallOutgoingRinging ||
