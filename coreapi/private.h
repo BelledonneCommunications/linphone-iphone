@@ -252,7 +252,6 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
-void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);

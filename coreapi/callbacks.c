@@ -46,9 +46,6 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		call->media_pending=TRUE;
 	}
 	call->resultdesc=new_md;
-	if (call->ice_session != NULL) {
-		linphone_core_deactivate_ice_for_deactivated_media_streams(call, call->resultdesc);
-	}
 	if ((call->audiostream && call->audiostream->ticker) || (call->videostream && call->videostream->ticker)){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
