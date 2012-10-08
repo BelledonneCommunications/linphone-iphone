@@ -3840,7 +3840,10 @@ void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t di
 #endif
 	lc->video_conf.capture=vcap_enabled;
 	lc->video_conf.display=display_enabled;
-
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
+		lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
+	}
 	/* need to re-apply network bandwidth settings*/
 	linphone_core_set_download_bandwidth(lc,
 		linphone_core_get_download_bandwidth(lc));
