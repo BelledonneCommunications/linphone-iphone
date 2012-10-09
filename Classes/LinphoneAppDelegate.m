@@ -211,14 +211,8 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    if([notification.userInfo objectForKey:@"call"] != nil) {
-        LinphoneCall* call;
-        [(NSData*)[notification.userInfo objectForKey:@"call"] getBytes:&call];
-        if (!call) {
-            [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
-            return;
-        }
-        linphone_core_accept_call([LinphoneManager getLc], call);
+    if([notification.userInfo objectForKey:@"callId"] != nil) {
+        [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
         // Go to ChatRoom view

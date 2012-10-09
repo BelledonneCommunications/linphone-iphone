@@ -115,6 +115,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)enableAutoAnswerForCallId:(NSString*) callid;
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
+- (void)acceptCallForCallId:(NSString*)callid;
 - (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;

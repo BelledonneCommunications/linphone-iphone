@@ -427,9 +427,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 				data->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
 				data->notification.alertAction = NSLocalizedString(@"Answer", nil);
 				data->notification.soundName = @"ring.caf";
-				data->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
+				data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
 				
-				[[LinphoneManager instance] enableAutoAnswerForCallId:callId];
 				[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
 				
 				if (!incallBgTask){
@@ -844,10 +843,24 @@ static LinphoneCoreVTable linphonec_vtable = {
         
     }
 }
-static int comp_call_id  (const LinphoneCall* call , const char *callid) {
+
+static int comp_call_id(const LinphoneCall* call , const char *callid) {
 	return strcmp(linphone_call_get_call_log(call)->call_id, callid);
 }
-- (void)enableAutoAnswerForCallId:(NSString*) callid{
+
+- (void)acceptCallForCallId:(NSString*)callid {
+    //first, make sure this callid is not already involved in a call
+	if ([LinphoneManager isLcReady]) {
+		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
+        MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+		if (call != NULL) {
+            linphone_core_accept_call(theLinphoneCore, (LinphoneCall*)call->data);
+			return;
+		};
+	}
+}
+
+- (void)enableAutoAnswerForCallId:(NSString*) callid {
     //first, make sure this callid is not already involved in a call
 	if ([LinphoneManager isLcReady]) {
 		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
@@ -862,7 +875,7 @@ static int comp_call_id  (const LinphoneCall* call , const char *callid) {
 	
 }
 
-- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId{
+- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId {
     for (NSString* pendingNotif in pendindCallIdFromRemoteNotif) {
 		if ([pendingNotif  compare:callId] == NSOrderedSame) {
 			[pendindCallIdFromRemoteNotif removeObject:pendingNotif];
