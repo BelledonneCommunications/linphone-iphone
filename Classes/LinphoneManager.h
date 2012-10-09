@@ -89,6 +89,7 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
+	UIBackgroundTaskIdentifier incallBgTask;
 	CTCallCenter* callCenter;
     
 @public

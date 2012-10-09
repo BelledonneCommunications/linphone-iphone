@@ -376,24 +376,89 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 #pragma mark - Call State Functions
 
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
-    // Handling wrapper
     
- 	if(state == LinphoneCallReleased) {
-        LinphoneCallAppData* data = linphone_call_get_user_pointer(call);
+	// Handling wrapper
+	LinphoneCallAppData* data=nil;
+	if (!linphone_call_get_user_pointer(call)) {
+        data = [[LinphoneCallAppData alloc] init];
+        linphone_call_set_user_pointer(call, data);
+    } else {
+		data = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+	}
+	if (state == LinphoneCallIncomingReceived
+		&&[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        LinphoneCallLog* callLog=linphone_call_get_call_log(call);
+		NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
+        const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+        NSString* address = nil;
+        if(addr != NULL) {
+            BOOL useLinphoneAddress = true;
+            // contact name
+            char* lAddress = linphone_address_as_string_uri_only(addr);
+            if(lAddress) {
+                NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+                if(contact) {
+                    address = [FastAddressBook getContactDisplayName:contact];
+                    useLinphoneAddress = false;
+                }
+                ms_free(lAddress);
+            }
+            if(useLinphoneAddress) {
+                const char* lDisplayName = linphone_address_get_display_name(addr);
+                const char* lUserName = linphone_address_get_username(addr);
+                if (lDisplayName)
+                    address = [NSString stringWithUTF8String:lDisplayName];
+                else if(lUserName)
+                    address = [NSString stringWithUTF8String:lUserName];
+            }
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
+		if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
+			// case where a remote notification is not already received
+			// Create a new local notification
+			data->notification = [[UILocalNotification alloc] init];
+			if (data->notification) {
+				data->notification.repeatInterval = 0;
+				data->notification.alertBody =[NSString  stringWithFormat:NSLocalizedString(@"IC_MSG",nil), address];
+				data->notification.alertAction = NSLocalizedString(@"Answer", nil);
+				data->notification.soundName = @"ring.caf";
+				data->notification.userInfo = [NSDictionary dictionaryWithObject:[NSData dataWithBytes:&call length:sizeof(call)] forKey:@"call"];
+				
+				[[LinphoneManager instance] enableAutoAnswerForCallId:callId];
+				[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
+				
+				if (!incallBgTask){
+					incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+						[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
+					}];
+				}
+
+			}
+		}
+	}
+	
+	
+	if(state == LinphoneCallReleased) {
         if(data != NULL) {
             [data release];
             linphone_call_set_user_pointer(call, NULL);
         }
     }
-    if (!linphone_call_get_user_pointer(call)) {
-        LinphoneCallAppData* data = [[LinphoneCallAppData alloc] init];
-        linphone_call_set_user_pointer(call, data);
-    }
+ 
     
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
             [self setSpeakerEnabled:FALSE];
+		if (incallBgTask) {
+			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
+			incallBgTask=0;
+		}
     }
     
     // Enable speaker when video
@@ -900,6 +965,11 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 		[[UIApplication sharedApplication]  endBackgroundTask:pausedCallBgTask];
 		pausedCallBgTask=0;
 	}
+    if (incallBgTask) {
+		[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
+		incallBgTask=0;
+	}
+	
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
 	
