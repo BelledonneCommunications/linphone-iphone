@@ -830,6 +830,7 @@ static void video_config_read(LinphoneCore *lc){
 	const char *str;	
 #ifdef VIDEO_ENABLED	
 	LinphoneVideoPolicy vpol;
+	memset(&vpol, 0, sizeof(LinphoneVideoPolicy));
 #endif
 	build_video_devices_table(lc);
 
