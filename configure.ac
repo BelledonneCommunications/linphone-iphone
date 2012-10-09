@@ -107,6 +107,7 @@ if test "$mingw_found" != "yes" ; then
 	dnl AM_GNU_GETTEXT pollutes CPPFLAGS: workaround this.
 	CPPFLAGS_save=$CPPFLAGS
 	AM_GNU_GETTEXT([external])
+	AC_SUBST(INTLLIBS)
 	CPPFLAGS=$CPPFLAGS_save
 	LIBS="$LIBS $LIBINTL"
 else
