@@ -35,12 +35,12 @@ max_calls=3
 [wizard]
 service_url=https://www.linphone.org/wizard.php
 domain=sip.linphone.org
-proxy=sip.linphone.org:5223
+proxy=sip.linphone.org:5228
 password_length=6
 username_length=4
 expires=604800
 push_notification=1
-transport=tls
+transport=tcp
 sharing_server=https://www.linphone.org:444/upload.php
 ice=1
 stun=stun.linphone.org
