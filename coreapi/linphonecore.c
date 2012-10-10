@@ -2581,7 +2581,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		}
 		call->params = *params;
 		update_local_media_description(lc, call);
-		if ((call->ice_session != NULL) && !has_video && params->has_video) {
+		if ((call->ice_session != NULL) && !has_video && call->params.has_video) {
 			/* Defer call update until the ICE candidates gathering process has finished. */
 			ms_message("Defer call update to gather ICE candidates");
 			linphone_call_init_video_stream(call);
