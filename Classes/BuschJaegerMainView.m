@@ -195,7 +195,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
         }
         case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
-        case LinphoneCallUpdated:
+        case LinphoneCallUpdating:
         {
             [navigationController popToViewController:welcomeView animated:FALSE];
             [navigationController pushViewController:callView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework

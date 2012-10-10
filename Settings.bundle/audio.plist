@@ -52,6 +52,16 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>amr_preference</string>
+			<key>Title</key>
+			<string>AMR</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>g722_preference</string>
@@ -64,7 +74,17 @@
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
-			<string>gsm_8k_preference</string>
+			<string>g729_preference</string>
+			<key>Title</key>
+			<string>G729</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>gsm_preference</string>
 			<key>Title</key>
 			<string>GSM</string>
 			<key>Type</key>

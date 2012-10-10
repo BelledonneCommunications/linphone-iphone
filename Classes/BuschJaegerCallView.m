@@ -186,7 +186,7 @@
         case LinphoneCallOutgoingRinging:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning:
-        case LinphoneCallUpdated:
+        case LinphoneCallUpdating:
         {
             [[LinphoneManager instance] setSpeakerEnabled:TRUE];
 			//check video

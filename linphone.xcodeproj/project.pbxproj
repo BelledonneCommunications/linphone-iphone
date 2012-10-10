@@ -257,6 +257,8 @@
 		D37CD3A215E2452C0028869A /* BuschJaegerStationTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */; };
 		D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
 		D37DC7191594AF3F00B2A5EB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37DC7171594AF3400B2A5EB /* MessageUI.framework */; };
+		D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
+		D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */; };
 		D380800515C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380800615C28A7A005BE9BC /* UILinphone.m in Sources */ = {isa = PBXBuildFile; fileRef = D380800415C28A7A005BE9BC /* UILinphone.m */; };
 		D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */ = {isa = PBXBuildFile; fileRef = D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */; };
@@ -693,6 +695,8 @@
 		D37CD39F15E245290028869A /* BuschJaegerStationTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerStationTableViewController.h; sourceTree = "<group>"; };
 		D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerStationTableViewController.m; sourceTree = "<group>"; };
 		D37DC7171594AF3400B2A5EB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CAAnimation+Blocks.h"; sourceTree = "<group>"; };
+		D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CAAnimation+Blocks.m"; sourceTree = "<group>"; };
 		D37EE160160377D7003608A6 /* DTActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTActionSheet.h; sourceTree = "<group>"; };
 		D37EE161160377D7003608A6 /* DTActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTActionSheet.m; sourceTree = "<group>"; };
 		D380800415C28A7A005BE9BC /* UILinphone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphone.m; sourceTree = "<group>"; };
@@ -1343,6 +1347,7 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D37E3ECA1619C27A0087659A /* CAAnimationBlocks */,
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
 				D37EE15F160377D7003608A6 /* DTFoundation */,
@@ -1387,6 +1392,16 @@
 			);
 			name = ZBarSDK;
 			path = Utils/ZBarSDK;
+			sourceTree = "<group>";
+		};
+		D37E3ECA1619C27A0087659A /* CAAnimationBlocks */ = {
+			isa = PBXGroup;
+			children = (
+				D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */,
+				D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */,
+			);
+			name = CAAnimationBlocks;
+			path = Utils/CAAnimationBlocks;
 			sourceTree = "<group>";
 		};
 		D37CD35615E22B0C0028869A /* Headers */ = {
@@ -1744,6 +1759,7 @@
 				D376EAF416008DF1007C8226 /* User.m in Sources */,
 				D32EDD9B1600C450009A84C7 /* LevelPushButton.m in Sources */,
 				D37490841612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
+				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1799,6 +1815,7 @@
 				D376EAF516008DF1007C8226 /* User.m in Sources */,
 				D32EDD9C1600C450009A84C7 /* LevelPushButton.m in Sources */,
 				D37490851612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
+				D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1833,6 +1850,7 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					HAVE_SSL,
 					DEBUG,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -1903,6 +1921,7 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2147,6 +2166,7 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2217,6 +2237,7 @@
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
+					HAVE_SSL,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (

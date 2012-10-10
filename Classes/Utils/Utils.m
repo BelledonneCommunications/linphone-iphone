@@ -63,6 +63,18 @@
 
 @implementation LinphoneUtils
 
++ (BOOL)findAndResignFirstResponder:(UIView*)view {
+    if (view.isFirstResponder) {
+        [view resignFirstResponder];
+        return YES;
+    }
+    for (UIView *subView in view.subviews) {
+        if ([LinphoneUtils findAndResignFirstResponder:subView])
+            return YES;
+    }
+    return NO;
+}
+
 + (void)adjustFontSize:(UIView*)view mult:(float)mult{
     if([view isKindOfClass:[UILabel class]]) {
         UILabel *label = (UILabel*)view;

@@ -1,4 +1,4 @@
-openssl_version=1.0.0a
+openssl_version=1.0.1c
 openssl_site=http://www.openssl.org/source
 OPENSSL_BUILD_DIR?=$(BUILDER_BUILD_DIR)/externals/openssl
 

@@ -513,7 +513,7 @@
         NSArray *anchors = (NSArray*)certificates;
         SecTrustSetAnchorCertificates(trust, (CFArrayRef)anchors);
         SecTrustSetAnchorCertificatesOnly(trust, YES);
-        SecPolicyCreateBasicX509()
+
         SecTrustResultType result = kSecTrustResultInvalid;
         OSStatus sanityChesk = SecTrustEvaluate(trust, &result);
         

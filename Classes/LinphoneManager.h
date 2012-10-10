@@ -22,6 +22,7 @@
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AssetsLibrary/ALAssetsLibrary.h>
+#import <CoreTelephony/CTCallCenter.h>
 
 #import <sqlite3.h>
 
@@ -69,10 +70,14 @@ struct NetworkReachabilityContext {
     void (*networkStateChanged) (Connectivity newConnectivity);
 };
 
-typedef struct _LinphoneCallAppData {
-    bool_t batteryWarningShown;
+@interface LinphoneCallAppData :NSObject {
+    @public
+	bool_t batteryWarningShown;
     UILocalNotification *notification;
-} LinphoneCallAppData;
+    NSMutableDictionary *userInfos;
+	bool_t videoRequested; /*set when user has requested for video*/
+};
+@end
 
 typedef struct _LinphoneManagerSounds {
     SystemSoundID call;
@@ -88,9 +93,12 @@ typedef struct _LinphoneManagerSounds {
     
 @private
 	NSTimer* mIterateTimer;
-    time_t lastRemoteNotificationTime;
+    NSMutableArray*  pendindCallIdFromRemoteNotif;
 	Connectivity connectivity;
     BOOL stopWaitingRegisters;
+	UIBackgroundTaskIdentifier pausedCallBgTask;
+	UIBackgroundTaskIdentifier incallBgTask;
+	CTCallCenter* callCenter;
     
     /* MODIFICATION: Add NSUSerdefault settings */
     NSDictionary *currentSettings;
@@ -116,9 +124,10 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
-- (void)didReceiveRemoteNotification;
+- (void)enableAutoAnswerForCallId:(NSString*) callid;
 - (void)addPushTokenToProxyConfig: (LinphoneProxyConfig*)cfg;
-- (BOOL)shouldAutoAcceptCall;
+- (BOOL)shouldAutoAcceptCallForCallId:(NSString*) callId;
+- (void)acceptCallForCallId:(NSString*)callid;
 - (void)waitForRegisterToArrive;
 
 + (void)kickOffNetworkConnection;

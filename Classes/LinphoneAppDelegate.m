@@ -53,17 +53,7 @@
 
 #pragma mark - 
 
-- (void)handleGSMCallInteration: (id) cCenter {
-    CTCallCenter* ct = (CTCallCenter*) cCenter;
-    
-    int callCount = [ct.currentCalls count];
-     /* pause current call, if any */
-     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-     if (callCount>0 && call) {
-          [LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
-          linphone_core_pause_call([LinphoneManager getLc], call);
-      }
-}
+
 
 - (void)applicationDidEnterBackground:(UIApplication *)application{
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
@@ -91,13 +81,7 @@
 	}
     
     if (![[LinphoneManager instance] resignActive]) {
-        // destroying eventHandler if app cannot go in background.
-        // Otherwise if a GSM call happen and Linphone is resumed,
-        // the handler will be called before LinphoneCore is built.
-        // Then handler will be restored in appDidBecomeActive cb
-        callCenter.callEventHandler = nil;
-        [callCenter release];
-        callCenter = nil;
+
     }
     
 }
@@ -108,8 +92,6 @@
     
 	[[LinphoneManager instance] becomeActive];
     
-    // check call state at startup
-    [self handleGSMCallInteration:callCenter];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
@@ -128,17 +110,7 @@
 	}
 }
 
-- (void)setupGSMInteraction {
-    if (callCenter == nil) {
-        callCenter = [[CTCallCenter alloc] init];
-        callCenter.callEventHandler = ^(CTCall* call) {
-            // post on main thread
-            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-                               withObject:callCenter
-                            waitUntilDone:YES];
-        };    
-    }
-}
+
 
 /* MODIFICATION: Add default settings */
 - (void) loadDefaultSettings {
@@ -193,6 +165,13 @@
     
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
     
+	//work around until we can access lpconfig without linphonecore
+	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"YES", @"start_at_boot_preference",
+								 @"YES", @"backgroundmode_preference",
+                                 nil];
+	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+	
     if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
         && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
@@ -202,7 +181,10 @@
         }
     
     [self startApplication];
-    
+	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotif){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
+	}
     return YES;
 }
 
@@ -212,7 +194,7 @@
         [[LinphoneManager instance]	startLibLinphone];
     }
     if([LinphoneManager isLcReady]) {
-        [self setupGSMInteraction];
+        
         
         // Only execute one time at application start
         if(!started) {
@@ -228,6 +210,7 @@
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
@@ -247,41 +230,12 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"PushNotification: Receive %@", userInfo];
-    /* MODIFICATION: Remove remote notification
-    NSDictionary *aps = [userInfo objectForKey:@"aps"];
-    if(aps != nil) {
-        NSDictionary *alert = [aps objectForKey:@"alert"];
-        if(alert != nil) {
-            NSString *loc_key = [alert objectForKey:@"loc-key"];
-			//if we receive a remote notification, it is because our TCP background socket was no more working.
-            //As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
-			LinphoneCore *lc = [LinphoneManager getLc];
-			linphone_core_set_network_reachable(lc, FALSE);
-			linphone_core_set_network_reachable(lc, TRUE);
-            if(loc_key != nil) {
-                if([loc_key isEqualToString:@"IM_MSG"]) {
-                    [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
-                    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
-                } else if([loc_key isEqualToString:@"IC_MSG"]) {
-                    //it's a call
-                    [[LinphoneManager instance] didReceiveRemoteNotification];
-                }
-            }
-        }
-    }
-    */
+	[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    if([notification.userInfo objectForKey:@"call"] != nil) {
-        LinphoneCall* call;
-        [(NSData*)[notification.userInfo objectForKey:@"call"] getBytes:&call];
-        if (!call) {
-            [LinphoneLogger logc:LinphoneLoggerWarning format:"Local notification received with nil call"];
-            return;
-        }
-        linphone_core_accept_call([LinphoneManager getLc], call);
+    if([notification.userInfo objectForKey:@"callId"] != nil) {
+        [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
         /* MODIFICATION: Remove chat local notificaiton
         NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
