@@ -53,7 +53,8 @@ NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 /* MODIFICATION: Add buschjaeger configuration event */
 NSString *const kLinphoneConfigurationUpdate = @"LinphoneConfigurationUpdate";
 NSString *const kLinphoneConfigurationPath = @"buschjaeger.ini";
-NSString *const kLinphonePEMPath = @"certificates";
+NSString *const kLinphonePEMPath = @"cert.pem";
+NSString *const kLinphoneDERPath = @"cert.der";
 /**/
 NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
@@ -656,7 +657,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
 	NSString *confiFileName = [LinphoneManager documentFile:@".linphonerc"];
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
+    /* MODIFICATION: Change ROOTCA
 	const char* lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+     */
+
 	connectivity = none;
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
@@ -688,7 +692,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     fastAddressBook = [[FastAddressBook alloc] init];
     */
 	
-    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
+    linphone_core_set_root_ca(theLinphoneCore, [[LinphoneManager documentFile:kLinphonePEMPath] UTF8String]);
 	// Set audio assets
 	const char* lRing = [[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ring(theLinphoneCore, lRing);
@@ -1161,8 +1165,6 @@ static void audioRouteChangeListenerCallback (
 		linphone_core_disable_logs();
 	}
     
-    NSBundle* myBundle = [NSBundle mainBundle];
-    
     /* unregister before modifying any settings */
     {
         LinphoneProxyConfig* proxyCfg;
@@ -1182,14 +1184,15 @@ static void audioRouteChangeListenerCallback (
             }
         }
     }
-    
+    /* MODIFICATION: Change ROOTCA
     const char* lRootCa = [[myBundle pathForResource:@"rootca"ofType:@"pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-    linphone_core_set_root_ca(theLinphoneCore, lRootCa);
+     */
+    linphone_core_set_root_ca(theLinphoneCore, [[LinphoneManager documentFile:kLinphonePEMPath] UTF8String]);
     
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
     
 	LCSipTransports transportValue;
-	if (transport!=nil) {
+	if (transport != nil) {
 		if (linphone_core_get_sip_transports(theLinphoneCore, &transportValue)) {
             [LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
 		}

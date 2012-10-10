@@ -27,6 +27,7 @@
 @property (copy) NSString* localHistory;
 @property (copy) NSString* globalHistory;
 @property (copy) NSString* tlsCertificate;
+@property (copy) NSString* derCertificate;
 
 - (NSString*)write;
 + (id)parse:(NSString*)section array:(NSArray*)array;

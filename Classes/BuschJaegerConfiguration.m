@@ -197,15 +197,17 @@
 
 - (BOOL)downloadCertificates:(id<BuschJaegerConfigurationDelegate>)delegate {
     if(network.tlsCertificate && [network.tlsCertificate length] > 0) {
-        NSURL *url = [NSURL URLWithString:network.tlsCertificate];
-        if(url != nil) {
-            NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
-            if(request != nil) {
+        NSURL *pemUrl = [NSURL URLWithString:network.tlsCertificate];
+        NSURL *derUrl = [NSURL URLWithString:network.derCertificate];
+        if(pemUrl != nil && derUrl != nil) {
+            NSURLRequest *pemRequest = [NSURLRequest requestWithURL:pemUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+            NSURLRequest *derRequest = [NSURLRequest requestWithURL:pemUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+            if(pemRequest != nil && derRequest != nil) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
                     NSURLResponse *response = nil;
                     NSError *error = nil;
                     NSData *data  = nil;
-                    data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
+                    data = [NSURLConnection sendSynchronousRequest:pemRequest returningResponse:&response error:&error delegate:self];
                     if(data == nil) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[error localizedDescription]];
@@ -213,24 +215,52 @@
                     } else {
                         NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                         if(urlResponse.statusCode == 200) {
-                            if([data writeToFile:[LinphoneManager documentFile:kLinphonePEMPath] atomically:TRUE]) {
-                                [self reloadCertificates];
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    [delegate buschJaegerConfigurationSuccess];
-                                });
-                            } else {
+                            if(![data writeToFile:[LinphoneManager documentFile:kLinphonePEMPath] atomically:TRUE]) {
                                 [self reset];
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                     [delegate buschJaegerConfigurationError:NSLocalizedString(@"Unknown issue when saving configuration", nil)];
                                 });
+                                return;
                             }
                         } else {
                             [self reset];
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                             });
+                            return;
                         }
                     }
+                    
+                    error = nil;
+                    data  = nil;
+                    data = [NSURLConnection sendSynchronousRequest:derRequest returningResponse:&response error:&error delegate:self];
+                    if(data == nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [delegate buschJaegerConfigurationError:[error localizedDescription]];
+                        });
+                    } else {
+                        NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+                        if(urlResponse.statusCode == 200) {
+                            if(![data writeToFile:[LinphoneManager documentFile:kLinphoneDERPath] atomically:TRUE]) {
+                                [self reset];
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    [delegate buschJaegerConfigurationError:NSLocalizedString(@"Unknown issue when saving configuration", nil)];
+                                });
+                                return;
+                            }
+                        } else {
+                            [self reset];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
+                            });
+                            return;
+                        }
+                    }
+                    
+                    [self reloadCertificates];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [delegate buschJaegerConfigurationSuccess];
+                    });
                 });
                 return TRUE;
             }
@@ -248,6 +278,8 @@
 }
 
 - (void)reloadCertificates {
+    [[LinphoneManager instance] destroyLibLinphone];
+    [[LinphoneManager instance] startLibLinphone];
     [self unloadCertificates];
     [self loadCertificates];
 }
@@ -258,7 +290,7 @@
         CFRelease(certificates);
         certificates = NULL;
     }
-    NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager documentFile:kLinphonePEMPath]];
+    NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager documentFile:kLinphoneDERPath]];
     if(data != NULL) {
         SecCertificateRef rootcert = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)data);
         if(rootcert) {
@@ -481,7 +513,7 @@
         NSArray *anchors = (NSArray*)certificates;
         SecTrustSetAnchorCertificates(trust, (CFArrayRef)anchors);
         SecTrustSetAnchorCertificatesOnly(trust, YES);
-        
+        SecPolicyCreateBasicX509()
         SecTrustResultType result = kSecTrustResultInvalid;
         OSStatus sanityChesk = SecTrustEvaluate(trust, &result);
         

@@ -29,6 +29,7 @@
 @synthesize localHistory;
 @synthesize globalHistory;
 @synthesize tlsCertificate;
+@synthesize derCertificate;
 /*
  domain=abb
  
@@ -40,7 +41,9 @@
  
  global-history=http://welcome.dyndns.org:8080/history.ini
  
- tls-certificate=http://192.168.1.1:8080/cert.pem
+ tls-certificate=http://192.168.1.1:8080/cert.pem 
+ 
+ der-certificate=http://192.168.1.1:8080/cert.der
  */
 
 - (void)dealloc {
@@ -63,6 +66,7 @@
     [str appendString:[NSString stringWithFormat:@"local-history=%@\n", localHistory]];
     [str appendString:[NSString stringWithFormat:@"global-history=%@\n", globalHistory]];
     [str appendString:[NSString stringWithFormat:@"tls-certificate=%@\n", tlsCertificate]];
+    [str appendString:[NSString stringWithFormat:@"der-certificate=%@\n", derCertificate]];
     return str;
 }
 
@@ -85,6 +89,8 @@
                 net.globalHistory = param;
             } else if((param = [BuschJaegerConfiguration getRegexValue:@"^tls-certificate=(.*)$" data:entry]) != nil) {
                 net.tlsCertificate = param;
+            } else if((param = [BuschJaegerConfiguration getRegexValue:@"^der-certificate=(.*)$" data:entry]) != nil) {
+                net.derCertificate = param;
             } else if([[entry stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] != 0){
                 [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown entry in %@ section: %@", section, entry];
             }

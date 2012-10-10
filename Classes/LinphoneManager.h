@@ -44,6 +44,7 @@ extern NSString *const kLinphoneMainViewChange;
 extern NSString *const kLinphoneConfigurationUpdate;
 extern NSString *const kLinphoneConfigurationPath;
 extern NSString *const kLinphonePEMPath;
+extern NSString *const kLinphoneDERPath;
 /**/
 extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
