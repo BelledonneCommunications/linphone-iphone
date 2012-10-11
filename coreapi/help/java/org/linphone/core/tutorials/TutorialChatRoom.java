@@ -80,6 +80,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
 	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
+	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 	
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {
         write("Message ["+message+"] received from ["+from.asString()+"]");

@@ -85,6 +85,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
 	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
+	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 
 	public static void main(String[] args) {
 		// Check tutorial was called with the right number of arguments
