@@ -1819,9 +1819,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			ice_session_compute_candidates_foundations(call->ice_session);
 			ice_session_eliminate_redundant_candidates(call->ice_session);
 			ice_session_choose_default_candidates(call->ice_session);
-			ping_time = ice_session_gathering_duration(call->ice_session);
+			ping_time = ice_session_average_gathering_round_trip_time(call->ice_session);
 			if (ping_time >=0) {
-				ping_time /= ice_session_nb_check_lists(call->ice_session);
 				call->ping_time=ping_time;
 			}
 		} else {
