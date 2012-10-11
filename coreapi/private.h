@@ -398,8 +398,10 @@ typedef struct sip_config
 
 typedef struct rtp_config
 {
-	int audio_rtp_port;
-	int video_rtp_port;
+	int audio_rtp_min_port;
+	int audio_rtp_max_port;
+	int video_rtp_min_port;
+	int video_rtp_max_port;
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;

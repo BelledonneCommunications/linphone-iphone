@@ -1115,13 +1115,21 @@ void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
 int linphone_core_get_audio_port(const LinphoneCore *lc);
 
+void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
 int linphone_core_get_video_port(const LinphoneCore *lc);
+
+void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
 void linphone_core_set_audio_port(LinphoneCore *lc, int port);
 
+void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port);
+
 void linphone_core_set_video_port(LinphoneCore *lc, int port);
+
+void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
 
 void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 

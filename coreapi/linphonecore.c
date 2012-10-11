@@ -624,18 +624,29 @@ static void sip_config_read(LinphoneCore *lc)
 
 static void rtp_config_read(LinphoneCore *lc)
 {
-	int port;
+	int min_port, max_port;
 	int jitt_comp;
 	int nortp_timeout;
 	bool_t rtp_no_xmit_on_audio_mute;
 	bool_t adaptive_jitt_comp_enabled;
 
-	port=lp_config_get_int(lc->config,"rtp","audio_rtp_port",7078);
-	linphone_core_set_audio_port(lc,port);
+	if (lp_config_get_range(lc->config, "rtp", "audio_rtp_port", &min_port, &max_port, 7078, 7078) == TRUE) {
+		if (min_port <= 0) min_port = 1;
+		if (max_port > 65535) max_port = 65535;
+		linphone_core_set_audio_port_range(lc, min_port, max_port);
+	} else {
+		min_port = lp_config_get_int(lc->config, "rtp", "audio_rtp_port", 7078);
+		linphone_core_set_audio_port(lc, min_port);
+	}
 
-	port=lp_config_get_int(lc->config,"rtp","video_rtp_port",9078);
-	if (port==0) port=9078;
-	linphone_core_set_video_port(lc,port);
+	if (lp_config_get_range(lc->config, "rtp", "video_rtp_port", &min_port, &max_port, 9078, 9078) == TRUE) {
+		if (min_port <= 0) min_port = 1;
+		if (max_port > 65535) max_port = 65535;
+		linphone_core_set_video_port_range(lc, min_port, max_port);
+	} else {
+		min_port = lp_config_get_int(lc->config, "rtp", "video_rtp_port", 9078);
+		linphone_core_set_video_port(lc, min_port);
+	}
 
 	jitt_comp=lp_config_get_int(lc->config,"rtp","audio_jitt_comp",60);
 	linphone_core_set_audio_jittcomp(lc,jitt_comp);
@@ -1440,7 +1451,18 @@ int linphone_core_get_video_jittcomp(LinphoneCore *lc)
 **/
 int linphone_core_get_audio_port(const LinphoneCore *lc)
 {
-	return lc->rtp_conf.audio_rtp_port;
+	return lc->rtp_conf.audio_rtp_min_port;
+}
+
+/**
+ * Get the audio port range from which is randomly chosen the UDP port used for audio streaming.
+ *
+ * @ingroup network_parameters
+ */
+void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port)
+{
+	*min_port = lc->rtp_conf.audio_rtp_min_port;
+	*max_port = lc->rtp_conf.audio_rtp_max_port;
 }
 
 /**
@@ -1449,7 +1471,18 @@ int linphone_core_get_audio_port(const LinphoneCore *lc)
  * @ingroup network_parameters
 **/
 int linphone_core_get_video_port(const LinphoneCore *lc){
-	return lc->rtp_conf.video_rtp_port;
+	return lc->rtp_conf.video_rtp_min_port;
+}
+
+/**
+ * Get the video port range from which is randomly chosen the UDP port used for video streaming.
+ *
+ * @ingroup network_parameters
+ */
+void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port)
+{
+	*min_port = lc->rtp_conf.video_rtp_min_port;
+	*max_port = lc->rtp_conf.video_rtp_max_port;
 }
 
 
@@ -1501,7 +1534,16 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_
 **/
 void linphone_core_set_audio_port(LinphoneCore *lc, int port)
 {
-	lc->rtp_conf.audio_rtp_port=port;
+	lc->rtp_conf.audio_rtp_min_port=lc->rtp_conf.audio_rtp_max_port=port;
+}
+
+/**
+ * Sets the UDP port range from which to randomly select the port used for audio streaming.
+ */
+void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port)
+{
+	lc->rtp_conf.audio_rtp_min_port=min_port;
+	lc->rtp_conf.audio_rtp_max_port=max_port;
 }
 
 /**
@@ -1510,7 +1552,16 @@ void linphone_core_set_audio_port(LinphoneCore *lc, int port)
  * @ingroup network_parameters
 **/
 void linphone_core_set_video_port(LinphoneCore *lc, int port){
-	lc->rtp_conf.video_rtp_port=port;
+	lc->rtp_conf.video_rtp_min_port=lc->rtp_conf.video_rtp_max_port=port;
+}
+
+/**
+ * Sets the UDP port range from which to randomly select the port used for video streaming.
+ */
+void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port)
+{
+	lc->rtp_conf.video_rtp_min_port=min_port;
+	lc->rtp_conf.video_rtp_max_port=max_port;
 }
 
 /**
@@ -4556,8 +4607,16 @@ void sip_config_uninit(LinphoneCore *lc)
 void rtp_config_uninit(LinphoneCore *lc)
 {
 	rtp_config_t *config=&lc->rtp_conf;
-	lp_config_set_int(lc->config,"rtp","audio_rtp_port",config->audio_rtp_port);
-	lp_config_set_int(lc->config,"rtp","video_rtp_port",config->video_rtp_port);
+	if (config->audio_rtp_min_port == config->audio_rtp_max_port) {
+		lp_config_set_int(lc->config, "rtp", "audio_rtp_port", config->audio_rtp_min_port);
+	} else {
+		lp_config_set_range(lc->config, "rtp", "audio_rtp_port", config->audio_rtp_min_port, config->audio_rtp_max_port);
+	}
+	if (config->video_rtp_min_port == config->video_rtp_max_port) {
+		lp_config_set_int(lc->config, "rtp", "video_rtp_port", config->video_rtp_min_port);
+	} else {
+		lp_config_set_range(lc->config, "rtp", "video_rtp_port", config->video_rtp_min_port, config->video_rtp_max_port);
+	}
 	lp_config_set_int(lc->config,"rtp","audio_jitt_comp",config->audio_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->video_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","nortp_timeout",config->nortp_timeout);

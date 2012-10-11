@@ -298,17 +298,35 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	return _create_local_media_description(lc,call,id,id);
 }
 
-static int find_port_offset(LinphoneCore *lc){
+static int find_port_offset(LinphoneCore *lc, SalStreamType type){
 	int offset;
 	MSList *elem;
-	int audio_port;
+	int tried_port;
+	int existing_port;
 	bool_t already_used=FALSE;
 	for(offset=0;offset<100;offset+=2){
-		audio_port=linphone_core_get_audio_port (lc)+offset;
+		switch (type) {
+			default:
+			case SalAudio:
+				tried_port=linphone_core_get_audio_port (lc)+offset;
+				break;
+			case SalVideo:
+				tried_port=linphone_core_get_video_port (lc)+offset;
+				break;
+		}
 		already_used=FALSE;
 		for(elem=lc->calls;elem!=NULL;elem=elem->next){
 			LinphoneCall *call=(LinphoneCall*)elem->data;
-			if (call->audio_port==audio_port) {
+			switch (type) {
+				default:
+				case SalAudio:
+					existing_port = call->audio_port;
+					break;
+				case SalVideo:
+					existing_port = call->video_port;
+					break;
+			}
+			if (existing_port==tried_port) {
 				already_used=TRUE;
 				break;
 			}
@@ -322,8 +340,54 @@ static int find_port_offset(LinphoneCore *lc){
 	return offset;
 }
 
+static int select_random_port(LinphoneCore *lc, SalStreamType type) {
+	MSList *elem;
+	int nb_tries;
+	int tried_port = 0;
+	int existing_port = 0;
+	int min_port = 0, max_port = 0;
+	bool_t already_used = FALSE;
+
+	switch (type) {
+		default:
+		case SalAudio:
+			linphone_core_get_audio_port_range(lc, &min_port, &max_port);
+			break;
+		case SalVideo:
+			linphone_core_get_video_port_range(lc, &min_port, &max_port);
+			break;
+	}
+	tried_port = (rand() % (max_port - min_port) + min_port) & ~0x1;
+	if (tried_port < min_port) tried_port = min_port + 2;
+	for (nb_tries = 0; nb_tries < 100; nb_tries++) {
+		for (elem = lc->calls; elem != NULL; elem = elem->next) {
+			LinphoneCall *call = (LinphoneCall *)elem->data;
+			switch (type) {
+				default:
+				case SalAudio:
+					existing_port = call->audio_port;
+					break;
+				case SalVideo:
+					existing_port = call->video_port;
+					break;
+			}
+			if (existing_port == tried_port) {
+				already_used = TRUE;
+				break;
+			}
+		}
+		if (!already_used) break;
+	}
+	if (nb_tries == 100) {
+		ms_error("Could not find any free port!");
+		return -1;
+	}
+	return tried_port;
+}
+
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int port_offset;
+	int min_port, max_port;
 	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
@@ -333,10 +397,26 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
 	linphone_core_notify_all_friends(call->core,LinphoneStatusOnThePhone);
-	port_offset=find_port_offset (call->core);
-	if (port_offset==-1) return;
-	call->audio_port=linphone_core_get_audio_port(call->core)+port_offset;
-	call->video_port=linphone_core_get_video_port(call->core)+port_offset;
+	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
+	if (min_port == max_port) {
+		/* Used fixed RTP audio port. */
+		port_offset=find_port_offset (call->core, SalAudio);
+		if (port_offset==-1) return;
+		call->audio_port=linphone_core_get_audio_port(call->core)+port_offset;
+	} else {
+		/* Select random RTP audio port in the specified range. */
+		call->audio_port = select_random_port(call->core, SalAudio);
+	}
+	linphone_core_get_video_port_range(call->core, &min_port, &max_port);
+	if (min_port == max_port) {
+		/* Used fixed RTP video port. */
+		port_offset=find_port_offset (call->core, SalVideo);
+		if (port_offset==-1) return;
+		call->video_port=linphone_core_get_video_port(call->core)+port_offset;
+	} else {
+		/* Select random RTP video port in the specified range. */
+		call->video_port = select_random_port(call->core, SalVideo);
+	}
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
 }
