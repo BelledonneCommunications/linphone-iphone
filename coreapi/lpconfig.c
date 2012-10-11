@@ -271,6 +271,25 @@ const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const 
 	return default_string;
 }
 
+bool_t lp_config_get_range(LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
+	const char *str = lp_config_get_string(lpconfig, section, key, NULL);
+	if (str != NULL) {
+		char *minusptr = strchr(str, '-');
+		if ((minusptr == NULL) || (minusptr == str)) {
+			*min = default_min;
+			*max = default_max;
+			return FALSE;
+		}
+		*min = atoi(str);
+		*max = atoi(minusptr + 1);
+		return TRUE;
+	} else {
+		*min = default_min;
+		*max = default_max;
+		return TRUE;
+	}
+}
+
 int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, int default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
@@ -322,6 +341,12 @@ void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *ke
 		lp_section_add_item(sec,lp_item_new(key,value));
 	}
 	lpconfig->modified++;
+}
+
+void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value) {
+	char tmp[30];
+	snprintf(tmp, sizeof(tmp), "%i-%i", min_value, max_value);
+	lp_config_set_string(lpconfig, section, key, tmp);
 }
 
 void lp_config_set_int(LpConfig *lpconfig,const char *section, const char *key, int value){
