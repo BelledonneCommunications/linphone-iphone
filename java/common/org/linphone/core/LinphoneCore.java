@@ -234,18 +234,23 @@ public interface LinphoneCore {
 		public static final int IN_PROGRESS_STATUS=0;
 		public static final int DONE_STATUS=1;
 		public static final int FAILED_STATUS=2;
+		public static final int DONE_NO_ECHO_STATUS=3;
 		/**
 		 * Calibration in progress
 		 */
-		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");       
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");
 		/**
-		 * Calibration done
+		 * Calibration done that produced an echo delay measure
 		 */
-		static public EcCalibratorStatus Done  = new EcCalibratorStatus(DONE_STATUS,"Done");
+		static public EcCalibratorStatus Done = new EcCalibratorStatus(DONE_STATUS,"Done");
 		/**
-		 * Calibration in progress
+		 * Calibration failed
 		 */
 		static public EcCalibratorStatus Failed = new EcCalibratorStatus(FAILED_STATUS,"Failed");
+		/**
+		 * Calibration done with no echo detected
+		 */
+		static public EcCalibratorStatus DoneNoEcho = new EcCalibratorStatus(DONE_NO_ECHO_STATUS, "DoneNoEcho");
 
 		private final int mValue;
 		private final String mStringValue;

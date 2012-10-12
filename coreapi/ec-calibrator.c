@@ -114,7 +114,6 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	MSDtmfGenCustomTone tone;
 	MSToneDetectorDef expected_tone;
 
-	
 	ms_filter_set_notify_callback(ecc->det,on_tone_received,ecc);
 
 	expected_tone.frequency=2000;
@@ -142,20 +141,29 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
 
-	if (ecc->sent_count==3 && ecc->recv_count==3){
-		int delay=ecc->acc/3;
-		if (delay<0){
-			ms_error("Quite surprising calibration result, delay=%i",delay);
-			ecc->status=LinphoneEcCalibratorFailed;
-		}else{ms_message("Echo calibration estimated delay to be %i ms",delay);
-			ecc->delay=delay;
-			ecc->status=LinphoneEcCalibratorDone;
+	if (ecc->sent_count==3) {
+		if (ecc->recv_count==3){
+			int delay=ecc->acc/3;
+			if (delay<0){
+				ms_error("Quite surprising calibration result, delay=%i",delay);
+				ecc->status=LinphoneEcCalibratorFailed;
+			}else{
+				ms_message("Echo calibration estimated delay to be %i ms",delay);
+				ecc->delay=delay;
+				ecc->status=LinphoneEcCalibratorDone;
+			}
+		} else if (ecc->recv_count == 0) {
+			ms_message("Echo calibration succeeded, no echo has been detected");
+			ecc->status = LinphoneEcCalibratorDoneNoEcho;
+		} else {
+			ecc->status = LinphoneEcCalibratorFailed;
 		}
 	}else{
-		ms_error("Echo calibration failed, tones received = %i",ecc->recv_count);
 		ecc->status=LinphoneEcCalibratorFailed;
 	}
-	
+	if (ecc->status == LinphoneEcCalibratorFailed) {
+		ms_error("Echo calibration failed, tones received = %i",ecc->recv_count);
+	}
 }
 
 static void  * ecc_thread(void *p){

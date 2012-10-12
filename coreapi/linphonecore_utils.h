@@ -56,9 +56,10 @@ void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
  * Enum describing the result of the echo canceller calibration process.
 **/
 typedef enum {
-	LinphoneEcCalibratorInProgress,
-	LinphoneEcCalibratorDone,
-	LinphoneEcCalibratorFailed
+	LinphoneEcCalibratorInProgress,	/**< The echo canceller calibration process is on going. */
+	LinphoneEcCalibratorDone,	/**< The echo canceller calibration has been performed and produced an echo delay measure. */
+	LinphoneEcCalibratorFailed,	/**< The echo canceller calibration process has failed. */
+	LinphoneEcCalibratorDoneNoEcho	/**< The echo canceller calibration has been performed and no echo has been detected. */
 }LinphoneEcCalibratorStatus;
 
 
