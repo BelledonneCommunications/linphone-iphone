@@ -24,17 +24,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
+							<key>5</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ContactDetailsViewController/4/ContactDetailsViewController.xib</string>
+								<string>Classes/ContactDetailsViewController/5/ContactDetailsViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:19Z</date>
+					<date>2012-10-12T07:54:44Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -44,7 +44,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>43882923c210d264214497b3ab945eff
+					<string>f826110f6bb9c9f39b9191f041a2e184
 </string>
 					<key>name</key>
 					<string>ContactDetailsViewController.xib</string>
@@ -233,9 +233,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>5</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>5</string>
 					</dict>
 				</dict>
 				<dict>
