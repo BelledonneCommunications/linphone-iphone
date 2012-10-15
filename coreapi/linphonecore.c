@@ -1935,6 +1935,10 @@ void linphone_core_iterate(LinphoneCore *lc){
 			if (ecs==LinphoneEcCalibratorDone){
 				int len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
 				lp_config_set_int(lc->config, "sound", "ec_delay",MAX(lc->ecc->delay-(len/2),0));
+			} else if (ecs == LinphoneEcCalibratorFailed) {
+				lp_config_set_int(lc->config, "sound", "ec_delay", LP_CONFIG_DEFAULT_INT(lc->config, "ec_delay", 250));
+			} else if (ecs == LinphoneEcCalibratorDoneNoEcho) {
+				linphone_core_enable_echo_cancellation(lc, FALSE);
 			}
 			ec_calibrator_destroy(lc->ecc);
 			lc->ecc=NULL;
