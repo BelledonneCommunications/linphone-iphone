@@ -376,6 +376,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [self saveAndSend:[UIImage imageWithData:data] url:url];
             }];
         }
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
         dispatch_async(dispatch_get_main_queue(), ^{
             [waitView setHidden:TRUE];
             [sheet showInView:[PhoneMainView instance].view];
