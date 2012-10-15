@@ -184,10 +184,10 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 					if (pos2==NULL) pos2=pos1+strlen(pos1);
 					else {
 						*pos2='\0'; /*replace the '\n' */
-						pos2--;
 					}
 					/* remove ending white spaces */
-					for (; pos2>pos1 && *pos2==' ';pos2--) *pos2='\0';
+					for (; pos2>pos1 && pos2[-1]==' ';pos2--) pos2[-1]='\0';
+
 					if (pos2-pos1>=0){
 						/* found a pair key,value */
 						if (cur!=NULL){
@@ -198,7 +198,7 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 								ms_free(item->value);
 								item->value=strdup(pos1);
 							}
-							/*printf("Found %s %s=%s\n",cur->name,key,pos1);*/
+							/*printf("Found %s %s={%s}\n",cur->name,key,pos1);*/
 						}else{
 							ms_warning("found key,item but no sections");
 						}
