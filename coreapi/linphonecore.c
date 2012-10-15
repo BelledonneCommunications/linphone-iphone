@@ -620,6 +620,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
+	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
 }
 
 static void rtp_config_read(LinphoneCore *lc)
