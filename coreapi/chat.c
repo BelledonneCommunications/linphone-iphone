@@ -22,8 +22,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
  
- #include "linphonecore.h"
- #include "private.h"
+#include "linphonecore.h"
+#include "private.h"
+#include "lpconfig.h"
  
  LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
 	LinphoneAddress *parsed_url=NULL;
@@ -56,15 +57,18 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
-	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
-		if (call->state==LinphoneCallConnected ||
-		    call->state==LinphoneCallStreamsRunning ||
-		    call->state==LinphoneCallPaused ||
-		    call->state==LinphoneCallPausing ||
-		    call->state==LinphoneCallPausedByRemote){
-			ms_message("send SIP message through the existing call.");
-			op = call->op;
-			call->pending_message=msg;
+	
+	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",1)){
+		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
+			if (call->state==LinphoneCallConnected ||
+			call->state==LinphoneCallStreamsRunning ||
+			call->state==LinphoneCallPaused ||
+			call->state==LinphoneCallPausing ||
+			call->state==LinphoneCallPausedByRemote){
+				ms_message("send SIP message through the existing call.");
+				op = call->op;
+				call->pending_message=msg;
+			}
 		}
 	}
 	if (op==NULL){
