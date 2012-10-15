@@ -49,6 +49,20 @@ typedef struct _LpConfig LpConfig;
 extern "C" {
 #endif
 
+
+#define LP_CONFIG_DEFAULT_STRING(config, name, default) \
+	(config) ? (lp_config_get_string(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_INT(config, name, default) \
+	(config) ? (lp_config_get_int(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_INT64(config, name, default) \
+	(config) ? (lp_config_get_int64(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_FLOAT(config, name, default) \
+	(config) ? (lp_config_get_float(config, "default_values", name, default)) : (default)
+
+
 LpConfig * lp_config_new(const char *filename);
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 /**
