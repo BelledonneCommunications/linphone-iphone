@@ -29,13 +29,12 @@
 #include "config.h"
 #endif
 
+#ifdef HAVE_READLINE
 #ifdef HAVE_READLINE_H
 #include <readline.h>
-#define HAVE_READLINE
 #else
 #ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
-#define HAVE_READLINE
 #endif
 #endif
 #ifdef HAVE_HISTORY_H
@@ -43,6 +42,7 @@
 #else
 #ifdef HAVE_READLINE_HISTORY_H
 #include <readline/history.h>
+#endif
 #endif
 #endif
 
