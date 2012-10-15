@@ -110,6 +110,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getMissedCallsCount(long nativePtr);
 	private native void resetMissedCallsCount(long nativePtr);
 	private native String getVersion(long nativePtr);
+	private native void setAudioPort(long nativePtr, int port);
+	private native void setVideoPort(long nativePtr, int port);
+	private native void setAudioPortRange(long nativePtr, int minPort, int maxPort);
+	private native void setVideoPortRange(long nativePtr, int minPort, int maxPort);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
 		mListener=listener;
@@ -756,5 +760,21 @@ class LinphoneCoreImpl implements LinphoneCore {
 			return null;
 		}
 		return new LinphoneFriendImpl(ptr);
+	}
+	
+	public void setAudioPort(int port) {
+		setAudioPort(nativePtr, port);
+	}
+	
+	public void setVideoPort(int port) {
+		setVideoPort(nativePtr, port);
+	}
+	
+	public void setAudioPortRange(int minPort, int maxPort) {
+		setAudioPortRange(nativePtr, minPort, maxPort);
+	}
+	
+	public void setVideoPortRange(int minPort, int maxPort) {
+		setVideoPortRange(nativePtr, minPort, maxPort);
 	}
 }

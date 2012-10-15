@@ -809,4 +809,24 @@ public interface LinphoneCore {
 	 * return a linphone friend (if exists) that matches the sip address
 	 */
 	LinphoneFriend findFriendByAddress(String sipUri);
+	
+	/**
+	 * Sets the UDP port used for audio streaming.
+	**/
+	void setAudioPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for audio streaming.
+	 */
+	void setAudioPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Sets the UDP port used for video streaming.
+	**/
+	void setVideoPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for video streaming.
+	 */
+	void setVideoPortRange(int minPort, int maxPort);
 }

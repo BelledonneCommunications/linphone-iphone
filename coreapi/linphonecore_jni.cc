@@ -2114,6 +2114,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv
 	ms_set_cpu_count(count);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioPort(JNIEnv *env, jobject thiz, jlong lc, jint port) {
+	linphone_core_set_audio_port((LinphoneCore *)lc, port);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPort(JNIEnv *env, jobject thiz, jlong lc, jint port) {
+	linphone_core_set_video_port((LinphoneCore *)lc, port);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioPortRange(JNIEnv *env, jobject thiz, jlong lc, jint min_port, jint max_port) {
+	linphone_core_set_audio_port_range((LinphoneCore *)lc, min_port, max_port);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv *env, jobject thiz, jlong lc, jint min_port, jint max_port) {
+	linphone_core_set_video_port_range((LinphoneCore *)lc, min_port, max_port);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
 	return jvalue;
