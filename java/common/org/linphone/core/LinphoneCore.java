@@ -829,4 +829,11 @@ public interface LinphoneCore {
 	 * Sets the UDP port range from which to randomly select the port used for video streaming.
 	 */
 	void setVideoPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Set the incoming call timeout in seconds.
+	 * If an incoming call isn't answered for this timeout period, it is
+	 * automatically declined.
+	**/
+	void setIncomingTimeout(int timeout);
 }

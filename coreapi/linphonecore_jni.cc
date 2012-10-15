@@ -2130,6 +2130,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv
 	linphone_core_set_video_port_range((LinphoneCore *)lc, min_port, max_port);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
+	linphone_core_set_inc_timeout((LinphoneCore *)lc, timeout);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
 	return jvalue;
