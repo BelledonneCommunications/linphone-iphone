@@ -133,8 +133,15 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         addressBook = ABAddressBookCreate();
     }
     if(addressBook != NULL) {
-        ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+        if(ABAddressBookGetAuthorizationStatus) {
+            ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+                ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+                [self loadData];
+            });
+        } else {
+            ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
             [self loadData];
+        }
     } else {
         [LinphoneLogger log:LinphoneLoggerError format:@"Create AddressBook: Fail(%@)", [error localizedDescription]];
         if(ABAddressBookGetAuthorizationStatus) {
