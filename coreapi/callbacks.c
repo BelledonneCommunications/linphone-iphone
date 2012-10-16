@@ -804,14 +804,24 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus sta
 	return LinphoneChatMessageStateIdle;
 }
 
+static int op_equals(LinphoneCall *a, SalOp *b) {
+	return a->op !=b; /*return 0 if equals*/
+}
 static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
+	const MSList* calls = linphone_core_get_calls(chat_msg->chat_room->lc);
+	
 	if (chat_msg && chat_msg->cb) {
 		chat_msg->cb(chat_msg
 			,chatStatusSal2Linphone(status)
 			,chat_msg->cb_ud);
 	}
 	linphone_chat_message_destroy(chat_msg);
+	
+	if (!ms_list_find_custom((MSList*)calls, (MSCompareFunc) op_equals, op)) {
+		/*op was only create for messaging purpose, destroying*/
+		sal_op_release(op);
+	}
 }
 
 SalCallbacks linphone_sal_callbacks={

@@ -354,7 +354,6 @@ struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
-	SalOp *op;
 	void * user_data;
 };
 

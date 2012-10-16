@@ -46,8 +46,6 @@
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
-	if (cr->op)
-		 sal_op_release(cr->op);
  }
 
 
@@ -75,11 +73,6 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
 		sal_op_set_route(op,route);
-		if (cr->op!=NULL){
-			sal_op_release (cr->op);
-			cr->op=NULL;
-		}
-		cr->op=op;
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
 	if (msg->external_body_url) {
