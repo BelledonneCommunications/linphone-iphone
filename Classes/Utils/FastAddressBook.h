@@ -30,6 +30,8 @@
 + (NSString*)getContactDisplayName:(ABRecordRef)contact;
 + (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
 - (ABRecordRef)getContact:(NSString*)address;
+- (void)reload;
++ (BOOL)isAuthorized;
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number;
 + (NSString*)normalizePhoneNumber:(NSString*)number;
 + (NSString*)normalizeSipURI:(NSString*)address;

@@ -107,22 +107,42 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     return [FastAddressBook appendCountryCodeIfPossible:lNormalizedAddress];
 }
 
++ (BOOL)isAuthorized {
+    return !ABAddressBookGetAuthorizationStatus || ABAddressBookGetAuthorizationStatus() ==  kABAuthorizationStatusAuthorized;
+}
+
 - (FastAddressBook*)init {
     if ((self = [super init]) != nil) {
         addressBookMap  = [[NSMutableDictionary alloc] init];
-        addressBook = ABAddressBookCreate();
-		ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
-		if (ABAddressBookGetAuthorizationStatus && ABAddressBookGetAuthorizationStatus() !=  kABAuthorizationStatusNotDetermined) {
-			ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-				if (granted) [self loadData];
-			});
-		} else {
-			[self loadData];
-		}
-       
-        
+        addressBook = nil;
+        [self reload];
     }
     return self;
+}
+
+- (void)reload {
+    if(addressBook != nil) {
+        ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
+        CFRelease(addressBook);
+        addressBook = nil;
+    }
+    NSError *error = nil;
+    if(ABAddressBookCreateWithOptions) {
+        addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+    } else {
+        addressBook = ABAddressBookCreate();
+    }
+    if(addressBook != NULL) {
+        ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+            [self loadData];
+    } else {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Create AddressBook: Fail(%@)", [error localizedDescription]];
+        if(ABAddressBookGetAuthorizationStatus) {
+            ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+                if (granted) [self reload];
+            });
+        }
+    }
 }
 
 - (void)loadData {

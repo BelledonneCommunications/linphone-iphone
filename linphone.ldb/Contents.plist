@@ -12050,7 +12050,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-05T12:13:58Z</date>
+					<date>2012-10-16T09:25:05Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12060,7 +12060,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>1a73bb401d656923b7ded3d958f5bb5b
+					<string>c50a71e6174b7a7b723ffa38dd90788b
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -12315,6 +12315,31 @@ La cause était: %2$@</string>
 								<string>Account validation issue</string>
 								<key>fr</key>
 								<string>Problème de validation du compte</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Address book</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Address book</string>
+								<key>fr</key>
+								<string>Annuaire</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -14279,6 +14304,34 @@ La cause était: %2$@</string>
 								<string>Video cannot be activated because of low bandwidth condition, only audio is available</string>
 								<key>fr</key>
 								<string>L'appel video ne peut pas aboutir car les conditions réseaux sont inssufisantent. </string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>You must authorize the application to have access to address book.
+Toggle the application in Settings &gt; Privacy &gt; Contacts</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>You must authorize the application to have access to address book.
+Toggle the application in Settings &gt; Privacy &gt; Contacts</string>
+								<key>fr</key>
+								<string>Vous devez autoriser l'application à accéder à l'annuaire.
+Activer l'application dans Réglages &gt; Confidentialité &gt; Contacts</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
