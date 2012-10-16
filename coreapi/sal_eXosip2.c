@@ -463,6 +463,14 @@ void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
 
 void sal_use_dates(Sal *ctx, bool_t enabled){
 	ctx->add_dates=enabled;
+#ifdef EXOSIP_OPT_REGISTER_WITH_DATE
+	{
+		int tmp=enabled;
+		eXosip_set_option(EXOSIP_OPT_REGISTER_WITH_DATE,&tmp);
+	}
+#else
+	if (enabled) ms_warning("Exosip does not support EXOSIP_OPT_REGISTER_WITH_DATE option.");
+#endif
 }
 
 void sal_use_rport(Sal *ctx, bool_t use_rports){
@@ -2220,24 +2228,6 @@ static void sal_register_add_route(osip_message_t *msg, const char *proxy){
 	osip_message_set_route(msg,tmp);
 }
 
-static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-
-static void sal_register_set_date(osip_message_t *msg){
-	char tmp[256]={0};
-	time_t curtime=time(NULL);
-	struct tm *ret;
-#ifndef WIN32
-	struct tm gmt;
-	ret=gmtime_r(&curtime,&gmt);
-#else
-	ret=gmtime(&curtime);
-#endif
-	/*cannot use strftime because it is locale dependant*/
-	snprintf(tmp,sizeof(tmp)-1,"%s, %i %s %i %02i:%02i:%02i GMT",
-		 days[ret->tm_wday],ret->tm_mday,months[ret->tm_mon],1900+ret->tm_year,ret->tm_hour,ret->tm_min,ret->tm_sec);
-	osip_message_replace_header(msg,"Date",tmp);
-}
 
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
@@ -2280,7 +2270,6 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		sal_register_add_route(msg,proxy);
 	}
 	if (msg){
-		if (h->base.root->add_dates) sal_register_set_date(msg);
 		eXosip_register_send_register(h->rid,msg);
 	}
 	eXosip_unlock();
