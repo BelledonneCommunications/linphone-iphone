@@ -220,25 +220,37 @@ mic_gain=0.1
 
 <b>Echo cancellation</b>
 <br>
-On Android devices, echo is a problem, especially with low-end devices. The root cause is the unpredictable latency of Android's sound system. The liblinphone software {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} that is operating well on desktop platforms (Mac, Linux, Windows) is unable to operate under Android platform. The situation is very heterogenous:<br>
+On Android devices, there are two types of devices regarding echo cancellation:<br>
 <ul>
-	<li>On new (after 2011) high end devices, manufacturers often include a hardware echo cancellation. If available, liblinphone will make use of it and no software correction is required. 
-	Source file linphone-android/submodules/linphone/mediastreamer2/java/src/org/linphone/mediastream/video/capture/hwconf/Hacks.java contains a method hasBuiltInEchoCanceller() that returns true if an hardware echo canceller is available, based on device model identifier. The current list is incomplete.
-	</li>
-	<li>On former models with decent CPU power (armv7), sound system behaves in a nearly predictive way so that it is possible to use {@link org.linphone.core.LinphoneCore#enableEchoLimiter echo limiter}. Echo limiter is a simple echo attenuation technique which consists in strongly attenuating the microphone input when speaker is playing voice, in order to cut the echo. The main drawback of echo limiter is that the conversation is perceived as half duplex by users, because they won't hear background noise from the remote side while they are speaking.
-	</li>
-	<li>On low class android devices or very old models (armv5 processor), no solution works.
-	</li>
+	<li>The new (after 2011) high end devices, on which manufacturers often include a hardware echo cancellation. If available, liblinphone will make use of it and no software correction is required. Source file linphone-android/submodules/linphone/mediastreamer2/java/src/org/linphone/mediastream/video/capture/hwconf/Hacks.java contains a method hasBuiltInEchoCanceller() that returns true if an hardware echo canceller is available, based on device model identifier. The current list is incomplete.</li>
+	<li>The other devices, on which it is recommended to enable the software echo canceller of liblinphone.</li>
 </ul>
 
 <br>
 In order to benefit from the best echo cancellation solution, we recommend applications to run the following algorithm, when it is run for the first time:<br>
-First of {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} should not be used, in any case.
 <ul>
-	<li>Use the Hacks.hasBuiltInEchoCanceller() method to first check if the device has hardware echo canceller. If yes, then echo limiter must be turned off.</li>
-	<li>If no the hasBuiltInEchoCanceller() returned false, then it is possible to use the echo calibration procedure. If the calibration procedure fails, it means that
-	probably the phone performs hardware echo cancellation, so in this case echo limiter must be turned off.</li>
-	<li>If the echo calibration succeeded, then echo is present, so it is recommended to enable echo limiter.
+	<li>Use the Hacks.hasBuiltInEchoCanceller() method to first check if the device has hardware echo cancellation. If yes, then echo canceller must be turned off.</li>
+	<li>If no the hasBuiltInEchoCanceller() returned false, then it is possible to use the echo calibration procedure. This procedure can produce the following results:
+		<ul>
+			<li>success with no echo detected: it means that the device has an hardware echo canceller but is not (yet) referenced in our list of devices having hardware echo cancellation.</li>
+			<li>success with an estimated echo delay: the echo canceller should be enabled and configured with the delay found by the calibration.</li>
+			<li>failure: it means that some echo has been detected but the delay could not be estimated. In this case it is recommended to activate the echo canceller anyway with a default value for the delay of 250 ms.</li>
+		</ul>
+	</li>
+</ul>
+In any case, the echo limiter should be disabled while using the earpiece, but enabled while using the speaker. It is also recommended to disable echo canceller while using the speaker. Therefore you should have the following situation:
+<ul>
+	<li>While using the earpiece</li>
+		<ul>
+			<li>Echo canceller enabled (or disabled for devices that have hardware echo cancellation)</li>
+			<li>Echo limiter disabled</li>
+		</ul>
+	<li>While using the speaker</li>
+		<ul>
+			<li>Echo canceller disabled</li>
+			<li>Echo limiter enabled</li>
+		</ul>
+	</li>
 </ul>
 
 <br>
