@@ -44,6 +44,7 @@
         if ([arrayOfViews count] >= 1) {
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
+        [chatContentLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
     }
     return self;
 }
@@ -127,40 +128,6 @@
     }
     
     linphone_address_destroy(linphoneAddress);
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    //
-    // Adapt size
-    //
-    CGRect displayNameFrame = [addressLabel frame];
-    CGRect chatContentFrame = [chatContentLabel frame];
-    
-    // Compute firstName size
-    CGSize displayNameSize = [[addressLabel text] sizeWithFont:[addressLabel font]];
-    CGSize chatContentSize = [[chatContentLabel text] sizeWithFont:[chatContentLabel font]];
-    float sum = displayNameSize.width + 5 + chatContentSize.width;
-    float limit = self.bounds.size.width - 5 - displayNameFrame.origin.x;
-    if(sum > limit) {
-        displayNameSize.width *= limit/sum;
-        chatContentSize.width *= limit/sum;
-        if(displayNameSize.width > limit/2) {
-            displayNameSize.width = limit/2;
-            chatContentSize.width = limit/2;
-        }
-    }
-    
-    displayNameFrame.size.width = displayNameSize.width;
-    chatContentFrame.size.width = chatContentSize.width;
-    
-    // Compute lastName size & position
-    chatContentFrame.origin.x = displayNameFrame.origin.x + displayNameFrame.size.width;
-    if(displayNameFrame.size.width)
-        chatContentFrame.origin.x += 5;
-    
-    [addressLabel setFrame: displayNameFrame];
-    [chatContentLabel setFrame: chatContentFrame];
 }
 
 - (void)setEditing:(BOOL)editing {
