@@ -1368,17 +1368,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>5</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/DialerViewController/5/DialerViewController.xib</string>
+								<string>Classes/DialerViewController/6/DialerViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-26T14:58:35Z</date>
+					<date>2012-10-16T12:36:35Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -1388,7 +1388,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>9e26a5888ff9dabd85d7cca675540636
+					<string>db230136d1bdea7fda72ecf324a5a159
 </string>
 					<key>name</key>
 					<string>DialerViewController.xib</string>
@@ -1902,9 +1902,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>5</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>5</string>
+						<string>6</string>
 					</dict>
 				</dict>
 				<dict>
@@ -2481,17 +2481,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>5</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/FirstLoginViewController/5/FirstLoginViewController.xib</string>
+								<string>Classes/FirstLoginViewController/6/FirstLoginViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:19Z</date>
+					<date>2012-10-16T14:13:48Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2501,7 +2501,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>955b765235e9de0f0fc6f830777dae53
+					<string>d4cf9755b94184e4eb59331c42b1b4e4
 </string>
 					<key>name</key>
 					<string>FirstLoginViewController.xib</string>
@@ -2665,9 +2665,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>5</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>5</string>
+						<string>6</string>
 					</dict>
 				</dict>
 				<dict>
@@ -2675,17 +2675,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>5</key>
+							<key>8</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/HistoryDetailsViewController/5/HistoryDetailsViewController.xib</string>
+								<string>Classes/HistoryDetailsViewController/8/HistoryDetailsViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:19Z</date>
+					<date>2012-10-16T14:28:47Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -2695,7 +2695,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>e32663fb7bb499508cfde62e883bded0
+					<string>cafa067232a482fd15bc0222fa7c9d45
 </string>
 					<key>name</key>
 					<string>HistoryDetailsViewController.xib</string>
@@ -3076,17 +3076,19 @@
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Class = "IBUIButton"; normalTitle = "0102030405"; ObjectID = "37";</string>
+							<string>Class = "IBUIButton"; normalTitle = "Call"; ObjectID = "37";</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
-							<integer>2</integer>
+							<integer>3</integer>
 							<key>key</key>
 							<string>37.normalTitle</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>0102030405</string>
+								<string>Call</string>
+								<key>fr</key>
+								<string>Appeler</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -3141,6 +3143,129 @@
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Address:"; ObjectID = "55";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>55.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Address:</string>
+								<key>fr</key>
+								<string>Adresse:</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; accessibilityLabel = "Address"; ObjectID = "56";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>56.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Address</string>
+								<key>fr</key>
+								<string>Adresse</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "0102030405"; ObjectID = "56";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>56.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>0102030405</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Send message"; ObjectID = "59";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>59.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Send message</string>
+								<key>fr</key>
+								<string>Envoyer un message</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Send message"; ObjectID = "59";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>59.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Send message</string>
+								<key>fr</key>
+								<string>Envoyer un message</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array/>
@@ -3149,9 +3274,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>5</string>
+						<string>8</string>
 						<key>fr</key>
-						<string>5</string>
+						<string>8</string>
 					</dict>
 				</dict>
 				<dict>
