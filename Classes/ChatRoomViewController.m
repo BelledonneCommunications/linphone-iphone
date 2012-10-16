@@ -393,10 +393,14 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from"] pointerValue];
     
 	ChatModel *chat = [[notif userInfo] objectForKey:@"chat"];
-    if(from != NULL && chat != NULL) {
-        char *fromStr = linphone_address_as_string_uri_only(from);
-        if(fromStr != NULL) {
-            if([[NSString stringWithUTF8String:fromStr] 
+    if(from == NULL || chat == NULL) {
+        return;
+    }
+    char *fromStr = linphone_address_as_string_uri_only(from);
+    if(fromStr != NULL) {
+        if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+            || [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
+            if([[NSString stringWithUTF8String:fromStr]
                 caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
                 [chat setRead:[NSNumber numberWithInt:1]];
                 [chat update];
@@ -404,10 +408,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [tableController addChatEntry:chat];
                 [tableController scrollToLastUnread:TRUE];
             }
-            ms_free(fromStr);
         }
-	} else {
-        [LinphoneLogger logc:LinphoneLoggerWarning format:"Invalid textReceivedEvent"];
+        ms_free(fromStr);
     }
 }
 
