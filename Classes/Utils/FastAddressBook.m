@@ -188,7 +188,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         if(add) {
                             CFStringRef lValue = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
                             NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:(NSString*)lValue];
-                            [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+                            if(lNormalizedKey != NULL) {
+                                [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+                            } else {
+                                [addressBookMap setObject:lPerson forKey:(NSString*)lValue];
+                            }
                         }
                         CFRelease(lDict);
                     }

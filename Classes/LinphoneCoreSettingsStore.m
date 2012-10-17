@@ -382,6 +382,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_set_default_proxy(lc,proxyCfg);
 		
 	}
+    [[[LinphoneManager instance] fastAddressBook] reload];
 }
 
 - (BOOL)synchronize {
