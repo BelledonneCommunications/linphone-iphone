@@ -72,18 +72,17 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (NSString*)normalizeSipURI:(NSString*)address {
-    NSString* ret = address;
-    if([address rangeOfString:@"@"].location != NSNotFound) {
-        if([address rangeOfString:@"sip:" options:NSCaseInsensitiveSearch].location == 0) {
-            // have to be sure that start with sip: in lower case
-            ret = [ret substringFromIndex:4];
+    NSString *normalizedSipAddress = nil;
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [address UTF8String]);
+    if(linphoneAddress != NULL) {
+        char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
+        if(tmp != NULL) {
+            normalizedSipAddress = [NSString stringWithUTF8String:tmp];
+            ms_free(tmp);
         }
-        ret = [@"sip:" stringByAppendingString:ret];
-        if([ret hasSuffix:@":5060"]) {
-            ret = [ret substringToIndex:[ret length] - 5];
-        }
+        linphone_address_destroy(linphoneAddress);
     }
-    return ret;
+    return normalizedSipAddress;
 }
 
 + (NSString*)normalizePhoneNumber:(NSString*)address {
