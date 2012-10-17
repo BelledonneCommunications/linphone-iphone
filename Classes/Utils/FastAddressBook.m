@@ -144,11 +144,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         }
     } else {
         [LinphoneLogger log:LinphoneLoggerError format:@"Create AddressBook: Fail(%@)", [error localizedDescription]];
-        if(ABAddressBookGetAuthorizationStatus) {
-            ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-                if (granted) [self reload];
-            });
-        }
     }
 }
 
