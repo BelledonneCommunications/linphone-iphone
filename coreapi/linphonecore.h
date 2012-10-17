@@ -390,6 +390,7 @@ void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall
@@ -1427,8 +1428,6 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 * get tunnel instance if available
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
-
-void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_sip_dscp(const LinphoneCore *lc);
