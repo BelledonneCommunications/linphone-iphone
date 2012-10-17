@@ -970,6 +970,12 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 															   }
 															   //kick up network cnx, just in case
 															   [LinphoneManager kickOffNetworkConnection];
+                                                               
+                                                               [self setupGSMInteraction];
+                                                               //to make sure presence status is correct
+                                                               if ([callCenter currentCalls]==nil)
+                                                                   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+                                                               
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
