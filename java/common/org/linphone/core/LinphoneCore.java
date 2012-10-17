@@ -231,6 +231,8 @@ public interface LinphoneCore {
 	static public class EcCalibratorStatus {
 		
 		static private Vector values = new Vector();
+		/* Do not change the values of these constants or the strings associated with them to prevent breaking
+		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;
 		public static final int DONE_STATUS=1;
 		public static final int FAILED_STATUS=2;
