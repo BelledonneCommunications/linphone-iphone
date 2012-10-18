@@ -173,17 +173,26 @@ void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->autoDetect();
 }
 
-static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, char* confaddress){
-	char *str1;
-	for(str1=confaddress;;str1=NULL){
-		char *port;
-		char *address=strtok(str1," "); // Not thread safe
-		if (!address) break;
-		port=strchr(address, ':');
-		if (!port) ms_fatal("Bad tunnel address %s",confaddress);
-		*port++='\0';
-		linphone_tunnel_add_server(tunnel, address, atoi(port));
-	}
+static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
+	char *tmp=(char*)ms_malloc0(strlen(confaddress)+1);
+	const char *it=confaddress;
+	int adv;
+	do{
+		int ret=sscanf(it,"%s%n",tmp,&adv);
+		if (ret>=1){
+			it+=adv;
+			char *port=strchr(tmp,':');
+			if (!port){
+				ms_error("Tunnel server addresses incorrectly specified from config file: %s",it);
+				break;
+			}else{
+				*port='\0';
+				port++;
+				bcTunnel(tunnel)->addServer(tmp, atoi(port));
+			}
+		}else break;
+	}while(1);
+	ms_free(tmp);
 }
 
 static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
@@ -197,13 +206,9 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	bool_t enabled=(bool_t)lp_config_get_int(config(tunnel),"tunnel","enabled",FALSE);
 	const char* addresses=lp_config_get_string(config(tunnel),"tunnel","server_addresses", NULL);
-	char *copy=addresses ? ms_strdup(addresses) : NULL;
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
-	linphone_tunnel_clean_servers(tunnel);
-	if (copy){
-		tunnel_add_servers_from_config(tunnel,copy);
-		ms_free(copy);
-	}
+	if (addresses)
+		tunnel_add_servers_from_config(tunnel,addresses);
 	linphone_tunnel_enable(tunnel, enabled);
 }
 

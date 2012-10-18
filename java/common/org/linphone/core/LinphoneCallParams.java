@@ -34,7 +34,7 @@ public interface LinphoneCallParams {
 	 * @param value 0 to disable limitation
 	 */
 	void setAudioBandwidth(int value);
-	
+
 	/**
 	 * return selected media encryption
 	 * @return MediaEncryption.None MediaEncryption.SRTP or MediaEncryption.ZRTP
@@ -45,5 +45,16 @@ public interface LinphoneCallParams {
 	 * @params menc: MediaEncryption.None, MediaEncryption.SRTP or MediaEncryption.ZRTP
 	 */
 	void setMediaEnctyption(MediaEncryption menc);
-	
+
+	/**
+	 * Get the currently used audio codec
+	 * @return PayloadType or null
+	 */
+	PayloadType getUsedAudioCodec();
+
+	/**
+	 * Get the currently used video codec
+	 * @return PayloadType or null
+	 */
+	PayloadType getUsedVideoCodec();
 }

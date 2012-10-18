@@ -269,7 +269,9 @@ const char *sal_op_get_proxy(const SalOp *op){
 const char *sal_op_get_network_origin(const SalOp *op){
 	return ((SalOpBase*)op)->origin;
 }
-
+const char* sal_op_get_call_id(const SalOp *op) {
+	return  ((SalOpBase*)op)->call_id;
+}
 void __sal_op_init(SalOp *b, Sal *sal){
 	memset(b,0,sizeof(SalOpBase));
 	((SalOpBase*)b)->root=sal;
@@ -310,6 +312,8 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
+	if (b->call_id)
+		ms_free((void*)b->call_id);
 	ms_free(op);
 }
 

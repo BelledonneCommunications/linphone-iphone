@@ -62,10 +62,10 @@ void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int po
  * @param  tunnel object
  * @param host tunnel server ip address
  * @param port tunnel server tls port, recommended value is 443
- * @param remote_udp_mirror remote port on the tunnel server side  used to test udp reachability
+ * @param remote_udp_mirror_port remote port on the tunnel server side used to test udp reachability
  * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
  */
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay);
+void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror_port, int delay);
 /**
  * @param  tunnel object
  * returns a string of space separated list of host:port of tunnel server addresses
@@ -98,15 +98,36 @@ bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
 **/
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 /**
+ * Start tunnel need detection.
  * @param  tunnel object
  * In auto detect mode, the tunnel manager try to establish a real time rtp cummunication with the tunnel server on  specified port.
  *<br>In case of success, the tunnel is automatically turned off. Otherwise, if no udp commmunication is feasible, tunnel mode is turned on.
  *<br> Call this method each time to run the auto detection algorithm
  */
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
+
+/**
+ * Set an optional http proxy to go through when connecting to tunnel server.
+ * @param tunnel LinphoneTunnel object
+ * @param host Http proxy host.
+ * @param port http proxy port.
+ * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
+ * @param password optional http proxy password. Use NULL if not needed.
+ **/
 void linphone_tunnel_set_http_proxy(LinphoneTunnel *tunnel, const char *host, int port, const char* username,const char* passwd);
-void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
+
+/**
+ * Retrieve optional http proxy configuration previously set with linphone_tunnel_set_http_proxy().
+ * @param tunnel LinphoneTunnel object
+ * @param host Http proxy host.
+ * @param port http proxy port.
+ * @param username optional http proxy username if the proxy request authentication. Currently only basic authentication is supported. Use NULL if not needed.
+ * @param password optional http proxy password. Use NULL if not needed.
+ **/
 void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd);
+
+void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
+
 
 void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
 

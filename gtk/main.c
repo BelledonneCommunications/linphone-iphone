@@ -278,8 +278,10 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 		linphone_gtk_visibility_set(shown,window_name,w,TRUE);
 	if (icon_path) {
 		GdkPixbuf *pbuf=create_pixbuf(icon_path);
-		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
+		if(pbuf != NULL) {
+			gtk_window_set_icon(GTK_WINDOW(w),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
 	}
 }
 
@@ -1530,8 +1532,10 @@ static void linphone_gtk_configure_main_window(){
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"directory_search_button_icon")),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
+		if(pbuf != NULL) {
+			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"directory_search_button_icon")),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
 	}
 	if (home){
 		gchar *tmp;

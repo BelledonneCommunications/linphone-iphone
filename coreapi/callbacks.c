@@ -46,9 +46,6 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		call->media_pending=TRUE;
 	}
 	call->resultdesc=new_md;
-	if (call->ice_session != NULL) {
-		linphone_core_deactivate_ice_for_deactivated_media_streams(call, call->resultdesc);
-	}
 	if ((call->audiostream && call->audiostream->ticker) || (call->videostream && call->videostream->ticker)){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
@@ -184,7 +181,6 @@ static void call_received(SalOp *h){
 	}
 	
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
-	sal_call_set_local_media_description(h,call->localdesc);
 	
 	/* the call is acceptable so we can now add it to our list */
 	linphone_core_add_call(lc,call);
@@ -270,6 +266,7 @@ static void call_accepted(SalOp *op){
 	}
 
 	md=sal_call_get_final_media_description(op);
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||
 	    call->state==LinphoneCallOutgoingRinging ||
@@ -303,11 +300,7 @@ static void call_accepted(SalOp *op){
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state(call,LinphoneCallPausedByRemote,"Call paused by remote");
 		}else{
-			if (call->state==LinphoneCallStreamsRunning){
-				/*media was running before, the remote as acceted a call modification (that is
-					a reinvite made by us. We must notify the application this reinvite was accepted*/
-				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
-			}else{
+			if (call->state!=LinphoneCallUpdating){
 				if (call->state==LinphoneCallResuming){
 					if (lc->vtable.display_status){
 						lc->vtable.display_status(lc,_("Call resumed."));
@@ -344,11 +337,6 @@ static void call_ack(SalOp *op){
 	if (call->media_pending){
 		SalMediaDescription *md=sal_call_get_final_media_description(op);
 		if (md && !sal_media_description_empty(md)){
-			if (call->state==LinphoneCallStreamsRunning){
-				/*media was running before, the remote as acceted a call modification (that is
-					a reinvite made by us. We must notify the application this reinvite was accepted*/
-				linphone_call_set_state(call, LinphoneCallUpdated, "Call updated");
-			}
 			linphone_core_update_streams (lc,call,md);
 			linphone_call_set_state (call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		}else{
@@ -535,7 +523,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 							call->localdesc->streams[i].proto = SalProtoRtpAvp;
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 						}
-						linphone_core_start_invite(lc, call, NULL);
+						linphone_core_start_invite(lc, call);
 					}
 					return;
 				}
@@ -816,14 +804,24 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus sta
 	return LinphoneChatMessageStateIdle;
 }
 
+static int op_equals(LinphoneCall *a, SalOp *b) {
+	return a->op !=b; /*return 0 if equals*/
+}
 static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
+	const MSList* calls = linphone_core_get_calls(chat_msg->chat_room->lc);
+	
 	if (chat_msg && chat_msg->cb) {
 		chat_msg->cb(chat_msg
 			,chatStatusSal2Linphone(status)
 			,chat_msg->cb_ud);
 	}
 	linphone_chat_message_destroy(chat_msg);
+	
+	if (!ms_list_find_custom((MSList*)calls, (MSCompareFunc) op_equals, op)) {
+		/*op was only create for messaging purpose, destroying*/
+		sal_op_release(op);
+	}
 }
 
 SalCallbacks linphone_sal_callbacks={

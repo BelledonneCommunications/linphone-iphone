@@ -146,7 +146,7 @@ typedef struct _LinphoneCallLog{
 	LinphoneCallStatus status; /**< The status of the call*/
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
-	char start_date[128]; /**<Human readable string containg the start date*/
+	char start_date[128]; /**<Human readable string containing the start date*/
 	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
 	void *user_pointer;
@@ -156,6 +156,7 @@ typedef struct _LinphoneCallLog{
     int video_enabled;
 	struct _LinphoneCore *lc;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	const char* call_id; /**unique id of a call*/
 } LinphoneCallLog;
 
 
@@ -203,7 +204,14 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
 void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
-
+/**
+ * @ingroup call_control
+ * Use to know if this call has been configured in low bandwidth mode.
+ * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file
+ * <br> When enabled, this param may transform a call request with video in audio only mode.
+ * @return TRUE if low bandwidth has been configured/detected
+ */
+bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -262,6 +270,25 @@ typedef struct _LinphoneCall LinphoneCall;
 #define LINPHONE_CALL_STATS_VIDEO 1
 
 /**
+ * Enum describing ICE states.
+ * @ingroup initializing
+**/
+enum _LinphoneIceState{
+	LinphoneIceStateNotActivated, /**< ICE has not been activated for this call */
+	LinphoneIceStateFailed, /**< ICE processing has failed */
+	LinphoneIceStateInProgress, /**< ICE process is in progress */
+	LinphoneIceStateHostConnection, /**< ICE has established a direct connection to the remote host */
+	LinphoneIceStateReflexiveConnection, /**< ICE has established a connection to the remote host through one or several NATs */
+	LinphoneIceStateRelayConnection /**< ICE has established a connection through a relay */
+};
+
+/**
+ * Enum describing Ice states.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneIceState LinphoneIceState;
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
@@ -285,6 +312,9 @@ struct _LinphoneCallStats {
 	mblk_t*		received_rtcp; /**<Last RTCP packet received, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
+	LinphoneIceState	ice_state; /**< State of ICE processing. */
+	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 };
 
 /**
@@ -321,7 +351,7 @@ typedef enum _LinphoneCallState{
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
 	LinphoneCallUpdatedByRemote, /**<The call's parameters change is requested by remote end, used for example when video is added by remote */
 	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
-	LinphoneCallUpdated, /**<The remote accepted the call update initiated by us */
+	LinphoneCallUpdating, /**<A call update has been initiated by us */
 	LinphoneCallReleased /**< The call object is no more retained by the core */
 } LinphoneCallState;
 
@@ -360,6 +390,7 @@ void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall
@@ -877,11 +908,14 @@ void linphone_core_disable_logs(void);
 /*sets the user-agent string in sip messages, must be set before linphone_core_new() or linphone_core_init() */
 void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
+const char *linphone_core_get_user_agent_name(void);
+const char *linphone_core_get_user_agent_version(void);
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
 
 /* function to be periodically called in a main loop */
+/* For ICE to work properly it should be called every 20ms */
 void linphone_core_iterate(LinphoneCore *lc);
 #if 0 /*not implemented yet*/
 /**
@@ -1082,13 +1116,21 @@ void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
 int linphone_core_get_audio_port(const LinphoneCore *lc);
 
+void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
 int linphone_core_get_video_port(const LinphoneCore *lc);
+
+void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
 void linphone_core_set_audio_port(LinphoneCore *lc, int port);
 
+void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port);
+
 void linphone_core_set_video_port(LinphoneCore *lc, int port);
+
+void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
 
 void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 
@@ -1387,8 +1429,6 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
-void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
-
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_sip_dscp(const LinphoneCore *lc);
 
@@ -1397,6 +1437,8 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
+
+
 
 #ifdef __cplusplus
 }

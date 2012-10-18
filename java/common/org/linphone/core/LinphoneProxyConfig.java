@@ -139,4 +139,10 @@ public interface LinphoneProxyConfig {
 	 * @param parameters to add
 	 */
 	public void setContactParameters(String params);
+	
+	/**
+	 * Return the international prefix for the given country
+	 * @param country iso code
+	 */
+	public int lookupCCCFromIso(String iso);
 }

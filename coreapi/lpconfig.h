@@ -49,6 +49,20 @@ typedef struct _LpConfig LpConfig;
 extern "C" {
 #endif
 
+
+#define LP_CONFIG_DEFAULT_STRING(config, name, default) \
+	(config) ? (lp_config_get_string(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_INT(config, name, default) \
+	(config) ? (lp_config_get_int(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_INT64(config, name, default) \
+	(config) ? (lp_config_get_int64(config, "default_values", name, default)) : (default)
+
+#define LP_CONFIG_DEFAULT_FLOAT(config, name, default) \
+	(config) ? (lp_config_get_float(config, "default_values", name, default)) : (default)
+
+
 LpConfig * lp_config_new(const char *filename);
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 /**
@@ -59,6 +73,14 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 **/
 const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
+/**
+ * Retrieves a configuration item as a range, given its section, key, and default min and max values.
+ *
+ * @ingroup misc
+ * @return TRUE if the value is successfully parsed as a range, FALSE otherwise.
+ * If FALSE is returned, min and max are filled respectively with default_min and default_max values.
+ */
+bool_t lp_config_get_range(LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max);
 /**
  * Retrieves a configuration item as an integer, given its section, key, and default value.
  * 
@@ -90,6 +112,12 @@ float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *ke
  * @ingroup misc
 **/
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
+/**
+ * Sets a range config item
+ *
+ * @ingroup misc
+ */
+void lp_config_set_range(LpConfig *lpconfig, const char *section, const char *key, int min_value, int max_value);
 /**
  * Sets an integer config item
  *

@@ -61,7 +61,7 @@ case $target in
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
 	;;
-       armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin)
+       armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
                 CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
                 build_tests=no
                 ios_found=yes
@@ -107,6 +107,7 @@ if test "$mingw_found" != "yes" ; then
 	dnl AM_GNU_GETTEXT pollutes CPPFLAGS: workaround this.
 	CPPFLAGS_save=$CPPFLAGS
 	AM_GNU_GETTEXT([external])
+	AC_SUBST(INTLLIBS)
 	CPPFLAGS=$CPPFLAGS_save
 	LIBS="$LIBS $LIBINTL"
 else

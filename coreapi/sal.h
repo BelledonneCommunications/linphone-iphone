@@ -207,6 +207,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
+	const char* call_id;
 } SalOpBase;
 
 
@@ -339,6 +340,7 @@ unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_double_registrations(Sal *ctx, bool_t enabled);
 void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled);
+void sal_use_dates(Sal *ctx, bool_t enabled);
 void sal_reuse_authorization(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
@@ -373,6 +375,7 @@ const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
+const char* sal_op_get_call_id(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

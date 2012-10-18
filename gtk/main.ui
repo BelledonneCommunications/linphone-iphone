@@ -508,6 +508,7 @@
                 <property name="width_request">90</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="tooltip_text" translatable="yes">Call quality rating</property>
               </object>
               <packing>

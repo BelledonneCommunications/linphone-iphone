@@ -218,7 +218,9 @@ bundle: $(LIBICONV_HACK)
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
-	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
+	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
+	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
+	sed -e 's:@executable_path/../Resources:../..:g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 
@@ -230,6 +232,4 @@ clean-local:
 discovery:
 	touch specs.cpp
 	$(CC) --include $(top_builddir)/config.h \
-          --include $(top_builddir)/mediastreamer2/mediastreamer-config.h  \
-          --include $(top_builddir)/oRTP/ortp-config.h \
           $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) -E -P -v -dD specs.cpp

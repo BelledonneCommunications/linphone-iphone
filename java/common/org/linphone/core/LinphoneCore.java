@@ -20,9 +20,6 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallParams;
-
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
@@ -234,21 +231,28 @@ public interface LinphoneCore {
 	static public class EcCalibratorStatus {
 		
 		static private Vector values = new Vector();
+		/* Do not change the values of these constants or the strings associated with them to prevent breaking
+		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;
 		public static final int DONE_STATUS=1;
 		public static final int FAILED_STATUS=2;
+		public static final int DONE_NO_ECHO_STATUS=3;
 		/**
 		 * Calibration in progress
 		 */
-		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");       
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");
 		/**
-		 * Calibration done
+		 * Calibration done that produced an echo delay measure
 		 */
-		static public EcCalibratorStatus Done  = new EcCalibratorStatus(DONE_STATUS,"Done");
+		static public EcCalibratorStatus Done = new EcCalibratorStatus(DONE_STATUS,"Done");
 		/**
-		 * Calibration in progress
+		 * Calibration failed
 		 */
 		static public EcCalibratorStatus Failed = new EcCalibratorStatus(FAILED_STATUS,"Failed");
+		/**
+		 * Calibration done with no echo detected
+		 */
+		static public EcCalibratorStatus DoneNoEcho = new EcCalibratorStatus(DONE_NO_ECHO_STATUS, "DoneNoEcho");
 
 		private final int mValue;
 		private final String mStringValue;
@@ -373,7 +377,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -384,7 +388,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -395,7 +399,7 @@ public interface LinphoneCore {
 	 * Accept call modifications initiated by other end.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -407,7 +411,7 @@ public interface LinphoneCore {
 	 * Prevent LinphoneCore from performing an automatic answer
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -491,11 +495,17 @@ public interface LinphoneCore {
 	 */
 	void clearCallLogs();
 	/***
-	 * get payload type  from mime type an clock rate
+	 * get payload type  from mime type, clock rate, and number of channels.-
 	 * 
 	 * return null if not found
 	 */
 	PayloadType findPayloadType(String mime, int clockRate, int channels); 
+	/***
+	 * get payload type  from mime type and clock rate..
+	 * 
+	 * return null if not found
+	 */
+	PayloadType findPayloadType(String mime, int clockRate); 
 	/**
 	 * not implemented yet
 	 * @param pt
@@ -677,6 +687,10 @@ public interface LinphoneCore {
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
 	void enableIpv6(boolean enable);
+	/**
+	 * @deprecated
+	 * @param i
+	 */
 	void adjustSoftwareVolume(int i);
 	
 	boolean pauseCall(LinphoneCall call);
@@ -792,4 +806,41 @@ public interface LinphoneCore {
 	 * return the version code of linphone core
 	 */
 	public String getVersion();
+	
+	/**
+	 * remove a linphone friend from linphone core and linphonerc
+	 */
+	void removeFriend(LinphoneFriend lf);
+	
+	/**
+	 * return a linphone friend (if exists) that matches the sip address
+	 */
+	LinphoneFriend findFriendByAddress(String sipUri);
+	
+	/**
+	 * Sets the UDP port used for audio streaming.
+	**/
+	void setAudioPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for audio streaming.
+	 */
+	void setAudioPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Sets the UDP port used for video streaming.
+	**/
+	void setVideoPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for video streaming.
+	 */
+	void setVideoPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Set the incoming call timeout in seconds.
+	 * If an incoming call isn't answered for this timeout period, it is
+	 * automatically declined.
+	**/
+	void setIncomingTimeout(int timeout);
 }

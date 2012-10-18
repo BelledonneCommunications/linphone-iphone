@@ -5,13 +5,7 @@ AC_REQUIRE([LP_CHECK_OSIP2])
 
 
 case $host_alias in
-	i386-apple*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
-	;;
-	armv6-apple*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
-	;;
-	armv7-apple*)
+	i386-apple*|armv6-apple*|armv7-apple*|armv7s-apple*)
 		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
 	;;
 	x86_64-apple*)

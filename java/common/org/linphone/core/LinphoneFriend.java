@@ -123,5 +123,8 @@ public interface LinphoneFriend {
 	 */
 	String toString();
 	
-
+	/**
+	 * Return the native pointer for this object
+	 */
+	long getNativePtr();
 }

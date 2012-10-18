@@ -24,6 +24,7 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/buddylookup.ui
 [type: gettext/glade]gtk/waiting.ui
 [type: gettext/glade]gtk/dscp_settings.ui
+[type: gettext/glade]gtk/call_statistics.ui
 [type: gettext/glade]gtk/tunnel_config.ui
 coreapi/linphonecore.c
 coreapi/misc.c

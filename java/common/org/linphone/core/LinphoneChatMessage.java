@@ -75,6 +75,13 @@ public interface LinphoneChatMessage {
 	LinphoneAddress getPeerAddress();
 	
 	/**
+	 * get from address associated to this LinphoneChatMessage
+	 *
+	 * @return LinphoneAddress from address
+	 */
+	LinphoneAddress getFrom();
+	
+	/**
 	 * Linphone message can carry external body as defined by rfc2017
 	 * @param message #LinphoneChatMessage
 	 * @return return external body url null if not present.
