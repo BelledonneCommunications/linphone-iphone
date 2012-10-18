@@ -170,7 +170,6 @@ char *linphone_gtk_get_config_file(const char *filename){
 	return config_file;
 }
 
-
 #define FACTORY_CONFIG_FILE "linphonerc.factory"
 static char _factory_config_file[1024];
 static const char *linphone_gtk_get_factory_config_file(){
@@ -481,6 +480,7 @@ static void set_video_window_decorations(GdkWindow *w){
 	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 	char video_title[256];
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
+	
 	if (!linphone_core_in_call(linphone_gtk_get_core())){
 		snprintf(video_title,sizeof(video_title),"%s video",title);
 		/* When not in call, treat the video as a normal window */
@@ -688,7 +688,6 @@ void linphone_gtk_show_main_window(){
 void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (linphone_core_get_calls(linphone_gtk_get_core())==NULL){
-	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),FALSE);
 	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
 	}
 	if (linphone_gtk_use_in_call_view() && call)
@@ -702,15 +701,15 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	const MSList *calls=linphone_core_get_calls(lc);
 	GtkWidget *button;
 	bool_t start_active=TRUE;
-	bool_t stop_active=FALSE;
+	//bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
 	int call_list_size=ms_list_size(calls);
 	
 	if (calls==NULL){
 		start_active=TRUE;
-		stop_active=FALSE;
+		//stop_active=FALSE;
 	}else{
-		stop_active=TRUE;	
+		//stop_active=TRUE;	
 		start_active=TRUE;
 		add_call=TRUE;
 	}
@@ -726,7 +725,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	}
 	gtk_widget_set_visible(button,add_call);
 	
-	gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
+	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
 
 	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
 	linphone_gtk_enable_conference_button(lc,call_list_size>1);
@@ -967,6 +966,7 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GtkWidget *status_bar=linphone_gtk_get_widget(w,"status_bar");
+	
 	gtk_statusbar_push(GTK_STATUSBAR(status_bar),
 			gtk_statusbar_get_context_id(GTK_STATUSBAR(status_bar),""),
 			status);
@@ -1484,18 +1484,28 @@ static void linphone_gtk_configure_main_window(){
 	static const char *home;
 	static const char *start_call_icon;
 	static const char *add_call_icon;
-	static const char *stop_call_icon;
+	//static const char *stop_call_icon;
 	static const char *search_icon;
 	static gboolean update_check_menu;
 	static gboolean buttons_have_borders;
 	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
+	
+	//Change the color
+	GdkColor color;
+	//RGB(246^2,249^2,252^2)
+	color.pixel = 0;
+	color.red=65025;
+	color.green=46656;
+	color.blue=50625;
+	gtk_widget_modify_bg(GTK_WIDGET(w), GTK_STATE_NORMAL, &color);
+	
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
 		add_call_icon=linphone_gtk_get_ui_config("add_call_icon","addcall-green.png");
-		stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png");
+		//stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png");
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
@@ -1517,12 +1527,6 @@ static void linphone_gtk_configure_main_window(){
 		                    create_pixmap (add_call_icon));
 		if (!buttons_have_borders)
 			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"add_call")),GTK_RELIEF_NONE);
-	}
-	if (stop_call_icon){
-		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"terminate_call")),
-		                    create_pixmap (stop_call_icon));
-		if (!buttons_have_borders)
-			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"terminate_call")),GTK_RELIEF_NONE);
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);

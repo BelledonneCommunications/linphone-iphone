@@ -20,7 +20,6 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/call_logs.ui
 [type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/sip_account.ui
-[type: gettext/glade]gtk/chatroom.ui
 [type: gettext/glade]gtk/parameters.ui
 [type: gettext/glade]gtk/buddylookup.ui
 [type: gettext/glade]gtk/waiting.ui

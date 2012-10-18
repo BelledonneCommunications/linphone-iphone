@@ -107,7 +107,6 @@ static void linphone_gtk_in_call_set_animation_spinner(GtkWidget *callview){
 #endif
 }
 
-
 static void linphone_gtk_transfer_call(LinphoneCall *dest_call){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call) linphone_core_transfer_call_to_another(linphone_gtk_get_core(),call,dest_call);
@@ -140,8 +139,6 @@ static void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 		gtk_get_current_event_time());
 	gtk_widget_show(menu);
 }
-
-
 
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value){
 	const MSList *elem=linphone_core_get_calls(lc);
@@ -217,6 +214,13 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	linphone_gtk_enable_hold_button (call,FALSE,TRUE);
 	linphone_gtk_enable_mute_button(
 					GTK_BUTTON(linphone_gtk_get_widget(call_view,"incall_mute")),FALSE);
+	
+	GtkWidget *button=linphone_gtk_get_widget(call_view,"terminate_call");
+	GtkWidget *image=create_pixmap("stopcall-red.png");
+	gtk_button_set_label(GTK_BUTTON(button),_("Stop"));
+	gtk_button_set_image(GTK_BUTTON(button),image);
+	gtk_widget_show(image);
+
 }
 
 static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
@@ -570,6 +574,8 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"incall_audioview"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"terminate_call"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"video_button"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
