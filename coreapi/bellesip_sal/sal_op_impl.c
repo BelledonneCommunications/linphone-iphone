@@ -159,12 +159,11 @@ void sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
 	/*in case DIALOG is in state NULL create a new dialog*/
-	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_NULL) {
-		belle_sip_dialog_delete(op->dialog);
+	if (!op->dialog  && strcmp("INVITE",belle_sip_request_get_method(request))==0) {
 		op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
+		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
 		belle_sip_dialog_set_application_data(op->dialog,op);
-	} else
-	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
+	} else if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL);

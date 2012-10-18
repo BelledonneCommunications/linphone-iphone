@@ -83,6 +83,9 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("process_io_error not implemented yet");
 }
+static void process_dialog_terminated(void *op, const belle_sip_dialog_terminated_event_t *event) {
+	if (((SalOp*)op)->dialog) ((SalOp*)op)->dialog=NULL;
+}
 static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	belle_sdp_session_description_t* sdp;
 	if ((sdp=belle_sdp_session_description_create(BELLE_SIP_MESSAGE(response)))) {
@@ -90,6 +93,13 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 		sdp_to_media_description(sdp,op->base.remote_media);
 		if (op->base.local_media) sdp_process(op);
 	}
+}
+static void cancelling_invite(SalOp* op ){
+	belle_sip_request_t* cancel;
+	ms_message("Cancelling INVITE requets from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
+	cancel = belle_sip_client_transaction_create_cancel(op->pending_inv_client_trans);
+	sal_op_send_request(op,cancel);
+	op->state=SalOpStateTerminated;
 }
 static void call_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
@@ -154,9 +164,19 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		}
 		return;
 	}
+	/*check if op is terminating*/
+	dialog_state=belle_sip_dialog_get_state(op->dialog);
+
+	if (op->state == SalOpStateTerminating
+			&& (dialog_state==BELLE_SIP_DIALOG_NULL
+			|| dialog_state==BELLE_SIP_DIALOG_EARLY)) {
+		cancelling_invite(op);
+
+		return;
+	}
 	/*else dialog*/
 
-	dialog_state=belle_sip_dialog_get_state(op->dialog);
+
 		switch(dialog_state) {
 
 		case BELLE_SIP_DIALOG_NULL: {
@@ -211,6 +231,21 @@ static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t
 static void call_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	ms_error("process_transaction_terminated not implemented yet");
 }
+static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_transaction, belle_sip_request_t* request,int status_code) {
+	belle_sip_response_t* resp;
+	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
+	resp=belle_sip_response_create_from_request(request,status_code);
+	belle_sip_server_transaction_send_response(server_transaction,resp);
+	op->state=SalOpStateTerminated;
+	return;
+}
+static void unsupported_method(belle_sip_server_transaction_t* server_transaction,belle_sip_request_t* request) {
+	belle_sip_response_t* resp;
+	resp=belle_sip_response_create_from_request(request,500);
+	belle_sip_server_transaction_send_response(server_transaction,resp);
+	return;
+}
+
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
@@ -223,7 +258,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_dialog_state_t dialog_state;
 	belle_sdp_session_description_t* sdp;
 	belle_sip_header_t* call_info;
-	belle_sip_response_t* resp;
+
 	if (!op->dialog) {
 		op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(op->pending_server_trans));
 		belle_sip_dialog_set_application_data(op->dialog,op);
@@ -258,6 +293,30 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 
 		break;
 	}
+	case BELLE_SIP_DIALOG_EARLY: {
+		//hmm probably a cancel
+		if (strcmp("CANCEL",belle_sip_request_get_method(req))==0) {
+			if(belle_sip_request_event_get_server_transaction(event)) {
+				/*first answer 200 ok to cancel*/
+				belle_sip_server_transaction_send_response(server_transaction
+															,belle_sip_response_create_from_request(req,200));
+				/*terminate invite request*/
+				call_terminated(op
+								,belle_sip_request_event_get_server_transaction(event)
+								,belle_sip_request_event_get_request(event),487);
+
+
+			} else {
+				/*call leg does not exist*/
+				belle_sip_server_transaction_send_response(server_transaction
+															,belle_sip_response_create_from_request(req,481));
+			}
+		} else {
+			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY");
+			unsupported_method(server_transaction,belle_sip_request_event_get_request(event));
+		}
+		break;
+	}
 	case BELLE_SIP_DIALOG_CONFIRMED:
 		/*great ACK received*/
 		if (strcmp("ACK",belle_sip_request_get_method(req))==0) {
@@ -277,9 +336,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		}*/
 			op->base.root->callbacks.call_ack(op);
 		} else if(strcmp("BYE",belle_sip_request_get_method(req))==0) {
-			op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
-			resp=belle_sip_response_create_from_request(belle_sip_request_event_get_request(event),200);
-			belle_sip_server_transaction_send_response(server_transaction,resp);
+			call_terminated(op,server_transaction,belle_sip_request_event_get_request(event),200);
 		} else {
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 		}
@@ -305,9 +362,9 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 int sal_call(SalOp *op, const char *from, const char *to){
 	belle_sip_request_t* req;
 	belle_sip_header_allow_t* header_allow;
-	belle_sip_client_transaction_t* client_transaction;
+/*	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
-	belle_sip_header_route_t* route_header;
+	belle_sip_header_route_t* route_header;*/
 	op->dir=SalOpDirOutgoing;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
@@ -325,16 +382,17 @@ int sal_call(SalOp *op, const char *from, const char *to){
 			set_sdp_from_desc(BELLE_SIP_MESSAGE(req),op->base.local_media);
 	}else op->sdp_offering=FALSE;
 
-	if (sal_op_get_route_address(op)) {
+/*	if (sal_op_get_route_address(op)) {
 		route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(route_header));
-	}
+	}*/
 	sal_op_call_fill_cbs(op);
-	client_transaction = belle_sip_provider_create_client_transaction(prov,req);
+	sal_op_send_request(op,req);
+	/*op->pending_inv_client_trans = client_transaction = belle_sip_provider_create_client_transaction(prov,req);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
 	op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_client_transaction_send_request(client_transaction);
-
+	 */
 	return 0;
 }
 void sal_op_call_fill_cbs(SalOp*op) {
@@ -343,6 +401,7 @@ void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_timeout=call_process_timeout;
 	op->callbacks.process_transaction_terminated=call_process_transaction_terminated;
 	op->callbacks.process_request_event=process_request_event;
+	op->callbacks.process_dialog_terminated=process_dialog_terminated;
 }
 int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	belle_sip_response_t* ringing_response;
@@ -414,6 +473,9 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 	case SalReasonMedia:
 		status=415;
 		break;
+	case SalReasonDeclined:
+		status=603;
+		break;
 	case SalReasonRedirect:
 		if(redirection!=NULL) {
 			if (strstr(redirection,"sip:")!=0) status=302;
@@ -483,12 +545,35 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 }
 int sal_call_terminate(SalOp *op){
 	belle_sip_dialog_state_t dialog_state=belle_sip_dialog_get_state(op->dialog);
-
+	op->state=SalOpStateTerminating;
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
+			op->state=SalOpStateTerminated;
+			break;
 		}
-		break;
+		case BELLE_SIP_DIALOG_NULL: {
+			if (op->dir == SalOpDirIncoming) {
+				sal_call_decline(op, SalReasonDeclined,NULL);
+				op->state=SalOpStateTerminated;
+			} else if (op->pending_inv_client_trans
+					&& belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_inv_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
+				cancelling_invite(op);
+				break;
+			} else {
+				ms_error("Don't know how to termination NUL dialog [%p]",op->dialog);
+			}
+			break;
+		}
+		case BELLE_SIP_DIALOG_EARLY: {
+			if (op->dir == SalOpDirIncoming) {
+				sal_call_decline(op, SalReasonDeclined,NULL);
+				op->state=SalOpStateTerminated;
+			} else  {
+				cancelling_invite(op);
+			}
+			break;
+		}
 		default: {
 			ms_fatal("sal_call_terminate not implemented yet for dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
 			return -1;

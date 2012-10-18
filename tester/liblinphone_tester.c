@@ -292,28 +292,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 		CU_FAIL("unexpected event");break;
 	}
 }
-static void simple_call_declined() {
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
-	int retry=0;
 
-	memset (&v_table,0,sizeof(LinphoneCoreVTable));
-	v_table.registration_state_changed=registration_state_changed;
-	v_table.call_state_changed=call_state_changed;
-	lc=configure_lc(&v_table);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	linphone_core_invite(lc,"marie");
-
-	while (counters->number_of_LinphoneCallIncomingReceived<1 && retry++ <20) {
-				linphone_core_iterate(lc);
-				ms_usleep(100000);
-	}
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneCallIncomingReceived,1);
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc));
-	/*linphone_core_terminate_call(lc,linphone_core_get_current_call(lc));*/
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneCallReleased,1);
-	linphone_core_destroy(lc);
-}
 static bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	int retry=0;
 	while (*counter<value && retry++ <20) {
@@ -335,60 +314,121 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}
 }
+typedef struct _LinphoneCoreManager {
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	stats stat;
+} LinphoneCoreManager;
+
+static LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
+	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
+	memset (mgr,0,sizeof(LinphoneCoreManager));
+	mgr->v_table.registration_state_changed=registration_state_changed;
+	mgr->v_table.call_state_changed=call_state_changed;
+
+	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);
+	enable_codec(mgr->lc,"PCMU",8000);
+	linphone_core_set_user_data(mgr->lc,&mgr->stat);
+	return mgr;
+}
+static void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
+	linphone_core_destroy(mgr->lc);
+	free(mgr);
+}
 static void simple_call() {
-	LinphoneCoreVTable v_table_marie;
-	LinphoneCore* lc_marie;
-	LinphoneCoreVTable v_table_pauline;
-	LinphoneCore* lc_pauline;
-	stats stat_marie;
-	stats stat_pauline;
-	reset_counters(&stat_marie);
-	reset_counters(&stat_pauline);
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	LinphoneCore* lc_marie=marie->lc;
+	LinphoneCore* lc_pauline=pauline->lc;
+	stats* stat_marie=&marie->stat;
+	stats* stat_pauline=&pauline->stat;
 
 
-
-	memset (&v_table_marie,0,sizeof(LinphoneCoreVTable));
-	v_table_marie.registration_state_changed=registration_state_changed;
-	v_table_marie.call_state_changed=call_state_changed;
-
-	lc_marie=configure_lc_from(&v_table_marie,"./tester/marie_rc",1);
-	enable_codec(lc_marie,"PCMU",8000);
-	linphone_core_set_user_data(lc_marie,&stat_marie);
-
-	memset (&v_table_pauline,0,sizeof(LinphoneCoreVTable));
-	v_table_pauline.registration_state_changed=registration_state_changed;
-	v_table_pauline.call_state_changed=call_state_changed;
-
-	lc_pauline=configure_lc_from(&v_table_pauline,"./tester/pauline_rc",1);
-	linphone_core_set_user_data(lc_pauline,&stat_pauline);
 
 	linphone_core_invite(lc_marie,"pauline");
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline.number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
 	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
-	CU_ASSERT_EQUAL(stat_marie.number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie.number_of_LinphoneCallOutgoingRinging,1));
+	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
 
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(lc_marie,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-
-	CU_ASSERT_STRING_EQUAL(linphone_proxy_config_get_identity(proxy),linphone_core_get_current_call_remote_address(lc_pauline))
+	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
+	linphone_address_destroy(identity);
 
 	linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline.number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie.number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline.number_of_LinphoneCallStreamsRunning,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie.number_of_LinphoneCallStreamsRunning,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
 	/*just to sleep*/
-	wait_for(lc_pauline,lc_marie,&stat_marie.number_of_LinphoneCallStreamsRunning,3);
+	wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
 	linphone_core_terminate_all_calls(lc_pauline);
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
 
-	linphone_core_destroy(lc_marie);
-	linphone_core_destroy(lc_pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void call_canceled() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+
+	linphone_core_terminate_call(pauline->lc,out_call);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonCanceled);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void call_ringing_canceled() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
+
+	linphone_core_terminate_call(pauline->lc,out_call);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	//CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
+	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_early_declined() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
+	LinphoneCall* in_call=linphone_core_get_current_call(marie->lc);
+	linphone_call_ref(in_call);
+
+	linphone_core_terminate_call(marie->lc,in_call);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
+	linphone_call_unref(in_call);
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 int init_test_suite () {
 
@@ -419,7 +459,13 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
 	}
-	if (NULL == CU_add_test(pSuite, "simple_call_declined", simple_call_declined)) {
+	if (NULL == CU_add_test(pSuite, "call_early_declined", call_early_declined)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_canceled", call_canceled)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_ringing_canceled", call_ringing_canceled)) {
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple_call", simple_call)) {
@@ -441,6 +487,9 @@ int main (int argc, char *argv[]) {
 		}else if (strcmp(argv[i],"--domain")==0){
 			i++;
 			test_domain=argv[i];
+		}	else if (strcmp(argv[i],"--auth-domain")==0){
+			i++;
+			auth_domain=argv[i];
 		}else if (strcmp(argv[i],"--test")==0){
 			i++;
 			test_name=argv[i];

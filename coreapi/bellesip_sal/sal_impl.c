@@ -45,8 +45,14 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 	}
 
 }
-static void process_dialog_terminated(void *user_ctx, const belle_sip_dialog_terminated_event_t *event){
-	ms_error("process_dialog_terminated not implemented yet");
+static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
+	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_get_dialog(event);
+	SalOp* op = belle_sip_dialog_get_application_data(dialog);
+	if (op->callbacks.process_dialog_terminated) {
+		op->callbacks.process_dialog_terminated(op,event);
+	} else {
+		ms_error("sal process_dialog_terminated not implemented yet");
+	}
 }
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("process_io_error not implemented yet");
@@ -119,7 +125,10 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_request_t* old_request=NULL;;
 	belle_sip_response_t* old_response=NULL;;
 	int response_code = belle_sip_response_get_status_code(response);
-
+	if (op->state == SalOpStateTerminated) {
+		belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
+		return;
+	}
 	if (!op->base.remote_ua) {
 		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
 	}
@@ -204,8 +213,13 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		}
 		case 401:
 		case 407:{
-			sal_process_authentication(op,response);
-			return;
+			if (op->state == SalOpStateTerminating) {
+				belle_sip_message("Op is in state terminating, nothing else to do");
+				return;
+			} else {
+				sal_process_authentication(op,response);
+				return;
+			}
 		}
 		}
 		op->callbacks.process_response_event(op,event);
@@ -245,6 +259,7 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event
 }
 Sal * sal_init(){
 	char stack_string[64];
+	belle_sip_listener_t* listener;
 	Sal * sal=ms_new0(Sal,1);
 	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
 	sal->user_agent=belle_sip_header_user_agent_new();
@@ -260,7 +275,8 @@ Sal * sal_init(){
 	sal->listener_callbacks.process_timeout=process_timeout;
 	sal->listener_callbacks.process_transaction_terminated=process_transaction_terminated;
 	sal->listener_callbacks.process_auth_requested=process_auth_requested;
-	belle_sip_provider_add_sip_listener(sal->prov,belle_sip_listener_create_from_callbacks(&sal->listener_callbacks,sal));
+	belle_sip_provider_add_sip_listener(sal->prov,listener=belle_sip_listener_create_from_callbacks(&sal->listener_callbacks,sal));
+	belle_sip_object_unref(listener);
 	return sal;
 }
 void sal_set_user_pointer(Sal *sal, void *user_data){

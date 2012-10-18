@@ -3548,6 +3548,9 @@ const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
 **/
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 	lc->video_conf.show_local=val;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config,"video","show_local",linphone_core_video_preview_enabled(lc));
+	}
 }
 
 /**
@@ -3570,6 +3573,9 @@ void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call (lc);
 	lc->video_conf.selfview=val;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config,"video","self_view",linphone_core_self_view_enabled(lc));
+	}
 	if (call && call->videostream){
 		video_stream_enable_self_view(call->videostream,val);
 	}

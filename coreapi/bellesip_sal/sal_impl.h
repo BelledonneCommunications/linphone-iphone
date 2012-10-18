@@ -38,6 +38,7 @@ struct Sal{
 typedef enum SalOpSate {
 	SalOpStateEarly=0
 	,SalOpStateActive
+	,SalOpStateTerminating /*this state is used to wait until a procedding state, so we can send the cancel*/
 	,SalOpStateTerminated
 }SalOpSate_t;
 
@@ -52,6 +53,7 @@ struct SalOp{
 	belle_sip_request_t* request;
 	belle_sip_response_t* response;
 	belle_sip_server_transaction_t* pending_server_trans;
+	belle_sip_client_transaction_t* pending_inv_client_trans;
 	SalAuthInfo auth_info;
 	unsigned long int  registration_refresh_timer;
 	bool_t sdp_offering;
