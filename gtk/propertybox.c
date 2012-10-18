@@ -146,14 +146,74 @@ void linphone_gtk_ipv6_toggled(GtkWidget *w){
 				gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)));
 }
 
-void linphone_gtk_audio_port_changed(GtkWidget *w){
-	linphone_core_set_audio_port(linphone_gtk_get_core(),
-			(gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
+void linphone_gtk_min_audio_port_changed(GtkWidget *w){
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	GtkSpinButton *min_button = GTK_SPIN_BUTTON(w);
+	GtkSpinButton *max_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_max_rtp_port"));
+	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_audio_port")));
+
+	if (fixed) {
+		linphone_core_set_audio_port(linphone_gtk_get_core(), (gint) gtk_spin_button_get_value(min_button));
+		gtk_spin_button_set_value(max_button, gtk_spin_button_get_value(min_button));
+	} else {
+		gint min_port = gtk_spin_button_get_value(min_button);
+		gint max_port = gtk_spin_button_get_value(max_button);
+		if (min_port > max_port) {
+			gtk_spin_button_set_value(max_button, min_port);
+			max_port = min_port;
+		}
+		linphone_core_set_audio_port_range(linphone_gtk_get_core(), min_port, max_port);
+	}
 }
 
-void linphone_gtk_video_port_changed(GtkWidget *w){
-	linphone_core_set_video_port(linphone_gtk_get_core(),
-			(gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
+void linphone_gtk_max_audio_port_changed(GtkWidget *w){
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	GtkSpinButton *min_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port"));
+	GtkSpinButton *max_button = GTK_SPIN_BUTTON(w);
+	gint min_port = gtk_spin_button_get_value(min_button);
+	gint max_port = gtk_spin_button_get_value(max_button);
+	if (max_port < min_port) {
+		gtk_spin_button_set_value(min_button, max_port);
+		min_port = max_port;
+	}
+	linphone_core_set_audio_port_range(linphone_gtk_get_core(), min_port, max_port);
+}
+
+void linphone_gtk_min_video_port_changed(GtkWidget *w){
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	GtkSpinButton *min_button = GTK_SPIN_BUTTON(w);
+	GtkSpinButton *max_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_max_rtp_port"));
+	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_video_port")));
+
+	if (fixed) {
+		linphone_core_set_video_port(linphone_gtk_get_core(), (gint) gtk_spin_button_get_value(min_button));
+		gtk_spin_button_set_value(max_button, gtk_spin_button_get_value(min_button));
+	} else {
+		gint min_port = gtk_spin_button_get_value(min_button);
+		gint max_port = gtk_spin_button_get_value(max_button);
+		if (min_port > max_port) {
+			gtk_spin_button_set_value(max_button, min_port);
+			max_port = min_port;
+		}
+		linphone_core_set_video_port_range(linphone_gtk_get_core(), min_port, max_port);
+	}
+}
+
+void linphone_gtk_max_video_port_changed(GtkWidget *w){
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	GtkSpinButton *min_button = GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port"));
+	GtkSpinButton *max_button = GTK_SPIN_BUTTON(w);
+	gint min_port = gtk_spin_button_get_value(min_button);
+	gint max_port = gtk_spin_button_get_value(max_button);
+	if (max_port < min_port) {
+		gtk_spin_button_set_value(min_button, max_port);
+		min_port = max_port;
+	}
+	linphone_core_set_video_port_range(linphone_gtk_get_core(), min_port, max_port);
 }
 
 void linphone_gtk_no_firewall_toggled(GtkWidget *w){
@@ -877,6 +937,7 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 
 void linphone_gtk_parameters_destroyed(GtkWidget *pb){
 	GtkWidget *mw=linphone_gtk_get_main_window();
+	ms_error("linphone_gtk_paramters_destroyed");
 	g_object_set_data(G_OBJECT(mw),"parameters",NULL);
 }
 
@@ -908,12 +969,15 @@ void linphone_gtk_show_parameters(void){
 	int mtu;
 	int ui_advanced;
 	LCSipTransports tr;
+	int min_port = 0, max_port = 0;
 
 	if (pb==NULL) {
 		pb=linphone_gtk_create_window("parameters");
 		g_object_set_data(G_OBJECT(mw),"parameters",pb);
+		ms_error("linphone_gtk_show_paramters: create");
 	}else {
 		gtk_widget_show(pb);
+		ms_error("linphone_gtk_show_parameters: show");
 		return;
 	}
 	codec_list=linphone_gtk_get_widget(pb,"codec_list");
@@ -939,10 +1003,20 @@ void linphone_gtk_show_parameters(void){
 				tr.udp_port);
     }
 
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"audio_rtp_port")),
-				linphone_core_get_audio_port(lc));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_rtp_port")),
-				linphone_core_get_video_port(lc));
+	linphone_core_get_audio_port_range(lc, &min_port, &max_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")), min_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_max_rtp_port")), max_port);
+	if (min_port == max_port) {
+		gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "audio_max_rtp_port")), FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_audio_port")), TRUE);
+	}
+	linphone_core_get_video_port_range(lc, &min_port, &max_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port")), min_port);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_max_rtp_port")), max_port);
+	if (min_port == max_port) {
+		gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "video_max_rtp_port")), FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_video_port")), TRUE);
+	}
 
 	linphone_gtk_show_media_encryption(pb);
 	
@@ -1029,6 +1103,36 @@ void linphone_gtk_show_parameters(void){
 	}
 
 	gtk_widget_show(pb);
+}
+
+
+void linphone_gtk_fixed_audio_port_toggle(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_audio_port")));
+	gint min_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")));
+	gint max_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_max_rtp_port")));
+	gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "audio_max_rtp_port")), !fixed);
+	if (fixed) {
+		linphone_core_set_audio_port(linphone_gtk_get_core(), min_port);
+	} else {
+		linphone_core_set_audio_port_range(linphone_gtk_get_core(), min_port, max_port);
+	}
+}
+
+
+void linphone_gtk_fixed_video_port_toggle(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *pb = (GtkWidget *) g_object_get_data(G_OBJECT(mw), "parameters");
+	gboolean fixed = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "fixed_video_port")));
+	gint min_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_min_rtp_port")));
+	gint max_port = gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "video_max_rtp_port")));
+	gtk_widget_set_sensitive(GTK_WIDGET(linphone_gtk_get_widget(pb, "video_max_rtp_port")), !fixed);
+	if (fixed) {
+		linphone_core_set_video_port(linphone_gtk_get_core(), min_port);
+	} else {
+		linphone_core_set_video_port_range(linphone_gtk_get_core(), min_port, max_port);
+	}
 }
 
 
