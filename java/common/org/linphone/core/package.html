@@ -224,7 +224,7 @@ On Android devices, there are two kind of situations regarding echo cancellation
 <br>
 <b>Echo calibration tool</b>
 <br>
-The echo calibration procedure is a five second audio test which consists in playing small beeps to the speaker while the microphone input is recorded.
+The echo calibration procedure is a five second audio test which consists in playing small beeps to the receiver while the microphone input is recorded.
 If the device is subject to echo (or doesn't have hardware echo cancellation), then beeps recorded by the microphone will be detected and a measurement of echo delay can be computed.
 Echo calibration procedure can be started by calling {@link org.linphone.core.LinphoneCore#startEchoCalibration LinphoneCore.startEchoCalibration}.
 The measurement of the echo delay is important to save CPU computations by restricting the temporal area where the software echo canceller has to perform.
@@ -233,7 +233,7 @@ The measurement of the echo delay is important to save CPU computations by restr
 <br>
 <b>Echo limiter</b>
 <br>
-The echo limiter is a liblinphone algorithm to clear out echo with a brute force method. It consists in cutting down the microphone signal when active signal is played by the speaker, to prevent voice to feed back into the microphone. This algorithm has disadvantages compared to the hardware or software echo cancellers because the remote user will be not hear any background noise when speaking, which is confusing. As a result the echo limiter method shall be used only under situation where echo canceller can't perform, that is loud signals with heavy saturations, which usually happens when using the device in speaker mode. Echo limiter can be enabled or disabled during a call with {@link org.linphone.core.LinphoneCall#enableEchoLimiter LinphoneCall.enableEchoLimiter()}.
+The echo limiter is a liblinphone algorithm to clear out echo with a brute force method. It consists in cutting down the microphone signal when active signal is played by the speaker/receiver, to prevent voice to feed back into the microphone. This algorithm has disadvantages compared to the hardware or software echo cancellers because the remote user will be not hear any background noise when speaking, which is confusing. As a result the echo limiter method shall be used only under situation where echo canceller can't perform, that is loud signals with heavy saturations, which usually happens when using the device in speaker mode. Echo limiter can be enabled or disabled during a call with {@link org.linphone.core.LinphoneCall#enableEchoLimiter LinphoneCall.enableEchoLimiter()}.
 <br>
 
 <br>
@@ -253,14 +253,14 @@ In order to benefit from the best echo cancellation solution, we recommend appli
 	</li>
 </ul>
 
-During calls, the echo limiter should be disabled while using the earpiece, but enabled while using the speaker. It is also recommended to disable echo canceller while using the echo limiter, because the first one would be useless. Therefore you should have the following situations:
+During calls, the echo limiter should be disabled while using the receiver, but enabled while using the hands-free speaker. It is also recommended to disable echo canceller while using the echo limiter, because the first one would be useless. Therefore you should have the following situations:
 <ul>
-	<li>While using the earpiece</li>
+	<li>While using the receiver</li>
 		<ul>
 			<li>Echo canceller enabled, unless the device has hardware echo cancellation</li>
 			<li>Echo limiter disabled</li>
 		</ul>
-	<li>While using the speaker</li>
+	<li>While using the hands-free speaker</li>
 		<ul>
 			<li>Echo canceller disabled</li>
 			<li>Echo limiter enabled, unless the device has hardware echo cancellation.</li>
