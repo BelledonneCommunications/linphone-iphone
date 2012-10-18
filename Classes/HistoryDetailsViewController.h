@@ -36,13 +36,17 @@
 @property (nonatomic, retain) IBOutlet UILabel *durationHeaderLabel;
 @property (nonatomic, retain) IBOutlet UILabel *typeLabel;
 @property (nonatomic, retain) IBOutlet UILabel *typeHeaderLabel;
-@property (nonatomic, retain) IBOutlet UIButton *addressButton;
+@property (nonatomic, retain) IBOutlet UILabel *plainAddressLabel;
+@property (nonatomic, retain) IBOutlet UILabel *plainAddressHeaderLabel;
+@property (nonatomic, retain) IBOutlet UIButton *callButton;
+@property (nonatomic, retain) IBOutlet UIButton *messageButton;
 @property (nonatomic, retain) IBOutlet UIButton *addContactButton;
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
-- (IBAction)onAddressClick:(id)event;
+- (IBAction)onCallClick:(id)event;
+- (IBAction)onMessageClick:(id)event;
 
 @end

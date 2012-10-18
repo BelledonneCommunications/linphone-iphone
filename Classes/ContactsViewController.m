@@ -138,7 +138,18 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidAppear:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [tableController viewDidAppear:animated];
-    }   
+    }
+    if(![FastAddressBook isAuthorized]) {
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Address book",nil)
+														message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
+                                                                                  "Toggle the application in Settings > Privacy > Contacts",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil];
+		[error show];
+		[error release];
+        [[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

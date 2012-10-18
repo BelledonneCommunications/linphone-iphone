@@ -621,32 +621,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #pragma mark - ActionSheet Functions
 
 - (void)displayMessage:(ChatModel*)chat {
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
-        
-        NSString* address = [chat remoteContact];
-        NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
-        ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-        if(contact) {
-            address = [FastAddressBook getContactDisplayName:contact];
-        }
-        if(address == nil) {
-            address = @"Unknown";
-        }
-        
-		// Create a new notification
-		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
-		if (notif) {
-			notif.repeatInterval = 0;
-			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
-			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = @"msg.caf";
-			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
-			
-			
-			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-		}
-	} else {
+    if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
         if(![self removeInhibitedEvent:kLinphoneTextReceived]) {
             AudioServicesPlaySystemSound([LinphoneManager instance].sounds.message);
         }

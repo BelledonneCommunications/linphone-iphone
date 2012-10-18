@@ -398,7 +398,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             char* lAddress = linphone_address_as_string_uri_only(addr);
             if(lAddress) {
                 NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-                ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+                ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
                 if(contact) {
                     address = [FastAddressBook getContactDisplayName:contact];
                     useLinphoneAddress = false;
@@ -533,6 +533,35 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat create];
     
     ms_free(fromStr);
+    
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        NSString* address = [chat remoteContact];
+        NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
+        ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
+        if(contact) {
+            address = [FastAddressBook getContactDisplayName:contact];
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        
+		// Create a new notification
+		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
+		if (notif) {
+			notif.repeatInterval = 0;
+			notif.alertBody = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
+			notif.alertAction = NSLocalizedString(@"Show", nil);
+			notif.soundName = @"msg.caf";
+			notif.userInfo = [NSDictionary dictionaryWithObject:[chat remoteContact] forKey:@"chat"];
+			
+			
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		}
+	}
+    
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSValue valueWithPointer:room], @"room", 
@@ -941,6 +970,12 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 															   }
 															   //kick up network cnx, just in case
 															   [LinphoneManager kickOffNetworkConnection];
+                                                               
+                                                               [self setupGSMInteraction];
+                                                               //to make sure presence status is correct
+                                                               if ([callCenter currentCalls]==nil)
+                                                                   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+                                                               
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }

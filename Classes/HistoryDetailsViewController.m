@@ -33,7 +33,10 @@
 @synthesize durationHeaderLabel;
 @synthesize typeLabel;
 @synthesize typeHeaderLabel;
-@synthesize addressButton;
+@synthesize plainAddressLabel;
+@synthesize plainAddressHeaderLabel;
+@synthesize callButton;
+@synthesize messageButton;
 @synthesize addContactButton;
 
 #pragma mark - LifeCycle Functions
@@ -63,7 +66,10 @@
     [durationHeaderLabel release];
     [typeLabel release];
     [typeHeaderLabel release];
-    [addressButton release];
+    [plainAddressLabel release];
+    [plainAddressHeaderLabel release];
+    [callButton release];
+    [messageButton release];
     [addContactButton release];
     
     [super dealloc];
@@ -105,7 +111,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     [HistoryDetailsViewController adaptSize:dateHeaderLabel field:dateLabel];
     [HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
     [HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
-    [addressButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
+    [HistoryDetailsViewController adaptSize:plainAddressHeaderLabel field:plainAddressLabel];
+    [callButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
+    [messageButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -240,18 +248,24 @@ static UICompositeViewDescription *compositeDescription = nil;
     int duration = callLog->duration;
     [durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
     
+    // contact name
+    [plainAddressLabel setText:@""];
     if (addr != NULL) {
-        // contact name 
         char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress != NULL) {
-            [addressButton setTitle:[NSString stringWithUTF8String:lAddress] forState:UIControlStateNormal];
-            [addressButton setHidden:FALSE];
+            [plainAddressLabel setText:[NSString stringWithUTF8String:lAddress]];
             ms_free(lAddress);
         } else {
-           [addressButton setHidden:TRUE]; 
+            
         }
+    }
+    
+    if (addr != NULL) {
+        [callButton setHidden:FALSE];
+        [messageButton setHidden:FALSE];
     } else {
-        [addressButton setHidden:TRUE];
+        [callButton setHidden:TRUE];
+        [messageButton setHidden:TRUE];
     }
     
 }
@@ -274,15 +288,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddContactClick:(id)event {
-    [ContactSelection setSelectionMode:ContactSelectionModeEdit];
-    [ContactSelection setAddAddress:[[addressButton titleLabel] text]];
-    [ContactSelection setSipFilter:FALSE];
-    ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
-    if(controller != nil) {
+    LinphoneAddress* addr = NULL;
+	if (callLog->dir == LinphoneCallIncoming) {
+		addr = callLog->from;
+	} else {
+		addr = callLog->to;
+	}
+    if (addr != NULL) {
+        char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress != NULL) {
+            [ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
+            [ContactSelection setSelectionMode:ContactSelectionModeEdit];
+            
+            [ContactSelection setSipFilter:FALSE];
+            ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
+            if(controller != nil) {
+            }
+            ms_free(lAddress);
+        }
     }
 }
 
-- (IBAction)onAddressClick:(id)event {
+- (IBAction)onCallClick:(id)event {
     LinphoneAddress* addr; 
 	if (callLog->dir == LinphoneCallIncoming) {
 		addr = callLog->from;
@@ -314,6 +341,39 @@ static UICompositeViewDescription *compositeDescription = nil;
         } else {
             [controller call:[NSString stringWithUTF8String:lAddress]];
         }
+    }
+    ms_free(lAddress);
+}
+
+- (IBAction)onMessageClick:(id)event {
+    LinphoneAddress* addr;
+	if (callLog->dir == LinphoneCallIncoming) {
+		addr = callLog->from;
+	} else {
+		addr = callLog->to;
+	}
+    
+    char* lAddress = linphone_address_as_string_uri_only(addr);
+    if(lAddress == NULL)
+        return;
+    
+    NSString *displayName = nil;
+    if(contact != nil) {
+        displayName = [FastAddressBook getContactDisplayName:contact];
+    } else {
+        const char* lDisplayName = linphone_address_get_display_name(addr);
+        const char* lUserName = linphone_address_get_username(addr);
+        if (lDisplayName)
+            displayName = [NSString stringWithUTF8String:lDisplayName];
+        else if(lUserName)
+            displayName = [NSString stringWithUTF8String:lUserName];
+    }
+    
+    // Go to ChatRoom view
+    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+    ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+    if(controller != nil) {
+        [controller setRemoteAddress:[NSString stringWithUTF8String:lAddress]];
     }
     ms_free(lAddress);
 }
