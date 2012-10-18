@@ -186,11 +186,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     LinphoneCore *lc = [LinphoneManager getLc];
     LCSipTransports transportValue={0};
-    if (linphone_core_get_sip_transports(lc, &transportValue)) {
-        [LinphoneLogger logc:LinphoneLoggerError format:"cannot get current transport"];
-    }
-    transportValue.udp_port=transportValue.tcp_port|transportValue.udp_port|transportValue.tls_port;
-	transportValue.tls_port=0;
+    transportValue.udp_port=5060;
+    transportValue.tls_port=0;
     transportValue.tcp_port=0;
     
     if (linphone_core_set_sip_transports(lc, &transportValue)) {
