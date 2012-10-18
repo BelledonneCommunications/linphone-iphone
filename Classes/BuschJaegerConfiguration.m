@@ -257,8 +257,8 @@
                         }
                     }
                     
-                    [self reloadCertificates];
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [self reloadCertificates];
                         [delegate buschJaegerConfigurationSuccess];
                     });
                 });
@@ -511,6 +511,9 @@
     if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = [challenge.protectionSpace serverTrust];
         NSArray *anchors = (NSArray*)certificates;
+        if(anchors == nil) {
+            anchors = [NSArray array];
+        }
         SecTrustSetAnchorCertificates(trust, (CFArrayRef)anchors);
         SecTrustSetAnchorCertificatesOnly(trust, YES);
 
