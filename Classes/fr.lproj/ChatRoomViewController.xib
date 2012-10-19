@@ -260,7 +260,7 @@
 										<string key="NSReuseIdentifierKey">_NS:9</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
-											<string key="IBUIAccessibilityLabel">Envoyez</string>
+											<string key="IBUIAccessibilityLabel">Envoyer</string>
 										</object>
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<bool key="IBUIEnabled">NO</bool>
@@ -272,7 +272,7 @@
 										<double key="IBUITitleEdgeInsets.bottom">0.0</double>
 										<double key="IBUITitleEdgeInsets.left">0.0</double>
 										<double key="IBUITitleEdgeInsets.right">0.0</double>
-										<string key="IBUINormalTitle">Envoyez</string>
+										<string key="IBUINormalTitle">Envoyer</string>
 										<object class="NSColor" key="IBUIHighlightedTitleColor">
 											<int key="NSColorSpace">2</int>
 											<bytes key="NSRGB">MCAwIDAAA</bytes>
