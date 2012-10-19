@@ -42,5 +42,5 @@ expires=604800
 push_notification=1
 transport=tcp
 sharing_server=https://www.linphone.org:444/upload.php
-ice=1
+ice=0
 stun=stun.linphone.org
