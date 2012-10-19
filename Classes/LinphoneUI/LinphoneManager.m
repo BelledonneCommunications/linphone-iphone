@@ -166,7 +166,16 @@ extern  void libmsbcg729_init();
     }
     
 	switch (new_state) {					
-		case LinphoneCallIncomingReceived: 
+		case LinphoneCallIncomingReceived:
+			/*first step is to re-enable ctcall center*/
+			[self setupGSMInteraction];
+			
+			/*should we reject this call ?*/
+			if ([callCenter currentCalls]!=nil) {
+				ms_message("Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from));
+				linphone_core_decline_call([LinphoneManager getLc], call, LinphoneReasonBusy);
+				return;
+			}
 			[callDelegate	displayIncomingCall:call 
                            NotificationFromUI:mCurrentViewController
 														forUser:lUserName 
@@ -872,6 +881,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 															   }
 															   //kick up network cnx, just in case
 															   [self kickOffNetworkConnection];
+															   
+															   [self setupGSMInteraction];
+															   //to make sure presence status is correct
+															   if ([callCenter currentCalls]==nil)
+																   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+															   
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
@@ -1128,8 +1143,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #pragma GSM management
 
 -(void) setupGSMInteraction {
-	if (callCenter != nil)
+	if (callCenter != nil) {
+		callCenter.callEventHandler=NULL;
 		[callCenter release];
+	}
 	
 	callCenter = [[CTCallCenter alloc] init];
 	callCenter.callEventHandler = ^(CTCall* call) {
