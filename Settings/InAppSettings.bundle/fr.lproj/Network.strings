@@ -23,7 +23,7 @@
 "Transport" = "Transport";
 
 /* Media Encryption */
-"Media Encryption" = "Chiffrement";
+"Media Encryption" = "Encryption media";
 
 /* Push Notifications */
 "Push Notification" = "Push Notification";
