@@ -2917,6 +2917,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_stop_media_streams(call);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call ended") );
+	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
 }
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
@@ -2924,7 +2925,6 @@ int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char
 		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
 		call->reason=LinphoneReasonDeclined;
 		terminate_call(lc,call);
-		linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
 	}else{
 		ms_error("Bad state for call redirection.");
 		return -1;
@@ -2958,8 +2958,35 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	}
 	sal_call_terminate(call->op);
 	terminate_call(lc,call);
+	return 0;
+}
 
-	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");
+/**
+ * Decline a pending incoming call, with a reason.
+ * @param lc the linphone core
+ * @param call the LinphoneCall, must be in the IncomingReceived state.
+ * @param reason the reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
+**/
+int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason){
+	SalReason sal_reason=SalReasonUnknown;
+	if (call->state!=LinphoneCallIncomingReceived && call->state!=LinphoneCallIncomingEarlyMedia){
+		ms_error("linphone_core_decline_call(): Cannot decline a call that is in state %s",linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	switch(reason){
+		case LinphoneReasonDeclined:
+			sal_reason=SalReasonDeclined;
+		break;
+		case LinphoneReasonBusy:
+			sal_reason=SalReasonBusy;
+		break;
+		default:
+			ms_error("linphone_core_decline_call(): unsupported reason %s",linphone_reason_to_string(reason));
+			return -1;
+		break;
+	}
+	sal_call_decline(call->op,sal_reason,NULL);
+	terminate_call(lc,call);
 	return 0;
 }
 
@@ -4975,6 +5002,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "User not found";
 		case LinphoneReasonNotAnswered:
 			return "Not answered";
+		case LinphoneReasonBusy:
+			return "Busy";
 	}
 	return "unknown error";
 }

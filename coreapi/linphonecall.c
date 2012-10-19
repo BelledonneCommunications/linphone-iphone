@@ -2096,6 +2096,7 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 
 /**
  * Perform a zoom of the video displayed during a call.
+ * @param call the call.
  * @param zoom_factor a floating point number describing the zoom factor. A value 1.0 corresponds to no zoom applied.
  * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.

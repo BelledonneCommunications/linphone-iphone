@@ -222,7 +222,8 @@ enum _LinphoneReason{
 	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
 	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
-	LinphoneReasonNotAnswered
+	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
+	LinphoneReasonBusy /**<Phone line was busy */
 };
 
 /**
@@ -963,6 +964,8 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
+
+int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
 
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
