@@ -385,10 +385,24 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     } else {
 		data = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
 	}
+
+	
 	if (state == LinphoneCallIncomingReceived
 		&&[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
-        LinphoneCallLog* callLog=linphone_call_get_call_log(call);
+        
+		/*first step is to re-enable ctcall center*/
+		[self setupGSMInteraction];
+		
+		/*should we reject this call ?*/
+		if ([callCenter currentCalls]!=nil) {
+			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+			linphone_core_decline_call([LinphoneManager getLc], call,LinphoneReasonBusy);
+			return;
+		}
+		
+		
+		LinphoneCallLog* callLog=linphone_call_get_call_log(call);
 		NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
         const LinphoneAddress *addr = linphone_call_get_remote_address(call);
         NSString* address = nil;
@@ -1327,9 +1341,10 @@ static void audioRouteChangeListenerCallback (
 
 - (void)setupGSMInteraction {
     
-	if (callCenter != nil)
+	if (callCenter != nil) {
+		callCenter.callEventHandler=NULL;
 		[callCenter release];
-	
+	}
     callCenter = [[CTCallCenter alloc] init];
     callCenter.callEventHandler = ^(CTCall* call) {
 		// post on main thread
