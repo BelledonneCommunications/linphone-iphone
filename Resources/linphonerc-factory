@@ -8,7 +8,7 @@ edge_bw=10
 
 [sip]
 guess_hostname=1
-inc_timeout=15
+inc_timeout=45
 use_info=0
 use_ipv6=0
 register_only_when_network_is_up=1
