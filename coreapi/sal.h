@@ -53,6 +53,11 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
+#define SAL_MEDIA_DESCRIPTION_UNCHANGED		0x00
+#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED	0x01
+#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED	0x02
+#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)
+
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
@@ -189,7 +194,7 @@ SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
-bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
+int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
