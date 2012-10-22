@@ -143,6 +143,14 @@
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationDidChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [self orientationUpdate:[[UIDevice currentDevice] orientation]];
 }
 
 - (void)vieWillDisappear:(BOOL)animated{
@@ -151,6 +159,12 @@
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneCallUpdate
+                                                  object:nil];
+    
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIDeviceOrientationDidChangeNotification
                                                   object:nil];
 }
 
@@ -163,10 +177,38 @@
     [self callUpdate:call state:state animated:TRUE];
 }
 
+- (void)orientationDidChange:(NSNotification*)notif {
+    [self orientationUpdate:[[UIDevice currentDevice] orientation]];
+}
 
-#pragma mark - 
 
-- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {    
+#pragma mark -
+
+- (void)orientationUpdate:(UIInterfaceOrientation)orientation {
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.3f];
+    CGRect frame = [videoView frame];
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            [videoView setTransform: CGAffineTransformMakeRotation(0)];
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            [videoView setTransform: CGAffineTransformMakeRotation(M_PI)];
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            [videoView setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            [videoView setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            break;
+        default:
+            break;
+    }
+    [videoView setFrame:frame];
+    [UIView commitAnimations];
+}
+
+- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
     // Fake call update
     if(call == NULL) {
         return;
