@@ -24,6 +24,7 @@
 @implementation BuschJaegerSettingsView
 
 @synthesize scanButton;
+@synthesize manualButton;
 @synthesize backButton;
 @synthesize waitView;
 
@@ -61,6 +62,9 @@
 
 - (void)dealloc {
     [scanController release];
+    [scanButton release];
+    [manualButton release];
+    [waitView release];
     [super dealloc];
 }
 
@@ -75,6 +79,7 @@
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
         
         [BuschJaegerUtils createGradientForView:scanButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
+        [BuschJaegerUtils createGradientForView:manualButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
         [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
     }
     [waitView setHidden:TRUE];
@@ -87,8 +92,23 @@
     [self presentModalViewController:scanController animated:FALSE];
 }
 
+- (IBAction)onManualClick:(id)sender {
+    [[BuschJaegerMainView instance].manualSettingsView reset];
+    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].manualSettingsView animated:FALSE];
+}
+
 - (IBAction)onBackClick:(id)sender {
     [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+}
+
+
+#pragma mark -
+
+- (void)setConfiguration:(NSString*)address username:(NSString*)username password:(NSString*)password {
+    NSString *dataString = [NSString stringWithFormat:@"URL=%@ USER=%@ PW=%@", address, username, password];
+    if([[[LinphoneManager instance] configuration] parseQRCode:dataString delegate:self]) {
+        [waitView setHidden:FALSE];
+    }
 }
 
 

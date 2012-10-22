@@ -111,6 +111,10 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
+		D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
+		D30B942816358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */; };
+		D30B942916358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */; };
 		D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
 		D3196D3F15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
 		D321FF9915E628CB0098B5F4 /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = D321FF9815E628CB0098B5F4 /* linphonerc~ipad */; };
@@ -582,6 +586,9 @@
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* buschjaeger-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "buschjaeger-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerManualSettingsView.xib; sourceTree = "<group>"; };
+		D30B942616358DD600D53C46 /* BuschJaegerManualSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerManualSettingsView.h; sourceTree = "<group>"; };
+		D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerManualSettingsView.m; sourceTree = "<group>"; };
 		D3196D3C15A32BD7007FEEBA /* UITransferButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransferButton.h; sourceTree = "<group>"; };
 		D3196D3D15A32BD8007FEEBA /* UITransferButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransferButton.m; sourceTree = "<group>"; };
 		D321FF9815E628CB0098B5F4 /* linphonerc~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc~ipad"; path = "Resources/linphonerc~ipad"; sourceTree = "<group>"; };
@@ -866,6 +873,9 @@
 				D37CD38415E22C000028869A /* BuschJaegerMainView.h */,
 				D37CD38515E22C000028869A /* BuschJaegerMainView.m */,
 				D37CD38615E22C010028869A /* BuschJaegerMainView.xib */,
+				D30B942616358DD600D53C46 /* BuschJaegerManualSettingsView.h */,
+				D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */,
+				D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */,
 				D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */,
 				D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */,
 				D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */,
@@ -1394,16 +1404,6 @@
 			path = Utils/ZBarSDK;
 			sourceTree = "<group>";
 		};
-		D37E3ECA1619C27A0087659A /* CAAnimationBlocks */ = {
-			isa = PBXGroup;
-			children = (
-				D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */,
-				D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */,
-			);
-			name = CAAnimationBlocks;
-			path = Utils/CAAnimationBlocks;
-			sourceTree = "<group>";
-		};
 		D37CD35615E22B0C0028869A /* Headers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1456,6 +1456,16 @@
 				D37CD37215E22B0C0028869A /* zbar-samples.png */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D37E3ECA1619C27A0087659A /* CAAnimationBlocks */ = {
+			isa = PBXGroup;
+			children = (
+				D37E3ECB1619C27A0087659A /* CAAnimation+Blocks.h */,
+				D37E3ECC1619C27A0087659A /* CAAnimation+Blocks.m */,
+			);
+			name = CAAnimationBlocks;
+			path = Utils/CAAnimationBlocks;
 			sourceTree = "<group>";
 		};
 		D37EE15F160377D7003608A6 /* DTFoundation */ = {
@@ -1613,6 +1623,7 @@
 				D32EDDA71600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */,
 				D32EDDA91600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAB1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
+				D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1672,6 +1683,7 @@
 				D32EDDA81600C8FC009A84C7 /* ringtone_03_1600_loop.wav in Resources */,
 				D32EDDAA1600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
+				D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1760,6 +1772,7 @@
 				D32EDD9B1600C450009A84C7 /* LevelPushButton.m in Sources */,
 				D37490841612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
+				D30B942816358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1816,6 +1829,7 @@
 				D32EDD9C1600C450009A84C7 /* LevelPushButton.m in Sources */,
 				D37490851612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 				D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
+				D30B942916358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

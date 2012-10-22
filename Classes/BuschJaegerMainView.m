@@ -60,6 +60,7 @@
 @synthesize navigationController;
 @synthesize callView;
 @synthesize settingsView;
+@synthesize manualSettingsView;
 @synthesize welcomeView;
 @synthesize historyView;
 @synthesize historyDetailsView;
@@ -103,6 +104,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [navigationController release];
     [callView release];
     [settingsView release];
+    [manualSettingsView release];
     [welcomeView release];
     [historyView release];
     [historyDetailsView release];

@@ -1,4 +1,4 @@
-/* BuschJaegerSettingsView.h
+/* BuschJagerManualSettingsView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -19,23 +19,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ZBarReaderViewController.h"
-#import "BuschJaegerConfiguration.h"
-
-@interface BuschJaegerSettingsView : UIViewController<ZBarReaderDelegate, BuschJaegerConfigurationDelegate> {
-    @private
-    ZBarReaderViewController *scanController;
+@interface BuschJaegerManualSettingsView : UIViewController<UITextFieldDelegate> {
+    
 }
 
-@property (nonatomic, retain) IBOutlet UIView *scanButton;
-@property (nonatomic, retain) IBOutlet UIView *manualButton;
+@property (nonatomic, retain) IBOutlet UITextField *addressField;
+@property (nonatomic, retain) IBOutlet UITextField *usernameField;
+@property (nonatomic, retain) IBOutlet UITextField *passwordField;
+
+@property (nonatomic, retain) IBOutlet UIView *validButton;
 @property (nonatomic, retain) IBOutlet UIView *backButton;
-@property (nonatomic, retain) IBOutlet UIView *waitView;
 
-- (IBAction)onScanClick:(id)sender;
-- (IBAction)onManualClick:(id)sender;
-- (IBAction)onBackClick:(id)sender;
-
-- (void)setConfiguration:(NSString*)address username:(NSString*)username password:(NSString*)password;
+- (void)reset;
 
 @end

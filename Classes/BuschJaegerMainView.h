@@ -21,6 +21,7 @@
 
 #import "BuschJaegerCallView.h"
 #import "BuschJaegerSettingsView.h"
+#import "BuschJaegerManualSettingsView.h"
 #import "BuschJaegerWelcomeView.h"
 #import "BuschJaegerHistoryView.h"
 #import "BuschJaegerHistoryDetailsView.h"
@@ -36,6 +37,7 @@
 @property (nonatomic, retain) IBOutlet UINavigationControllerEx *navigationController;
 @property (nonatomic, retain) IBOutlet BuschJaegerCallView *callView;
 @property (nonatomic, retain) IBOutlet BuschJaegerSettingsView *settingsView;
+@property (nonatomic, retain) IBOutlet BuschJaegerManualSettingsView *manualSettingsView;
 @property (nonatomic, retain) IBOutlet BuschJaegerWelcomeView *welcomeView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryView *historyView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryDetailsView *historyDetailsView;
