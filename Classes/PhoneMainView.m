@@ -267,6 +267,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return [mainViewController currentOrientation];
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    [mainViewController clearCache:viewStack];
+}
 
 #pragma mark - Event Functions
 

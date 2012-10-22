@@ -244,11 +244,6 @@
     return NO;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    [self clearCache];
-}
-
 
 #pragma mark - Event Functions
 
@@ -265,18 +260,29 @@
 
 #pragma mark -
 
-- (void)clearCache {
+- (void)clearCache:(NSArray *)exclude {
     for(NSString *key in [viewControllerCache allKeys]) {
-        UIViewController *vc = [viewControllerCache objectForKey:key];
-        if(vc != self.stateBarViewController &&
-           vc != self.tabBarViewController &&
-           vc != self.contentViewController) {
+        bool remove = true;
+        if(exclude != nil) {
+            for (UICompositeViewDescription *description in exclude) {
+                if([key isEqualToString:description.content] ||
+                   [key isEqualToString:description.stateBar] ||
+                   [key isEqualToString:description.tabBar]
+                   ) {
+                    remove = false;
+                    break;
+                }
+            }
+        }
+        if(remove) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Free cached view: %@", key];
+            UIViewController *vc = [viewControllerCache objectForKey:key];
             if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
                 [vc viewWillUnload];
             }
             [vc viewDidUnload];
+            [viewControllerCache removeObjectForKey:key];
         }
-        [viewControllerCache removeObjectForKey:key];
     }
 }
 
