@@ -415,6 +415,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	int dont_use_101 = !ctx->use_101; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_DONT_SEND_101,&dont_use_101);
 	sal_set_dscp(ctx,ctx->dscp);
+	sal_use_dates(ctx,ctx->add_dates);
 
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
