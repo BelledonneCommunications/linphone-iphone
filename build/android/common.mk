@@ -75,6 +75,10 @@ LOCAL_CFLAGS += -DHAVE_X264
 endif
 endif
 
+ifeq ($(USE_JAVAH),1)
+LOCAL_CFLAGS += -DUSE_JAVAH
+endif
+
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
