@@ -145,7 +145,7 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	sal_op_send_request(op,request);
 }
-void sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
+int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
@@ -168,6 +168,6 @@ void sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL);
 	}
-	belle_sip_client_transaction_send_request(client_transaction);
+	return belle_sip_client_transaction_send_request(client_transaction);
 
 }

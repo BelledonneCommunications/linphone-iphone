@@ -76,7 +76,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
 void sal_op_call_fill_cbs(SalOp*op);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
-void sal_op_send_request(SalOp* op, belle_sip_request_t* request);
+int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
 

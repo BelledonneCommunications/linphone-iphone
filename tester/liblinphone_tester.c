@@ -19,8 +19,8 @@
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 
-const char *test_domain="sip.example.org";
-const char *auth_domain="auth.example.org";
+const char *test_domain="sipopen.example.org";
+const char *auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 
@@ -335,6 +335,39 @@ static void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	linphone_core_destroy(mgr->lc);
 	free(mgr);
 }
+
+static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
+	LinphoneProxyConfig* proxy;
+	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
+	LinphoneAddress* dest_identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	linphone_address_clean(dest_identity);
+
+	CU_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_invite_address(caller_mgr->lc,dest_identity));
+	linphone_address_destroy(dest_identity);
+	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
+
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
+	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallOutgoingRinging,1));
+
+	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
+	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+	linphone_address_destroy(identity);
+
+	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
+
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
+	/*just to sleep*/
+	return wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,1)
+			&&
+			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,1);
+
+}
 static void simple_call() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
@@ -430,6 +463,67 @@ static void call_early_declined() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void call_terminated_by_caller() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_paused_resumed() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCall* call_obj;
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+	call_obj = linphone_core_get_current_call(pauline->lc);
+
+	linphone_core_pause_call(pauline->lc,call_obj);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+
+	linphone_core_resume_call(pauline->lc,call_obj);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_srtp() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+	linphone_core_set_media_encryption(marie->lc,LinphoneMediaEncryptionSRTP);
+	linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	CU_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),LinphoneMediaEncryptionSRTP);
+	CU_ASSERT_EQUAL(linphone_core_get_media_encryption(pauline->lc),LinphoneMediaEncryptionSRTP);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 int init_test_suite () {
 
 CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
@@ -471,7 +565,15 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 	if (NULL == CU_add_test(pSuite, "simple_call", simple_call)) {
 			return CU_get_error();
 	}
-
+	if (NULL == CU_add_test(pSuite, "call_terminated_by_caller", call_terminated_by_caller)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_paused_resumed", call_paused_resumed)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
+			return CU_get_error();
+	}
 	return 0;
 }
 int main (int argc, char *argv[]) {

@@ -29,6 +29,7 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 	MSList* pt_it;
 	PayloadType* pt;
 	char buffer[1024];
+	char* dir;
 
 	if (strchr(desc->addr,':')!=NULL){
 			inet6=1;
@@ -114,6 +115,23 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 				}
 
 			}
+		switch(desc->streams[i].dir){
+			case SalStreamSendRecv:
+				/*dir="sendrecv";*/
+				dir=NULL;
+			break;
+			case SalStreamRecvOnly:
+				dir="recvonly";
+				break;
+			case SalStreamSendOnly:
+				dir="sendonly";
+				break;
+			case SalStreamInactive:
+				dir="inactive";
+				break;
+		}
+		if (dir) belle_sdp_media_description_add_attribute(media_desc,belle_sdp_attribute_create(dir,NULL));
+
 		belle_sdp_session_description_add_media_description(session_desc,media_desc);
 
 	}

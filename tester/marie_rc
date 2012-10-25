@@ -9,13 +9,13 @@ ping_with_options=0
 username=marie
 userid=marie
 passwd=secret
-realm="auth.example.org"
+realm="sip.example.org"
 
 
 [proxy_0]
-reg_proxy=auth.example.org;transport=tcp
-reg_route=auth.example.org;transport=tcp;lr
-reg_identity=sip:marie@auth.example.org
+reg_proxy=sip.example.org;transport=tcp
+reg_route=sip.example.org;transport=tcp;lr
+reg_identity=sip:marie@sip.example.org
 reg_expires=3600
 reg_sendregister=1
 publish=0

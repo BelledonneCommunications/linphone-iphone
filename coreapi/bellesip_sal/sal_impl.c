@@ -276,7 +276,7 @@ Sal * sal_init(){
 	sal->listener_callbacks.process_transaction_terminated=process_transaction_terminated;
 	sal->listener_callbacks.process_auth_requested=process_auth_requested;
 	belle_sip_provider_add_sip_listener(sal->prov,listener=belle_sip_listener_create_from_callbacks(&sal->listener_callbacks,sal));
-	belle_sip_object_unref(listener);
+	/* belle_sip_callbacks_t is unowned, why ?belle_sip_object_unref(listener);*/
 	return sal;
 }
 void sal_set_user_pointer(Sal *sal, void *user_data){
