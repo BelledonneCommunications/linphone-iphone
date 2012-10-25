@@ -35,6 +35,7 @@
 #include "commands/terminate.h"
 #include "commands/unregister.h"
 #include "commands/quit.h"
+#include "commands/version.h"
 
 using namespace std;
 
@@ -350,6 +351,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new MediaEncryptionCommand());
 	mCommands.push_back(new PortCommand());
 	mCommands.push_back(new AdaptiveBufferCompensationCommand());
+	mCommands.push_back(new VersionCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
 
