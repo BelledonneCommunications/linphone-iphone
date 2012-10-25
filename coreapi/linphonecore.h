@@ -146,7 +146,7 @@ typedef struct _LinphoneCallLog{
 	LinphoneCallStatus status; /**< The status of the call*/
 	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
 	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
-	char start_date[128]; /**<Human readable string containg the start date*/
+	char start_date[128]; /**<Human readable string containing the start date*/
 	int duration; /**<Duration of the call in seconds*/
 	char *refkey;
 	void *user_pointer;
@@ -156,6 +156,7 @@ typedef struct _LinphoneCallLog{
     int video_enabled;
 	struct _LinphoneCore *lc;
 	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	const char* call_id; /**unique id of a call*/
 } LinphoneCallLog;
 
 
@@ -203,7 +204,14 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
 void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
-
+/**
+ * @ingroup call_control
+ * Use to know if this call has been configured in low bandwidth mode.
+ * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file
+ * <br> When enabled, this param may transform a call request with video in audio only mode.
+ * @return TRUE if low bandwidth has been configured/detected
+ */
+bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -214,7 +222,8 @@ enum _LinphoneReason{
 	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
 	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
-	LinphoneReasonNotAnswered
+	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
+	LinphoneReasonBusy /**<Phone line was busy */
 };
 
 /**
@@ -343,7 +352,7 @@ typedef enum _LinphoneCallState{
 	LinphoneCallPausedByRemote, /**<The call is paused by remote end*/
 	LinphoneCallUpdatedByRemote, /**<The call's parameters change is requested by remote end, used for example when video is added by remote */
 	LinphoneCallIncomingEarlyMedia, /**<We are proposing early media to an incoming call */
-	LinphoneCallUpdated, /**<The remote accepted the call update initiated by us */
+	LinphoneCallUpdating, /**<A call update has been initiated by us */
 	LinphoneCallReleased /**< The call object is no more retained by the core */
 } LinphoneCallState;
 
@@ -382,6 +391,7 @@ void *linphone_call_get_user_pointer(LinphoneCall *call);
 void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall
@@ -955,6 +965,8 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
+int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
+
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
@@ -1107,13 +1119,21 @@ void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
 int linphone_core_get_audio_port(const LinphoneCore *lc);
 
+void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
 int linphone_core_get_video_port(const LinphoneCore *lc);
+
+void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
 int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
 void linphone_core_set_audio_port(LinphoneCore *lc, int port);
 
+void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port);
+
 void linphone_core_set_video_port(LinphoneCore *lc, int port);
+
+void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
 
 void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 
@@ -1411,8 +1431,6 @@ typedef struct LinphoneTunnel LinphoneTunnel;
 * get tunnel instance if available
 */
 LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
-
-void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_sip_dscp(const LinphoneCore *lc);

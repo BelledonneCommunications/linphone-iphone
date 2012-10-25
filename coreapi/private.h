@@ -79,7 +79,7 @@ struct _LinphoneCallParams{
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
-	
+	bool_t low_bandwidth;
 };
     
 typedef struct _CallCallbackObj
@@ -252,7 +252,6 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_core_update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session);
 void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
-void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
 void linphone_core_write_friends_config(LinphoneCore* lc);
@@ -355,7 +354,6 @@ struct _LinphoneChatRoom{
 	struct _LinphoneCore *lc;
 	char  *peer;
 	LinphoneAddress *peer_url;
-	SalOp *op;
 	void * user_data;
 };
 
@@ -399,8 +397,10 @@ typedef struct sip_config
 
 typedef struct rtp_config
 {
-	int audio_rtp_port;
-	int video_rtp_port;
+	int audio_rtp_min_port;
+	int audio_rtp_max_port;
+	int video_rtp_min_port;
+	int video_rtp_max_port;
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
@@ -591,7 +591,8 @@ struct _EcCalibrator{
 	ms_thread_t thread;
 	MSSndCard *play_card,*capt_card;
 	MSFilter *sndread,*det,*rec;
-	MSFilter *play, *gen, *sndwrite,*resampler;
+	MSFilter *play, *gen, *sndwrite;
+	MSFilter *read_resampler,*write_resampler;
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;

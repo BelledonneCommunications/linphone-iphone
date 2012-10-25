@@ -159,12 +159,7 @@ Any subsequente modifications to {@link org.linphone.core.LinphoneFriend} must b
 	my_friend.enableSubscribes(true); /*disable subscription for this friend*/
 	my_friend.done(); /*commit changes triggering an UNSUBSCRIBE message*/
 </code>
-</pre>                  Do not display status messages
--J<flag>                  Pass <flag> directly to the runtime system
-
-Provided by Standard doclet:
--d <directory>                    Destination directory for output files
--use             
+</pre>
 
 <b> Publishing presence status </b>
 <br>Local presence status can be changed using function {@link org.linphone.core.LinphoneCore#setPresenceInfo }.New status is propagated to all friends {@link org.linphone.core.LinphoneCore#addFriend(LinphoneFriend lf)  previously added } to LinphoneCore. 
@@ -220,36 +215,65 @@ mic_gain=0.1
 
 <b>Echo cancellation</b>
 <br>
-On Android devices, echo is a problem, especially with low-end devices. The root cause is the unpredictable latency of Android's sound system. The liblinphone software {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} that is operating well on desktop platforms (Mac, Linux, Windows) is unable to operate under Android platform. The situation is very heterogenous:<br>
+On Android devices, there are two kind of situations regarding echo cancellation:<br>
 <ul>
-	<li>On new (after 2011) high end devices, manufacturers often include a hardware echo cancellation. If available, liblinphone will make use of it and no software correction is required. 
-	Source file linphone-android/submodules/linphone/mediastreamer2/java/src/org/linphone/mediastream/video/capture/hwconf/Hacks.java contains a method hasBuiltInEchoCanceller() that returns true if an hardware echo canceller is available, based on device model identifier. The current list is incomplete.
-	</li>
-	<li>On former models with decent CPU power (armv7), sound system behaves in a nearly predictive way so that it is possible to use {@link org.linphone.core.LinphoneCore#enableEchoLimiter echo limiter}. Echo limiter is a simple echo attenuation technique which consists in strongly attenuating the microphone input when speaker is playing voice, in order to cut the echo. The main drawback of echo limiter is that the conversation is perceived as half duplex by users, because they won't hear background noise from the remote side while they are speaking.
-	</li>
-	<li>On low class android devices or very old models (armv5 processor), no solution works.
-	</li>
+	<li>The new (after 2011) high end devices, on which manufacturers often include a hardware echo cancellation. If available, liblinphone will make use of it and no software correction is required. Source file linphone-android/submodules/linphone/mediastreamer2/java/src/org/linphone/mediastream/video/capture/hwconf/Hacks.java contains a method hasBuiltInEchoCanceller() that returns true if an hardware echo canceller is available, based on device model identifier. The current list is incomplete.</li>
+	<li>The other devices, for which it is recommended to enable the software echo canceller of liblinphone.</li>
 </ul>
 
 <br>
-In order to benefit from the best echo cancellation solution, we recommend applications to run the following algorithm, when it is run for the first time:<br>
-First of {@link org.linphone.core.LinphoneCore#enableEchoCancellation echo canceller} should not be used, in any case.
-<ul>
-	<li>Use the Hacks.hasBuiltInEchoCanceller() method to first check if the device has hardware echo canceller. If yes, then echo limiter must be turned off.</li>
-	<li>If no the hasBuiltInEchoCanceller() returned false, then it is possible to use the echo calibration procedure. If the calibration procedure fails, it means that
-	probably the phone performs hardware echo cancellation, so in this case echo limiter must be turned off.</li>
-	<li>If the echo calibration succeeded, then echo is present, so it is recommended to enable echo limiter.
-</ul>
-
+<b>Echo calibration tool</b>
 <br>
-<b>Echo calibration procedure</b>
-<br>
-The echo calibration procedure is a five second test which consists in playing small beeps to the speaker while the microphone input is recorded.
+The echo calibration procedure is a five second audio test which consists in playing small beeps to the receiver while the microphone input is recorded.
 If the device is subject to echo (or doesn't have hardware echo cancellation), then beeps recorded by the microphone will be detected and a measurement of echo delay can be computed.
 Echo calibration procedure can be started by calling {@link org.linphone.core.LinphoneCore#startEchoCalibration LinphoneCore.startEchoCalibration}.
+The measurement of the echo delay is important to save CPU computations by restricting the temporal area where the software echo canceller has to perform.
+<br>
+
+<br>
+<b>Echo limiter</b>
+<br>
+The echo limiter is a liblinphone algorithm to clear out echo with a brute force method. It consists in cutting down the microphone signal when active signal is played by the speaker/receiver, to prevent voice to feed back into the microphone. This algorithm has disadvantages compared to the hardware or software echo cancellers because the remote user will be not hear any background noise when speaking, which is confusing. As a result the echo limiter method shall be used only under situation where echo canceller can't perform, that is loud signals with heavy saturations, which usually happens when using the device in speaker mode. Echo limiter can be enabled or disabled during a call with {@link org.linphone.core.LinphoneCall#enableEchoLimiter LinphoneCall.enableEchoLimiter()}.
+<br>
+
+<br>
+<b>Recommandations to applications for optimal audio performance</b>
+<br>
+
+<br>
+In order to benefit from the best echo cancellation solution, we recommend applications to run the following procedure, when they are run for the first time:<br>
+<ul>
+	<li>Use the Hacks.hasBuiltInEchoCanceller() method to first check if the device has hardware echo cancellation. If yes, then echo canceller must be turned off.</li>
+	<li>If hasBuiltInEchoCanceller() returned false, then it is recommended to run the echo calibration procedure. This procedure can produce the following results:
+		<ul>
+			<li>success with no echo detected: it means that the device has an hardware echo canceller but is not (yet) referenced in our list of devices having hardware echo cancellation. Echo cancellation should be disabled with {@link org.linphone.core.LinphoneCore#enableEchoCancellation LinphoneCore.enableEchoCancellation(false)}</li>
+			<li>success with an estimated echo delay: the echo canceller should be enabled.</li>
+			<li>failure: it means that some echo has been detected but the delay could not be estimated. In this case it is recommended to activate the echo canceller. A typical for android minimum delay of 250 ms will be used as default.</li>
+		</ul>
+	</li>
+</ul>
+
+During calls, the echo limiter should be disabled while using the receiver, but enabled while using the hands-free speaker. It is also recommended to disable echo canceller while using the echo limiter, because the first one would be useless. Therefore you should have the following situations:
+<ul>
+	<li>While using the receiver</li>
+		<ul>
+			<li>Echo canceller enabled, unless the device has hardware echo cancellation</li>
+			<li>Echo limiter disabled</li>
+		</ul>
+	<li>While using the hands-free speaker</li>
+		<ul>
+			<li>Echo canceller disabled</li>
+			<li>Echo limiter enabled, unless the device has hardware echo cancellation.</li>
+		</ul>
+	</li>
+</ul>
+Controlling echo limiter during a call has to be done with {@link org.linphone.core.LinphoneCall#enableEchoLimiter LinphoneCall.enableEchoLimiter()}.
+Controlling echo canceller during a call has to be done with {@link org.linphone.core.LinphoneCall#enableEchoCancellation LinphoneCall.enableEchoCancellation()}.
+
 
 <br><br>
-<b>Echo limiter settings</b><br>
+<b>Echo limiter settings</b>
+<br>
 Echo limiter requires settings to be defined in linphonerc factory config file for correction operation.
 Typical settings are:
 <pre>

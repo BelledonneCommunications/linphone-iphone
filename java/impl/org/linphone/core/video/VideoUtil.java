@@ -1,6 +1,6 @@
 /*
-PayloadType.java
-Copyright (C) 2010  Belledonne Communications, Grenoble, France
+VideoUtil.java
+Copyright (C) 2011  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,11 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package org.linphone.core;
+package org.linphone.core.video;
 
-public interface PayloadType {
+import java.util.ArrayList;
+import java.util.List;
 
-	String getMime();
-	
-	int getRate();
+import org.linphone.core.VideoSize;
+
+import android.hardware.Camera.Size;
+
+/**
+ * @author Guillaume Beraudo
+ */
+final class VideoUtil {
+
+	private VideoUtil() {}
+
+	public static List<VideoSize> createList(List<Size> supportedVideoSizes) {
+		List<VideoSize> converted = new ArrayList<VideoSize>(supportedVideoSizes.size());
+		for (Size s : supportedVideoSizes) {
+			converted.add(new VideoSize(s.width, s.height));
+		}
+		return converted;
+	}
 }

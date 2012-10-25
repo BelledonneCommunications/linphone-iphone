@@ -277,6 +277,7 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	update_media_description_from_stun(md,&call->ac,&call->vc);
 	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
+		linphone_core_update_ice_state_in_call_stats(call);
 	}
 	linphone_address_destroy(addr);
 	return md;
@@ -297,17 +298,35 @@ SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCa
 	return _create_local_media_description(lc,call,id,id);
 }
 
-static int find_port_offset(LinphoneCore *lc){
+static int find_port_offset(LinphoneCore *lc, SalStreamType type){
 	int offset;
 	MSList *elem;
-	int audio_port;
+	int tried_port;
+	int existing_port;
 	bool_t already_used=FALSE;
 	for(offset=0;offset<100;offset+=2){
-		audio_port=linphone_core_get_audio_port (lc)+offset;
+		switch (type) {
+			default:
+			case SalAudio:
+				tried_port=linphone_core_get_audio_port (lc)+offset;
+				break;
+			case SalVideo:
+				tried_port=linphone_core_get_video_port (lc)+offset;
+				break;
+		}
 		already_used=FALSE;
 		for(elem=lc->calls;elem!=NULL;elem=elem->next){
 			LinphoneCall *call=(LinphoneCall*)elem->data;
-			if (call->audio_port==audio_port) {
+			switch (type) {
+				default:
+				case SalAudio:
+					existing_port = call->audio_port;
+					break;
+				case SalVideo:
+					existing_port = call->video_port;
+					break;
+			}
+			if (existing_port==tried_port) {
 				already_used=TRUE;
 				break;
 			}
@@ -321,8 +340,54 @@ static int find_port_offset(LinphoneCore *lc){
 	return offset;
 }
 
+static int select_random_port(LinphoneCore *lc, SalStreamType type) {
+	MSList *elem;
+	int nb_tries;
+	int tried_port = 0;
+	int existing_port = 0;
+	int min_port = 0, max_port = 0;
+	bool_t already_used = FALSE;
+
+	switch (type) {
+		default:
+		case SalAudio:
+			linphone_core_get_audio_port_range(lc, &min_port, &max_port);
+			break;
+		case SalVideo:
+			linphone_core_get_video_port_range(lc, &min_port, &max_port);
+			break;
+	}
+	tried_port = (rand() % (max_port - min_port) + min_port) & ~0x1;
+	if (tried_port < min_port) tried_port = min_port + 2;
+	for (nb_tries = 0; nb_tries < 100; nb_tries++) {
+		for (elem = lc->calls; elem != NULL; elem = elem->next) {
+			LinphoneCall *call = (LinphoneCall *)elem->data;
+			switch (type) {
+				default:
+				case SalAudio:
+					existing_port = call->audio_port;
+					break;
+				case SalVideo:
+					existing_port = call->video_port;
+					break;
+			}
+			if (existing_port == tried_port) {
+				already_used = TRUE;
+				break;
+			}
+		}
+		if (!already_used) break;
+	}
+	if (nb_tries == 100) {
+		ms_error("Could not find any free port!");
+		return -1;
+	}
+	return tried_port;
+}
+
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int port_offset;
+	int min_port, max_port;
 	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
@@ -332,10 +397,26 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
 	linphone_core_notify_all_friends(call->core,LinphoneStatusOnThePhone);
-	port_offset=find_port_offset (call->core);
-	if (port_offset==-1) return;
-	call->audio_port=linphone_core_get_audio_port(call->core)+port_offset;
-	call->video_port=linphone_core_get_video_port(call->core)+port_offset;
+	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
+	if (min_port == max_port) {
+		/* Used fixed RTP audio port. */
+		port_offset=find_port_offset (call->core, SalAudio);
+		if (port_offset==-1) return;
+		call->audio_port=linphone_core_get_audio_port(call->core)+port_offset;
+	} else {
+		/* Select random RTP audio port in the specified range. */
+		call->audio_port = select_random_port(call->core, SalAudio);
+	}
+	linphone_core_get_video_port_range(call->core, &min_port, &max_port);
+	if (min_port == max_port) {
+		/* Used fixed RTP video port. */
+		port_offset=find_port_offset (call->core, SalVideo);
+		if (port_offset==-1) return;
+		call->video_port=linphone_core_get_video_port(call->core)+port_offset;
+	} else {
+		/* Select random RTP video port in the specified range. */
+		call->video_port = select_random_port(call->core, SalVideo);
+	}
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
 }
@@ -411,6 +492,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_address_clean(from);
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
+	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(op));
@@ -520,8 +602,8 @@ const char *linphone_call_state_to_string(LinphoneCallState cs){
 			return "LinphoneCallUpdatedByRemote";
 		case LinphoneCallIncomingEarlyMedia:
 			return "LinphoneCallIncomingEarlyMedia";
-		case LinphoneCallUpdated:
-			return "LinphoneCallUpdated";
+		case LinphoneCallUpdating:
+			return "LinphoneCallUpdating";
 		case LinphoneCallReleased:
 			return "LinphoneCallReleased";
 	}
@@ -580,6 +662,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
+	linphone_call_delete_ice_session(obj);
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
 		obj->op=NULL;
@@ -602,9 +685,6 @@ static void linphone_call_destroy(LinphoneCall *obj)
 		linphone_call_log_destroy(obj->log);
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
-	}
-	if (obj->ice_session) {
-		ice_session_destroy(obj->ice_session);
 	}
 
 	ms_free(obj);
@@ -853,6 +933,9 @@ const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallP
 	return cp->video_codec;
 }
 
+bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
+	return cp->low_bandwidth;
+}
 /**
  * Returns whether video is enabled.
 **/
@@ -1074,8 +1157,7 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 
 static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B','C','D'};
 
-static void linphone_core_dtmf_received(RtpSession* s, int dtmf, void* user_data){
-	LinphoneCore* lc = (LinphoneCore*)user_data;
+static void linphone_core_dtmf_received(LinphoneCore *lc, int dtmf){
 	if (dtmf<0 || dtmf>15){
 		ms_warning("Bad dtmf value %i",dtmf);
 		return;
@@ -1165,7 +1247,7 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	if (lc->vtable.dtmf_received!=NULL){
 		/* replace by our default action*/
 		audio_stream_play_received_dtmfs(call->audiostream,FALSE);
-		rtp_session_signal_connect(call->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);
+		/*rtp_session_signal_connect(call->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);*/
 	}
 }
 
@@ -1370,6 +1452,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				linphone_call_add_to_conf(call, mute);
 			}
 			call->current_params.in_conference=call->params.in_conference;
+			call->current_params.low_bandwidth=call->params.low_bandwidth;
 		}else ms_warning("No audio stream accepted ?");
 	}
 }
@@ -1570,7 +1653,6 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 
 void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
-		call->audiostream->ice_check_list = NULL;
 		rtp_session_unregister_event_queue(call->audiostream->session,call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
@@ -1596,7 +1678,6 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 void linphone_call_stop_video_stream(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL){
-		call->videostream->ice_check_list = NULL;
 		rtp_session_unregister_event_queue(call->videostream->session,call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
@@ -1818,9 +1899,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			ice_session_compute_candidates_foundations(call->ice_session);
 			ice_session_eliminate_redundant_candidates(call->ice_session);
 			ice_session_choose_default_candidates(call->ice_session);
-			ping_time = ice_session_gathering_duration(call->ice_session);
+			ping_time = ice_session_average_gathering_round_trip_time(call->ice_session);
 			if (ping_time >=0) {
-				ping_time /= ice_session_nb_check_lists(call->ice_session);
 				call->ping_time=ping_time;
 			}
 		} else {
@@ -1828,7 +1908,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			linphone_call_delete_ice_session(call);
 		}
 		switch (call->state) {
-			case LinphoneCallStreamsRunning:
+			case LinphoneCallUpdating:
 				linphone_core_start_update_call(call->core, call);
 				break;
 			case LinphoneCallUpdatedByRemote:
@@ -1838,13 +1918,16 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_proceed_with_invite_if_ready(call->core, call, NULL);
 				break;
-			default:
+			case LinphoneCallIdle:
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 				linphone_core_notify_incoming_call(call->core, call);
+				break;
+			default:
 				break;
 		}
 	} else if (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) {
 		linphone_core_start_accept_call_update(call->core, call);
+		linphone_core_update_ice_state_in_call_stats(call);
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
 		ice_session_restart(call->ice_session);
 		ice_session_set_role(call->ice_session, IR_Controlling);
@@ -1949,6 +2032,8 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 				|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
 				handle_ice_events(call, ev);
+			} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
+				linphone_core_dtmf_received(lc,evd->info.telephone_event);
 			}
 			ortp_event_destroy(ev);
 		}
@@ -2007,3 +2092,39 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params.in_conference;
 }
+
+
+/**
+ * Perform a zoom of the video displayed during a call.
+ * @param call the call.
+ * @param zoom_factor a floating point number describing the zoom factor. A value 1.0 corresponds to no zoom applied.
+ * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
+ * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.
+ * 
+ * cx and cy are updated in return in case their coordinates were to excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
+**/
+void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
+	VideoStream* vstream = call->videostream;
+	if (vstream) {
+		float zoom[3];
+		
+		if (zoom_factor < 1)
+			zoom_factor = 1;
+		float halfsize = 0.5 * 1.0 / zoom_factor;
+
+		if ((*cx - halfsize) < 0)
+			*cx = 0 + halfsize;
+		if ((*cx + halfsize) > 1)
+			*cx = 1 - halfsize;
+		if ((*cy - halfsize) < 0)
+			*cy = 0 + halfsize;
+		if ((*cy + halfsize) > 1)
+			*cy = 1 - halfsize;
+	
+		zoom[0] = zoom_factor;
+		zoom[1] = *cx;
+		zoom[2] = *cy;
+        	ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
+	}else ms_warning("Could not apply zoom: video output wasn't activated.");
+}
+

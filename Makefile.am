@@ -233,6 +233,4 @@ clean-local:
 discovery:
 	touch specs.cpp
 	$(CC) --include $(top_builddir)/config.h \
-          --include $(top_builddir)/mediastreamer2/mediastreamer-config.h  \
-          --include $(top_builddir)/oRTP/ortp-config.h \
           $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) -E -P -v -dD specs.cpp

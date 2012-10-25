@@ -22,8 +22,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
  
- #include "linphonecore.h"
- #include "private.h"
+#include "linphonecore.h"
+#include "private.h"
+#include "lpconfig.h"
  
  LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to){
 	LinphoneAddress *parsed_url=NULL;
@@ -45,8 +46,6 @@
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
-	if (cr->op)
-		 sal_op_release(cr->op);
  }
 
 
@@ -56,26 +55,24 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
-	if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
-		if (call->state==LinphoneCallConnected ||
-		    call->state==LinphoneCallStreamsRunning ||
-		    call->state==LinphoneCallPaused ||
-		    call->state==LinphoneCallPausing ||
-		    call->state==LinphoneCallPausedByRemote){
-			ms_message("send SIP message through the existing call.");
-			op = call->op;
-			call->pending_message=msg;
+	
+	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",1)){
+		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
+			if (call->state==LinphoneCallConnected ||
+			call->state==LinphoneCallStreamsRunning ||
+			call->state==LinphoneCallPaused ||
+			call->state==LinphoneCallPausing ||
+			call->state==LinphoneCallPausedByRemote){
+				ms_message("send SIP message through the existing call.");
+				op = call->op;
+				call->pending_message=msg;
+			}
 		}
 	}
 	if (op==NULL){
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
 		sal_op_set_route(op,route);
-		if (cr->op!=NULL){
-			sal_op_release (cr->op);
-			cr->op=NULL;
-		}
-		cr->op=op;
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
 	if (msg->external_body_url) {

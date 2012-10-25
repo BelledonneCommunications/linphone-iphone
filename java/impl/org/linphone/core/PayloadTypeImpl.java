@@ -1,5 +1,5 @@
 /*
-PayloadType.java
+PayloadTypeImpl.java
 Copyright (C) 2010  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -16,11 +16,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 package org.linphone.core;
 
-public interface PayloadType {
+class PayloadTypeImpl implements PayloadType {
 
-	String getMime();
+	protected final long nativePtr;
 	
-	int getRate();
+	private native String toString(long ptr);
+	private native String getMime(long ptr);
+	private native int getRate(long ptr);
+
+	protected PayloadTypeImpl(long aNativePtr)  {
+		nativePtr = aNativePtr;
+	}
+	
+	public int getRate() {
+		return getRate(nativePtr);
+	}
+
+	public String getMime() {
+		return getMime(nativePtr);
+	}
+	
+	public String toString() {
+		return toString(nativePtr);
+	}
 }

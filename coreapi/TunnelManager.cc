@@ -59,12 +59,12 @@ int TunnelManager::eXosipRecvfrom(int fd, void *buf, size_t len, int flags, stru
 int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3, struct timeval *tv,void* userdata){
 	struct timeval begin,cur;
 	TunnelManager* lTunnelMgr=(TunnelManager*)userdata;
-	if (tv!=0 && tv->tv_sec){
+	if (s1 && tv!=0 && tv->tv_sec){
 		/*this is the select from udp.c, the one that is interesting to us*/
 		NativeSocket udp_fd=(NativeSocket)eXosip_get_udp_socket();
 		NativeSocket controlfd=(NativeSocket)eXosip_get_control_fd();
 
-		FD_ZERO(s1);		
+		FD_ZERO(s1);
 		gettimeofday(&begin,NULL);
 		do{
 			struct timeval abit;
@@ -258,7 +258,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		lTransport.tls_port=0;
 		lTransport.dtls_port=0;
 		
-		linphone_core_set_sip_transports(mCore, &lTransport);		
+		linphone_core_set_sip_transports(mCore, &lTransport);
 		//register
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);

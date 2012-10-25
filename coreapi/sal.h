@@ -53,6 +53,11 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
+#define SAL_MEDIA_DESCRIPTION_UNCHANGED		0x00
+#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED	0x01
+#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED	0x02
+#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)
+
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
@@ -189,7 +194,7 @@ SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
-bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
+int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
@@ -207,6 +212,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
+	const char* call_id;
 } SalOpBase;
 
 
@@ -339,6 +345,7 @@ unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_double_registrations(Sal *ctx, bool_t enabled);
 void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled);
+void sal_use_dates(Sal *ctx, bool_t enabled);
 void sal_reuse_authorization(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
@@ -373,6 +380,7 @@ const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
+const char* sal_op_get_call_id(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

@@ -283,6 +283,7 @@ Sal * sal_init(){
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
 	sal->expire_old_contact=FALSE;
+	sal->add_dates=FALSE;
 	sal->dscp=-1;
 	return sal;
 }
@@ -414,6 +415,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	int dont_use_101 = !ctx->use_101; // Copy char to int to avoid bad alignment
 	eXosip_set_option(EXOSIP_OPT_DONT_SEND_101,&dont_use_101);
 	sal_set_dscp(ctx,ctx->dscp);
+	sal_use_dates(ctx,ctx->add_dates);
 
 	ipv6=strchr(addr,':')!=NULL;
 	eXosip_enable_ipv6(ipv6);
@@ -458,6 +460,18 @@ void sal_use_double_registrations(Sal *ctx, bool_t enabled){
 
 void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
 	ctx->expire_old_contact=enabled;
+}
+
+void sal_use_dates(Sal *ctx, bool_t enabled){
+	ctx->add_dates=enabled;
+#ifdef EXOSIP_OPT_REGISTER_WITH_DATE
+	{
+		int tmp=enabled;
+		eXosip_set_option(EXOSIP_OPT_REGISTER_WITH_DATE,&tmp);
+	}
+#else
+	if (enabled) ms_warning("Exosip does not support EXOSIP_OPT_REGISTER_WITH_DATE option.");
+#endif
 }
 
 void sal_use_rport(Sal *ctx, bool_t use_rports){
@@ -603,6 +617,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 	int err;
 	const char *route;
 	osip_message_t *invite=NULL;
+	osip_call_id_t *callid;
 	sal_op_set_from(h,from);
 	sal_op_set_to(h,to);
 	sal_exosip_fix_route(h);
@@ -643,6 +658,8 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite ! Error code %d", err);
 		return -1;
 	}else{
+		callid=osip_message_get_call_id(invite);
+		osip_call_id_to_str(callid,(char **)(&h->base.call_id));
 		sal_add_call(h->base.root,h);
 	}
 	return 0;
@@ -1018,6 +1035,8 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	osip_call_info_t *call_info;
 	char *tmp;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+	osip_call_id_t *callid=osip_message_get_call_id(ev->request);
+	osip_call_id_to_str(callid,(char**)(&op->base.call_id));
 
 	set_network_origin(op,ev->request);
 	set_remote_ua(op,ev->request);
@@ -1054,7 +1073,6 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	op->tid=ev->tid;
 	op->cid=ev->cid;
 	op->did=ev->did;
-	
 	sal_add_call(op->base.root,op);
 	sal->callbacks.call_received(op);
 }
@@ -2211,6 +2229,7 @@ static void sal_register_add_route(osip_message_t *msg, const char *proxy){
 	osip_message_set_route(msg,tmp);
 }
 
+
 int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	osip_message_t *msg;
 	const char *contact=sal_op_get_contact(h);
@@ -2251,8 +2270,9 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		eXosip_register_build_register(h->rid,expires,&msg);
 		sal_register_add_route(msg,proxy);
 	}
-	if (msg)
+	if (msg){
 		eXosip_register_send_register(h->rid,msg);
+	}
 	eXosip_unlock();
 	h->expires=expires;
 	return (msg != NULL) ? 0 : -1;

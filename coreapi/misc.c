@@ -586,7 +586,7 @@ void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, Linphone
 			params->up_bw=params->down_bw=edge_bw;
 			params->up_ptime=params->down_ptime=edge_ptime;
 			params->has_video=FALSE;
-			
+			params->low_bandwidth=TRUE;
 		}/*else use default settings */
 	}
 }
@@ -689,6 +689,11 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 			}
 		}
+	} else if (session_state == IS_Running) {
+		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
+		if (call->params.has_video && (video_check_list != NULL)) {
+			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+		}
 	} else {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
 		if (call->params.has_video && (video_check_list != NULL)) {
@@ -782,14 +787,18 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
 			int rtp_port, rtcp_port;
 			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
-			ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-			if ((rtp_addr != NULL) && (rtcp_addr != NULL)) {
+			if (ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port) == TRUE) {
 				strncpy(stream->ice_remote_candidates[0].addr, rtp_addr, sizeof(stream->ice_remote_candidates[0].addr));
 				stream->ice_remote_candidates[0].port = rtp_port;
 				strncpy(stream->ice_remote_candidates[1].addr, rtcp_addr, sizeof(stream->ice_remote_candidates[1].addr));
 				stream->ice_remote_candidates[1].port = rtcp_port;
 			} else {
 				ms_error("ice: Selected valid remote candidates should be present if the check list is in the Completed state");
+			}
+		} else {
+			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+				stream->ice_remote_candidates[j].addr[0] = '\0';
+				stream->ice_remote_candidates[j].port = 0;
 			}
 		}
 	}
@@ -871,8 +880,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						break;
 				}
 			}
-			if ((stream->ice_mismatch == TRUE) || (stream->rtp_port == 0)) {
+			if (stream->ice_mismatch == TRUE) {
 				ice_check_list_set_state(cl, ICL_Failed);
+			} else if (stream->rtp_port == 0) {
+				ice_session_remove_check_list(call->ice_session, cl);
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
@@ -898,6 +909,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 						int componentID = j + 1;
 						if (candidate->addr[0] == '\0') break;
 						get_default_addr_and_port(componentID, md, stream, &addr, &port);
+						if (j == 0) {
+							/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
+							ice_check_list_unselect_valid_pairs(cl);
+						}
 						ice_add_losing_pair(cl, j + 1, candidate->addr, candidate->port, addr, port);
 						losing_pairs_added = TRUE;
 					}
@@ -928,17 +943,6 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 			return TRUE;
 	}
 	return FALSE;
-}
-
-void linphone_core_deactivate_ice_for_deactivated_media_streams(LinphoneCall *call, const SalMediaDescription *md)
-{
-	int i;
-	for (i = 0; i < md->nstreams; i++) {
-		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-		if (cl && (md->streams[i].rtp_port == 0)) {
-			if (ice_check_list_state(cl) != ICL_Completed) ice_check_list_set_state(cl, ICL_Failed);
-		}
-	}
 }
 
 LinphoneCall * is_a_linphone_call(void *user_pointer){
