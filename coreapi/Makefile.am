@@ -1,7 +1,15 @@
+GITVERSION_FILE=liblinphone_gitversion.h
+GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
+
+ECHO=/bin/echo
 
 SUBDIRS=. help
 
-EXTRA_DIST=linphonecore_jni.cc
+EXTRA_DIST=linphonecore_jni.cc $(GITVERSION_FILE)
+
+BUILT_SOURCES=$(GITVERSION_FILE)
+
+CLEANFILES=$(GITVERSION_FILE)
 
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
@@ -41,7 +49,8 @@ liblinphone_la_SOURCES=\
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c \
-	linphone_tunnel.cc
+	linphone_tunnel.cc \
+	$(GITVERSION_FILE)
 	
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
@@ -97,3 +106,16 @@ AM_CFLAGS+= -DBUILD_WIZARD
 endif
 
 AM_CXXFLAGS=$(AM_CFLAGS)
+
+$(GITVERSION_FILE):
+	if test -d $(top_srcdir)/.git ; then \
+		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION " > $(GITVERSION_FILE_TMP) &&\
+		$(ECHO) \"`cd $(top_srcdir) && git describe`\" >> $(GITVERSION_FILE_TMP) &&\
+		if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
+			cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
+		fi \
+		&& rm -f $(GITVERSION_FILE_TMP) ;\
+	fi
+	if ! test -f $(srcdir)/$(GITVERSION_FILE) ; then \
+		$(ECHO) -n "" > $(srcdir)/$(GITVERSION_FILE) ;\
+	fi
