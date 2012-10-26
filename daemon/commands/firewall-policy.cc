@@ -37,6 +37,16 @@ FirewallPolicyCommand::FirewallPolicyCommand() :
 				"<type> must be one of these values: none, nat, stun, ice.\n"
 				"<address> must be specified for the 'nat' and 'stun' types. "
 				"It represents the public address of the gateway for the 'nat' type and the STUN server address for the 'stun' and 'ice' types.") {
+	addExample(new DaemonCommandExample("firewall-policy stun stun.linphone.org",
+						"Status: Ok\n\n"
+						"Type: stun\n"
+						"Address: stun.linphone.org"));
+	addExample(new DaemonCommandExample("firewall-policy none",
+						"Status: Ok\n\n"
+						"Type: none"));
+	addExample(new DaemonCommandExample("firewall-policy",
+						"Status: Ok\n\n"
+						"Type: none"));
 }
 
 void FirewallPolicyCommand::exec(Daemon *app, const char *args) {

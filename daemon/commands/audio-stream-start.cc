@@ -4,6 +4,9 @@ using namespace std;
 
 AudioStreamStartCommand::AudioStreamStartCommand() :
 		DaemonCommand("audio-stream-start", "audio-stream-start <remote ip> <remote port> <payload type number>", "Start an audio stream.") {
+	addExample(new DaemonCommandExample("audio-stream-start 192.168.1.28 7078 9",
+						"Status: Ok\n\n"
+						"Id: 1"));
 }
 
 void AudioStreamStartCommand::exec(Daemon *app, const char *args) {

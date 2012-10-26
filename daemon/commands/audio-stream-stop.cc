@@ -4,7 +4,13 @@ using namespace std;
 
 AudioStreamStopCommand::AudioStreamStopCommand() :
 		DaemonCommand("audio-stream-stop", "audio-stream-stop <audio stream id>", "Stop an audio stream.") {
+	addExample(new DaemonCommandExample("audio-stream-stop 1",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("audio-stream-stop 2",
+						"Status: Error\n"
+						"Reason: No Audio Stream with such id."));
 }
+
 void AudioStreamStopCommand::exec(Daemon *app, const char *args) {
 	int id;
 	if (sscanf(args, "%d", &id) == 1) {

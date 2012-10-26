@@ -29,6 +29,19 @@ void RegisterStatusResponse::append(int id, const LinphoneProxyConfig* cfg) {
 
 RegisterStatusCommand::RegisterStatusCommand() :
 		DaemonCommand("register-status", "register-status <register_id|ALL>", "Return status of a registration or of all registrations.") {
+	addExample(new DaemonCommandExample("register-status 1",
+						"Status: Ok\n\n"
+						"Id: 1\n"
+						"State: LinphoneRegistrationOk"));
+	addExample(new DaemonCommandExample("register-status ALL",
+						"Status: Ok\n\n"
+						"Id: 1\n"
+						"State: LinphoneRegistrationOk\n\n"
+						"Id: 2\n"
+						"State: LinphoneRegistrationFailed"));
+	addExample(new DaemonCommandExample("register-status 3",
+						"Status: Error\n"
+						"Reason: No register with such id."));
 }
 
 void RegisterStatusCommand::exec(Daemon *app, const char *args) {

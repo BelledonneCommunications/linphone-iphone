@@ -22,6 +22,15 @@ IPv6Response::IPv6Response(LinphoneCore *core) : Response() {
 IPv6Command::IPv6Command() :
 		DaemonCommand("ipv6", "ipv6 [enable|disable]",
 				"Enable or disable IPv6 respectively with the 'enable' and 'disable' parameters, return the status of the use of IPv6 without parameter.") {
+	addExample(new DaemonCommandExample("ipv6 enable",
+						"Status: Ok\n\n"
+						"State: enabled"));
+	addExample(new DaemonCommandExample("ipv6 disable",
+						"Status: Ok\n\n"
+						"State: disabled"));
+	addExample(new DaemonCommandExample("ipv6",
+						"Status: Ok\n\n"
+						"State: disabled"));
 }
 
 void IPv6Command::exec(Daemon *app, const char *args) {

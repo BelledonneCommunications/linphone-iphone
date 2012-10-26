@@ -4,7 +4,21 @@ using namespace std;
 
 AnswerCommand::AnswerCommand() :
 		DaemonCommand("answer", "answer <call id>", "Answer an incoming call.") {
+	addExample(new DaemonCommandExample("answer 3",
+						"Status: Error\n"
+						"Reason: No call with such id."));
+	addExample(new DaemonCommandExample("answer 2",
+						"Status: Error\n"
+						"Reason: Can't accept this call."));
+	addExample(new DaemonCommandExample("answer 1",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("answer",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("answer",
+						"Status: Error\n"
+						"Reason: No call to accept."));
 }
+
 void AnswerCommand::exec(Daemon *app, const char *args) {
 	LinphoneCore *lc = app->getCore();
 	int cid;

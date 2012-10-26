@@ -4,6 +4,13 @@ using namespace std;
 
 UnregisterCommand::UnregisterCommand() :
 		DaemonCommand("unregister", "unregister <register_id|ALL>", "Unregister the daemon from the specified proxy or from all proxies.") {
+	addExample(new DaemonCommandExample("unregister 3",
+						"Status: Error\n"
+						"Reason: No register with such id."));
+	addExample(new DaemonCommandExample("unregister 2",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("unregister ALL",
+						"Status: Ok"));
 }
 
 void UnregisterCommand::exec(Daemon *app, const char *args) {

@@ -6,6 +6,31 @@ AudioCodecGetCommand::AudioCodecGetCommand() :
 		DaemonCommand("audio-codec-get", "audio-codec-get <payload_type_number|mime_type>",
 				"Get an audio codec if a parameter is given, otherwise return the audio codec list.\n"
 				"<mime_type> is of the form mime/rate/channels, eg. speex/16000/1") {
+	addExample(new DaemonCommandExample("audio-codec-get 9",
+						"Status: Ok\n\n"
+						"Index: 9\n"
+						"Payload-type-number: 9\n"
+						"Clock-rate: 8000\n"
+						"Bitrate: 64000\n"
+						"Mime: G722\n"
+						"Channels: 1\n"
+						"Recv-fmtp: \n"
+						"Send-fmtp: \n"
+						"Enabled: false"));
+	addExample(new DaemonCommandExample("audio-codec-get G722/8000/1",
+						"Status: Ok\n\n"
+						"Index: 9\n"
+						"Payload-type-number: 9\n"
+						"Clock-rate: 8000\n"
+						"Bitrate: 64000\n"
+						"Mime: G722\n"
+						"Channels: 1\n"
+						"Recv-fmtp: \n"
+						"Send-fmtp: \n"
+						"Enabled: false"));
+	addExample(new DaemonCommandExample("audio-codec-get 2",
+						"Status: Error\n"
+						"Reason: Audio codec not found."));
 }
 
 void AudioCodecGetCommand::exec(Daemon *app, const char *args) {

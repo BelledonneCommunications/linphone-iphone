@@ -72,6 +72,29 @@ PortCommand::PortCommand() :
 				"Set the port to use for type if port is set, otherwise return the port used for type if specified or all the used ports if no type is specified.\n"
 				"<type> must be one of these values: sip, audio, video.\n"
 				"<protocol> should be defined only for sip port and have one of these values: udp, tcp, tls.") {
+	addExample(new DaemonCommandExample("port sip 5060 tls",
+						"Status: Ok\n\n"
+						"SIP: 5060 TLS"));
+	addExample(new DaemonCommandExample("port sip 5060 udp",
+						"Status: Ok\n\n"
+						"SIP: 5060 UDP"));
+	addExample(new DaemonCommandExample("port audio 7078",
+						"Status: Ok\n\n"
+						"Audio RTP: 7078"));
+	addExample(new DaemonCommandExample("port video 9078",
+						"Status: Ok\n\n"
+						"Video RTP: 9078"));
+	addExample(new DaemonCommandExample("port sip",
+						"Status: Ok\n\n"
+						"SIP: 5060 UDP"));
+	addExample(new DaemonCommandExample("port audio",
+						"Status: Ok\n\n"
+						"Audio RTP: 7078"));
+	addExample(new DaemonCommandExample("port",
+						"Status: Ok\n\n"
+						"SIP: 5060 UDP\n"
+						"Audio RTP: 7078\n"
+						"Video RTP: 9078"));
 }
 
 void PortCommand::exec(Daemon *app, const char *args) {

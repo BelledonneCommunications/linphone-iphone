@@ -35,6 +35,21 @@
 
 class Daemon;
 
+class DaemonCommandExample {
+public:
+	DaemonCommandExample(const char *command, const char *output);
+	~DaemonCommandExample() {};
+	const std::string &getCommand() const {
+		return mCommand;
+	}
+	const std::string &getOutput() const {
+		return mOutput;
+	}
+private:
+	const std::string mCommand;
+	const std::string mOutput;
+};
+
 class DaemonCommand {
 public:
 	virtual ~DaemonCommand() {
@@ -42,17 +57,23 @@ public:
 	};
 	virtual void exec(Daemon *app, const char *args)=0;
 	bool matches(const char *name) const;
+	const std::string getHelp() const;
 	const std::string &getProto() const {
 		return mProto;
 	}
-	const std::string &getHelp() const {
-		return mHelp;
+	const std::string &getDescription() const {
+		return mDescription;
 	}
+	const std::list<const DaemonCommandExample*> &getExamples() const {
+		return mExamples;
+	}
+	void addExample(const DaemonCommandExample *example);
 protected:
-	DaemonCommand(const char *name, const char *proto, const char *help);
+	DaemonCommand(const char *name, const char *proto, const char *description);
 	const std::string mName;
 	const std::string mProto;
-	const std::string mHelp;
+	const std::string mDescription;
+	std::list<const DaemonCommandExample*> mExamples;
 };
 
 class Response {
@@ -158,6 +179,7 @@ public:
 	int updateProxyId(LinphoneProxyConfig *proxy);
 	inline int maxProxyId() { return mProxyIds; };
 	int updateAudioStreamId(AudioStream *audio_stream);
+	void dumpCommandsHelp();
 private:
 	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);

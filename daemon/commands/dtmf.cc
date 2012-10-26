@@ -4,6 +4,12 @@ using namespace std;
 
 DtmfCommand::DtmfCommand() :
 		DaemonCommand("dtmf", "dtmf <digit>", "Generate a DTMF (one of: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, *, #.") {
+	addExample(new DaemonCommandExample("dtmf 4",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("dtmf B",
+						"Status: Ok"));
+	addExample(new DaemonCommandExample("dtmf #",
+						"Status: Ok"));
 }
 
 void DtmfCommand::exec(Daemon *app, const char *args) {

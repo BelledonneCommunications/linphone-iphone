@@ -28,6 +28,15 @@ MediaEncryptionResponse::MediaEncryptionResponse(LinphoneCore *core) : Response(
 MediaEncryptionCommand::MediaEncryptionCommand() :
 		DaemonCommand("media-encryption", "media-encryption [none|srtp|zrtp]",
 				"Set the media encryption policy if a parameter is given, otherwise return the media encrytion in use.") {
+	addExample(new DaemonCommandExample("media-encryption none",
+						"Status: Ok\n\n"
+						"Encryption: none"));
+	addExample(new DaemonCommandExample("media-encryption srtp",
+						"Status: Ok\n\n"
+						"Encryption: srtp"));
+	addExample(new DaemonCommandExample("media-encryption",
+						"Status: Ok\n\n"
+						"Encryption: srtp"));
 }
 
 void MediaEncryptionCommand::exec(Daemon *app, const char *args) {

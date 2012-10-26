@@ -4,6 +4,9 @@ using namespace std;
 
 RegisterCommand::RegisterCommand() :
 		DaemonCommand("register", "register <identity> <proxy-address> <password>", "Register the daemon to a SIP proxy.") {
+	addExample(new DaemonCommandExample("register sip:daemon-test@sip.linphone.org sip.linphone.org password",
+						"Status: Ok\n\n"
+						"Id: 1"));
 }
 void RegisterCommand::exec(Daemon *app, const char *args) {
 	LinphoneCore *lc = app->getCore();

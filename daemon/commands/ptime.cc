@@ -31,6 +31,19 @@ PtimeResponse::PtimeResponse(LinphoneCore *core, Direction dir) : Response() {
 
 PtimeCommand::PtimeCommand() :
 		DaemonCommand("ptime", "ptime [up|down] <ms>", "Set the upload or download ptime if ms is defined, otherwise return the current value of the ptime.") {
+	addExample(new DaemonCommandExample("ptime up 20",
+						"Status: Ok\n\n"
+						"Upload: 20"));
+	addExample(new DaemonCommandExample("ptime down 30",
+						"Status: Ok\n\n"
+						"Download: 30"));
+	addExample(new DaemonCommandExample("ptime up",
+						"Status: Ok\n\n"
+						"Upload: 20"));
+	addExample(new DaemonCommandExample("ptime",
+						"Status: Ok\n\n"
+						"Upload: 20\n"
+						"Download: 30"));
 }
 
 void PtimeCommand::exec(Daemon *app, const char *args) {

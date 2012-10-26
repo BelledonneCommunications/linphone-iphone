@@ -1,4 +1,7 @@
+#include <cstdio>
+#include <sys/ioctl.h>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <algorithm>
 
@@ -210,8 +213,30 @@ PayloadTypeParser::PayloadTypeParser(LinphoneCore *core, const string &mime_type
 	}
 }
 
-DaemonCommand::DaemonCommand(const char *name, const char *proto, const char *help) :
-		mName(name), mProto(proto), mHelp(help) {
+DaemonCommandExample::DaemonCommandExample(const char *command, const char *output)
+	: mCommand(command), mOutput(output) {}
+
+DaemonCommand::DaemonCommand(const char *name, const char *proto, const char *description) :
+		mName(name), mProto(proto), mDescription(description) {
+}
+
+void DaemonCommand::addExample(const DaemonCommandExample *example) {
+	mExamples.push_back(example);
+}
+
+const string DaemonCommand::getHelp() const {
+	ostringstream ost;
+	ost << getProto() << endl << endl;
+	ost << "Description:" << endl << getDescription() << endl << endl;
+	list<const DaemonCommandExample*> examples = getExamples();
+	int c = 1;
+	for (list<const DaemonCommandExample*>::iterator it = examples.begin(); it != examples.end(); ++it, ++c) {
+		ost << "Example " << c << ":" << endl;
+		ost << ">" << (*it)->getCommand() << endl;
+		ost << (*it)->getOutput() << endl;
+		ost << endl;
+	}
+	return ost.str();
 }
 
 bool DaemonCommand::matches(const char *name) const {
@@ -504,6 +529,26 @@ char *Daemon::readPipe(char *buffer, int buflen) {
 	return NULL;
 }
 
+void Daemon::dumpCommandsHelp() {
+	int cols = 80;
+#ifdef TIOCGSIZE
+	struct ttysize ts;
+	ioctl(STDIN_FILENO, TIOCGSIZE, &ts);
+	cols = ts.ts_cols;
+#elif defined(TIOCGWINSZ)
+	struct winsize ts;
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &ts);
+	cols = ts.ws_col;
+#endif
+
+	cout << endl;
+	for (list<DaemonCommand*>::iterator it = mCommands.begin(); it != mCommands.end(); ++it) {
+		cout << setfill('-') << setw(cols) << "-" << endl << endl;
+		cout << (*it)->getHelp();
+	}
+}
+
+
 static void printHelp() {
 	fprintf(stdout, "daemon-linphone [<options>]\n"
 #if defined(LICENCE_GPL) || defined(LICENCE_COMMERCIAL)
@@ -519,6 +564,7 @@ static void printHelp() {
 
 			"where options are :\n"
 			"\t--help\t\t\tPrint this notice.\n"
+			"\t--dump-commands-help\tDump the help of every available commands.\n"
 			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
 			"\t--log <path>\t\tSupply a file where the log will be saved\n"
 			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
@@ -617,6 +663,10 @@ int main(int argc, char *argv[]) {
 	for (i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--help") == 0) {
 			printHelp();
+			return 0;
+		} else if (strcmp(argv[i], "--dump-commands-help") == 0) {
+			Daemon app(NULL, NULL, NULL, NULL, false, false);
+			app.dumpCommandsHelp();
 			return 0;
 		} else if (strcmp(argv[i], "--pipe") == 0) {
 			if (i + 1 >= argc) {

@@ -4,6 +4,12 @@ using namespace std;
 
 CallCommand::CallCommand() :
 		DaemonCommand("call", "call <sip address>", "Place a call.") {
+	addExample(new DaemonCommandExample("call daemon-test@sip.linphone.org",
+						"Status: Ok\n\n"
+						"Id: 1"));
+	addExample(new DaemonCommandExample("call daemon-test@sip.linphone.org",
+						"Status: Error\n"
+						"Reason: Call creation failed."));
 }
 
 void CallCommand::exec(Daemon *app, const char *args) {

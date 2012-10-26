@@ -4,6 +4,18 @@ using namespace std;
 
 CallStatusCommand::CallStatusCommand() :
 		DaemonCommand("call-status", "call-status <call id>", "Return status of a call.") {
+	addExample(new DaemonCommandExample("call-status 1",
+						"Status: Ok\n\n"
+						"State: LinphoneCallStreamsRunning\n"
+						"From: <sip:daemon-test@sip.linphone.org>\n"
+						"Direction: out\n"
+						"Duration: 6"));
+	addExample(new DaemonCommandExample("call-status 2",
+						"Status: Error\n"
+						"Reason: No call with such id."));
+	addExample(new DaemonCommandExample("call-status",
+						"Status: Error\n"
+						"Reason: No current call available."));
 }
 void CallStatusCommand::exec(Daemon *app, const char *args) {
 	LinphoneCore *lc = app->getCore();
@@ -27,7 +39,7 @@ void CallStatusCommand::exec(Daemon *app, const char *args) {
 	call_state = linphone_call_get_state(call);
 	const LinphoneAddress *remoteAddress = linphone_call_get_remote_address(call);
 	ostringstream ostr;
-	ostr << linphone_call_state_to_string(call_state) << "\n";
+	ostr << "State: " << linphone_call_state_to_string(call_state) << "\n";
 
 	switch (call_state) {
 	case LinphoneCallOutgoingInit:
