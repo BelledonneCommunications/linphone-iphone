@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
+#ifdef USE_JAVAH
 #include "linphonecore_jni.h"
+#endif
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 

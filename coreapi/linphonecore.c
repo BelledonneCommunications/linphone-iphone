@@ -42,11 +42,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 
+#include "liblinphone_gitversion.h"
+
 /*#define UNSTANDART_GSM_11K 1*/
 
 #define ROOT_CA_FILE PACKAGE_DATA_DIR "/linphone/rootca.pem"
 
-static const char *liblinphone_version=LIBLINPHONE_VERSION;
+static const char *liblinphone_version=
+#ifdef LIBLINPHONE_GIT_VERSION
+	LIBLINPHONE_GIT_VERSION
+#else
+	LIBLINPHONE_VERSION
+#endif
+;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
