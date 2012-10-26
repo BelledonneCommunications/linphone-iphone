@@ -1,5 +1,7 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
+GITDESCRIBE=$(shell git describe)
+GITREVISION=$(shell git rev-parse HEAD)
 
 ECHO=/bin/echo
 
@@ -107,15 +109,17 @@ endif
 
 AM_CXXFLAGS=$(AM_CFLAGS)
 
-$(GITVERSION_FILE):
-	if test -d $(top_srcdir)/.git ; then \
-		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION " > $(GITVERSION_FILE_TMP) &&\
-		$(ECHO) \"`cd $(top_srcdir) && git describe`\" >> $(GITVERSION_FILE_TMP) &&\
-		if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
-			cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
-		fi \
-		&& rm -f $(GITVERSION_FILE_TMP) ;\
+make_gitversion_h:
+	if test "$(GITDESCRIBE)" != "" ; then \
+		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
+	elif test "$(GITREVISION)" != "" ; then \
+		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
+	else \
+		$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
 	fi
-	if ! test -f $(srcdir)/$(GITVERSION_FILE) ; then \
-		$(ECHO) -n "" > $(srcdir)/$(GITVERSION_FILE) ;\
+	if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
+		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
 	fi
+	rm -f $(GITVERSION_FILE_TMP) ;
+
+$(GITVERSION_FILE): make_gitversion_h
