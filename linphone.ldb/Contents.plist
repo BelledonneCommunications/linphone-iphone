@@ -15470,7 +15470,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T09:26:35Z</date>
+					<date>2012-10-22T08:50:22Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -15480,7 +15480,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>dc9f190a8a2dcdf8026518ff11e1d480
+					<string>1637ea0ccdf086dbddb51c854d6310db
 </string>
 					<key>name</key>
 					<string>Root.strings</string>
@@ -15523,13 +15523,13 @@ Raison: %2$s</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
-							<integer>0</integer>
+							<integer>1</integer>
 							<key>key</key>
 							<string>Wizard</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Wizard</string>
+								<string>Run assistant</string>
 								<key>fr</key>
 								<string>Assistant</string>
 							</dict>
@@ -16840,7 +16840,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:05:39Z</date>
+					<date>2012-10-29T15:42:49Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -16848,9 +16848,9 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
-					<string>3cc5ec7e298d1a3aa4449641876f5960
+					<string>6ae28fd473b2900cce974380a72d5447
 </string>
 					<key>name</key>
 					<string>Call.strings</string>
@@ -16956,9 +16956,107 @@ Raison: %2$s</string>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Incoming call timeout</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call timeout</string>
+								<key>fr</key>
+								<string>Durée max. sonnerie</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>In call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>In call timeout</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>In call timeout</string>
+								<key>fr</key>
+								<string>Durée max. appel</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
-					<array/>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>In</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>call</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>3</integer>
+							<key>key</key>
+							<string>timeout</string>
+							<key>localizations</key>
+							<dict/>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
 					<key>plist file</key>
 					<false/>
 					<key>snapshots</key>
