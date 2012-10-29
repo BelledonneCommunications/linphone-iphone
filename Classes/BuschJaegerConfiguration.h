@@ -45,7 +45,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
 @property (readonly) NSMutableSet *outdoorStations;
 @property (readonly) Network *network;
 @property (readonly) LevelPushButton *levelPushButton;
-@property (readonly) CFArrayRef certificates;
+@property (readonly) SecCertificateRef certificate;
 
 - (void)reset;
 
@@ -61,6 +61,10 @@ typedef enum _BuschJaegerConfigurationRequestType{
 - (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image;
 
 - (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type;
+
+- (BOOL)canHandleAuthChallenge : (NSURLConnection*)connection   : (NSURLProtectionSpace*)protectionSpace;
+
+- (void)handleAuthChallenge:(NSURLConnection*)conn : (NSURLAuthenticationChallenge*)challenge;
 
 + (NSString*)getRegexValue:(NSString*)regexString data:(NSString*)data;
 

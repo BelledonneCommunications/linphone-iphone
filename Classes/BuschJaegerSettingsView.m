@@ -105,6 +105,13 @@
 #pragma mark -
 
 - (void)setConfiguration:(NSString*)address username:(NSString*)username password:(NSString*)password {
+    
+    NSRange range = [address rangeOfString:@"http://"];
+    if (range.location == NSNotFound)
+    {
+        address = [@"http://" stringByAppendingString:address];
+    }
+    
     NSString *dataString = [NSString stringWithFormat:@"URL=%@/config.ini USER=%@ PW=%@", address, username, password];
     if([[[LinphoneManager instance] configuration] parseQRCode:dataString delegate:self]) {
         [waitView setHidden:FALSE];

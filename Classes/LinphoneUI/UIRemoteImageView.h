@@ -20,7 +20,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIRemoteImageView : UIImageView
+@interface UIRemoteImageView : UIImageView <NSURLConnectionDelegate>
 
 @property (retain) UIActivityIndicatorView *waitIndicatorView;
 

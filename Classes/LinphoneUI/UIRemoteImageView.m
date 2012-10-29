@@ -18,6 +18,9 @@
  */
 
 #import "UIRemoteImageView.h"
+#import "BuschJaegerConfiguration.h"
+#import "LinphoneManager.h"
+#import "NSURLConnection+SynchronousDelegate.h"
 
 @implementation UIRemoteImageView
 
@@ -90,7 +93,9 @@
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
-            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+          
+            
+            data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
             if(data != nil) {
                 UIImage *image = [UIImage imageWithData:data];
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -106,5 +111,14 @@
         
     }
 }
-
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
+{
+    BuschJaegerConfiguration* conf = [[LinphoneManager instance] configuration];
+    return [conf canHandleAuthChallenge:connection:protectionSpace];
+}
+- (void)connection:(NSURLConnection *)conn didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    BuschJaegerConfiguration* conf = [[LinphoneManager instance] configuration];
+    [conf handleAuthChallenge:conn:challenge];
+}
 @end

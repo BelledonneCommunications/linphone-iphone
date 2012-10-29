@@ -29,7 +29,7 @@
 @synthesize network;
 @synthesize history;
 @synthesize levelPushButton;
-@synthesize certificates;
+@synthesize certificate;
 
 /********
  [outdoorstation_0]
@@ -96,7 +96,7 @@
         history = [[NSMutableSet alloc] init];
         network = [[Network alloc] init];
         levelPushButton = [[LevelPushButton alloc] init];
-        certificates = NULL;
+        certificate = NULL;
         [self reloadCertificates];
     }
     return self;
@@ -108,8 +108,8 @@
     [history release];
     [network release];
     [levelPushButton release];
-    if(certificates != NULL) {
-        CFRelease(certificates);
+    if(certificate != NULL) {
+        CFRelease(certificate);
     }
     [super dealloc];
 }
@@ -201,7 +201,7 @@
         NSURL *derUrl = [NSURL URLWithString:network.derCertificate];
         if(pemUrl != nil && derUrl != nil) {
             NSURLRequest *pemRequest = [NSURLRequest requestWithURL:pemUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
-            NSURLRequest *derRequest = [NSURLRequest requestWithURL:pemUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+            NSURLRequest *derRequest = [NSURLRequest requestWithURL:derUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
             if(pemRequest != nil && derRequest != nil) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
                     NSURLResponse *response = nil;
@@ -286,16 +286,14 @@
 
 - (void)loadCertificates {
     
-    if(certificates != NULL) {
-        CFRelease(certificates);
-        certificates = NULL;
+    if(certificate != NULL) {
+        CFRelease(certificate);
+        certificate = NULL;
     }
     NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager documentFile:kLinphoneDERPath]];
     if(data != NULL) {
-        SecCertificateRef rootcert = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)data);
-        if(rootcert) {
-            const void *certs[] = { rootcert };
-            certificates = CFArrayCreate(NULL, (const void**)certs, sizeof(certs) / sizeof(certs[0]), &kCFTypeArrayCallBacks);
+        certificate = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)data);
+        if(certificate) {
             [LinphoneLogger log:LinphoneLoggerLog format:@"Certificates loaded"];
         } else {
             [LinphoneLogger log:LinphoneLoggerError format:@"Can't load certificates"];
@@ -406,9 +404,14 @@
 
 - (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     [history removeAllObjects];
-    NSString *url = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+   
+    NSString *domain = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+    domain = [self addUserNameAndPasswordToUrl:domain];
+    NSString* url = [NSString stringWithFormat:@"%@", domain];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
+         //[NSURLConnection connectionWithRequest:request delegate:self];
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
@@ -439,6 +442,89 @@
     }
     return FALSE;
 }
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
+{
+    return [self canHandleAuthChallenge:connection:protectionSpace];
+}
+- (void)connection:(NSURLConnection *)conn didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    [self handleAuthChallenge:conn:challenge];
+}
+- (BOOL)canHandleAuthChallenge:(NSURLConnection*)connection : (NSURLProtectionSpace*)protectionSpace
+{
+    return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+- (void)handleAuthChallenge:(NSURLConnection*)conn : (NSURLAuthenticationChallenge*)challenge
+{
+    OSStatus err;
+    SecCertificateRef cert = [self certificate];
+	NSURLProtectionSpace* protectionSpace = [challenge protectionSpace];
+    SecTrustRef trust = [protectionSpace serverTrust];
+	
+	
+	// recreate trust since our hostname does not match the hostname in the certifcate
+    SecTrustRef  newTrust;
+	SecPolicyRef newSecPolicy = SecPolicyCreateSSL(false, nil);
+    if (!newSecPolicy)
+    {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+        return;
+    }
+    
+    NSMutableArray* certificates = [NSMutableArray array];
+		
+    CFIndex certCount = SecTrustGetCertificateCount(trust);
+    CFIndex certIndex;
+    for (certIndex = 0; certIndex < certCount; certIndex++)
+    {
+        SecCertificateRef   thisCertificate;
+        thisCertificate = SecTrustGetCertificateAtIndex(trust, certIndex);
+        [certificates addObject:(id)thisCertificate];
+    }
+    err = SecTrustCreateWithCertificates((CFArrayRef) certificates,
+                                             newSecPolicy,
+                                             &newTrust
+                                             );
+    
+	if (err != errSecSuccess)
+    {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+        return;
+    }
+	
+    // setup our .der certificate as anchor certificate
+   	NSArray  * arr = [NSArray arrayWithObject:(id)cert];
+	err = SecTrustSetAnchorCertificates(newTrust, (CFArrayRef)arr);
+    if (err != errSecSuccess)
+    {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+        return;
+    }
+    SecTrustSetAnchorCertificatesOnly(newTrust, YES);
+	
+    // FINALLY: check the certificates!
+    SecTrustResultType trustResult;
+    err = SecTrustEvaluate(newTrust, &trustResult);
+    BOOL trusted = (err == noErr) && ((trustResult == kSecTrustResultProceed) || (trustResult == kSecTrustResultUnspecified));
+ 	
+    NSURLCredential* credential = nil;
+	if (trusted)
+    {
+        credential = [NSURLCredential credentialForTrust:trust];
+	}
+    
+	if (credential == nil)
+    {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+    }
+    else
+    {
+        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+    }
+    
+}
+
 
 - (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     NSString *url = [NSString stringWithFormat:@"%@/adduser.cgi?type=delhistory&id=%d", [self getGateway:type], ahistory.ID];
@@ -471,17 +557,43 @@
     return FALSE;
 }
 
+- (NSString*)addUserNameAndPasswordToUrl:(NSString*)url
+{
+    NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+    NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
+  
+    // add username and password
+    NSString* domain;
+    NSString* proto;
+    NSRange range = [url rangeOfString:@"https"];
+    if (range.location == 0)
+    {
+        proto = @"https://";
+        domain = [url substringFromIndex:8];
+    }
+    else
+    {
+        proto = @"http://";
+        domain = [url substringFromIndex:7];
+    }
+    
+    return [NSString stringWithFormat:@"%@%@:%@@%@", proto, username, password, domain];
+}
 
 - (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type {
     NSString *gateway = nil;
     NSString *urlString = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+
     NSURL *url = [NSURL URLWithString:urlString];
     NSRange range = [urlString rangeOfString:[url relativePath]];
     if(range.location != NSNotFound) {
         gateway = [urlString substringToIndex:range.location];
     }
+   
+    gateway= [self addUserNameAndPasswordToUrl:gateway];
     return gateway;
 }
+
 
 - (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image {
     return [NSString stringWithFormat:@"%@/%@", [self getGateway:type], image];
@@ -502,7 +614,7 @@
 
 
 #pragma mark - NSURLConnectionDelegate Function
-
+/*
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
     return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
 }
@@ -510,7 +622,7 @@
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = [challenge.protectionSpace serverTrust];
-        NSArray *anchors = (NSArray*)certificates;
+        SecCertificateRef cert = (NSArray*)certificate;
         if(anchors == nil) {
             anchors = [NSArray array];
         }
@@ -530,6 +642,6 @@
     } else {
         [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
     }
-}
+}*/
 
 @end
