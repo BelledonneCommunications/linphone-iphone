@@ -22,7 +22,6 @@
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Configure VoIP tunnel</property>
     <property name="window_position">center-on-parent</property>
-    <property name="icon">linphone2.png</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">

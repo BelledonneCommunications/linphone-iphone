@@ -70,7 +70,7 @@ void linphone_gtk_show_parameters(void);
 void linphone_gtk_fill_soundcards(GtkWidget *pb);
 void linphone_gtk_fill_webcams(GtkWidget *pb);
 void linphone_gtk_load_identities(void);
-LinphoneChatRoom * linphone_gtk_create_chatroom(const char *with);
+LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 void linphone_gtk_call_log_update(GtkWidget *w);
 void linphone_gtk_create_log_window(void);
@@ -96,14 +96,19 @@ void linphone_gtk_buddy_lookup_set_keyword(GtkWidget *w, const char *kw);
 void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress);
 
 void linphone_gtk_terminate_call(GtkWidget *button);
+void update_tab_header(LinphoneCall *call,gboolean pause);
 
 void linphone_gtk_show_directory_search(void);
 
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void linphone_gtk_notify(LinphoneCall *call, const char *msg);
 LinphoneChatRoom *linphone_gtk_start_chat(GtkTreeView* t);
-void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const char* uri);
+void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view);
 void linphone_gtk_send_text(LinphoneChatRoom *cr);
+GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
+void linphone_gtk_update_chat_picture();
+void linphone_gtk_chat_set_conversation(const LinphoneAddress *uri,gchar *conversation);
+gchar * linphone_gtk_chat_get_conversation(const LinphoneAddress *uri);
 
 /*functions controlling the different views*/
 gboolean linphone_gtk_use_in_call_view();
@@ -117,6 +122,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call);
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call);
 void linphone_gtk_in_call_view_set_transfer_status(LinphoneCall *call,LinphoneCallState cstate);
 void linphone_gtk_mute_clicked(GtkButton *button);
+void transfer_button_clicked(GtkWidget *button, gpointer call_ref);
 void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive);
 void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gboolean holdon);
 void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gboolean value);
