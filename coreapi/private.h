@@ -556,6 +556,9 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	
+        time_t network_last_check;
+        bool_t network_last_status;
+
 	bool_t ringstream_autorelease;
 	bool_t pad[3];
 	int device_rotation;
