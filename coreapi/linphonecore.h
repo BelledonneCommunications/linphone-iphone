@@ -1164,6 +1164,10 @@ void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
 
 int linphone_core_get_inc_timeout(LinphoneCore *lc);
 
+void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds);
+
+int linphone_core_get_in_call_timeout(LinphoneCore *lc);
+
 void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc);

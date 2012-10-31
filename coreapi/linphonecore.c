@@ -591,6 +591,9 @@ static void sip_config_read(LinphoneCore *lc)
 	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
 
+	tmp=lp_config_get_int(lc->config,"sip","in_call_timeout",0);
+	linphone_core_set_in_call_timeout(lc,tmp);
+
 	/* get proxies config */
 	for(i=0;; i++){
 		LinphoneProxyConfig *cfg=linphone_proxy_config_new_from_config_file(lc->config,i);
@@ -1979,6 +1982,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	calls= lc->calls;
 	while(calls!= NULL){
 		call = (LinphoneCall *)calls->data;
+		elapsed = curtime-call->start_time;
 		 /* get immediately a reference to next one in case the one
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
@@ -1995,7 +1999,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 			linphone_core_start_invite(lc,call);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
-			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
@@ -2003,6 +2006,12 @@ void linphone_core_iterate(LinphoneCore *lc){
 				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
 			}
+		}
+		if (lc->sip_conf.in_call_timeout > 0 && elapsed>lc->sip_conf.in_call_timeout) {
+			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
+			call->log->status=LinphoneCallMissed;
+			call->reason=LinphoneReasonNotAnswered;
+			linphone_core_terminate_call(lc,call);
 		}
 	}
 		
@@ -3206,6 +3215,26 @@ void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds){
 **/
 int linphone_core_get_inc_timeout(LinphoneCore *lc){
 	return lc->sip_conf.inc_timeout;
+}
+
+/**
+ * Set the in call timeout in seconds.
+ *
+ * @ingroup call_control
+ * After this timeout period, the call is automatically hangup.
+**/
+void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds){
+	lc->sip_conf.in_call_timeout=seconds;
+}
+
+/**
+ * Returns the in call timeout
+ *
+ * @ingroup call_control
+ * See linphone_core_set_in_call_timeout() for details.
+**/
+int linphone_core_get_in_call_timeout(LinphoneCore *lc){
+	return lc->sip_conf.in_call_timeout;
 }
 
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
@@ -4604,6 +4633,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
+	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
