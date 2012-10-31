@@ -2009,8 +2009,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 		}
 		if (lc->sip_conf.in_call_timeout > 0 && elapsed>lc->sip_conf.in_call_timeout) {
 			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
-			call->log->status=LinphoneCallMissed;
-			call->reason=LinphoneReasonNotAnswered;
 			linphone_core_terminate_call(lc,call);
 		}
 	}
