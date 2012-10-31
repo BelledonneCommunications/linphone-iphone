@@ -189,21 +189,21 @@ public interface LinphoneCore {
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */
-	static public class MediaEncryption {
+	static public final class MediaEncryption {
 		
 		static private Vector values = new Vector();
 		/**
 		 * None
 		 */
-		static public MediaEncryption None = new MediaEncryption(0,"None");       
+		static public final MediaEncryption None = new MediaEncryption(0,"None");       
 		/**
 		 * SRTP
 		 */
-		static public MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
+		static public final MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
 		/**
 		 * ZRTP
 		 */
-		static public MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		static public final MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
 		protected final int mValue;
 		private final String mStringValue;
 
