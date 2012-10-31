@@ -216,7 +216,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool:linphone_core_get_use_rfc2833_for_dtmf(lc) forKey:@"rfc_dtmf_preference"];
         
         [self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"incoming_call_timeout_preference"];
-        //[self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"in_call_timeout_preference"];
+        [self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"in_call_timeout_preference"];
     }
     
 
@@ -429,7 +429,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
     linphone_core_set_inc_timeout(lc, [self integerForKey:@"incoming_call_timeout_preference"]);
-    //linphone_core_set_inc_timeout(lc, [self integerForKey:@"in_call_timeout_preference"]);
+    linphone_core_set_in_call_timeout(lc, [self integerForKey:@"in_call_timeout_preference"]);
     
 	bool enableVideo = [self boolForKey:@"enable_video_preference"];
 	linphone_core_enable_video(lc, enableVideo, enableVideo);
