@@ -216,7 +216,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool:linphone_core_get_use_rfc2833_for_dtmf(lc) forKey:@"rfc_dtmf_preference"];
         
         [self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"incoming_call_timeout_preference"];
-        [self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"in_call_timeout_preference"];
+        [self setInteger:linphone_core_get_in_call_timeout(lc) forKey:@"in_call_timeout_preference"];
     }
     
 
