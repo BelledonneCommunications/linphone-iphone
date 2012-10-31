@@ -4080,7 +4080,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	if (id!=NULL){
 		lc->video_conf.device=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),id);
 		if (lc->video_conf.device==NULL){
-			ms_warning("Could not found video device %s",id);
+			ms_warning("Could not find video device %s",id);
 		}
 	}
 	if (lc->video_conf.device==NULL)
