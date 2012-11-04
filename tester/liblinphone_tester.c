@@ -82,6 +82,8 @@ typedef struct _stats {
 	int number_of_LinphoneCallIncomingEarlyMedia;
 	int number_of_LinphoneCallUpdated;
 	int number_of_LinphoneCallReleased;
+
+	int number_of_LinphoneMessageReceived;
 }stats;
 static  stats global_stat;
 
@@ -243,7 +245,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	reset_counters(counters);
 	CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);
 
-	while (counters->number_of_LinphoneRegistrationOk<3 && retry++ <20) {
+	while (counters->number_of_LinphoneRegistrationOk<proxy_count && retry++ <20) {
 			linphone_core_iterate(lc);
 			ms_usleep(100000);
 	}
@@ -293,6 +295,15 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 	}
 }
 
+static void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
+
+	char* from=linphone_address_as_string(from_address);
+	ms_message("Message from [%s]  is [%s]",from,message);
+	ms_free(from);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_LinphoneMessageReceived++;
+}
+
 static bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	int retry=0;
 	while (*counter<value && retry++ <20) {
@@ -318,21 +329,27 @@ typedef struct _LinphoneCoreManager {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	stats stat;
+	LinphoneAddress* identity;
 } LinphoneCoreManager;
 
 static LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
+	LinphoneProxyConfig* proxy;
 	memset (mgr,0,sizeof(LinphoneCoreManager));
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.call_state_changed=call_state_changed;
-
+	mgr->v_table.text_received=text_message_received;
 	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
+	linphone_core_get_default_proxy(mgr->lc,&proxy);
+	mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	linphone_address_clean(mgr->identity);
 	return mgr;
 }
 static void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	linphone_core_destroy(mgr->lc);
+	linphone_address_destroy(mgr->identity);
 	free(mgr);
 }
 
@@ -340,11 +357,10 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-	LinphoneAddress* dest_identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	linphone_address_clean(dest_identity);
 
-	CU_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_invite_address(caller_mgr->lc,dest_identity));
-	linphone_address_destroy(dest_identity);
+
+	CU_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
+
 	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
 
 	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
@@ -523,6 +539,17 @@ static void call_srtp() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void text_message() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 int init_test_suite () {
 
@@ -572,6 +599,9 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "text_message", text_message)) {
 			return CU_get_error();
 	}
 	return 0;

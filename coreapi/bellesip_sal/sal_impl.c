@@ -63,8 +63,12 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
 	belle_sip_header_address_t* origin_address;
 	belle_sip_header_address_t* address;
-	belle_sip_header_from_t* from;
+	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to;
+	belle_sip_header_content_type_t* content_type;
+	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
+
+	char* from;
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
@@ -72,18 +76,36 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
+	} else if (strcmp("MESSAGE",belle_sip_request_get_method(req))==0) {
+			content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
+			if (content_type
+				&& strcmp("text",belle_sip_header_content_type_get_type(content_type))==0
+				&&	strcmp("plain",belle_sip_header_content_type_get_subtype(content_type))==0) {
+				address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+																,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
+				from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
+				((Sal*)sal)->callbacks.text_received((Sal*)sal,from,belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)));
+				belle_sip_object_unref(address);
+				belle_sip_free(from);
+				return;
+			} else {
+				ms_error("Unsupported MESSAGE with content type [%s/%s]",belle_sip_header_content_type_get_type(content_type)
+																,belle_sip_header_content_type_get_subtype(content_type));
+				return;
+			}
 	} else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
 		return;
 	}
 
 	if (!op->base.from_address)  {
-		from=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
-		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from))
-												,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
+		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
+														,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
 		sal_op_set_from_address(op,(SalAddress*)address);
 		belle_sip_object_unref(address);
 	}
+
+
 	if (!op->base.to_address) {
 		to=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_to_t);
 		address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(to))

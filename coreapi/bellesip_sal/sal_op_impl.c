@@ -87,11 +87,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 }
 
 
-/*Messaging */
-int sal_text_send(SalOp *op, const char *from, const char *to, const char *text){
-	ms_fatal("sal_text_send not implemented yet");
-	return -1;
-}
+
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){

@@ -45,7 +45,8 @@ liblinphone_la_SOURCES+= 	bellesip_sal/sal_address_impl.c \
 							bellesip_sal/sal_op_impl.c \
 							bellesip_sal/sal_op_call.c \
 							bellesip_sal/sal_op_registration.c \
-							bellesip_sal/sal_sdp.c 
+							bellesip_sal/sal_sdp.c  \
+							bellesip_sal/sal_op_message.c
 else
 liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
 							sal_eXosip2_sdp.c \
