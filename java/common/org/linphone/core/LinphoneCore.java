@@ -843,4 +843,10 @@ public interface LinphoneCore {
 	 * automatically declined.
 	**/
 	void setIncomingTimeout(int timeout);
+	
+	/**
+	 * Set the call timeout in seconds.
+	 * Once this time is elapsed (ringing included), the call is automatically hung up.
+	**/
+	void setInCallTimeout(int timeout);
 }
