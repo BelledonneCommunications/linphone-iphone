@@ -3186,6 +3186,9 @@ int linphone_core_send_publish(LinphoneCore *lc,
 **/
 void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds){
 	lc->sip_conf.inc_timeout=seconds;
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sip","inc_timeout",seconds);
+	}
 }
 
 /**
