@@ -39,6 +39,35 @@
 
 #pragma mark - View lifecycle
 
+- (void)initBuschJaegerCallView {
+    currentCall = NULL;
+    chatRoom = NULL;
+}
+
+- (id)init {
+    self = [super init];
+    if(self != NULL) {
+        [self initBuschJaegerCallView];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if(self != NULL) {
+        [self initBuschJaegerCallView];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if(self != NULL) {
+        [self initBuschJaegerCallView];
+    }
+    return self;
+}
+
 - (void)dealloc {
     [videoView release];
     [takeCallButton release];
@@ -54,6 +83,9 @@
     
     [super dealloc];
 }
+
+
+#pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -212,6 +244,24 @@
     // Fake call update
     if(call == NULL) {
         return;
+    }
+    
+    // Update chatroom
+    if(currentCall != linphone_core_get_current_call([LinphoneManager getLc])) {
+        if(currentCall != NULL) {
+            linphone_chat_room_destroy(chatRoom);
+            chatRoom = NULL;
+        }
+        currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
+        if(currentCall != NULL) {
+            char *address = linphone_call_get_remote_address_as_string(currentCall);
+            if(address != NULL) {
+                chatRoom = linphone_core_create_chat_room([LinphoneManager getLc], address);
+                ms_free(address);
+            }
+        }
+        [openDoorButton setChatRoom:chatRoom];
+        [lightsButton setChatRoom:chatRoom];
     }
     
     [microButton update];

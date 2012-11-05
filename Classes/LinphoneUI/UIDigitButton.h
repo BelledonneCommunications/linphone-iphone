@@ -20,11 +20,13 @@
 #import <UIKit/UIKit.h>
 
 #import "UILongTouchButton.h"
+#import "linphonecore.h"
 
 
 @interface UIDigitButton : UILongTouchButton<UILongTouchButtonDelegate> {
 }
 
+@property (nonatomic, assign) LinphoneChatRoom *chatRoom;
 @property (nonatomic, retain) IBOutlet UITextField* addressField;
 @property char digit;
 @property bool dtmf;

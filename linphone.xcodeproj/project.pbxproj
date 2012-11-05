@@ -215,8 +215,6 @@
 		D37CD31A15E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
 		D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
 		D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
-		D37CD32115E21E520028869A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD32015E21E520028869A /* UILightButton.m */; };
-		D37CD32215E21E520028869A /* UILightButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD32015E21E520028869A /* UILightButton.m */; };
 		D37CD32815E220620028869A /* buschjaeger_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32315E220620028869A /* buschjaeger_icon_57.png */; };
 		D37CD32915E220620028869A /* buschjaeger_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32315E220620028869A /* buschjaeger_icon_57.png */; };
 		D37CD32A15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */; };
@@ -653,8 +651,6 @@
 		D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D37CD30915E21E330028869A /* BuschJaegerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerUtils.h; sourceTree = "<group>"; };
 		D37CD30A15E21E330028869A /* BuschJaegerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerUtils.m; sourceTree = "<group>"; };
-		D37CD31F15E21E520028869A /* UILightButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILightButton.h; sourceTree = "<group>"; };
-		D37CD32015E21E520028869A /* UILightButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILightButton.m; sourceTree = "<group>"; };
 		D37CD32315E220620028869A /* buschjaeger_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_57.png; path = Resources/buschjaeger_icon_57.png; sourceTree = "<group>"; };
 		D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "buschjaeger_icon_57@2x.png"; path = "Resources/buschjaeger_icon_57@2x.png"; sourceTree = "<group>"; };
 		D37CD32515E220620028869A /* buschjaeger_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_72.png; path = Resources/buschjaeger_icon_72.png; sourceTree = "<group>"; };
@@ -1121,8 +1117,6 @@
 				D3FE9F4815E790D70024F3E4 /* UIHistoryDetailsCell.h */,
 				D3FE9F4915E790D80024F3E4 /* UIHistoryDetailsCell.m */,
 				D3FE9F4A15E790D80024F3E4 /* UIHistoryDetailsCell.xib */,
-				D37CD31F15E21E520028869A /* UILightButton.h */,
-				D37CD32015E21E520028869A /* UILightButton.m */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
 				D380800415C28A7A005BE9BC /* UILinphone.m */,
 				D32409C1158B49A600C8C119 /* UILongTouchButton.h */,
@@ -1754,7 +1748,6 @@
 				D37CD31115E21E330028869A /* BuschJaegerConfiguration.m in Sources */,
 				D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
 				D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */,
-				D37CD32115E21E520028869A /* UILightButton.m in Sources */,
 				D37CD35315E22A470028869A /* OutdoorStation.m in Sources */,
 				D37CD38015E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38715E22C020028869A /* BuschJaegerMainView.m in Sources */,
@@ -1811,7 +1804,6 @@
 				D37CD31215E21E330028869A /* BuschJaegerConfiguration.m in Sources */,
 				D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */,
 				D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */,
-				D37CD32215E21E520028869A /* UILightButton.m in Sources */,
 				D37CD35415E22A470028869A /* OutdoorStation.m in Sources */,
 				D37CD38115E22B700028869A /* BuschJaegerWelcomeView.m in Sources */,
 				D37CD38815E22C020028869A /* BuschJaegerMainView.m in Sources */,

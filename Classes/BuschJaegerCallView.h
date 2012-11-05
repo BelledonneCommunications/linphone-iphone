@@ -24,11 +24,13 @@
 #import "UIDigitButton.h"
 #import "UIHangUpButton.h"
 #import "LinphoneManager.h"
-#import "UILightButton.h"
+#import "UIToggleButton.h"
 #import "VideoZoomHandler.h"
 
 @interface BuschJaegerCallView : UIViewController {
 @private
+    LinphoneChatRoom *chatRoom;
+    LinphoneCall *currentCall;
     VideoZoomHandler* videoZoomHandler;
 }
 

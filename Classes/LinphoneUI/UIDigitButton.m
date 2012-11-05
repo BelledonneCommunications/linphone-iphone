@@ -26,12 +26,14 @@
 @synthesize dtmf;
 @synthesize digit;
 @synthesize addressField;
+@synthesize chatRoom;
 
 
 #pragma mark - Lifecycle Functions
 
 - (void)initUIDigitButton {
     dtmf = FALSE;
+    chatRoom = NULL;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
 }
@@ -78,7 +80,11 @@
 		[addressField setText:newAddress];
 		linphone_core_play_dtmf([LinphoneManager getLc], digit, -1);
 	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc], digit);
+        if(chatRoom == NULL) {
+            linphone_core_send_dtmf([LinphoneManager getLc], digit);
+        } else {
+            linphone_chat_room_send_message(chatRoom, [[NSString stringWithFormat:@"%c", digit] UTF8String]);
+        }
 		linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
 	}
 }
