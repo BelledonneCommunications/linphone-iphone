@@ -58,13 +58,13 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-                        <false/>
-                        <key>Key</key>
-                        <string>wifi_only_preference</string>
-                        <key>Title</key>
-                        <string>Wifi only</string>
-                        <key>Type</key>
-                        <string>PSToggleSwitchSpecifier</string>
+			<false/>
+			<key>Key</key>
+			<string>wifi_only_preference</string>
+			<key>Title</key>
+			<string>Wifi only</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>Key</key>
@@ -100,7 +100,7 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<string>udp</string>
+			<string>tls</string>
 			<key>Key</key>
 			<string>transport_preference</string>
 			<key>Title</key>
@@ -137,16 +137,6 @@
 			<string>disable_autoboot_preference</string>
 			<key>Title</key>
 			<string>Disable application autostart</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>backgroundmode_preference</string>
-			<key>Title</key>
-			<string>Background mode</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

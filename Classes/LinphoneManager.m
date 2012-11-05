@@ -1448,19 +1448,6 @@ static void audioRouteChangeListenerCallback (
     policy.automatically_initiate = [[NSUserDefaults standardUserDefaults] boolForKey:@"start_video_preference"];
     linphone_core_set_video_policy(theLinphoneCore, &policy);
     
-	UIDevice* device = [UIDevice currentDevice];
-	bool backgroundSupported = false;
-	if ([device respondsToSelector:@selector(isMultitaskingSupported)])
-		backgroundSupported = [device isMultitaskingSupported];
-	
-    BOOL isbackgroundModeEnabled;
-	if (backgroundSupported) {
-		isbackgroundModeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"];
-	} else {
-		isbackgroundModeEnabled=false;
-	}
-    lp_config_set_int(linphone_core_get_config(theLinphoneCore),"app","backgroundmode_preference", isbackgroundModeEnabled);
-    
     [currentSettings release];
     currentSettings = newSettings;
     [currentSettings retain];

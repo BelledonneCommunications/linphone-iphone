@@ -138,7 +138,7 @@
                                  @"NO", @"mpeg4_preference",
                                  @"YES", @"pcmu_preference",
                                  @"YES", @"pcma_preference",
-                                 @"tcp", @"transport_preference",
+                                 @"tls", @"transport_preference",
                                  @"NO", @"enable_srtp_preference",
                                  @"YES", @"backgroundmode_preference",
                                  @"YES", @"outbound_proxy_preference",

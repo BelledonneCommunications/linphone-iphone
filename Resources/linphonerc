@@ -1,7 +1,7 @@
 [sip]
+sip_port=0
+sip_tls_port=5061
 sip_random_port=1
-sip_tcp_random_port=1
-sip_tls_random_port=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 keepalive_period=30000
 default_proxy=0
