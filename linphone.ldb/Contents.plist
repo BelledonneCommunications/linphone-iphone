@@ -16518,7 +16518,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-01T10:31:40Z</date>
+					<date>2012-11-06T09:45:46Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -16528,7 +16528,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>d07bfbef0b1c424572d4ab830553e0d6
+					<string>d8b4f45bf8fca397a7f791bd55a61e1c
 </string>
 					<key>name</key>
 					<string>Audio.strings</string>
@@ -16808,6 +16808,81 @@ Raison: %2$s</string>
 							<dict>
 								<key>en</key>
 								<string>PCMA</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Advanced</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Advanced</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Advanced</string>
+								<key>fr</key>
+								<string>Avancés</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Playback gain</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Playback gain</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Playback gain</string>
+								<key>fr</key>
+								<string>Gain sortie</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Microphone gain</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Microphone gain</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Microphone gain</string>
+								<key>fr</key>
+								<string>Gain microphone</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -17377,7 +17452,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T15:13:17Z</date>
+					<date>2012-11-06T09:36:36Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -17387,7 +17462,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>f5919fdebddf11e613578ee7ff05f05e
+					<string>bb988b6e05b6fdd4c767f75b9d73b087
 </string>
 					<key>name</key>
 					<string>Network.strings</string>
@@ -17779,6 +17854,81 @@ Raison: %2$s</string>
 							<dict>
 								<key>en</key>
 								<string>ZRTP</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Limits</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Limits</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Limits</string>
+								<key>fr</key>
+								<string>Limites</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Upload bandwidth</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Upload bandwidth</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Upload bandwidth</string>
+								<key>fr</key>
+								<string>Débit montant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Download bandwidth</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Download bandwidth</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Download bandwidth</string>
+								<key>fr</key>
+								<string>Débit descendant</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

@@ -125,6 +125,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setInteger: linphone_core_get_audio_port(lc) forKey:@"audio_port_preference"];
         [self setInteger: linphone_core_get_video_port(lc) forKey:@"video_port_preference"];
     }
+    {
+        [self setInteger: linphone_core_get_upload_bandwidth(lc) forKey:@"upload_bandwidth_preference"];
+        [self setInteger: linphone_core_get_download_bandwidth(lc) forKey:@"download_bandwidth_preference"];
+    }
+    {
+        [self setFloat:linphone_core_get_playback_gain_db(lc) forKey:@"playback_gain_preference"];
+        //[self setFloat: linphone_core_get_microphone_gain_db(lc) forKey:@"microphone_gain_preference"];
+    }
 	{
 		LCSipTransports tp;
 		const char *tname = "udp";
@@ -481,6 +489,18 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     linphone_core_set_audio_port(lc, audio_port_preference);
     int video_port_preference = [self integerForKey:@"video_port_preference"];
     linphone_core_set_video_port(lc, video_port_preference);
+    
+    int upload_bandwidth = [self integerForKey:@"upload_bandwidth_preference"];
+    linphone_core_set_upload_bandwidth(lc, upload_bandwidth);
+    
+    int download_bandwidth = [self integerForKey:@"download_bandwidth_preference"];
+    linphone_core_set_download_bandwidth(lc, download_bandwidth);
+    
+    float playback_gain = [self floatForKey:@"playback_gain_preference"];
+    linphone_core_set_playback_gain_db(lc, playback_gain);
+    
+    //float microphone_gain = [self floatForKey:@"microphone_gain_preference"];
+    //linphone_core_set_microphone_gain_db(lc, microphone_gain);
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;

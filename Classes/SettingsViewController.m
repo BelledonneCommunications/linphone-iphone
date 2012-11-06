@@ -574,10 +574,18 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
     
+    [hiddenKeys addObject:@"audio_advanced_group"];
+    [hiddenKeys addObject:@"playback_gain_preference"];
+    [hiddenKeys addObject:@"microphone_gain_preference"];
+    
+    [hiddenKeys addObject:@"network_limit_group"];
+    [hiddenKeys addObject:@"upload_bandwidth_preference"];
+    [hiddenKeys addObject:@"download_bandwidth_preference"];
+    
     [hiddenKeys addObject:@"incoming_call_timeout_preference"];
     [hiddenKeys addObject:@"in_call_timeout_preference"];
+    
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
-    [hiddenKeys addObject:@"about_button"]; // Hide for the moment
     
     if (!linphone_core_video_supported([LinphoneManager getLc]))
         [hiddenKeys addObject:@"video_menu"];

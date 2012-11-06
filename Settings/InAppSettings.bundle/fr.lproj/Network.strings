@@ -23,7 +23,7 @@
 "Transport" = "Transport";
 
 /* Media Encryption */
-"Media Encryption" = "Encryption media";
+"Media Encryption" = "Chiffrement";
 
 /* Push Notifications */
 "Push Notification" = "Push Notification";
@@ -49,3 +49,11 @@
 /* ZRTP */
 "ZRTP" = "ZRTP";
 
+/* Limits */
+"Limits" = "Limites";
+
+/* Upload bandwidth */
+"Upload bandwidth" = "Débit montant";
+
+/* Download bandwidth */
+"Download bandwidth" = "Débit descendant";
