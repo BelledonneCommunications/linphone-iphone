@@ -77,7 +77,7 @@
     
     if (config == NULL) {
         s = LinphoneRegistrationNone;
-        m = linphone_core_is_network_reachabled([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
+        m = linphone_core_is_network_reachable([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
     } else {
         s = linphone_proxy_config_get_state(config);
     

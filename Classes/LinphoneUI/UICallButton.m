@@ -35,7 +35,7 @@ static BOOL transferMode = NO;
 }
 
 -(void) touchUp:(id) sender {
-	if (!linphone_core_is_network_reachabled([LinphoneManager getLc])) {
+	if (!linphone_core_is_network_reachable([LinphoneManager getLc])) {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
 														message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call",nil) 
 													   delegate:nil 
