@@ -4823,6 +4823,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);
+	
+	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
+	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
 
 	linphone_core_free_payload_types(lc);
 	ortp_exit();

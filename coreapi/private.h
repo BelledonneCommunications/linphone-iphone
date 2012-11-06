@@ -566,6 +566,7 @@ struct _LinphoneCore
 	int max_calls;
 	LinphoneTunnel *tunnel;
 	char* device_id;
+	MSList *last_recv_msg_ids;
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
