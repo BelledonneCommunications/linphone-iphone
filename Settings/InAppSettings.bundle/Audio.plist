@@ -135,12 +135,8 @@
 			<string>Playback gain</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
 			<key>KeyboardType</key>
-			<string>NumberPad</string>
+			<string>DecimalPad</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>IASKTextAlignment</key>
@@ -153,12 +149,8 @@
 			<string>Microphone gain</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
 			<key>KeyboardType</key>
-			<string>NumberPad</string>
+			<string>DecimalPad</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>IASKTextAlignment</key>
