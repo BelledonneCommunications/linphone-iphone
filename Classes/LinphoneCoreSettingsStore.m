@@ -131,7 +131,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     }
     {
         [self setFloat:linphone_core_get_playback_gain_db(lc) forKey:@"playback_gain_preference"];
-        //[self setFloat: linphone_core_get_microphone_gain_db(lc) forKey:@"microphone_gain_preference"];
+        [self setFloat:linphone_core_get_mic_gain_db(lc) forKey:@"microphone_gain_preference"];
     }
 	{
 		LCSipTransports tp;
@@ -499,8 +499,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     float playback_gain = [self floatForKey:@"playback_gain_preference"];
     linphone_core_set_playback_gain_db(lc, playback_gain);
     
-    //float microphone_gain = [self floatForKey:@"microphone_gain_preference"];
-    //linphone_core_set_microphone_gain_db(lc, microphone_gain);
+    float mic_gain = [self floatForKey:@"microphone_gain_preference"];
+    linphone_core_set_mic_gain_db(lc, mic_gain);
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
