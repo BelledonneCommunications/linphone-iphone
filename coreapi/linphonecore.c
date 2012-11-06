@@ -3319,6 +3319,10 @@ void linphone_core_set_mic_gain_db (LinphoneCore *lc, float gaindb){
 
 	lc->sound_conf.soft_mic_lev=gaindb;
 
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sound","mic_gain_db",lc->sound_conf.soft_mic_lev);
+	}
+
 	if (call==NULL || (st=call->audiostream)==NULL){
 		ms_message("linphone_core_set_mic_gain_db(): no active call.");
 		return;
@@ -3348,6 +3352,9 @@ void linphone_core_set_playback_gain_db (LinphoneCore *lc, float gaindb){
 	AudioStream *st;
 
 	lc->sound_conf.soft_play_lev=gaindb;
+	if (linphone_core_ready(lc)){
+		lp_config_set_int(lc->config,"sound","playback_gain_db",lc->sound_conf.soft_play_lev);
+	}
 
 	if (call==NULL || (st=call->audiostream)==NULL){
 		ms_message("linphone_core_set_playback_gain_db(): no active call.");
