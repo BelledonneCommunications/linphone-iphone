@@ -586,6 +586,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"in_call_timeout_preference"];
     
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
+    [hiddenKeys addObject:@"about_button"]; // Hide for the moment
     
     if (!linphone_core_video_supported([LinphoneManager getLc]))
         [hiddenKeys addObject:@"video_menu"];
@@ -663,6 +664,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         if(controller != nil) {
             [controller reset];
         }
+    } else if([key isEqual:@"about_button"]) {
+        [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
     }
 }
 
