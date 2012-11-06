@@ -1196,9 +1196,11 @@ int linphone_core_get_rec_level(LinphoneCore *lc);
 void linphone_core_set_ring_level(LinphoneCore *lc, int level);
 void linphone_core_set_play_level(LinphoneCore *lc, int level);
 
+void linphone_core_set_mic_gain_db(LinphoneCore *lc, float level);
+float linphone_core_get_mic_gain_db(LinphoneCore *lc);
 void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
-
 float linphone_core_get_playback_gain_db(LinphoneCore *lc);
+
 void linphone_core_set_rec_level(LinphoneCore *lc, int level);
 const char * linphone_core_get_ringer_device(LinphoneCore *lc);
 const char * linphone_core_get_playback_device(LinphoneCore *lc);

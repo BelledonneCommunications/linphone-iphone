@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 #include "private.h"
 
+#include <math.h>
 #include <ortp/telephonyevents.h>
 #include <ortp/zrtp.h>
 #include "mediastreamer2/mediastream.h"
@@ -425,7 +426,6 @@ static void sound_config_read(LinphoneCore *lc)
 	int tmp;
 	const char *tmpbuf;
 	const char *devid;
-	float gain=0;
 #ifdef __linux
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
@@ -497,8 +497,8 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_enable_agc(lc,
 		lp_config_get_int(lc->config,"sound","agc",0));
 
-	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
-	linphone_core_set_playback_gain_db (lc,gain);
+	linphone_core_set_playback_gain_db (lc,lp_config_get_float(lc->config,"sound","playback_gain_db",0));
+	linphone_core_set_mic_gain_db (lc,lp_config_get_float(lc->config,"sound","mic_gain_db",0));
 
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
 
@@ -3308,6 +3308,36 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 }
 
 /**
+ * Allow to control microphone level:  gain in db
+ *
+ * @ingroup media_parameters
+**/
+void linphone_core_set_mic_gain_db (LinphoneCore *lc, float gaindb){
+	float gain=gaindb;
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	AudioStream *st;
+
+	lc->sound_conf.soft_mic_lev=gaindb;
+
+	if (call==NULL || (st=call->audiostream)==NULL){
+		ms_message("linphone_core_set_mic_gain_db(): no active call.");
+		return;
+	}
+	if (st->volrecv){
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+}
+
+/**
+ * Get microphone gain in db.
+ *
+ * @ingroup media_parameters
+**/
+float linphone_core_get_mic_gain_db(LinphoneCore *lc) {
+	return lc->sound_conf.soft_mic_lev;
+}
+
+/**
  * Allow to control play level before entering sound card:  gain in db
  *
  * @ingroup media_parameters
@@ -3718,7 +3748,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	}
 	if (st!=NULL){
 		audio_stream_set_mic_gain(st,
-			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
+			(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
 		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 			audio_stream_mute_rtp(st,val);
 		}
@@ -4704,6 +4734,8 @@ static void sound_config_uninit(LinphoneCore *lc)
 	ms_free(config->cards);
 
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
+	lp_config_set_float(lc->config,"sound","playback_gain_db",config->soft_play_lev);
+	lp_config_set_float(lc->config,"sound","mic_gain_db",config->soft_mic_lev);
 
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
