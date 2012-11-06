@@ -5,3 +5,4 @@ Makefile.in
 *.lo
 *.la
 *.loT
+liblinphone_gitversion.h

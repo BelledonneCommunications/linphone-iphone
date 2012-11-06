@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
+#ifdef USE_JAVAH
+#include "linphonecore_jni.h"
+#endif
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 
@@ -2132,6 +2135,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
 	linphone_core_set_inc_timeout((LinphoneCore *)lc, timeout);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setInCallTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
+	linphone_core_set_in_call_timeout((LinphoneCore *)lc, timeout);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {

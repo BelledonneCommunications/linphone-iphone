@@ -382,6 +382,7 @@ typedef struct sip_config
 	MSList *proxies;
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
+	int in_call_timeout;	/*timeout after a call is hangup */
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 	LCSipTransports transports;
 	bool_t use_info;
@@ -436,6 +437,7 @@ typedef struct sound_config
 	const char **cards;
 	int latency;	/* latency in samples of the current used sound device */
 	float soft_play_lev; /*playback gain in db.*/
+	float soft_mic_lev; /*mic gain in db.*/
 	char rec_lev;
 	char play_lev;
 	char ring_lev;
@@ -556,12 +558,16 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	
+        time_t network_last_check;
+        bool_t network_last_status;
+
 	bool_t ringstream_autorelease;
 	bool_t pad[3];
 	int device_rotation;
 	int max_calls;
 	LinphoneTunnel *tunnel;
 	char* device_id;
+	MSList *last_recv_msg_ids;
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);

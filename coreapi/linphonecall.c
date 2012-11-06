@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include <ortp/event.h>
 #include <ortp/b64.h>
-
+#include <math.h>
 
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
@@ -1189,7 +1189,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 }
 
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
-	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
+	float mic_gain=lc->sound_conf.soft_mic_lev;
 	float thres = 0;
 	float recv_gain;
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
@@ -1197,7 +1197,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
 
 	if (!muted)
-		audio_stream_set_mic_gain(st,mic_gain);
+		linphone_core_set_mic_gain_db (lc, mic_gain);
 	else
 		audio_stream_set_mic_gain(st,0);
 
@@ -1231,7 +1231,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	}
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
-		float floorgain = 1/mic_gain;
+		float floorgain = 1/pow(10,(mic_gain)/10);
 		int spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
 		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);

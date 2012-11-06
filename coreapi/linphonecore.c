@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 #include "private.h"
 
+#include <math.h>
 #include <ortp/telephonyevents.h>
 #include <ortp/zrtp.h>
 #include "mediastreamer2/mediastream.h"
@@ -40,13 +41,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#include "liblinphone_gitversion.h"
+#else
+#ifndef LIBLINPHONE_GIT_VERSION
+#define LIBLINPHONE_GIT_VERSION "unknown"
 #endif
+#endif
+
 
 /*#define UNSTANDART_GSM_11K 1*/
 
 #define ROOT_CA_FILE PACKAGE_DATA_DIR "/linphone/rootca.pem"
 
-static const char *liblinphone_version=LIBLINPHONE_VERSION;
+static const char *liblinphone_version=
+#ifdef LIBLINPHONE_GIT_VERSION
+	LIBLINPHONE_GIT_VERSION
+#else
+	LIBLINPHONE_VERSION
+#endif
+;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
@@ -413,7 +426,6 @@ static void sound_config_read(LinphoneCore *lc)
 	int tmp;
 	const char *tmpbuf;
 	const char *devid;
-	float gain=0;
 #ifdef __linux
 	/*alsadev let the user use custom alsa device within linphone*/
 	devid=lp_config_get_string(lc->config,"sound","alsadev",NULL);
@@ -485,8 +497,8 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_enable_agc(lc,
 		lp_config_get_int(lc->config,"sound","agc",0));
 
-	gain=lp_config_get_float(lc->config,"sound","playback_gain_db",0);
-	linphone_core_set_playback_gain_db (lc,gain);
+	linphone_core_set_playback_gain_db (lc,lp_config_get_float(lc->config,"sound","playback_gain_db",0));
+	linphone_core_set_mic_gain_db (lc,lp_config_get_float(lc->config,"sound","mic_gain_db",0));
 
 	linphone_core_set_remote_ringback_tone (lc,lp_config_get_string(lc->config,"sound","ringback_tone",NULL));
 
@@ -582,6 +594,9 @@ static void sip_config_read(LinphoneCore *lc)
 
 	tmp=lp_config_get_int(lc->config,"sip","inc_timeout",30);
 	linphone_core_set_inc_timeout(lc,tmp);
+
+	tmp=lp_config_get_int(lc->config,"sip","in_call_timeout",0);
+	linphone_core_set_in_call_timeout(lc,tmp);
 
 	/* get proxies config */
 	for(i=0;; i++){
@@ -1099,6 +1114,7 @@ static void misc_config_read (LinphoneCore *lc) {
 static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
     const char *factory_config_path, void * userdata)
 {
+	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
@@ -1182,6 +1198,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->sal=sal_init();
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
+
+        lc->network_last_check = 0;
+        lc->network_last_status = FALSE;
 
 	sip_setup_register_all();
 	sound_config_read(lc);
@@ -1794,24 +1813,22 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
-	static time_t last_check=0;
-	static bool_t last_status=FALSE;
 	char result[LINPHONE_IPADDR_SIZE];
-	bool_t new_status=last_status;
+	bool_t new_status=lc->network_last_status;
 
 	/* only do the network up checking every five seconds */
-	if (last_check==0 || (curtime-last_check)>=5){
+	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
 		linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,NULL,result);
 		if (strcmp(result,"::1")!=0 && strcmp(result,"127.0.0.1")!=0){
 			new_status=TRUE;
 		}else new_status=FALSE;
-		last_check=curtime;
-		if (new_status!=last_status) {
+		lc->network_last_check=curtime;
+		if (new_status!=lc->network_last_status) {
 			if (new_status){
 				ms_message("New local ip address is %s",result);
 			}
 			set_network_reachable(lc,new_status, curtime);
-			last_status=new_status;
+			lc->network_last_status=new_status;
 		}
 	}
 }
@@ -1969,6 +1986,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	calls= lc->calls;
 	while(calls!= NULL){
 		call = (LinphoneCall *)calls->data;
+		elapsed = curtime-call->start_time;
 		 /* get immediately a reference to next one in case the one
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
@@ -1985,7 +2003,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 			linphone_core_start_invite(lc,call);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
-			elapsed=curtime-call->start_time;
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
@@ -1993,6 +2010,10 @@ void linphone_core_iterate(LinphoneCore *lc){
 				call->reason=LinphoneReasonNotAnswered;
 				linphone_core_terminate_call(lc,call);
 			}
+		}
+		if (lc->sip_conf.in_call_timeout > 0 && elapsed>lc->sip_conf.in_call_timeout) {
+			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
+			linphone_core_terminate_call(lc,call);
 		}
 	}
 		
@@ -3201,6 +3222,26 @@ int linphone_core_get_inc_timeout(LinphoneCore *lc){
 	return lc->sip_conf.inc_timeout;
 }
 
+/**
+ * Set the in call timeout in seconds.
+ *
+ * @ingroup call_control
+ * After this timeout period, the call is automatically hangup.
+**/
+void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds){
+	lc->sip_conf.in_call_timeout=seconds;
+}
+
+/**
+ * Returns the in call timeout
+ *
+ * @ingroup call_control
+ * See linphone_core_set_in_call_timeout() for details.
+**/
+int linphone_core_get_in_call_timeout(LinphoneCore *lc){
+	return lc->sip_conf.in_call_timeout;
+}
+
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
 													const char *contact,
 													LinphoneOnlineStatus presence_mode)
@@ -3270,6 +3311,40 @@ void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 }
 
 /**
+ * Allow to control microphone level:  gain in db
+ *
+ * @ingroup media_parameters
+**/
+void linphone_core_set_mic_gain_db (LinphoneCore *lc, float gaindb){
+	float gain=gaindb;
+	LinphoneCall *call=linphone_core_get_current_call (lc);
+	AudioStream *st;
+
+	lc->sound_conf.soft_mic_lev=gaindb;
+
+	if (linphone_core_ready(lc)){
+		lp_config_set_float(lc->config,"sound","mic_gain_db",lc->sound_conf.soft_mic_lev);
+	}
+
+	if (call==NULL || (st=call->audiostream)==NULL){
+		ms_message("linphone_core_set_mic_gain_db(): no active call.");
+		return;
+	}
+	if (st->volrecv){
+		ms_filter_call_method(st->volsend,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply gain: gain control wasn't activated.");
+}
+
+/**
+ * Get microphone gain in db.
+ *
+ * @ingroup media_parameters
+**/
+float linphone_core_get_mic_gain_db(LinphoneCore *lc) {
+	return lc->sound_conf.soft_mic_lev;
+}
+
+/**
  * Allow to control play level before entering sound card:  gain in db
  *
  * @ingroup media_parameters
@@ -3280,6 +3355,9 @@ void linphone_core_set_playback_gain_db (LinphoneCore *lc, float gaindb){
 	AudioStream *st;
 
 	lc->sound_conf.soft_play_lev=gaindb;
+	if (linphone_core_ready(lc)){
+		lp_config_set_float(lc->config,"sound","playback_gain_db",lc->sound_conf.soft_play_lev);
+	}
 
 	if (call==NULL || (st=call->audiostream)==NULL){
 		ms_message("linphone_core_set_playback_gain_db(): no active call.");
@@ -3680,7 +3758,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	}
 	if (st!=NULL){
 		audio_stream_set_mic_gain(st,
-			(val==TRUE) ? 0 : lp_config_get_float(lc->config,"sound","mic_gain",1));
+			(val==TRUE) ? 0 : pow(10,lc->sound_conf.soft_mic_lev/10));
 		if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 			audio_stream_mute_rtp(st,val);
 		}
@@ -4044,7 +4122,7 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	if (id!=NULL){
 		lc->video_conf.device=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),id);
 		if (lc->video_conf.device==NULL){
-			ms_warning("Could not found video device %s",id);
+			ms_warning("Could not find video device %s",id);
 		}
 	}
 	if (lc->video_conf.device==NULL)
@@ -4597,6 +4675,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","guess_hostname",config->guess_hostname);
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
+	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
@@ -4665,6 +4744,8 @@ static void sound_config_uninit(LinphoneCore *lc)
 	ms_free(config->cards);
 
 	lp_config_set_string(lc->config,"sound","remote_ring",config->remote_ring);
+	lp_config_set_float(lc->config,"sound","playback_gain_db",config->soft_play_lev);
+	lp_config_set_float(lc->config,"sound","mic_gain_db",config->soft_mic_lev);
 
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
@@ -4784,6 +4865,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);
+	
+	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
+	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
 
 	linphone_core_free_payload_types(lc);
 	ortp_exit();

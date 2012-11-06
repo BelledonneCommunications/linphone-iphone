@@ -27,9 +27,63 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
-static bool_t media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd){
-	if (call->params.in_conference!=call->current_params.in_conference) return TRUE;
-	return !sal_media_description_equals(oldmd,newmd)  || call->up_bw!=linphone_core_get_upload_bandwidth(call->core);
+static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
+	if (call->params.in_conference != call->current_params.in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
+	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_CHANGED;
+	return sal_media_description_equals(oldmd, newmd);
+}
+
+void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
+	SalStreamDescription *old_audiodesc = NULL;
+	SalStreamDescription *old_videodesc = NULL;
+	SalStreamDescription *new_audiodesc = NULL;
+	SalStreamDescription *new_videodesc = NULL;
+	char *rtp_addr, *rtcp_addr;
+	int i;
+
+	for (i = 0; i < old_md->nstreams; i++) {
+		if (old_md->streams[i].type == SalAudio) {
+			old_audiodesc = &old_md->streams[i];
+		} else if (old_md->streams[i].type == SalVideo) {
+			old_videodesc = &old_md->streams[i];
+		}
+	}
+	for (i = 0; i < new_md->nstreams; i++) {
+		if (new_md->streams[i].type == SalAudio) {
+			new_audiodesc = &new_md->streams[i];
+		} else if (new_md->streams[i].type == SalVideo) {
+			new_videodesc = &new_md->streams[i];
+		}
+	}
+	if (call->audiostream && new_audiodesc) {
+		rtp_addr = (new_audiodesc->rtp_addr[0] != '\0') ? new_audiodesc->rtp_addr : new_md->addr;
+		rtcp_addr = (new_audiodesc->rtcp_addr[0] != '\0') ? new_audiodesc->rtcp_addr : new_md->addr;
+		ms_message("Change audio stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_audiodesc->rtp_port, rtcp_addr, new_audiodesc->rtcp_port);
+		rtp_session_set_remote_addr_full(call->audiostream->session, rtp_addr, new_audiodesc->rtp_port, rtcp_addr, new_audiodesc->rtcp_port);
+	}
+#ifdef VIDEO_ENABLED
+	if (call->videostream && new_videodesc) {
+		rtp_addr = (new_videodesc->rtp_addr[0] != '\0') ? new_videodesc->rtp_addr : new_md->addr;
+		rtcp_addr = (new_videodesc->rtcp_addr[0] != '\0') ? new_videodesc->rtcp_addr : new_md->addr;
+		ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
+		rtp_session_set_remote_addr_full(call->videostream->session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
+	}
+#endif
+
+	/* Copy address and port values from new_md to old_md since we will keep old_md as resultdesc */
+	strcpy(old_md->addr, new_md->addr);
+	if (old_audiodesc && new_audiodesc) {
+		strcpy(old_audiodesc->rtp_addr, new_audiodesc->rtp_addr);
+		strcpy(old_audiodesc->rtcp_addr, new_audiodesc->rtcp_addr);
+		old_audiodesc->rtp_port = new_audiodesc->rtp_port;
+		old_audiodesc->rtcp_port = new_audiodesc->rtcp_port;
+	}
+	if (old_videodesc && new_videodesc) {
+		strcpy(old_videodesc->rtp_addr, new_videodesc->rtp_addr);
+		strcpy(old_videodesc->rtcp_addr, new_videodesc->rtcp_addr);
+		old_videodesc->rtp_port = new_videodesc->rtp_port;
+		old_videodesc->rtcp_port = new_videodesc->rtcp_port;
+	}
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -49,7 +103,8 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if ((call->audiostream && call->audiostream->ticker) || (call->videostream && call->videostream->ticker)){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
-			if (!media_parameters_changed(call,oldmd,new_md) && !call->playing_ringbacktone){
+			int md_changed = media_parameters_changed(call, oldmd, new_md);
+			if ((md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) && !call->playing_ringbacktone) {
 				/*as nothing has changed, keep the oldmd */
 				call->resultdesc=oldmd;
 				sal_media_description_unref(new_md);
@@ -65,6 +120,12 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 #endif
 				}
 				ms_message("No need to restart streams, SDP is unchanged.");
+				return;
+			} else if ((md_changed == SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) && !call->playing_ringbacktone) {
+				call->resultdesc = oldmd;
+				ms_message("Network parameters have changed, update them.");
+				linphone_core_update_streams_destinations(lc, call, oldmd, new_md);
+				sal_media_description_unref(new_md);
 				return;
 			}else{
 				ms_message("Media descriptions are different, need to restart the streams.");
@@ -718,14 +779,33 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	}
 }
 
-static void text_received(Sal *sal, const char *from, const char *msg){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	linphone_core_message_received(lc,from,msg,NULL);
+static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
+	MSList *elem=lc->last_recv_msg_ids;
+	int i;
+	bool_t is_duplicate=FALSE;
+	for(i=0;elem!=NULL;elem=elem->next,i++){
+		if (strcmp((const char*)elem->data,msg_id)==0){
+			is_duplicate=TRUE;
+		}
+	}
+	if (!is_duplicate){
+		lc->last_recv_msg_ids=ms_list_prepend(lc->last_recv_msg_ids,ms_strdup(msg_id));
+	}
+	if (i>=10){
+		ms_free(elem->data);
+		ms_list_remove_link(lc->last_recv_msg_ids,elem);
+	}
+	return is_duplicate;
 }
-void message_external_body_received(Sal *sal, const char *from, const char *url) {
+
+
+static void text_received(Sal *sal, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	linphone_core_message_received(lc,from,NULL,url);
+	if (is_duplicate_msg(lc,msg->message_id)==FALSE){
+		linphone_core_message_received(lc,msg->from,msg->text,msg->url);
+	}
 }
+
 static void notify(SalOp *op, const char *from, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer (op);
@@ -841,7 +921,6 @@ SalCallbacks linphone_sal_callbacks={
 	dtmf_received,
 	refer_received,
 	text_received,
-	message_external_body_received,
 	text_delivery_update,
 	notify,
 	notify_presence,
