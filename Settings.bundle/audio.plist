@@ -120,6 +120,42 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
+		<dict>
+			<key>Key</key>
+			<string>audio_advanced_group</string>
+			<key>Title</key>
+			<string>Advanced</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>playback_gain_preference</string>
+			<key>Title</key>
+			<string>Playback gain</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>microphone_gain_preference</string>
+			<key>Title</key>
+			<string>Microphone gain</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
 	</array>
 </dict>
 </plist>

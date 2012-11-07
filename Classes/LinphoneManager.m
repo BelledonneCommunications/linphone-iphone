@@ -409,6 +409,80 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     } else {
 		data = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
 	}
+
+	
+	if (state == LinphoneCallIncomingReceived
+		&&[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+		/*first step is to re-enable ctcall center*/
+		[self setupGSMInteraction];
+		
+		/*should we reject this call ?*/
+		if ([callCenter currentCalls]!=nil) {
+			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+			linphone_core_decline_call([LinphoneManager getLc], call,LinphoneReasonBusy);
+			return;
+		}
+		
+		
+		LinphoneCallLog* callLog=linphone_call_get_call_log(call);
+		NSString* callId = [NSString stringWithUTF8String:callLog->call_id];
+        const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+        NSString* address = nil;
+        if(addr != NULL) {
+            BOOL useLinphoneAddress = true;
+            // contact name
+            char* lAddress = linphone_address_as_string_uri_only(addr);
+            if(lAddress) {
+                // Find caller in outdoor stations
+                NSSet *outstations = configuration.outdoorStations;
+                for(OutdoorStation *os in outstations) {
+                    if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:[NSString stringWithUTF8String:lAddress]]) {
+                        address = os.name;
+                        useLinphoneAddress = false;
+                        break;
+                    }
+                }
+                ms_free(lAddress);
+            }
+            if(useLinphoneAddress) {
+                const char* lDisplayName = linphone_address_get_display_name(addr);
+                const char* lUserName = linphone_address_get_username(addr);
+                if (lDisplayName)
+                    address = [NSString stringWithUTF8String:lDisplayName];
+                else if(lUserName)
+                    address = [NSString stringWithUTF8String:lUserName];
+            }
+        }
+        if(address == nil) {
+            address = @"Unknown";
+        }
+        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"], nil];
+        
+		if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
+			// case where a remote notification is not already received
+			// Create a new local notification
+			data->notification = [[UILocalNotification alloc] init];
+			if (data->notification) {
+				data->notification.repeatInterval = 0;
+				data->notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), address];
+				data->notification.alertAction = NSLocalizedString(@"Answer", nil);
+				data->notification.soundName = ringtone;
+				data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
+				
+				[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
+				
+				if (!incallBgTask){
+					incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+						[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
+					}];
+				}
+
+			}
+		}
+	}
+	
 	
 	if(state == LinphoneCallReleased) {
         if(data != NULL) {
@@ -502,6 +576,27 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
     [chat create];
     
     ms_free(fromStr);
+    */
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+        
+        
+        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"], nil];
+        
+		// Create a new notification
+		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
+		if (notif) {
+			notif.repeatInterval = 0;
+			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), configuration.levelPushButton.name];
+			notif.alertAction = NSLocalizedString(@"Show", nil);
+			notif.soundName = ringtone;
+			
+			
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		}
+	}
+    /* MODIFICATION: Disable chat
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSValue valueWithPointer:room], @"room", 
@@ -925,6 +1020,12 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 															   }
 															   //kick up network cnx, just in case
 															   [LinphoneManager kickOffNetworkConnection];
+                                                               
+                                                               [self setupGSMInteraction];
+                                                               //to make sure presence status is correct
+                                                               if ([callCenter currentCalls]==nil)
+                                                                   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+                                                               
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
@@ -1552,9 +1653,10 @@ static void audioRouteChangeListenerCallback (
 
 - (void)setupGSMInteraction {
     
-	if (callCenter != nil)
+	if (callCenter != nil) {
+		callCenter.callEventHandler=NULL;
 		[callCenter release];
-	
+	}
     callCenter = [[CTCallCenter alloc] init];
     callCenter.callEventHandler = ^(CTCall* call) {
 		// post on main thread

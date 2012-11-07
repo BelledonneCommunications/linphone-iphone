@@ -39,9 +39,9 @@
 }
 
 + (id)parse:(NSString*)section array:(NSArray*)array {
-    NSString *param;
+    NSString *gparam;
     LevelPushButton *net = nil;
-    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[(levelpushbutton)\\]$" data:section]) != nil) {
+    if((gparam = [BuschJaegerConfiguration getRegexValue:@"^\\[(levelpushbutton)\\]$" data:section]) != nil) {
         net = [[[LevelPushButton alloc] init] autorelease];
         NSString *param;
         for(NSString *entry in array) {

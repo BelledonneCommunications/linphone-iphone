@@ -72,18 +72,17 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 + (NSString*)normalizeSipURI:(NSString*)address {
-    NSString* ret = address;
-    if([address rangeOfString:@"@"].location != NSNotFound) {
-        if([address rangeOfString:@"sip:" options:NSCaseInsensitiveSearch].location == 0) {
-            // have to be sure that start with sip: in lower case
-            ret = [ret substringFromIndex:4];
+    NSString *normalizedSipAddress = nil;
+	LinphoneAddress* linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [address UTF8String]);
+    if(linphoneAddress != NULL) {
+        char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
+        if(tmp != NULL) {
+            normalizedSipAddress = [NSString stringWithUTF8String:tmp];
+            ms_free(tmp);
         }
-        ret = [@"sip:" stringByAppendingString:ret];
-        if([ret hasSuffix:@":5060"]) {
-            ret = [ret substringToIndex:[ret length] - 5];
-        }
+        linphone_address_destroy(linphoneAddress);
     }
-    return ret;
+    return normalizedSipAddress;
 }
 
 + (NSString*)normalizePhoneNumber:(NSString*)address {
@@ -107,22 +106,44 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     return [FastAddressBook appendCountryCodeIfPossible:lNormalizedAddress];
 }
 
++ (BOOL)isAuthorized {
+    return !ABAddressBookGetAuthorizationStatus || ABAddressBookGetAuthorizationStatus() ==  kABAuthorizationStatusAuthorized;
+}
+
 - (FastAddressBook*)init {
     if ((self = [super init]) != nil) {
         addressBookMap  = [[NSMutableDictionary alloc] init];
-        addressBook = ABAddressBookCreate();
-		ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
-		if (ABAddressBookGetAuthorizationStatus && ABAddressBookGetAuthorizationStatus() !=  kABAuthorizationStatusNotDetermined) {
-			ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
-				if (granted) [self loadData];
-			});
-		} else {
-			[self loadData];
-		}
-       
-        
+        addressBook = nil;
+        [self reload];
     }
     return self;
+}
+
+- (void)reload {
+    if(addressBook != nil) {
+        ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
+        CFRelease(addressBook);
+        addressBook = nil;
+    }
+    NSError *error = nil;
+    if(ABAddressBookCreateWithOptions) {
+        addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+    } else {
+        addressBook = ABAddressBookCreate();
+    }
+    if(addressBook != NULL) {
+        if(ABAddressBookGetAuthorizationStatus) {
+            ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+                ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+                [self loadData];
+            });
+        } else {
+            ABAddressBookRegisterExternalChangeCallback (addressBook, sync_address_book, self);
+            [self loadData];
+        }
+    } else {
+        [LinphoneLogger log:LinphoneLoggerError format:@"Create AddressBook: Fail(%@)", [error localizedDescription]];
+    }
 }
 
 - (void)loadData {
@@ -167,7 +188,11 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         if(add) {
                             CFStringRef lValue = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
                             NSString* lNormalizedKey = [FastAddressBook normalizeSipURI:(NSString*)lValue];
-                            [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+                            if(lNormalizedKey != NULL) {
+                                [addressBookMap setObject:lPerson forKey:lNormalizedKey];
+                            } else {
+                                [addressBookMap setObject:lPerson forKey:(NSString*)lValue];
+                            }
                         }
                         CFRelease(lDict);
                     }

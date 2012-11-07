@@ -37,11 +37,11 @@
 }
 
 + (id)parse:(NSString*)section array:(NSArray*)array {
-    NSString *param;
+    NSString *gparam;
     OutdoorStation *os = nil;
-    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
+    if((gparam = [BuschJaegerConfiguration getRegexValue:@"^\\[outdoorstation_([\\d]+)\\]$" data:section]) != nil) {
         os = [[[OutdoorStation alloc] init] autorelease];
-        os.ID = [param intValue];
+        os.ID = [gparam intValue];
         NSString *param;
         for(NSString *entry in array) {
             if((param = [BuschJaegerConfiguration getRegexValue:@"^address=(.*)$" data:entry]) != nil) {

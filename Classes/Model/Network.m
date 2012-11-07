@@ -71,9 +71,9 @@
 }
 
 + (id)parse:(NSString*)section array:(NSArray*)array {
-    NSString *param;
+    NSString *gparam;
     Network *net = nil;
-    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[(network)\\]$" data:section]) != nil) {
+    if((gparam = [BuschJaegerConfiguration getRegexValue:@"^\\[(network)\\]$" data:section]) != nil) {
         net = [[[Network alloc] init] autorelease];
         NSString *param;
         for(NSString *entry in array) {

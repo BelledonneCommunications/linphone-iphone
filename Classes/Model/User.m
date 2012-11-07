@@ -56,11 +56,11 @@
 }
 
 + (id)parse:(NSString*)section array:(NSArray*)array {
-    NSString *param;
+    NSString *gparam;
     User *usr = nil;
-    if((param = [BuschJaegerConfiguration getRegexValue:@"^\\[user_([\\d]+)\\]$" data:section]) != nil) {
+    if((gparam = [BuschJaegerConfiguration getRegexValue:@"^\\[user_([\\d]+)\\]$" data:section]) != nil) {
         usr = [[[User alloc] init] autorelease];
-        usr.ID = [param intValue];
+        usr.ID = [gparam intValue];
         NSString *param;
         for(NSString *entry in array) {
             if((param = [BuschJaegerConfiguration getRegexValue:@"^user=(.*)$" data:entry]) != nil) {

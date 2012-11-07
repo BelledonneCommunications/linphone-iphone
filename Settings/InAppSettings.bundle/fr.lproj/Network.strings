@@ -49,3 +49,11 @@
 /* ZRTP */
 "ZRTP" = "ZRTP";
 
+/* Limits */
+"Limits" = "Limites";
+
+/* Upload bandwidth */
+"Upload bandwidth" = "Débit montant";
+
+/* Download bandwidth */
+"Download bandwidth" = "Débit descendant";
