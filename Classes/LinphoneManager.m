@@ -1418,7 +1418,7 @@ static void audioRouteChangeListenerCallback (
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
+	//bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
 	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
 	
 	
