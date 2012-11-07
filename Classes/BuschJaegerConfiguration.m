@@ -196,7 +196,8 @@
 }
 
 - (BOOL)downloadCertificates:(id<BuschJaegerConfigurationDelegate>)delegate {
-    if(network.tlsCertificate && [network.tlsCertificate length] > 0) {
+    if(network.tlsCertificate && [network.tlsCertificate length] > 0 &&
+       network.derCertificate && [network.derCertificate length] > 0) {
         NSURL *pemUrl = [NSURL URLWithString:network.tlsCertificate];
         NSURL *derUrl = [NSURL URLWithString:network.derCertificate];
         if(pemUrl != nil && derUrl != nil) {
@@ -269,6 +270,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                     [delegate buschJaegerConfigurationError:NSLocalizedString(@"Invalid configuration file", nil)];
             });
+            return TRUE;
         }
     } 
     return FALSE;
