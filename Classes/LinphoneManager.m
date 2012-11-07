@@ -1473,7 +1473,7 @@ static void audioRouteChangeListenerCallback (
 		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
 		
 	} else {
-		if (configCheckDisable == false ) {
+		/*if (configCheckDisable == false ) {
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Warning",nil)
 															message:NSLocalizedString(@"It seems you have not configured any proxy server from settings",nil)
 														   delegate:self
@@ -1481,7 +1481,7 @@ static void audioRouteChangeListenerCallback (
 												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
 			[error show];
             [error release];
-		}
+		}*/
 	}
 	
 	//Configure Codecs
