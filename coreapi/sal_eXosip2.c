@@ -1750,7 +1750,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 			return;
 		}
 		msg=body->body;
-	} if (content_type->type 
+	}else if (content_type->type 
 		  && strcmp(content_type->type, "message")==0 
 		  && content_type->subtype
 		  && strcmp(content_type->subtype, "external-body")==0 ) {
@@ -1796,7 +1796,7 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
 		inc_update(sal,ev);
-    }else {
+	}else {
 		char *tmp=NULL;
 		size_t msglen=0;
 		osip_message_to_str(ev->request,&tmp,&msglen);
