@@ -745,7 +745,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	
 	@Override
 	public PayloadType findPayloadType(String mime, int clockRate) {
-		return null;
+		return findPayloadType(mime, clockRate, 1);
 	}
 	
 	private native void removeFriend(long ptr, long lf);
