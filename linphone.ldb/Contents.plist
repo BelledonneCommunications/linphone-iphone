@@ -7504,17 +7504,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>10</key>
+							<key>11</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar/10/UICallBar.xib</string>
+								<string>LinphoneUI/UICallBar/11/UICallBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-27T09:31:07Z</date>
+					<date>2012-11-09T09:15:46Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7524,7 +7524,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>c5958759098558a4f8f5d1c18abc0e21
+					<string>18fba1eaf5f411c2e245f79b882aa7b1
 </string>
 					<key>name</key>
 					<string>UICallBar.xib</string>
@@ -8626,9 +8626,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>10</string>
+						<string>11</string>
 						<key>fr</key>
-						<string>10</string>
+						<string>11</string>
 					</dict>
 				</dict>
 				<dict>

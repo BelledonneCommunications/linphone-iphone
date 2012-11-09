@@ -527,7 +527,7 @@
         tabFrame.origin.y = viewFrame.size.height;
         tabFrame.origin.x = viewFrame.size.width;
         tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-        tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
+        //tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
