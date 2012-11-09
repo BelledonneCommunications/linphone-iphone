@@ -850,9 +850,5 @@ public interface LinphoneCore {
 	**/
 	void setInCallTimeout(int timeout);
 	
-	void setUploadBandwidth(int bandwidth);
-	
-	void setDownloadBandwidth(int bandwidth);
-	
 	void setMicrophoneGain(float gain);
 }

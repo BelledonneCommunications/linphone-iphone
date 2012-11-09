@@ -789,18 +789,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setInCallTimeout(nativePtr, timeout);
 	}
 	
-	private native void setUploadBandwidth(long ptr, int bandwidth);
-	public void setUploadBandwidth(int bandwidth) {
-		setUploadBandwidth(nativePtr, bandwidth);
-	}
-	
-	private native void setDownloadBandwidth(long ptr, int bandwidth);
-	public void setDownloadBandwidth(int bandwidth) {
-		setUploadBandwidth(nativePtr, bandwidth);
-	}
-	
 	private native void setMicrophoneGain(long ptr, float gain);
 	public void setMicrophoneGain(float gain) {
-		setUploadBandwidth(nativePtr, gain);
+		setMicrophoneGain(nativePtr, gain);
 	}
 }
