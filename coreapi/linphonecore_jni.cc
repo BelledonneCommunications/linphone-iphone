@@ -703,6 +703,27 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isNetworkStateReacha
 		return (jboolean)linphone_core_is_network_reachable((LinphoneCore*)lc);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jint bandwidth) {
+		 linphone_core_set_upload_bandwidth((LinphoneCore*)lc,bandwidth);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jint bandwidth) {
+		linphone_core_set_download_bandwidth((LinphoneCore*)lc,bandwidth);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMicrophoneGain(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jfloat gain) {
+		linphone_core_set_microphone_gain_db((LinphoneCore*)lc,gain);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc

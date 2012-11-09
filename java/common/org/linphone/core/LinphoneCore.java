@@ -849,4 +849,10 @@ public interface LinphoneCore {
 	 * Once this time is elapsed (ringing included), the call is automatically hung up.
 	**/
 	void setInCallTimeout(int timeout);
+	
+	void setUploadBandwidth(int bandwidth);
+	
+	void setDownloadBandwidth(int bandwidth);
+	
+	void setMicrophoneGain(float gain);
 }
