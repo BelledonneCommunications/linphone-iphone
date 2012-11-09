@@ -707,7 +707,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMicrophoneGain(JNIEnv
 		,jobject  thiz
 		,jlong lc
 		,jfloat gain) {
-		linphone_core_set_microphone_gain_db((LinphoneCore*)lc,gain);
+		linphone_core_set_mic_gain_db((LinphoneCore*)lc,gain);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
