@@ -117,6 +117,9 @@ make_gitversion_h:
 	else \
 		$(ECHO) -n "" > $(GITVERSION_FILE_TMP) ; \
 	fi
+	if test ! -f $(srcdir)/$(GITVERSION_FILE) ; then \
+		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
+	fi
 	if test "`cat $(GITVERSION_FILE_TMP)`" != "`cat $(srcdir)/$(GITVERSION_FILE)`" ; then \
 		cp -f $(GITVERSION_FILE_TMP) $(srcdir)/$(GITVERSION_FILE) ; \
 	fi
