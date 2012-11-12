@@ -24,6 +24,9 @@
     UIView* videoView;
 }
 
+@property (readonly) float zoomLevel;
+@property (readonly) float cx;
+@property (readonly) float cy;
 - (void) setup: (UIView*) videoView;
 - (void) resetZoom;
 

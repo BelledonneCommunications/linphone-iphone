@@ -509,6 +509,9 @@
     SecTrustResultType trustResult;
     err = SecTrustEvaluate(newTrust, &trustResult);
     BOOL trusted = (err == noErr) && ((trustResult == kSecTrustResultProceed) || (trustResult == kSecTrustResultUnspecified));
+#ifdef DEBUG
+    trusted = TRUE;
+#endif
  	
     NSURLCredential* credential = nil;
 	if (trusted)

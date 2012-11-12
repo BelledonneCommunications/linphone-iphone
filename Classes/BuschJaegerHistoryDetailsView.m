@@ -33,6 +33,9 @@
 @synthesize imageView;
 @synthesize saveButton;
 @synthesize fullscreenView;
+@synthesize detailsLeftSwipeGestureRecognizer;
+@synthesize detailsRightSwipeGestureRecognizer;
+@synthesize detailsTapGestureRecognizer;
 
 #pragma mark - Lifecycle Functions
 
@@ -77,6 +80,9 @@
     [fullscreenView release];
     [imageView release];
     [saveButton release];
+    [detailsLeftSwipeGestureRecognizer release];
+    [detailsRightSwipeGestureRecognizer release];
+    [detailsTapGestureRecognizer release];
     
     [dateFormatter release];
     
@@ -97,6 +103,19 @@
         
         [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
     }
+    
+    detailsRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
+    [detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [imageView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
+    
+    detailsLeftSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
+    [detailsLeftSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+    [imageView addGestureRecognizer:detailsLeftSwipeGestureRecognizer];
+    
+    detailsTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideImage:)];
+    [detailsTapGestureRecognizer setNumberOfTapsRequired:1];
+    [detailsTapGestureRecognizer setNumberOfTouchesRequired:1];
+    [imageView addGestureRecognizer:detailsTapGestureRecognizer];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -144,18 +163,18 @@
     [[LinphoneManager instance].configuration removeHistory:BuschJaegerConfigurationRequestType_Local history:history delegate:self];
 }
 
-- (IBAction)nextImage:(id)sender {
-    if([history.images count]) {
-        currentIndex = (currentIndex - 1);
-        if(currentIndex < 0) currentIndex = [history.images count] - 1;
-        [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
-    }
-}
-
-- (IBAction)previousImage:(id)sender {
-    if([history.images count]) {
-        currentIndex = (currentIndex + 1) % [history.images count];
-        [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+- (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender {
+    if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+        if([history.images count]) {
+            currentIndex = (currentIndex - 1);
+            if(currentIndex < 0) currentIndex = [history.images count] - 1;
+            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+        }
+    } else if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+        if([history.images count]) {
+            currentIndex = (currentIndex + 1) % [history.images count];
+            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+        }
     }
 }
 

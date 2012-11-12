@@ -23,6 +23,10 @@
 
 @implementation VideoZoomHandler
 
+@synthesize zoomLevel;
+@synthesize cx;
+@synthesize cy;
+
 - (void)zoomInOut:(UITapGestureRecognizer*) reco {
     if (zoomLevel != 1)
         zoomLevel = 1;

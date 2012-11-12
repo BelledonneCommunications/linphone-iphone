@@ -35,6 +35,8 @@
 @synthesize lightsButton;
 @synthesize openDoorButton;
 @synthesize snapshotButton;
+@synthesize cameraLeftSwipeGestureRecognizer;
+@synthesize cameraRightSwipeGestureRecognizer;
 
 
 #pragma mark - View lifecycle
@@ -77,6 +79,8 @@
     [lightsButton release];
     [openDoorButton release];
     [snapshotButton release];
+    [cameraLeftSwipeGestureRecognizer release];
+    [cameraRightSwipeGestureRecognizer release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -111,7 +115,7 @@
         UIColor* col1 = BUSCHJAEGER_GREEN_COLOR;
         UIColor* col2 = BUSCHJAEGER_GREEN_COLOR;
         
-        [BuschJaegerUtils createGradientForView:takeCallButton withTopColor:col1 bottomColor:col2];
+        [BuschJaegerUtils createGradientForButton:takeCallButton withTopColor:col1 bottomColor:col2];
     }
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
@@ -119,6 +123,16 @@
     
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
+    
+    cameraRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doCameraSwipe:)];
+    [cameraRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [cameraRightSwipeGestureRecognizer setDelegate:self];
+    [videoView addGestureRecognizer:cameraRightSwipeGestureRecognizer];
+    
+    cameraLeftSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doCameraSwipe:)];
+    [cameraLeftSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+    [cameraLeftSwipeGestureRecognizer setDelegate:self];
+    [videoView addGestureRecognizer:cameraLeftSwipeGestureRecognizer];
 }
 
 - (void)viewDidUnload {
@@ -354,7 +368,30 @@
     }
 }
 
+
 #pragma mark - Actions Functions
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (IBAction)doCameraSwipe:(UISwipeGestureRecognizer *)sender {
+    if(videoZoomHandler.zoomLevel == 1) {
+        char digit = 0;
+        if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+            digit = '7';
+        } else if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+            digit = '8';
+        }
+        if(digit != 0) {
+            if(chatRoom == NULL) {
+                linphone_core_send_dtmf([LinphoneManager getLc], digit);
+            } else {
+                linphone_chat_room_send_message(chatRoom, [[NSString stringWithFormat:@"%c", digit] UTF8String]);
+            }
+        }
+    }
+}
 
 - (IBAction)takeCall:(id)sender {
     const MSList* calls = linphone_core_get_calls([LinphoneManager getLc]);	

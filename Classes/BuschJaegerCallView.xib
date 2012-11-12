@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">11G56</string>
+		<string key="IBDocument.SystemVersion">11G63</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
 		<string key="IBDocument.AppKitVersion">1138.51</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
@@ -41,6 +41,7 @@
 						<int key="NSvFlags">-2147483374</int>
 						<string key="NSFrameSize">{320, 480}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="935863454"/>
 						<string key="NSReuseIdentifierKey">_NS:196</string>
 						<object class="NSColor" key="IBUIBackgroundColor" id="732745065">
@@ -54,6 +55,7 @@
 						<int key="NSvFlags">289</int>
 						<string key="NSFrame">{{266, 20}, {34, 34}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="903884486"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
@@ -95,6 +97,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrameSize">{73, 58}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="842436331"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<object class="NSColor" key="IBUIBackgroundColor" id="666829842">
@@ -119,6 +122,7 @@
 								<int key="NSvFlags">-2147483356</int>
 								<string key="NSFrameSize">{73, 58}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1031602630"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
@@ -140,6 +144,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{207, 0}, {73, 58}}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="33985418"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
@@ -166,6 +171,8 @@
 								<int key="NSvFlags">-2147483356</int>
 								<string key="NSFrame">{{207, 0}, {73, 58}}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
 								<bool key="IBUIOpaque">NO</bool>
@@ -187,6 +194,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{73, 0}, {67, 58}}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="762727327"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
@@ -213,6 +221,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{140, 0}, {67, 58}}</string>
 								<reference key="NSSuperview" ref="903884486"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="889522260"/>
 								<string key="NSReuseIdentifierKey">_NS:225</string>
 								<reference key="IBUIBackgroundColor" ref="666829842"/>
@@ -242,6 +251,7 @@
 						</array>
 						<string key="NSFrame">{{20, 399}, {280, 58}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="910162139"/>
 						<string key="NSReuseIdentifierKey">_NS:196</string>
 						<reference key="IBUIBackgroundColor" ref="666829842"/>
@@ -256,6 +266,7 @@
 								<int key="NSvFlags">274</int>
 								<string key="NSFrameSize">{320, 42}</string>
 								<reference key="NSSuperview" ref="935863454"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="317702958"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
@@ -288,6 +299,7 @@
 						</array>
 						<string key="NSFrameSize">{320, 42}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="810603278"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
@@ -299,6 +311,7 @@
 				</array>
 				<string key="NSFrame">{{0, 20}, {320, 480}}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="1051556672"/>
 				<reference key="IBUIBackgroundColor" ref="732745065"/>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
@@ -564,7 +577,147 @@
 			<nil key="sourceID"/>
 			<int key="maxID">91</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<object class="IBPartialClassDescription">
+					<string key="className">BuschJaegerCallView</string>
+					<string key="superclassName">UIViewController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="onSnapshotClick:">id</string>
+						<string key="takeCall:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="onSnapshotClick:">
+							<string key="name">onSnapshotClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="takeCall:">
+							<string key="name">takeCall:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="cameraLeftSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
+						<string key="cameraRightSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
+						<string key="contactLabel">UILabel</string>
+						<string key="declineButton">UIHangUpButton</string>
+						<string key="endOrRejectCallButton">UIHangUpButton</string>
+						<string key="incomingView">UIView</string>
+						<string key="lightsButton">UIDigitButton</string>
+						<string key="microButton">UIToggleButton</string>
+						<string key="openDoorButton">UIDigitButton</string>
+						<string key="snapshotButton">UIButton</string>
+						<string key="takeCallButton">UIButton</string>
+						<string key="videoView">UIView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="cameraLeftSwipeGestureRecognizer">
+							<string key="name">cameraLeftSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="cameraRightSwipeGestureRecognizer">
+							<string key="name">cameraRightSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="contactLabel">
+							<string key="name">contactLabel</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="declineButton">
+							<string key="name">declineButton</string>
+							<string key="candidateClassName">UIHangUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="endOrRejectCallButton">
+							<string key="name">endOrRejectCallButton</string>
+							<string key="candidateClassName">UIHangUpButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="incomingView">
+							<string key="name">incomingView</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="lightsButton">
+							<string key="name">lightsButton</string>
+							<string key="candidateClassName">UIDigitButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="microButton">
+							<string key="name">microButton</string>
+							<string key="candidateClassName">UIToggleButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="openDoorButton">
+							<string key="name">openDoorButton</string>
+							<string key="candidateClassName">UIDigitButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="snapshotButton">
+							<string key="name">snapshotButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="takeCallButton">
+							<string key="name">takeCallButton</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="videoView">
+							<string key="name">videoView</string>
+							<string key="candidateClassName">UIView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/BuschJaegerCallView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIDigitButton</string>
+					<string key="superclassName">UILongTouchButton</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">addressField</string>
+						<string key="NS.object.0">UITextField</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">addressField</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">addressField</string>
+							<string key="candidateClassName">UITextField</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIDigitButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIHangUpButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIHangUpButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UILongTouchButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UILongTouchButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIMicroButton</string>
+					<string key="superclassName">UIToggleButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIMicroButton.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UIToggleButton</string>
+					<string key="superclassName">UIButton</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UIToggleButton.h</string>
+					</object>
+				</object>
+			</array>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">

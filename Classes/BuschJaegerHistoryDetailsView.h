@@ -37,11 +37,12 @@
 @property (nonatomic, retain) IBOutlet UIView *fullscreenView;
 @property (nonatomic, retain) IBOutlet UIButton *saveButton;
 @property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsLeftSwipeGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsRightSwipeGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *detailsTapGestureRecognizer;
 
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
-- (IBAction)nextImage:(id)sender;
-- (IBAction)previousImage:(id)sender;
 - (IBAction)hideImage:(id)sender;
 - (IBAction)saveImage:(id)sender;
 

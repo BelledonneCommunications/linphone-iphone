@@ -27,7 +27,7 @@
 #import "UIToggleButton.h"
 #import "VideoZoomHandler.h"
 
-@interface BuschJaegerCallView : UIViewController {
+@interface BuschJaegerCallView : UIViewController<UIGestureRecognizerDelegate> {
 @private
     LinphoneChatRoom *chatRoom;
     LinphoneCall *currentCall;
@@ -44,6 +44,8 @@
 @property (nonatomic, retain) IBOutlet UIDigitButton* lightsButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* openDoorButton;
 @property (nonatomic, retain) IBOutlet UIButton* snapshotButton;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *cameraLeftSwipeGestureRecognizer;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *cameraRightSwipeGestureRecognizer;
 
 - (IBAction)takeCall:(id)sender;
 - (IBAction)onSnapshotClick:(id)sender;
