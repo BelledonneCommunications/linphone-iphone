@@ -566,6 +566,8 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
 #endif
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
+	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
+	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
  	linphone_core_set_sip_transports(lc,&tr);
 
@@ -634,7 +636,6 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
-	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
 }
 
@@ -5316,8 +5317,10 @@ const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
 **/
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp){
 	sal_set_dscp(lc->sal,dscp);
-	if (linphone_core_ready(lc))
+	if (linphone_core_ready(lc)){
 		lp_config_set_int_hex(lc->config,"sip","dscp",dscp);
+		apply_transports(lc);
+	}
 }
 
 /**
