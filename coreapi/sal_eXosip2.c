@@ -1747,6 +1747,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		osip_message_get_body(ev->request,0,&body);
 		if (body==NULL){
 			ms_error("Could not get text message from SIP body");
+			osip_free(from);
 			return;
 		}
 		msg=body->body;
