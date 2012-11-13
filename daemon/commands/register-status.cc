@@ -65,8 +65,8 @@ void RegisterStatusCommand::exec(Daemon *app, const char *args) {
 		}
 		app->sendResponse(response);
 	} else {
+		ist.clear();
 		ist.str(param);
-		ist.seekg(0);
 		ist >> pid;
 		if (ist.fail()) {
 			app->sendResponse(Response("Incorrect parameter.", Response::Error));

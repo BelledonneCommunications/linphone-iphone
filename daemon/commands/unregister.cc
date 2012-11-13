@@ -32,8 +32,8 @@ void UnregisterCommand::exec(Daemon *app, const char *args) {
 			}
 		}
 	} else {
+		ist.clear();
 		ist.str(param);
-		ist.seekg(0);
 		ist >> pid;
 		if (ist.fail()) {
 			app->sendResponse(Response("Incorrect parameter.", Response::Error));
