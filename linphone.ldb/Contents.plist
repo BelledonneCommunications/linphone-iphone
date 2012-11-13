@@ -7504,17 +7504,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>11</key>
+							<key>12</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar/11/UICallBar.xib</string>
+								<string>LinphoneUI/UICallBar/12/UICallBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-11-09T09:15:46Z</date>
+					<date>2012-11-13T08:39:33Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7524,7 +7524,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>18fba1eaf5f411c2e245f79b882aa7b1
+					<string>6ce20b228103dd1de3d5c07ecc8cc68a
 </string>
 					<key>name</key>
 					<string>UICallBar.xib</string>
@@ -8626,9 +8626,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>11</string>
+						<string>12</string>
 						<key>fr</key>
-						<string>11</string>
+						<string>12</string>
 					</dict>
 				</dict>
 				<dict>
@@ -17452,7 +17452,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-11-06T09:36:36Z</date>
+					<date>2012-11-13T09:28:24Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -17462,7 +17462,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>bb988b6e05b6fdd4c767f75b9d73b087
+					<string>7220a3af4b5567ce1842c8a01759b1c9
 </string>
 					<key>name</key>
 					<string>Network.strings</string>
@@ -17601,19 +17601,19 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Audio Port</string>
+							<string>Audio Port(s)</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Audio Port</string>
+							<string>Audio Port(s)</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Audio Port</string>
+								<string>Audio Port(s)</string>
 								<key>fr</key>
-								<string>Port Audio</string>
+								<string>Port(s) Audio</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -17626,19 +17626,19 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Video Port</string>
+							<string>Video Port(s)</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Video Port</string>
+							<string>Video Port(s)</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Video Port</string>
+								<string>Video Port(s)</string>
 								<key>fr</key>
-								<string>Port Vidéo</string>
+								<string>Port(s) Vidéo</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -18026,6 +18026,56 @@ Raison: %2$s</string>
 								<string>Stun server</string>
 								<key>fr</key>
 								<string>Serveur Stun</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Audio Port</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Audio Port</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Audio Port</string>
+								<key>fr</key>
+								<string>Port Audio</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Video Port</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Video Port</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Video Port</string>
+								<key>fr</key>
+								<string>Port Vidéo</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

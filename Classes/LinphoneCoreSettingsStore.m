@@ -122,8 +122,22 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         linphone_address_destroy(parsed);
     }
     {
-        [self setInteger: linphone_core_get_audio_port(lc) forKey:@"audio_port_preference"];
-        [self setInteger: linphone_core_get_video_port(lc) forKey:@"video_port_preference"];
+        {
+            int minPort, maxPort;
+            linphone_core_get_audio_port_range(lc, &minPort, &maxPort);
+            if(minPort != maxPort)
+                [self setObject:[NSString stringWithFormat:@"%d-%d", minPort, maxPort] forKey:@"audio_port_preference"];
+            else
+                [self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"audio_port_preference"];
+        }
+        {
+            int minPort, maxPort;
+            linphone_core_get_video_port_range(lc, &minPort, &maxPort);
+            if(minPort != maxPort)
+                [self setObject:[NSString stringWithFormat:@"%d-%d", minPort, maxPort] forKey:@"video_port_preference"];
+            else
+                [self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"video_port_preference"];
+        }
     }
     {
         [self setInteger: linphone_core_get_upload_bandwidth(lc) forKey:@"upload_bandwidth_preference"];
@@ -396,6 +410,47 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     [[[LinphoneManager instance] fastAddressBook] reload];
 }
 
++ (int)validPort:(int)port {
+    if(port < 0) {
+        return 0;
+    }
+    if(port > 65535) {
+        return 65535;
+    }
+    return port;
+}
+
++ (BOOL)parsePortRange:(NSString*)text minPort:(int*)minPort maxPort:(int*)maxPort {
+    NSError* error = nil;
+    *minPort = -1;
+    *maxPort = -1;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9]+)(([^0-9]+)([0-9]+))?" options:0 error:&error];
+    if(error != NULL)
+        return FALSE;
+    NSArray* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
+    if([matches count] == 1) {
+        NSTextCheckingResult *match = [matches objectAtIndex:0];
+        NSLog(@"%d", [match numberOfRanges]);
+        bool range = [match rangeAtIndex:2].length > 0;
+        if(!range) {
+            NSRange rangeMinPort = [match rangeAtIndex:1];
+            *minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+            *maxPort = *minPort;
+            return TRUE;
+        } else {
+            NSRange rangeMinPort = [match rangeAtIndex:1];
+            *minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+            NSRange rangeMaxPort = [match rangeAtIndex:4];
+            *maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] integerValue]];
+            if(*minPort > *maxPort) {
+                *minPort = *maxPort;
+            }
+           return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 - (BOOL)synchronize {
 	if (![LinphoneManager isLcReady]) return YES;
 	LinphoneCore *lc=[LinphoneManager getLc];
@@ -485,10 +540,18 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
 
     // Audio & Video Port
-    int audio_port_preference = [self integerForKey:@"audio_port_preference"];
-    linphone_core_set_audio_port(lc, audio_port_preference);
-    int video_port_preference = [self integerForKey:@"video_port_preference"];
-    linphone_core_set_video_port(lc, video_port_preference);
+    {
+        NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
+        int minPort, maxPort;
+        [LinphoneCoreSettingsStore parsePortRange:audio_port_preference minPort:&minPort maxPort:&maxPort];
+        linphone_core_set_audio_port_range(lc, minPort, maxPort);
+    }
+    {
+        NSString *video_port_preference = [self stringForKey:@"video_port_preference"];
+        int minPort, maxPort;
+        [LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&minPort maxPort:&maxPort];
+        linphone_core_set_video_port_range(lc, minPort, maxPort);
+    }
     
     int upload_bandwidth = [self integerForKey:@"upload_bandwidth_preference"];
     linphone_core_set_upload_bandwidth(lc, upload_bandwidth);
