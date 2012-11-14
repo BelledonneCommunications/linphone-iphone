@@ -277,6 +277,22 @@
             [pauseButton setHidden:true];
             [conferenceButton setHidden:false];
         }
+        bool enabled = true;
+        const MSList *list = linphone_core_get_calls(lc);
+        while(list != NULL) {
+            LinphoneCall *call = (LinphoneCall*) list->data;
+            LinphoneCallState state = linphone_call_get_state(call);
+            if(state == LinphoneCallIncomingReceived ||
+               state == LinphoneCallOutgoingInit ||
+               state == LinphoneCallOutgoingProgress ||
+               state == LinphoneCallOutgoingRinging ||
+               state == LinphoneCallOutgoingEarlyMedia ||
+               state == LinphoneCallConnected) {
+                enabled = false;
+            }
+            list = list->next;
+        }
+        [conferenceButton setEnabled:enabled];
     } else {
         if([pauseButton isHidden]) {
             [pauseButton setHidden:false];
