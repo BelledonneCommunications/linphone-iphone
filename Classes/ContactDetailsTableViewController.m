@@ -588,10 +588,11 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {   
     if(section == (ContactSections_MAX - 1)) {
-        return [footerController view];
-    } else {
-        return nil;
+        if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
+            return [footerController view];
+        }
     }
+    return nil;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -619,9 +620,13 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section { 
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if(section == (ContactSections_MAX - 1)) {
-         return [UIContactDetailsFooter height:[footerController isEditing]];
+        if(ABRecordGetRecordID(contact) != kABRecordInvalidID) {
+            return [UIContactDetailsFooter height:[footerController isEditing]];
+        } else {
+            return 0.000001f; // Hack UITableView = 0
+        }
     } else if(section == ContactSections_None) {
         return 0.000001f; // Hack UITableView = 0
     }
