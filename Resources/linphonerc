@@ -5,6 +5,7 @@ sip_random_port=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 keepalive_period=30000
 default_proxy=0
+ping_with_options=0
 
 [rtp]
 audio_rtp_port=7076
