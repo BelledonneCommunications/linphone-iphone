@@ -94,8 +94,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [openDoorButton setPlay:FALSE];
     [openDoorButton setDigit:'1'];
+    
+    [lightsButton setPlay:FALSE];
     [lightsButton setDigit:'2'];
+
     [microButton setImage:[UIImage imageNamed:@"bj_mute_off.png"] forState:UIControlStateHighlighted | UIControlStateSelected];
     
     /* init gradients */

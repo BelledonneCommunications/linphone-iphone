@@ -24,6 +24,7 @@
 @implementation UIDigitButton
 
 @synthesize dtmf;
+@synthesize play;
 @synthesize digit;
 @synthesize addressField;
 @synthesize chatRoom;
@@ -33,6 +34,7 @@
 
 - (void)initUIDigitButton {
     dtmf = FALSE;
+    play = TRUE;
     chatRoom = NULL;
 	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
@@ -85,7 +87,9 @@
         } else {
             linphone_chat_room_send_message(chatRoom, [[NSString stringWithFormat:@"%c", digit] UTF8String]);
         }
-		linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
+        if(play) {
+            linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
+        }
 	}
 }
 

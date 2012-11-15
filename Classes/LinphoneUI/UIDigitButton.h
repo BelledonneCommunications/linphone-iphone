@@ -30,5 +30,6 @@
 @property (nonatomic, retain) IBOutlet UITextField* addressField;
 @property char digit;
 @property bool dtmf;
+@property bool play;
 
 @end
