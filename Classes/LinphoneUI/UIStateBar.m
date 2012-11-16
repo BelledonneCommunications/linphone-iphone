@@ -100,7 +100,7 @@ NSTimer *callSecurityTimer;
         [callQualityTimer invalidate];
         callQualityTimer = nil;
     }
-    if(callQualityTimer != nil) {
+    if(callSecurityTimer != nil) {
         [callSecurityTimer invalidate];
         callSecurityTimer = nil;
     }
