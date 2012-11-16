@@ -762,6 +762,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	}
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
+    linphone_core_set_user_agent([@"LinphoneIPhone" UTF8String],
+                                 [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
