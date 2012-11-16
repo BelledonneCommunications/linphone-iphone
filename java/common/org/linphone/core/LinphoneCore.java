@@ -851,4 +851,9 @@ public interface LinphoneCore {
 	void setInCallTimeout(int timeout);
 	
 	void setMicrophoneGain(float gain);
+	
+	/**
+	 * Set username and display name to use if no LinphoneProxyConfig configured
+	 */
+	void setPrimaryContact(String displayName, String username);
 }

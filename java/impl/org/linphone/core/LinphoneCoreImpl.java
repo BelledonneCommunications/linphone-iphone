@@ -116,6 +116,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setVideoPortRange(long nativePtr, int minPort, int maxPort);
 	private native void setIncomingTimeout(long nativePtr, int timeout);
 	private native void setInCallTimeout(long nativePtr, int timeout);
+	private native void setPrimaryContact(long nativePtr, String displayName, String username);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
 		mListener=listener;
@@ -792,5 +793,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setMicrophoneGain(long ptr, float gain);
 	public void setMicrophoneGain(float gain) {
 		setMicrophoneGain(nativePtr, gain);
+	}
+	
+	public void setPrimaryContact(String displayName, String username) {
+		setPrimaryContact(nativePtr, displayName, username);
 	}
 }

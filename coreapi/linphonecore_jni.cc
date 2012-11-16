@@ -542,6 +542,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
 	delete lcData;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
+	const char* displayname = env->GetStringUTFChars(jdisplayname, NULL);
+	const char* username = env->GetStringUTFChars(jusername, NULL);
+
+	LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed((LinphoneCore*)lc);
+    if (parsed != NULL) {
+        linphone_address_set_display_name(parsed, displayname);
+        linphone_address_set_username(parsed, username);
+        char *contact = linphone_address_as_string(parsed);
+		linphone_core_set_primary_contact((LinphoneCore*)lc, contact);
+	}
+
+	env->ReleaseStringUTFChars(jdisplayname, displayname);
+	env->ReleaseStringUTFChars(jusername, username);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearProxyConfigs(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_proxy_config((LinphoneCore*)lc);
 }
