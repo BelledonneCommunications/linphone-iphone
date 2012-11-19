@@ -781,19 +781,21 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 
 static bool_t is_duplicate_msg(LinphoneCore *lc, const char *msg_id){
 	MSList *elem=lc->last_recv_msg_ids;
+	MSList *tail=NULL;
 	int i;
 	bool_t is_duplicate=FALSE;
 	for(i=0;elem!=NULL;elem=elem->next,i++){
 		if (strcmp((const char*)elem->data,msg_id)==0){
 			is_duplicate=TRUE;
 		}
+		tail=elem;
 	}
 	if (!is_duplicate){
 		lc->last_recv_msg_ids=ms_list_prepend(lc->last_recv_msg_ids,ms_strdup(msg_id));
 	}
 	if (i>=10){
-		ms_free(elem->data);
-		ms_list_remove_link(lc->last_recv_msg_ids,elem);
+		ms_free(tail->data);
+		lc->last_recv_msg_ids=ms_list_remove_link(lc->last_recv_msg_ids,tail);
 	}
 	return is_duplicate;
 }
