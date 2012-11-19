@@ -138,8 +138,6 @@
     }
     self->remoteAddress = [aremoteAddress copy];
     [self loadData];
-    [ChatModel readConversation:remoteAddress];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
 }
 
 

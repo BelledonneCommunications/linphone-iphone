@@ -143,7 +143,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:) 
                                                  name:UIKeyboardWillShowNotification 
                                                object:nil];
@@ -187,6 +191,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         chatRoom = NULL;
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidBecomeActiveNotification
+                                                  object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillShowNotification 
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -226,6 +234,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     [messageField setText:@""];
     [self update];
 	[tableController setRemoteAddress: remoteAddress];
+    [ChatModel readConversation:remoteAddress];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+}
+
+- (void)applicationWillEnterForeground:(NSNotification*)notif {
+    if(remoteAddress != nil) {
+        [ChatModel readConversation:remoteAddress];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+    }
 }
 
 - (void)update {
@@ -398,16 +415,16 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     }
     char *fromStr = linphone_address_as_string_uri_only(from);
     if(fromStr != NULL) {
-        if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-            || [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
-            if([[NSString stringWithUTF8String:fromStr]
-                caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
+        if([[NSString stringWithUTF8String:fromStr]
+            caseInsensitiveCompare:remoteAddress] == NSOrderedSame) {
+            if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+                || [UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
                 [chat setRead:[NSNumber numberWithInt:1]];
                 [chat update];
                 [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
-                [tableController addChatEntry:chat];
-                [tableController scrollToLastUnread:TRUE];
             }
+            [tableController addChatEntry:chat];
+            [tableController scrollToLastUnread:TRUE];
         }
         ms_free(fromStr);
     }
