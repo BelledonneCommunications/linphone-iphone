@@ -41,8 +41,8 @@
 
 //2 20120425 1022 3 O 20120425-2022-1.jpg 20120425-2023-2.jpg 20120425-2024-3.jpg
 + (id)parse:(NSString*)line {
-    History *history;
-    NSError  *error;
+    History *history = nil;
+    NSError *error;
     NSRegularExpression *regex = [NSRegularExpression
                                   regularExpressionWithPattern:@"([\\d]+) ([\\d]+ [\\d]+) ([\\d]+) (i|o)"
                                   options:NSRegularExpressionCaseInsensitive
