@@ -27,6 +27,7 @@
 
 @property (nonatomic, retain) IBOutlet UIImageView *stationImage;
 @property (nonatomic, retain) IBOutlet UILabel *stationLabel;
+@property (retain, nonatomic) IBOutlet UIView *cellBackgroundView;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

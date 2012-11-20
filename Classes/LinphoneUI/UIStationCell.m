@@ -19,11 +19,14 @@
 
 #import "UIStationCell.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 @implementation UIStationCell
 
 @synthesize stationImage;
 @synthesize stationLabel;
 @synthesize station;
+@synthesize cellBackgroundView;
 
 #pragma mark - Lifecycle Functions
 
@@ -36,6 +39,35 @@
         if ([arrayOfViews count] >= 1) {
             [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
         }
+        
+        CALayer *layer = cellBackgroundView.layer;
+        layer.cornerRadius = 8.0f;
+        layer.masksToBounds = YES;
+        layer.borderWidth = 1.0f;
+        layer.borderColor = [UIColor colorWithWhite:0.5f alpha:0.2f].CGColor;
+        
+        CAGradientLayer *overlayButtonShineLayer;
+        
+        overlayButtonShineLayer = [CAGradientLayer layer];
+        overlayButtonShineLayer.frame = layer.bounds;
+        overlayButtonShineLayer.colors = [NSArray arrayWithObjects:
+                                          (id)[UIColor colorWithWhite:1.0f
+                                                                alpha:1.0].CGColor,
+                                          (id)[UIColor colorWithWhite:1.0f
+                                                                alpha:1.0f].CGColor,
+                                          (id)[UIColor colorWithRed:0.0f green:0.0f blue:0.5f
+                                                                alpha:0.8f].CGColor,
+                                          (id)[UIColor colorWithRed:0.0f green:0.0f blue:0.2f
+                                                                alpha:0.8f].CGColor,
+                                          nil];
+        overlayButtonShineLayer.locations = [NSArray arrayWithObjects:
+                                             [NSNumber numberWithFloat:0.0f],
+                                             [NSNumber numberWithFloat:0.1f],
+                                             [NSNumber numberWithFloat:0.101f],
+                                             [NSNumber numberWithFloat:1.0f],
+                                             nil];
+        [layer addSublayer:overlayButtonShineLayer];
+        
     }
     return self;
 }
@@ -45,6 +77,7 @@
     [stationImage release];
     [stationLabel release];
     
+    [cellBackgroundView release];
     [super dealloc];
 }
 
