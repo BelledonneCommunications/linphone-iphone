@@ -412,19 +412,19 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 	}
 
 	
-	if (state == LinphoneCallIncomingReceived
-		&&[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
-		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+	if (state == LinphoneCallIncomingReceived) {
         
 		/*first step is to re-enable ctcall center*/
-		[self setupGSMInteraction];
+		CTCallCenter* lCTCallCenter = [[CTCallCenter alloc] init];
 		
 		/*should we reject this call ?*/
-		if ([callCenter currentCalls]!=nil) {
+		if ([lCTCallCenter currentCalls]!=nil) {
 			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
 			linphone_core_decline_call([LinphoneManager getLc], call,LinphoneReasonBusy);
+			[lCTCallCenter release];
 			return;
 		}
+		[lCTCallCenter release];
 		
 		
 		LinphoneCallLog* callLog=linphone_call_get_call_log(call);
@@ -479,8 +479,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 						[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
 					}];
 				}
-
-			}
+            }
 		}
 	}
 	
@@ -495,8 +494,10 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
-        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0)
+        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
             [self setSpeakerEnabled:FALSE];
+			[self removeCTCallCenterCb];
+		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
 			incallBgTask=0;
@@ -512,7 +513,10 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             [self setSpeakerEnabled:TRUE];
         }
     }
-    
+    if (state == LinphoneCallConnected && !mCallCenter) {
+		/*only register CT call center CB for connected call*/
+		[self setupGSMInteraction];
+	}
     // Post event
     NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                            [NSValue valueWithPointer:call], @"call",
@@ -787,7 +791,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 #if HAVE_G729
 	libmsbcg729_init(); // load g729 plugin
 #endif
-	[self setupGSMInteraction];
 	/* Initialize linphone core*/
     
 	/*to make sure we don't loose debug trace*/
@@ -795,6 +798,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	}
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
+    linphone_core_set_user_agent([@"LinphoneIPhone" UTF8String],
+                                 [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
@@ -896,13 +901,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 
 - (void)destroyLibLinphone {
 	[mIterateTimer invalidate]; 
-	// destroying eventHandler if app cannot go in background.
-	// Otherwise if a GSM call happen and Linphone is resumed,
-	// the handler will be called before LinphoneCore is built.
-	// Then handler will be restored in appDidBecomeActive cb
-	callCenter.callEventHandler = nil;
-	[callCenter release];
-	callCenter = nil;
+	//just in case
+	[self removeCTCallCenterCb];
 	
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
@@ -993,6 +993,13 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	return linphone_call_get_state(call) != LinphoneCallPaused;
 }
 
+- (void) startCallPausedLongRunningTask {
+	pausedCallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+		[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot be paused any more, too late"];
+	}];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Long running task started, remaining [%g s] because at least one call is paused"
+	 ,[[UIApplication  sharedApplication] backgroundTimeRemaining]];
+}
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
 	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);	
@@ -1020,13 +1027,6 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 																   return;
 															   }
 															   //kick up network cnx, just in case
-															   [LinphoneManager kickOffNetworkConnection];
-                                                               
-                                                               [self setupGSMInteraction];
-                                                               //to make sure presence status is correct
-                                                               if ([callCenter currentCalls]==nil)
-                                                                   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
-                                                               
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
@@ -1042,13 +1042,8 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 		if (!currentCall //no active call
 			&& callList // at least one call in a non active state
 			&& ms_list_find_custom((MSList*)callList, (MSCompareFunc) comp_call_state_paused, NULL)) {
-			pausedCallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-				[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot be paused any more, too late"];
-			}];
-			[LinphoneLogger log:LinphoneLoggerLog format:@"Long running task started, remaining [%fs] because at least one call is paused"
-			 ,[[UIApplication  sharedApplication] backgroundTimeRemaining]];
+			[self startCallPausedLongRunningTask];
 		}
-		
 		return YES;
 	}
 	else {
@@ -1075,14 +1070,6 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
-	
-	
-	//call center is unrelialable on the long run, so we change it each time the application is resumed. To avoid zombie GSM call
-	[self setupGSMInteraction];
-	
-	//to make sure presence status is correct
-	if ([callCenter currentCalls]==nil)
-		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
 	
 
 }
@@ -1171,7 +1158,7 @@ static void audioRouteChangeListenerCallback (
 		return;
 	}
     
-    
+    CTCallCenter* callCenter = [[CTCallCenter alloc] init];
     if ([callCenter currentCalls]!=nil) {
         [LinphoneLogger logc:LinphoneLoggerError format:"GSM call in progress, cancelling outgoing SIP call request"];
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot make call",nil)
@@ -1181,9 +1168,11 @@ static void audioRouteChangeListenerCallback (
 											  otherButtonTitles:nil];
 		[error show];
         [error release];
+		[callCenter release];
 		return;
     }
-    
+    [callCenter release];
+	
 	LinphoneProxyConfig* proxyCfg;	
 	//get default proxy
 	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
@@ -1664,18 +1653,24 @@ static void audioRouteChangeListenerCallback (
 
 
 #pragma GSM management
+-(void) removeCTCallCenterCb {
+	if (mCallCenter != nil) {
+		[LinphoneLogger log:LinphoneLoggerLog format:@"Removing CT call center listener [%p]",mCallCenter];
+		mCallCenter.callEventHandler=NULL;
+		[mCallCenter release];
+	}
+	mCallCenter=nil;
+}
 
 - (void)setupGSMInteraction {
     
-	if (callCenter != nil) {
-		callCenter.callEventHandler=NULL;
-		[callCenter release];
-	}
-    callCenter = [[CTCallCenter alloc] init];
-    callCenter.callEventHandler = ^(CTCall* call) {
+	[self removeCTCallCenterCb];
+    mCallCenter = [[CTCallCenter alloc] init];
+	[LinphoneLogger log:LinphoneLoggerLog format:@"Adding CT call center listener [%p]",mCallCenter];
+    mCallCenter.callEventHandler = ^(CTCall* call) {
 		// post on main thread
 		[self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-							   withObject:callCenter
+							   withObject:mCallCenter
 							waitUntilDone:YES];
 	};
     
@@ -1686,12 +1681,15 @@ static void audioRouteChangeListenerCallback (
 	/* pause current call, if any */
 	LinphoneCall* call = linphone_core_get_current_call(theLinphoneCore);
 	if ([ct currentCalls]!=nil) {
-		if (call) {[LinphoneLogger logc:LinphoneLoggerLog format:"Pausing SIP call"];
+		if (call) {
+			[LinphoneLogger log:LinphoneLoggerLog format:@"Pausing SIP call because GSM call"];
 			linphone_core_pause_call(theLinphoneCore, call);
+			[self startCallPausedLongRunningTask];
+		} else if (linphone_core_is_in_conference(theLinphoneCore)) {
+			[LinphoneLogger log:LinphoneLoggerLog format:@"Leaving conference call because GSM call"];
+			linphone_core_leave_conference(theLinphoneCore);
+			[self startCallPausedLongRunningTask];
 		}
-		//set current status to busy
-		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusBusy);
-	} else
-		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+	} //else nop, keep call in paused state
 }
 @end

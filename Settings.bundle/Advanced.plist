@@ -70,7 +70,7 @@
 			<key>Key</key>
 			<string>audio_port_preference</string>
 			<key>Title</key>
-			<string>Audio Port</string>
+			<string>Audio Port(s)</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>AutocapitalizationType</key>
@@ -78,7 +78,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>KeyboardType</key>
-			<string>NumberPad</string>
+			<string>NumbersAndPunctuation</string>
 			<key>DefaultValue</key>
 			<integer>7076</integer>
 		</dict>
@@ -86,7 +86,7 @@
 			<key>Key</key>
 			<string>video_port_preference</string>
 			<key>Title</key>
-			<string>Video Port</string>
+			<string>Video Port(s)</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>AutocapitalizationType</key>
@@ -94,7 +94,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>KeyboardType</key>
-			<string>NumberPad</string>
+			<string>NumbersAndPunctuation</string>
 			<key>DefaultValue</key>
 			<integer>9078</integer>
 		</dict>

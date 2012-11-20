@@ -1618,6 +1618,8 @@
 				D32EDDA91600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAB1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 				D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
+				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
+				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1678,6 +1680,8 @@
 				D32EDDAA1600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 				D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
+				D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */,
+				D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

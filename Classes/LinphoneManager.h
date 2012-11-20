@@ -98,7 +98,7 @@ typedef struct _LinphoneManagerSounds {
     BOOL stopWaitingRegisters;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
-	CTCallCenter* callCenter;
+	CTCallCenter* mCallCenter;
     
     /* MODIFICATION: Add NSUSerdefault settings */
     NSDictionary *currentSettings;

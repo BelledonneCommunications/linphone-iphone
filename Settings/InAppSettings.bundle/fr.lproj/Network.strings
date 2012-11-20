@@ -13,11 +13,11 @@
 /* Port */
 "Port" = "Port";
 
-/* Audio Port */
-"Audio Port" = "Port Audio";
+/* Audio Port(s) */
+"Audio Port(s)" = "Port(s) Audio";
 
-/* Video Port */
-"Video Port" = "Port Vidéo";
+/* Video Port(s) */
+"Video Port(s)" = "Port(s) Vidéo";
 
 /* Transport */
 "Transport" = "Transport";
