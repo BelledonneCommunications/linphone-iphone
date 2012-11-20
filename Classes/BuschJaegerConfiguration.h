@@ -40,6 +40,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
     BuschJaegerConfigurationRequestType_Global
 } BuschJaegerConfigurationRequestType;
 
+@property (readonly) NSData *homeAP;
 @property (readonly) NSMutableSet *history;
 @property (readonly) NSMutableSet *users;
 @property (readonly) NSMutableSet *outdoorStations;
@@ -53,14 +54,15 @@ typedef enum _BuschJaegerConfigurationRequestType{
 - (BOOL)saveFile:(NSString*)file;
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
-- (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
-- (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)history delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (BOOL)loadHistory:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (BOOL)removeHistory:(History*)history delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
 - (User*)getCurrentUser;
 
-- (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image;
+- (NSString*)getImageUrl:(NSString *)image;
 
-- (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type;
+- (BuschJaegerConfigurationRequestType)getCurrentRequestType;
+- (NSString*)getGateway;
 
 - (BOOL)canHandleAuthChallenge : (NSURLConnection*)connection   : (NSURLProtectionSpace*)protectionSpace;
 

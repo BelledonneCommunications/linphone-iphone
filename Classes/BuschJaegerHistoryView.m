@@ -70,7 +70,7 @@
 
 - (void)reload {
     [self view]; // Force view load
-    if([[LinphoneManager instance].configuration loadHistory:BuschJaegerConfigurationRequestType_Local delegate:self]) {
+    if([[LinphoneManager instance].configuration loadHistory:self]) {
         [waitView setHidden:FALSE];
     } else {
         [waitView setHidden:TRUE];

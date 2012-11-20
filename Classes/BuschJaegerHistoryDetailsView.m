@@ -160,7 +160,7 @@
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-    [[LinphoneManager instance].configuration removeHistory:BuschJaegerConfigurationRequestType_Local history:history delegate:self];
+    [[LinphoneManager instance].configuration removeHistory:history delegate:self];
 }
 
 - (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender {
@@ -168,12 +168,12 @@
         if([history.images count]) {
             currentIndex = (currentIndex - 1);
             if(currentIndex < 0) currentIndex = [history.images count] - 1;
-            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:[history.images objectAtIndex:currentIndex]]];
         }
     } else if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
         if([history.images count]) {
             currentIndex = (currentIndex + 1) % [history.images count];
-            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+            [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:[history.images objectAtIndex:currentIndex]]];
         }
     }
 }
@@ -222,7 +222,7 @@
     currentIndex = [indexPath row];
     [fullscreenView setHidden:FALSE];
     [imageView setImage:nil];
-    [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:[history.images objectAtIndex:currentIndex]]];
+    [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:[history.images objectAtIndex:currentIndex]]];
 }
 
 #pragma mark - BuschJaegerConfigurationDelegate Functions

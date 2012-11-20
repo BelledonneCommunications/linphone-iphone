@@ -64,7 +64,7 @@
 - (void)update {
     if(image) {
         [imageView setImage:nil];
-        [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:image]];
+        [imageView loadImage:[[LinphoneManager instance].configuration getImageUrl:image]];
     }
 }
 

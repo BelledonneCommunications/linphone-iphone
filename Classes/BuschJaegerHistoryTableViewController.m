@@ -96,7 +96,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath  {
     if(editingStyle == UITableViewCellEditingStyleDelete) {
         History *ahistory = [history objectAtIndex:[indexPath row]];
-        [[LinphoneManager instance].configuration removeHistory:BuschJaegerConfigurationRequestType_Local history:ahistory delegate:self];
+        [[LinphoneManager instance].configuration removeHistory:ahistory delegate:self];
         [tableView beginUpdates];
         [history removeObjectAtIndex:[indexPath row]];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];

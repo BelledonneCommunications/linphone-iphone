@@ -22,8 +22,11 @@
 #import "Utils.h"
 #import "NSURLConnection+SynchronousDelegate.h"
 
+static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
+
 @implementation BuschJaegerConfiguration
 
+@synthesize homeAP;
 @synthesize outdoorStations;
 @synthesize users;
 @synthesize network;
@@ -98,11 +101,13 @@
         levelPushButton = [[LevelPushButton alloc] init];
         certificate = NULL;
         [self reloadCertificates];
+        homeAP = [[[NSUserDefaults standardUserDefaults] dataForKey:CONFIGURATION_HOME_AP_KEY] retain];
     }
     return self;
 }
 
 - (void)dealloc {
+    [homeAP release];
     [outdoorStations release];
     [users release];
     [history release];
@@ -287,7 +292,6 @@
 }
 
 - (void)loadCertificates {
-    
     if(certificate != NULL) {
         CFRelease(certificate);
         certificate = NULL;
@@ -306,15 +310,18 @@
 }
 
 - (void)reset {
+    [homeAP release];
     [history removeAllObjects];
     [outdoorStations removeAllObjects];
     [users removeAllObjects];
     if(network != nil) {
         [network release];
+        network = nil;
     }
     network = [[Network alloc] init];
     if(levelPushButton != nil) {
         [levelPushButton release];
+        levelPushButton = nil;
     }
     levelPushButton = [[LevelPushButton alloc] init];
 }
@@ -380,6 +387,8 @@
                     NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                     if(urlResponse.statusCode == 200) {
                         if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                            homeAP = [[LinphoneManager getWifiData] retain];
+                            [[NSUserDefaults standardUserDefaults] setObject:homeAP forKey:CONFIGURATION_HOME_AP_KEY];
                             [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
@@ -404,12 +413,10 @@
     return FALSE;
 }
 
-- (BOOL)loadHistory:(BuschJaegerConfigurationRequestType)type delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+- (BOOL)loadHistory:(id<BuschJaegerConfigurationDelegate>)delegate {
     [history removeAllObjects];
-   
-    NSString *domain = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
-    domain = [self addUserNameAndPasswordToUrl:domain];
-    NSString* url = [NSString stringWithFormat:@"%@", domain];
+    NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+    url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
          //[NSURLConnection connectionWithRequest:request delegate:self];
@@ -531,8 +538,8 @@
 }
 
 
-- (BOOL)removeHistory:(BuschJaegerConfigurationRequestType)type history:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
-    NSString *url = [NSString stringWithFormat:@"%@/adduser.cgi?type=delhistory&id=%d", [self getGateway:type], ahistory.ID];
+- (BOOL)removeHistory:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    NSString *url = [NSString stringWithFormat:@"%@/adduser.cgi?type=delhistory&id=%d", [self getGateway], ahistory.ID];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
@@ -585,9 +592,16 @@
     return [NSString stringWithFormat:@"%@%@:%@@%@", proto, username, password, domain];
 }
 
-- (NSString*)getGateway:(BuschJaegerConfigurationRequestType)type {
+- (BuschJaegerConfigurationRequestType)getCurrentRequestType {
+    if([[LinphoneManager getWifiData] isEqualToData:homeAP]) {
+        return BuschJaegerConfigurationRequestType_Local;
+    }
+    return  BuschJaegerConfigurationRequestType_Global;
+}
+
+- (NSString*)getGateway {
     NSString *gateway = nil;
-    NSString *urlString = (type == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+    NSString *urlString = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
 
     NSURL *url = [NSURL URLWithString:urlString];
     NSRange range = [urlString rangeOfString:[url relativePath]];
@@ -600,8 +614,9 @@
 }
 
 
-- (NSString*)getImageUrl:(BuschJaegerConfigurationRequestType)type image:(NSString *)image {
-    return [NSString stringWithFormat:@"%@/%@", [self getGateway:type], image];
+- (NSString*)getImageUrl:(NSString *)image {
+    NSString *url = [self getGateway];
+    return [NSString stringWithFormat:@"%@/%@", url, image];
 }
 
 - (User*)getCurrentUser {

@@ -26,6 +26,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreTelephony/CTCallCenter.h>
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 #import "LinphoneManager.h"
 
@@ -1591,6 +1592,18 @@ static void audioRouteChangeListenerCallback (
 /**/
 
 
++ (NSData*)getWifiData {
+    NSData *data = nil;
+    CFDictionaryRef dict = CNCopyCurrentNetworkInfo((CFStringRef)@"en0");
+    if(dict) {
+        [LinphoneLogger log:LinphoneLoggerDebug format:@"AP Wifi: %@", dict];
+        data = [NSData dataWithData:(NSData*) CFDictionaryGetValue(dict, @"SSIDDATA")];
+        CFRelease(dict);
+    }
+    return data;
+}
+
+
 #pragma mark - LPConfig Functions
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key {
@@ -1648,6 +1661,7 @@ static void audioRouteChangeListenerCallback (
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
 	return [self lpConfigIntForKey:key forSection:section] == 1;
 }
+
 
 #pragma GSM management
 

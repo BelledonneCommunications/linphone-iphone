@@ -90,7 +90,7 @@
     if([history.images count] > 0) {
         NSString *image = [history.images objectAtIndex:0];
         [iconImage setImage:nil];
-        [iconImage loadImage:[[LinphoneManager instance].configuration getImageUrl:BuschJaegerConfigurationRequestType_Local image:image]];
+        [iconImage loadImage:[[LinphoneManager instance].configuration getImageUrl:image]];
     }
 }
 
