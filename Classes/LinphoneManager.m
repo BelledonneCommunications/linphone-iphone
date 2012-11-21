@@ -738,6 +738,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 - (void)startLibLinphone {
+    if (theLinphoneCore != nil) {
+        [LinphoneLogger logc:LinphoneLoggerLog format:"linphonecore is already created"];
+        return;
+    }
 	
 	//get default config from bundle
 	NSString* factoryConfig = [LinphoneManager bundleFile:[LinphoneManager runningOnIpad]?@"linphonerc-factory~ipad":@"linphonerc-factory"];
