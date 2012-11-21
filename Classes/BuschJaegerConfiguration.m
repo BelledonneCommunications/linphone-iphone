@@ -285,8 +285,10 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (void)reloadCertificates {
-    [[LinphoneManager instance] destroyLibLinphone];
-    [[LinphoneManager instance] startLibLinphone];
+    if ([LinphoneManager isLcReady]) {
+        [[LinphoneManager instance] destroyLibLinphone];
+        [[LinphoneManager instance] startLibLinphone];
+    }
     [self unloadCertificates];
     [self loadCertificates];
 }
