@@ -2105,7 +2105,7 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 **/
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
 	VideoStream* vstream = call->videostream;
-	if (vstream) {
+	if (vstream && vstream->output) {
 		float zoom[3];
 		
 		if (zoom_factor < 1)
