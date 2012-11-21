@@ -82,6 +82,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         }
         linphone_address_destroy(linphoneAddress);
     }
+    // MODIFICATION REMOVE PORT
+    NSRange range = [normalizedSipAddress rangeOfString:@":" options:NSBackwardsSearch];
+    if(range.location != NSNotFound) {
+        normalizedSipAddress = [normalizedSipAddress substringToIndex:range.location];
+    }
+    //
     return normalizedSipAddress;
 }
 
