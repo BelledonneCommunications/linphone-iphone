@@ -426,59 +426,62 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}
 		[lCTCallCenter release];
 		
-		
-		LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-		NSString* callId = [NSString stringWithUTF8String:callLog->call_id];
-        const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-        NSString* address = nil;
-        if(addr != NULL) {
-            BOOL useLinphoneAddress = true;
-            // contact name
-            char* lAddress = linphone_address_as_string_uri_only(addr);
-            if(lAddress) {
-                // Find caller in outdoor stations
-                NSSet *outstations = configuration.outdoorStations;
-                for(OutdoorStation *os in outstations) {
-                    if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:[NSString stringWithUTF8String:lAddress]]) {
-                        address = os.name;
-                        useLinphoneAddress = false;
-                        break;
+        if(	[[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		   && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
+            
+            LinphoneCallLog* callLog=linphone_call_get_call_log(call);
+            NSString* callId = [NSString stringWithUTF8String:callLog->call_id];
+            const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+            NSString* address = nil;
+            if(addr != NULL) {
+                BOOL useLinphoneAddress = true;
+                // contact name
+                char* lAddress = linphone_address_as_string_uri_only(addr);
+                if(lAddress) {
+                    // Find caller in outdoor stations
+                    NSSet *outstations = configuration.outdoorStations;
+                    for(OutdoorStation *os in outstations) {
+                        if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:[NSString stringWithUTF8String:lAddress]]) {
+                            address = os.name;
+                            useLinphoneAddress = false;
+                            break;
+                        }
+                    }
+                    ms_free(lAddress);
+                }
+                if(useLinphoneAddress) {
+                    const char* lDisplayName = linphone_address_get_display_name(addr);
+                    const char* lUserName = linphone_address_get_username(addr);
+                    if (lDisplayName)
+                        address = [NSString stringWithUTF8String:lDisplayName];
+                    else if(lUserName)
+                        address = [NSString stringWithUTF8String:lUserName];
+                }
+            }
+            if(address == nil) {
+                address = @"Unknown";
+            }
+            NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"], nil];
+            
+            if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
+                // case where a remote notification is not already received
+                // Create a new local notification
+                data->notification = [[UILocalNotification alloc] init];
+                if (data->notification) {
+                    data->notification.repeatInterval = 0;
+                    data->notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), address];
+                    data->notification.alertAction = NSLocalizedString(@"Answer", nil);
+                    data->notification.soundName = ringtone;
+                    data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
+                    
+                    [[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
+                    
+                    if (!incallBgTask){
+                        incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
+                            [LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
+                        }];
                     }
                 }
-                ms_free(lAddress);
-            }
-            if(useLinphoneAddress) {
-                const char* lDisplayName = linphone_address_get_display_name(addr);
-                const char* lUserName = linphone_address_get_username(addr);
-                if (lDisplayName)
-                    address = [NSString stringWithUTF8String:lDisplayName];
-                else if(lUserName)
-                    address = [NSString stringWithUTF8String:lUserName];
-            }
-        }
-        if(address == nil) {
-            address = @"Unknown";
-        }
-        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"], nil];
-        
-		if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
-			// case where a remote notification is not already received
-			// Create a new local notification
-			data->notification = [[UILocalNotification alloc] init];
-			if (data->notification) {
-				data->notification.repeatInterval = 0;
-				data->notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), address];
-				data->notification.alertAction = NSLocalizedString(@"Answer", nil);
-				data->notification.soundName = ringtone;
-				data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
-				
-				[[UIApplication sharedApplication] presentLocalNotificationNow:data->notification];
-				
-				if (!incallBgTask){
-					incallBgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler: ^{
-						[LinphoneLogger log:LinphoneLoggerWarning format:@"Call cannot ring any more, too late"];
-					}];
-				}
             }
 		}
 	}
