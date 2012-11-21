@@ -690,7 +690,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 - (void)setupNetworkReachabilityCallback {
 	SCNetworkReachabilityContext *ctx=NULL;
-	const char *nodeName="linphone.org";
+    //any internet cnx
+	struct sockaddr_in zeroAddress;
+	bzero(&zeroAddress, sizeof(zeroAddress));
+	zeroAddress.sin_len = sizeof(zeroAddress);
+	zeroAddress.sin_family = AF_INET;
 	
     if (proxyReachability) {
         [LinphoneLogger logc:LinphoneLoggerLog format:"Cancelling old network reachability"];
@@ -699,8 +703,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
         proxyReachability = nil;
     }
     
-    proxyReachability = SCNetworkReachabilityCreateWithName(nil, nodeName);
-    
+    proxyReachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)&zeroAddress);
 
 	if (!SCNetworkReachabilitySetCallback(proxyReachability, (SCNetworkReachabilityCallBack)networkReachabilityCallBack, ctx)){
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register reachability cb: %s", SCErrorString(SCError())];
@@ -709,6 +712,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if(!SCNetworkReachabilityScheduleWithRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)){
 		[LinphoneLogger logc:LinphoneLoggerError format:"Cannot register schedule reachability cb: %s", SCErrorString(SCError())];
 		return;
+	}
+	// this check is to know network connectivity right now without waiting for a change. Don'nt remove it unless you have good reason. Jehan
+	SCNetworkReachabilityFlags flags;
+	if (SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
+		networkReachabilityCallBack(proxyReachability,flags,nil);
 	}
 }
 
