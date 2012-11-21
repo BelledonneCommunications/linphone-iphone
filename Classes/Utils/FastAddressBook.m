@@ -85,7 +85,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     // MODIFICATION REMOVE PORT
     NSRange range = [normalizedSipAddress rangeOfString:@":" options:NSBackwardsSearch];
     if(range.location != NSNotFound) {
-        normalizedSipAddress = [normalizedSipAddress substringToIndex:range.location];
+        NSString *newString = [normalizedSipAddress substringToIndex:range.location];
+        if([newString caseInsensitiveCompare:@"sip"] != NSOrderedSame) {
+            normalizedSipAddress = newString;
+        }
     }
     //
     return normalizedSipAddress;
