@@ -591,6 +591,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
+    
+    BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
+	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", wifiOnly);
+    
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
 	
