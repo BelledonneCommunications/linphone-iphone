@@ -825,6 +825,7 @@ typedef struct codec_desc{
 }codec_desc_t;
 
 static codec_desc_t codec_pref_order[]={
+	{"opus", 48000},
 	{"SILK", 16000},
 	{"speex", 16000},
 	{"speex", 8000},
@@ -1287,6 +1288,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
 	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,NULL);
 	linphone_core_handle_static_payloads(lc);
 	
 	ms_init();
