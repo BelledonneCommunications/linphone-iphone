@@ -594,6 +594,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
     BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", wifiOnly);
+    if([self valueChangedForKey:@"wifi_only_preference"]) {
+        [[LinphoneManager instance] setupNetworkReachabilityCallback];
+    }
     
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
