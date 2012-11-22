@@ -1372,6 +1372,8 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarr
 		pt = linphone_call_params_get_used_audio_codec(params);
 	else
 		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return (jfloat)0.0;
 	return (jfloat)((float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
@@ -1399,6 +1401,8 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverIntera
 		pt = linphone_call_params_get_used_audio_codec(params);
 	else
 		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return (jfloat)0.0;
 	return (jfloat)((float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
