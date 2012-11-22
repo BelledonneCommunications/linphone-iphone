@@ -2290,7 +2290,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_init_media_streams(call);
 	if (lc->ringstream==NULL)
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
-	call->localdesc=create_local_media_description(lc,call);
+	linphone_call_make_local_media_description(lc,call);
 	if (!lc->sip_conf.sdp_200_ack){
 		call->media_pending=TRUE;
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -2552,7 +2552,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	bool_t propose_early_media=lp_config_get_int(lc->config,"sip","incoming_calls_early_media",FALSE);
 	const char *ringback_tone=linphone_core_get_remote_ringback_tone (lc);
 
-	call->localdesc=create_local_media_description(lc,call);
+	linphone_call_make_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && sal_media_description_empty(md)){
@@ -2658,7 +2658,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			call->videostream->ice_check_list = NULL;
 		}
 		call->params = *params;
-		update_local_media_description(lc, call);
+		linphone_call_make_local_media_description(lc, call);
 		if ((call->ice_session != NULL) && !has_video && call->params.has_video) {
 			/* Defer call update until the ICE candidates gathering process has finished. */
 			ms_message("Defer call update to gather ICE candidates");
@@ -2769,7 +2769,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	}
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
 	call->camera_active=call->params.has_video;
-	update_local_media_description(lc,call);
+	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
 #ifdef VIDEO_ENABLED
@@ -2885,7 +2885,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		call->params=*params;
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
 		call->camera_active=call->params.has_video;
-		update_local_media_description(lc,call);
+		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	
@@ -3075,7 +3075,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_warning("Cannot pause this call, it is not active.");
 		return -1;
 	}
-	update_local_media_description(lc,call);
+	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL)
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
@@ -3154,7 +3154,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	 prevents the participants to hear it while the 200OK comes back.*/
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
-	update_local_media_description(lc,the_call);
+	linphone_call_make_local_media_description(lc,the_call);
 	if (call->ice_session != NULL)
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	sal_call_set_local_media_description(call->op,call->localdesc);

@@ -162,6 +162,10 @@ static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
 	return TRUE;
 }
 
+static bool_t is_recv_only(PayloadType *p){
+	return (p->flags & PAYLOAD_TYPE_FLAG_CAN_RECV) && ! (p->flags & PAYLOAD_TYPE_FLAG_CAN_SEND);
+}
+
 static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 	const MSList *e1,*e2;
 	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
@@ -169,6 +173,12 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 		PayloadType *p2=(PayloadType*)e2->data;
 		if (!payload_type_equals(p1,p2))
 			return FALSE;
+	}
+	if (e1!=NULL){
+		/*skip possible recv-only payloads*/
+		for(;e1!=NULL && is_recv_only((PayloadType*)e1->data);e1=e1->next){
+			ms_message("Skipping recv-only payload type...");
+		}
 	}
 	if (e1!=NULL || e2!=NULL){
 		/*means one list is longer than the other*/
