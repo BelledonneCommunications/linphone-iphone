@@ -196,6 +196,27 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 **/
 
 /**
+ * @defgroup conferencing Making an audio conference.
+ * This API allows to create a conference entirely managed by the client. No server capabilities are required.
+ * The way such conference is created is by doing the following:<br>
+ * The application shall makes "normal" calls to several destinations (using linphone_core_invite() ), one after another. 
+ * While initiating the second call, the first one is automatically paused.
+ * Then, once the second call is established, the application has the possibility to merge the two calls to form a conference where each participant
+ * (the local participant, the remote destination of the first call, the remote destination of the second call) can talk together.
+ * This must be done by adding the two calls to the conference using \link linphone_call_add_to_conference() \endlink
+ *
+ * Once merged into a conference the LinphoneCall objects representing the calls that were established remain unchanged, except that 
+ * they are tagged as part of the conference (see \link linphone_call_is_in_conference() \endlink ). The calls in a conference are in the LinphoneCallStreamsRunning state.
+ * 
+ * Only a single conference can be created: the purpose of this feature is to allow the local user to create, take part and manage the conference. 
+ * This API is not designed to create a conference server application.
+ *
+ * Up to 10 calls can be merged into the conference, however depending on the CPU usage required for doing the encoding/decoding of the streams of each participants,
+ * the effective limit can be lower.
+ * 
+**/
+
+/**
  * @defgroup misc Miscenalleous: logs, version strings, config storage
 **/
 

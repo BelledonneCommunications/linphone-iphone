@@ -663,13 +663,13 @@ const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 /**
- *LinphoneChatMessageStatus used to notify if message has been succesfully delivered or not
+ *LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  */
 typedef enum _LinphoneChatMessageStates {
-	LinphoneChatMessageStateIdle, /** initial state*/
-	LinphoneChatMessageStateInProgress, /*delivery in progress**/
-	LinphoneChatMessageStateDelivered, /** message succesffully delivered an acknoleged by remote end point*/
-	LinphoneChatMessageStateNotDelivered /** message was not delivered*/
+	LinphoneChatMessageStateIdle, /**<initial state*/
+	LinphoneChatMessageStateInProgress, /**<delivery in progress**/
+	LinphoneChatMessageStateDelivered, /**<message succesffully delivered an acknoleged by remote end point*/
+	LinphoneChatMessageStateNotDelivered /**<message was not delivered*/
 }LinphoneChatMessageState;
 
 	
@@ -679,20 +679,20 @@ typedef enum _LinphoneChatMessageStates {
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 
 /**
- * clone a chat message 
+ * Clone a chat message 
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneChatMessage
  */
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
 /**
- * set origine of the message
+ * Set origin of the message
  *@param message #LinphoneChatMessage obj
  *@param from #LinphoneAddress origin of this message (copied)
  */
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
 
 /**
- * get origine of the message 
+ * Get origin of the message 
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
@@ -701,21 +701,21 @@ LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* messa
 /**
  * Linphone message can carry external body as defined by rfc2017
  * @param message #LinphoneChatMessage
- * @return return external body url null if not present.
+ * @return external body url or NULL if not present.
  */
 const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 	
 /**
  * Linphone message can carry external body as defined by rfc2017
  * 
- * @param  #LinphoneChatMessage  
+ * @param message a LinphoneChatMessage  
  * @param url ex: access-type=URL; URL="http://www.foo.com/file"
  */
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 
 /**
- * get text part of this message
- *@return text or NULL if no text.
+ * Get text part of this message
+ * @return text or NULL if no text.
  */
 const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
 /**
@@ -731,15 +731,15 @@ void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
 /**
  * Call back used to notify message delivery status
  *@param msg #LinphoneChatMessage object
- *@param status #LinphoneChatMessageStatus
- *@param ud us user data
+ *@param status LinphoneChatMessageState
+ *@param ud application user data
  */
 typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 /**
  * send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
  * @param msg #LinphoneChatMessage message to be sent
- * @param status_cb #LinphoneChatMessageStatus status call back invoked when to message is delivered or not. May be NULL
+ * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when message is delivered or could not be delivered. May be NULL
  * @param ud user data for the status cb.
  */
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
@@ -1055,8 +1055,8 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * @param lc #LinphoneCore object
  * @param type payload mime type (I.E SPEEX, PCMU, VP8)
- * @param rate, can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
- * @param channels, number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
+ * @param rate can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
+ * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found.
  */	
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
