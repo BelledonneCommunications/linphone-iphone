@@ -61,8 +61,6 @@
 - (void)fullScreen:(BOOL)enabled;
 - (void)startUp;
 
-+ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
-
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;
 

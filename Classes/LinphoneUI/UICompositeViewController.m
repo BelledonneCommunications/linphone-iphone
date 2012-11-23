@@ -19,7 +19,7 @@
 
 #import "UICompositeViewController.h"
 
-#import "PhoneMainView.h"
+#import "LinphoneAppDelegate.h"
 
 @implementation UICompositeViewDescription
 
@@ -252,13 +252,88 @@
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
-            [PhoneMainView setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
+            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
         }
     }
 }
 
 
 #pragma mark -
+
+/*
+ Will simulate a device rotation
+ */
++ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
+    UIView *firstResponder = nil;
+    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"] ||
+           [NSStringFromClass(window.class) isEqualToString:@"_UIAlertOverlayWindow"] ) {
+            continue;
+        }
+        UIView *view = window;
+        UIViewController *controller = nil;
+        CGRect frame = [view frame];
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            controller = window.rootViewController;
+            view = controller.view;
+        }
+        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
+        
+        NSTimeInterval animationDuration = 0.0;
+        if(animated) {
+            animationDuration = 0.3f;
+        }
+        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView beginAnimations:nil context:nil];
+            [UIView setAnimationDuration:animationDuration];
+        }
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+                [view setTransform: CGAffineTransformMakeRotation(0)];
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+                break;
+            default:
+                break;
+        }
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            [view setFrame:frame];
+        }
+        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView commitAnimations];
+        }
+        [controller didRotateFromInterfaceOrientation:oldOrientation];
+        if(firstResponder == nil) {
+            firstResponder = [UICompositeViewController findFirstResponder:view];
+        }
+    }
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
+    if(firstResponder) {
+        [firstResponder resignFirstResponder];
+        [firstResponder becomeFirstResponder];
+    }
+}
+
++ (UIView*)findFirstResponder:(UIView*)view {
+    if (view.isFirstResponder) {
+        return view;
+    }
+    for (UIView *subView in view.subviews) {
+        UIView *ret = [UICompositeViewController findFirstResponder:subView];
+        if (ret != nil)
+            return ret;
+    }
+    return nil;
+}
 
 - (void)clearCache:(NSArray *)exclude {
     for(NSString *key in [viewControllerCache allKeys]) {
@@ -441,7 +516,7 @@
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
-            [PhoneMainView setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
         } else {
             if(oldContentViewController != newContentViewController) {
                 UIInterfaceOrientation oldOrientation = self.contentViewController.interfaceOrientation;
