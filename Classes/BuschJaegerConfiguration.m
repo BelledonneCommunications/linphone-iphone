@@ -541,7 +541,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 
 
 - (BOOL)removeHistory:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
-    NSString *url = [NSString stringWithFormat:@"%@/adduser.cgi?type=delhistory&id=%d", [self getGateway], ahistory.ID];
+    NSString *url = [NSString stringWithFormat:@"%@/cgi-bin/adduser.cgi?type=delhistory&id=%d", [self getGateway], ahistory.ID];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {

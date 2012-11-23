@@ -59,7 +59,7 @@
         history.date = [dateFormat dateFromString:stringDate];
         [dateFormat release];
         
-        history.stationID = [[line substringWithRange:[result rangeAtIndex:3]] intValue];
+        history.stationID = [[line substringWithRange:[result rangeAtIndex:3]] intValue] -1;
         
         history.incoming = [[line substringWithRange:[result rangeAtIndex:4]] compare:@"i" options:NSCaseInsensitiveSearch] == 0;
         
