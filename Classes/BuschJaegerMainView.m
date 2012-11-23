@@ -18,6 +18,7 @@
  */
 
 #import "BuschJaegerMainView.h"
+#include "lpconfig.h"
 
 @implementation UINavigationControllerEx
 
@@ -145,6 +146,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
    // [view setFrame:[self.view bounds]];
     [self.view addSubview:view];
     [navigationController pushViewController:welcomeView animated:FALSE];
+    [self networkUpdate:[[LinphoneManager instance].configuration.homeAP isEqualToData:[LinphoneManager getWifiData]]];
 }
 
 - (void)viewDidUnload {
@@ -168,6 +170,12 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                              selector:@selector(textReceivedEvent:)
                                                  name:kLinphoneTextReceived
                                                object:nil];
+    // set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(networkUpdateEvent:)
+                                                 name:kLinphoneNetworkUpdate
+                                               object:nil];
+    
 }
 
 - (void)vieWillDisappear:(BOOL)animated{
@@ -206,8 +214,30 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [self displayMessage:notif];
 }
 
+- (void)networkUpdateEvent: (NSNotification*) notif {
+    [self networkUpdate:[[LinphoneManager instance].configuration.homeAP isEqualToData:[LinphoneManager getWifiData]]];
+}
+
 
 #pragma mark -
+
+- (void)networkUpdate:(BOOL)home {
+    if([LinphoneManager isLcReady]) {
+        LinphoneCore *lc = [LinphoneManager getLc];
+        LpConfig  *config =  linphone_core_get_config(lc);
+        int upload, download;
+        if(home) {
+            upload = lp_config_get_int(config, "net", "home_upload_bw", 0);
+            download = lp_config_get_int(config, "net", "home_download_bw", 0);
+
+        } else {
+            upload = lp_config_get_int(config, "net", "out_upload_bw", 0);
+            download = lp_config_get_int(config, "net", "out_download_bw", 0);
+        }
+        linphone_core_set_upload_bandwidth(lc, upload);
+        linphone_core_set_download_bandwidth(lc, download);
+    }
+}
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
     // Fake call update

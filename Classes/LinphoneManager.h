@@ -50,7 +50,9 @@ extern NSString *const kLinphoneDERPath;
 extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
-
+/* MODIFICATION: Add network event */
+extern NSString *const kLinphoneNetworkUpdate;
+/**/
 extern NSString *const kContactSipField;
 
 typedef enum _Connectivity {

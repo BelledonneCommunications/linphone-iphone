@@ -1,6 +1,10 @@
 [net]
 download_bw=380
 upload_bw=380
+home_download_bw=380
+home_upload_bw=380
+out_download_bw=200
+out_upload_bw=200
 mtu=1300
 activate_edge_workarounds=1
 edge_ping_time=200

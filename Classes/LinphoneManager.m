@@ -61,6 +61,9 @@ NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
+/* MODIFICATION: Add network event */
+NSString *const kLinphoneNetworkUpdate = @"LinphoneNetworkUpdate";
+/**/
 NSString *const kContactSipField = @"SIP";
 
 
@@ -711,6 +714,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			}
 			lLinphoneMgr.connectivity=newConnectivity;
 		}
+        /* MODIFICATION: Add network event */
+        [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneNetworkUpdate object:[LinphoneManager instance] userInfo:nil];
+        /**/
 		if (ctx && ctx->networkStateChanged) {
             (*ctx->networkStateChanged)(lLinphoneMgr.connectivity);
         }

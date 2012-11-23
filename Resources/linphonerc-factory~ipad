@@ -1,6 +1,10 @@
 [net]
 download_bw=512
 upload_bw=512
+home_download_bw=512
+home_upload_bw=512
+out_download_bw=200
+out_upload_bw=200
 firewall_policy=0
 mtu=1300
 
