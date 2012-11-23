@@ -202,8 +202,6 @@
             /* MODIFICATION: Change Main View
             [[PhoneMainView instance] startUp];
              */
-            [window setRootViewController:[[[BuschJaegerMainView alloc] initWithNibName:@"BuschJaegerMainView" bundle:[NSBundle mainBundle]] autorelease]];
-            /**/
         }
     }
 }

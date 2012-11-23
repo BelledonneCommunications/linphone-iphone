@@ -85,6 +85,22 @@
     }
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if ([LinphoneManager runningOnIpad]) {
+        return YES;
+    } else {
+        return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    }
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    if ([LinphoneManager runningOnIpad]) {
+        return UIInterfaceOrientationMaskAll;
+    } else {
+        return [super supportedInterfaceOrientations];
+    }
+}
+
 
 #pragma mark - Action Functions
 

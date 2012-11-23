@@ -18,6 +18,7 @@
  */    
 
 #import "BuschJaegerCallView.h"
+#import "BuschJaegerMainView.h"
 #import "BuschJaegerUtils.h"
 #include "linphonecore.h"
 #import <QuartzCore/QuartzCore.h>
@@ -145,11 +146,6 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -194,16 +190,20 @@
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];
     
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [self orientationUpdate:[[UIDevice currentDevice] orientation]];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    [[BuschJaegerMainView instance].navigationController setNavigationBarHidden:FALSE];
+    [[BuschJaegerMainView instance].navigationController setNavigationBarHidden:TRUE];
+    if (![LinphoneManager runningOnIpad]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(orientationDidChange:)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        [self orientationUpdate:[[UIDevice currentDevice] orientation]];
+    }
 }
 
-- (void)vieWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     
     // Remove observer
@@ -211,11 +211,14 @@
                                                     name:kLinphoneCallUpdate
                                                   object:nil];
     
-    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
-                                                  object:nil];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    if (![LinphoneManager runningOnIpad]) {
+        [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:UIDeviceOrientationDidChangeNotification
+                                                      object:nil];
+    }
 }
 
 
@@ -237,24 +240,24 @@
 - (void)orientationUpdate:(UIInterfaceOrientation)orientation {
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3f];
-    CGRect frame = [videoView frame];
+    CGRect frame = [self.view frame];
     switch (orientation) {
         case UIInterfaceOrientationPortrait:
-            [videoView setTransform: CGAffineTransformMakeRotation(0)];
+            [self.view setTransform: CGAffineTransformMakeRotation(0)];
             break;
         case UIInterfaceOrientationPortraitUpsideDown:
-            [videoView setTransform: CGAffineTransformMakeRotation(M_PI)];
+            [self.view setTransform: CGAffineTransformMakeRotation(M_PI)];
             break;
         case UIInterfaceOrientationLandscapeLeft:
-            [videoView setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+            [self.view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
             break;
         case UIInterfaceOrientationLandscapeRight:
-            [videoView setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            [self.view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
             break;
         default:
             break;
     }
-    [videoView setFrame:frame];
+    [self.view setFrame:frame];
     [UIView commitAnimations];
 }
 
@@ -418,6 +421,22 @@
         if(ret == 0) {
             [self performSelector:@selector(saveImage:) withObject:imagePath afterDelay:0.5];
         }
+    }
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if ([LinphoneManager runningOnIpad]) {
+        return YES;
+    } else {
+        return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    }
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    if ([LinphoneManager runningOnIpad]) {
+        return UIInterfaceOrientationMaskAll;
+    } else {
+        return [super supportedInterfaceOrientations];
     }
 }
 

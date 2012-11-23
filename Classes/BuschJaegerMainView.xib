@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">11G56</string>
+		<string key="IBDocument.SystemVersion">11G63</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
 		<string key="IBDocument.AppKitVersion">1138.51</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
@@ -36,17 +36,14 @@
 			</object>
 			<object class="IBUIView" id="168986707">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
+				<int key="NSvFlags">301</int>
 				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
-					<bytes key="NSWhite">MQA</bytes>
-					<object class="NSColorSpace" key="NSCustomColorSpace">
-						<int key="NSID">2</int>
-					</object>
+					<bytes key="NSWhite">MAA</bytes>
 				</object>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
@@ -111,11 +108,13 @@
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
 			<object class="IBUINavigationController" id="864273647">
+				<bool key="IBUIAutoresizesArchivedViewToFullSize">NO</bool>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
 					<int key="IBUIInterfaceOrientation">1</int>
 					<int key="interfaceOrientation">1</int>
 				</object>
+				<bool key="IBUIWantsFullScreenLayout">YES</bool>
 				<bool key="IBUIDefinesPresentationContext">YES</bool>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
@@ -331,10 +330,15 @@
 					<string key="className">BuschJaegerCallView</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="doCameraSwipe:">UISwipeGestureRecognizer</string>
 						<string key="onSnapshotClick:">id</string>
 						<string key="takeCall:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="doCameraSwipe:">
+							<string key="name">doCameraSwipe:</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
 						<object class="IBActionInfo" key="onSnapshotClick:">
 							<string key="name">onSnapshotClick:</string>
 							<string key="candidateClassName">id</string>
@@ -345,6 +349,8 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="cameraLeftSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
+						<string key="cameraRightSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
 						<string key="contactLabel">UILabel</string>
 						<string key="declineButton">UIHangUpButton</string>
 						<string key="endOrRejectCallButton">UIHangUpButton</string>
@@ -357,6 +363,14 @@
 						<string key="videoView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="cameraLeftSwipeGestureRecognizer">
+							<string key="name">cameraLeftSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="cameraRightSwipeGestureRecognizer">
+							<string key="name">cameraRightSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="contactLabel">
 							<string key="name">contactLabel</string>
 							<string key="candidateClassName">UILabel</string>
@@ -407,20 +421,19 @@
 					<string key="className">BuschJaegerHistoryDetailsView</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="doDetailsSwipe:">UISwipeGestureRecognizer</string>
 						<string key="hideImage:">id</string>
-						<string key="nextImage:">id</string>
 						<string key="onBackClick:">id</string>
 						<string key="onDeleteClick:">id</string>
-						<string key="previousImage:">id</string>
 						<string key="saveImage:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="doDetailsSwipe:">
+							<string key="name">doDetailsSwipe:</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
 						<object class="IBActionInfo" key="hideImage:">
 							<string key="name">hideImage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="nextImage:">
-							<string key="name">nextImage:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="onBackClick:">
@@ -431,10 +444,6 @@
 							<string key="name">onDeleteClick:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="previousImage:">
-							<string key="name">previousImage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="saveImage:">
 							<string key="name">saveImage:</string>
 							<string key="candidateClassName">id</string>
@@ -443,6 +452,9 @@
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="backButton">UIView</string>
 						<string key="dateLabel">UILabel</string>
+						<string key="detailsLeftSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
+						<string key="detailsRightSwipeGestureRecognizer">UISwipeGestureRecognizer</string>
+						<string key="detailsTapGestureRecognizer">UITapGestureRecognizer</string>
 						<string key="fullscreenView">UIView</string>
 						<string key="imageView">UIRemoteImageView</string>
 						<string key="saveButton">UIButton</string>
@@ -457,6 +469,18 @@
 						<object class="IBToOneOutletInfo" key="dateLabel">
 							<string key="name">dateLabel</string>
 							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="detailsLeftSwipeGestureRecognizer">
+							<string key="name">detailsLeftSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="detailsRightSwipeGestureRecognizer">
+							<string key="name">detailsRightSwipeGestureRecognizer</string>
+							<string key="candidateClassName">UISwipeGestureRecognizer</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="detailsTapGestureRecognizer">
+							<string key="name">detailsTapGestureRecognizer</string>
+							<string key="candidateClassName">UITapGestureRecognizer</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="fullscreenView">
 							<string key="name">fullscreenView</string>
@@ -591,6 +615,20 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">BuschJaegerManualSettingsView</string>
 					<string key="superclassName">UIViewController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="onBackClick:">id</string>
+						<string key="onValidClick:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="onBackClick:">
+							<string key="name">onBackClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="onValidClick:">
+							<string key="name">onValidClick:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="addressField">UITextField</string>
 						<string key="backButton">UIView</string>

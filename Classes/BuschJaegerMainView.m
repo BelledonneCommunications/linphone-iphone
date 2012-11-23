@@ -26,8 +26,8 @@
     UIViewController *oldTopViewController = self.topViewController;
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [oldTopViewController viewWillDisappear:animated];
+        [viewController viewWillAppear:animated];
     }
-    [viewController viewWillAppear:animated];
     [super pushViewController:viewController animated:animated];
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
         [self.topViewController viewDidAppear:animated];
@@ -35,22 +35,35 @@
     }
 }
 
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+- (NSArray*)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [self.topViewController viewWillDisappear:animated];
-        UIViewController *nextView = nil;
-        int count = [self.viewControllers count];
-        if(count > 1) {
-            nextView = [self.viewControllers objectAtIndex:count - 2];
+        NSMutableArray *array = [NSMutableArray array];
+        while([self.viewControllers count] > 1 && self.topViewController != viewController) {
+            [array addObject:[self popViewControllerAnimated:animated]];
         }
-        [nextView viewWillAppear:animated];
+        return array;
     }
-    UIViewController * ret = [super popViewControllerAnimated:animated];
-    if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
-        [ret viewDidDisappear:animated];
-        [self.topViewController viewDidAppear:animated];
+    return [super popToViewController:viewController animated:animated];
+}
+
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+    int count = [self.viewControllers count];
+    if(count > 1) {
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [self.topViewController viewWillDisappear:animated];
+            UIViewController *nextView = nil;
+            nextView = [self.viewControllers objectAtIndex:count - 2];
+            
+            [nextView viewWillAppear:animated];
+        }
+        UIViewController * ret = [super popViewControllerAnimated:animated];
+        if ([[UIDevice currentDevice].systemVersion doubleValue] < 5.0) {
+            [ret viewDidDisappear:animated];
+            [self.topViewController viewDidAppear:animated];
+        }
+        return ret;
     }
-    return ret;
+    return nil;
 }
 
 @end
@@ -74,6 +87,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
 - (void)initBuschJaegerMainView {
     assert (!mainViewInstance);
     mainViewInstance = self;
+    loadCount = 0;
 }
 
 - (id)init {
@@ -119,14 +133,25 @@ static BuschJaegerMainView* mainViewInstance=nil;
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+    // Avoid IOS 4 bug
+    if(loadCount++ > 0)
+        return;
+    
     [super viewDidLoad];
     
-    [self setWantsFullScreenLayout:TRUE];
+   // [self setWantsFullScreenLayout:TRUE];
     
     UIView *view = navigationController.view;
-    [view setFrame:[self.view bounds]];
+   // [view setFrame:[self.view bounds]];
     [self.view addSubview:view];
     [navigationController pushViewController:welcomeView animated:FALSE];
+}
+
+- (void)viewDidUnload {
+    [super viewDidUnload];
+    
+    // Avoid IOS 4 bug
+    loadCount--;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -159,8 +184,12 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                                   object:nil];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return [navigationController.topViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+}
+
 - (NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskPortraitUpsideDown | UIInterfaceOrientationMaskPortrait;
+    return [navigationController.topViewController supportedInterfaceOrientations];
 }
 
 

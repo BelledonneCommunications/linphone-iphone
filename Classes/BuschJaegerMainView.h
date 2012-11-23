@@ -31,7 +31,8 @@
 @end
 
 @interface BuschJaegerMainView : UIViewController {
-    
+@private
+    int loadCount;
 }
 
 @property (nonatomic, retain) IBOutlet UINavigationControllerEx *navigationController;
