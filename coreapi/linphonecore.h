@@ -1214,6 +1214,7 @@ void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
+const char *linphone_core_get_root_ca(LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
 
@@ -1282,8 +1283,9 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
-/* Set static picture to be used when "Static picture" is the video device */
+/* Set and get static picture to be used when "Static picture" is the video device */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+const char *linphone_core_get_static_picture(LinphoneCore *lc);
 
 /* Set and get frame rate for static picture */
 int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
@@ -1387,7 +1389,7 @@ void linphone_core_refresh_registers(LinphoneCore* lc);
 
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
-
+const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 

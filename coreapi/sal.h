@@ -356,6 +356,7 @@ void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
 void sal_use_101(Sal *ctx, bool_t use_101);
 void sal_set_root_ca(Sal* ctx, const char* rootCa);
+const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 
 int sal_iterate(Sal *sal);

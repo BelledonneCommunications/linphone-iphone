@@ -486,6 +486,10 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 	set_tls_options(ctx);
 }
 
+const char *sal_get_root_ca(Sal* ctx) {
+	return ctx->rootCa;
+}
+
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ctx->verify_server_certs=verify;
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE

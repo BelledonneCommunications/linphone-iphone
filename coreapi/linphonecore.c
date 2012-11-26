@@ -3660,6 +3660,17 @@ void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
 }
 
 /**
+ * Gets the path to a file or folder containing trusted root CAs (PEM format)
+ *
+ * @param lc The LinphoneCore object
+ *
+ * @ingroup media_parameters
+**/
+const char *linphone_core_get_root_ca(LinphoneCore *lc){
+	return sal_get_root_ca(lc->sal);
+}
+
+/**
  * Specify whether the tls server certificate must be verified when connecting to a SIP/TLS server.
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
@@ -4187,6 +4198,16 @@ int linphone_core_set_static_picture(LinphoneCore *lc, const char *path) {
 	ms_warning("Video support not compiled.");
 #endif
 	return 0;
+}
+
+const char *linphone_core_get_static_picture(LinphoneCore *lc) {
+	const char *path=NULL;
+#ifdef VIDEO_ENABLED
+	path=ms_static_image_get_default_image();	
+#else
+	ms_warning("Video support not compiled.");
+#endif
+	return path;
 }
 
 int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps) {
@@ -5183,6 +5204,10 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 		ms_free(lc->zrtp_secrets_cache);
 	}
 	lc->zrtp_secrets_cache=file ? ms_strdup(file) : NULL;
+}
+
+const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
+	return lc->zrtp_secrets_cache;
 }
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
