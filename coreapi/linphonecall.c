@@ -219,9 +219,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	SalMediaDescription *md=sal_media_description_new();
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
 	
-	if (call->ping_time>0) {
-		linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
-	}
+	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
@@ -746,6 +744,11 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			}else if (vsd){
 				cp->has_video=is_video_active(vsd);
 			}
+			if (!cp->has_video){
+				if (md->bandwidth>0 && md->bandwidth<=linphone_core_get_edge_bw(call->core)){
+					cp->low_bandwidth=TRUE;
+				}
+			}
 			return cp;
 		}
 	}
@@ -925,9 +928,31 @@ const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallP
 	return cp->video_codec;
 }
 
+/**
+ * @ingroup call_control
+ * Use to know if this call has been configured in low bandwidth mode.
+ * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file.
+ * An application that would have reliable way to know network capacity may not use activate_edge_workarounds=1 but instead manually configure
+ * low bandwidth mode with linphone_call_params_enable_low_bandwidth().
+ * <br> When enabled, this param may transform a call request with video in audio only mode.
+ * @return TRUE if low bandwidth has been configured/detected
+ */
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
 	return cp->low_bandwidth;
 }
+
+/**
+ * @ingroup call_control
+ * Indicate low bandwith mode. 
+ * Configuring a call to low bandwidth mode will result in the core to activate several settings for the call in order to ensure that bitrate usage
+ * is lowered to the minimum possible. Typically, ptime (packetization time) will be increased, audio codec's output bitrate will be targetted to 20kbit/s provided
+ * that it is achievable by the codec selected after SDP handshake. Video is automatically disabled.
+ * 
+**/
+void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled){
+	cp->low_bandwidth=TRUE;
+}
+
 /**
  * Returns whether video is enabled.
 **/

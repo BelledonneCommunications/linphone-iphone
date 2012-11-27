@@ -639,7 +639,8 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 #endif
 void call_logs_write_to_config_file(LinphoneCore *lc);
 
-
+int linphone_core_get_edge_bw(LinphoneCore *lc);
+int linphone_core_get_edge_ptime(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

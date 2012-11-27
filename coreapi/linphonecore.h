@@ -204,14 +204,9 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
 void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
-/**
- * @ingroup call_control
- * Use to know if this call has been configured in low bandwidth mode.
- * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file
- * <br> When enabled, this param may transform a call request with video in audio only mode.
- * @return TRUE if low bandwidth has been configured/detected
- */
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
+void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
+
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
