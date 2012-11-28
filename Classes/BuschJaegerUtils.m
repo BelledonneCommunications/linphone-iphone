@@ -34,13 +34,14 @@
 
 + (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
     // Remove previous
-    [view.layer.sublayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        CALayer *layer = (CALayer *)obj;
-        if([layer.name compare:@"BuschJaegerLayer" options:0]) {
-            [layer removeFromSuperlayer];
+    for(CALayer *sublayer in view.layer.sublayers) {
+        if(sublayer.name != nil && [sublayer.name compare:@"BuschJaegerLayer" options:0] == NSOrderedSame) {
+            [sublayer removeFromSuperlayer];
+            break;
         }
-    }];
+    };
     CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.needsDisplayOnBoundsChange = TRUE;
     gradient.name = @"BuschJaegerLayer";
     gradient.frame = view.bounds;
     gradient.cornerRadius = corner;
@@ -50,18 +51,39 @@
 
 + (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)corner{
     // Remove previous
-    [button.layer.sublayers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        CALayer *layer = (CALayer *)obj;
-        if([layer.name compare:@"BuschJaegerLayer" options:0]) {
-            [layer removeFromSuperlayer];
+    for(CALayer *sublayer in button.layer.sublayers) {
+        if(sublayer.name != nil && [sublayer.name compare:@"BuschJaegerLayer" options:0] == NSOrderedSame) {
+            [sublayer removeFromSuperlayer];
+            break;
         }
-    }];
+    };
     CAGradientLayer* gradient = [CAGradientLayer layer];
+    gradient.needsDisplayOnBoundsChange = TRUE;
     gradient.name = @"BuschJaegerLayer";
     gradient.frame = button.bounds;
     gradient.cornerRadius = corner;
     gradient.colors = [NSArray arrayWithObjects:(id)topColor.CGColor, (id)bottomColor.CGColor, nil];
     [button.layer insertSublayer:gradient below:button.imageView.layer];
+}
+
++ (void)resizeGradientLayer:(CALayer*)layer {
+    if(layer.name != nil && [layer.name compare:@"BuschJaegerLayer" options:0] == NSOrderedSame) {
+        if(layer.superlayer != nil) {
+            [layer setFrame:layer.superlayer.bounds];
+        }
+    }
+    if([layer respondsToSelector:@selector(sublayers)]) {
+        for(CALayer *sublayer in layer.sublayers) {
+            [BuschJaegerUtils resizeGradientLayer:sublayer];
+        };
+    }
+}
+
++ (void)resizeGradient:(UIView*)view {
+    [BuschJaegerUtils resizeGradientLayer:view.layer];
+    for(UIView *subView in view.subviews) {
+        [BuschJaegerUtils resizeGradient:subView];
+    }
 }
 
 @end

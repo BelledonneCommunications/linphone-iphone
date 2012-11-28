@@ -41,6 +41,7 @@
         }
         
         CALayer *layer = cellBackgroundView.layer;
+        layer.name = @"BuschJaegerLayer";
         layer.cornerRadius = 8.0f;
         layer.masksToBounds = YES;
         layer.borderWidth = 1.0f;
@@ -49,6 +50,7 @@
         CAGradientLayer *overlayButtonShineLayer;
         
         overlayButtonShineLayer = [CAGradientLayer layer];
+        overlayButtonShineLayer.name = @"BuschJaegerLayer";
         overlayButtonShineLayer.frame = layer.bounds;
         overlayButtonShineLayer.colors = [NSArray arrayWithObjects:
                                           (id)[UIColor colorWithWhite:1.0f

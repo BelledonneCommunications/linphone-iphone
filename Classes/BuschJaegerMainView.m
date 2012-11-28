@@ -18,6 +18,7 @@
  */
 
 #import "BuschJaegerMainView.h"
+#import "BuschJaegerUtils.h"
 #include "lpconfig.h"
 
 @implementation UINavigationControllerEx
@@ -198,6 +199,10 @@ static BuschJaegerMainView* mainViewInstance=nil;
 
 - (NSUInteger)supportedInterfaceOrientations {
     return [navigationController.topViewController supportedInterfaceOrientations];
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [BuschJaegerUtils resizeGradient:self.view];
 }
 
 

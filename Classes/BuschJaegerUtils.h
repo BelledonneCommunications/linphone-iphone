@@ -40,4 +40,6 @@
 + (void)createGradientForView:(UIView*)view withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)cornerRadius;
 + (void)createGradientForButton:(UIButton*)button withTopColor:(UIColor*)topColor bottomColor:(UIColor*)bottomColor cornerRadius:(int)cornerRadius;
 
++ (void)resizeGradient:(UIView*)view;
+
 @end
