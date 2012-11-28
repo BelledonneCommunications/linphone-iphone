@@ -111,6 +111,8 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D304B3EA16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
+		D304B3EB16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
 		D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
 		D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
 		D30B942816358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */; };
@@ -584,6 +586,7 @@
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* buschjaeger-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "buschjaeger-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerManualSettingsView.xib; sourceTree = "<group>"; };
 		D30B942616358DD600D53C46 /* BuschJaegerManualSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerManualSettingsView.h; sourceTree = "<group>"; };
 		D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerManualSettingsView.m; sourceTree = "<group>"; };
@@ -882,6 +885,7 @@
 				D37CD37D15E22B6F0028869A /* BuschJaegerWelcomeView.h */,
 				D37CD37E15E22B6F0028869A /* BuschJaegerWelcomeView.m */,
 				D37CD37F15E22B700028869A /* BuschJaegerWelcomeView.xib */,
+				D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
@@ -1618,8 +1622,7 @@
 				D32EDDA91600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAB1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 				D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
-				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
-				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
+				D304B3EA16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1680,8 +1683,7 @@
 				D32EDDAA1600C8FC009A84C7 /* ringtone_04_1600_loop.wav in Resources */,
 				D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 				D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
-				D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */,
-				D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */,
+				D304B3EB16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

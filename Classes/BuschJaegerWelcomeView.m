@@ -24,14 +24,18 @@
 
 @synthesize settingsButton;
 @synthesize historyButton;
-@synthesize tableController;
+@synthesize stationTableController;
+@synthesize historyTableController;
+@synthesize waitView;
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
     [settingsButton release];
     [historyButton release];
-    [tableController release];
+    [stationTableController release];
+    [historyTableController release];
+    
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -45,7 +49,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [tableController.view setBackgroundColor:[UIColor clearColor]];
+    [historyTableController.view setBackgroundColor:[UIColor clearColor]];
+    [stationTableController.view setBackgroundColor:[UIColor clearColor]];
+    
+    [waitView setHidden:TRUE];
+    
+    if([LinphoneManager runningOnIpad]) {
+        [historyButton setHidden:TRUE];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -56,6 +67,7 @@
                                                  name:kLinphoneConfigurationUpdate
                                                object:nil];
     [self updateConfiguration:[LinphoneManager instance].configuration];
+    [self reload];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -94,12 +106,28 @@
 - (void)updateConfiguration:(BuschJaegerConfiguration *)configuration {
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
     NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
-    [tableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
+    [stationTableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
     [historyButton setEnabled: configuration.network.localAddress != nil];
 }
 
 
-#pragma mark - 
+#pragma mark -
+
+- (void)reload {
+    [self view]; // Force view load
+    if([[LinphoneManager instance].configuration loadHistory:self]) {
+        [waitView setHidden:FALSE];
+    } else {
+        [waitView setHidden:TRUE];
+    }
+}
+
+- (void)update {
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
+    NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
+    
+    [historyTableController setHistory:[[LinphoneManager instance].configuration.history sortedArrayUsingDescriptors:sortDescriptors]];
+}
 
 - (IBAction)settingsClick:(id)sender {
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:FALSE];
@@ -109,5 +137,25 @@
     [[BuschJaegerMainView instance].historyView reload];
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:FALSE];
 }
+
+#pragma mark - BuschJaegerConfigurationDelegate Functions
+
+- (void)buschJaegerConfigurationSuccess {
+    [waitView setHidden:TRUE];
+    [self update];
+}
+
+- (void)buschJaegerConfigurationError:(NSString *)error {
+    UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"History provisioning error",nil)
+                                                        message:[NSString stringWithFormat:NSLocalizedString(@"Connection issue: %@", nil), error]
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                              otherButtonTitles:nil,nil];
+    [errorView show];
+    [errorView release];
+    [waitView setHidden:TRUE];
+    [self update];
+}
+
 
 @end

@@ -176,7 +176,6 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                              selector:@selector(networkUpdateEvent:)
                                                  name:kLinphoneNetworkUpdate
                                                object:nil];
-    
 }
 
 - (void)vieWillDisappear:(BOOL)animated{

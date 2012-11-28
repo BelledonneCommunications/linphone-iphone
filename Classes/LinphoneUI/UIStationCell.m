@@ -18,7 +18,7 @@
  */
 
 #import "UIStationCell.h"
-
+#import "BuschJaegerUtils.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation UIStationCell
@@ -83,6 +83,10 @@
     [super dealloc];
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [BuschJaegerUtils resizeGradient:self];
+}
 
 #pragma mark - Property Functions
 
