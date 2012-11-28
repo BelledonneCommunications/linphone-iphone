@@ -574,6 +574,19 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
     
+    [hiddenKeys addObject:@"audio_advanced_group"];
+    [hiddenKeys addObject:@"playback_gain_preference"];
+    [hiddenKeys addObject:@"microphone_gain_preference"];
+    
+    [hiddenKeys addObject:@"network_limit_group"];
+    [hiddenKeys addObject:@"upload_bandwidth_preference"];
+    [hiddenKeys addObject:@"download_bandwidth_preference"];
+    
+    [hiddenKeys addObject:@"incoming_call_timeout_preference"];
+    [hiddenKeys addObject:@"in_call_timeout_preference"];
+    
+    [hiddenKeys addObject:@"wifi_only_preference"];
+    
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
     [hiddenKeys addObject:@"about_button"]; // Hide for the moment
     
@@ -639,7 +652,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[LinphoneManager instance]	destroyLibLinphone];
         [LinphoneManager instanceRelease];
     } else  if([key isEqual:@"clear_cache_button"]) {
-        [[PhoneMainView instance].mainViewController clearCache];
+        [[PhoneMainView instance].mainViewController clearCache:[NSArray arrayWithObject:[[PhoneMainView  instance] currentView]]];
     } else  if([key isEqual:@"battery_alert_button"]) {
         [[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
         [[UIDevice currentDevice] _setBatteryLevel:0.09f];
@@ -653,6 +666,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         if(controller != nil) {
             [controller reset];
         }
+    } else if([key isEqual:@"about_button"]) {
+        [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
     }
 }
 

@@ -803,17 +803,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>17</key>
+							<key>19</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/ChatViewController/17/ChatViewController.xib</string>
+								<string>Classes/ChatViewController/19/ChatViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-16T14:43:40Z</date>
+					<date>2012-11-19T11:40:43Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -823,7 +823,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>7e5a8ab77b42e6a8f401a59751110598
+					<string>467bb3255f207bc3c8d25dcdfca871ee
 </string>
 					<key>name</key>
 					<string>ChatViewController.xib</string>
@@ -1038,9 +1038,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>17</string>
+						<string>19</string>
 						<key>fr</key>
-						<string>17</string>
+						<string>19</string>
 					</dict>
 				</dict>
 				<dict>
@@ -7504,17 +7504,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>10</key>
+							<key>12</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar/10/UICallBar.xib</string>
+								<string>LinphoneUI/UICallBar/12/UICallBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-27T09:31:07Z</date>
+					<date>2012-11-13T08:39:33Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7524,7 +7524,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>c5958759098558a4f8f5d1c18abc0e21
+					<string>6ce20b228103dd1de3d5c07ecc8cc68a
 </string>
 					<key>name</key>
 					<string>UICallBar.xib</string>
@@ -8626,9 +8626,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>10</string>
+						<string>12</string>
 						<key>fr</key>
-						<string>10</string>
+						<string>12</string>
 					</dict>
 				</dict>
 				<dict>
@@ -15470,7 +15470,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T09:26:35Z</date>
+					<date>2012-10-22T08:50:22Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -15480,7 +15480,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>dc9f190a8a2dcdf8026518ff11e1d480
+					<string>1637ea0ccdf086dbddb51c854d6310db
 </string>
 					<key>name</key>
 					<string>Root.strings</string>
@@ -15523,13 +15523,13 @@ Raison: %2$s</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
-							<integer>0</integer>
+							<integer>1</integer>
 							<key>key</key>
 							<string>Wizard</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Wizard</string>
+								<string>Run assistant</string>
 								<key>fr</key>
 								<string>Assistant</string>
 							</dict>
@@ -16518,7 +16518,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-01T10:31:40Z</date>
+					<date>2012-11-06T09:45:46Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -16528,7 +16528,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>d07bfbef0b1c424572d4ab830553e0d6
+					<string>d8b4f45bf8fca397a7f791bd55a61e1c
 </string>
 					<key>name</key>
 					<string>Audio.strings</string>
@@ -16812,6 +16812,81 @@ Raison: %2$s</string>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Advanced</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Advanced</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Advanced</string>
+								<key>fr</key>
+								<string>Avancés</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Playback gain</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Playback gain</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Playback gain</string>
+								<key>fr</key>
+								<string>Gain sortie</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Microphone gain</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Microphone gain</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Microphone gain</string>
+								<key>fr</key>
+								<string>Gain microphone</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array/>
@@ -16840,7 +16915,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-11T10:05:39Z</date>
+					<date>2012-10-29T15:42:49Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -16848,9 +16923,9 @@ Raison: %2$s</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
-					<string>3cc5ec7e298d1a3aa4449641876f5960
+					<string>6ae28fd473b2900cce974380a72d5447
 </string>
 					<key>name</key>
 					<string>Call.strings</string>
@@ -16956,9 +17031,107 @@ Raison: %2$s</string>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Incoming call timeout</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Incoming call timeout</string>
+								<key>fr</key>
+								<string>Durée max. sonnerie</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>In call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>In call timeout</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>In call timeout</string>
+								<key>fr</key>
+								<string>Durée max. appel</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
-					<array/>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>In</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>call</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Incoming call timeout</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>3</integer>
+							<key>key</key>
+							<string>timeout</string>
+							<key>localizations</key>
+							<dict/>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
 					<key>plist file</key>
 					<false/>
 					<key>snapshots</key>
@@ -17279,7 +17452,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-18T15:13:17Z</date>
+					<date>2012-11-13T09:28:24Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -17289,7 +17462,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>f5919fdebddf11e613578ee7ff05f05e
+					<string>7220a3af4b5567ce1842c8a01759b1c9
 </string>
 					<key>name</key>
 					<string>Network.strings</string>
@@ -17428,19 +17601,19 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Audio Port</string>
+							<string>Audio Port(s)</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Audio Port</string>
+							<string>Audio Port(s)</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Audio Port</string>
+								<string>Audio Port(s)</string>
 								<key>fr</key>
-								<string>Port Audio</string>
+								<string>Port(s) Audio</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -17453,19 +17626,19 @@ Raison: %2$s</string>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
-							<string>Video Port</string>
+							<string>Video Port(s)</string>
 							<key>errors</key>
 							<array/>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
-							<string>Video Port</string>
+							<string>Video Port(s)</string>
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Video Port</string>
+								<string>Video Port(s)</string>
 								<key>fr</key>
-								<string>Port Vidéo</string>
+								<string>Port(s) Vidéo</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -17685,6 +17858,81 @@ Raison: %2$s</string>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Limits</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Limits</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Limits</string>
+								<key>fr</key>
+								<string>Limites</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Upload bandwidth</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Upload bandwidth</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Upload bandwidth</string>
+								<key>fr</key>
+								<string>Débit montant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Download bandwidth</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Download bandwidth</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Download bandwidth</string>
+								<key>fr</key>
+								<string>Débit descendant</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array>
@@ -17778,6 +18026,56 @@ Raison: %2$s</string>
 								<string>Stun server</string>
 								<key>fr</key>
 								<string>Serveur Stun</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Audio Port</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Audio Port</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Audio Port</string>
+								<key>fr</key>
+								<string>Port Audio</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Video Port</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Video Port</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Video Port</string>
+								<key>fr</key>
+								<string>Port Vidéo</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

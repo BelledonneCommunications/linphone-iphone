@@ -172,81 +172,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return 0;
 }
 
-+ (UIView*)findFirstResponder:(UIView*)view {
-    if (view.isFirstResponder) {
-        return view;
-    }
-    for (UIView *subView in view.subviews) {
-        UIView *ret = [PhoneMainView findFirstResponder:subView];
-        if (ret != nil)
-            return ret;
-    }
-    return nil;
-}
-
-/* 
-    Will simulate a device rotation
- */
-+ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
-    UIView *firstResponder = nil;
-    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
-        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"] ||
-           [NSStringFromClass(window.class) isEqualToString:@"_UIAlertOverlayWindow"] ) {
-            continue;
-        }
-        UIView *view = window;
-        UIViewController *controller = nil;
-        CGRect frame = [view frame];
-        if([window isKindOfClass:[UILinphoneWindow class]]) {
-            controller = window.rootViewController;
-            view = controller.view;
-        }
-        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
-        
-        NSTimeInterval animationDuration = 0.0;
-        if(animated) {
-            animationDuration = 0.3f;
-        }
-        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
-        if(animated) {
-            [UIView beginAnimations:nil context:nil];
-            [UIView setAnimationDuration:animationDuration];
-        }
-        switch (orientation) {
-            case UIInterfaceOrientationPortrait:
-                [view setTransform: CGAffineTransformMakeRotation(0)];
-                break;
-            case UIInterfaceOrientationPortraitUpsideDown:
-                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
-                break;
-            default:
-                break;
-        }
-        if([window isKindOfClass:[UILinphoneWindow class]]) {
-            [view setFrame:frame];
-        }
-        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
-        if(animated) {
-            [UIView commitAnimations];
-        }
-        [controller didRotateFromInterfaceOrientation:oldOrientation];
-        if(firstResponder == nil) {
-            firstResponder = [PhoneMainView findFirstResponder:view];
-        }
-    }
-    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
-    if(firstResponder) {
-        [firstResponder resignFirstResponder];
-     [firstResponder becomeFirstResponder];
-    }
-}
-
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -267,6 +192,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
     return [mainViewController currentOrientation];
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    [mainViewController clearCache:viewStack];
+}
 
 #pragma mark - Event Functions
 

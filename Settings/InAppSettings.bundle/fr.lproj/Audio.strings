@@ -34,3 +34,11 @@
 /* PCMA */
 "PCMA" = "PCMA";
 
+/* Advanced */
+"Advanced" = "Avancés";
+
+/* Playback gain */
+"Playback gain" = "Gain sortie";
+
+/* Microphone gain */
+"Microphone gain" = "Gain microphone";

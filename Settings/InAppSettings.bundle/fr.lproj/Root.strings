@@ -2,7 +2,7 @@
 "SIP account" = "Compte SIP";
 
 /* Wizard */
-"Wizard" = "Lancer l'assistant";
+"Wizard" = "Assistant";
 
 /* User name */
 "User name" = "Nom d'utilisateur";
@@ -23,7 +23,7 @@
 "Settings" = "Options";
 
 /* Enable video */
-"Enable video" = "Activer la vidéo";
+"Enable video" = "Activer vidéo";
 
 /* Audio */
 "Audio" = "Audio";

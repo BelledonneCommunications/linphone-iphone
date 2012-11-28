@@ -74,8 +74,6 @@
 - (UIViewController *)getCachedController:(NSString*)name;
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;
-#ifdef DEBUG
-- (void)clearCache;
-#endif
+- (void)clearCache:(NSArray*)exclude;
 
 @end

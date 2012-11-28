@@ -326,6 +326,10 @@
 		D33CF34B15D3A03400CD4B85 /* linphone_icon_57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */; };
 		D33CF34C15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */; };
 		D33CF34D15D3A03400CD4B85 /* linphone_icon_72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */; };
+		D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F06164CF35100CFA363 /* callbar_left_padding.png */; };
+		D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F06164CF35100CFA363 /* callbar_left_padding.png */; };
+		D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F07164CF35100CFA363 /* callbar_right_padding.png */; };
+		D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */ = {isa = PBXBuildFile; fileRef = D33E1F07164CF35100CFA363 /* callbar_right_padding.png */; };
 		D3432A62158A4446001C6B0B /* led_connected.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5C158A4446001C6B0B /* led_connected.png */; };
 		D3432A64158A4446001C6B0B /* led_error.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5D158A4446001C6B0B /* led_error.png */; };
 		D3432A66158A4446001C6B0B /* call_quality_indicator_0.png in Resources */ = {isa = PBXBuildFile; fileRef = D3432A5E158A4446001C6B0B /* call_quality_indicator_0.png */; };
@@ -1757,6 +1761,8 @@
 		D339890515C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dialer_alt_back_over_landscape~ipad.png"; path = "Resources/dialer_alt_back_over_landscape~ipad.png"; sourceTree = "<group>"; };
 		D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_57@2x.png"; path = "Resources/linphone_icon_57@2x.png"; sourceTree = "<group>"; };
 		D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "linphone_icon_72@2x.png"; path = "Resources/linphone_icon_72@2x.png"; sourceTree = "<group>"; };
+		D33E1F06164CF35100CFA363 /* callbar_left_padding.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callbar_left_padding.png; path = Resources/callbar_left_padding.png; sourceTree = "<group>"; };
+		D33E1F07164CF35100CFA363 /* callbar_right_padding.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callbar_right_padding.png; path = Resources/callbar_right_padding.png; sourceTree = "<group>"; };
 		D3432A5C158A4446001C6B0B /* led_connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_connected.png; path = Resources/led_connected.png; sourceTree = "<group>"; };
 		D3432A5D158A4446001C6B0B /* led_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = led_error.png; path = Resources/led_error.png; sourceTree = "<group>"; };
 		D3432A5E158A4446001C6B0B /* call_quality_indicator_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = call_quality_indicator_0.png; path = Resources/call_quality_indicator_0.png; sourceTree = "<group>"; };
@@ -2998,6 +3004,8 @@
 				D31C9C8D158A1C1000756B45 /* call_status_incoming.png */,
 				D31C9C8E158A1C1000756B45 /* call_status_missed.png */,
 				D31C9C8F158A1C1000756B45 /* call_status_outgoing.png */,
+				D33E1F06164CF35100CFA363 /* callbar_left_padding.png */,
+				D33E1F07164CF35100CFA363 /* callbar_right_padding.png */,
 				D3E84F1715B00F4100420DAC /* cancel_default.png */,
 				D3E84F1815B00F4100420DAC /* cancel_over.png */,
 				D36C43CC158F2F370048BA40 /* cell_call.png */,
@@ -4201,6 +4209,8 @@
 				D3103926162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */,
 				D3103928162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */,
 				D310392A162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
+				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
+				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4707,6 +4717,8 @@
 				D3103927162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */,
 				D3103929162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */,
 				D310392B162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
+				D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */,
+				D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5266,7 +5278,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "EE9CAF78-3536-4133-BAAA-020FDF65D279";
+				PROVISIONING_PROFILE = "7763350E-083E-4ADA-8535-05883F19F947";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5676,7 +5688,7 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "79E53132-649F-48B3-A931-24792E466A11";
+				PROVISIONING_PROFILE = "2AC0DC11-4546-47B6-8B8A-453CCA80903C";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";

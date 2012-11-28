@@ -122,8 +122,30 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         linphone_address_destroy(parsed);
     }
     {
-        [self setInteger: linphone_core_get_audio_port(lc) forKey:@"audio_port_preference"];
-        [self setInteger: linphone_core_get_video_port(lc) forKey:@"video_port_preference"];
+        {
+            int minPort, maxPort;
+            linphone_core_get_audio_port_range(lc, &minPort, &maxPort);
+            if(minPort != maxPort)
+                [self setObject:[NSString stringWithFormat:@"%d-%d", minPort, maxPort] forKey:@"audio_port_preference"];
+            else
+                [self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"audio_port_preference"];
+        }
+        {
+            int minPort, maxPort;
+            linphone_core_get_video_port_range(lc, &minPort, &maxPort);
+            if(minPort != maxPort)
+                [self setObject:[NSString stringWithFormat:@"%d-%d", minPort, maxPort] forKey:@"video_port_preference"];
+            else
+                [self setObject:[NSString stringWithFormat:@"%d", minPort] forKey:@"video_port_preference"];
+        }
+    }
+    {
+        [self setInteger: linphone_core_get_upload_bandwidth(lc) forKey:@"upload_bandwidth_preference"];
+        [self setInteger: linphone_core_get_download_bandwidth(lc) forKey:@"download_bandwidth_preference"];
+    }
+    {
+        [self setFloat:linphone_core_get_playback_gain_db(lc) forKey:@"playback_gain_preference"];
+        [self setFloat:linphone_core_get_mic_gain_db(lc) forKey:@"microphone_gain_preference"];
     }
 	{
 		LCSipTransports tp;
@@ -212,8 +234,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
 	}
     {
-        [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "sipinfo_dtmf_preference", 0) forKey:@"sipinfo_dtmf_preference"];
-        [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rfc_dtmf_preference", 1) forKey:@"rfc_dtmf_preference"];
+        [self setBool:linphone_core_get_use_info_for_dtmf(lc) forKey:@"sipinfo_dtmf_preference"];
+        [self setBool:linphone_core_get_use_rfc2833_for_dtmf(lc) forKey:@"rfc_dtmf_preference"];
+        
+        [self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"incoming_call_timeout_preference"];
+        [self setInteger:linphone_core_get_in_call_timeout(lc) forKey:@"in_call_timeout_preference"];
     }
     
 
@@ -385,6 +410,47 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     [[[LinphoneManager instance] fastAddressBook] reload];
 }
 
++ (int)validPort:(int)port {
+    if(port < 0) {
+        return 0;
+    }
+    if(port > 65535) {
+        return 65535;
+    }
+    return port;
+}
+
++ (BOOL)parsePortRange:(NSString*)text minPort:(int*)minPort maxPort:(int*)maxPort {
+    NSError* error = nil;
+    *minPort = -1;
+    *maxPort = -1;
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9]+)(([^0-9]+)([0-9]+))?" options:0 error:&error];
+    if(error != NULL)
+        return FALSE;
+    NSArray* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
+    if([matches count] == 1) {
+        NSTextCheckingResult *match = [matches objectAtIndex:0];
+        NSLog(@"%d", [match numberOfRanges]);
+        bool range = [match rangeAtIndex:2].length > 0;
+        if(!range) {
+            NSRange rangeMinPort = [match rangeAtIndex:1];
+            *minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+            *maxPort = *minPort;
+            return TRUE;
+        } else {
+            NSRange rangeMinPort = [match rangeAtIndex:1];
+            *minPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMinPort] integerValue]];
+            NSRange rangeMaxPort = [match rangeAtIndex:4];
+            *maxPort = [LinphoneCoreSettingsStore validPort:[[text substringWithRange:rangeMaxPort] integerValue]];
+            if(*minPort > *maxPort) {
+                *minPort = *maxPort;
+            }
+           return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 - (BOOL)synchronize {
 	if (![LinphoneManager isLcReady]) return YES;
 	LinphoneCore *lc=[LinphoneManager getLc];
@@ -425,6 +491,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
     linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
+    linphone_core_set_inc_timeout(lc, [self integerForKey:@"incoming_call_timeout_preference"]);
+    linphone_core_set_in_call_timeout(lc, [self integerForKey:@"in_call_timeout_preference"]);
     
 	bool enableVideo = [self boolForKey:@"enable_video_preference"];
 	linphone_core_enable_video(lc, enableVideo, enableVideo);
@@ -472,10 +540,30 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     
 
     // Audio & Video Port
-    int audio_port_preference = [self integerForKey:@"audio_port_preference"];
-    linphone_core_set_audio_port(lc, audio_port_preference);
-    int video_port_preference = [self integerForKey:@"video_port_preference"];
-    linphone_core_set_video_port(lc, video_port_preference);
+    {
+        NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
+        int minPort, maxPort;
+        [LinphoneCoreSettingsStore parsePortRange:audio_port_preference minPort:&minPort maxPort:&maxPort];
+        linphone_core_set_audio_port_range(lc, minPort, maxPort);
+    }
+    {
+        NSString *video_port_preference = [self stringForKey:@"video_port_preference"];
+        int minPort, maxPort;
+        [LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&minPort maxPort:&maxPort];
+        linphone_core_set_video_port_range(lc, minPort, maxPort);
+    }
+    
+    int upload_bandwidth = [self integerForKey:@"upload_bandwidth_preference"];
+    linphone_core_set_upload_bandwidth(lc, upload_bandwidth);
+    
+    int download_bandwidth = [self integerForKey:@"download_bandwidth_preference"];
+    linphone_core_set_download_bandwidth(lc, download_bandwidth);
+    
+    float playback_gain = [self floatForKey:@"playback_gain_preference"];
+    linphone_core_set_playback_gain_db(lc, playback_gain);
+    
+    float mic_gain = [self floatForKey:@"microphone_gain_preference"];
+    linphone_core_set_mic_gain_db(lc, mic_gain);
     
 	UIDevice* device = [UIDevice currentDevice];
 	bool backgroundSupported = false;
@@ -503,6 +591,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
     BOOL animations = [self boolForKey:@"animations_preference"];
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", animations);
+    
+    BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
+	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", wifiOnly);
+    if([self valueChangedForKey:@"wifi_only_preference"]) {
+        [[LinphoneManager instance] setupNetworkReachabilityCallback];
+    }
+    
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
 	

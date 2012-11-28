@@ -10,3 +10,8 @@
 /* Send SIP INFO DTMFs */
 "Send SIP INFO DTMFs" = "Send SIP INFO DTMFs";
 
+/* Incoming call timeout */
+"Incoming call timeout" = "Incoming call timeout";
+
+/* In call timeout */
+"In call timeout" = "In call timeout";

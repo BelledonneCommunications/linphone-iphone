@@ -19,7 +19,7 @@
 
 #import "UICompositeViewController.h"
 
-#import "PhoneMainView.h"
+#import "LinphoneAppDelegate.h"
 
 @implementation UICompositeViewDescription
 
@@ -244,11 +244,6 @@
     return NO;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    [self clearCache];
-}
-
 
 #pragma mark - Event Functions
 
@@ -257,7 +252,7 @@
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
-            [PhoneMainView setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
+            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation != UIDeviceOrientationUnknown];
         }
     }
 }
@@ -265,18 +260,104 @@
 
 #pragma mark -
 
-- (void)clearCache {
+/*
+ Will simulate a device rotation
+ */
++ (void)setOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
+    UIView *firstResponder = nil;
+    for(UIWindow *window in [[UIApplication sharedApplication] windows]) {
+        if([NSStringFromClass(window.class) isEqualToString:@"UITextEffectsWindow"] ||
+           [NSStringFromClass(window.class) isEqualToString:@"_UIAlertOverlayWindow"] ) {
+            continue;
+        }
+        UIView *view = window;
+        UIViewController *controller = nil;
+        CGRect frame = [view frame];
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            controller = window.rootViewController;
+            view = controller.view;
+        }
+        UIInterfaceOrientation oldOrientation = controller.interfaceOrientation;
+        
+        NSTimeInterval animationDuration = 0.0;
+        if(animated) {
+            animationDuration = 0.3f;
+        }
+        [controller willRotateToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView beginAnimations:nil context:nil];
+            [UIView setAnimationDuration:animationDuration];
+        }
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+                [view setTransform: CGAffineTransformMakeRotation(0)];
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI)];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+                break;
+            default:
+                break;
+        }
+        if([window isKindOfClass:[UILinphoneWindow class]]) {
+            [view setFrame:frame];
+        }
+        [controller willAnimateRotationToInterfaceOrientation:orientation duration:animationDuration];
+        if(animated) {
+            [UIView commitAnimations];
+        }
+        [controller didRotateFromInterfaceOrientation:oldOrientation];
+        if(firstResponder == nil) {
+            firstResponder = [UICompositeViewController findFirstResponder:view];
+        }
+    }
+    [[UIApplication sharedApplication] setStatusBarOrientation:orientation animated:animated];
+    if(firstResponder) {
+        [firstResponder resignFirstResponder];
+        [firstResponder becomeFirstResponder];
+    }
+}
+
++ (UIView*)findFirstResponder:(UIView*)view {
+    if (view.isFirstResponder) {
+        return view;
+    }
+    for (UIView *subView in view.subviews) {
+        UIView *ret = [UICompositeViewController findFirstResponder:subView];
+        if (ret != nil)
+            return ret;
+    }
+    return nil;
+}
+
+- (void)clearCache:(NSArray *)exclude {
     for(NSString *key in [viewControllerCache allKeys]) {
-        UIViewController *vc = [viewControllerCache objectForKey:key];
-        if(vc != self.stateBarViewController &&
-           vc != self.tabBarViewController &&
-           vc != self.contentViewController) {
+        bool remove = true;
+        if(exclude != nil) {
+            for (UICompositeViewDescription *description in exclude) {
+                if([key isEqualToString:description.content] ||
+                   [key isEqualToString:description.stateBar] ||
+                   [key isEqualToString:description.tabBar]
+                   ) {
+                    remove = false;
+                    break;
+                }
+            }
+        }
+        if(remove) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Free cached view: %@", key];
+            UIViewController *vc = [viewControllerCache objectForKey:key];
             if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
                 [vc viewWillUnload];
             }
             [vc viewDidUnload];
+            [viewControllerCache removeObjectForKey:key];
         }
-        [viewControllerCache removeObjectForKey:key];
     }
 }
 
@@ -435,7 +516,7 @@
         // Update rotation
         UIInterfaceOrientation correctOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
         if(currentOrientation != correctOrientation) {
-            [PhoneMainView setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
+            [UICompositeViewController setOrientation:correctOrientation animated:currentOrientation!=UIDeviceOrientationUnknown];
         } else {
             if(oldContentViewController != newContentViewController) {
                 UIInterfaceOrientation oldOrientation = self.contentViewController.interfaceOrientation;
@@ -521,7 +602,7 @@
         tabFrame.origin.y = viewFrame.size.height;
         tabFrame.origin.x = viewFrame.size.width;
         tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-        tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
+        //tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
         tabFrame.origin.y -= tabFrame.size.height;
         tabFrame.origin.x -= tabFrame.size.width;
         contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
