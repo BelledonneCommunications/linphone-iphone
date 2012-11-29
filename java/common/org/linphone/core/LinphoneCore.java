@@ -856,4 +856,14 @@ public interface LinphoneCore {
 	 * Set username and display name to use if no LinphoneProxyConfig configured
 	 */
 	void setPrimaryContact(String displayName, String username);
+	
+	/**
+	 * Enable/Disable the use of SIP INFO for DTMFs
+	 */
+	void setUseSipInfoForDtmfs(boolean use);
+	
+	/**
+	 * Enable/Disable the use of inband DTMFs
+	 */
+	void setUseRfc2833ForDtmfs(boolean use);
 }

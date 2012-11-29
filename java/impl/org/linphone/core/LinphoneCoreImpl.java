@@ -798,4 +798,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void setPrimaryContact(String displayName, String username) {
 		setPrimaryContact(nativePtr, displayName, username);
 	}
+	
+	private native void setUseSipInfoForDtmfs(long ptr, boolean use);
+	public void setUseSipInfoForDtmfs(boolean use) {
+		setUseSipInfoForDtmfs(nativePtr, use);
+	}
+	
+	private native void setUseRfc2833ForDtmfs(long ptr, boolean use);
+	public void setUseRfc2833ForDtmfs(boolean use) {
+		setUseRfc2833ForDtmfs(nativePtr, use);
+	}
 }
