@@ -1869,11 +1869,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEn
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseSipInfoForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jbool use){
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseSipInfoForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jboolean use){
 	linphone_core_set_use_info_for_dtmf((LinphoneCore *)lc, (bool) use);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseRfc2833ForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jbool use){
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseRfc2833ForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jboolean use){
 	linphone_core_set_use_rfc2833_for_dtmf((LinphoneCore *)lc, (bool) use);
 }
 
