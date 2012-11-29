@@ -527,7 +527,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
 	sal_expire_old_registration_contacts(lc->sal,lp_config_get_int(lc->config,"sip","expire_old_registration_contacts",0));
 
-	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",0);
+	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",1);
 	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
