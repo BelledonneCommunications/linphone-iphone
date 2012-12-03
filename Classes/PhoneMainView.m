@@ -582,8 +582,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
     if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
         return;
     LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+    float level = [UIDevice currentDevice].batteryLevel;
     if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
-        float level = [UIDevice currentDevice].batteryLevel;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Video call is running. Battery level: %.2f", level];
         if (level < 0.1 && !appData->batteryWarningShown) {
             DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
@@ -597,6 +597,9 @@ static PhoneMainView* phoneMainViewInstance=nil;
             [sheet showInView:self.view];
             appData->batteryWarningShown = TRUE;
         }
+    }
+    if (level >= 0.1) {
+        appData->batteryWarningShown = FALSE;
     }
 }
 
