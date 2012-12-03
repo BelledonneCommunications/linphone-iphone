@@ -950,7 +950,7 @@ bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) 
  * 
 **/
 void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled){
-	cp->low_bandwidth=TRUE;
+	cp->low_bandwidth=enabled;
 }
 
 /**
