@@ -655,7 +655,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [[PhoneMainView instance].mainViewController clearCache:[NSArray arrayWithObject:[[PhoneMainView  instance] currentView]]];
     } else  if([key isEqual:@"battery_alert_button"]) {
         [[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
-        [[UIDevice currentDevice] _setBatteryLevel:0.09f];
+        [[UIDevice currentDevice] _setBatteryLevel:0.01f];
         [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
     }
 #endif
