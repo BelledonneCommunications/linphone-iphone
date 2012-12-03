@@ -2,7 +2,7 @@
 download_bw=512
 upload_bw=512
 mtu=1300
-activate_edge_workarounds=1
+activate_edge_workarounds=0
 edge_ping_time=200
 edge_bw=10
 
