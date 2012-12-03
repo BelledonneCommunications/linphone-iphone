@@ -201,7 +201,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
     [self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rotation_preference", "auto") forKey:@"rotation_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "edge_opt_preference", 1) forKey:@"edge_opt_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "edge_opt_preference", 0) forKey:@"edge_opt_preference"];
     [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", 1) forKey:@"animations_preference"];
