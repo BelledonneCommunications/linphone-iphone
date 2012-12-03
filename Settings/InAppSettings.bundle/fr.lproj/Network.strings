@@ -1,6 +1,9 @@
 /* Wifi only */
 "Wifi only" = "Uniquement Wifi";
 
+/* Edge optimization */
+"Edge optimization" = "Optimisation Edge";
+
 /* Stun Server */
 "Stun Server" = "Serveur Stun";
 

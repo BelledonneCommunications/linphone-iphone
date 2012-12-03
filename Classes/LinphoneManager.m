@@ -1139,11 +1139,13 @@ static void audioRouteChangeListenerCallback (
 
 - (void)acceptCall:(LinphoneCall *)call {
     LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
-    bool low_bandwidth = self.network == network_2g;
-    if(low_bandwidth) {
-        [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+    if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
+        bool low_bandwidth = self.network == network_2g;
+        if(low_bandwidth) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+        }
+        linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     }
-    linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     linphone_core_accept_call_with_params(theLinphoneCore,call, lcallParams);
 }
 
@@ -1178,11 +1180,13 @@ static void audioRouteChangeListenerCallback (
 	//get default proxy
 	linphone_core_get_default_proxy(theLinphoneCore,&proxyCfg);
 	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
-    bool low_bandwidth = self.network == network_2g;
-    if(low_bandwidth) {
-        [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+    if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
+        bool low_bandwidth = self.network == network_2g;
+        if(low_bandwidth) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+        }
+        linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     }
-    linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
 	LinphoneCall* call=NULL;
 	
 	if ([address length] == 0) return; //just return

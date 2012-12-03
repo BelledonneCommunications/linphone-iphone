@@ -24,6 +24,7 @@ firewall_policy=0
 [app]
 rotation_preference=auto
 animations_preference=1
+edge_opt_preference=1
 
 [default_values]
 reg_expires=600

@@ -201,7 +201,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setString:val forKey:@"media_encryption_preference"];
 	}
     [self setString: lp_config_get_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rotation_preference", "auto") forKey:@"rotation_preference"];
-	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
+	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "edge_opt_preference", 1) forKey:@"edge_opt_preference"];
+    [self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", 0) forKey:@"enable_first_login_view_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "debugenable_preference", 0) forKey:@"debugenable_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "animations_preference", 1) forKey:@"animations_preference"];
 	[self setBool: lp_config_get_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "wifi_only_preference", 0) forKey:@"wifi_only_preference"];
@@ -575,10 +576,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	} else {
 		isbackgroundModeEnabled = false;
 	}
+    
 	lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "backgroundmode_preference", isbackgroundModeEnabled);
 	
     BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
     lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "enable_first_login_view_preference", firstloginview);
+    
+    BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
+    lp_config_set_int(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "edge_opt_preference", edgeOpt);
     
     NSString *landscape = [self stringForKey:@"rotation_preference"];
     lp_config_set_string(linphone_core_get_config(lc), LINPHONERC_APPLICATION_KEY, "rotation_preference", [landscape UTF8String]);
