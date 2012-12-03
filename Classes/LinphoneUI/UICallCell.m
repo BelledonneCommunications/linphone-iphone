@@ -61,9 +61,11 @@
                 self.address = [FastAddressBook getContactDisplayName:contact];
                 UIImage *tmpImage = [FastAddressBook getContactImage:contact thumbnail:false];
                 if(tmpImage != nil) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (unsigned long)NULL), ^(void) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
                         UIImage *tmpImage2 = [UIImage decodedImageWithImage:tmpImage];
-                        self.image = tmpImage2;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self setImage: tmpImage2];
+                        });
                     });
                 }
             }

@@ -348,7 +348,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)saveAndSend:(UIImage*)image url:(NSURL*)url {
     if(url == nil) {
         [waitView setHidden:FALSE];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[LinphoneManager instance].photoLibrary writeImageToSavedPhotosAlbum:image.CGImage
                                                                       orientation:(ALAssetOrientation)[image imageOrientation]
                                                                   completionBlock:^(NSURL *assetURL, NSError *error){
@@ -381,7 +381,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [waitView setHidden:FALSE];
     
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         //UIImage *image = [original_image normalizedImage];
         for(NSString *key in [imageQualities allKeys]) {
             NSNumber *number = [imageQualities objectForKey:key];

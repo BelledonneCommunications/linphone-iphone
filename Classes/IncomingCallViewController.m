@@ -21,6 +21,7 @@
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "PhoneMainView.h"
+#import "UILinphone.h"
 
 @implementation IncomingCallViewController
 
@@ -113,7 +114,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)update {
     [self view]; //Force view load
     
-    UIImage *image = nil;
+    [avatarImage setImage:[UIImage imageNamed:@"avatar_unknown.png"]];
+    
     NSString* address = nil;
     const LinphoneAddress* addr = linphone_call_get_remote_address(call);
     if (addr != NULL) {
@@ -124,7 +126,15 @@ static UICompositeViewDescription *compositeDescription = nil;
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
             ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
             if(contact) {
-                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                UIImage *tmpImage = [FastAddressBook getContactImage:contact thumbnail:false];
+                if(tmpImage != nil) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+                        UIImage *tmpImage2 = [UIImage decodedImageWithImage:tmpImage];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            avatarImage.image = tmpImage2;
+                        });
+                    });
+                }
                 address = [FastAddressBook getContactDisplayName:contact];
                 useLinphoneAddress = false;
             }
@@ -139,12 +149,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                 address = [NSString stringWithUTF8String:lUserName];
         }
     }
-    
-    // Set Image
-    if(image == nil) {
-        image = [UIImage imageNamed:@"avatar_unknown.png"];
-    }
-    [avatarImage setImage:image];
     
     // Set Address
     if(address == nil) {

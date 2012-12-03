@@ -127,7 +127,7 @@ static UIFont *CELL_FONT = nil;
         [messageImageView startLoading];
         ChatModel *achat = chat;
         [[LinphoneManager instance].photoLibrary assetForURL:[NSURL URLWithString:[chat message]] resultBlock:^(ALAsset *asset) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (unsigned long)NULL), ^(void) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
                 ALAssetRepresentation* representation = [asset defaultRepresentation];
                 UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]
                                                      scale:representation.scale
