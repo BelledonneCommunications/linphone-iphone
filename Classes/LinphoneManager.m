@@ -96,6 +96,7 @@ extern  void libmsbcg729_init();
 @implementation LinphoneManager
 
 @synthesize connectivity;
+@synthesize network;
 @synthesize frontCamId;
 @synthesize backCamId;
 @synthesize database;
@@ -142,7 +143,7 @@ struct codec_name_pref_table codec_pref_table[]={
 + (NSSet *)unsupportedCodecs {
     NSMutableSet *set = [NSMutableSet set];
 	for(int i=0;codec_pref_table[i].name!=NULL;++i) {
-        if(linphone_core_find_payload_type([LinphoneManager getLc],codec_pref_table[i].name
+        if(linphone_core_find_payload_type(theLinphoneCore,codec_pref_table[i].name
 										   , codec_pref_table[i].rate,LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS) == NULL) {
             [set addObject:codec_pref_table[i].prefname];
 		}
@@ -395,7 +396,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		/*should we reject this call ?*/
 		if ([lCTCallCenter currentCalls]!=nil) {
 			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
-			linphone_core_decline_call([LinphoneManager getLc], call,LinphoneReasonBusy);
+			linphone_core_decline_call(theLinphoneCore, call,LinphoneReasonBusy);
 			[lCTCallCenter release];
 			return;
 		}
@@ -469,7 +470,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
-        if(linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+        if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
             [self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
 		}
@@ -641,18 +642,18 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
 	SCNetworkReachabilityFlags networkDownFlags=kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand;
 
-	if ([LinphoneManager getLc] != nil) {
+	if (theLinphoneCore != nil) {
 		LinphoneProxyConfig* proxy;
-		linphone_core_get_default_proxy([LinphoneManager getLc], &proxy);
+		linphone_core_get_default_proxy(theLinphoneCore, &proxy);
 
         struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
 		if ((flags == 0) || (flags & networkDownFlags)) {
-			linphone_core_set_network_reachable([LinphoneManager getLc],false);
+			linphone_core_set_network_reachable(theLinphoneCore, false);
 			lLinphoneMgr.connectivity = none;
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
+			BOOL isWifiOnly = lp_config_get_int(linphone_core_get_config(theLinphoneCore), LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
             if (!ctx || ctx->testWWan)
                 newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
             else
@@ -672,11 +673,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			
 			if (lLinphoneMgr.connectivity != newConnectivity) {
 				// connectivity has changed
-				linphone_core_set_network_reachable([LinphoneManager getLc],false);
+				linphone_core_set_network_reachable(theLinphoneCore,false);
 				if (newConnectivity == wwan && proxy && isWifiOnly) {
 					linphone_proxy_config_expires(proxy, 0);
 				} 
-				linphone_core_set_network_reachable([LinphoneManager getLc],true);
+				linphone_core_set_network_reachable(theLinphoneCore,true);
 				[LinphoneLogger logc:LinphoneLoggerLog format:"Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan")];
 				[lLinphoneMgr waitForRegisterToArrive];
 			}
@@ -718,6 +719,21 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	if (SCNetworkReachabilityGetFlags(proxyReachability, &flags)) {
 		networkReachabilityCallBack(proxyReachability,flags,nil);
 	}
+}
+
+- (NetworkType)network {
+    UIApplication *app = [UIApplication sharedApplication];
+    NSArray *subviews = [[[app valueForKey:@"statusBar"] valueForKey:@"foregroundView"]    subviews];
+    NSNumber *dataNetworkItemView = nil;
+    
+    for (id subview in subviews) {
+        if([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
+            dataNetworkItemView = subview;
+            break;
+        }
+    }
+    NSNumber *number = (NSNumber*)[dataNetworkItemView valueForKey:@"dataNetworkType"];
+    return [number intValue];
 }
 
 
@@ -910,10 +926,10 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 - (void)acceptCallForCallId:(NSString*)callid {
     //first, make sure this callid is not already involved in a call
 	if ([LinphoneManager isLcReady]) {
-		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
+		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
         MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
 		if (call != NULL) {
-            linphone_core_accept_call(theLinphoneCore, (LinphoneCall*)call->data);
+            [self acceptCall:(LinphoneCall*)call->data];
 			return;
 		};
 	}
@@ -922,7 +938,7 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 - (void)enableAutoAnswerForCallId:(NSString*) callid {
     //first, make sure this callid is not already involved in a call
 	if ([LinphoneManager isLcReady]) {
-		MSList* calls = (MSList*)linphone_core_get_calls([LinphoneManager getLc]);
+		MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
 		if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
 			[LinphoneLogger log:LinphoneLoggerWarning format:@"Call id [%@] already handled",callid];
 			return;
@@ -1121,6 +1137,18 @@ static void audioRouteChangeListenerCallback (
 
 #pragma mark - Call Functions
 
+- (void)acceptCall:(LinphoneCall *)call {
+    LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
+    if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
+        bool low_bandwidth = self.network == network_2g;
+        if(low_bandwidth) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+        }
+        linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
+    }
+    linphone_core_accept_call_with_params(theLinphoneCore,call, lcallParams);
+}
+
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer {
     if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Network Error",nil)
@@ -1150,8 +1178,15 @@ static void audioRouteChangeListenerCallback (
 	
 	LinphoneProxyConfig* proxyCfg;	
 	//get default proxy
-	linphone_core_get_default_proxy([LinphoneManager getLc],&proxyCfg);
-	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters([LinphoneManager getLc]);
+	linphone_core_get_default_proxy(theLinphoneCore,&proxyCfg);
+	LinphoneCallParams* lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
+    if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
+        bool low_bandwidth = self.network == network_2g;
+        if(low_bandwidth) {
+            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+        }
+        linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
+    }
 	LinphoneCall* call=NULL;
 	
 	if ([address length] == 0) return; //just return
@@ -1161,9 +1196,9 @@ static void audioRouteChangeListenerCallback (
             linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
-            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         } else {
-            call=linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
+            call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
         }
         linphone_address_destroy(linphoneAddress);
 	} else if (proxyCfg==nil){
@@ -1176,16 +1211,16 @@ static void audioRouteChangeListenerCallback (
 		[error release];
 	} else {
 		char normalizedUserName[256];
-        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));  
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));  
 		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
         linphone_address_set_username(linphoneAddress, normalizedUserName);
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
-            linphone_core_transfer_call([LinphoneManager getLc], linphone_core_get_current_call([LinphoneManager getLc]), normalizedUserName);
+            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), normalizedUserName);
         } else {
-            call=linphone_core_invite_address_with_params([LinphoneManager getLc], linphoneAddress, lcallParams);
+            call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
         }
         linphone_address_destroy(linphoneAddress);
 	}

@@ -183,7 +183,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
             contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
             if(contact) {
-                image = [FastAddressBook getContactImage:contact thumbnail:false];
+                image = [FastAddressBook getContactImage:contact thumbnail:true];
                 address = [FastAddressBook getContactDisplayName:contact];
                 useLinphoneAddress = false;
             }

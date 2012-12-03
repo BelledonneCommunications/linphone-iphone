@@ -48,10 +48,19 @@ extern NSString *const kLinphoneSettingsUpdate;
 
 extern NSString *const kContactSipField;
 
+typedef enum _NetworkType {
+    network_none = 0,
+    network_2g,
+    network_3g,
+    network_4g,
+    network_lte,
+    network_wifi
+} NetworkType;
+
 typedef enum _Connectivity {
 	wifi,
-	wwan
-	,none
+	wwan,
+    none
 } Connectivity;
 
 /* Application specific call context */
@@ -127,6 +136,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
 
+- (void)acceptCall:(LinphoneCall *)call;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
@@ -144,6 +154,7 @@ typedef struct _LinphoneManagerSounds {
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
+@property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
 @property (readonly) sqlite3* database;
