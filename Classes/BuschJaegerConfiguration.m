@@ -571,24 +571,25 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     return FALSE;
 }
 
-- (NSString*)addUserNameAndPasswordToUrl:(NSString*)url
-{
+- (NSString*)addUserNameAndPasswordToUrl:(NSString*)url {
     NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
     NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
   
     // add username and password
     NSString* domain;
     NSString* proto;
-    NSRange range = [url rangeOfString:@"https"];
-    if (range.location == 0)
-    {
+    NSRange range = [url rangeOfString:@"https" options:NSCaseInsensitiveSearch];
+    if (range.location == 0) {
         proto = @"https://";
         domain = [url substringFromIndex:8];
-    }
-    else
-    {
+    } else {
+        NSRange range = [url rangeOfString:@"http" options:NSCaseInsensitiveSearch];
         proto = @"http://";
-        domain = [url substringFromIndex:7];
+        if (range.location == 0) {
+            domain = [url substringFromIndex:7];
+        } else {
+            domain = url;
+        }
     }
     
     return [NSString stringWithFormat:@"%@%@:%@@%@", proto, username, password, domain];
