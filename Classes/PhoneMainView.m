@@ -565,7 +565,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 	if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
 		if ([[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
-			linphone_core_accept_call(linphone_call_get_core(call),call);
+            [[LinphoneManager instance] acceptCall:call];
 		}else{
 			IncomingCallViewController *controller = DYNAMIC_CAST([self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],IncomingCallViewController);
 			if(controller != nil) {
@@ -607,7 +607,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)incomingCallAccepted:(LinphoneCall*)call {
-    linphone_core_accept_call([LinphoneManager getLc], call);
+    [[LinphoneManager instance] acceptCall:call];
 }
 
 - (void)incomingCallDeclined:(LinphoneCall*)call {
