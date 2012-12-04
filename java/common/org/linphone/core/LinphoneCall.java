@@ -268,6 +268,11 @@ public interface LinphoneCall {
 	boolean isInConference();
 	
 	float getPlayVolume();
+
+	/**
+	 * Obtain the remote user agent string. 
+	 */
+	String getRemoteUserAgent();
 	
 	/**
 	 * Take a photo of currently received video and write it into a jpeg file.

@@ -1488,6 +1488,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteAddress(	JNIEn
 	return (jlong)linphone_call_get_remote_address((LinphoneCall*)ptr);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_get_remoteUserAgent(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *)ptr;
+	jstring jvalue = env->NewStringUTF(linphone_call_get_remote_user_agent(call));
+	return jvalue;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
