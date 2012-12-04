@@ -625,6 +625,10 @@
 		D350F22615A43D3400149E54 /* setup_start_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21815A43D3400149E54 /* setup_start_default.png */; };
 		D350F22815A43D3400149E54 /* setup_start_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21915A43D3400149E54 /* setup_start_over.png */; };
 		D350F22C15A43D3400149E54 /* setup_welcome_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D350F21B15A43D3400149E54 /* setup_welcome_logo.png */; };
+		D35204F6166E1F3800887A94 /* libNinePatch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B90E1915C2CB5800F64F8C /* libNinePatch.a */; };
+		D35204F7166E1F3800887A94 /* libXMLRPC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3554ED115CA79AA00478841 /* libXMLRPC.a */; };
+		D35204F8166E1F4700887A94 /* libNinePatch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B90E1915C2CB5800F64F8C /* libNinePatch.a */; };
+		D35204F9166E1F4700887A94 /* libXMLRPC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3554ED115CA79AA00478841 /* libXMLRPC.a */; };
 		D35406F715A47E9E007E7E81 /* button_background_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F515A47E9E007E7E81 /* button_background_default.png */; };
 		D35406F915A47E9E007E7E81 /* button_background_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D35406F615A47E9E007E7E81 /* button_background_over.png */; };
 		D354944C160B615A0027E44E /* linphone_splashscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = D354944A160B615A0027E44E /* linphone_splashscreen.png */; };
@@ -2307,6 +2311,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D35204F8166E1F4700887A94 /* libNinePatch.a in Frameworks */,
+				D35204F9166E1F4700887A94 /* libXMLRPC.a in Frameworks */,
 				22B5F03510CE6B2F00777D97 /* AddressBook.framework in Frameworks */,
 				22B5EFA310CE50BD00777D97 /* AddressBookUI.framework in Frameworks */,
 				22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */,
@@ -2365,6 +2371,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D35204F6166E1F3800887A94 /* libNinePatch.a in Frameworks */,
+				D35204F7166E1F3800887A94 /* libXMLRPC.a in Frameworks */,
 				22D8F170147548E2008C97DB /* AVFoundation.framework in Frameworks */,
 				22D8F172147548E2008C97DB /* AddressBook.framework in Frameworks */,
 				22D8F171147548E2008C97DB /* AddressBookUI.framework in Frameworks */,
@@ -5253,14 +5261,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5326,14 +5326,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5376,14 +5368,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
 			};
@@ -5424,14 +5408,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
 			};
@@ -5473,14 +5449,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
 			};
@@ -5522,14 +5490,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = "linphone-no-gpl-thirdparties";
 				SKIP_INSTALL = NO;
 			};
@@ -5593,14 +5553,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5666,14 +5618,6 @@
 					"\"$(SRCROOT)/liblinphone-sdk/apple-darwin/lib\"",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libNinePatch.a",
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libXMLRPC.a",
-					"-Objc",
-				);
 				PRODUCT_NAME = linphone;
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
