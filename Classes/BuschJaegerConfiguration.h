@@ -40,6 +40,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
     BuschJaegerConfigurationRequestType_Global
 } BuschJaegerConfigurationRequestType;
 
+@property (readonly) bool valid;
 @property (readonly) NSData *homeAP;
 @property (readonly) NSMutableSet *history;
 @property (readonly) NSMutableSet *users;

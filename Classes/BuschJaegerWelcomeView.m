@@ -115,10 +115,12 @@
 
 - (void)reload {
     [self view]; // Force view load
-    if([[LinphoneManager instance].configuration loadHistory:self]) {
-        [waitView setHidden:FALSE];
-    } else {
-        [waitView setHidden:TRUE];
+    if([LinphoneManager runningOnIpad] && [LinphoneManager instance].configuration.valid) {
+        if([[LinphoneManager instance].configuration loadHistory:self]) {
+            [waitView setHidden:FALSE];
+        } else {
+            [waitView setHidden:TRUE];
+        }
     }
 }
 

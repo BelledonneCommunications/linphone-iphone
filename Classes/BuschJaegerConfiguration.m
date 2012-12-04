@@ -26,6 +26,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 
 @implementation BuschJaegerConfiguration
 
+@synthesize valid;
 @synthesize homeAP;
 @synthesize outdoorStations;
 @synthesize users;
@@ -100,6 +101,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
         network = [[Network alloc] init];
         levelPushButton = [[LevelPushButton alloc] init];
         certificate = NULL;
+        valid = FALSE;
         [self reloadCertificates];
         homeAP = [[[NSUserDefaults standardUserDefaults] dataForKey:CONFIGURATION_HOME_AP_KEY] retain];
     }
@@ -277,7 +279,9 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
             });
             return TRUE;
         }
-    } 
+    }  else {
+        [LinphoneLogger log:LinphoneLoggerWarning format:@"No certificates to download"];
+    }
     return FALSE;
 }
 
@@ -312,6 +316,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (void)reset {
+    valid = FALSE;
     [homeAP release];
     [history removeAllObjects];
     [outdoorStations removeAllObjects];
@@ -364,7 +369,11 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
         [LinphoneLogger log:LinphoneLoggerError format:@"Can't read BuschJaeger ini file: %@", [error localizedDescription]];
         return FALSE;
     }
-    return [self parseConfig:data delegate:nil];
+    if([self parseConfig:data delegate:nil]) {
+        valid = TRUE;
+        [LinphoneLogger log:LinphoneLoggerDebug format:@"Parsing ok"];
+    }
+    return valid;
 }
 
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
@@ -388,7 +397,10 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                 } else {
                     NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                     if(urlResponse.statusCode == 200) {
+                        [LinphoneLogger log:LinphoneLoggerDebug format:@"Download ok"];
                         if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
+                            valid = TRUE;
+                            [LinphoneLogger log:LinphoneLoggerDebug format:@"Parsing ok"];
                             homeAP = [[LinphoneManager getWifiData] retain];
                             [[NSUserDefaults standardUserDefaults] setObject:homeAP forKey:CONFIGURATION_HOME_AP_KEY];
                             [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
