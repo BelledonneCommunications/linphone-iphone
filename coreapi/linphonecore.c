@@ -2882,8 +2882,11 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		sal_op_set_contact(call->op,contact);
 
 	if (params){
+		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
 		call->params=*params;
-		call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
+		// There might not be a md if the INVITE was lacking an SDP
+		// In this case we use the parameters as is.
+		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 		call->camera_active=call->params.has_video;
 		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
