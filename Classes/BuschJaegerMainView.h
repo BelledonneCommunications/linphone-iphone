@@ -33,6 +33,8 @@
 @interface BuschJaegerMainView : UIViewController {
 @private
     int loadCount;
+    NSTimer *historyTimer;
+    NSOperationQueue *historyQueue;
 }
 
 @property (nonatomic, retain) IBOutlet UINavigationControllerEx *navigationController;
@@ -42,6 +44,8 @@
 @property (nonatomic, retain) IBOutlet BuschJaegerWelcomeView *welcomeView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryView *historyView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryDetailsView *historyDetailsView;
+
+- (void)updateIconBadge:(id)info;
 
 + (BuschJaegerMainView*) instance;
 

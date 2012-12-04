@@ -56,6 +56,7 @@ typedef enum _BuschJaegerConfigurationRequestType{
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
 - (BOOL)loadHistory:(id<BuschJaegerConfigurationDelegate>)delegate;
+- (NSMutableSet*)getHistory;
 - (BOOL)removeHistory:(History*)history delegate:(id<BuschJaegerConfigurationDelegate>)delegate;
 
 - (User*)getCurrentUser;

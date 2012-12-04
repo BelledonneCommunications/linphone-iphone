@@ -90,6 +90,14 @@ static BuschJaegerMainView* mainViewInstance=nil;
     assert (!mainViewInstance);
     mainViewInstance = self;
     loadCount = 0;
+    historyTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
+                                                    target: self
+                                                  selector: @selector(updateIconBadge:)
+                                                  userInfo: nil
+                                                   repeats: YES];
+    historyQueue = [[NSOperationQueue alloc] init];
+    historyQueue.name = @"History queue";
+    historyQueue.maxConcurrentOperationCount = 1;
 }
 
 - (id)init {
@@ -125,6 +133,9 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [historyView release];
     [historyDetailsView release];
     
+    [historyTimer invalidate];
+    [historyQueue release];
+    
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -148,6 +159,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [self.view addSubview:view];
     [navigationController pushViewController:welcomeView animated:FALSE];
     [self networkUpdate:[[LinphoneManager instance].configuration.homeAP isEqualToData:[LinphoneManager getWifiData]]];
+    [self updateIconBadge:nil];
 }
 
 - (void)viewDidUnload {
@@ -206,6 +218,21 @@ static BuschJaegerMainView* mainViewInstance=nil;
 
 
 #pragma mark - Event Functions
+
+- (void)updateIconBadge:(id)info {
+    if([historyQueue operationCount] == 0) {
+        [historyQueue addOperationWithBlock:^(void) {
+            if([[LinphoneManager instance] configuration].valid) {
+                NSMutableSet *set = [[[LinphoneManager instance] configuration] getHistory];
+                if(set != nil) {
+                    int missed = [set count] - [[[LinphoneManager instance] configuration].history count];
+                    if(missed < 0) missed = 0;
+                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:missed];
+                }
+            }
+        }];
+    }
+}
 
 - (void)callUpdateEvent: (NSNotification*) notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
@@ -272,6 +299,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
                 [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
             }
+            [self updateIconBadge:nil];
 			break;
         }
         default:

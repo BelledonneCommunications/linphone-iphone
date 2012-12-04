@@ -103,6 +103,7 @@
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
 - (void)buschJaegerConfigurationSuccess {
+    [[BuschJaegerMainView instance] updateIconBadge:nil];
     [waitView setHidden:TRUE];
     [self update];
 }

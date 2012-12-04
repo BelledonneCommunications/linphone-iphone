@@ -427,14 +427,43 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     return FALSE;
 }
 
+- (NSMutableSet*)getHistory {
+    NSMutableSet *set;
+    NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
+    url = [self addUserNameAndPasswordToUrl:url];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
+    if(request != nil) {
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        NSData *data  = nil;
+        data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
+        if(data != nil){
+            NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+            if(urlResponse.statusCode == 200) {
+                set = [[[NSMutableSet alloc] init] autorelease];
+                NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
+                NSArray *arr = [dataString componentsSeparatedByString:@"\n"];
+                for (NSString *line in arr) {
+                    if([line length]) {
+                        History *his = [History parse:line];
+                        if(his) {
+                            [set addObject:his];
+                        }
+                    }
+                }
+                [dataString release];
+            }
+        }
+    }
+    return set;
+}
+
 - (BOOL)loadHistory:(id<BuschJaegerConfigurationDelegate>)delegate {
     [history removeAllObjects];
     NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
     url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
-         //[NSURLConnection connectionWithRequest:request delegate:self];
-
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
