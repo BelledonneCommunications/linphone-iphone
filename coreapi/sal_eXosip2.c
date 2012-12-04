@@ -343,8 +343,6 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.text_received=(SalOnTextReceived)unimplemented_stub;
 	if (ctx->callbacks.ping_reply==NULL)
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
-	if (ctx->callbacks.message_external_body==NULL)
-		ctx->callbacks.message_external_body=(SalOnMessageExternalBodyReceived)unimplemented_stub;
 }
 
 int sal_unlisten_ports(Sal *ctx){
@@ -486,6 +484,10 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa) {
 		ms_free(ctx->rootCa);
 	ctx->rootCa = ms_strdup(rootCa);
 	set_tls_options(ctx);
+}
+
+const char *sal_get_root_ca(Sal* ctx) {
+	return ctx->rootCa;
 }
 
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
@@ -1728,11 +1730,13 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
-	char *from=NULL,*msg;
+	char *from=NULL,*msg=NULL;
 	osip_content_type_t* content_type;
 	osip_uri_param_t* external_body_url; 
 	char unquoted_external_body_url [256];
 	int external_body_size=0;
+	SalMessage salmsg;
+	char message_id[256]={0};
 	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
@@ -1744,14 +1748,14 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		&& strcmp(content_type->type, "text")==0 
 		&& content_type->subtype
 		&& strcmp(content_type->subtype, "plain")==0 ) {
-	osip_message_get_body(ev->request,0,&body);
-	if (body==NULL){
-		ms_error("Could not get text message from SIP body");
-		return;
-	}
-	msg=body->body;
-	sal->callbacks.text_received(sal,from,msg);
-	} if (content_type->type 
+		osip_message_get_body(ev->request,0,&body);
+		if (body==NULL){
+			ms_error("Could not get text message from SIP body");
+			osip_free(from);
+			return;
+		}
+		msg=body->body;
+	}else if (content_type->type 
 		  && strcmp(content_type->type, "message")==0 
 		  && content_type->subtype
 		  && strcmp(content_type->subtype, "external-body")==0 ) {
@@ -1762,11 +1766,18 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 				,&external_body_url->gvalue[1]
 				,external_body_size=MIN(strlen(external_body_url->gvalue)-1,sizeof(unquoted_external_body_url)));
 		unquoted_external_body_url[external_body_size-1]='\0';
-		sal->callbacks.message_external_body(sal,from,unquoted_external_body_url);
-		
 	} else {
 		ms_warning("Unsupported content type [%s/%s]",content_type->type,content_type->subtype);
+		osip_free(from);
+		return;
 	}
+	snprintf(message_id,sizeof(message_id)-1,"%s%s",ev->request->call_id->number,ev->request->cseq->number);
+	
+	salmsg.from=from;
+	salmsg.text=msg;
+	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
+	salmsg.message_id=message_id;
+	sal->callbacks.text_received(sal,&salmsg);
 	osip_free(from);
 }
 
@@ -1790,7 +1801,7 @@ static void other_request(Sal *sal, eXosip_event_t *ev){
 		}else ms_warning("Ignored REFER not coming from this local loopback interface.");
 	}else if (strncmp(ev->request->sip_method, "UPDATE", 6) == 0){
 		inc_update(sal,ev);
-    }else {
+	}else {
 		char *tmp=NULL;
 		size_t msglen=0;
 		osip_message_to_str(ev->request,&tmp,&msglen);

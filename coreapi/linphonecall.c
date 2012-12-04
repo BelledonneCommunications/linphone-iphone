@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include <ortp/event.h>
 #include <ortp/b64.h>
-
+#include <math.h>
 
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msvolume.h"
@@ -208,22 +208,21 @@ static void update_media_description_from_stun(SalMediaDescription *md, const St
 	
 }
 
-
-static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, LinphoneCall *call, unsigned int session_id, unsigned int session_ver){
+void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
 	MSList *l;
 	PayloadType *pt;
+	SalMediaDescription *old_md=call->localdesc;
 	int i;
 	const char *me=linphone_core_get_identity(lc);
 	LinphoneAddress *addr=linphone_address_new(me);
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
+	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
 	
-	if (call->ping_time>0) {
-		linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
-	}
+	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 
-	md->session_id=session_id;
-	md->session_ver=session_ver;
+	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
+	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->nstreams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
@@ -248,8 +247,6 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
-	
-
 
 	if (call->params.has_video){
 		md->nstreams++;
@@ -263,15 +260,22 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 	
 	for(i=0; i<md->nstreams; i++) {
 		if (md->streams[i].proto == SalProtoRtpSavp) {
-			md->streams[i].crypto[0].tag = 1;
-			md->streams[i].crypto[0].algo = AES_128_SHA1_80;
-			if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key))
-				md->streams[i].crypto[0].algo = 0;
-			md->streams[i].crypto[1].tag = 2;
-			md->streams[i].crypto[1].algo = AES_128_SHA1_32;
-			if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key))
-				md->streams[i].crypto[1].algo = 0;
-			md->streams[i].crypto[2].algo = 0;
+			if (keep_srtp_keys && old_md && old_md->streams[i].proto==SalProtoRtpSavp){
+				int j;
+				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
+					memcpy(&md->streams[i].crypto[j],&old_md->streams[i].crypto[j],sizeof(SalSrtpCryptoAlgo));
+				}
+			}else{
+				md->streams[i].crypto[0].tag = 1;
+				md->streams[i].crypto[0].algo = AES_128_SHA1_80;
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key))
+					md->streams[i].crypto[0].algo = 0;
+				md->streams[i].crypto[1].tag = 2;
+				md->streams[i].crypto[1].algo = AES_128_SHA1_32;
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key))
+					md->streams[i].crypto[1].algo = 0;
+				md->streams[i].crypto[2].algo = 0;
+			}
 		}
 	}
 	update_media_description_from_stun(md,&call->ac,&call->vc);
@@ -280,22 +284,8 @@ static SalMediaDescription *_create_local_media_description(LinphoneCore *lc, Li
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
 	linphone_address_destroy(addr);
-	return md;
-}
-
-void update_local_media_description(LinphoneCore *lc, LinphoneCall *call){
-	SalMediaDescription *md=call->localdesc;
-	if (md== NULL) {
-		call->localdesc = create_local_media_description(lc,call);
-	} else {
-		call->localdesc = _create_local_media_description(lc,call,md->session_id,md->session_ver+1);
-		sal_media_description_unref(md);
-	}
-}
-
-SalMediaDescription *create_local_media_description(LinphoneCore *lc, LinphoneCall *call){
-	unsigned int id=rand() & 0xfff;
-	return _create_local_media_description(lc,call,id,id);
+	call->localdesc=md;
+	if (old_md) sal_media_description_unref(old_md);
 }
 
 static int find_port_offset(LinphoneCore *lc, SalStreamType type){
@@ -754,6 +744,11 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			}else if (vsd){
 				cp->has_video=is_video_active(vsd);
 			}
+			if (!cp->has_video){
+				if (md->bandwidth>0 && md->bandwidth<=linphone_core_get_edge_bw(call->core)){
+					cp->low_bandwidth=TRUE;
+				}
+			}
 			return cp;
 		}
 	}
@@ -933,9 +928,31 @@ const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallP
 	return cp->video_codec;
 }
 
+/**
+ * @ingroup call_control
+ * Use to know if this call has been configured in low bandwidth mode.
+ * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file.
+ * An application that would have reliable way to know network capacity may not use activate_edge_workarounds=1 but instead manually configure
+ * low bandwidth mode with linphone_call_params_enable_low_bandwidth().
+ * <br> When enabled, this param may transform a call request with video in audio only mode.
+ * @return TRUE if low bandwidth has been configured/detected
+ */
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
 	return cp->low_bandwidth;
 }
+
+/**
+ * @ingroup call_control
+ * Indicate low bandwith mode. 
+ * Configuring a call to low bandwidth mode will result in the core to activate several settings for the call in order to ensure that bitrate usage
+ * is lowered to the minimum possible. Typically, ptime (packetization time) will be increased, audio codec's output bitrate will be targetted to 20kbit/s provided
+ * that it is achievable by the codec selected after SDP handshake. Video is automatically disabled.
+ * 
+**/
+void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled){
+	cp->low_bandwidth=enabled;
+}
+
 /**
  * Returns whether video is enabled.
 **/
@@ -1026,11 +1043,11 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 			ms_warning("Case is MS_VIDEO_DECODER_DECODING_ERRORS");
 			linphone_call_send_vfu_request(call);
 			break;
-        case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
-            ms_message("First video frame decoded successfully");
-            if (call->nextVideoFrameDecoded._func != NULL)
-                call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
-            break;
+		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
+			ms_message("First video frame decoded successfully");
+			if (call->nextVideoFrameDecoded._func != NULL)
+			call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
+			break;
 		default:
 			ms_warning("Unhandled event %i", event_id);
 			break;
@@ -1039,10 +1056,10 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 #endif
 
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data) {
-    call->nextVideoFrameDecoded._func = cb;
-    call->nextVideoFrameDecoded._user_data = user_data;
+	call->nextVideoFrameDecoded._func = cb;
+	call->nextVideoFrameDecoded._user_data = user_data;
 #ifdef VIDEO_ENABLED
-    ms_filter_call_method_noarg(call->videostream->decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
+	ms_filter_call_method_noarg(call->videostream->decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
 #endif
 }
 
@@ -1189,7 +1206,7 @@ static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
 }
 
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted){
-	float mic_gain=lp_config_get_float(lc->config,"sound","mic_gain",1);
+	float mic_gain=lc->sound_conf.soft_mic_lev;
 	float thres = 0;
 	float recv_gain;
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
@@ -1197,7 +1214,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
 
 	if (!muted)
-		audio_stream_set_mic_gain(st,mic_gain);
+		linphone_core_set_mic_gain_db (lc, mic_gain);
 	else
 		audio_stream_set_mic_gain(st,0);
 
@@ -1231,7 +1248,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	}
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
-		float floorgain = 1/mic_gain;
+		float floorgain = 1/pow(10,(mic_gain)/10);
 		int spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
 		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
@@ -2089,6 +2106,10 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 	}
 }
 
+/**
+ * Returns true if the call is part of the conference.
+ * @ingroup conferencing
+**/
 bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params.in_conference;
 }
@@ -2105,7 +2126,7 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 **/
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
 	VideoStream* vstream = call->videostream;
-	if (vstream) {
+	if (vstream && vstream->output) {
 		float zoom[3];
 		
 		if (zoom_factor < 1)

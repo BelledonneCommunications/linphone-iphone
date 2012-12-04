@@ -94,8 +94,14 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
  *@return call country code or -1 if not found
  */
 int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
-	
-	
+/**
+ * @ingroup misc
+ *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
+ *@param e164 phone number
+ *@return call country code or -1 if not found
+ */
+int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
+
 #ifdef __cplusplus
 }
 #endif

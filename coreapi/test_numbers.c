@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "linphonecore.h"
+#include "linphonecore_utils.h"
 
 int main(int argc , char *argv[]){
 	LinphoneProxyConfig *cfg;
@@ -35,6 +36,13 @@ int main(int argc , char *argv[]){
 	if (argc>3 && strcmp(argv[3],"--escape-plus")==0)
 		linphone_proxy_config_set_dial_escape_plus(cfg,TRUE);
 	linphone_proxy_config_normalize_number(cfg,argv[1],normalized_number,sizeof(normalized_number));
+
 	printf("Normalized number is %s\n",normalized_number);
+	/*check extracted ccc*/
+	if (linphone_dial_plan_lookup_ccc_from_e164(normalized_number) != atoi(linphone_proxy_config_get_dial_prefix(cfg))) {
+		printf("Error ccc [%i] not correctly parsed\n",linphone_dial_plan_lookup_ccc_from_e164(normalized_number));
+	} else {
+		printf("Extracted ccc is [%i] \n",linphone_dial_plan_lookup_ccc_from_e164(normalized_number));
+	}
 	return 0;
 }

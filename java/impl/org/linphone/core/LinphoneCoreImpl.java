@@ -115,6 +115,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setAudioPortRange(long nativePtr, int minPort, int maxPort);
 	private native void setVideoPortRange(long nativePtr, int minPort, int maxPort);
 	private native void setIncomingTimeout(long nativePtr, int timeout);
+	private native void setInCallTimeout(long nativePtr, int timeout);
+	private native void setPrimaryContact(long nativePtr, String displayName, String username);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
 		mListener=listener;
@@ -744,7 +746,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	
 	@Override
 	public PayloadType findPayloadType(String mime, int clockRate) {
-		return null;
+		return findPayloadType(mime, clockRate, 1);
 	}
 	
 	private native void removeFriend(long ptr, long lf);
@@ -781,5 +783,29 @@ class LinphoneCoreImpl implements LinphoneCore {
 	
 	public void setIncomingTimeout(int timeout) {
 		setIncomingTimeout(nativePtr, timeout);
+	}
+	
+	public void setInCallTimeout(int timeout)
+	{
+		setInCallTimeout(nativePtr, timeout);
+	}
+	
+	private native void setMicrophoneGain(long ptr, float gain);
+	public void setMicrophoneGain(float gain) {
+		setMicrophoneGain(nativePtr, gain);
+	}
+	
+	public void setPrimaryContact(String displayName, String username) {
+		setPrimaryContact(nativePtr, displayName, username);
+	}
+	
+	private native void setUseSipInfoForDtmfs(long ptr, boolean use);
+	public void setUseSipInfoForDtmfs(boolean use) {
+		setUseSipInfoForDtmfs(nativePtr, use);
+	}
+	
+	private native void setUseRfc2833ForDtmfs(long ptr, boolean use);
+	public void setUseRfc2833ForDtmfs(boolean use) {
+		setUseRfc2833ForDtmfs(nativePtr, use);
 	}
 }

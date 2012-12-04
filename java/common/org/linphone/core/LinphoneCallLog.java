@@ -38,7 +38,7 @@ public interface LinphoneCallLog {
 		/**
 		 * Call success.
 		 */
-		public final static CallStatus Sucess = new CallStatus(0,"Sucess");
+		public final static CallStatus Success = new CallStatus(0,"Sucess");
 		/**
 		 * Call aborted.
 		 */

@@ -574,20 +574,30 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	return -1;
 }
 
+int linphone_core_get_edge_bw(LinphoneCore *lc){
+	int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",20);
+	return edge_bw;
+}
+
+int linphone_core_get_edge_ptime(LinphoneCore *lc){
+	int edge_ptime=lp_config_get_int(lc->config,"net","edge_ptime",100);
+	return edge_ptime;
+}
+
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
-	if (lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
+	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
 		ms_message("Stun server ping time is %i ms",ping_time_ms);
 		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
 		
 		if (ping_time_ms>threshold){
-			int edge_ptime=lp_config_get_int(lc->config,"net","edge_ptime",100);
-			int edge_bw=lp_config_get_int(lc->config,"net","edge_bw",20);
-			/* we are in a 2G network*/
-			params->up_bw=params->down_bw=edge_bw;
-			params->up_ptime=params->down_ptime=edge_ptime;
-			params->has_video=FALSE;
+			/* we might be in a 2G network*/
 			params->low_bandwidth=TRUE;
 		}/*else use default settings */
+	}
+	if (params->low_bandwidth){
+		params->up_bw=params->down_bw=linphone_core_get_edge_bw(lc);
+		params->up_ptime=params->down_ptime=linphone_core_get_edge_ptime(lc);
+		params->has_video=FALSE;
 	}
 }
 
