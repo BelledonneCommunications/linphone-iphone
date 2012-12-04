@@ -5243,8 +5243,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5316,8 +5316,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5366,8 +5366,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5414,8 +5414,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5463,8 +5463,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5512,8 +5512,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5583,8 +5583,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -5656,8 +5656,8 @@
 					submodules/externals/osip/include,
 					submodules/externals/exosip/include,
 					submodules/externals/speex/include,
-					classes/Utils/NinePatch/,
-					classes/Utils/XMLRPC/,
+					Classes/Utils/NinePatch/,
+					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
