@@ -6,8 +6,8 @@ home_upload_bw=380
 out_download_bw=200
 out_upload_bw=200
 mtu=1300
-activate_edge_workarounds=1
-edge_ping_time=200
+activate_edge_workarounds=0
+edge_ping_time=10
 edge_bw=10
 
 [sip]
