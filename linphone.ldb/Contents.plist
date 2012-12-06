@@ -12,7 +12,9 @@
 			<key>change date</key>
 			<date>2001-01-01T00:00:00Z</date>
 			<key>changed values</key>
-			<array/>
+			<array>
+				<string>&lt;reference&gt;</string>
+			</array>
 			<key>class</key>
 			<string>BLBundleObject</string>
 			<key>errors</key>
@@ -31,20 +33,29 @@
 								<key>name</key>
 								<string>Classes/ContactDetailsViewController/5/ContactDetailsViewController.xib</string>
 							</dict>
+							<key>6</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/ContactDetailsViewController/6/ContactDetailsViewController.xib</string>
+							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-12T07:54:44Z</date>
+					<date>2012-12-06T16:14:16Z</date>
 					<key>changed values</key>
-					<array/>
+					<array>
+						<string>&lt;reference&gt;</string>
+					</array>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
-					<string>f826110f6bb9c9f39b9191f041a2e184
+					<string>5a206fff1944a6ff2a10814f0ff35a15
 </string>
 					<key>name</key>
 					<string>ContactDetailsViewController.xib</string>
@@ -54,7 +65,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -79,7 +92,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -104,7 +119,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -129,7 +146,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -154,7 +173,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -179,7 +200,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -204,7 +227,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -233,7 +258,7 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>5</string>
+						<string>6</string>
 						<key>fr</key>
 						<string>5</string>
 					</dict>
@@ -250,20 +275,29 @@
 								<key>name</key>
 								<string>Classes/ContactDetailsLabelViewController/4/ContactDetailsLabelViewController.xib</string>
 							</dict>
+							<key>5</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/ContactDetailsLabelViewController/5/ContactDetailsLabelViewController.xib</string>
+							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:19Z</date>
+					<date>2012-12-06T16:14:16Z</date>
 					<key>changed values</key>
-					<array/>
+					<array>
+						<string>&lt;reference&gt;</string>
+					</array>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
-					<string>5c405771bb00fa3b9d58151b4f959205
+					<string>1628c1686cfb982660e726c2f8118ebb
 </string>
 					<key>name</key>
 					<string>ContactDetailsLabelViewController.xib</string>
@@ -273,7 +307,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -298,7 +334,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -327,7 +365,7 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>5</string>
 						<key>fr</key>
 						<string>4</string>
 					</dict>
@@ -1055,20 +1093,29 @@
 								<key>name</key>
 								<string>Classes/ContactsViewController/13/ContactsViewController.xib</string>
 							</dict>
+							<key>14</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/ContactsViewController/14/ContactsViewController.xib</string>
+							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:19Z</date>
+					<date>2012-12-06T16:04:33Z</date>
 					<key>changed values</key>
-					<array/>
+					<array>
+						<string>&lt;reference&gt;</string>
+					</array>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
-					<string>8e543e6857c6d386b26dfcbb630432f3
+					<string>55cfac63b99a2e8b631ee79f15a579c5
 </string>
 					<key>name</key>
 					<string>ContactsViewController.xib</string>
@@ -1078,7 +1125,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1103,7 +1152,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1128,7 +1179,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1153,7 +1206,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1178,7 +1233,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1203,7 +1260,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1228,7 +1287,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1253,7 +1314,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1358,7 +1421,7 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>13</string>
+						<string>14</string>
 						<key>fr</key>
 						<string>13</string>
 					</dict>
@@ -12175,7 +12238,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-10-16T09:25:05Z</date>
+					<date>2012-12-06T16:35:25Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12185,7 +12248,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>c50a71e6174b7a7b723ffa38dd90788b
+					<string>5d8dda6d0a22dfa9f07da63202a55cbb
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -13215,6 +13278,52 @@ La cause était: %2$@</string>
 								<string>First name</string>
 								<key>fr</key>
 								<string>Prénom</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>GNU General Public License V2 </string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>GNU General Public License V2 </string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>http://www.linphone.org</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>http://www.linphone.org</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -14507,6 +14616,29 @@ Activer l'application dans Réglages &gt; Confidentialité &gt; Contacts</string
 								<string>Your account is not validate yet.</string>
 								<key>fr</key>
 								<string>Votre compte n'est pas encore validé.</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>2</integer>
+							<key>key</key>
+							<string>© 2010-2012 Belledonne Communications </string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>© 2010-2012 Belledonne Communications </string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

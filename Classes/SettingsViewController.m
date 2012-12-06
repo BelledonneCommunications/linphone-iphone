@@ -634,7 +634,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(![LinphoneManager runningOnIpad]) {
         [hiddenKeys addObject:@"preview_preference"];
     }
-    
+    if([[LinphoneManager instance] lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
+		[hiddenKeys addObject:@"wizard_button"];
+	}
+	
     return hiddenKeys;
 }
 

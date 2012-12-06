@@ -25,11 +25,14 @@
 @implementation AboutViewController
 
 @synthesize linphoneCoreVersionLabel;
+@synthesize linphoneLabel;
 @synthesize linphoneIphoneVersionLabel;
 @synthesize contentView;
 @synthesize linkTapGestureRecognizer;
 @synthesize linkLabel;
 @synthesize licensesView;
+@synthesize licenseLabel;
+@synthesize copyrightLabel;
 
 
 #pragma mark - Lifecycle Functions
@@ -59,15 +62,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+	[linkLabel setText:NSLocalizedString(@"http://www.linphone.org", nil)];
+	[licenseLabel setText:NSLocalizedString(@"GNU General Public License V2 ", nil)];
+	[copyrightLabel setText:NSLocalizedString(@"© 2010-2012 Belledonne Communications ", nil)];
+	
     [linkLabel addGestureRecognizer:linkTapGestureRecognizer];
     
     UIScrollView *scrollView = (UIScrollView *)self.view;
     [scrollView addSubview:contentView];
     [scrollView setContentSize:[contentView bounds].size];
     
-    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"Linphone iPhone %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
+	[linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
+	
+    [linphoneIphoneVersionLabel setText:[NSString stringWithFormat:@"%@ iPhone %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+	 ,[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]]];
 
-    [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"Linphone Core %s", linphone_core_get_version()]];
+    [linphoneCoreVersionLabel setText:[NSString stringWithFormat:@"%@ Core %s", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"], linphone_core_get_version()]];
     
     if([LinphoneManager runningOnIpad]) {
         [LinphoneUtils adjustFontSize:self.view mult:2.22f];

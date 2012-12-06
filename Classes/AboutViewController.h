@@ -24,10 +24,13 @@
 @interface AboutViewController : UIViewController<UICompositeViewDelegate, UIWebViewDelegate> {
 }
 
+@property (nonatomic, retain) IBOutlet UILabel *linphoneLabel;
 @property (nonatomic, retain) IBOutlet UILabel *linphoneIphoneVersionLabel;
 @property (nonatomic, retain) IBOutlet UILabel *linphoneCoreVersionLabel;
 @property (nonatomic, retain) IBOutlet UIView *contentView;
 @property (nonatomic, retain) IBOutlet UILabel *linkLabel;
+@property (nonatomic, retain) IBOutlet UILabel *copyrightLabel;
+@property (nonatomic, retain) IBOutlet UILabel *licenseLabel;
 @property (nonatomic, retain) IBOutlet UIWebView *licensesView;
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
 
