@@ -470,7 +470,7 @@ if test "$build_wizard" != "false" ; then
 fi
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
-AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
+AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard != xfalse)
 if test "$build_wizard" != "false" ; then
    build_wizard=true
    AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] ) 
