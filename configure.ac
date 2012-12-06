@@ -457,12 +457,20 @@ if test "$build_wizard" != "false" ; then
 			build_wizard=false
 		fi
 	])
+	PKG_CHECK_MODULES(LIBGTK, [gtk+-2.0 >= 2.22.0],[build_wizard=true],
+	[
+		if test "$build_wizard" = "true" ; then
+			AC_MSG_ERROR([gtk+-2.0 < 2.22.0, assistant cannot be compiled.])
+		else
+			build_wizard=false
+		fi
+	])
 fi
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
 if test "$build_wizard" = "true" ; then
-   AC_DEFINE( BUILD_WIZARD, 1, [Define if wizard enabled] ) 
+   AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] ) 
 fi
 
 AC_CHECK_HEADERS(libudev.h)
