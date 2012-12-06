@@ -457,7 +457,9 @@ if test "$build_wizard" != "false" ; then
 			build_wizard=false
 		fi
 	])
-	PKG_CHECK_MODULES(LIBGTK, [gtk+-2.0 >= 2.22.0],[build_wizard=true],
+fi
+if test "$build_wizard" != "false" ; then
+	PKG_CHECK_MODULES(LIBGTKWIZARD, [gtk+-2.0 >= 2.22.0],[build_wizard=true],
 	[
 		if test "$build_wizard" = "true" ; then
 			AC_MSG_ERROR([gtk+-2.0 < 2.22.0, assistant cannot be compiled.])
