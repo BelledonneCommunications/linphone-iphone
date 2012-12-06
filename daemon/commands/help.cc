@@ -22,7 +22,7 @@ void HelpCommand::exec(Daemon *app, const char *args) {
 	
 	if (args==NULL){
 		for (it = l.begin(); it != l.end(); ++it) {
-			ost << (*it)->getHelp() << endl;
+			ost << (*it)->getProto() << endl;
 		}
 	}
 	Response resp;

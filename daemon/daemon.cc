@@ -548,6 +548,59 @@ void Daemon::dumpCommandsHelp() {
 	}
 }
 
+static string htmlEscape(const string &orig){
+	string ret=orig;
+	size_t pos;
+	
+	while(1){
+		pos=ret.find('<');
+		if (pos!=string::npos){
+			ret.erase(pos,1);
+			ret.insert(pos,"&lt");
+			continue;
+		}
+		pos=ret.find('>');
+		if (pos!=string::npos){
+			ret.erase(pos,1);
+			ret.insert(pos,"&gt");
+			continue;
+		}
+		break;
+	}
+	while(1){
+		pos=ret.find('\n');
+		if (pos!=string::npos){
+			ret.erase(pos,1);
+			ret.insert(pos,"<br>");
+			continue;
+		}
+		break;
+	}
+	return ret;
+}
+
+void Daemon::dumpCommandsHelpHtml(){
+	cout << endl;
+	cout << "<!DOCTYPE html><html><body>"<<endl;
+	cout << "<h1>List of linphone-daemon commands.</h1>"<<endl;
+	for (list<DaemonCommand*>::iterator it = mCommands.begin(); it != mCommands.end(); ++it) {
+		cout<<"<h2>"<<htmlEscape((*it)->getProto())<<"</h2>"<<endl;
+		cout<<"<h3>"<<"Description"<<"</h3>"<<endl;
+		cout<<"<p>"<<htmlEscape((*it)->getDescription())<<"</p>"<<endl;
+		cout<<"<h3>"<<"Examples"<<"</h3>"<<endl;
+		const std::list<const DaemonCommandExample*> &examples=(*it)->getExamples();
+		cout<<"<p><i>";
+		for(list<const DaemonCommandExample*>::const_iterator ex_it=examples.begin();ex_it!=examples.end();++ex_it){
+			cout<<"<b>"<<htmlEscape("Linphone-daemon>")<<htmlEscape((*ex_it)->getCommand())<<"</b><br>"<<endl;
+			cout<<htmlEscape((*ex_it)->getOutput())<<"<br>"<<endl;
+			cout<<"<br><br>";
+		}
+		cout<<"</i></p>"<<endl;
+	}
+	
+	cout << "</body></html>"<<endl;
+}
+
 
 static void printHelp() {
 	fprintf(stdout, "daemon-linphone [<options>]\n"
@@ -565,6 +618,7 @@ static void printHelp() {
 			"where options are :\n"
 			"\t--help\t\t\tPrint this notice.\n"
 			"\t--dump-commands-help\tDump the help of every available commands.\n"
+			"\t--dump-commands-html-help\tDump the help of every available commands.\n"
 			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
 			"\t--log <path>\t\tSupply a file where the log will be saved\n"
 			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
@@ -667,6 +721,10 @@ int main(int argc, char *argv[]) {
 		} else if (strcmp(argv[i], "--dump-commands-help") == 0) {
 			Daemon app(NULL, NULL, NULL, NULL, false, false);
 			app.dumpCommandsHelp();
+			return 0;
+		}else if (strcmp(argv[i], "--dump-commands-html-help") == 0) {
+			Daemon app(NULL, NULL, NULL, NULL, false, false);
+			app.dumpCommandsHelpHtml();
 			return 0;
 		} else if (strcmp(argv[i], "--pipe") == 0) {
 			if (i + 1 >= argc) {

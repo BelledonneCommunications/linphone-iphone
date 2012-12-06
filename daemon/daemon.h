@@ -180,6 +180,7 @@ public:
 	inline int maxProxyId() { return mProxyIds; };
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
+	void dumpCommandsHelpHtml();
 private:
 	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
