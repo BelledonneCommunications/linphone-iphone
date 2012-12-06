@@ -449,7 +449,7 @@ AC_ARG_ENABLE(assistant,
 
 dnl check libsoup (needed for wizard)
 if test "$build_wizard" != "false" ; then
-	PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[build_wizard=true],
+	PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[],
 	[
 		if test "$build_wizard" = "true" ; then
 			AC_MSG_ERROR([Could not found libsoup, assistant cannot be compiled.])
@@ -459,7 +459,7 @@ if test "$build_wizard" != "false" ; then
 	])
 fi
 if test "$build_wizard" != "false" ; then
-	PKG_CHECK_MODULES(LIBGTKWIZARD, [gtk+-2.0 >= 2.22.0],[build_wizard=true],
+	PKG_CHECK_MODULES(LIBGTKWIZARD, [gtk+-2.0 >= 2.22.0],[],
 	[
 		if test "$build_wizard" = "true" ; then
 			AC_MSG_ERROR([gtk+-2.0 < 2.22.0, assistant cannot be compiled.])
@@ -471,7 +471,7 @@ fi
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard = xtrue)
-if test "$build_wizard" = "true" ; then
+if test "$build_wizard" != "false" ; then
    AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] ) 
 fi
 
