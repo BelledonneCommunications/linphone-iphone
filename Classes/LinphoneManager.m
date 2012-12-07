@@ -82,7 +82,7 @@ extern  void libmsbcg729_init();
     if ((self = [super init])) {
 		self->batteryWarningShown = FALSE;
         self->notification = nil;
-		self->videoRequested=FALSE;
+		self->videoRequested = FALSE;
         self->userInfos = [[NSMutableDictionary alloc] init];
 	}
 	return self;
@@ -379,14 +379,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 - (void)onCall:(LinphoneCall*)call StateChanged:(LinphoneCallState)state withMessage:(const char *)message {
     
 	// Handling wrapper
-	LinphoneCallAppData* data=nil;
-	if (!linphone_call_get_user_pointer(call)) {
+	LinphoneCallAppData* data=(LinphoneCallAppData*)linphone_call_get_user_pointer(call);
+	if (!data) {
         data = [[LinphoneCallAppData alloc] init];
         linphone_call_set_user_pointer(call, data);
-    } else {
-		data = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
-	}
-
+    }
 	
 	if (state == LinphoneCallIncomingReceived) {
         
@@ -795,6 +792,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	/*to make sure we don't loose debug trace*/
 	if ([[NSUserDefaults standardUserDefaults]  boolForKey:@"debugenable_preference"]) {
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+        ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	}
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
     linphone_core_set_user_agent([@"LinphoneIPhone" UTF8String],
@@ -1142,7 +1140,7 @@ static void audioRouteChangeListenerCallback (
     if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
         bool low_bandwidth = self.network == network_2g;
         if(low_bandwidth) {
-            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Low bandwidth mode"];
         }
         linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     }
@@ -1183,7 +1181,7 @@ static void audioRouteChangeListenerCallback (
     if([self lpConfigBoolForKey:@"edge_opt_preference"]) {
         bool low_bandwidth = self.network == network_2g;
         if(low_bandwidth) {
-            [LinphoneLogger log:LinphoneLoggerDebug format:@"Low bandwidth mode"];
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Low bandwidth mode"];
         }
         linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
     }

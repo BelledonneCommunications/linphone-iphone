@@ -116,6 +116,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                                  name:UIDeviceBatteryLevelDidChangeNotification
                                                object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
+    
+    batteryTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f target:self selector:@selector(batteryLevelChanged:) userInfo:nil repeats:TRUE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -139,6 +141,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                                  name:UIDeviceBatteryLevelDidChangeNotification 
                                                object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
+    
+    [batteryTimer invalidate];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -577,29 +581,34 @@ static PhoneMainView* phoneMainViewInstance=nil;
 }
 
 - (void)batteryLevelChanged:(NSNotification*)notif {
+    float level = [UIDevice currentDevice].batteryLevel;
+    UIDeviceBatteryState state = [UIDevice currentDevice].batteryState;
+    [LinphoneLogger log:LinphoneLoggerLog format:@"Battery state:%d level:%.2f", state, level];
+    
 	if (![LinphoneManager isLcReady]) return;
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-    if (!call || !linphone_call_params_video_enabled(linphone_call_get_current_params(call)))
-        return;
-    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
-    float level = [UIDevice currentDevice].batteryLevel;
-    if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged) {
-        [LinphoneLogger logc:LinphoneLoggerLog format:"Video call is running. Battery level: %.2f", level];
-        if (level < 0.1 && !appData->batteryWarningShown) {
-            DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
-            [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
-            [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
-                LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-                // stop video
-                linphone_call_params_enable_video(paramsCopy, FALSE);
-                linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
-            }];
-            [sheet showInView:self.view];
-            appData->batteryWarningShown = TRUE;
+    if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+        LinphoneCallAppData* callData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+        if(callData != nil) {
+            if (state == UIDeviceBatteryStateUnplugged) {
+                if (level <= 0.2f && !callData->batteryWarningShown) {
+                    [LinphoneLogger log:LinphoneLoggerLog format:@"Battery warning"];
+                    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
+                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
+                    [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
+                        LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+                        // stop video
+                        linphone_call_params_enable_video(paramsCopy, FALSE);
+                        linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+                    }];
+                    [sheet showInView:self.view];
+                    callData->batteryWarningShown = TRUE;
+                }
+            }
+            if (level > 0.2f) {
+                callData->batteryWarningShown = FALSE;
+            }
         }
-    }
-    if (level >= 0.1) {
-        appData->batteryWarningShown = FALSE;
     }
 }
 

@@ -350,7 +350,7 @@
             }
         }
         if(remove) {
-            [LinphoneLogger log:LinphoneLoggerDebug format:@"Free cached view: %@", key];
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Free cached view: %@", key];
             UIViewController *vc = [viewControllerCache objectForKey:key];
             if ([[UIDevice currentDevice].systemVersion doubleValue] >= 5.0) {
                 [vc viewWillUnload];
