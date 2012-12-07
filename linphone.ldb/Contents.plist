@@ -12,9 +12,7 @@
 			<key>change date</key>
 			<date>2001-01-01T00:00:00Z</date>
 			<key>changed values</key>
-			<array>
-				<string>&lt;reference&gt;</string>
-			</array>
+			<array/>
 			<key>class</key>
 			<string>BLBundleObject</string>
 			<key>errors</key>
@@ -26,13 +24,6 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>5</key>
-							<dict>
-								<key>class</key>
-								<string>BLWrapperHandle</string>
-								<key>name</key>
-								<string>Classes/ContactDetailsViewController/5/ContactDetailsViewController.xib</string>
-							</dict>
 							<key>6</key>
 							<dict>
 								<key>class</key>
@@ -45,15 +36,13 @@
 					<key>change date</key>
 					<date>2012-12-06T16:14:16Z</date>
 					<key>changed values</key>
-					<array>
-						<string>&lt;reference&gt;</string>
-					</array>
+					<array/>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
 					<string>5a206fff1944a6ff2a10814f0ff35a15
 </string>
@@ -65,9 +54,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -92,9 +79,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -119,9 +104,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -146,9 +129,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -173,9 +154,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -200,9 +179,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -227,9 +204,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -260,7 +235,7 @@
 						<key>en</key>
 						<string>6</string>
 						<key>fr</key>
-						<string>5</string>
+						<string>6</string>
 					</dict>
 				</dict>
 				<dict>
@@ -268,13 +243,6 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
-							<dict>
-								<key>class</key>
-								<string>BLWrapperHandle</string>
-								<key>name</key>
-								<string>Classes/ContactDetailsLabelViewController/4/ContactDetailsLabelViewController.xib</string>
-							</dict>
 							<key>5</key>
 							<dict>
 								<key>class</key>
@@ -287,15 +255,13 @@
 					<key>change date</key>
 					<date>2012-12-06T16:14:16Z</date>
 					<key>changed values</key>
-					<array>
-						<string>&lt;reference&gt;</string>
-					</array>
+					<array/>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
 					<string>1628c1686cfb982660e726c2f8118ebb
 </string>
@@ -307,9 +273,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -334,9 +298,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -367,7 +329,7 @@
 						<key>en</key>
 						<string>5</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>5</string>
 					</dict>
 				</dict>
 				<dict>
@@ -1086,13 +1048,6 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>13</key>
-							<dict>
-								<key>class</key>
-								<string>BLWrapperHandle</string>
-								<key>name</key>
-								<string>Classes/ContactsViewController/13/ContactsViewController.xib</string>
-							</dict>
 							<key>14</key>
 							<dict>
 								<key>class</key>
@@ -1105,15 +1060,13 @@
 					<key>change date</key>
 					<date>2012-12-06T16:04:33Z</date>
 					<key>changed values</key>
-					<array>
-						<string>&lt;reference&gt;</string>
-					</array>
+					<array/>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>hash</key>
 					<string>55cfac63b99a2e8b631ee79f15a579c5
 </string>
@@ -1125,9 +1078,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1152,9 +1103,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1179,9 +1128,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1206,9 +1153,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1233,9 +1178,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1260,9 +1203,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1287,9 +1228,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1314,9 +1253,7 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array>
-								<string>&lt;reference&gt;</string>
-							</array>
+							<array/>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -1423,7 +1360,7 @@
 						<key>en</key>
 						<string>14</string>
 						<key>fr</key>
-						<string>13</string>
+						<string>14</string>
 					</dict>
 				</dict>
 				<dict>
