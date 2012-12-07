@@ -318,6 +318,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 - (void)reset {
     valid = FALSE;
     [homeAP release];
+    homeAP = nil;
     [history removeAllObjects];
     [outdoorStations removeAllObjects];
     [users removeAllObjects];
@@ -428,7 +429,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (NSMutableSet*)getHistory {
-    NSMutableSet *set;
+    NSMutableSet *set = nil;
     NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
     url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];

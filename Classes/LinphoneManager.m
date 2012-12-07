@@ -1465,8 +1465,9 @@ static void audioRouteChangeListenerCallback (
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
 	//bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
-	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
-	
+    /* MODIFICATION always enable outbound*/
+	bool isOutboundProxy=TRUE;// [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
+	/**/
 	
 	//clear auth info list
 	linphone_core_clear_all_auth_info(theLinphoneCore);
@@ -1476,7 +1477,14 @@ static void audioRouteChangeListenerCallback (
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
-		NSString* proxyAddress = [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
+        /* MODIFICATION use config address */
+		NSString* proxyAddress = nil;// [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
+        if([[LinphoneManager getWifiData] isEqualToData:configuration.homeAP]) {
+            proxyAddress = configuration.network.localAddress;
+        } else {
+            proxyAddress = configuration.network.globalAddress;
+        }
+        /**/
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
 		} else {
