@@ -2079,10 +2079,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_soundResourcesLocked
 
 // Needed by Galaxy S (can't switch to/from speaker while playing and still keep mic working)
 // Implemented directly in msandroid.cpp (sound filters for Android).
-extern "C" void msandroid_hack_speaker_state(bool speakerOn);
-
-extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
-	msandroid_hack_speaker_state(speakerOn);
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_forceSpeakerState(JNIEnv *env, jobject thiz, jlong ptr, jboolean speakerOn) {
+	LinphoneCore *lc = (LinphoneCore *)ptr;
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	if (call && call->audiostream && call->audiostream->soundread) {
+		bool_t on = speakerOn;
+		ms_filter_call_method(call->audiostream->soundread, MS_AUDIO_CAPTURE_FORCE_SPEAKER_STATE, &on);
+	}
 }
 // End Galaxy S hack functions
 

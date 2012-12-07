@@ -278,6 +278,12 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+
+	/**
+	 * Set the context of creation of the LinphoneCore.
+	 */
+	public void setContext(Object context);
+
 	/**
 	 * clear all added proxy configs
 	 */
@@ -417,7 +423,9 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException 
 	 */
 	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
-	
+
+	public void startRinging();
+
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
@@ -472,7 +480,7 @@ public interface LinphoneCore {
 	 * @return true is mic is muted
 	 */
 	boolean isMicMuted();
-	
+
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number
@@ -524,7 +532,7 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoCancellationEnabled();
 	/**
-	 * Get echo limiter status (another method of doing echo suppressionn, more brute force)
+	 * Get echo limiter status (another method of doing echo suppression, more brute force)
 	 * @return true if echo limiter is enabled
 	 */
 	boolean isEchoLimiterEnabled();
@@ -537,13 +545,13 @@ public interface LinphoneCore {
 	 */
 	Transports getSignalingTransportPorts();
 	/**
-	 * not implemented
+	 * Activates or deactivates the speaker.
 	 * @param value
 	 */
 	void enableSpeaker(boolean value);
 	/**
-	 * not implemented
-	 * @return
+	 * Tells whether the speaker is activated.
+	 * @return true if speaker enabled, false otherwise
 	 */
 	boolean isSpeakerEnabled();
 	/**

@@ -18,14 +18,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import static android.media.AudioManager.MODE_IN_CALL;
+import static android.media.AudioManager.MODE_RINGTONE;
+import android.content.Context;
+import android.media.AudioManager;
+
 import java.io.File;
 import java.io.IOException;
+
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.mediastream.video.capture.hwconf.Hacks;
 
 
 class LinphoneCoreImpl implements LinphoneCore {
 
 	private final  LinphoneCoreListener mListener; //to make sure to keep a reference on this object
 	private long nativePtr = 0;
+	private Context mContext = null;
+	private AudioManager mAudioManager = null;
+	private boolean mSpeakerEnabled = false;
 	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata);
 	private native void iterate(long nativePtr);
 	private native long getDefaultProxyConfig(long nativePtr);
@@ -130,13 +141,23 @@ class LinphoneCoreImpl implements LinphoneCore {
 	protected void finalize() throws Throwable {
 		
 	}
-	
+
+	private boolean contextInitialized() {
+		if (mContext == null) {
+			Log.e("Context of LinphoneCore has not been initialized, call setContext() after creating LinphoneCore.");
+			return false;
+		}
+		return true;
+	}
+	public void setContext(Object context) {
+		mContext = (Context)context;
+		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+	}
+
 	public synchronized void addAuthInfo(LinphoneAuthInfo info) {
 		isValid();
 		addAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
 	}
-
-
 
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
 		isValid();
@@ -201,7 +222,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void acceptCall(LinphoneCall aCall) {
 		isValid();
 		acceptCall(nativePtr,((LinphoneCallImpl)aCall).nativePtr);
-		
 	}
 	public synchronized LinphoneCallLog[] getCallLogs() {
 		isValid();
@@ -235,6 +255,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void muteMic(boolean isMuted) {
 		muteMic(nativePtr,isMuted);
 	}
+
 	public synchronized LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException {
 		long lAddress = interpretUrl(nativePtr,destination);
 		if (lAddress != 0) {
@@ -301,13 +322,37 @@ class LinphoneCoreImpl implements LinphoneCore {
 		// TODO Auto-generated method stub
 		
 	}
+
+	private void applyAudioHacks() {
+		if (Hacks.needGalaxySAudioHack()) {
+			/* The microphone gain is way too high on the Galaxy S so correct it here. */
+			setMicrophoneGain(-9.0f);
+		}
+	}
+	private void setAudioModeIncallForGalaxyS() {
+		if (!contextInitialized()) return;
+		mAudioManager.setMode(MODE_IN_CALL);
+	}
+	public void routeAudioToSpeakerHelper(boolean speakerOn) {
+		if (!contextInitialized()) return;
+		if (Hacks.needGalaxySAudioHack())
+			setAudioModeIncallForGalaxyS();
+		mAudioManager.setSpeakerphoneOn(speakerOn);
+	}
+	private native void forceSpeakerState(long nativePtr, boolean speakerOn);
 	public void enableSpeaker(boolean value) {
-		// TODO Auto-generated method stub
-		
+		final LinphoneCall call = getCurrentCall();
+		mSpeakerEnabled = value;
+		applyAudioHacks();
+		if (call != null && call.getState() == State.StreamsRunning && Hacks.needGalaxySAudioHack()) {
+			Log.d("Hack to have speaker=", value, " while on call");
+			forceSpeakerState(nativePtr, value);
+		} else {
+			routeAudioToSpeakerHelper(value);
+		}
 	}
 	public boolean isSpeakerEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return mSpeakerEnabled;
 	}
 	public synchronized void playDtmf(char number, int duration) {
 		playDtmf(nativePtr,number, duration);
@@ -696,6 +741,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void deferCallUpdate(LinphoneCall aCall)
 			throws LinphoneCoreException {
 		deferCallUpdate(nativePtr, getCallPtr(aCall));
+	}
+
+	public synchronized void startRinging() {
+		if (!contextInitialized()) return;
+		if (Hacks.needGalaxySAudioHack()) {
+			mAudioManager.setMode(MODE_RINGTONE);
+		}
 	}
 	
 	private native void setVideoPolicy(long nativePtr, boolean autoInitiate, boolean autoAccept);
