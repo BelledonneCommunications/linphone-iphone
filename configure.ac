@@ -32,9 +32,9 @@ AC_MSG_NOTICE([licensed under the terms of the General Public License (GPL)])
 AM_INIT_AUTOMAKE
 AC_SUBST([LIBTOOL_DEPS])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
+AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([m4])
-AC_SUBST([mkdir_p])
 AC_ISC_POSIX
 AC_PROG_CC
 AC_PROG_CXX
@@ -118,7 +118,7 @@ fi
 
 GETTEXT_PACKAGE=linphone
 AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",[The name of the gettext package name])
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The name of the gettext package name])
 dnl AC_CHECK_LIB(intl,libintl_gettext)
 
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )

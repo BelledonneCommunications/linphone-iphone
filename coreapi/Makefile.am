@@ -1,7 +1,7 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
-GITDESCRIBE=$(shell git describe)
-GITREVISION=$(shell git rev-parse HEAD)
+GITDESCRIBE=`git describe`
+GITREVISION=`git rev-parse HEAD`
 
 ECHO=/bin/echo
 
@@ -21,10 +21,6 @@ linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ..
 if BUILD_TUNNEL
 linphone_include_HEADERS+=linphone_tunnel.h
 endif
-
-INCLUDES = \
-	-I$(top_srcdir)
-
 
 lib_LTLIBRARIES=liblinphone.la
 
@@ -89,8 +85,11 @@ test_numbers_SOURCES=test_numbers.c
 test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 endif
 
+AM_CPPFLAGS=\
+	-I$(top_srcdir)
 
-AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
+AM_CFLAGS=\
+	$(STRICT_OPTIONS)  -DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
 	$(OSIP_CFLAGS) \

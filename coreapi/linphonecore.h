@@ -1234,7 +1234,6 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 **/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
-bool_t linphone_core_is_audio_muted(LinphoneCore *lc);
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
 bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);

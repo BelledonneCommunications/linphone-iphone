@@ -1,2 +1,2 @@
-EXTRA_DIST= $(shell cd $(srcdir) && ls *.m4)
+EXTRA_DIST=`ls $(srcdir)/*.m4`
 
