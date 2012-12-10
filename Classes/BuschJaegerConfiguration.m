@@ -591,21 +591,15 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
             NSError *error = nil;
             NSData *data  = nil;
             data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
-            if(data == nil) {
+            NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
+            if(urlResponse.statusCode == 200) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [delegate buschJaegerConfigurationError:[error localizedDescription]];
+                    [delegate buschJaegerConfigurationSuccess];
                 });
             } else {
-                NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
-                if(urlResponse.statusCode == 200) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [delegate buschJaegerConfigurationSuccess];
-                    });
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
-                    });
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
+                });
             }
         });
         return TRUE;
