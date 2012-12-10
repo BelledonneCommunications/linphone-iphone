@@ -31,7 +31,7 @@ public interface LinphoneCore {
 	 */
 	static public class GlobalState {
 		
-		static private Vector values = new Vector();
+		static private Vector<GlobalState> values = new Vector<GlobalState>();
 		/**
 		 * Off
 		 */
@@ -76,7 +76,7 @@ public interface LinphoneCore {
 	 */
 	static public class RegistrationState {
 		
-		private static Vector values = new Vector();
+		private static Vector<RegistrationState> values = new Vector<RegistrationState>();
 		/**
 		 * None
 		 */
@@ -124,7 +124,7 @@ public interface LinphoneCore {
 	 */
 	static public class FirewallPolicy {
 		
-		static private Vector values = new Vector();
+		static private Vector<FirewallPolicy> values = new Vector<FirewallPolicy>();
 		/**
 		 * No firewall is assumed.
 		 */
@@ -191,7 +191,7 @@ public interface LinphoneCore {
 	 */
 	static public final class MediaEncryption {
 		
-		static private Vector values = new Vector();
+		static private Vector<MediaEncryption> values = new Vector<MediaEncryption>();
 		/**
 		 * None
 		 */
@@ -230,7 +230,7 @@ public interface LinphoneCore {
 	 */
 	static public class EcCalibratorStatus {
 		
-		static private Vector values = new Vector();
+		static private Vector<EcCalibratorStatus> values = new Vector<EcCalibratorStatus>();
 		/* Do not change the values of these constants or the strings associated with them to prevent breaking
 		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;

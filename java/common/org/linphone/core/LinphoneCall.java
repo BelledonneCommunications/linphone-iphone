@@ -32,7 +32,7 @@ public interface LinphoneCall {
 	 */
 	static class State {
 		
-		static private Vector values = new Vector();
+		static private Vector<State> values = new Vector<State>();
 		private final int mValue;
 		public final int value() {return mValue;}
 		

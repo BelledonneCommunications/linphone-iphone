@@ -32,7 +32,7 @@ public interface LinphoneCallLog {
 	 */
 	static class CallStatus {
 		
-		static private Vector values = new Vector();
+		static private Vector<CallStatus> values = new Vector<CallStatus>();
 		private final int mValue;
 		private final String mStringValue;
 		/**

@@ -28,7 +28,7 @@ import java.util.Vector;
 
 public class OnlineStatus {
 	
-	static private Vector values = new Vector();
+	static private Vector<OnlineStatus> values = new Vector<OnlineStatus>();
 	/**
 	 * Offline
 	 */
