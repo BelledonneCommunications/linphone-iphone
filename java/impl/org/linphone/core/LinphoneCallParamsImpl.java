@@ -35,7 +35,7 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	private native long getUsedAudioCodec(long nativePtr);
 	private native long getUsedVideoCodec(long nativePtr);
 	private native void destroy(long nativePtr);
-	
+	private native void enableLowBandwidth(long nativePtr, boolean enable);
 	
 	public boolean getVideoEnabled() {
 		return getVideoEnabled(nativePtr);
@@ -78,5 +78,9 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	private native boolean localConferenceMode(long nativePtr);
 	public boolean localConferenceMode() {
 		return localConferenceMode(nativePtr);
+	}
+	
+	public void enableLowBandwidth(boolean enable) {
+		enableLowBandwidth(nativePtr, enable);
 	}
 }

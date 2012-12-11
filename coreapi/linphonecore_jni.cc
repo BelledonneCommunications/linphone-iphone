@@ -1774,6 +1774,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 
 //CallParams
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
+	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_getUsedAudioCodec(JNIEnv *env, jobject thiz, jlong cp) {
 	return (jlong)linphone_call_params_get_used_audio_codec((LinphoneCallParams *)cp);
 }
@@ -1850,7 +1854,6 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateAddressWithParams(
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, jobject thiz, jlong lc, jlong call, jlong params){
 	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (const LinphoneCallParams *)params);
 }
-
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc, jint width, jint height){
 	MSVideoSize vsize;
