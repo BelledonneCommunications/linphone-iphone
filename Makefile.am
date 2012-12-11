@@ -40,7 +40,7 @@ GTK_THEME=Outcrop
 GTK_FILELIST=gtk+-2.22.1.filelist
 GTK_FILELIST_PATH=$(abs_top_srcdir)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
-WINBINDIST_FILES="`cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST)`"
+WINBINDIST_FILES=`cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST)`
 ISS_SCRIPT=linphone.iss
 ISS_SCRIPT_PATH=$(abs_top_srcdir)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
@@ -182,9 +182,9 @@ newdate:
 	cd gtk && $(MAKE) newdate
 
 if HAVE_MD5SUM
-GEN_MD5="`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'}`"
+GEN_MD5=`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'}`
 else
-GEN_MD5="`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'}`"
+GEN_MD5=`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'}`
 endif
 
 Portfile: $(top_srcdir)/scripts/Portfile.tmpl dist
