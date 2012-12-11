@@ -14,6 +14,7 @@
 
 #include "daemon.h"
 #include "commands/adaptive-jitter-compensation.h"
+#include "commands/jitterbuffer.h"
 #include "commands/answer.h"
 #include "commands/audio-codec-get.h"
 #include "commands/audio-codec-move.h"
@@ -279,6 +280,7 @@ Daemon::Daemon(const char *config_path, const char *factory_config_path, const c
 	linphone_core_set_user_data(mLc, this);
 	linphone_core_enable_video(mLc, capture_video, display_video);
 	initCommands();
+	mUseStatsEvents=true;
 }
 
 const list<DaemonCommand*> &Daemon::getCommandList() const {
@@ -376,6 +378,8 @@ void Daemon::initCommands() {
 	mCommands.push_back(new MediaEncryptionCommand());
 	mCommands.push_back(new PortCommand());
 	mCommands.push_back(new AdaptiveBufferCompensationCommand());
+	mCommands.push_back(new JitterBufferCommand());
+	mCommands.push_back(new JitterBufferResetCommand());
 	mCommands.push_back(new VersionCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
@@ -421,7 +425,7 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 }
 
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
-	mEventQueue.push(new CallStatsResponse(this, call, stats, true));
+	if (mUseStatsEvents) mEventQueue.push(new CallStatsResponse(this, call, stats, true));
 }
 
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
@@ -623,6 +627,7 @@ static void printHelp() {
 			"\t--log <path>\t\tSupply a file where the log will be saved\n"
 			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
 			"\t--config <path>\t\tSupply a linphonerc style config file to start with.\n"
+			"\t--disable-stats-events\t\tDo not automatically raise RTP statistics events.\n"
 			"\t-C\t\t\tenable video capture.\n"
 			"\t-D\t\t\tenable video display.\n");
 }
@@ -678,6 +683,10 @@ void Daemon::quit() {
 	mRunning = false;
 }
 
+void Daemon::enableStatsEvents(bool enabled){
+	mUseStatsEvents=enabled;
+}
+
 Daemon::~Daemon() {
 	uninitCommands();
 
@@ -712,6 +721,7 @@ int main(int argc, char *argv[]) {
 	const char *log_file = NULL;
 	bool capture_video = false;
 	bool display_video = false;
+	bool nostats=FALSE;
 	int i;
 
 	for (i = 1; i < argc; ++i) {
@@ -757,9 +767,12 @@ int main(int argc, char *argv[]) {
 			capture_video = true;
 		} else if (strcmp(argv[i], "-D") == 0) {
 			display_video = true;
+		}else if (strcmp(argv[i],"--disable-stats-events")==0){
+			nostats=TRUE;
 		}
 	}
 	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
+	app.enableStatsEvents(!nostats);
 	return app.run();
 }
 ;

@@ -181,6 +181,7 @@ public:
 	int updateAudioStreamId(AudioStream *audio_stream);
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();
+	void enableStatsEvents(bool enabled);
 private:
 	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
@@ -204,6 +205,7 @@ private:
 	int mChildFd;
 	std::string mHistfile;
 	bool mRunning;
+	bool mUseStatsEvents;
 	FILE *mLogFile;
 	int mCallIds;
 	int mProxyIds;

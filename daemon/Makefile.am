@@ -55,7 +55,8 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/terminate.h \
 			commands/unregister.h \
 			commands/quit.h \
-			commands/version.h
+			commands/version.h \
+			commands/jitterbuffer.cc commands/jitterbuffer.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
 
