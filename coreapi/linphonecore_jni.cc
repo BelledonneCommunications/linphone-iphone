@@ -2141,7 +2141,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUserAgent(JNIEnv *env,jobject thiz,jlong pCore, jstring name, jstring version){
 	const char* cname=env->GetStringUTFChars(name, NULL);
 	const char* cversion=env->GetStringUTFChars(version, NULL);
-	linphone_core_set_user_agent(cname,cversion);
+	linphone_core_set_user_agent((LinphoneCore *)pCore,cname,cversion);
 	env->ReleaseStringUTFChars(name, cname);
 	env->ReleaseStringUTFChars(version, cversion);
 }
