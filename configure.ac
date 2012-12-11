@@ -124,16 +124,16 @@ dnl AC_CHECK_LIB(intl,libintl_gettext)
 AC_CHECK_FUNCS([get_current_dir_name strndup stpcpy] )
 
 AC_ARG_ENABLE(x11,
-			  [  --disable-x11    Disable X11 support],
-		 	  [case "${enableval}" in
-			  yes) enable_x11=true ;;
-			  no)  enable_x11=false ;;
-			  *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
-		  	  esac],[enable_x11=true])
+      [AS_HELP_STRING([--disable-x11], [Disable X11 support (default=no)])],
+      [case "${enableval}" in
+        yes) enable_x11=true ;;
+        no)  enable_x11=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-x11) ;;
+      esac],[enable_x11=true])
 
 dnl conditionnal build of console interface.
 AC_ARG_ENABLE(console_ui,
-      [  --enable-console_ui=[yes/no]    Turn on or off compilation of console interface [default=yes]],
+      [AS_HELP_STRING([--enable-console_ui=[yes/no]], [Turn on or off compilation of console interface (default=yes)])],
       [case "${enableval}" in
         yes) console_ui=true ;;
         no)  console_ui=false ;;
@@ -142,7 +142,7 @@ AC_ARG_ENABLE(console_ui,
 
 dnl conditionnal build of gtk interface.
 AC_ARG_ENABLE(gtk_ui,
-      [  --enable-gtk_ui=[yes/no]    Turn on or off compilation of gtk interface [default=yes]],
+      [AS_HELP_STRING([--enable-gtk_ui=[yes/no]], [Turn on or off compilation of gtk interface (default=yes)])],
       [case "${enableval}" in
         yes) gtk_ui=true ;;
         no)  gtk_ui=false ;;
@@ -160,12 +160,12 @@ else
 fi
 
 AC_ARG_ENABLE(notify,
-		[  --enable-notify=[yes/no]    Enable libnotify support [default=yes]],
-		[case "${enableval}" in
-		  yes) notify=true ;;
-		  no)  notify=false ;;
-		  *) AC_MSG_ERROR(bad value ${enableval} for --enable-notify) ;;
-		esac],[notify=true])
+      [AS_HELP_STRING([--enable-notify=[yes/no]], [Enable libnotify support (default=yes)])],
+      [case "${enableval}" in
+        yes) notify=true ;;
+        no)  notify=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-notify) ;;
+      esac],[notify=true])
 
 dnl conditionnal build of the notify library
 if test "$gtk_ui" = "true" ; then
@@ -205,14 +205,14 @@ case "$host_cpu" in
 		;;
 esac
 
-AC_ARG_WITH( configdir,
-      [  --with-configdir      Set a APPDATA subdir where linphone is supposed to find its config (windows only) ],
+AC_ARG_WITH(configdir,
+      [AS_HELP_STRING([--with-configdir], [Set a APPDATA subdir where linphone is supposed to find its config (windows only)])],
       [ configdir=${withval}],[ configdir="Linphone" ])
 
 AC_DEFINE_UNQUOTED(LINPHONE_CONFIG_DIR,"$configdir",[Windows appdata subdir where linphonerc can be found])
 
 AC_ARG_ENABLE(relativeprefix,
-      [  --enable-relativeprefix    Build a linphone that finds its resources relatively to the directory where it is installed],
+      [AS_HELP_STRING([--enable-relativeprefix], [Build a linphone that finds its resources relatively to the directory where it is installed])],
       [case "${enableval}" in
         yes) relativeprefix=yes ;;
         no)  relativeprefix=no ;;
@@ -220,7 +220,7 @@ AC_ARG_ENABLE(relativeprefix,
       esac],[relativeprefix=guess])
 
 AC_ARG_ENABLE(date,
-      [  --enable-date    Use build date in internal version number],
+      [AS_HELP_STRING([--enable-date], [Use build date in internal version number])],
       [case "${enableval}" in
         yes) use_date=yes ;;
         no)  use_date=no ;;
@@ -234,7 +234,7 @@ fi
 
 dnl enable ipv6 support
 AC_ARG_ENABLE(ipv6,
-      [  --enable-ipv6    Turn on ipv6 support],
+      [AS_HELP_STRING([--enable-ipv6], [Turn on ipv6 support])],
       [case "${enableval}" in
         yes)  ipv6=true;;
         no)   ipv6=false;;
@@ -248,7 +248,7 @@ AC_SUBST(IPV6_CFLAGS)
 
 dnl enable timestamp support
 AC_ARG_ENABLE(ntp-timestamp,
-      [  --enable-ntp-timestamp Turn on NTP timestamping on received packet],
+      [AS_HELP_STRING([--enable-ntp-timestamp], [Turn on NTP timestamping on received packet])],
       [case "${enableval}" in
         yes)  ntptimestamp=true;;
         no)   ntptimestamp=false;;
@@ -256,17 +256,16 @@ AC_ARG_ENABLE(ntp-timestamp,
       esac],[ntptimestamp=false])
 
 AC_ARG_ENABLE(debug,
-                        [  --enable-debug=[yes/no]   enables the display of traces showing the execution of the library. [default=yes]],
-                        [case "${enableval}" in
-                                yes) debug_enabled=yes;;
-                                no) debug_enabled=no;;
-                                *) AC_MSG_ERROR("Bad value for --enable-debug");;
-                        esac],
-                        [debug_enabled=no])
+      [AS_HELP_STRING([--enable-debug=[yes/no]], [Enables the display of traces showing the execution of the library. (default=yes)])],
+      [case "${enableval}" in
+        yes) debug_enabled=yes;;
+        no) debug_enabled=no;;
+        *) AC_MSG_ERROR("Bad value for --enable-debug");;
+      esac],[debug_enabled=no])
 
 dnl enable truespeech codec support
 AC_ARG_ENABLE(truespeech,
-      [  --enable-truespeech    Turn on TrueSpeech support (x86 only)],
+      [AS_HELP_STRING([--enable-truespeech], [Turn on TrueSpeech support (x86 only)])],
       [case "${enableval}" in
         yes)  truespeech=true;;
         no)   truespeech=false;;
@@ -280,11 +279,11 @@ AC_SUBST(TRUESPEECH_CFLAGS)
 AM_CONDITIONAL([BUILD_TRUESPEECH], [test x$truespeech = xtrue])
 
 AC_ARG_ENABLE(nonstandard-gsm,
-      [  --enable-nonstandard-gsm    Enable GSM codec at nonstandard rates (11025hz, 16000hz)],
+      [AS_HELP_STRING([--enable-nonstandard-gsm], [Enable GSM codec at nonstandard rates (11025hz, 16000hz)])],
       [case "${enableval}" in
         yes) exotic_gsm=yes
-	AC_DEFINE(ENABLE_NONSTANDARD_GSM,1,[Defined when using gsm at nonstandard rates])
-	 ;;
+         AC_DEFINE(ENABLE_NONSTANDARD_GSM,1,[Defined when using gsm at nonstandard rates])
+         ;;
         no)  exotic_gsm=no ;;
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-nonstandard-gsm) ;;
       esac],[exotic_gsm=no])
@@ -292,7 +291,7 @@ AC_ARG_ENABLE(nonstandard-gsm,
 
 dnl support for RSVP (by Vincent Maury)
 AC_ARG_ENABLE(rsvp,
-[  --enable-rsvp           enable support for QoS reservations.],
+[AS_HELP_STRING([--enable-rsvp], [Enable support for QoS reservations.])],
 AC_DEFINE(VINCENT_MAURY_RSVP,1,[Tell whether RSVP support
 should be compiled.]) )
 
@@ -331,12 +330,12 @@ LP_CHECK_OSIP2
 
 dnl conditionnal build for ssl
 AC_ARG_ENABLE(ssl,
-		[  --enable-ssl    Turn on ssl support compiling. Required for sip tls. default = false],
-		[case "${enableval}" in
-		yes) build_ssl=true ;;
-		no)  build_ssl=false ;;
-		*) AC_MSG_ERROR(bad value ${enableval} for --enable-ssl) ;;
-		esac],[build_ssl=false])
+      [AS_HELP_STRING([--enable-ssl], [Turn on ssl support compiling. Required for sip tls. (default=false)])],
+      [case "${enableval}" in
+        yes) build_ssl=true ;;
+        no)  build_ssl=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-ssl) ;;
+      esac],[build_ssl=false])
 
 if test "$build_ssl" = "true"; then
 	PKG_CHECK_MODULES(OPENSSL, libssl >= 0.9.8)
@@ -367,16 +366,16 @@ fi
 
 dnl conditionnal build of video support
 AC_ARG_ENABLE(video,
-		[  --enable-video    Turn on video support compiling],
-		[case "${enableval}" in
-		yes) video=true ;;
-		no)  video=false ;;
-		*) AC_MSG_ERROR(bad value ${enableval} for --enable-video) ;;
-		esac],[video=true])
-		
+      [AS_HELP_STRING([--enable-video], [Turn on video support compiling])],
+      [case "${enableval}" in
+        yes) video=true ;;
+        no)  video=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-video) ;;
+      esac],[video=true])
+
 AC_ARG_WITH( ffmpeg,
-		[  --with-ffmpeg		Sets the installation prefix of ffmpeg, needed for video support. [default=/usr] ],
-		[ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
+      [AS_HELP_STRING([--with-ffmpeg], [Sets the installation prefix of ffmpeg, needed for video support. (default=/usr)])],
+      [ ffmpegdir=${withval}],[ ffmpegdir=/usr ])
 
 if test "$video" = "true"; then
 	
@@ -393,7 +392,7 @@ if test "$video" = "true"; then
 fi
 
 AC_ARG_ENABLE(alsa,
-      [  --enable-alsa    Turn on alsa native support compiling],
+      [AS_HELP_STRING([--enable-alsa], [Turn on alsa native support compiling])],
       [case "${enableval}" in
         yes) alsa=true ;;
         no)  alsa=false ;;
@@ -401,7 +400,7 @@ AC_ARG_ENABLE(alsa,
       esac],[alsa=true])
 
 AC_ARG_ENABLE(zrtp,
-      [  --enable-zrtp    Turn on zrtp support ],
+      [AS_HELP_STRING([--enable-zrtp], [Turn on zrtp support])],
       [case "${enableval}" in
         yes) zrtp=true ;;
         no)  zrtp=false ;;
@@ -410,7 +409,7 @@ AC_ARG_ENABLE(zrtp,
 
 
 AC_ARG_ENABLE(portaudio,
-      [  --enable-portaudio    Turn on portaudio native support compiling],
+      [AS_HELP_STRING([--enable-portaudio], [Turn on portaudio native support compiling])],
       [case "${enableval}" in
         yes) portaudio=true ;;
         no)  portaudio=false ;;
@@ -440,7 +439,7 @@ if test "$has_sighandler_t" = "yes" ; then
 fi
 
 AC_ARG_ENABLE(assistant,
-      [  --enable-assistant    Turn on assistant compiling],
+      [AS_HELP_STRING([--enable-assistant], [Turn on assistant compiling])],
       [case "${enableval}" in
         yes) build_wizard=true ;;
         no)  build_wizard=false ;;
@@ -531,7 +530,7 @@ AC_SUBST([MS2_DIR])
 
 
 AC_ARG_ENABLE(tunnel,
-      [  --enable-tunnel=[yes/no]    Turn on compilation of tunnel support [default=no]],
+      [AS_HELP_STRING([--enable-tunnel=[yes/no]], [Turn on compilation of tunnel support (default=no)])],
       [case "${enableval}" in
         yes) enable_tunnel=true ;;
         no)  enable_tunnel=false ;;
@@ -575,7 +574,7 @@ LINPHONE_PLUGINS_DIR="${package_prefix}/lib/liblinphone/plugins"
 AC_SUBST(LINPHONE_PLUGINS_DIR)
 
 AC_ARG_ENABLE(external-ortp,
-      [  --enable-external-ortp    Use external oRTP library],
+      [AS_HELP_STRING([--enable-external-ortp], [Use external oRTP library])],
       [case "${enableval}" in
         yes) external_ortp=true ;;
         no)  external_ortp=false ;;
@@ -606,7 +605,7 @@ AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
 AC_ARG_ENABLE(tests_enabled,
-      [  --disable-tests    Disable compilation of tests],
+      [AS_HELP_STRING([--disable-tests], [Disable compilation of tests])],
       [case "${enableval}" in
         yes) tests_enabled=true ;;
         no)  tests_enabled=false ;;
@@ -665,4 +664,3 @@ if test "$enable_tunnel" = "true" ; then
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."
-
