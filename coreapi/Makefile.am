@@ -1,7 +1,7 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
-GITDESCRIBE=`git describe`
-GITREVISION=`git rev-parse HEAD`
+GITDESCRIBE="`git describe`"
+GITREVISION="`git rev-parse HEAD`"
 
 ECHO=/bin/echo
 
