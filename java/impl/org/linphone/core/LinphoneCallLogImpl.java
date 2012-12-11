@@ -67,6 +67,6 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	}
 	
 	public long getTimestamp() {
-		return getTimestamp(nativePtr);
+		return getTimestamp(nativePtr) * 1000;  // Need milliseconds, not seconds
 	}
 }
