@@ -1671,9 +1671,10 @@ static void apply_user_agent(LinphoneCore *lc){
  *
  * @ingroup misc
 **/
-void linphone_core_set_user_agent(const char *name, const char *ver){
+void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char *ver){
 	strncpy(_ua_name,name,sizeof(_ua_name)-1);
 	strncpy(_ua_version,ver,sizeof(_ua_version));
+	apply_user_agent(lc);
 }
 
 const char *linphone_core_get_user_agent_name(void){
