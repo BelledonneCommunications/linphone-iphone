@@ -101,6 +101,11 @@ public interface LinphoneCallLog {
 	public String getStartDate();
 	
 	/**
+	 * @return a timestamp of the start date/time of the call in milliseconds since January 1st 1970
+	 */
+	public long getTimestamp();
+	
+	/**
 	 * @return the call duration, in seconds
 	 */
 	public int getCallDuration();
