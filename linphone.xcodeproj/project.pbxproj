@@ -285,6 +285,10 @@
 		D384468615E6577700DF89DF /* BuschJaegerHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */; };
 		D384468915E65CFE00DF89DF /* History.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468815E65CFE00DF89DF /* History.m */; };
 		D384468A15E65CFE00DF89DF /* History.m in Sources */ = {isa = PBXBuildFile; fileRef = D384468815E65CFE00DF89DF /* History.m */; };
+		D3A5C9C7167873C300694CA4 /* NSString+MD5Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5C9C4167873C300694CA4 /* NSString+MD5Addition.m */; };
+		D3A5C9C8167873C300694CA4 /* NSString+MD5Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5C9C4167873C300694CA4 /* NSString+MD5Addition.m */; };
+		D3A5C9C9167873C300694CA4 /* UIDevice+IdentifierAddition.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5C9C6167873C300694CA4 /* UIDevice+IdentifierAddition.m */; };
+		D3A5C9CA167873C300694CA4 /* UIDevice+IdentifierAddition.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A5C9C6167873C300694CA4 /* UIDevice+IdentifierAddition.m */; };
 		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3C6526815AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
@@ -722,6 +726,10 @@
 		D384468415E6577700DF89DF /* BuschJaegerHistoryTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerHistoryTableViewController.m; sourceTree = "<group>"; };
 		D384468715E65CFE00DF89DF /* History.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = History.h; path = Model/History.h; sourceTree = "<group>"; };
 		D384468815E65CFE00DF89DF /* History.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = History.m; path = Model/History.m; sourceTree = "<group>"; };
+		D3A5C9C3167873C300694CA4 /* NSString+MD5Addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+MD5Addition.h"; path = "Utils/UIDeviceAddition/Classes/NSString+MD5Addition.h"; sourceTree = "<group>"; };
+		D3A5C9C4167873C300694CA4 /* NSString+MD5Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+MD5Addition.m"; path = "Utils/UIDeviceAddition/Classes/NSString+MD5Addition.m"; sourceTree = "<group>"; };
+		D3A5C9C5167873C300694CA4 /* UIDevice+IdentifierAddition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIDevice+IdentifierAddition.h"; path = "Utils/UIDeviceAddition/Classes/UIDevice+IdentifierAddition.h"; sourceTree = "<group>"; };
+		D3A5C9C6167873C300694CA4 /* UIDevice+IdentifierAddition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIDevice+IdentifierAddition.m"; path = "Utils/UIDeviceAddition/Classes/UIDevice+IdentifierAddition.m"; sourceTree = "<group>"; };
 		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
 		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
 		D3E84F3C15B018A600420DAC /* UILinphone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphone.h; sourceTree = "<group>"; };
@@ -1355,6 +1363,7 @@
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D3A5C9C2167873A700694CA4 /* UIDeviceAddition */,
 				D37E3ECA1619C27A0087659A /* CAAnimationBlocks */,
 				D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */,
 				D380801115C29984005BE9BC /* ColorSpaceUtilities.h */,
@@ -1474,6 +1483,17 @@
 			);
 			name = DTFoundation;
 			path = Utils/DTFoundation;
+			sourceTree = "<group>";
+		};
+		D3A5C9C2167873A700694CA4 /* UIDeviceAddition */ = {
+			isa = PBXGroup;
+			children = (
+				D3A5C9C3167873C300694CA4 /* NSString+MD5Addition.h */,
+				D3A5C9C4167873C300694CA4 /* NSString+MD5Addition.m */,
+				D3A5C9C5167873C300694CA4 /* UIDevice+IdentifierAddition.h */,
+				D3A5C9C6167873C300694CA4 /* UIDevice+IdentifierAddition.m */,
+			);
+			name = UIDeviceAddition;
 			sourceTree = "<group>";
 		};
 		D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */ = {
@@ -1772,6 +1792,8 @@
 				D37490841612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 				D30B942816358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */,
+				D3A5C9C7167873C300694CA4 /* NSString+MD5Addition.m in Sources */,
+				D3A5C9C9167873C300694CA4 /* UIDevice+IdentifierAddition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1828,6 +1850,8 @@
 				D37490851612E3F200A62D02 /* NSURLConnection+SynchronousDelegate.m in Sources */,
 				D37E3ECE1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 				D30B942916358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */,
+				D3A5C9C8167873C300694CA4 /* NSString+MD5Addition.m in Sources */,
+				D3A5C9CA167873C300694CA4 /* UIDevice+IdentifierAddition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

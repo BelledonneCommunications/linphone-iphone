@@ -28,6 +28,7 @@
 #import <CoreTelephony/CTCallCenter.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
 
+#import "UIDevice+IdentifierAddition.h"
 #import "LinphoneManager.h"
 
 #include "linphonecore_utils.h"
@@ -1522,6 +1523,9 @@ static void audioRouteChangeListenerCallback (
 		}
 		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
 		
+        NSString *instance = [NSString stringWithFormat:@"instance=%@", [[UIDevice currentDevice] uniqueDeviceIdentifier]];
+        linphone_proxy_config_set_contact_parameters(proxyCfg, [instance UTF8String]);
+        
 		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
 		//set to default proxy
 		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
