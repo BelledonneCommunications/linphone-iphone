@@ -31,6 +31,7 @@
 #include "commands/ipv6.h"
 #include "commands/media-encryption.h"
 #include "commands/msfilter-add-fmtp.h"
+#include "commands/play-wav.h"
 #include "commands/pop-event.h"
 #include "commands/port.h"
 #include "commands/ptime.h"
@@ -245,7 +246,7 @@ bool DaemonCommand::matches(const char *name) const {
 }
 
 Daemon::Daemon(const char *config_path, const char *factory_config_path, const char *log_file, const char *pipe_name, bool display_video, bool capture_video) :
-		mLogFile(NULL), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
+		mLSD(0), mLogFile(NULL), mCallIds(0), mProxyIds(0), mAudioStreamIds(0) {
 	ms_mutex_init(&mMutex, NULL);
 	mServerFd = -1;
 	mChildFd = -1;
@@ -289,6 +290,10 @@ const list<DaemonCommand*> &Daemon::getCommandList() const {
 
 LinphoneCore *Daemon::getCore() {
 	return mLc;
+}
+
+LinphoneSoundDaemon *Daemon::getLSD() {
+	return mLSD;
 }
 
 int Daemon::updateCallId(LinphoneCall *call) {
@@ -360,6 +365,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new CallCommand());
 	mCommands.push_back(new TerminateCommand());
 	mCommands.push_back(new DtmfCommand());
+	mCommands.push_back(new PlayWavCommand());
 	mCommands.push_back(new PopEventCommand());
 	mCommands.push_back(new AnswerCommand());
 	mCommands.push_back(new CallStatusCommand());
@@ -624,10 +630,11 @@ static void printHelp() {
 			"\t--dump-commands-help\tDump the help of every available commands.\n"
 			"\t--dump-commands-html-help\tDump the help of every available commands.\n"
 			"\t--pipe <pipename>\tCreate an unix server socket to receive commands.\n"
-			"\t--log <path>\t\tSupply a file where the log will be saved\n"
+			"\t--log <path>\t\tSupply a file where the log will be saved.\n"
 			"\t--factory-config <path>\tSupply a readonly linphonerc style config file to start with.\n"
 			"\t--config <path>\t\tSupply a linphonerc style config file to start with.\n"
 			"\t--disable-stats-events\t\tDo not automatically raise RTP statistics events.\n"
+			"\t--enable-lsd\t\tUse the linphone sound daemon.\n"
 			"\t-C\t\t\tenable video capture.\n"
 			"\t-D\t\t\tenable video display.\n");
 }
@@ -687,6 +694,15 @@ void Daemon::enableStatsEvents(bool enabled){
 	mUseStatsEvents=enabled;
 }
 
+void Daemon::enableLSD(bool enabled) {
+	if (mLSD) linphone_sound_daemon_destroy(mLSD);
+	linphone_core_use_sound_daemon(mLc, NULL);
+	if (enabled) {
+		mLSD = linphone_sound_daemon_new(NULL, 44100, 1);
+		linphone_core_use_sound_daemon(mLc, mLSD);
+	}
+}
+
 Daemon::~Daemon() {
 	uninitCommands();
 
@@ -694,6 +710,7 @@ Daemon::~Daemon() {
 		audio_stream_stop(it->second);
 	}
 
+	enableLSD(false);
 	linphone_core_destroy(mLc);
 	if (mChildFd != -1) {
 		close(mChildFd);
@@ -722,6 +739,7 @@ int main(int argc, char *argv[]) {
 	bool capture_video = false;
 	bool display_video = false;
 	bool nostats=FALSE;
+	bool lsd_enabled = false;
 	int i;
 
 	for (i = 1; i < argc; ++i) {
@@ -769,10 +787,13 @@ int main(int argc, char *argv[]) {
 			display_video = true;
 		}else if (strcmp(argv[i],"--disable-stats-events")==0){
 			nostats=TRUE;
+		} else if (strcmp(argv[i], "--enable-lsd") == 0) {
+			lsd_enabled = true;
 		}
 	}
 	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
 	app.enableStatsEvents(!nostats);
+	app.enableLSD(lsd_enabled);
 	return app.run();
 }
 ;

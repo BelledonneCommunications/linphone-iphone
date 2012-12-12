@@ -2,6 +2,7 @@
 #define DAEMON_H_
 
 #include <linphonecore.h>
+#include <linphonecore_utils.h>
 #include <mediastreamer2/mediastream.h>
 #include <mediastreamer2/mscommon.h>
 
@@ -169,6 +170,7 @@ public:
 	void quit();
 	void sendResponse(const Response &resp);
 	LinphoneCore *getCore();
+	LinphoneSoundDaemon *getLSD();
 	const std::list<DaemonCommand*> &getCommandList() const;
 	LinphoneCall *findCall(int id);
 	LinphoneProxyConfig *findProxy(int id);
@@ -182,6 +184,7 @@ public:
 	void dumpCommandsHelp();
 	void dumpCommandsHelpHtml();
 	void enableStatsEvents(bool enabled);
+	void enableLSD(bool enabled);
 private:
 	static void* iterateThread(void *arg);
 	static void callStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state, const char *msg);
@@ -199,6 +202,7 @@ private:
 	void initCommands();
 	void uninitCommands();
 	LinphoneCore *mLc;
+	LinphoneSoundDaemon *mLSD;
 	std::list<DaemonCommand*> mCommands;
 	std::queue<Response*> mEventQueue;
 	int mServerFd;
