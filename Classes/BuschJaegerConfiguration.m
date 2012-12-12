@@ -316,6 +316,13 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (void)reset {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
     valid = FALSE;
     [homeAP release];
     homeAP = nil;
@@ -407,6 +414,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                             [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
+                            [[NSUserDefaults standardUserDefaults] synchronize];
                             [[LinphoneManager instance] reconfigureLinphone];
                             if(![self downloadCertificates:delegate]) {
                                 dispatch_async(dispatch_get_main_queue(), ^{
