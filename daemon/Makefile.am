@@ -18,6 +18,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/firewall-policy.cc \
 			commands/help.cc \
 			commands/ipv6.cc \
+			commands/jitterbuffer.cc \
 			commands/media-encryption.cc \
 			commands/msfilter-add-fmtp.cc \
 			commands/play-wav.cc \
@@ -46,6 +47,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/firewall-policy.h \
 			commands/help.h \
 			commands/ipv6.h \
+			commands/jitterbuffer.h \
 			commands/media-encryption.h \
 			commands/msfilter-add-fmtp.h \
 			commands/play-wav.h \
@@ -57,8 +59,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/terminate.h \
 			commands/unregister.h \
 			commands/quit.h \
-			commands/version.h \
-			commands/jitterbuffer.cc commands/jitterbuffer.h
+			commands/version.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
 

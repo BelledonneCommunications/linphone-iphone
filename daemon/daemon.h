@@ -54,7 +54,6 @@ private:
 class DaemonCommand {
 public:
 	virtual ~DaemonCommand() {
-
 	};
 	virtual void exec(Daemon *app, const char *args)=0;
 	bool matches(const char *name) const;

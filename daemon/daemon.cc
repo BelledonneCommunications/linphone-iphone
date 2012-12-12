@@ -389,7 +389,6 @@ void Daemon::initCommands() {
 	mCommands.push_back(new VersionCommand());
 	mCommands.push_back(new QuitCommand());
 	mCommands.push_back(new HelpCommand());
-
 }
 
 void Daemon::uninitCommands() {
@@ -561,7 +560,7 @@ void Daemon::dumpCommandsHelp() {
 static string htmlEscape(const string &orig){
 	string ret=orig;
 	size_t pos;
-	
+
 	while(1){
 		pos=ret.find('<');
 		if (pos!=string::npos){
@@ -607,7 +606,7 @@ void Daemon::dumpCommandsHelpHtml(){
 		}
 		cout<<"</i></p>"<<endl;
 	}
-	
+
 	cout << "</body></html>"<<endl;
 }
 
@@ -738,7 +737,7 @@ int main(int argc, char *argv[]) {
 	const char *log_file = NULL;
 	bool capture_video = false;
 	bool display_video = false;
-	bool nostats=FALSE;
+	bool stats_enabled = true;
 	bool lsd_enabled = false;
 	int i;
 
@@ -786,15 +785,13 @@ int main(int argc, char *argv[]) {
 		} else if (strcmp(argv[i], "-D") == 0) {
 			display_video = true;
 		}else if (strcmp(argv[i],"--disable-stats-events")==0){
-			nostats=TRUE;
+			stats_enabled = false;
 		} else if (strcmp(argv[i], "--enable-lsd") == 0) {
 			lsd_enabled = true;
 		}
 	}
 	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
-	app.enableStatsEvents(!nostats);
+	app.enableStatsEvents(stats_enabled);
 	app.enableLSD(lsd_enabled);
 	return app.run();
 }
-;
-
