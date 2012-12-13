@@ -140,6 +140,33 @@ AC_ARG_ENABLE(console_ui,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-console_ui) ;;
       esac],[console_ui=true])
 
+dnl conditionnal build of tools.
+AC_ARG_ENABLE(tools,
+      [AS_HELP_STRING([--enable-tools=[yes/no]], [Turn on or off compilation of console interface (default=yes)])],
+      [case "${enableval}" in
+        yes) build_tools=true ;;
+        no)  build_tools=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --enable-tools) ;;
+      esac],[build_tools=check])
+
+dnl check libxml2 (needed for tools)
+if test "$build_tools" != "false" ; then
+	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[],
+	[
+		if test "$build_tools" = "true" ; then
+			AC_MSG_ERROR([Could not found libxml2, tools cannot be compiled.])
+		else
+			build_tools=false
+		fi
+	])
+fi
+
+AM_CONDITIONAL(BUILD_TOOLS, test x$build_tools != xfalse)
+if test "$build_tools" != "false" ; then
+   build_tools=true
+   AC_DEFINE(BUILD_TOOLS, 1, [Define if tools enabled] ) 
+fi
+
 dnl conditionnal build of gtk interface.
 AC_ARG_ENABLE(gtk_ui,
       [AS_HELP_STRING([--enable-gtk_ui=[yes/no]], [Turn on or off compilation of gtk interface (default=yes)])],
@@ -418,8 +445,10 @@ AC_ARG_ENABLE(portaudio,
 
 dnl build console if required
 AM_CONDITIONAL(BUILD_CONSOLE, test x$console_ui = xtrue)
+
 dnl special things for arm-linux cross compilation toolchain
 AM_CONDITIONAL(ARMBUILD, test x$use_arm_toolchain = xyes)
+
 dnl compilation of gtk user interface
 AM_CONDITIONAL(BUILD_GTK_UI, [test x$gtk_ui = xtrue ] )
 AM_CONDITIONAL(BUILD_WIN32, test x$mingw_found = xyes )
@@ -642,9 +671,11 @@ share/fr/Makefile
 share/it/Makefile
 share/ja/Makefile
 share/cs/Makefile
+share/xml/Makefile
 share/linphone.pc
 share/linphone.desktop
 scripts/Makefile
+tools/Makefile
 linphone.spec
 linphone.iss
 ])
@@ -657,6 +688,7 @@ printf "* Video support\t\t\t%s\n" $video
 printf "* GTK interface\t\t\t%s\n" $gtk_ui
 printf "* Account assistant\t\t%s\n" $build_wizard
 printf "* Console interface\t\t%s\n" $console_ui
+printf "* Tools\t\t\t\t%s\n" $build_tools
 printf "* zRTP encryption (GPLv3)\t%s\n" $zrtp
 
 if test "$enable_tunnel" = "true" ; then
