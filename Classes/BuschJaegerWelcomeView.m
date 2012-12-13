@@ -67,7 +67,7 @@
                                                  name:kLinphoneConfigurationUpdate
                                                object:nil];
     [self updateConfiguration:[LinphoneManager instance].configuration];
-    [self reload];
+    [self reloadHistory];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -113,7 +113,7 @@
 
 #pragma mark -
 
-- (void)reload {
+- (void)reloadHistory {
     [self view]; // Force view load
     if([LinphoneManager runningOnIpad] && [LinphoneManager instance].configuration.valid) {
         if([[LinphoneManager instance].configuration loadHistory:self]) {

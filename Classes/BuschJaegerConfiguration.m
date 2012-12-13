@@ -95,6 +95,9 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 - (id)init {
     self = [super init];
     if(self != nil) {
+        cmdQueue = [[NSOperationQueue alloc] init];
+        cmdQueue.name = @"cmd queue";
+        cmdQueue.maxConcurrentOperationCount = 1;
         outdoorStations = [[NSMutableSet alloc] init];
         users = [[NSMutableSet alloc] init];
         history = [[NSMutableSet alloc] init];
@@ -109,6 +112,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (void)dealloc {
+    [cmdQueue release];
     [homeAP release];
     [outdoorStations release];
     [users release];
@@ -211,7 +215,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
             NSURLRequest *pemRequest = [NSURLRequest requestWithURL:pemUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
             NSURLRequest *derRequest = [NSURLRequest requestWithURL:derUrl cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
             if(pemRequest != nil && derRequest != nil) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+                [cmdQueue addOperationWithBlock: ^(void) {
                     NSURLResponse *response = nil;
                     NSError *error = nil;
                     NSData *data  = nil;
@@ -269,7 +273,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                         [self reloadCertificates];
                         [delegate buschJaegerConfigurationSuccess];
                     });
-                });
+                }];
                 return TRUE;
             }
         } else {
@@ -393,7 +397,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     if(urlString != nil && userString != nil && passwordString != nil) {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
         if(request != nil) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+            [cmdQueue addOperationWithBlock: ^(void) {
                 NSURLResponse *response = nil;
                 NSError *error = nil;
                 NSData *data  = nil;
@@ -405,6 +409,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                 } else {
                     NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                     if(urlResponse.statusCode == 200) {
+                        [self reset];
                         [LinphoneLogger log:LinphoneLoggerDebug format:@"Download ok"];
                         if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
                             valid = TRUE;
@@ -429,7 +434,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                         });
                     }
                 }
-            });
+            }];
             return TRUE;
         }
     }
@@ -473,7 +478,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+        [cmdQueue addOperationWithBlock: ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
@@ -486,6 +491,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                 NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                 if(urlResponse.statusCode == 200) {
                     NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
+                    [history removeAllObjects];
                     if([self parseHistory:dataString delegate:delegate]) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationSuccess];
@@ -498,7 +504,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                     });
                 }
             }
-        });
+        }];
         return TRUE;
     }
     return FALSE;
@@ -594,7 +600,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     NSString *url = [NSString stringWithFormat:@"%@/cgi-bin/adduser.cgi?type=delhistory&id=%d", [self getGateway], ahistory.ID];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+        [cmdQueue addOperationWithBlock: ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
@@ -609,7 +615,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                     [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                 });
             }
-        });
+        }];
         return TRUE;
     }
     return FALSE;

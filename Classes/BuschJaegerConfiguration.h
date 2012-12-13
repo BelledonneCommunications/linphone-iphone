@@ -33,6 +33,8 @@
 @end
 
 @interface BuschJaegerConfiguration : NSObject<NSURLConnectionDelegate> {
+    @private
+    NSOperationQueue *cmdQueue;
 }
 
 typedef enum _BuschJaegerConfigurationRequestType{

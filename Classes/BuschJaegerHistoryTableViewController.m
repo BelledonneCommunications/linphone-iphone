@@ -118,7 +118,11 @@
                                               otherButtonTitles:nil,nil];
     [errorView show];
     [errorView release];
-    [[BuschJaegerMainView instance].historyView reload];
+    if(![LinphoneManager runningOnIpad]) {
+        [[BuschJaegerMainView instance].historyView reload];
+    } else {
+        [[BuschJaegerMainView instance].welcomeView reloadHistory];
+    }
 }
 
 @end

@@ -33,4 +33,6 @@
 - (IBAction)settingsClick:(id)sender;
 - (IBAction)historyClick:(id)sender;
 
+- (void)reloadHistory;
+
 @end
