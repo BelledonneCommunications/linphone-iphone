@@ -64,12 +64,12 @@ void xml2lpc_context_destroy(xml2lpc_context *ctx) {
 	free(ctx);
 }
 
-void xml2lpc_context_clear_logs(xml2lpc_context *ctx) {
+static void xml2lpc_context_clear_logs(xml2lpc_context *ctx) {
 	ctx->errorBuffer[0]='\0';
 	ctx->warningBuffer[0]='\0';
 }
 
-void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...) {
+static void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...) {
 	va_list args;	
 	va_start(args, fmt);	
 	if(xmlCtx->cbf != NULL) {
@@ -78,7 +78,7 @@ void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...) {
  	va_end(args);
 }
 
-void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {	
+static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {	
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->errorBuffer);
 	va_list args;	
@@ -87,7 +87,7 @@ void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 	va_end(args);
 }
 
-void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {	
+static void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {	
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->warningBuffer);
 	va_list args;	
@@ -96,6 +96,7 @@ void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {
 	va_end(args);
 }
 
+#if 0
 static void dumpNodes(int level, xmlNode * a_node, xml2lpc_context *ctx) {
     xmlNode *cur_node = NULL;
 
@@ -109,6 +110,7 @@ static void dumpNodes(int level, xmlNode * a_node, xml2lpc_context *ctx) {
         dumpNodes(level + 1, cur_node->children, ctx);
     }
 }
+#endif
 
 
 static void dumpNode(xmlNode *node, xml2lpc_context *ctx) {
