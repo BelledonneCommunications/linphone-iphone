@@ -3,7 +3,7 @@
 DESCRIPTION = "Audio/video SIP-based IP phone (console edition)"
 HOMEPAGE = "http://www.linphone.org/?lang=us"
 LICENSE = "GPLv2"
-PR="r13"
+PR="r14"
 
 DEFAULT_PREFERENCE = "3"
 OVERRIDES_append = ":console"
