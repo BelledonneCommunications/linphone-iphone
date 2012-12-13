@@ -40,7 +40,7 @@ GTK_THEME=Outcrop
 GTK_FILELIST=gtk+-2.22.1.filelist
 GTK_FILELIST_PATH=$(abs_top_srcdir)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
-WINBINDIST_FILES=`cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST)`
+WINBINDIST_FILES=`cat $(abs_top_srcdir)/$(LINPHONEDEPS_FILELIST)`
 ISS_SCRIPT=linphone.iss
 ISS_SCRIPT_PATH=$(abs_top_srcdir)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
