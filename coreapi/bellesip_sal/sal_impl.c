@@ -35,12 +35,28 @@ static void sal_add_pending_auth(Sal *sal, SalOp *op){
 }
 
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
-	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_AUTHORIZATION);
-	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_PROXY_AUTHORIZATION);
-	if (belle_sip_provider_add_authorization(op->base.root->prov,op->request,response)) {
-		sal_op_resend_request(op,op->request);
+	belle_sip_request_t* request;
+	bool_t is_within_dialog=FALSE;
+	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
+		request = belle_sip_dialog_create_request_from(op->dialog,(const belle_sip_request_t *)op->request);
+		is_within_dialog=TRUE;
+	} else {
+		request=op->request;
+		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION);
+		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION);
+
+	}
+	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response)) {
+		if (is_within_dialog) {
+			sal_op_resend_request(op,request);
+		} else {
+			sal_op_send_request(op,request);
+		}
 	}else {
 		ms_message("No auth info found for [%s]",sal_op_get_from(op));
+		if (is_within_dialog) {
+			belle_sip_object_unref(request);
+		}
 		sal_add_pending_auth(op->base.root,op);
 	}
 
@@ -76,6 +92,10 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
+	} else if (strcmp("SUBSCRIBE",belle_sip_request_get_method(req))==0) {
+		op=sal_op_new((Sal*)sal);
+		op->dir=SalOpDirIncoming;
+		sal_op_presence_fill_cbs(op);
 	} else if (strcmp("MESSAGE",belle_sip_request_get_method(req))==0) {
 			content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 			if (content_type

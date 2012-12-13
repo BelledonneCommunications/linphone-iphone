@@ -88,40 +88,6 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 
 
 
-
-/*presence Subscribe/notify*/
-int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
-	ms_fatal("sal_subscribe_presence not implemented yet");
-	return -1;
-}
-int sal_unsubscribe(SalOp *op){
-	ms_fatal("sal_unsubscribe not implemented yet");
-	return -1;
-}
-int sal_subscribe_accept(SalOp *op){
-	ms_fatal("sal_subscribe_accept not implemented yet");
-	return -1;
-}
-int sal_subscribe_decline(SalOp *op){
-	ms_fatal("sal_subscribe_decline not implemented yet");
-	return -1;
-}
-int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
-	ms_fatal("sal_notify_presence not implemented yet");
-	return -1;
-}
-int sal_notify_close(SalOp *op){
-	ms_fatal("sal_notify_close not implemented yet");
-	return -1;
-}
-
-/*presence publish */
-int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status){
-	ms_fatal("sal_publish not implemented yet");
-	return -1;
-}
-
-
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to){
 	ms_fatal("sal_ping not implemented yet");
@@ -141,6 +107,11 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	sal_op_send_request(op,request);
 }
+static bool_t is_request_creating_dialog(belle_sip_request_t* request) {
+	return strcmp("INVITE",belle_sip_request_get_method(request))==0
+			||
+			strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0;
+}
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
@@ -155,7 +126,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
 	/*in case DIALOG is in state NULL create a new dialog*/
-	if (!op->dialog  && strcmp("INVITE",belle_sip_request_get_method(request))==0) {
+	if (!op->dialog  && is_request_creating_dialog(request)) {
 		op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
 		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
 		belle_sip_dialog_set_application_data(op->dialog,op);
@@ -166,4 +137,66 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	}
 	return belle_sip_client_transaction_send_request(client_transaction);
 
+}
+/*return TRUE if error code*/
+bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
+	int code = belle_sip_response_get_status_code(response);
+	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
+	*sal_err=SalErrorUnknown;
+	*sal_reason = SalReasonUnknown;
+
+	if (reason_header){
+		snprintf(reason
+				,reason_size
+				,"%s %s"
+				,belle_sip_response_get_reason_phrase(response)
+				,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
+	} else {
+		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
+	}
+	if (code >=400) {
+		switch(code) {
+		case 400:
+			*sal_err=SalErrorUnknown;
+			break;
+		case 404:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonNotFound;
+			break;
+		case 415:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonMedia;
+			break;
+		case 422:
+			ms_error ("422 not implemented yet");;
+			break;
+		case 480:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonTemporarilyUnavailable;
+			break;
+		case 486:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonBusy;
+			break;
+		case 487:
+			break;
+		case 600:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonDoNotDisturb;
+			break;
+		case 603:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonDeclined;
+			break;
+		default:
+			if (code>0){
+				*sal_err=SalErrorFailure;
+				*sal_reason=SalReasonUnknown;
+			}else *sal_err=SalErrorNoResponse;
+			/* no break */
+		}
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }

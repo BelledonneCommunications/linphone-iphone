@@ -84,6 +84,9 @@ typedef struct _stats {
 	int number_of_LinphoneCallReleased;
 
 	int number_of_LinphoneMessageReceived;
+
+	int number_of_NewSubscriptionRequest;
+	int number_of_NotifyReceived;
 }stats;
 static  stats global_stat;
 
@@ -296,7 +299,6 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 }
 
 static void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
-
 	char* from=linphone_address_as_string(from_address);
 	ms_message("Message from [%s]  is [%s]",from,message);
 	ms_free(from);
@@ -304,6 +306,21 @@ static void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, cons
 	counters->number_of_LinphoneMessageReceived++;
 }
 
+void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
+	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
+	ms_message("New subscription request  from [%s]  url [%s]",from,url);
+	ms_free(from);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_NewSubscriptionRequest++;
+
+}
+static void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
+	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
+	ms_message("New Notify request  from [%s] ",from);
+	ms_free(from);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_NotifyReceived++;
+}
 static bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	int retry=0;
 	while (*counter<value && retry++ <20) {
@@ -339,6 +356,8 @@ static LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
+	mgr->v_table.new_subscription_request=new_subscribtion_request;
+	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
@@ -551,6 +570,37 @@ static void text_message() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void simple_publish() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneProxyConfig* proxy;
+	linphone_core_get_default_proxy(marie->lc,&proxy);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,TRUE);
+	linphone_proxy_config_done(proxy);
+	linphone_core_iterate(marie->lc);
+	linphone_core_manager_destroy(marie);
+}
+
+
+static void simple_subscribe() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	const MSList* marie_friends = linphone_core_get_friend_list(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_friends);
+	LinphoneFriend* friend = (LinphoneFriend*) marie_friends->data;
+	linphone_friend_edit(friend);
+	linphone_friend_enable_subscribes(friend,TRUE);
+	linphone_friend_done(friend);
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyReceived,1));
+
+	linphone_core_manager_destroy(marie);
+	CU_ASSERT_TRUE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*wait for unsubscribe*/
+
+	linphone_core_manager_destroy(pauline);
+}
+
 int init_test_suite () {
 
 CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
@@ -602,6 +652,12 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "text_message", text_message)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "simple_subscribe", simple_subscribe)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "simple_publish", simple_publish)) {
 			return CU_get_error();
 	}
 	return 0;

@@ -66,6 +66,7 @@ struct SalOp{
 	bool_t supports_session_timers;
 	SalOpSate_t state;
 	SalOpDir_t dir;
+	belle_sip_refresher_t* refresher;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
@@ -79,5 +80,10 @@ void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
+
+bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size);
+
+/*presence*/
+void sal_op_presence_fill_cbs(SalOp*op);
 
 #endif /* SAL_IMPL_H_ */

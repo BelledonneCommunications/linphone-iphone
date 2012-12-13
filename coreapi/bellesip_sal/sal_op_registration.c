@@ -30,11 +30,7 @@ static void register_refresh(SalOp* op) {
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	sal_op_send_request(op,op->request);
 }
-static bool_t is_contact_equal(belle_sip_header_contact_t* a,belle_sip_header_contact_t* b) {
-	if (!a | !b) return FALSE;
-	return !belle_sip_uri_equals(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(a))
-								,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(b)));
-}
+
 static void register_response_event(void *user_ctx, const belle_sip_response_event_t *event){
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
@@ -52,7 +48,7 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 
 		contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
 		if (contact_header_list) {
-			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)is_contact_equal, (const void*)sal_op_get_contact_address(op));
+			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)sal_op_get_contact_address(op));
 			if (!contact_header_list) {
 				ms_error("no matching contact for [%s]", sal_op_get_contact(op));
 			} else {

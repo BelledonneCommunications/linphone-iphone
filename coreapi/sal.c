@@ -414,3 +414,18 @@ const char* sal_stream_dir_to_string(SalStreamDir type) {
 	}
 
 }
+
+const char* sal_reason_to_string(const SalReason reason) {
+	switch (reason) {
+	case SalReasonDeclined : return "SalReasonDeclined";
+	case SalReasonBusy: return "SalReasonBusy";
+	case SalReasonRedirect: return "SalReasonRedirect";
+	case SalReasonTemporarilyUnavailable: return "SalReasonTemporarilyUnavailable";
+	case SalReasonNotFound: return "SalReasonNotFound";
+	case SalReasonDoNotDisturb: return "SalReasonDoNotDisturb";
+	case SalReasonMedia: return "SalReasonMedia";
+	case SalReasonForbidden: return "SalReasonForbidden";
+	case SalReasonUnknown: return "SalReasonUnknown";
+	default: return "Unkown reason";
+	}
+}

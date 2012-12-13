@@ -201,6 +201,8 @@ typedef enum SalReason{
 	SalReasonUnknown
 }SalReason;
 
+const char* sal_reason_to_string(const SalReason reason);
+
 typedef enum SalPresenceStatus{
 	SalPresenceOffline,
 	SalPresenceOnline,

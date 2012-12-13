@@ -338,8 +338,8 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		ms_warning("No sip url defined.");
 		return;
 	}
-	fr->lc=lc;
 	
+
 	linphone_core_write_friends_config(lc);
 
 	if (fr->inc_subscribe_pending){
@@ -390,6 +390,7 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 		return ;
 	}
 	lc->friends=ms_list_append(lc->friends,lf);
+	lf->lc=lc;
 	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
 	else lf->commit=TRUE;
 	return ;
