@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "xml2lpc.h"
 
 void cb_function(void *ctx, xml2lpc_log_level level, const char *msg, va_list list) {
-	const char *header;
+	const char *header = "";
 	switch(level) {
 		case XML2LPC_DEBUG:
 			header = "DEBUG";
