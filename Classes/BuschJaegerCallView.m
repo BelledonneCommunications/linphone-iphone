@@ -201,6 +201,9 @@
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
         [self orientationUpdate:[[UIDevice currentDevice] orientation]];
     }
+    
+    UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -219,6 +222,9 @@
                                                         name:UIDeviceOrientationDidChangeNotification
                                                       object:nil];
     }
+    
+    UIDevice *device = [UIDevice currentDevice];
+    device.proximityMonitoringEnabled = NO;
 }
 
 
