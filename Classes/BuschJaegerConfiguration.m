@@ -315,14 +315,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     }
 }
 
-- (void)reset {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
+- (void)reset {  
     valid = FALSE;
     [homeAP release];
     homeAP = nil;
@@ -386,6 +379,13 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 
 - (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
     [self reset];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
     NSString *urlString = [BuschJaegerConfiguration getRegexValue:@"URL=([^\\s]+)" data:data];
     NSString *userString = [BuschJaegerConfiguration getRegexValue:@"USER=([^\\s]+)" data:data];
     NSString *passwordString = [BuschJaegerConfiguration getRegexValue:@"PW=([^\\s]+)" data:data];
