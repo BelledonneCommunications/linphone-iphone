@@ -33,6 +33,7 @@
 
 - (void)initBuschJaegerSettingsView {
     scanController = [[ZBarReaderViewController alloc] init];
+    scanController.supportedOrientationsMask = ZBarOrientationMaskAll;
     [scanController setReaderDelegate:self];
 }
 
@@ -85,6 +86,11 @@
     [waitView setHidden:TRUE];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [BuschJaegerUtils resizeGradient:self.view];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     if ([LinphoneManager runningOnIpad]) {
         return YES;
@@ -105,7 +111,9 @@
 #pragma mark - Action Functions
 
 - (IBAction)onScanClick:(id)sender {
-    [self presentModalViewController:scanController animated:FALSE];
+    [[BuschJaegerMainView instance].navigationController pushViewController:scanController animated:FALSE];
+    [[BuschJaegerMainView instance].navigationController setNavigationBarHidden:FALSE];
+    [[BuschJaegerMainView instance].navigationController setNavigationBarHidden:TRUE];
 }
 
 - (IBAction)onManualClick:(id)sender {
@@ -148,11 +156,14 @@
             }
         }
         if(handled) {
-            [self dismissModalViewControllerAnimated:FALSE];
+            [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
         }
     }
 }
 
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+}
 
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
