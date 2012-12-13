@@ -381,15 +381,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     return valid;
 }
 
-- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
-    [self reset];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
+- (BOOL)parseQRCode:(NSString*)data delegate:(id<BuschJaegerConfigurationDelegate>)delegate {   
     NSString *urlString = [BuschJaegerConfiguration getRegexValue:@"URL=([^\\s]+)" data:data];
     NSString *userString = [BuschJaegerConfiguration getRegexValue:@"USER=([^\\s]+)" data:data];
     NSString *passwordString = [BuschJaegerConfiguration getRegexValue:@"PW=([^\\s]+)" data:data];
@@ -410,6 +402,11 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                     NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                     if(urlResponse.statusCode == 200) {
                         [self reset];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
                         [LinphoneLogger log:LinphoneLoggerDebug format:@"Download ok"];
                         if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
                             valid = TRUE;
@@ -419,7 +416,6 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                             [[NSUserDefaults standardUserDefaults] setObject:userString forKey:@"username_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:network.domain forKey:@"domain_preference"];
                             [[NSUserDefaults standardUserDefaults] setObject:passwordString forKey:@"password_preference"];
-                            [[NSUserDefaults standardUserDefaults] synchronize];
                             [[LinphoneManager instance] reconfigureLinphone];
                             if(![self downloadCertificates:delegate]) {
                                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -427,8 +423,8 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                                 });
                             }
                         }
+                        [[NSUserDefaults standardUserDefaults] synchronize];
                     } else {
-                        [self reset];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                         });
@@ -473,7 +469,6 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 }
 
 - (BOOL)loadHistory:(id<BuschJaegerConfigurationDelegate>)delegate {
-    [history removeAllObjects];
     NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
     url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
