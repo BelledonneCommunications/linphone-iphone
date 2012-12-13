@@ -2233,11 +2233,21 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 }
 
 static void sal_register_add_route(osip_message_t *msg, const char *proxy){
-	char tmp[256]={0};
-	snprintf(tmp,sizeof(tmp)-1,"<%s;lr>",proxy);
-	
+	osip_route_t *route;
+
 	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
-	osip_message_set_route(msg,tmp);
+	
+	osip_route_init(&route);
+	if (osip_route_parse(route,proxy)==0){
+		osip_uri_param_t *lr_param = NULL;
+		osip_uri_uparam_get_byname(route->url, "lr", &lr_param);
+		if (lr_param == NULL){
+			osip_uri_uparam_add(route->url,osip_strdup("lr"),NULL);
+		}
+		osip_list_add(&msg->routes,route,0);
+		return;
+	}
+	osip_route_free(route);
 }
 
 
