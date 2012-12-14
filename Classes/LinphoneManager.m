@@ -795,13 +795,14 @@ static LinphoneCoreVTable linphonec_vtable = {
         ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	}
 	[LinphoneLogger logc:LinphoneLoggerLog format:"Create linphonecore"];
-    linphone_core_set_user_agent([@"LinphoneIPhone" UTF8String],
-                                 [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
+
 	theLinphoneCore = linphone_core_new (&linphonec_vtable
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
 
+	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
+                                 [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
 	fastAddressBook = [[FastAddressBook alloc] init];
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
