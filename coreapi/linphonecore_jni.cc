@@ -36,7 +36,7 @@ extern "C" {
 
 #ifdef ANDROID
 #include <android/log.h>
-extern "C" void libmsilbc_init();
+extern "C" void libmsilbc_init();enableca
 #ifdef HAVE_X264
 extern "C" void libmsx264_init();
 #endif
@@ -1779,7 +1779,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 
 //CallParams
 
-extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
 	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
 }
 
