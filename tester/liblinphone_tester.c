@@ -312,6 +312,7 @@ void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *
 	ms_free(from);
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_NewSubscriptionRequest++;
+	linphone_core_add_friend(lc,lf); /*accept subscription*/
 
 }
 static void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
@@ -596,7 +597,7 @@ static void simple_subscribe() {
 	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyReceived,1));
 
 	linphone_core_manager_destroy(marie);
-	CU_ASSERT_TRUE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*wait for unsubscribe*/
+	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
 
 	linphone_core_manager_destroy(pauline);
 }
