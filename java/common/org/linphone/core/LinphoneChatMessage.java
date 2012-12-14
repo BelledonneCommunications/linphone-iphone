@@ -7,9 +7,8 @@ public interface LinphoneChatMessage {
 	interface StateListener{
 		void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state);
 	}
-	static class State {
-		@SuppressWarnings("rawtypes")
-		static private Vector values = new Vector();
+	public static class State {
+		static private Vector<State> values = new Vector<State>();
 		private final int mValue;
 		public final int value() {return mValue;}
 		
@@ -31,7 +30,6 @@ public interface LinphoneChatMessage {
 		 */
 		public final static State NotDelivered = new State(3,"NotDelivered");
 		
-		@SuppressWarnings("unchecked")
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);

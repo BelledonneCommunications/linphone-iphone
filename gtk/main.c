@@ -237,8 +237,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
 	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
 
-	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
+	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);

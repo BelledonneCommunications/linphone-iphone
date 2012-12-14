@@ -31,7 +31,7 @@ public interface LinphoneCore {
 	 */
 	static public class GlobalState {
 		
-		static private Vector values = new Vector();
+		static private Vector<GlobalState> values = new Vector<GlobalState>();
 		/**
 		 * Off
 		 */
@@ -76,7 +76,7 @@ public interface LinphoneCore {
 	 */
 	static public class RegistrationState {
 		
-		private static Vector values = new Vector();
+		private static Vector<RegistrationState> values = new Vector<RegistrationState>();
 		/**
 		 * None
 		 */
@@ -124,7 +124,7 @@ public interface LinphoneCore {
 	 */
 	static public class FirewallPolicy {
 		
-		static private Vector values = new Vector();
+		static private Vector<FirewallPolicy> values = new Vector<FirewallPolicy>();
 		/**
 		 * No firewall is assumed.
 		 */
@@ -189,21 +189,21 @@ public interface LinphoneCore {
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */
-	static public class MediaEncryption {
+	static public final class MediaEncryption {
 		
-		static private Vector values = new Vector();
+		static private Vector<MediaEncryption> values = new Vector<MediaEncryption>();
 		/**
 		 * None
 		 */
-		static public MediaEncryption None = new MediaEncryption(0,"None");       
+		static public final MediaEncryption None = new MediaEncryption(0,"None");       
 		/**
 		 * SRTP
 		 */
-		static public MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
+		static public final MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
 		/**
 		 * ZRTP
 		 */
-		static public MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		static public final MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
 		protected final int mValue;
 		private final String mStringValue;
 
@@ -230,7 +230,7 @@ public interface LinphoneCore {
 	 */
 	static public class EcCalibratorStatus {
 		
-		static private Vector values = new Vector();
+		static private Vector<EcCalibratorStatus> values = new Vector<EcCalibratorStatus>();
 		/* Do not change the values of these constants or the strings associated with them to prevent breaking
 		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;
@@ -278,6 +278,12 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+
+	/**
+	 * Set the context of creation of the LinphoneCore.
+	 */
+	public void setContext(Object context);
+
 	/**
 	 * clear all added proxy configs
 	 */
@@ -417,7 +423,9 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException 
 	 */
 	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
-	
+
+	public void startRinging();
+
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
@@ -472,7 +480,7 @@ public interface LinphoneCore {
 	 * @return true is mic is muted
 	 */
 	boolean isMicMuted();
-	
+
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number
@@ -524,7 +532,7 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoCancellationEnabled();
 	/**
-	 * Get echo limiter status (another method of doing echo suppressionn, more brute force)
+	 * Get echo limiter status (another method of doing echo suppression, more brute force)
 	 * @return true if echo limiter is enabled
 	 */
 	boolean isEchoLimiterEnabled();
@@ -537,13 +545,13 @@ public interface LinphoneCore {
 	 */
 	Transports getSignalingTransportPorts();
 	/**
-	 * not implemented
+	 * Activates or deactivates the speaker.
 	 * @param value
 	 */
 	void enableSpeaker(boolean value);
 	/**
-	 * not implemented
-	 * @return
+	 * Tells whether the speaker is activated.
+	 * @return true if speaker enabled, false otherwise
 	 */
 	boolean isSpeakerEnabled();
 	/**
@@ -843,4 +851,27 @@ public interface LinphoneCore {
 	 * automatically declined.
 	**/
 	void setIncomingTimeout(int timeout);
+	
+	/**
+	 * Set the call timeout in seconds.
+	 * Once this time is elapsed (ringing included), the call is automatically hung up.
+	**/
+	void setInCallTimeout(int timeout);
+	
+	void setMicrophoneGain(float gain);
+	
+	/**
+	 * Set username and display name to use if no LinphoneProxyConfig configured
+	 */
+	void setPrimaryContact(String displayName, String username);
+	
+	/**
+	 * Enable/Disable the use of SIP INFO for DTMFs
+	 */
+	void setUseSipInfoForDtmfs(boolean use);
+	
+	/**
+	 * Enable/Disable the use of inband DTMFs
+	 */
+	void setUseRfc2833ForDtmfs(boolean use);
 }

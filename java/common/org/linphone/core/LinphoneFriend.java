@@ -37,7 +37,7 @@ public interface LinphoneFriend {
 	static class SubscribePolicy {
 
 		
-		static private Vector values = new Vector();
+		static private Vector<SubscribePolicy> values = new Vector<SubscribePolicy>();
 		protected final int mValue;
 		private final String mStringValue;
 		/**

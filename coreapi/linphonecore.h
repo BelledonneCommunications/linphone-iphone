@@ -204,14 +204,9 @@ bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams
 bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
 void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
 void linphone_call_params_destroy(LinphoneCallParams *cp);
-/**
- * @ingroup call_control
- * Use to know if this call has been configured in low bandwidth mode.
- * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file
- * <br> When enabled, this param may transform a call request with video in audio only mode.
- * @return TRUE if low bandwidth has been configured/detected
- */
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
+void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
+
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -222,7 +217,8 @@ enum _LinphoneReason{
 	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
 	LinphoneReasonDeclined, /**<The call has been declined*/
 	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
-	LinphoneReasonNotAnswered
+	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
+	LinphoneReasonBusy /**<Phone line was busy */
 };
 
 /**
@@ -662,13 +658,13 @@ const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 /**
- *LinphoneChatMessageStatus used to notify if message has been succesfully delivered or not
+ *LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  */
 typedef enum _LinphoneChatMessageStates {
-	LinphoneChatMessageStateIdle, /** initial state*/
-	LinphoneChatMessageStateInProgress, /*delivery in progress**/
-	LinphoneChatMessageStateDelivered, /** message succesffully delivered an acknoleged by remote end point*/
-	LinphoneChatMessageStateNotDelivered /** message was not delivered*/
+	LinphoneChatMessageStateIdle, /**<initial state*/
+	LinphoneChatMessageStateInProgress, /**<delivery in progress**/
+	LinphoneChatMessageStateDelivered, /**<message succesffully delivered an acknoleged by remote end point*/
+	LinphoneChatMessageStateNotDelivered /**<message was not delivered*/
 }LinphoneChatMessageState;
 
 	
@@ -678,20 +674,20 @@ typedef enum _LinphoneChatMessageStates {
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 
 /**
- * clone a chat message 
+ * Clone a chat message 
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneChatMessage
  */
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
 /**
- * set origine of the message
+ * Set origin of the message
  *@param message #LinphoneChatMessage obj
  *@param from #LinphoneAddress origin of this message (copied)
  */
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
 
 /**
- * get origine of the message 
+ * Get origin of the message 
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
@@ -700,21 +696,21 @@ LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* messa
 /**
  * Linphone message can carry external body as defined by rfc2017
  * @param message #LinphoneChatMessage
- * @return return external body url null if not present.
+ * @return external body url or NULL if not present.
  */
 const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
 	
 /**
  * Linphone message can carry external body as defined by rfc2017
  * 
- * @param  #LinphoneChatMessage  
+ * @param message a LinphoneChatMessage  
  * @param url ex: access-type=URL; URL="http://www.foo.com/file"
  */
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
 
 /**
- * get text part of this message
- *@return text or NULL if no text.
+ * Get text part of this message
+ * @return text or NULL if no text.
  */
 const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
 /**
@@ -730,15 +726,15 @@ void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
 /**
  * Call back used to notify message delivery status
  *@param msg #LinphoneChatMessage object
- *@param status #LinphoneChatMessageStatus
- *@param ud us user data
+ *@param status LinphoneChatMessageState
+ *@param ud application user data
  */
 typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 /**
  * send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
  * @param msg #LinphoneChatMessage message to be sent
- * @param status_cb #LinphoneChatMessageStatus status call back invoked when to message is delivered or not. May be NULL
+ * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when message is delivered or could not be delivered. May be NULL
  * @param ud user data for the status cb.
  */
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
@@ -905,8 +901,6 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
 void linphone_core_enable_logs(FILE *file);
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
-/*sets the user-agent string in sip messages, must be set before linphone_core_new() or linphone_core_init() */
-void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);
 const char *linphone_core_get_user_agent_version(void);
@@ -936,6 +930,9 @@ const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
 
 #endif
 
+/*sets the user-agent string in sip messages, ideally called just after linphone_core_new() or linphone_core_init() */
+void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
+
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
@@ -963,6 +960,8 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
+
+int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
 
 int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
@@ -1052,8 +1051,8 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * @param lc #LinphoneCore object
  * @param type payload mime type (I.E SPEEX, PCMU, VP8)
- * @param rate, can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
- * @param channels, number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
+ * @param rate can be #LINPHONE_FIND_PAYLOAD_IGNORE_RATE
+ * @param channels  number of channels, can be #LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS
  * @return Returns NULL if not found.
  */	
 PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
@@ -1161,6 +1160,10 @@ void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
 
 int linphone_core_get_inc_timeout(LinphoneCore *lc);
 
+void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds);
+
+int linphone_core_get_in_call_timeout(LinphoneCore *lc);
+
 void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc);
@@ -1189,9 +1192,11 @@ int linphone_core_get_rec_level(LinphoneCore *lc);
 void linphone_core_set_ring_level(LinphoneCore *lc, int level);
 void linphone_core_set_play_level(LinphoneCore *lc, int level);
 
+void linphone_core_set_mic_gain_db(LinphoneCore *lc, float level);
+float linphone_core_get_mic_gain_db(LinphoneCore *lc);
 void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
-
 float linphone_core_get_playback_gain_db(LinphoneCore *lc);
+
 void linphone_core_set_rec_level(LinphoneCore *lc, int level);
 const char * linphone_core_get_ringer_device(LinphoneCore *lc);
 const char * linphone_core_get_playback_device(LinphoneCore *lc);
@@ -1205,6 +1210,7 @@ void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
+const char *linphone_core_get_root_ca(LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
 
@@ -1229,7 +1235,6 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 **/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
-bool_t linphone_core_is_audio_muted(LinphoneCore *lc);
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
 bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);
@@ -1273,8 +1278,9 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
-/* Set static picture to be used when "Static picture" is the video device */
+/* Set and get static picture to be used when "Static picture" is the video device */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+const char *linphone_core_get_static_picture(LinphoneCore *lc);
 
 /* Set and get frame rate for static picture */
 int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
@@ -1378,7 +1384,7 @@ void linphone_core_refresh_registers(LinphoneCore* lc);
 
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
-
+const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 

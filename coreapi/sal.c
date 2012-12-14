@@ -162,6 +162,10 @@ static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
 	return TRUE;
 }
 
+static bool_t is_recv_only(PayloadType *p){
+	return (p->flags & PAYLOAD_TYPE_FLAG_CAN_RECV) && ! (p->flags & PAYLOAD_TYPE_FLAG_CAN_SEND);
+}
+
 static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 	const MSList *e1,*e2;
 	for(e1=l1,e2=l2;e1!=NULL && e2!=NULL; e1=e1->next,e2=e2->next){
@@ -170,6 +174,12 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 		if (!payload_type_equals(p1,p2))
 			return FALSE;
 	}
+	if (e1!=NULL){
+		/*skip possible recv-only payloads*/
+		for(;e1!=NULL && is_recv_only((PayloadType*)e1->data);e1=e1->next){
+			ms_message("Skipping recv-only payload type...");
+		}
+	}
 	if (e1!=NULL || e2!=NULL){
 		/*means one list is longer than the other*/
 		return FALSE;
@@ -177,32 +187,40 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 	return TRUE;
 }
 
-bool_t sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2){
-	if (sd1->proto!=sd2->proto) return FALSE;
-	if (sd1->type!=sd2->type) return FALSE;
-	if (strcmp(sd1->rtp_addr,sd2->rtp_addr)!=0) return FALSE;
-	if (sd1->rtp_port!=sd2->rtp_port) return FALSE;
-	if (strcmp(sd1->rtcp_addr,sd2->rtcp_addr)!=0) return FALSE;
-	if (sd1->rtcp_port!=sd2->rtcp_port) return FALSE;
-	if (!payload_list_equals(sd1->payloads,sd2->payloads)) return FALSE;
-	if (sd1->bandwidth!=sd2->bandwidth) return FALSE;
-	if (sd1->ptime!=sd2->ptime) return FALSE;
-	/* compare candidates: TODO */
-	if (sd1->dir!=sd2->dir) return FALSE;
-	return TRUE;
+int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2) {
+	int result = SAL_MEDIA_DESCRIPTION_UNCHANGED;
+
+	/* A different proto should result in SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED but the encryption change
+	   needs a stream restart for now, so use SAL_MEDIA_DESCRIPTION_CODEC_CHANGED */
+	if (sd1->proto != sd2->proto) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+
+	if (sd1->type != sd2->type) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (strcmp(sd1->rtp_addr, sd2->rtp_addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (sd1->rtp_port != sd2->rtp_port) {
+		if ((sd1->rtp_port == 0) || (sd2->rtp_port == 0)) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+		else result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	}
+	if (strcmp(sd1->rtcp_addr, sd2->rtcp_addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (sd1->rtcp_port != sd2->rtcp_port) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (!payload_list_equals(sd1->payloads, sd2->payloads)) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (sd1->bandwidth != sd2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (sd1->ptime != sd2->ptime) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (sd1->dir != sd2->dir) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+
+	return result;
 }
 
-bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2){
+int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2) {
+	int result = SAL_MEDIA_DESCRIPTION_UNCHANGED;
 	int i;
-	
-	if (strcmp(md1->addr,md2->addr)!=0) return FALSE;
-	if (md1->nstreams!=md2->nstreams) return FALSE;
-	if (md1->bandwidth!=md2->bandwidth) return FALSE;
-	for(i=0;i<md1->nstreams;++i){
-		if (!sal_stream_description_equals(&md1->streams[i],&md2->streams[i]))
-			return FALSE;
+
+	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	if (md1->nstreams != md2->nstreams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	for(i = 0; i < md1->nstreams; ++i){
+		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
 	}
-	return TRUE;
+	return result;
 }
 
 static void assign_string(char **str, const char *arg){

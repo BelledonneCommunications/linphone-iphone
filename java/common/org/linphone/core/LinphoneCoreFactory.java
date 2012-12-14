@@ -40,7 +40,7 @@ abstract public class LinphoneCoreFactory {
 	public static final synchronized LinphoneCoreFactory instance() {
 		try {
 			if (theLinphoneCoreFactory == null) {
-				Class lFactoryClass = Class.forName(factoryName);
+				Class<?> lFactoryClass = Class.forName(factoryName);
 				theLinphoneCoreFactory = (LinphoneCoreFactory) lFactoryClass.newInstance();
 			}
 		} catch (Exception e) {

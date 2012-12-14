@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <jni.h>
+#ifdef USE_JAVAH
+#include "linphonecore_jni.h"
+#endif
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 
@@ -539,6 +542,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
 	delete lcData;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
+	const char* displayname = env->GetStringUTFChars(jdisplayname, NULL);
+	const char* username = env->GetStringUTFChars(jusername, NULL);
+
+	LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed((LinphoneCore*)lc);
+    if (parsed != NULL) {
+        linphone_address_set_display_name(parsed, displayname);
+        linphone_address_set_username(parsed, username);
+        char *contact = linphone_address_as_string(parsed);
+		linphone_core_set_primary_contact((LinphoneCore*)lc, contact);
+	}
+
+	env->ReleaseStringUTFChars(jdisplayname, displayname);
+	env->ReleaseStringUTFChars(jusername, username);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearProxyConfigs(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_proxy_config((LinphoneCore*)lc);
 }
@@ -698,6 +717,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isNetworkStateReacha
 		,jobject  thiz
 		,jlong lc) {
 		return (jboolean)linphone_core_is_network_reachable((LinphoneCore*)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMicrophoneGain(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jfloat gain) {
+		linphone_core_set_mic_gain_db((LinphoneCore*)lc,gain);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlaybackGain(	JNIEnv*  env
@@ -1268,6 +1294,11 @@ extern "C" jstring Java_org_linphone_core_LinphoneCallLogImpl_getStartDate(JNIEn
 	jstring jvalue =env->NewStringUTF(((LinphoneCallLog*)ptr)->start_date);
 	return jvalue;
 }
+extern "C" jlong Java_org_linphone_core_LinphoneCallLogImpl_getTimestamp(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return static_cast<long> (((LinphoneCallLog*)ptr)->start_date_time);
+}
 extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -1346,6 +1377,8 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarr
 		pt = linphone_call_params_get_used_audio_codec(params);
 	else
 		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return (jfloat)0.0;
 	return (jfloat)((float)report_block_get_interarrival_jitter(srb) / (float)pt->clock_rate);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
@@ -1373,6 +1406,8 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverIntera
 		pt = linphone_call_params_get_used_audio_codec(params);
 	else
 		pt = linphone_call_params_get_used_video_codec(params);
+	if (!pt || (pt->clock_rate == 0))
+		return (jfloat)0.0;
 	return (jfloat)((float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate);
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getRoundTripDelay(JNIEnv *env, jobject thiz, jlong stats_ptr) {
@@ -1456,6 +1491,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteAddress(	JNIEn
 																		,jobject  thiz
 																		,jlong ptr) {
 	return (jlong)linphone_call_get_remote_address((LinphoneCall*)ptr);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getRemoteUserAgent(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *)ptr;
+	jstring jvalue = env->NewStringUTF(linphone_call_get_remote_user_agent(call));
+	return jvalue;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
@@ -1738,6 +1779,10 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 
 //CallParams
 
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
+	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCallParamsImpl_getUsedAudioCodec(JNIEnv *env, jobject thiz, jlong cp) {
 	return (jlong)linphone_call_params_get_used_audio_codec((LinphoneCallParams *)cp);
 }
@@ -1815,7 +1860,6 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_updateCall(JNIEnv *env, 
 	return (jint) linphone_core_update_call((LinphoneCore *)lc, (LinphoneCall *)call, (const LinphoneCallParams *)params);
 }
 
-
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc, jint width, jint height){
 	MSVideoSize vsize;
 	vsize.width = (int)width;
@@ -1837,6 +1881,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNI
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_upload_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseSipInfoForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jboolean use){
+	linphone_core_set_use_info_for_dtmf((LinphoneCore *)lc, (bool) use);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseRfc2833ForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jboolean use){
+	linphone_core_set_use_rfc2833_for_dtmf((LinphoneCore *)lc, (bool) use);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){
@@ -2035,10 +2087,13 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_soundResourcesLocked
 
 // Needed by Galaxy S (can't switch to/from speaker while playing and still keep mic working)
 // Implemented directly in msandroid.cpp (sound filters for Android).
-extern "C" void msandroid_hack_speaker_state(bool speakerOn);
-
-extern "C" void Java_org_linphone_LinphoneManager_hackSpeakerState(JNIEnv*  env,jobject thiz,jboolean speakerOn){
-	msandroid_hack_speaker_state(speakerOn);
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_forceSpeakerState(JNIEnv *env, jobject thiz, jlong ptr, jboolean speakerOn) {
+	LinphoneCore *lc = (LinphoneCore *)ptr;
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	if (call && call->audiostream && call->audiostream->soundread) {
+		bool_t on = speakerOn;
+		ms_filter_call_method(call->audiostream->soundread, MS_AUDIO_CAPTURE_FORCE_SPEAKER_STATE, &on);
+	}
 }
 // End Galaxy S hack functions
 
@@ -2094,7 +2149,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelEnable(JNIEnv *env
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUserAgent(JNIEnv *env,jobject thiz,jlong pCore, jstring name, jstring version){
 	const char* cname=env->GetStringUTFChars(name, NULL);
 	const char* cversion=env->GetStringUTFChars(version, NULL);
-	linphone_core_set_user_agent(cname,cversion);
+	linphone_core_set_user_agent((LinphoneCore *)pCore,cname,cversion);
 	env->ReleaseStringUTFChars(name, cname);
 	env->ReleaseStringUTFChars(version, cversion);
 }
@@ -2132,6 +2187,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
 	linphone_core_set_inc_timeout((LinphoneCore *)lc, timeout);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setInCallTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
+	linphone_core_set_in_call_timeout((LinphoneCore *)lc, timeout);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  env,jobject  thiz,jlong ptr) {

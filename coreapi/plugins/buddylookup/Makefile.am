@@ -1,10 +1,8 @@
 SUBDIRS=src
 
-
-
-INSTALLDIR=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-install
+INSTALLDIR=$(abs_top_builddir)/$(PACKAGE)-install
 INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
+ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(VERSION).zip
 ZIP_EXCLUDED=include 
 PLUGIN_DEPS_PREFIX=/usr/bin
 PLUGIN_DEPS=	libsoup-2.4-1.dll \
@@ -20,9 +18,9 @@ PLUGIN_DEPS=	libsoup-2.4-1.dll \
 zip:
 	rm -f $(ZIPFILE)
 	rm -rf $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)
+	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
-	mkdir -p $(INSTALLDIR_WITH_PREFIX)/bin
+	$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/bin
 	cd $(PLUGIN_DEPS_PREFIX) && \
 		cp -f $(PLUGIN_DEPS) $(INSTALLDIR_WITH_PREFIX)/bin/.
 	cd $(INSTALLDIR)/$(prefix) && rm -rf $(ZIP_EXCLUDED) && \

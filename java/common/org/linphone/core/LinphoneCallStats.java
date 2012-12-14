@@ -23,7 +23,7 @@ import java.util.Vector;
 
 public interface LinphoneCallStats {
 	static public class MediaType {
-		static private Vector values = new Vector();
+		static private Vector<MediaType> values = new Vector<MediaType>();
 		/**
 		 * Audio
 		 */
@@ -52,7 +52,7 @@ public interface LinphoneCallStats {
 		}
 	}
 	static public class IceState {
-		static private Vector values = new Vector();
+		static private Vector<IceState> values = new Vector<IceState>();
 		/**
 		 * Not activated
 		 */

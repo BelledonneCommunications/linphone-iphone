@@ -57,13 +57,16 @@ endif
 LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
-        -DINET6 \
-        -DOSIP_MT \
+	-DINET6 \
+	-DOSIP_MT \
+	-DHAVE_EXOSIP_GET_VERSION \
 	-DHAVE_EXOSIP_RESET_TRANSPORTS \
 	-DENABLE_TRACE \
 	-DLINPHONE_VERSION=\"$(LINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DLOG_DOMAIN=$(MY_LOG_DOMAIN) 
+	-DLOG_DOMAIN=$(MY_LOG_DOMAIN) \
+	-DHAVE_EXOSIP_TRYLOCK=1 \
+	-DHAVE_EXOSIP_TLS_VERIFY_CERTIFICATE=1 
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -74,13 +77,18 @@ LOCAL_CFLAGS += -DHAVE_X264
 endif
 endif
 
+ifeq ($(USE_JAVAH),1)
+LOCAL_CFLAGS += -DUSE_JAVAH
+endif
+
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
 	$(LOCAL_PATH)/../../externals/exosip/include \
-	$(LOCAL_PATH)/../../externals/osip/include 
+	$(LOCAL_PATH)/../../externals/osip/include \
+	$(LOCAL_PATH)/../../../gen
 
 LOCAL_LDLIBS += -llog -ldl
 

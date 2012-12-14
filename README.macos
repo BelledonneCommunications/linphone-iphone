@@ -28,7 +28,7 @@ You need:
 - Install zrtpcpp (optional), for unbreakable call encryption
  $ port install cmake
  $ git clone git://git.linphone.org/zrtpcpp.git
- $ cd zrtpcpp && cmake -Denable_ccrtp=false . && make
+ $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
  $ sudo make install
 
 - Install gtk. It is recommended to use the quartz backend for better integration.

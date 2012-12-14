@@ -1,21 +1,20 @@
 
-EXTRA_DIST = Doxyfile.in doxygen.dox
+EXTRA_DIST=Doxyfile.in doxygen.dox
 
-SOURCES= doxygen.dox $(top_srcdir)/coreapi/help/*.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h  
+SOURCES=doxygen.dox $(top_srcdir)/coreapi/help/*.c $(top_srcdir)/coreapi/*.c $(top_srcdir)/coreapi/*.h  
 
 
-#html doc
+# html doc
 if HAVE_DOXYGEN
 
-# doxdir & pkgdocdir are not always defined by automake
-docdir=$(datadir)/doc
+# docdir & pkgdocdir are not always defined by automake
 pkgdocdir=$(docdir)/$(PACKAGE)-$(VERSION)
 doc_htmldir=$(pkgdocdir)/html
 
 doc_html_DATA = $(top_builddir)/coreapi/help/doc/html/html.tar
 
 $(doc_html_DATA): $(top_builddir)/coreapi/help/doc/html/index.html
-	cd $(<D) && tar cf html.tar *
+	cd $(top_builddir)/coreapi/help/doc/html/ && tar cf html.tar *
 
 $(top_builddir)/coreapi/help/doc/html/index.html: $(SOURCES) Doxyfile Makefile.am
 	rm -rf doc
@@ -60,21 +59,20 @@ LINPHONE_TUTOS+=$(chatroom_SOURCES)
 chatroom_LDADD=$(helloworld_LDADD)
 endif
 												
-endif			
+endif
 
-INCLUDES=-I$(top_srcdir)/coreapi \
-		$(MEDIASTREAMER_CFLAGS)
-
-AM_CFLAGS=$(STRICT_OPTIONS)  -DIN_LINPHONE \
+AM_CFLAGS=\
+	$(STRICT_OPTIONS) \
+	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
 	$(OSIP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
 	$(EXOSIP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
-	 $(IPV6_CFLAGS) \
-	 -DORTP_INET6 \
-	 $(VIDEO_CFLAGS) 
+	$(IPV6_CFLAGS) \
+	-DORTP_INET6 \
+	$(VIDEO_CFLAGS)
 
 
 tutodir=$(datadir)/tutorials/linphone

@@ -57,4 +57,12 @@ public interface LinphoneCallParams {
 	 * @return PayloadType or null
 	 */
 	PayloadType getUsedVideoCodec();
+	
+	/**
+	 * Indicate low bandwith mode. 
+	 * Configuring a call to low bandwidth mode will result in the core to activate several settings for the call in order to ensure that bitrate usage
+	 * is lowered to the minimum possible. Typically, ptime (packetization time) will be increased, audio codec's output bitrate will be targetted to 20kbit/s provided
+	 * that it is achievable by the codec selected after SDP handshake. Video is automatically disabled.
+	**/
+	void enableLowBandwidth(boolean enable);
 }

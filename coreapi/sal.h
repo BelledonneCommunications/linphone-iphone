@@ -53,6 +53,11 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
+#define SAL_MEDIA_DESCRIPTION_UNCHANGED		0x00
+#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED	0x01
+#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED	0x02
+#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)
+
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
@@ -183,13 +188,20 @@ typedef struct SalMediaDescription{
 	bool_t ice_completed;
 } SalMediaDescription;
 
+typedef struct SalMessage{
+	const char *from;
+	const char *text;
+	const char *url;
+	const char *message_id;
+}SalMessage;
+
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
-bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
+int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
@@ -275,8 +287,7 @@ typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
-typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
-typedef void (*SalOnMessageExternalBodyReceived)(Sal *sal, const char *from, const char *url);
+typedef void (*SalOnTextReceived)(Sal *sal, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
@@ -302,7 +313,6 @@ typedef struct SalCallbacks{
 	SalOnDtmfReceived dtmf_received;
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
-	SalOnMessageExternalBodyReceived message_external_body;
 	SalOnTextDeliveryUpdate text_delivery_update;
 	SalOnNotify notify;
 	SalOnNotifyPresence notify_presence;
@@ -346,6 +356,7 @@ void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
 void sal_use_101(Sal *ctx, bool_t use_101);
 void sal_set_root_ca(Sal* ctx, const char* rootCa);
+const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 
 int sal_iterate(Sal *sal);

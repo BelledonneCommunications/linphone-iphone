@@ -32,13 +32,13 @@ public interface LinphoneCallLog {
 	 */
 	static class CallStatus {
 		
-		static private Vector values = new Vector();
+		static private Vector<CallStatus> values = new Vector<CallStatus>();
 		private final int mValue;
 		private final String mStringValue;
 		/**
 		 * Call success.
 		 */
-		public final static CallStatus Sucess = new CallStatus(0,"Sucess");
+		public final static CallStatus Success = new CallStatus(0,"Sucess");
 		/**
 		 * Call aborted.
 		 */
@@ -99,6 +99,11 @@ public interface LinphoneCallLog {
 	 * @return a human readble String with the start date/time of the call
 	 */
 	public String getStartDate();
+	
+	/**
+	 * @return a timestamp of the start date/time of the call in milliseconds since January 1st 1970
+	 */
+	public long getTimestamp();
 	
 	/**
 	 * @return the call duration, in seconds
