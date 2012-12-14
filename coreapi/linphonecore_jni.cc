@@ -36,7 +36,7 @@ extern "C" {
 
 #ifdef ANDROID
 #include <android/log.h>
-extern "C" void libmsilbc_init();enableca
+extern "C" void libmsilbc_init();
 #ifdef HAVE_X264
 extern "C" void libmsx264_init();
 #endif
