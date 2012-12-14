@@ -474,7 +474,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
                 data->notification = [[UILocalNotification alloc] init];
                 if (data->notification) {
                     data->notification.repeatInterval = 0;
-                    data->notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), address];
+                    data->notification.alertBody = [NSString stringWithFormat:@"%@", address];
                     data->notification.alertAction = NSLocalizedString(@"Answer", nil);
                     data->notification.soundName = ringtone;
                     data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
@@ -601,7 +601,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
 			notif.repeatInterval = 0;
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), configuration.levelPushButton.name];
+			notif.alertBody = [NSString stringWithFormat:@"%@", configuration.levelPushButton.name];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = ringtone;
 			
