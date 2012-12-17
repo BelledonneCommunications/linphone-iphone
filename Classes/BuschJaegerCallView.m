@@ -420,13 +420,8 @@
 }
 
 - (IBAction)onSnapshotClick:(id)sender {
-    LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-    if(call != NULL) {
-        NSString *imagePath = [NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%.0f.%@", [NSDate timeIntervalSinceReferenceDate] * 1000.0, @"jpg"]];
-        int ret = linphone_call_take_video_snapshot(call, [imagePath UTF8String]);
-        if(ret == 0) {
-            [self performSelector:@selector(saveImage:) withObject:imagePath afterDelay:0.5];
-        }
+    if(chatRoom != NULL) {
+        linphone_chat_room_send_message(chatRoom, "3");
     }
 }
 
