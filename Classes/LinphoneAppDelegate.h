@@ -20,7 +20,6 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/ABPeoplePickerNavigationController.h>
-#import "CoreTelephony/CTCallCenter.h"
 
 #define DIALER_TAB_INDEX 1
 #define CONTACTS_TAB_INDEX 2
@@ -40,13 +39,10 @@
 	IBOutlet PhoneViewController* myPhoneViewController;
 	CallHistoryTableViewController* myCallHistoryTableViewController;
 	ContactPickerDelegate* myContactPickerDelegate;
-    
-    CTCallCenter* callCenter;
 }
 
 - (void) loadDefaultSettings:(NSDictionary *) appDefaults;
 -(void) setupUI;
--(void) setupGSMInteraction;
 
 -(void) startApplication;
 

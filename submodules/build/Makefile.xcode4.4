@@ -19,8 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-
-enable_gpl_third_parties=no
+enable_gpl_third_parties=yes
 enable_zrtp=no
 
 .NOTPARALLEL all: check_options build warning
@@ -32,7 +31,6 @@ else
 check_options:
 
 endif
-
 
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
@@ -56,29 +54,28 @@ endif
 LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp)
 
 build:
-	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  $(LINPHONE_OPTIONS) all  \
-	&& make -f  builder-iphone-os.mk  host=armv7s-apple-darwin $(LINPHONE_OPTIONS) all  \
+	make -f  builder-iphone-os.mk  host=armv6-apple-darwin $(LINPHONE_OPTIONS) all  \
+	&& make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
+	&& make -f  builder-iphone-os.mk   host=armv7-apple-darwin $(LINPHONE_OPTIONS) all \
 	&& make -f builder-iphone-os.mk delivery-sdk 
 
 ipa: build
 	make -f  builder-iphone-simulator.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  ipa \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin ipa \
-
+	&&  make -f  builder-iphone-os.mk  host=armv6-apple-darwin ipa \
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin ipa
 
 clean:
 	make -f  builder-iphone-simulator.mk  clean \
-	&&  make -f  builder-iphone-os.mk  clean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean \
+	&&  make -f  builder-iphone-os.mk  host=armv6-apple-darwin clean \
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean
 
 clean-makefile:
 	make -f  builder-iphone-simulator.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  clean-makefile \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin clean-makefile \
+	&&  make -f  builder-iphone-os.mk  host=armv6-apple-darwin clean-makefile \
+	&&  make -f  builder-iphone-os.mk   host=armv7-apple-darwin clean-makefile
 
 veryclean:
 	make -f  builder-iphone-simulator.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin veryclean \
+	&&  make -f  builder-iphone-os.mk  host=armv6-apple-darwin veryclean \
+	&&  make -f  builder-iphone-os.mk  host=armv7-apple-darwin veryclean 
 

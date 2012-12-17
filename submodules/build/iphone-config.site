@@ -18,16 +18,20 @@ elif test "${host_alias}" = "armv7-apple-darwin" ; then
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 	MCPU="-mcpu=cortex-a8"
+elif test "${host_alias}" = "armv7s-apple-darwin" ; then 
+	ARCH=armv7s
+	PLATFORM=OS
+	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 else 
 	echo "bad host ${host_alias} must be either i386-apple-darwin or armv6-apple-darwin"
 	exit
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
-
+XCODE_ROOT=/Applications/Xcode.app
 #new path with Xcode 4.3:
-if test -d /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
-	SDK_PATH_LIST=`ls -drt /Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-	SDK_BIN_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+if test -d ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
+	SDK_PATH_LIST=`ls -drt ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
+	SDK_BIN_PATH=${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
 else
 	SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
 	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
@@ -44,5 +48,4 @@ AR=${SDK_BIN_PATH}/ar
 RANLIB=${SDK_BIN_PATH}/ranlib
 
 CPPFLAGS="-Dasm=__asm"
-LDFLAGS="-Wl,-syslibroot,${SYSROOT_PATH} -framework CFNetwork" 
 OBJCFLAGS="-x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"

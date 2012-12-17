@@ -357,7 +357,7 @@ void addAnimationFadeTransition(UIView* view, float duration) {
         if (fullUpdate) {
             videoUpdateIndicator.hidden = YES;
             LinphoneCallState state = linphone_call_get_state(currentCall);
-            if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdated || state == LinphoneCallUpdatedByRemote) {
+            if (state == LinphoneCallStreamsRunning || state == LinphoneCallUpdating || state == LinphoneCallUpdatedByRemote) {
                 if (linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall))) {
                     [addVideo setTitle:NSLocalizedString(@"-video", nil) forState:UIControlStateNormal];
                     [IncallViewController updateIndicator: videoCallQuality withCallQuality:linphone_call_get_average_quality(currentCall)];

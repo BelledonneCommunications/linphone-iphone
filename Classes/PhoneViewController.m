@@ -77,7 +77,7 @@
     
     if (config == NULL) {
         s = LinphoneRegistrationNone;
-        m = linphone_core_is_network_reachabled([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
+        m = linphone_core_is_network_reachable([LinphoneManager getLc]) ? NSLocalizedString(@"No SIP account configured", nil) : NSLocalizedString(@"Network down", nil);
     } else {
         s = linphone_proxy_config_get_state(config);
     
@@ -320,8 +320,8 @@
 
 -(void) displayInCall: (LinphoneCall*) call FromUI:(UIViewController*) viewCtrl forUser:(NSString*) username withDisplayName:(NSString*) displayName {
     [mMainScreenWithVideoPreview showPreview:NO]; 
-    if (self.presentedViewController != (UIViewController*)mIncallViewController && (call == 0x0 ||
-																  linphone_call_get_dir(call)==LinphoneCallIncoming)){
+    if (self.presentedViewController != (UIViewController*)mIncallViewController /*&& (call == 0x0 ||
+																  linphone_call_get_dir(call)==LinphoneCallIncoming)*/){
 		[self presentModalViewController:(UIViewController*)mIncallViewController animated:true];
 		
 	}

@@ -44,8 +44,8 @@ extern void libmsamr_init();
 #ifdef HAVE_X264
 extern void libmsx264_init();
 #endif
-#define FRONT_CAM_NAME "AV Capture: Front Camera"
-#define BACK_CAM_NAME "AV Capture: Back Camera"
+#define FRONT_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
+#define BACK_CAM_NAME "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:0" /*"AV Capture: Back Camera"*/
 #define DEFAULT_EXPIRES 600
 #if defined (HAVE_SILK)
 extern void libmssilk_init(); 
@@ -172,7 +172,16 @@ extern  void libmsbcg729_init();
     }
     
 	switch (new_state) {					
-		case LinphoneCallIncomingReceived: 
+		case LinphoneCallIncomingReceived:
+			/*first step is to re-enable ctcall center*/
+			[self setupGSMInteraction];
+			
+			/*should we reject this call ?*/
+			if ([callCenter currentCalls]!=nil) {
+				ms_message("Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from));
+				linphone_core_decline_call([LinphoneManager getLc], call, LinphoneReasonBusy);
+				return;
+			}
 			[callDelegate	displayIncomingCall:call 
                            NotificationFromUI:mCurrentViewController
 														forUser:lUserName 
@@ -185,6 +194,8 @@ extern  void libmsbcg729_init();
 											   forUser:lUserName 
 									   withDisplayName:lDisplayName];
 			break;
+        case LinphoneCallPaused:
+        case LinphoneCallPausing:
         case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 			[callDelegate	displayInCall: call 
@@ -206,7 +217,7 @@ extern  void libmsbcg729_init();
             }
             break;
         }
-        case LinphoneCallUpdated:
+        case LinphoneCallUpdating:
         {
             const LinphoneCallParams* current = linphone_call_get_current_params(call);
             if (linphone_call_params_video_enabled(current)) {
@@ -254,10 +265,20 @@ extern  void libmsbcg729_init();
 									  forUser:@"" 
 							  withDisplayName:@""];
             } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
+                call = linphone_core_get_current_call([LinphoneManager getLc]);
+                if(call) {
+                    const LinphoneCallParams* current = linphone_call_get_current_params(call);
+                    if (linphone_call_params_video_enabled(current)) {
+                        [callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                               forUser:lUserName 
+                                       withDisplayName:lDisplayName];
+                    } else {
+                        [callDelegate displayInCall:call 
+                                             FromUI:mCurrentViewController
+                                            forUser:lUserName 
+                                    withDisplayName:lDisplayName];
+                    }
+                }
 			}
 			break;
 		}
@@ -267,10 +288,20 @@ extern  void libmsbcg729_init();
 									  forUser:@"" 
 							  withDisplayName:@""];
             } else {
-				[callDelegate	displayInCall:call 
-									 FromUI:mCurrentViewController
-									forUser:lUserName 
-							withDisplayName:lDisplayName];	
+                call = linphone_core_get_current_call([LinphoneManager getLc]);
+                if(call) {
+                    const LinphoneCallParams* current = linphone_call_get_current_params(call);
+                    if (linphone_call_params_video_enabled(current)) {
+                        [callDelegate	displayVideoCall:call FromUI:mCurrentViewController
+                                                forUser:lUserName 
+                                       withDisplayName:lDisplayName];
+                    } else {
+                        [callDelegate displayInCall:call 
+                                             FromUI:mCurrentViewController
+                                            forUser:lUserName 
+                                    withDisplayName:lDisplayName];
+                    }
+                }
 			}
 			break;
 		case LinphoneCallStreamsRunning:
@@ -444,7 +475,7 @@ static LinphoneCoreVTable linphonec_vtable;
 -(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
 		PayloadType* pt;
-		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
+		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate,1))) {
 			linphone_core_enable_payload_type(theLinphoneCore,pt, TRUE);
 		}
 	} 
@@ -866,7 +897,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 -(void) destroyLibLinphone {
-	[mIterateTimer invalidate]; 
+	[mIterateTimer invalidate];
+	
+	// destroying eventHandler if app cannot go in background.
+	// Otherwise if a GSM call happen and Linphone is resumed,
+	// the handler will be called before LinphoneCore is built.
+	// Then handler will be restored in appDidBecomeActive cb
+	callCenter.callEventHandler = nil;
+	[callCenter release];
+	callCenter = nil;
+	
 	AVAudioSession *audioSession = [AVAudioSession sharedInstance];
 	[audioSession setDelegate:nil];
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
@@ -907,6 +947,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 															   }
 															   //kick up network cnx, just in case
 															   [self kickOffNetworkConnection];
+															   
+															   [self setupGSMInteraction];
+															   //to make sure presence status is correct
+															   if ([callCenter currentCalls]==nil)
+																   linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+															   
 															   [self refreshRegisters];
 															   linphone_core_iterate(theLinphoneCore);
 														   }
@@ -1005,6 +1051,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #if HAVE_G729
 	libmsbcg729_init(); // load g729 plugin
 #endif
+	
+	[self setupGSMInteraction];
 	/* Initialize linphone core*/
 	
 	linphonec_vtable.show =NULL;
@@ -1129,6 +1177,13 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
+	
+	//call center is unrelialable on the long run, so we change it each time the application is resumed. To avoid zombie GSM call
+	[self setupGSMInteraction];
+	
+	//to make sure presence status is correct
+	if ([callCenter currentCalls]==nil)
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
     
 }
 -(void) registerLogView:(id<LogView>) view {
@@ -1147,6 +1202,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     ms_message("Sound interruption ended!");
     //let the user resume the call manually.
 }
+
 +(BOOL) runningOnIpad {
 #ifdef UI_USER_INTERFACE_IDIOM
     return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
@@ -1165,5 +1221,35 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     ms_message("UI - '%s' pressed", name);
 }
 
+#pragma GSM management
 
+-(void) setupGSMInteraction {
+	if (callCenter != nil) {
+		callCenter.callEventHandler=NULL;
+		[callCenter release];
+	}
+	
+	callCenter = [[CTCallCenter alloc] init];
+	callCenter.callEventHandler = ^(CTCall* call) {
+		// post on main thread
+		[self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
+							   withObject:callCenter
+							waitUntilDone:YES];
+	};
+}
+
+-(void) handleGSMCallInteration: (id) cCenter {
+	CTCallCenter* ct = (CTCallCenter*) cCenter;
+	/* pause current call, if any */
+	LinphoneCall* call = linphone_core_get_current_call(theLinphoneCore);
+	if ([ct currentCalls]!=nil) {
+		if (call) {
+			NSLog(@"Pausing SIP call");
+			linphone_core_pause_call(theLinphoneCore, call);
+		}
+		//set current status to busy
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusBusy);
+	} else
+		linphone_core_set_presence_info(theLinphoneCore, 0, nil, LinphoneStatusAltService);
+}
 @end

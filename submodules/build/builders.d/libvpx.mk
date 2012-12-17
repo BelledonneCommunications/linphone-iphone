@@ -6,6 +6,8 @@ libvpx_configure_options=\
 
 ifneq (,$(findstring armv6,$(host)))
 	libvpx_configure_options+= --target=armv6-darwin-gcc --cpu=arm1176jzf-s
+else ifneq (,$(findstring armv7s,$(host)))
+	libvpx_configure_options+= --target=armv7s-darwin-gcc --cpu=cortex-a8  
 else ifneq (,$(findstring armv7,$(host)))
 	libvpx_configure_options+= --target=armv7-darwin-gcc --cpu=cortex-a8 
 else
@@ -32,6 +34,9 @@ clean-libvpx:
 
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
+	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
+	&& git checkout build/make/configure.sh configure\
+	&& rm -f patched.stamp 
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:

@@ -46,25 +46,6 @@ int __aeabi_idiv(int a, int b) {
 @synthesize myPeoplePickerController;
 @synthesize myPhoneViewController;
 
--(void) handleGSMCallInteration: (id) cCenter {
-    CTCallCenter* ct = (CTCallCenter*) cCenter;
-    
-    int callCount = [ct.currentCalls count];
-    if (!callCount) {
-        NSLog(@"No GSM call -> enabling SIP calls");
-        linphone_core_set_max_calls([LinphoneManager getLc], 3);
-    } else {
-        NSLog(@"%d GSM call(s) -> disabling SIP calls", callCount);
-        /* pause current call, if any */
-        LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
-        if (call) {
-            NSLog(@"Pausing SIP call");
-            linphone_core_pause_call([LinphoneManager getLc], call);
-        }
-        linphone_core_set_max_calls([LinphoneManager getLc], 0);
-    }
-}
-
 -(void)applicationWillResignActive:(UIApplication *)application {
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
@@ -84,13 +65,7 @@ int __aeabi_idiv(int a, int b) {
 }
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     if (![[LinphoneManager instance] enterBackgroundMode]) {
-        // destroying eventHandler if app cannot go in background.
-        // Otherwise if a GSM call happen and Linphone is resumed,
-        // the handler will be called before LinphoneCore is built.
-        // Then handler will be restored in appDidBecomeActive cb
-        callCenter.callEventHandler = nil;
-        [callCenter release];
-        callCenter = nil;
+		
     }
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -104,18 +79,6 @@ int __aeabi_idiv(int a, int b) {
     }
     
 	[[LinphoneManager instance] becomeActive];
-    
-    if (callCenter == nil) {
-        callCenter = [[CTCallCenter alloc] init];
-        callCenter.callEventHandler = ^(CTCall* call) {
-            // post on main thread
-            [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-                                   withObject:callCenter
-                                waitUntilDone:YES];
-        };
-    }
-    // check call state at startup
-    [self handleGSMCallInteration:callCenter];
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
@@ -131,6 +94,7 @@ int __aeabi_idiv(int a, int b) {
                                         instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
         }
         instance->currentCallContextBeforeGoingBackground.call = 0;
+		[myPhoneViewController displayCall:call InProgressFromUI:nil forUser:nil withDisplayName:nil];
     }
 }
 
@@ -213,16 +177,6 @@ int __aeabi_idiv(int a, int b) {
     [UIDevice currentDevice].batteryMonitoringEnabled = YES;
 }
 
--(void) setupGSMInteraction {
-	callCenter = [[CTCallCenter alloc] init];
-    callCenter.callEventHandler = ^(CTCall* call) {
-        // post on main thread
-        [self performSelectorOnMainThread:@selector(handleGSMCallInteration:)
-                               withObject:callCenter
-                            waitUntilDone:YES];
-    };    
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
     NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"NO", @"enable_first_login_view_preference", //
@@ -258,8 +212,6 @@ int __aeabi_idiv(int a, int b) {
 	[[LinphoneManager instance]	startLibLinphone];
 
 	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
-    
-    [self setupGSMInteraction];
 }
 
 
