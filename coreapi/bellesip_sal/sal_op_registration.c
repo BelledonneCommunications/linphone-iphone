@@ -36,10 +36,12 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
 	belle_sip_header_expires_t* expires_header;
-
+	belle_sip_request_t* original_request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+	belle_sip_header_contact_t* original_contact=belle_sip_message_get_header_by_type(original_request,belle_sip_header_contact_t);
 	const belle_sip_list_t* contact_header_list;
 	int response_code = belle_sip_response_get_status_code(response);
 	int expires=-1;
+	char* tmp_string;
 	if (response_code<200) return;/*nothing to do*/
 
 
@@ -48,9 +50,14 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 
 		contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
 		if (contact_header_list) {
-			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)sal_op_get_contact_address(op));
+			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)original_contact);
 			if (!contact_header_list) {
-				ms_error("no matching contact for [%s]", sal_op_get_contact(op));
+				contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)sal_op_get_contact_address(op));
+			}
+			if (!contact_header_list) {
+				tmp_string=belle_sip_object_to_string(BELLE_SIP_OBJECT(original_contact));
+				ms_error("no matching contact neither for [%s] nor [%s]", tmp_string, sal_op_get_contact(op));
+				belle_sip_free(tmp_string);
 			} else {
 				expires=belle_sip_header_contact_get_expires(BELLE_SIP_HEADER_CONTACT(contact_header_list->data));
 			}
@@ -63,8 +70,10 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 			}
 		}
 		if (expires<0) {
-			ms_message("Neither Expires header nor corresponding Contact header found");
-			expires=0;
+			if ((expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(original_request),BELLE_SIP_EXPIRES))) {
+				expires = belle_sip_header_expires_get_expires(expires_header);
+				ms_message("Neither Expires header nor corresponding Contact header found, using expires value [%i] from request",expires);
+			}
 		}
 
 		op->base.root->callbacks.register_success(op,expires>0);

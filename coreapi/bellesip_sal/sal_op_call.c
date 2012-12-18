@@ -196,20 +196,23 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 			switch (op->state) {
 			case SalOpStateEarly:/*invite case*/
 			case SalOpStateActive: /*re-invite case*/
-			handle_sdp_from_response(op,response);
-			ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
-			if (ack==NULL) {
-				ms_error("This call has been already terminated.");
+				if (code >=200) {
+					handle_sdp_from_response(op,response);
+					ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
+					if (ack==NULL) {
+						ms_error("This call has been already terminated.");
 
-				return ;
-			}
-			if (op->sdp_answer){
-				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
-				op->sdp_answer=NULL;
-			}
-			belle_sip_dialog_send_ack(op->dialog,ack);
-			op->state=SalOpStateActive;
-			op->base.root->callbacks.call_accepted(op);
+						return ;
+					}
+					if (op->sdp_answer){
+						set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
+						op->sdp_answer=NULL;
+					}
+					belle_sip_dialog_send_ack(op->dialog,ack);
+					/*if (op->state != SalOpStateActive)*/
+					op->base.root->callbacks.call_accepted(op);
+					op->state=SalOpStateActive;
+				}
 			break;
 
 			case SalOpStateTerminated:
@@ -425,16 +428,29 @@ void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_request_event=process_request_event;
 	op->callbacks.process_dialog_terminated=process_dialog_terminated;
 }
-int sal_call_notify_ringing(SalOp *op, bool_t early_media){
-	belle_sip_response_t* ringing_response;
-
-	/*if early media send also 180 and 183 */
-	if (early_media){
-		ms_fatal("not implemented yet");
+static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* response) {
+	if (op->base.local_media){
+		/*this is the case where we received an invite without SDP*/
+		if (op->sdp_offering) {
+			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),op->base.local_media);
+		}else{
+			if (op->sdp_answer==NULL) sdp_process(op);
+			if (op->sdp_answer){
+				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
+				op->sdp_answer=NULL;
+			}
+		}
 	}else{
-		ringing_response = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),180);
-		belle_sip_server_transaction_send_response(op->pending_server_trans,ringing_response);
+		ms_error("You are accepting a call but not defined any media capabilities !");
 	}
+}
+int sal_call_notify_ringing(SalOp *op, bool_t early_media){
+	int status_code =early_media?183:180;
+	belle_sip_response_t* ringing_response = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),status_code);
+	if (early_media){
+		handle_offer_answer_response(op,ringing_response);
+	}
+	belle_sip_server_transaction_send_response(op->pending_server_trans,ringing_response);
 	return 0;
 }
 
@@ -461,20 +477,8 @@ int sal_call_accept(SalOp*h){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact_header));
 	}
 
-	if (h->base.local_media){
-		/*this is the case where we received an invite without SDP*/
-		if (h->sdp_offering) {
-			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),h->base.local_media);
-		}else{
-			if (h->sdp_answer==NULL) sdp_process(h);
-			if (h->sdp_answer){
-				set_sdp(BELLE_SIP_MESSAGE(response),h->sdp_answer);
-				h->sdp_answer=NULL;
-			}
-		}
-	}else{
-		ms_error("You are accepting a call but not defined any media capabilities !");
-	}
+	handle_offer_answer_response(h,response);
+
 	belle_sip_server_transaction_send_response(h->pending_server_trans,response);
 	return 0;
 }
@@ -523,8 +527,13 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 }
 int sal_call_update(SalOp *op, const char *subject){
 	belle_sip_request_t *reinvite=belle_sip_dialog_create_request(op->dialog,"INVITE");
+	/*belle_sdp_session_description_t* session_desc;*/
+	belle_sip_header_contact_t* contact=belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(reinvite),belle_sip_header_create( "Subject", subject));
+	/*need to add contact header for re-invite*/
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(reinvite),BELLE_SIP_HEADER(contact));
 	sal_op_fill_invite(op, reinvite);
+
 	return sal_op_send_request(op,reinvite);
 }
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h){

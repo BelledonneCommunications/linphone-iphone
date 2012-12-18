@@ -90,8 +90,9 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to){
-	ms_fatal("sal_ping not implemented yet");
-	return -1;
+	sal_op_set_from(op,from);
+	sal_op_set_to(op,to);
+	return sal_op_send_request(op,sal_op_build_request(op,"OPTION"));
 }
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {

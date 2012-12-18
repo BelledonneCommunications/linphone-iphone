@@ -376,6 +376,7 @@ static void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
+	int retry=0;
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
 
 
@@ -386,7 +387,16 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
 	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallOutgoingRinging,1));
+
+	while ((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging<1
+			|| caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia<1)  && retry++ <20) {
+			linphone_core_iterate(caller_mgr->lc);
+			linphone_core_iterate(callee_mgr->lc);
+			ms_usleep(100000);
+	}
+
+
+	CU_ASSERT_TRUE_FATAL(caller_mgr->stat.number_of_LinphoneCallOutgoingRinging|caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia);
 
 	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
@@ -602,6 +612,24 @@ static void simple_subscribe() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_early_media() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(marie->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 int init_test_suite () {
 
 CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
@@ -641,6 +669,9 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple_call", simple_call)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_early_media", call_early_media)) {
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "call_terminated_by_caller", call_terminated_by_caller)) {
