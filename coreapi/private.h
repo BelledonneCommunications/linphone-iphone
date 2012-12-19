@@ -502,6 +502,7 @@ struct _LinphoneCore
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
+	RtpProfile *default_profile;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;

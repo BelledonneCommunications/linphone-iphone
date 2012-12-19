@@ -244,7 +244,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	else
 		md->streams[0].ptime=linphone_core_get_download_ptime(lc);
 	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw,&md->streams[0].max_rate);
-	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
+	pt=payload_type_clone(rtp_profile_get_payload_from_mime(lc->default_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
 
