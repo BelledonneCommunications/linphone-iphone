@@ -165,6 +165,14 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		}
 		return;
 	}
+	/*check if dialog has changed*/
+	if (belle_sip_response_event_get_dialog(event) != op->dialog) {
+		ms_message("Dialog as changed from [%p] to [%p] for op [%p], updating",op->dialog,belle_sip_response_event_get_dialog(event),op);
+		/*fixme, shouldn't we cancel previous dialog*/
+		belle_sip_object_unref(op->dialog);
+		op->dialog=belle_sip_response_event_get_dialog(event);
+		belle_sip_object_ref(op->dialog);
+	}
 	/*check if op is terminating*/
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
 
