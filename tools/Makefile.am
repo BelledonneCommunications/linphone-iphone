@@ -7,9 +7,9 @@ AM_CPPFLAGS=\
 
 COMMON_CFLAGS=\
 	-DIN_LINPHONE \
-	$(LIBXML2_CFLAGS) \
 	$(ORTP_CFLAGS) \
-	$(STRICT_OPTIONS)
+	$(STRICT_OPTIONS) \
+	$(LIBXML2_CFLAGS) 
 
 if BUILD_TOOLS
 
@@ -21,8 +21,8 @@ libxml2lpc_la_SOURCES=\
 
 libxml2lpc_la_CFLAGS=$(COMMON_CFLAGS)
 libxml2lpc_la_LIBADD=\
-	$(LIBXML2_LIBS) \
-	$(top_builddir)/coreapi/liblinphone.la
+	$(top_builddir)/coreapi/liblinphone.la \
+	$(LIBXML2_LIBS) 
 
 libxml2lpc_la_LDFLAGS=-no-undefined
 
@@ -33,7 +33,8 @@ xml2lpc_test_SOURCES=\
 
 xml2lpc_test_CFLAGS=$(COMMON_CFLAGS)
 xml2lpc_test_LDADD=\
-	libxml2lpc.la
+	$(top_builddir)/coreapi/liblinphone.la \
+	libxml2lpc.la 
 
 endif
 

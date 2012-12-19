@@ -981,7 +981,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
 	if (obj->contact_params!=NULL){
-		lp_config_set_string(config,key,"contact_params",obj->contact_params);
+		lp_config_set_string(config,key,"contact_parameters",obj->contact_params);
 	}
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
