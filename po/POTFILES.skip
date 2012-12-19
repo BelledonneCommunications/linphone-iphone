@@ -12,6 +12,7 @@ mediastreamer2/src/extdisplay.c
 mediastreamer2/src/gsm.c
 mediastreamer2/src/ice.c
 mediastreamer2/src/itc.c
+mediastreamer2/src/genericplc.c
 mediastreamer2/src/macsnd.c
 mediastreamer2/src/msandroid.cpp
 mediastreamer2/src/msandroidvideo.cpp

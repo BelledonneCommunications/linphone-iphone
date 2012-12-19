@@ -538,11 +538,6 @@ GtkWidget * linphone_gtk_create_assistant(void){
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
 	notok = create_pixbuf(linphone_gtk_get_ui_config("notok","notok.png"));
 
-#if !GLIB_CHECK_VERSION(2, 31, 0)
-	g_thread_init (NULL);
-#endif
-	gdk_threads_init ();
-
 	GtkWidget *p1=create_intro();
 	GtkWidget *p2=create_setup_signin_choice();
 	GtkWidget *p31=create_account_informations_page();
@@ -605,3 +600,4 @@ GtkWidget * linphone_gtk_create_assistant(void){
 
 	return w;
 }
+

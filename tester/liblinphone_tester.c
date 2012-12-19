@@ -80,7 +80,7 @@ typedef struct _stats {
 	int number_of_LinphoneCallPausedByRemote;
 	int number_of_LinphoneCallUpdatedByRemote;
 	int number_of_LinphoneCallIncomingEarlyMedia;
-	int number_of_LinphoneCallUpdated;
+	int number_of_LinphoneCallUpdating;
 	int number_of_LinphoneCallReleased;
 
 	int number_of_LinphoneMessageReceived;
@@ -291,7 +291,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 	case LinphoneCallPausedByRemote :counters->number_of_LinphoneCallPausedByRemote++;break;
 	case LinphoneCallUpdatedByRemote :counters->number_of_LinphoneCallUpdatedByRemote++;break;
 	case LinphoneCallIncomingEarlyMedia :counters->number_of_LinphoneCallIncomingEarlyMedia++;break;
-	case LinphoneCallUpdated :counters->number_of_LinphoneCallUpdated++;break;
+	case LinphoneCallUpdating :counters->number_of_LinphoneCallUpdating++;break;
 	case LinphoneCallReleased :counters->number_of_LinphoneCallReleased++;break;
 	default:
 		CU_FAIL("unexpected event");break;
@@ -339,7 +339,7 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 			linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
 	PayloadType* pt;
-	if((pt = linphone_core_find_payload_type(lc,type,rate))) {
+	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}
 }

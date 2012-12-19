@@ -56,9 +56,10 @@ void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
  * Enum describing the result of the echo canceller calibration process.
 **/
 typedef enum {
-	LinphoneEcCalibratorInProgress,
-	LinphoneEcCalibratorDone,
-	LinphoneEcCalibratorFailed
+	LinphoneEcCalibratorInProgress,	/**< The echo canceller calibration process is on going. */
+	LinphoneEcCalibratorDone,	/**< The echo canceller calibration has been performed and produced an echo delay measure. */
+	LinphoneEcCalibratorFailed,	/**< The echo canceller calibration process has failed. */
+	LinphoneEcCalibratorDoneNoEcho	/**< The echo canceller calibration has been performed and no echo has been detected. */
 }LinphoneEcCalibratorStatus;
 
 
@@ -86,6 +87,20 @@ typedef bool_t (*LinphoneCoreIterateHook)(void *data);
 void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+/**
+ * @ingroup misc
+ *Function to get  call country code from  ISO 3166-1 alpha-2 code, ex: FR returns 33
+ *@param iso country code alpha2
+ *@return call country code or -1 if not found
+ */
+int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
+/**
+ * @ingroup misc
+ *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
+ *@param e164 phone number
+ *@return call country code or -1 if not found
+ */
+int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
 
 #ifdef __cplusplus
 }

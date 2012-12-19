@@ -53,6 +53,11 @@ typedef enum {
 	SalTransportDTLS /*DTLS*/
 }SalTransport;
 
+#define SAL_MEDIA_DESCRIPTION_UNCHANGED		0x00
+#define SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED	0x01
+#define SAL_MEDIA_DESCRIPTION_CODEC_CHANGED	0x02
+#define SAL_MEDIA_DESCRIPTION_CHANGED		(SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED | SAL_MEDIA_DESCRIPTION_CODEC_CHANGED)
+
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
@@ -108,12 +113,34 @@ typedef enum{
 }SalStreamDir;
 const char* sal_stream_dir_to_string(SalStreamDir type);
 
-typedef struct SalEndpointCandidate{
-	char addr[64];
-	int port;
-}SalEndpointCandidate;
-
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN 32
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN 6
+
+typedef struct SalIceCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char raddr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	char foundation[SAL_MEDIA_DESCRIPTION_MAX_ICE_FOUNDATION_LEN];
+	char type[SAL_MEDIA_DESCRIPTION_MAX_ICE_TYPE_LEN];
+	unsigned int componentID;
+	unsigned int priority;
+	int port;
+	int rport;
+} SalIceCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES 10
+
+typedef struct SalIceRemoteCandidate {
+	char addr[SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN];
+	int port;
+} SalIceRemoteCandidate;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES 2
+
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
+#define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
@@ -128,15 +155,23 @@ typedef struct SalStreamDescription{
 	SalMediaProto proto;
 	SalStreamType type;
 	char typeother[32];
-	char addr[64];
-	int port;
+	char rtp_addr[64];
+	char rtcp_addr[64];
+	int rtp_port;
+	int rtcp_port;
 	MSList *payloads; //<list of PayloadType
 	int bandwidth;
 	int ptime;
-	SalEndpointCandidate candidates[SAL_ENDPOINT_CANDIDATE_MAX];
 	SalStreamDir dir;
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
+	int max_rate;
+	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
+	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_mismatch;
+	bool_t ice_completed;
 } SalStreamDescription;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_STREAMS 4
@@ -150,13 +185,26 @@ typedef struct SalMediaDescription{
 	unsigned int session_ver;
 	unsigned int session_id;
 	SalStreamDescription streams[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
+	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
+	bool_t ice_lite;
+	bool_t ice_completed;
 } SalMediaDescription;
+
+typedef struct SalMessage{
+	const char *from;
+	const char *text;
+	const char *url;
+	const char *message_id;
+}SalMessage;
+
+#define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
 SalMediaDescription *sal_media_description_new();
 void sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
-bool_t sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
+int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2);
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir dir);
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type);
@@ -179,6 +227,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
+	const char* call_id;
 } SalOpBase;
 
 
@@ -216,10 +265,22 @@ typedef enum SalPresenceStatus{
 	SalPresenceAltService,
 }SalPresenceStatus;
 
-typedef enum SalSubscribeState{
+typedef enum SalReferStatus{
+	SalReferTrying,
+	SalReferSuccess,
+	SalReferFailed
+}SalReferStatus;
+
+typedef enum SalSubscribeStatus{
 	SalSubscribeActive,
 	SalSubscribeTerminated
-}SalSubscribeState;
+}SalSubscribeStatus;
+
+typedef enum SalTextDeliveryStatus{
+	SalTextDeliveryInProgress,
+	SalTextDeliveryDone,
+	SalTextDeliveryFailed
+}SalTextDeliveryStatus;
 
 typedef struct SalAuthInfo{
 	char *username;
@@ -245,9 +306,11 @@ typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
-typedef void (*SalOnTextReceived)(Sal *sal, const char *from, const char *msg);
-typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *value);
-typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeState ss, SalPresenceStatus status, const char *msg);
+typedef void (*SalOnTextReceived)(Sal *sal, const SalMessage *msg);
+typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
+typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
+typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
+typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
@@ -272,8 +335,10 @@ typedef struct SalCallbacks{
 	SalOnDtmfReceived dtmf_received;
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
+	SalOnTextDeliveryUpdate text_delivery_update;
 	SalOnNotify notify;
 	SalOnNotifyPresence notify_presence;
+	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
 	SalOnPingReply ping_reply;
@@ -289,6 +354,8 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info);
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
+void sal_set_dscp(Sal *ctx, int dscp);
+int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
@@ -300,11 +367,14 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 unsigned int sal_get_keepalive_period(Sal *ctx);
 void sal_use_session_timers(Sal *ctx, int expires);
 void sal_use_double_registrations(Sal *ctx, bool_t enabled);
+void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled);
+void sal_use_dates(Sal *ctx, bool_t enabled);
 void sal_reuse_authorization(Sal *ctx, bool_t enabled);
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec);
 void sal_use_rport(Sal *ctx, bool_t use_rports);
 void sal_use_101(Sal *ctx, bool_t use_101);
 void sal_set_root_ca(Sal* ctx, const char* rootCa);
+const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 
 int sal_iterate(Sal *sal);
@@ -343,6 +413,7 @@ const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
 /*returns far-end "User-Agent" string */
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
+const char* sal_op_get_call_id(const SalOp *op);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
@@ -366,6 +437,7 @@ int sal_call_terminate(SalOp *h);
 bool_t sal_call_autoanswer_asked(SalOp *op);
 void sal_call_send_vfu_request(SalOp *h);
 int sal_call_is_offerer(const SalOp *h);
+int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
@@ -374,6 +446,7 @@ int sal_unregister(SalOp *h);
 
 /*Messaging */
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *text);
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to);

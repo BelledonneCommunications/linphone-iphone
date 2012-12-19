@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#define VIDEOSELFVIEW_DEFAULT 1
+#define VIDEOSELFVIEW_DEFAULT 0
 
 #include "linphone.h"
 #include "lpconfig.h"
@@ -63,17 +63,22 @@ static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const ch
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
+static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
-static void linphone_gtk_status_icon_set_blinking(gboolean val);
+void linphone_gtk_status_icon_set_blinking(gboolean val);
+void _linphone_gtk_enable_video(gboolean val);
+
 
 
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
+static gboolean no_video=FALSE;
 static gboolean iconified=FALSE;
 static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
+static gboolean workaround_gtk_entry_chinese_bug=FALSE;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -89,6 +94,13 @@ static GOptionEntry linphone_options[]={
 	    .arg = G_OPTION_ARG_STRING,
 	    .arg_data = &linphone_logfile,
 	    .description = N_("path to a file to write logs into.")
+	},
+	{
+	    .long_name = "no-video",
+	    .short_name = '\0',
+	    .arg = G_OPTION_ARG_NONE,
+	    .arg_data = (gpointer)&no_video,
+	    .description = N_("Start linphone with video disabled.")
 	},
 	{
 		.long_name="iconified",
@@ -225,13 +237,18 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.refer_received=linphone_gtk_refer_received;
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
+	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
 
-	linphone_core_set_user_agent("Linphone", LINPHONE_VERSION);
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
+	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
 	linphone_core_enable_video(the_core,TRUE,TRUE);
+	if (no_video) {
+		_linphone_gtk_enable_video(FALSE);
+		linphone_gtk_set_ui_config_int("videoselfview",0);
+	}
 }
 
 
@@ -262,8 +279,10 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 		linphone_gtk_visibility_set(shown,window_name,w,TRUE);
 	if (icon_path) {
 		GdkPixbuf *pbuf=create_pixbuf(icon_path);
-		gtk_window_set_icon(GTK_WINDOW(w),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
+		if(pbuf != NULL) {
+			gtk_window_set_icon(GTK_WINDOW(w),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
 	}
 }
 
@@ -332,9 +351,16 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	return w;
 }
 
+static void entry_unmapped(GtkWidget *entry){
+	g_message("Entry is unmapped, calling unrealize to workaround chinese bug.");
+	gtk_widget_unrealize(entry);
+}
+
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
-	GtkBuilder *builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
+	GtkBuilder *builder;
 	GObject *w;
+	if (window==NULL) return NULL;
+	builder=(GtkBuilder*)g_object_get_data(G_OBJECT(window),"builder");
 	if (builder==NULL){
 		g_error("Fail to retrieve builder from window !");
 		return NULL;
@@ -342,6 +368,15 @@ GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name){
 	w=gtk_builder_get_object(builder,name);
 	if (w==NULL){
 		g_error("No widget named %s found in xml interface.",name);
+	}
+	if (workaround_gtk_entry_chinese_bug){
+		if (strcmp(G_OBJECT_TYPE_NAME(w),"GtkEntry")==0){
+			if (g_object_get_data(G_OBJECT(w),"entry_bug_workaround")==NULL){
+				g_object_set_data(G_OBJECT(w),"entry_bug_workaround",GINT_TO_POINTER(1));
+				g_message("%s is a GtkEntry",name);
+				g_signal_connect(G_OBJECT(w),"unmap",(GCallback)entry_unmapped,NULL);
+			}
+		}
 	}
 	return GTK_WIDGET(w);
 }
@@ -646,10 +681,8 @@ bool_t linphone_gtk_video_enabled(void){
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (linphone_gtk_video_enabled()){
-		linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
+	linphone_core_enable_video_preview(lc,linphone_gtk_get_ui_config_int("videoselfview",
 	    	VIDEOSELFVIEW_DEFAULT));
-	}
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -770,21 +803,24 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 	}
 }
 
-void linphone_gtk_enable_video(GtkWidget *w){
-	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
-	GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+void _linphone_gtk_enable_video(gboolean val){
 	LinphoneVideoPolicy policy={0};
 	policy.automatically_initiate=policy.automatically_accept=val;
 	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
 	
-	gtk_widget_set_sensitive(selfview_item,val);
 	if (val){
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),
 		linphone_gtk_get_ui_config_int("videoselfview",VIDEOSELFVIEW_DEFAULT));
 	}else{
 		linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
 	}
+}
+
+void linphone_gtk_enable_video(GtkWidget *w){
+	gboolean val=gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w));
+	//GtkWidget *selfview_item=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"selfview_item");
+	_linphone_gtk_enable_video(val);
 }
 
 void linphone_gtk_enable_self_view(GtkWidget *w){
@@ -803,6 +839,18 @@ void linphone_gtk_used_identity_changed(GtkWidget *w){
 		linphone_gtk_show_directory_search();
 	}
 	if (sel) g_free(sel);
+}
+
+
+void on_proxy_refresh_button_clicked(GtkWidget *w){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	MSList const *item=linphone_core_get_proxy_config_list(lc);
+	while (item != NULL) {
+		LinphoneProxyConfig *lpc=(LinphoneProxyConfig*)item->data;
+		linphone_proxy_config_edit(lpc);
+		linphone_proxy_config_done(lpc);
+		item = item->next;
+	}
 }
 
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
@@ -983,18 +1031,20 @@ static void make_notification(const char *title, const char *body){
 
 #endif
 
-static void linphone_gtk_notify(LinphoneCall *call, const char *msg){
+void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 #ifdef HAVE_NOTIFY
 	if (!notify_is_initted())
 		if (!notify_init ("Linphone")) ms_error("Libnotify failed to init.");
 #endif
 	if (!call) {
+	  
 #ifdef HAVE_NOTIFY
 		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
 #ifdef HAVE_NOTIFY1
 	,NULL
 #endif
 ),NULL))
+	 
 				ms_error("Failed to send notification.");
 #else
 		linphone_gtk_show_main_window();
@@ -1131,6 +1181,10 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token){
 	linphone_gtk_in_call_view_show_encryption(call);
+}
+
+static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate){
+	linphone_gtk_in_call_view_set_transfer_status(call,cstate);
 }
 
 static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistrationState rs){
@@ -1298,7 +1352,7 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 
 #endif
 
-static void linphone_gtk_status_icon_set_blinking(gboolean val){
+void linphone_gtk_status_icon_set_blinking(gboolean val){
 #ifdef HAVE_GTK_OSX
 	static gint attention_id;
 	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
@@ -1412,7 +1466,6 @@ static void linphone_gtk_check_menu_items(void){
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(linphone_gtk_get_widget(
 					linphone_gtk_get_main_window(),"enable_video_item")), video_enabled);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(selfview_item),selfview);
-	gtk_widget_set_sensitive(selfview_item,video_enabled);
 }
 
 static gboolean linphone_gtk_can_manage_accounts(){
@@ -1475,8 +1528,10 @@ static void linphone_gtk_configure_main_window(){
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"directory_search_button_icon")),pbuf);
-		g_object_unref(G_OBJECT(pbuf));
+		if(pbuf != NULL) {
+			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"directory_search_button_icon")),pbuf);
+			g_object_unref(G_OBJECT(pbuf));
+		}
 	}
 	if (home){
 		gchar *tmp;
@@ -1734,6 +1789,9 @@ int main(int argc, char *argv[]){
 		char tmp[128];
 		snprintf(tmp,sizeof(tmp),"LANG=%s",lang);
 		_putenv(tmp);
+		if (strncmp(lang,"zh",2)==0){
+			workaround_gtk_entry_chinese_bug=TRUE;
+		}
 #else
 		setenv("LANG",lang,1);
 #endif

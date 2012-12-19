@@ -478,7 +478,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);;
 	const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 	SalPresenceStatus estatus=SalPresenceOffline;
-	SalSubscribeState sub_state;
+	SalSubscribeStatus sub_state;
 	belle_sip_response_t* resp;
 	belle_sip_object_ref(server_transaction);
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);

@@ -4,7 +4,7 @@
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
-		coreapi console gtk share scripts tester
+		coreapi console gtk share scripts tools tester
 
 
 
@@ -18,13 +18,13 @@ OPTIONAL_SOUNDS=\
 		share/sounds/linphone/rings/rock.wav
 
 
-INSTALLDIR=$(shell cd $(top_builddir) && pwd)/linphone-install
+INSTALLDIR=$(abs_top_builddir)/linphone-install
 INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(shell cd $(top_builddir) && pwd)/$(PACKAGE)-win32-$(VERSION).zip
+ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(VERSION).zip
 ZIP_EXCLUDED=include lib \
 		$(OPTIONAL_SOUNDS)
 
-SDK_ZIPFILE=$(shell cd $(top_builddir) && pwd)/lib$(PACKAGE)-win32-$(VERSION).zip
+SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-win32-$(VERSION).zip
 SDK_EXCLUDED= \
 	bin/linphone.exe \
 	lib/*.la \
@@ -38,11 +38,11 @@ SDK_EXCLUDED= \
 GTK_PREFIX=/
 GTK_THEME=Outcrop
 GTK_FILELIST=gtk+-2.22.1.filelist
-GTK_FILELIST_PATH=$(shell cd $(top_srcdir) && pwd)/$(GTK_FILELIST)
+GTK_FILELIST_PATH=$(abs_top_srcdir)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
-WINBINDIST_FILES=$(shell cat $(top_srcdir)/$(LINPHONEDEPS_FILELIST))
+WINBINDIST_FILES=`cat $(abs_top_srcdir)/$(LINPHONEDEPS_FILELIST)`
 ISS_SCRIPT=linphone.iss
-ISS_SCRIPT_PATH=$(shell cd $(top_srcdir) && pwd)/$(ISS_SCRIPT)
+ISS_SCRIPT_PATH=$(abs_top_srcdir)/$(ISS_SCRIPT)
 #path to Inno Setup 5 compiler
 ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
@@ -102,7 +102,7 @@ other-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in $(WINBINDIST_FILES) ; do \
 		if test -d $$file; then \
-			mkdir -p $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
@@ -119,18 +119,18 @@ gtk-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in `cat $(GTK_FILELIST_PATH)` ; do \
 		if test -d $$file; then \
-			mkdir -p $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
 			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done && \
-	mkdir -p  $(INSTALLDIR_WITH_PREFIX)/share/themes && \
+	$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/share/themes && \
 	cp -rf share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
 
 zip:
 	rm -f $(ZIPFILE)
 	rm -rf $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)
+	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
 #remove unwanted linphone stuff
 	cd $(INSTALLDIR_WITH_PREFIX) && rm -rf $(ZIP_EXCLUDED)
@@ -145,7 +145,7 @@ zip:
 sdk:
 	rm -f $(SDK_ZIPFILE)
 	rm -rf $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)
+	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
 # remove unwanted stuff (gtk interface)
 	cd $(INSTALLDIR_WITH_PREFIX) && rm -rf $(SDK_EXCLUDED)
@@ -182,12 +182,12 @@ newdate:
 	cd gtk && $(MAKE) newdate
 
 if HAVE_MD5SUM
-GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'})
+GEN_MD5=`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$4'}`
 else
-GEN_MD5=$(shell $(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'})
+GEN_MD5=`$(MD5SUM) linphone-$(VERSION).tar.gz | awk {'print $$1'}`
 endif
 
-Portfile:	$(top_srcdir)/scripts/Portfile.tmpl dist
+Portfile: $(top_srcdir)/scripts/Portfile.tmpl dist
 	sed -e 's/\@VERSION\@/$(LINPHONE_VERSION)/g' \
 	  -e 's/\@LINPHONE_MD5\@/$(GEN_MD5)/' < $< > $@
 
@@ -210,7 +210,7 @@ $(LIBICONV_HACK):
 
 bundle: $(LIBICONV_HACK)
 	rm -rf $(INSTALLDIR)
-	mkdir -p $(INSTALLDIR)
+	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
 	BUNDLE_PREFIX=$(BUNDLEPREFIX) \
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
@@ -218,7 +218,9 @@ bundle: $(LIBICONV_HACK)
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
-	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc 
+	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
+	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
+	sed -e 's:@executable_path/../Resources:../..:g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 
@@ -229,4 +231,5 @@ clean-local:
 	rm -rf $(BUNDLEDIR)
 discovery:
 	touch specs.cpp
-	$(CC) $(CFLAGS) -include $(top_builddir)/config.h $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS)-E -P -v -dD specs.cpp
+	$(CC) --include $(top_builddir)/config.h \
+          $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.cpp

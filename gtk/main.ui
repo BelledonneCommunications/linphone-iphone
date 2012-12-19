@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="dummy_conf_window">
     <property name="can_focus">False</property>
     <child>
@@ -318,7 +319,7 @@
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -369,6 +370,7 @@
               <object class="GtkProgressBar" id="quality_indicator">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="tooltip_text" translatable="yes">Call quality rating</property>
               </object>
               <packing>
@@ -498,7 +500,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="label" translatable="yes">Enable video</property>
+                        <property name="label" translatable="yes">Always start video</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="linphone_gtk_enable_video" swapped="no"/>
                       </object>
@@ -518,7 +520,6 @@
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                       </object>
                     </child>
                     <child>
@@ -680,6 +681,8 @@
                                     <property name="invisible_char">●</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="linphone_gtk_uri_bar_activate" swapped="no"/>
                                   </object>
                                   <packing>
@@ -771,6 +774,8 @@
                                     <property name="invisible_char_set">True</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="changed" handler="linphone_gtk_show_friends" swapped="no"/>
                                   </object>
                                   <packing>
@@ -838,9 +843,6 @@
                                     <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
                                     <signal name="popup-menu" handler="linphone_gtk_popup_contact_menu" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection1"/>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -866,6 +868,8 @@
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="linphone_gtk_directory_search_activate" swapped="no"/>
                                         <signal name="icon-press" handler="linphone_gtk_directory_search_activate" swapped="no"/>
                                         <signal name="focus-in-event" handler="linphone_gtk_directory_search_focus_in" swapped="no"/>
@@ -1065,9 +1069,6 @@
                                     <property name="headers_visible">False</property>
                                     <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection2"/>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -1471,12 +1472,45 @@
                       </object>
                     </child>
                     <child type="label">
-                      <object class="GtkLabel" id="label17">
+                      <object class="GtkHBox" id="hbox7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">My current identity:</property>
-                        <property name="use_markup">True</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel" id="label17">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="label" translatable="yes">My current identity:</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="proxy_refresh_button">
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="relief">none</property>
+                            <signal name="clicked" handler="on_proxy_refresh_button_clicked" swapped="no"/>
+                            <child>
+                              <object class="GtkImage" id="image20">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="stock">gtk-refresh</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -1573,6 +1607,8 @@
                                         <property name="invisible_char">●</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -1587,6 +1623,8 @@
                                         <property name="invisible_char">●</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>

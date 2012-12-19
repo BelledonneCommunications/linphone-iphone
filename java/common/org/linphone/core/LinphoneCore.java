@@ -18,11 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
-import java.util.List;
 import java.util.Vector;
-
-import org.linphone.core.LinphoneCallParams;
 
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
@@ -34,8 +30,8 @@ public interface LinphoneCore {
 	 * linphone core states
 	 */
 	static public class GlobalState {
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+		
+		static private Vector<GlobalState> values = new Vector<GlobalState>();
 		/**
 		 * Off
 		 */
@@ -56,7 +52,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private GlobalState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -79,8 +75,8 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class RegistrationState {
-		@SuppressWarnings("unchecked")
-		private static Vector values = new Vector();
+		
+		private static Vector<RegistrationState> values = new Vector<RegistrationState>();
 		/**
 		 * None
 		 */
@@ -104,7 +100,7 @@ public interface LinphoneCore {
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private RegistrationState(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -127,8 +123,8 @@ public interface LinphoneCore {
 	 *
 	 */
 	static public class FirewallPolicy {
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+		
+		static private Vector<FirewallPolicy> values = new Vector<FirewallPolicy>();
 		/**
 		 * No firewall is assumed.
 		 */
@@ -141,11 +137,15 @@ public interface LinphoneCore {
 		 * Use stun server to discover RTP addresses and ports.
 		 */
 		static public FirewallPolicy UseStun = new FirewallPolicy(2,"UseStun");
+		/**
+		 * Use ICE.
+		 */
+		static public FirewallPolicy UseIce = new FirewallPolicy(3,"UseIce");
 		
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private FirewallPolicy(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -181,30 +181,33 @@ public interface LinphoneCore {
 			this.tcp = t.tcp;
 			this.tls = t.tls;
 		}
+		public String toString() {
+			return "udp["+udp+"] tcp["+tcp+"] tls["+tls+"]";
+		}
 	}
 	/**
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */
-	static public class MediaEncryption {
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+	static public final class MediaEncryption {
+		
+		static private Vector<MediaEncryption> values = new Vector<MediaEncryption>();
 		/**
 		 * None
 		 */
-		static public MediaEncryption None = new MediaEncryption(0,"None");       
+		static public final MediaEncryption None = new MediaEncryption(0,"None");       
 		/**
 		 * SRTP
 		 */
-		static public MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
+		static public final MediaEncryption SRTP = new MediaEncryption(1,"SRTP");
 		/**
 		 * ZRTP
 		 */
-		static public MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
+		static public final MediaEncryption ZRTP = new MediaEncryption(2,"ZRTP");
 		protected final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private MediaEncryption(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -226,28 +229,35 @@ public interface LinphoneCore {
 	 * 	EC Calibrator Status
 	 */
 	static public class EcCalibratorStatus {
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+		
+		static private Vector<EcCalibratorStatus> values = new Vector<EcCalibratorStatus>();
+		/* Do not change the values of these constants or the strings associated with them to prevent breaking
+		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;
 		public static final int DONE_STATUS=1;
 		public static final int FAILED_STATUS=2;
+		public static final int DONE_NO_ECHO_STATUS=3;
 		/**
 		 * Calibration in progress
 		 */
-		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");       
+		static public EcCalibratorStatus InProgress = new EcCalibratorStatus(IN_PROGRESS_STATUS,"InProgress");
 		/**
-		 * Calibration done
+		 * Calibration done that produced an echo delay measure
 		 */
-		static public EcCalibratorStatus Done  = new EcCalibratorStatus(DONE_STATUS,"Done");
+		static public EcCalibratorStatus Done = new EcCalibratorStatus(DONE_STATUS,"Done");
 		/**
-		 * Calibration in progress
+		 * Calibration failed
 		 */
 		static public EcCalibratorStatus Failed = new EcCalibratorStatus(FAILED_STATUS,"Failed");
+		/**
+		 * Calibration done with no echo detected
+		 */
+		static public EcCalibratorStatus DoneNoEcho = new EcCalibratorStatus(DONE_NO_ECHO_STATUS, "DoneNoEcho");
 
 		private final int mValue;
 		private final String mStringValue;
 
-		@SuppressWarnings("unchecked")
+		
 		private EcCalibratorStatus(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -268,6 +278,12 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+
+	/**
+	 * Set the context of creation of the LinphoneCore.
+	 */
+	public void setContext(Object context);
+
 	/**
 	 * clear all added proxy configs
 	 */
@@ -367,7 +383,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -378,7 +394,7 @@ public interface LinphoneCore {
 	 * Accept an incoming call.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -389,7 +405,7 @@ public interface LinphoneCore {
 	 * Accept call modifications initiated by other end.
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
@@ -401,18 +417,19 @@ public interface LinphoneCore {
 	 * Prevent LinphoneCore from performing an automatic answer
 	 *
 	 * Basically the application is notified of incoming calls within the
-	 * {@link LinphoneCoreListener#inviteReceived(LinphoneCore, String)} listener.
+	 * {@link LinphoneCoreListener#callState} listener method.
 	 * The application can later respond positively to the call using
 	 * this method.
 	 * @throws LinphoneCoreException 
 	 */
 	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
-	
+
+	public void startRinging();
+
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
-	@SuppressWarnings("unchecked")
-	public List getCallLogs();
+	public LinphoneCallLog[] getCallLogs();
 	
 	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
@@ -463,7 +480,7 @@ public interface LinphoneCore {
 	 * @return true is mic is muted
 	 */
 	boolean isMicMuted();
-	
+
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number
@@ -486,11 +503,17 @@ public interface LinphoneCore {
 	 */
 	void clearCallLogs();
 	/***
-	 * get payload type  from mime type an clock rate
+	 * get payload type  from mime type, clock rate, and number of channels.-
 	 * 
 	 * return null if not found
 	 */
-	PayloadType findPayloadType(String mime,int clockRate); 
+	PayloadType findPayloadType(String mime, int clockRate, int channels); 
+	/***
+	 * get payload type  from mime type and clock rate..
+	 * 
+	 * return null if not found
+	 */
+	PayloadType findPayloadType(String mime, int clockRate); 
 	/**
 	 * not implemented yet
 	 * @param pt
@@ -509,7 +532,7 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoCancellationEnabled();
 	/**
-	 * Get echo limiter status (another method of doing echo suppressionn, more brute force)
+	 * Get echo limiter status (another method of doing echo suppression, more brute force)
 	 * @return true if echo limiter is enabled
 	 */
 	boolean isEchoLimiterEnabled();
@@ -522,13 +545,13 @@ public interface LinphoneCore {
 	 */
 	Transports getSignalingTransportPorts();
 	/**
-	 * not implemented
+	 * Activates or deactivates the speaker.
 	 * @param value
 	 */
 	void enableSpeaker(boolean value);
 	/**
-	 * not implemented
-	 * @return
+	 * Tells whether the speaker is activated.
+	 * @return true if speaker enabled, false otherwise
 	 */
 	boolean isSpeakerEnabled();
 	/**
@@ -672,6 +695,10 @@ public interface LinphoneCore {
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
 	void enableIpv6(boolean enable);
+	/**
+	 * @deprecated
+	 * @param i
+	 */
 	void adjustSoftwareVolume(int i);
 	
 	boolean pauseCall(LinphoneCall call);
@@ -693,7 +720,7 @@ public interface LinphoneCore {
 	int getConferenceSize();
 	
 	void terminateAllCalls();
-	@SuppressWarnings("unchecked") List getCalls();
+	LinphoneCall[] getCalls();
 	int getCallsNb();
 
 
@@ -744,8 +771,8 @@ public interface LinphoneCore {
 	void setPlayFile(String path);
 	void tunnelEnable(boolean enable);
 	void tunnelAutoDetect();
-	void tunnelEnableLogs(boolean enable);
 	void tunnelCleanServers();
+	void tunnelSetHttpProxy(String proxy_host, int port, String username, String password);
 	/**
 	 * @param host tunnel server ip address
 	 * @param port tunnel server tls port, recommended value is 443
@@ -761,4 +788,90 @@ public interface LinphoneCore {
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
 	
 	void setUserAgent(String name, String version);
+	
+	void setCpuCount(int count);
+	
+	/**
+	 * remove a call log
+	 */
+	public void removeCallLog(LinphoneCallLog log);
+	
+	/**
+	 * @return count of missed calls
+	 */
+	public int getMissedCallsCount();
+	
+	/**
+	 * Set missed calls count to zero
+	 */
+	public void resetMissedCallsCount();
+	/**
+	 * re-initiates registration if network is up.
+	 */
+	public void refreshRegisters();
+
+	/**
+	 * return the version code of linphone core
+	 */
+	public String getVersion();
+	
+	/**
+	 * remove a linphone friend from linphone core and linphonerc
+	 */
+	void removeFriend(LinphoneFriend lf);
+	
+	/**
+	 * return a linphone friend (if exists) that matches the sip address
+	 */
+	LinphoneFriend findFriendByAddress(String sipUri);
+	
+	/**
+	 * Sets the UDP port used for audio streaming.
+	**/
+	void setAudioPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for audio streaming.
+	 */
+	void setAudioPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Sets the UDP port used for video streaming.
+	**/
+	void setVideoPort(int port);
+	
+	/**
+	 * Sets the UDP port range from which to randomly select the port used for video streaming.
+	 */
+	void setVideoPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Set the incoming call timeout in seconds.
+	 * If an incoming call isn't answered for this timeout period, it is
+	 * automatically declined.
+	**/
+	void setIncomingTimeout(int timeout);
+	
+	/**
+	 * Set the call timeout in seconds.
+	 * Once this time is elapsed (ringing included), the call is automatically hung up.
+	**/
+	void setInCallTimeout(int timeout);
+	
+	void setMicrophoneGain(float gain);
+	
+	/**
+	 * Set username and display name to use if no LinphoneProxyConfig configured
+	 */
+	void setPrimaryContact(String displayName, String username);
+	
+	/**
+	 * Enable/Disable the use of SIP INFO for DTMFs
+	 */
+	void setUseSipInfoForDtmfs(boolean use);
+	
+	/**
+	 * Enable/Disable the use of inband DTMFs
+	 */
+	void setUseRfc2833ForDtmfs(boolean use);
 }

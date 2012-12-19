@@ -67,7 +67,7 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 
 	for (i=0; i<desc->nstreams;i++) {
 		media_desc = belle_sdp_media_description_create(sal_stream_type_to_string(desc->streams[i].type)
-                										,desc->streams[i].port
+                										,desc->streams[i].rtp_port
                 										,1
                 										,sal_media_proto_to_string(desc->streams[i].proto)
                 										,NULL);
@@ -195,10 +195,10 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 			}
 		}
 		if ((cnx=belle_sdp_media_description_get_connection(media_desc)) && belle_sdp_connection_get_address(cnx)) {
-			strncpy(stream->addr,belle_sdp_connection_get_address(cnx),sizeof(stream->addr));
+			strncpy(stream->rtp_addr,belle_sdp_connection_get_address(cnx),sizeof(stream->rtp_addr));
 		}
 
-		stream->port=belle_sdp_media_get_media_port(media);
+		stream->rtp_port=belle_sdp_media_get_media_port(media);
 
 		mtype = belle_sdp_media_get_media_type(media);
 		if (strcasecmp("audio", mtype) == 0){

@@ -83,6 +83,11 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 	belle_sip_header_to_t* to;
 	belle_sip_header_content_type_t* content_type;
 	belle_sip_response_t* resp;
+	belle_sip_header_call_id_t* call_id = belle_sip_message_get_header_by_type(req,belle_sip_header_call_id_t);
+	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
+	SalMessage salmsg;
+	char message_id[256]={0};
+
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 
 	char* from;
@@ -105,7 +110,14 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 				address=belle_sip_header_address_create(belle_sip_header_address_get_displayname(BELLE_SIP_HEADER_ADDRESS(from_header))
 																,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from_header)));
 				from=belle_sip_object_to_string(BELLE_SIP_OBJECT(address));
-				((Sal*)sal)->callbacks.text_received((Sal*)sal,from,belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)));
+				snprintf(message_id,sizeof(message_id)-1,"%s%i"
+														,belle_sip_header_call_id_get_call_id(call_id)
+														,belle_sip_header_cseq_get_seq_number(cseq));
+				salmsg.from=from;
+				salmsg.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
+				salmsg.url=NULL; /*not implemented yet*/
+				salmsg.message_id=message_id;
+				((Sal*)sal)->callbacks.text_received((Sal*)sal,&salmsg);
 				belle_sip_object_unref(address);
 				belle_sip_free(from);
 				return;
@@ -480,4 +492,16 @@ MSList * sal_get_pending_auths(Sal *sal){
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen){
 	ms_fatal("sal_get_default_local_ip not implemented yet");
 	return ;
+}
+
+const char *sal_get_root_ca(Sal* ctx) {
+	ms_fatal("sal_get_root_ca not implemented yet");
+	return  NULL;
+}
+int sal_reset_transports(Sal *ctx){
+	ms_warning("sal_reset_transports() not implemented in this version.");
+	return -1;
+}
+void sal_set_dscp(Sal *ctx, int dscp){
+	ms_warning("sal_set_dscp not implemented");
 }

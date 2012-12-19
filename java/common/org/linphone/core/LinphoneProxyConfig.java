@@ -133,4 +133,16 @@ public interface LinphoneProxyConfig {
 	 * @param delay expiration time in seconds
 	 */
 	void setExpires(int delay);
+	
+	/**
+	 * Sets parameters for the contact
+	 * @param parameters to add
+	 */
+	public void setContactParameters(String params);
+	
+	/**
+	 * Return the international prefix for the given country
+	 * @param country iso code
+	 */
+	public int lookupCCCFromIso(String iso);
 }

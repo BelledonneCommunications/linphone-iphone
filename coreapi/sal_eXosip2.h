@@ -41,12 +41,15 @@ struct Sal{
 	int keepalive_period;
 	void *up; /*user pointer*/
 	char* rootCa; /* File _or_ folder containing root CA */
+	int dscp;
 	bool_t one_matching_codec;
 	bool_t double_reg;
 	bool_t use_rports;
 	bool_t use_101;
 	bool_t reuse_authorization;
 	bool_t verify_server_certs;
+	bool_t expire_old_contact;
+	bool_t add_dates;
 };
 
 struct SalOp{
@@ -66,6 +69,7 @@ struct SalOp{
 	char *replaces;
 	char *referred_by;
 	const SalAuthInfo *auth_info;
+	const char *sipfrag_pending;
 	bool_t supports_session_timers;
 	bool_t sdp_offering;
 	bool_t reinvite;

@@ -21,7 +21,7 @@ package org.linphone.core;
 import java.util.Vector;
 
 /**
- * Object representing a Call. calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or passed to the application by listener {@link LinphoneCoreListener#callState(LinphoneCore, LinphoneCall, State, String)}
+ * Object representing a call. Calls are created using {@link LinphoneCore#invite(LinphoneAddress)} or passed to the application by listener {@link LinphoneCoreListener#callState}
  * 
  */
 
@@ -31,8 +31,8 @@ public interface LinphoneCall {
 	 *
 	 */
 	static class State {
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+		
+		static private Vector<State> values = new Vector<State>();
 		private final int mValue;
 		public final int value() {return mValue;}
 		
@@ -119,7 +119,7 @@ public interface LinphoneCall {
 		 */
 		public static final State CallReleased = new State(18,"CallReleased");
 
-		@SuppressWarnings("unchecked")
+		
 		private State(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -159,6 +159,30 @@ public interface LinphoneCall {
 	 * @Return LinphoneCallLog
 	**/
 	LinphoneCallLog getCallLog();
+
+	/**
+	 * Set the audio statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	void setAudioStats(LinphoneCallStats stats);
+
+	/**
+	 * Set the video statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	void setVideoStats(LinphoneCallStats stats);
+
+	/**
+	 * Get the audio statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	LinphoneCallStats getAudioStats();
+
+	/**
+	 * Get the video statistics associated with this call.
+	 * @return LinphoneCallStats
+	 */
+	LinphoneCallStats getVideoStats();
 	
 	LinphoneCallParams getRemoteParams();
 
@@ -244,4 +268,19 @@ public interface LinphoneCall {
 	boolean isInConference();
 	
 	float getPlayVolume();
+
+	/**
+	 * Obtain the remote user agent string. 
+	 */
+	String getRemoteUserAgent();
+	
+	/**
+	 * Take a photo of currently received video and write it into a jpeg file.
+	 */
+	void takeSnapshot(String path);
+	
+	/**
+	 * Scale the video by factor, and center it using cx,cy point
+	 */
+	void zoomVideo(float factor, float cx, float cy);
 }

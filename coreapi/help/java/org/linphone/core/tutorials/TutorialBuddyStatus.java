@@ -20,6 +20,8 @@ package org.linphone.core.tutorials;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallStats;
+import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
@@ -96,8 +98,11 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {}
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
+	public void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats) {}
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
+	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
+	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 
 
 	public static void main(String[] args) {
@@ -228,6 +233,12 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 	private void write(String s) {
 		TutorialNotifier.notify(s);
+	}
+
+	@Override
+	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -5,13 +5,7 @@ AC_REQUIRE([LP_CHECK_OSIP2])
 
 
 case $host_alias in
-	i386-apple*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
-	;;
-	armv6-apple*)
-		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
-	;;
-	armv7-apple*)
+	i386-apple*|armv6-apple*|armv7-apple*|armv7s-apple*)
 		OSIP_LIBS="$OSIP_LIBS  -framework CoreFoundation -framework CFNetwork -lresolv"
 	;;
 	x86_64-apple*)
@@ -48,6 +42,10 @@ AC_CHECK_LIB([eXosip2],[eXosip_tls_verify_certificate],
 	[-losipparser2 -losip2 ])
 AC_CHECK_LIB([eXosip2],[eXosip_trylock],
 	[AC_DEFINE([HAVE_EXOSIP_TRYLOCK],[1],[Defined when eXosip_get_socket is available])],
+	[],
+	[-losipparser2 -losip2 ])
+AC_CHECK_LIB([eXosip2],[eXosip_reset_transports],
+	[AC_DEFINE([HAVE_EXOSIP_RESET_TRANSPORTS],[1],[Defined when eXosip_reset_transports is available])],
 	[],
 	[-losipparser2 -losip2 ])
 dnl AC_CHECK_LIB([eXosip2],[eXosip_get_naptr],

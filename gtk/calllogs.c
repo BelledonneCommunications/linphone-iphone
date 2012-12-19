@@ -57,6 +57,16 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		const char *display;
 		gchar *logtxt, *minutes, *seconds;
 		gchar quality[20];
+		const char *status=NULL;
+		gchar *start_date=NULL;
+		
+#if GLIB_CHECK_VERSION(2,26,0)
+		if (cl->start_date_time){
+			GDateTime *dt=g_date_time_new_from_unix_local(cl->start_date_time);
+			start_date=g_date_time_format(dt,"%c");
+			g_date_time_unref(dt);
+		}
+#endif
 		
 		display=linphone_address_get_display_name (la);
 		if (display==NULL){
@@ -67,19 +77,38 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		if (cl->quality!=-1){
 			snprintf(quality,sizeof(quality),"%.1f",cl->quality);
 		}
+		switch(cl->status){
+			case LinphoneCallAborted:
+				status=_("Aborted");
+			break;
+			case LinphoneCallMissed:
+				status=_("Missed");
+			break;
+			case LinphoneCallDeclined:
+				status=_("Declined");
+			break;
+			default:
+			break;
+		}
 		minutes=g_markup_printf_escaped(
 			ngettext("%i minute", "%i minutes", cl->duration/60),
 			cl->duration/60);
 		seconds=g_markup_printf_escaped(
 			ngettext("%i second", "%i seconds", cl->duration%60),
 			cl->duration%60);
-		logtxt=g_markup_printf_escaped(
+		if (status==NULL) logtxt=g_markup_printf_escaped(
 				_("<big><b>%s</b></big>\t<small><i>%s</i>\t"
 					"<i>Quality: %s</i></small>\n%s\t%s %s\t"),
 				display, addr, cl->quality!=-1 ? quality : _("n/a"),
-				cl->start_date, minutes, seconds);
+				start_date ? start_date : cl->start_date, minutes, seconds);
+		else logtxt=g_markup_printf_escaped(
+				_("<big><b>%s</b></big>\t<small><i>%s</i></small>\t"
+					"\n%s\t%s"),
+				display, addr,
+				start_date ? start_date : cl->start_date, status);
 		g_free(minutes);
 		g_free(seconds);
+		if (start_date) g_free(start_date);
 		gtk_list_store_append (store,&iter);
 		gtk_list_store_set (store,&iter,
 		               0, cl->dir==LinphoneCallOutgoing ? GTK_STOCK_GO_UP : GTK_STOCK_GO_DOWN,

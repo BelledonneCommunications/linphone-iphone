@@ -206,6 +206,7 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 		 case of a crash (which is one of the main reasons we have a
 		     log facility in the first place). */
 		fprintf(outlog, "[%s] [%s] %s\n", date, lname, msg);
+		fflush(outlog);
 	}
 }
 

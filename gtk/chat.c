@@ -19,6 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
+
+#ifdef HAVE_GTK_OSX
+#include <gtkosxapplication.h>
+#endif
+
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const char *with){
 	GtkWidget *w;
 	GtkTextBuffer *b;
@@ -37,6 +42,7 @@ GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const char *with){
 }
 
 void linphone_gtk_create_chatroom(const char *with){
+	
 	LinphoneChatRoom *cr=linphone_core_create_chat_room(linphone_gtk_get_core(),with);
 	if (!cr) return;
 	linphone_gtk_init_chatroom(cr,with);
@@ -84,6 +90,10 @@ const char* linphone_gtk_get_used_identity(){
 	else return linphone_core_get_primary_contact(lc);
 }
 
+static void on_chat_state_changed(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *user_pointer){
+	g_message("chat message state is %s",linphone_chat_message_state_to_string(state));
+}
+
 void linphone_gtk_send_text(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	GtkWidget *entry=linphone_gtk_get_widget(w,"text_entry");
@@ -91,19 +101,37 @@ void linphone_gtk_send_text(GtkWidget *button){
 	const gchar *entered;
 	entered=gtk_entry_get_text(GTK_ENTRY(entry));
 	if (strlen(entered)>0) {
+		LinphoneChatMessage *msg;
 		linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
 				linphone_gtk_get_used_identity(),
 				entered,TRUE);
-		linphone_chat_room_send_message(cr,entered);
+		msg=linphone_chat_room_create_message(cr,entered);
+		linphone_chat_room_send_message2(cr,msg,on_chat_state_changed,NULL);
 		gtk_entry_set_text(GTK_ENTRY(entry),"");
 	}
 }
 
 void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
-	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);
-	if (w==NULL){
+	GtkWidget *w=(GtkWidget*)linphone_chat_room_get_user_data(room);	
+	if (w==NULL){		
 		w=linphone_gtk_init_chatroom(room,linphone_address_as_string_uri_only(from));
+		g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(FALSE));
 	}
+
+	#ifdef HAVE_GTK_OSX
+	/* Notified when a new message is sent */
+	linphone_gtk_status_icon_set_blinking(TRUE);
+	#else 
+	if (!gtk_window_is_active((GtkWindow*)w)){
+		if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_notified"))){
+			linphone_gtk_notify(NULL,message);
+			g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(TRUE));
+		}
+	} else {
+		g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(FALSE));
+	}
+	#endif
+	
 	linphone_gtk_push_text(GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textlog")),
 				linphone_address_as_string_uri_only(from),
 				message,FALSE);

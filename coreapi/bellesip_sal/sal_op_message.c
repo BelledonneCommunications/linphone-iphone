@@ -22,9 +22,11 @@ static void message_response_event(void *op_base, const belle_sip_response_event
 	/*nop for futur use*/
 }
 
-int sal_text_send(SalOp *op, const char *from, const char *to, const char *text){
+
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	belle_sip_request_t* req;
-	size_t content_length = strlen(text);
+	char content_type_raw[256];
+	size_t content_length = strlen(msg);
 	if (!op->callbacks.process_response_event)
 		op->callbacks.process_response_event=message_response_event;
 	if (from)
@@ -32,8 +34,13 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *text)
 	if (to)
 		sal_op_set_to(op,to);
 	req=sal_op_build_request(op,"MESSAGE");
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_create("text","plain")));
+	snprintf(content_type_raw,sizeof(content_type_raw),BELLE_SIP_CONTENT_TYPE ": %s",content_type);
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_parse(content_type_raw)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),text,content_length);
+	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),msg,content_length);
 	return sal_op_send_request(op,req);
+
+}
+int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
+	return sal_message_send(op,from,to,"text/plain",msg);
 }

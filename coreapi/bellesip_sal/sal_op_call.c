@@ -40,11 +40,12 @@ static void sdp_process(SalOp *h){
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
 		for(i=0;i<h->result->nstreams;++i){
-			if (h->result->streams[i].port>0){
-				strcpy(h->result->streams[i].addr,h->base.remote_media->streams[i].addr);
+			if (h->result->streams[i].rtp_port>0){
+				/*fixme add rtcp*/
+				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
 				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
 				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-				h->result->streams[i].port=h->base.remote_media->streams[i].port;
+				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
 
 				if (h->result->streams[i].proto == SalProtoRtpSavp) {
 					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
@@ -624,4 +625,15 @@ int sal_call_is_offerer(const SalOp *h){
 	return h->sdp_offering;
 }
 
+int sal_call_notify_refer_state(SalOp *h, SalOp *newcall){
+	ms_fatal("sal_call_notify_refer_state not implemented yet");
+	return -1;
+}
+void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
+	ms_warning("sal_expire_old_registration_contacts not implemented ");
+}
+
+void sal_use_dates(Sal *ctx, bool_t enabled){
+	ms_warning("sal_use_dates not implemented yet");
+}
 

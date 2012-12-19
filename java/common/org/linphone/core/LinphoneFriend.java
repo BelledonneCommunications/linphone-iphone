@@ -36,8 +36,8 @@ public interface LinphoneFriend {
 	 */
 	static class SubscribePolicy {
 
-		@SuppressWarnings("unchecked")
-		static private Vector values = new Vector();
+		
+		static private Vector<SubscribePolicy> values = new Vector<SubscribePolicy>();
 		protected final int mValue;
 		private final String mStringValue;
 		/**
@@ -54,7 +54,7 @@ public interface LinphoneFriend {
 		 */
 		public final static SubscribePolicy SPAccept = new SubscribePolicy(2,"SPAccept");
 		
-		@SuppressWarnings("unchecked")
+		
 		private SubscribePolicy(int value,String stringValue) {
 			mValue = value;
 			values.addElement(this);
@@ -123,5 +123,8 @@ public interface LinphoneFriend {
 	 */
 	String toString();
 	
-
+	/**
+	 * Return the native pointer for this object
+	 */
+	long getNativePtr();
 }

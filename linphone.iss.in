@@ -13,6 +13,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 ShowLanguageDialog=yes
+UninstallDisplayIcon={app}\bin\linphone.exe
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

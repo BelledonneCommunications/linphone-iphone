@@ -24,26 +24,9 @@ package org.linphone.core;
  *This interface holds all callbacks that the application should implement. None is mandatory.
  */
 public interface LinphoneCoreListener {
-
-	/**< Notifies the application that it should show up
-	 * @return */
-	void show(LinphoneCore lc);
-
 	/**< Ask the application some authentication information 
 	 * @return */
 	void authInfoRequested(LinphoneCore lc,String realm,String username); 
-
-	/**< Callback that notifies various events with human readable text.
-	 * @return */
-	void displayStatus(LinphoneCore lc,String message);
-
-	/**< Callback to display a message to the user 
-	 * @return */
-	void displayMessage(LinphoneCore lc,String message);
-
-	/** Callback to display a warning to the user 
-	 * @return */
-	void displayWarning(LinphoneCore lc,String message);
 
 	/** General State notification  
 	 * @param state LinphoneCore.State
@@ -56,6 +39,11 @@ public interface LinphoneCoreListener {
 	 * @return 
 	 * */		
 	void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State cstate,String message);
+
+	/**
+	 * Call stats notification
+	 */
+	void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);
 
 	/**
 	 * Callback to display change in encryption state.
@@ -93,8 +81,24 @@ public interface LinphoneCoreListener {
 	 * @param from  	LinphoneAddress from
 	 * @param message 	incoming message
 	 */
-	void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);
+	void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message);
+	
+	/**
+	 * invoked when a new linphone chat message is received
+	 * @param lc LinphoneCore
+	 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
+	 * @param message 	incoming linphone chat message message
+	 */
+	void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message);
 
+	/**
+	 * invoked when a new dtmf is received
+	 * @param lc 	LinphoneCore
+	 * @param call 	LinphoneCall involved in the dtmf sending
+	 * @param dtmf 	value of the dtmf sent
+	 */
+	void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf);
+	
 	/**
 	 * Invoked when echo cancalation calibration is completed
 	 * @param lc LinphoneCore
@@ -103,5 +107,31 @@ public interface LinphoneCoreListener {
 	 * @param data
 	 */
 	void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data);
+	/**
+	 *  Report Notified message received for this identity.
+	 *  @param lc LinphoneCore
+	 *  @param call LinphoneCall in case the notify is part of a dialog, may be null
+	 *  @param from LinphoneAddress the message comes from
+	 *  @param event String the raw body of the notify event.
+	 *  
+	 */
+	void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event);
+
+	
+	/**< @Deprecated Notifies the application that it should show up
+	 * @return */
+	void show(LinphoneCore lc);
+	/**< @Deprecated Callback that notifies various events with human readable text.
+	 * @return */
+	void displayStatus(LinphoneCore lc,String message);
+
+	/**< @Deprecated Callback to display a message to the user 
+	 * @return */
+	void displayMessage(LinphoneCore lc,String message);
+
+	/** @Deprecated Callback to display a warning to the user 
+	 * @return */
+	void displayWarning(LinphoneCore lc,String message);
+
 }
 

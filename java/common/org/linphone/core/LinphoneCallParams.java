@@ -34,7 +34,7 @@ public interface LinphoneCallParams {
 	 * @param value 0 to disable limitation
 	 */
 	void setAudioBandwidth(int value);
-	
+
 	/**
 	 * return selected media encryption
 	 * @return MediaEncryption.None MediaEncryption.SRTP or MediaEncryption.ZRTP
@@ -45,5 +45,24 @@ public interface LinphoneCallParams {
 	 * @params menc: MediaEncryption.None, MediaEncryption.SRTP or MediaEncryption.ZRTP
 	 */
 	void setMediaEnctyption(MediaEncryption menc);
+
+	/**
+	 * Get the currently used audio codec
+	 * @return PayloadType or null
+	 */
+	PayloadType getUsedAudioCodec();
+
+	/**
+	 * Get the currently used video codec
+	 * @return PayloadType or null
+	 */
+	PayloadType getUsedVideoCodec();
 	
+	/**
+	 * Indicate low bandwith mode. 
+	 * Configuring a call to low bandwidth mode will result in the core to activate several settings for the call in order to ensure that bitrate usage
+	 * is lowered to the minimum possible. Typically, ptime (packetization time) will be increased, audio codec's output bitrate will be targetted to 20kbit/s provided
+	 * that it is achievable by the codec selected after SDP handshake. Video is automatically disabled.
+	**/
+	void enableLowBandwidth(boolean enable);
 }

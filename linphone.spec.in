@@ -11,7 +11,7 @@
 
 Name:           linphone
 Version:        @VERSION@
-Release:        %(git describe --tags | sed 's/.*-\([0-9]*\)-g.*/\1/' || echo '1')%{?dist}
+Release:        %(git describe --tags --abbrev=40 | sed -rn 's/^.*-([0-9]+)-g[a-z0-9]{40}$/\1/p' || echo '1')%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 Group:          Applications/Communications
@@ -27,7 +27,7 @@ BuildRequires: gtk2-devel
 BuildRequires: libeXosip2-devel speex-devel gettext 
 BuildRequires: intltool gettext-devel 
 %if %{video}
-BuildRequires:	ffmpeg-devel SDL-devel
+BuildRequires: ffmpeg-devel SDL-devel
 %endif
 
 %description
@@ -35,12 +35,12 @@ Linphone is a SIP compliant audio & video phone. It can be used to run calls
 over the internet. It has a gtk+ and console interface.
 
 %package devel
-Summary:        Development libraries for linphone
-Group:          Development/Libraries
-Requires:       %{name} = %{version}-%{release}
-Requires:	ortp-devel = @ORTP_VERSION@
-Requires:	mediastreamer2-devel = @MS2_VERSION@
-Requires:	glib2-devel
+Summary:       Development libraries for linphone
+Group:         Development/Libraries
+Requires:      %{name} = %{version}-%{release}
+Requires:      ortp-devel = @ORTP_VERSION@
+Requires:      mediastreamer-devel = @MS2_VERSION@
+Requires:      glib2-devel
 
 %description    devel
 Libraries and headers required to develop software with linphone.
