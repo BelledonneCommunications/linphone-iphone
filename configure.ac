@@ -149,6 +149,32 @@ AC_ARG_ENABLE(tools,
         *) AC_MSG_ERROR(bad value ${enableval} for --enable-tools) ;;
       esac],[build_tools=check])
 
+dnl check for installed version of libupnp
+AC_ARG_ENABLE(upnp,
+      [AS_HELP_STRING([--disable-upnp], [Disable uPnP support])],
+      [case "${enableval}" in
+        yes) build_upnp=true ;;
+        no)  build_upnp=false ;;
+        *) AC_MSG_ERROR(bad value ${enableval} for --disable-upnp) ;;
+      esac],[build_upnp=auto])
+
+if test "$build_upnp" != "false" ; then
+PKG_CHECK_MODULES([LIBUPNP], [libupnp], [build_upnp=true],
+	[
+		if test "$build_upnp" == "true" ; then
+			AC_MSG_ERROR([libupnp not found.])
+		else
+			build_upnp=false
+		fi
+	])
+
+fi
+
+AM_CONDITIONAL(BUILD_UPNP, test x$build_upnp != xfalse)
+if test "$build_upnp" != "false" ; then
+	AC_DEFINE(BUILD_UPNP, 1, [Define if upnp enabled])
+fi
+
 dnl check libxml2 (needed for tools)
 if test "$build_tools" != "false" ; then
 	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[],

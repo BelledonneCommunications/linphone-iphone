@@ -49,6 +49,10 @@ liblinphone_la_SOURCES=\
 	conference.c \
 	linphone_tunnel.cc \
 	$(GITVERSION_FILE)
+
+if BUILD_UPNP
+liblinphone_la_SOURCES+=upnp.c
+endif
 	
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 

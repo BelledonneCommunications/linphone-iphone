@@ -38,6 +38,9 @@ extern "C" {
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
+#ifdef BUILD_UPNP
+#include "mediastreamer2/upnp_igd.h"
+#endif
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -558,8 +561,8 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	
-        time_t network_last_check;
-        bool_t network_last_status;
+	time_t network_last_check;
+	bool_t network_last_status;
 
 	bool_t ringstream_autorelease;
 	bool_t pad[3];
@@ -568,6 +571,9 @@ struct _LinphoneCore
 	LinphoneTunnel *tunnel;
 	char* device_id;
 	MSList *last_recv_msg_ids;
+#ifdef BUILD_UPNP
+	upnp_igd_context *upnp_igd_ctxt;
+#endif
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
@@ -641,6 +647,9 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+
+int linphone_upnp_init(LinphoneCore *lc);
+void linphone_upnp_destroy(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }
