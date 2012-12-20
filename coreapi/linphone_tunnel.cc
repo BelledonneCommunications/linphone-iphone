@@ -23,9 +23,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef TUNNEL_ENABLED
 #include "TunnelManager.hh"
-#endif
 #include "linphone_tunnel.h"
 #include "linphonecore.h"
 #include "private.h"
@@ -35,8 +33,6 @@
 LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 	return lc->tunnel;
 }
-
-#ifdef TUNNEL_ENABLED
 
 static inline belledonnecomm::TunnelManager *bcTunnel(LinphoneTunnel *tunnel){
 	return (belledonnecomm::TunnelManager *)tunnel;
@@ -211,61 +207,4 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 		tunnel_add_servers_from_config(tunnel,addresses);
 	linphone_tunnel_enable(tunnel, enabled);
 }
-
-#else
-
-/*stubs to avoid to have #ifdef TUNNEL_ENABLED in upper layers*/
-
-void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
-}
-
-
-void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port){
-}
-
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay){
-}
-
-char *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
-	return NULL;
-}
-
-void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
-}
-
-bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
-	return FALSE;
-}
-
-
-void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
-}
-
-void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel *tunnel, const char* username,const char* passwd){
-}
-
-void linphone_tunnel_set_http_proxy(LinphoneTunnel*tunnel, const char *host, int port, const char* username,const char* passwd){
-}
-
-void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd){
-}
-
-void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-}
-
-
-#endif
-
-
-
-
 
