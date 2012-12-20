@@ -84,8 +84,11 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("process_io_error not implemented yet");
 }
-static void process_dialog_terminated(void *op, const belle_sip_dialog_terminated_event_t *event) {
-	if (((SalOp*)op)->dialog) ((SalOp*)op)->dialog=NULL;
+static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
+	SalOp* op=(SalOp*)ctx;
+	if (op->dialog)  {
+		op->dialog=NULL;
+	}
 }
 static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 	belle_sdp_session_description_t* sdp;

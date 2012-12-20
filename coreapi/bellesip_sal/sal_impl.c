@@ -183,6 +183,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_request_t* old_request=NULL;;
 	belle_sip_response_t* old_response=NULL;;
 	int response_code = belle_sip_response_get_status_code(response);
+
 	if (op->state == SalOpStateTerminated) {
 		belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
 		return;

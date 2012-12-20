@@ -591,6 +591,10 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 }
 int sal_unsubscribe(SalOp *op){
 	belle_sip_request_t* req=belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE");
+	if (!req) {
+		ms_error("Cannot unsubscribe to [%s]",sal_op_get_to(op));
+		return -1;
+	}
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","Presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(0)));
 	return sal_op_send_request(op,req);

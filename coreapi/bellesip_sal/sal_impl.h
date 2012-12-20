@@ -38,7 +38,7 @@ struct Sal{
 typedef enum SalOpSate {
 	SalOpStateEarly=0
 	,SalOpStateActive
-	,SalOpStateTerminating /*this state is used to wait until a procedding state, so we can send the cancel*/
+	,SalOpStateTerminating /*this state is used to wait until a proceeding state, so we can send the cancel*/
 	,SalOpStateTerminated
 }SalOpSate_t;
 

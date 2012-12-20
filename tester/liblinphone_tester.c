@@ -611,6 +611,17 @@ static void simple_subscribe() {
 
 	linphone_core_manager_destroy(pauline);
 }
+static void unsubscribe_while_subscribing() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneFriend* friend = linphone_friend_new_with_addr("sip:toto@git.linphone.org"); /*any unexisting address*/
+	linphone_friend_edit(friend);
+	linphone_friend_enable_subscribes(friend,TRUE);
+	linphone_friend_done(friend);
+	linphone_core_add_friend(marie->lc,friend);
+	linphone_core_iterate(marie->lc);
+	linphone_core_manager_destroy(marie);
+
+}
 
 static void call_early_media() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_early_rc");
@@ -690,6 +701,9 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "simple_publish", simple_publish)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "unsubscribe_while_subscribing", unsubscribe_while_subscribing)) {
 			return CU_get_error();
 	}
 	return 0;
