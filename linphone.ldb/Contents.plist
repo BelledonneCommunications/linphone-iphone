@@ -11072,17 +11072,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>4</key>
+							<key>5</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UIContactDetailsHeader/4/UIContactDetailsHeader.xib</string>
+								<string>LinphoneUI/UIContactDetailsHeader/5/UIContactDetailsHeader.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:21Z</date>
+					<date>2012-12-20T13:07:09Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -11092,7 +11092,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>a3054fa100ec1a034084f20d8b1369d9
+					<string>b230aead5bd66e84a58b749ed6a37680
 </string>
 					<key>name</key>
 					<string>UIContactDetailsHeader.xib</string>
@@ -11179,9 +11179,9 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>4</string>
+						<string>5</string>
 						<key>fr</key>
-						<string>4</string>
+						<string>5</string>
 					</dict>
 				</dict>
 				<dict>

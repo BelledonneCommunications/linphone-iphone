@@ -42,7 +42,8 @@
 - (void)initUIContactDetailsHeader {
     propertyList = [[NSArray alloc] initWithObjects:
                     [NSNumber numberWithInt:kABPersonFirstNameProperty],
-                    [NSNumber numberWithInt:kABPersonLastNameProperty], nil];
+                    [NSNumber numberWithInt:kABPersonLastNameProperty],
+                    [NSNumber numberWithInt:kABPersonOrganizationProperty], nil];
     editing = FALSE;
 }
 
@@ -139,7 +140,7 @@
 
 + (CGFloat)height:(BOOL)editing {
     if(editing) {
-        return 130.0f;
+        return 160.0f;
     } else {
         return 80.0f;
     }

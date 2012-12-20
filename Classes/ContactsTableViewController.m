@@ -102,6 +102,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                 CFStringRef lLocalizedFirstName = (lFirstName != nil)? ABAddressBookCopyLocalizedLabel(lFirstName): nil;
                 CFStringRef lLastName = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonLastNameProperty);
                 CFStringRef lLocalizedLastName = (lLastName != nil)? ABAddressBookCopyLocalizedLabel(lLastName): nil;
+                CFStringRef lOrganization = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonOrganizationProperty);
+                CFStringRef lLocalizedlOrganization = (lOrganization != nil)? ABAddressBookCopyLocalizedLabel(lOrganization): nil;
                 NSString *name = nil;
                 if(lLocalizedFirstName != nil && lLocalizedLastName != nil) {
                     name=[NSString stringWithFormat:@"%@%@", [(NSString *)lLocalizedFirstName retain], [(NSString *)lLocalizedLastName retain]];
@@ -109,8 +111,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedLastName retain]];
                 } else if(lLocalizedFirstName != nil) {
                     name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedFirstName retain]];
-                } else {
-                    
+                } else if(lLocalizedlOrganization != nil) {
+                    name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedlOrganization retain]];
                 }
                 if(name != nil && [name length] > 0) {
                     // Put in correct subDic
@@ -125,6 +127,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     }
                     [subDic insertObject:lPerson forKey:name selector:@selector(caseInsensitiveCompare:)];
                 }
+                if(lLocalizedlOrganization != nil)
+                    CFRelease(lLocalizedlOrganization);
+                if(lOrganization != nil)
+                    CFRelease(lOrganization);
                 if(lLocalizedLastName != nil)
                     CFRelease(lLocalizedLastName);
                 if(lLastName != nil)
