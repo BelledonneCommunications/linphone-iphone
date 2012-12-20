@@ -876,8 +876,23 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
     
+    // Disable H26
+    {
+        PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"h264",90000,-1);
+		if (pt) {
+			linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
+			[LinphoneLogger logc:LinphoneLoggerWarning format:"h264/90000 disabled for Apple store"];
+		}
+    }
     
-
+    // Disable MPEG4
+    {
+        PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"mp4v-es",90000,-1);
+		if (pt) {
+			linphone_core_enable_payload_type(theLinphoneCore,pt,FALSE);
+			[LinphoneLogger logc:LinphoneLoggerWarning format:"mp4v-es/90000 disabled for Apple store"];
+		}
+    }
     
     [LinphoneLogger logc:LinphoneLoggerWarning format:"Linphone [%s]  started on [%s]"
                ,linphone_core_get_version()

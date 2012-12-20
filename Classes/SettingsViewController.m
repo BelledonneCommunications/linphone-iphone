@@ -587,6 +587,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     [hiddenKeys addObject:@"wifi_only_preference"];
     
+    // Disable H264 and MPEG4
+    [hiddenKeys addObject:@"h264_preference"];
+    [hiddenKeys addObject:@"mp4v-es_preference"];
+    
     [hiddenKeys addObject:@"quit_button"]; // Hide for the moment
     [hiddenKeys addObject:@"about_button"]; // Hide for the moment
     
