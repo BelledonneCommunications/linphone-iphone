@@ -449,6 +449,11 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+		call->upnp_session = upnp_session_new();
+	}
+#endif //BUILD_UPNP
 	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));

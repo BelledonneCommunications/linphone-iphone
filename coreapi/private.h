@@ -28,9 +28,11 @@
 extern "C" {
 #endif
 #include "linphonecore.h"
+#include "linphonefriend.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal.h"
+#include "sipsetup.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -39,7 +41,7 @@ extern "C" {
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
 #ifdef BUILD_UPNP
-#include "mediastreamer2/upnp_igd.h"
+#include "upnp.h"
 #endif
 
 #ifndef LIBLINPHONE_VERSION
@@ -148,6 +150,9 @@ struct _LinphoneCall
 	OrtpEvQueue *videostream_app_evq;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
+#ifdef BUILD_UPNP
+	UpnpSession *upnp_session;
+#endif //BUILD_UPNP
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
 	int ping_time;
@@ -572,15 +577,15 @@ struct _LinphoneCore
 	char* device_id;
 	MSList *last_recv_msg_ids;
 #ifdef BUILD_UPNP
-	upnp_igd_context *upnp_igd_ctxt;
-#endif
+	UpnpContext upnp;
+#endif //BUILD_UPNP
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
-	
+
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);

@@ -885,7 +885,8 @@ typedef enum _LinphoneFirewallPolicy{
 	LinphonePolicyNoFirewall,
 	LinphonePolicyUseNatAddress,
 	LinphonePolicyUseStun,
-	LinphonePolicyUseIce
+	LinphonePolicyUseIce,
+	LinphonePolicyUseUpnp,
 } LinphoneFirewallPolicy;
 
 typedef enum _LinphoneWaitingState{

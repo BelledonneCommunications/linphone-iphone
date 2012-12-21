@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "upnp.h"
 #include "private.h"
-#include "mediastreamer2/upnp_igd.h"
 
 /* Convert uPnP IGD logs to ortp logs */
 void linphone_upnp_igd_print(void *cookie, upnp_igd_print_level level, const char *fmt, va_list list) {
@@ -36,16 +36,41 @@ void linphone_upnp_igd_print(void *cookie, upnp_igd_print_level level, const cha
 	default:
 		break;
 	}
-	ortp_logv(level, fmt, list);
+	ortp_logv(ortp_level, fmt, list);
 }
 
 void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
+	LinphoneCore *lc = (LinphoneCore *)cookie;
+	UpnpContext *lupnp = &lc->upnp;
+	switch(event) {
+	case UPNP_IGD_EXTERNAL_IPADDRESS_CHANGED:
+	case UPNP_IGD_NAT_ENABLED_CHANGED:
+	case UPNP_IGD_CONNECTION_STATUS_CHANGED:
+		break;
+
+	default:
+		break;
+	}
 }
 
-int linphone_upnp_init(LinphoneCore *lc) {
-	lc->upnp_igd_ctxt = NULL;
+int upnp_context_init(LinphoneCore *lc) {
+	UpnpContext *lupnp = &lc->upnp;
+	lupnp->upnp_igd_ctxt = NULL;
+	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, lc);
+	if(lupnp->upnp_igd_ctxt == NULL) {
+		ms_error("Can't create uPnP IGD context");
+		return -1;
+	}
 	return 0;
 }
-void linphone_upnp_destroy(LinphoneCore *lc) {
 
+void upnp_context_uninit(LinphoneCore *lc) {
+	UpnpContext *lupnp = &lc->upnp;
+	if(lupnp->upnp_igd_ctxt != NULL) {
+		upnp_igd_destroy(lupnp->upnp_igd_ctxt);
+	}
+}
+
+UpnpSession* upnp_session_new() {
+	return NULL;
 }

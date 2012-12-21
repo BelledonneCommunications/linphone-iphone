@@ -50,7 +50,7 @@ liblinphone_la_SOURCES=\
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
-liblinphone_la_SOURCES+=upnp.c
+liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
 	
 if BUILD_WIZARD

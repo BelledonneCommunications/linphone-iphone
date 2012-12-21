@@ -1218,6 +1218,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
+#ifdef BUILD_UPNP
+	upnp_context_init(lc);
+#endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -4900,6 +4903,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 #ifdef TUNNEL_ENABLED
 	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
+#endif
+#ifdef BUILD_UPNP
+	upnp_context_uninit(lc);
 #endif
 }
 
