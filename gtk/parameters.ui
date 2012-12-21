@@ -750,6 +750,23 @@
                           </packing>
                         </child>
                         <child>
+                          <object class="GtkRadioButton" id="use_upnp">
+                            <property name="label" translatable="yes">Behind NAT / Firewall (use uPnP)</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">no_nat</property>
+                            <signal name="toggled" handler="linphone_gtk_use_upnp_toggled" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkHBox" id="hbox24">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>

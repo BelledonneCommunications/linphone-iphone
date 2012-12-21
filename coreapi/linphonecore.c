@@ -2005,6 +2005,10 @@ void linphone_core_iterate(LinphoneCore *lc){
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 			}
+			if (call->upnp_session != NULL) {
+				ms_warning("uPnP mapping has not finished yet, proceeded with the call withoutt uPnP anyway.");
+				linphone_call_delete_upnp_session(call);
+			}
 			linphone_core_start_invite(lc,call);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
@@ -2419,7 +2423,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	LinphoneAddress *parsed_url2=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
-	bool_t use_ice = FALSE;
+	bool_t defer = FALSE;
 
 	linphone_core_preempt_sound_resources(lc);
 	
@@ -2472,8 +2476,20 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 			linphone_call_delete_ice_session(call);
 			linphone_call_stop_media_streams_for_ice_gathering(call);
 		} else {
-			use_ice = TRUE;
+			defer = TRUE;
 		}
+	}
+	else if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+#ifdef BUILD_UPNP
+		linphone_call_init_media_streams(call);
+		call->start_time=time(NULL);
+		if (linphone_core_update_upnp(lc,call)<0) {
+			/* uPnP port mappings failed, proceed with the call anyway. */
+			linphone_call_delete_upnp_session(call);
+		} else {
+			defer = TRUE;
+		}
+#endif
 	}
 
 	if (call->dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
@@ -2484,7 +2500,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		sal_op_set_user_pointer(call->ping_op,call);
 		call->start_time=time(NULL);
 	}else{
-		if (use_ice==FALSE) linphone_core_start_invite(lc,call);
+		if (defer==FALSE) linphone_core_start_invite(lc,call);
 	}
 
 	if (real_url!=NULL) ms_free(real_url);
@@ -2657,22 +2673,41 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #ifdef VIDEO_ENABLED
 		bool_t has_video = call->params.has_video;
-		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
-			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
-			call->videostream->ice_check_list = NULL;
+		if(call->videostream != NULL && !params->has_video) {
+			if ((call->ice_session != NULL)) {
+				ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
+				call->videostream->ice_check_list = NULL;
+			}
 		}
 		call->params = *params;
 		linphone_call_make_local_media_description(lc, call);
-		if ((call->ice_session != NULL) && !has_video && call->params.has_video) {
-			/* Defer call update until the ICE candidates gathering process has finished. */
-			ms_message("Defer call update to gather ICE candidates");
+		if (!has_video && call->params.has_video) {
+			if (call->ice_session != NULL) {
+				/* Defer call update until the ICE candidates gathering process has finished. */
+				ms_message("Defer call update to gather ICE candidates");
+				linphone_call_init_video_stream(call);
+				video_stream_prepare_video(call->videostream);
+				if (linphone_core_gather_ice_candidates(lc,call)<0) {
+					/* Ice candidates gathering failed, proceed with the call anyway. */
+					linphone_call_delete_ice_session(call);
+				} else {
+					return err;
+				}
+			}
+		}
+#ifdef BUILD_UPNP
+		if(call->upnp_session != NULL) {
+			ms_message("Defer call update to add uPnP port mappings");
 			linphone_call_init_video_stream(call);
 			video_stream_prepare_video(call->videostream);
-			if (linphone_core_gather_ice_candidates(lc,call)<0) {
-				/* Ice candidates gathering failed, proceed with the call anyway. */
-				linphone_call_delete_ice_session(call);
-			} else return err;
+			if (linphone_core_update_upnp(lc, call)<0) {
+				/* uPnP port mappings failed, proceed with the call anyway. */
+				linphone_call_delete_upnp_session(call);
+			} else {
+				return err;
+			}
 		}
+#endif //BUILD_UPNP
 #endif
 		err = linphone_core_start_update_call(lc, call);
 	}else{
@@ -2789,6 +2824,12 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		}
 #endif
 	}
+
+#if BUILD_UPNP
+	if(call->upnp_session != NULL) {
+	}
+#endif //BUILD_UPNP
+
 	linphone_core_start_accept_call_update(lc, call);
 	return 0;
 }

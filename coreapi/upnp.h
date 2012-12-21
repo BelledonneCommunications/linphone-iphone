@@ -23,15 +23,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/upnp_igd.h"
 #include "linphonecore.h"
 
-typedef struct _UpnpSession {
+typedef enum {
+	UPNP_Idle,
+	UPNP_Pending,
+	UPNP_Ok,
+	UPNP_Ko,
+} UpnpState;
 
-} UpnpSession;
+typedef struct _UpnpSession  UpnpSession;
+
+typedef struct _UpnpPortBinding {
+	ms_mutex_t mutex;
+	UpnpState state;
+	upnp_igd_ip_protocol protocol;
+	int local_port;
+	int remote_port;
+	int retry;
+	int ref;
+} UpnpPortBinding;
+
+struct _UpnpSession {
+	UpnpPortBinding *audio_rtp;
+	UpnpPortBinding *audio_rtcp;
+	UpnpPortBinding *video_rtp;
+	UpnpPortBinding *video_rtcp;
+	UpnpState state;
+};
 
 typedef struct _UpnpContext {
 	upnp_igd_context *upnp_igd_ctxt;
+	UpnpPortBinding *sip_tcp;
+	UpnpPortBinding *sip_tls;
+	UpnpPortBinding *sip_udp;
+	UpnpState state;
+	MSList *pending_bindinds;
+	ms_mutex_t mutex;
 } UpnpContext;
 
+
+int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call);
+int upnp_call_process(LinphoneCall *call);
 UpnpSession* upnp_session_new();
+void upnp_session_destroy(UpnpSession* session);
+
 int upnp_context_init(LinphoneCore *lc);
 void upnp_context_uninit(LinphoneCore *lc);
 

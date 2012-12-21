@@ -292,6 +292,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call);
 void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
+void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
