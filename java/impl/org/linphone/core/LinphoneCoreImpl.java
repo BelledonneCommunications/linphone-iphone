@@ -754,6 +754,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void setVideoPolicy(boolean autoInitiate, boolean autoAccept) {
 		setVideoPolicy(nativePtr, autoInitiate, autoAccept);
 	}
+	private native void setStaticPicture(long nativePtr, String path);
+	public void setStaticPicture(String path) {
+		setStaticPicture(nativePtr, path);
+	}
 	private native void setUserAgent(long nativePtr, String name, String version);
 	@Override
 	public void setUserAgent(String name, String version) {
