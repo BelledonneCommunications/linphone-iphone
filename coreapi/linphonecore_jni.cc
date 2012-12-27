@@ -52,6 +52,7 @@ extern "C" void libmsbcg729_init();
 #endif /*ANDROID*/
 
 static JavaVM *jvm=0;
+static const char* LogDomain = "Linphone";
 
 #ifdef ANDROID
 static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
@@ -70,15 +71,15 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
  	vsnprintf(str, sizeof(str) - 1, fmt, args);
  	str[sizeof(str) - 1] = '\0';
  	if (strlen(str) < 512) {
-		__android_log_write(prio, LOG_DOMAIN, str);
+		__android_log_write(prio, LogDomain, str);
 	} else {
 		current = str;
 		while ((next = strchr(current, '\n')) != NULL) {
 			*next = '\0';
-			__android_log_write(prio, LOG_DOMAIN, current);
+			__android_log_write(prio, LogDomain, current);
 			current = next + 1;
 		}
-		__android_log_write(prio, LOG_DOMAIN, current);
+		__android_log_write(prio, LogDomain, current);
 	}
 }
 
@@ -100,8 +101,10 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 //LinphoneFactory
 extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIEnv*  env
 		,jobject  thiz
-		,jboolean isDebug) {
+		,jboolean isDebug
+		,jstring  jdebugTag) {
 	if (isDebug) {
+		LogDomain = env->GetStringUTFChars(jdebugTag, NULL);
 		linphone_core_enable_logs_with_cb(linphone_android_log_handler);
 	} else {
 		linphone_core_disable_logs();

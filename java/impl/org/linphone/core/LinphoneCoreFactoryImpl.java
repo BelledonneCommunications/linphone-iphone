@@ -131,7 +131,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public native void setDebugMode(boolean enable);
+	public native void setDebugMode(boolean enable, String tag);
 
 	@Override
 	public void setLogHandler(LinphoneLogHandler handler) {
