@@ -20,14 +20,16 @@ package org.linphone.core;
 
 import static android.media.AudioManager.MODE_IN_CALL;
 import static android.media.AudioManager.MODE_RINGTONE;
-import android.content.Context;
-import android.media.AudioManager;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.linphone.core.LinphoneCall.State;
+import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
+
+import android.content.Context;
+import android.media.AudioManager;
 
 
 class LinphoneCoreImpl implements LinphoneCore {
@@ -753,6 +755,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setVideoPolicy(long nativePtr, boolean autoInitiate, boolean autoAccept);
 	public synchronized void setVideoPolicy(boolean autoInitiate, boolean autoAccept) {
 		setVideoPolicy(nativePtr, autoInitiate, autoAccept);
+	}
+	private native void setStaticPicture(long nativePtr, String path);
+	public void setStaticPicture(String path) {
+		setStaticPicture(nativePtr, path);
 	}
 	private native void setUserAgent(long nativePtr, String name, String version);
 	@Override

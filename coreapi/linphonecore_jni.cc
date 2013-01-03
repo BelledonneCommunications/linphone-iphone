@@ -52,6 +52,7 @@ extern "C" void libmsbcg729_init();
 #endif /*ANDROID*/
 
 static JavaVM *jvm=0;
+static const char* LogDomain = "Linphone";
 
 #ifdef ANDROID
 static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
@@ -70,15 +71,15 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
  	vsnprintf(str, sizeof(str) - 1, fmt, args);
  	str[sizeof(str) - 1] = '\0';
  	if (strlen(str) < 512) {
-		__android_log_write(prio, LOG_DOMAIN, str);
+		__android_log_write(prio, LogDomain, str);
 	} else {
 		current = str;
 		while ((next = strchr(current, '\n')) != NULL) {
 			*next = '\0';
-			__android_log_write(prio, LOG_DOMAIN, current);
+			__android_log_write(prio, LogDomain, current);
 			current = next + 1;
 		}
-		__android_log_write(prio, LOG_DOMAIN, current);
+		__android_log_write(prio, LogDomain, current);
 	}
 }
 
@@ -100,8 +101,10 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 //LinphoneFactory
 extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIEnv*  env
 		,jobject  thiz
-		,jboolean isDebug) {
+		,jboolean isDebug
+		,jstring  jdebugTag) {
 	if (isDebug) {
+		LogDomain = env->GetStringUTFChars(jdebugTag, NULL);
 		linphone_core_enable_logs_with_cb(linphone_android_log_handler);
 	} else {
 		linphone_core_disable_logs();
@@ -1779,7 +1782,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 
 //CallParams
 
-extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
 	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
 }
 
@@ -2163,6 +2166,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 	vpol.automatically_initiate = autoInitiate;
 	vpol.automatically_accept = autoAccept;
 	linphone_core_set_video_policy((LinphoneCore *)lc, &vpol);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStaticPicture(JNIEnv *env, jobject thiz, jlong lc, jstring path) {
+	const char *cpath = env->GetStringUTFChars(path, NULL);
+	linphone_core_set_static_picture((LinphoneCore *)lc, cpath);
+	env->ReleaseStringUTFChars(path, cpath);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {

@@ -244,7 +244,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	else
 		md->streams[0].ptime=linphone_core_get_download_ptime(lc);
 	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw,&md->streams[0].max_rate);
-	pt=payload_type_clone(rtp_profile_get_payload_from_mime(&av_profile,"telephone-event"));
+	pt=payload_type_clone(rtp_profile_get_payload_from_mime(lc->default_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
 
@@ -1654,6 +1654,52 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	if (call->videostream) {
 		video_stream_unprepare_video(call->videostream);
+	}
+#endif
+}
+
+void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
+	SalStreamDescription *old_stream;
+	SalStreamDescription *new_stream;
+	int i;
+
+	old_stream = sal_media_description_find_stream(old_md, SalProtoRtpSavp, SalAudio);
+	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalAudio);
+	if (old_stream && new_stream) {
+		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalAudio);
+		int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
+		if (crypto_idx >= 0) {
+			audio_stream_enable_strp(call->audiostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
+			call->audiostream_encrypted = TRUE;
+		} else {
+			ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
+			call->audiostream_encrypted = FALSE;
+		}
+		for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
+			old_stream->crypto[i].tag = new_stream->crypto[i].tag;
+			old_stream->crypto[i].algo = new_stream->crypto[i].algo;
+			strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+		}
+	}
+
+#ifdef VIDEO_ENABLED
+	old_stream = sal_media_description_find_stream(old_md, SalProtoRtpSavp, SalVideo);
+	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalVideo);
+	if (old_stream && new_stream) {
+		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalVideo);
+		int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
+		if (crypto_idx >= 0) {
+			video_stream_enable_strp(call->videostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
+			call->videostream_encrypted = TRUE;
+		} else {
+			ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
+			call->videostream_encrypted = FALSE;
+		}
+		for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
+			old_stream->crypto[i].tag = new_stream->crypto[i].tag;
+			old_stream->crypto[i].algo = new_stream->crypto[i].algo;
+			strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+		}
 	}
 #endif
 }

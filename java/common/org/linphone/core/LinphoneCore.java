@@ -786,7 +786,9 @@ public interface LinphoneCore {
 	LinphoneProxyConfig[] getProxyConfigList();
 	
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
-	
+
+	void setStaticPicture(String path);
+
 	void setUserAgent(String name, String version);
 	
 	void setCpuCount(int count);
