@@ -175,7 +175,6 @@ void linphone_gtk_update_chat_picture(){
 	GtkTreeIter iter;
 	GtkWidget *w = linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
-
 	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
@@ -858,23 +857,39 @@ gint get_col_number_from_tree_view_column (GtkTreeViewColumn *col){
     return num;
 }
 
-static gboolean tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y){
+int longueur_list (GtkTreeView *tree_view){
+    GtkTreeIter iter;
+	int i=0;
+	GtkTreeModel *model=gtk_tree_view_get_model(tree_view);
+	if (gtk_tree_model_get_iter_first(model,&iter)) {
+		do{
+			i++;
+		}while(gtk_tree_model_iter_next(model,&iter));
+	}
+	return i;
+}
+
+static gint tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y){
 	GtkTreeViewColumn *col = NULL;
 	GList *node, *columns;
-	guint colx = 0;
-
-	g_return_val_if_fail ( view != NULL, FALSE );
+	gint colx = 0;
+	gint coly = longueur_list(view);
+	gint height=0;
+	
+	g_return_val_if_fail ( view != NULL, 0 );
 	columns = gtk_tree_view_get_columns(view);
 
         for (node = columns;  node != NULL && col == NULL;  node = node->next){
             GtkTreeViewColumn *checkcol = (GtkTreeViewColumn*) node->data;
-            if (x >= colx  &&  x < (colx + checkcol->width)){
+			gtk_tree_view_column_cell_get_size(checkcol,NULL,NULL,NULL,NULL,&height);
+            if (x >= colx  &&  x < (colx + checkcol->width) && y < height*coly){
                 col = checkcol;
                 gint num = get_col_number_from_tree_view_column(col);
-                return num;
+				return num;
             }
-            else
+            else {
                 colx += checkcol->width;
+			}
         }
         g_list_free(columns);
 	return 0;
