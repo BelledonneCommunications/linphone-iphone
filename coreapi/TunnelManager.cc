@@ -399,6 +399,7 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 		enable(false);
 		mAutoDetectStarted = false;
 	} else {
+		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
 			// enable tunnel but also try backup server
 			LOGI("Tunnel is required, enabling; Trying backup udp mirror");
