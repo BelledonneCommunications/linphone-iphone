@@ -206,7 +206,7 @@ int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
 void check_sound_device(LinphoneCore *lc);
-void linphone_core_get_local_ip(LinphoneCore *lc, const char *to, char *result);
+void linphone_core_get_public_ip(LinphoneCore *lc, const char *to, char *result);
 bool_t host_has_ipv6_network();
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
@@ -592,6 +592,9 @@ int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
+
+void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call);

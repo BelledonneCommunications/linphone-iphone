@@ -268,7 +268,7 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 		LCSipTransports tr;
 		LinphoneAddress *contact;
 		
-		linphone_core_get_local_ip(obj->lc,host,localip);
+		linphone_core_get_public_ip(obj->lc,host,localip);
 		contact=linphone_address_new(obj->reg_identity);
 		linphone_address_set_domain (contact,localip);
 		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
@@ -427,7 +427,7 @@ static dial_plan_t const dial_plans[]={
     {"Congo Democratic Republic"	,"CD"		, "243"     , 9		, "00"  },
     {"Cook Islands"                 ,"CK"		, "682"     , 5		, "00"  },
     {"Costa Rica"                   ,"CR"		, "506"     , 8     , "00"	},
-    {"C™te d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
+    {"Cï¿½te d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
     {"Croatia"                      ,"HR"		, "385"     , 9		, "00"  },
     {"Cuba"                         ,"CU"		, "53"      , 8     , "119" },
     {"Cyprus"                       ,"CY"		, "357"     , 8     , "00"	},
@@ -545,7 +545,7 @@ static dial_plan_t const dial_plans[]={
     {"Portugal"                     ,"PT"		, "351"     , 9     , "00"	},
     {"Puerto Rico"                  ,"PR"		, "1"       , 10	, "011" },
     {"Qatar"                        ,"QA"		, "974"     , 8     , "00"  },
-    {"RŽunion Island"				,"RE"		, "262"     , 9     , "011"	},
+    {"Rï¿½union Island"				,"RE"		, "262"     , 9     , "011"	},
     {"Romania"                      ,"RO"		, "40"      , 9     , "00"	},
     {"Russian Federation"           ,"RU"		, "7"       , 10	, "8"	},
     {"Rwanda"                       ,"RW"		, "250"     , 9		, "00"  },
@@ -556,7 +556,7 @@ static dial_plan_t const dial_plans[]={
     {"Saint Vincent and the Grenadines","VC"	, "1"       , 10	, "011" },
     {"Samoa"                        ,"WS"		, "685"     , 7     , "0"	},
     {"San Marino"                   ,"SM"		, "378"     , 10	, "00"  },
-    {"S‹o TomŽ and Pr’ncipe"        ,"ST"		, "239"     , 7		, "00"  },
+    {"Sï¿½o Tomï¿½ and Prï¿½ncipe"        ,"ST"		, "239"     , 7		, "00"  },
     {"Saudi Arabia"                 ,"SA"		, "966"     , 9		, "00"	},
     {"Senegal"                      ,"SN"		, "221"     , 9	    , "00"  },
     {"Serbia"                       ,"RS"		, "381"     , 9     , "00"  },

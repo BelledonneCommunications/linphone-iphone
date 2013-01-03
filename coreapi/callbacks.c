@@ -416,6 +416,11 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_update_ice_from_remote_media_description(call,rmd);
 		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
 	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc,call->upnp_session);
+	}
+#endif
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md))

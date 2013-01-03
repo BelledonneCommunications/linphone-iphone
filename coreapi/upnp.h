@@ -22,33 +22,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/upnp_igd.h"
 #include "linphonecore.h"
+#include "sal.h"
 
 typedef enum {
-	UPNP_Idle,
-	UPNP_Pending,
-	UPNP_Ok,
-	UPNP_Ko,
+	LinphoneUpnpStateIdle,
+	LinphoneUpnpStatePending,
+	LinphoneUpnpStateAdding,   // Only used by port binding
+	LinphoneUpnpStateRemoving, // Only used by port binding
+	LinphoneUpnpStateNotAvailable,  // Only used by uPnP context
+	LinphoneUpnpStateOk,
+	LinphoneUpnpStateKo,
 } UpnpState;
 
-typedef struct _UpnpSession  UpnpSession;
 
 typedef struct _UpnpPortBinding {
 	ms_mutex_t mutex;
 	UpnpState state;
 	upnp_igd_ip_protocol protocol;
+	char local_addr[LINPHONE_IPADDR_SIZE];
 	int local_port;
-	int remote_port;
+	char external_addr[LINPHONE_IPADDR_SIZE];
+	int external_port;
 	int retry;
 	int ref;
 } UpnpPortBinding;
 
-struct _UpnpSession {
-	UpnpPortBinding *audio_rtp;
-	UpnpPortBinding *audio_rtcp;
-	UpnpPortBinding *video_rtp;
-	UpnpPortBinding *video_rtcp;
+typedef struct _UpnpStream {
+	UpnpPortBinding *rtp;
+	UpnpPortBinding *rtcp;
 	UpnpState state;
-};
+} UpnpStream;
+
+typedef struct _UpnpSession {
+	UpnpStream *audio;
+	UpnpStream *video;
+	UpnpState state;
+} UpnpSession;
 
 typedef struct _UpnpContext {
 	upnp_igd_context *upnp_igd_ctxt;
@@ -56,15 +65,17 @@ typedef struct _UpnpContext {
 	UpnpPortBinding *sip_tls;
 	UpnpPortBinding *sip_udp;
 	UpnpState state;
-	MSList *pending_bindinds;
+	UpnpState old_state;
+	MSList *pending_configs;
+
 	ms_mutex_t mutex;
 } UpnpContext;
 
-
+void linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session);
 int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call);
 int upnp_call_process(LinphoneCall *call);
 UpnpSession* upnp_session_new();
-void upnp_session_destroy(UpnpSession* session);
+void upnp_session_destroy(LinphoneCall* call);
 
 int upnp_context_init(LinphoneCore *lc);
 void upnp_context_uninit(LinphoneCore *lc);

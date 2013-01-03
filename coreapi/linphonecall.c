@@ -283,6 +283,11 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
+	}
+#endif
 	linphone_address_destroy(addr);
 	call->localdesc=md;
 	if (old_md) sal_media_description_unref(old_md);
@@ -439,7 +444,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->op=sal_op_new(lc->sal);
 	sal_op_set_user_pointer(call->op,call);
 	call->core=lc;
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
+	linphone_core_get_public_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
@@ -486,7 +491,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	linphone_address_clean(from);
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
+	linphone_core_get_public_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
@@ -1693,7 +1698,7 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 #ifdef BUILD_UPNP
 void linphone_call_delete_upnp_session(LinphoneCall *call){
 	if(call->upnp_session!=NULL) {
-		upnp_session_destroy(call->upnp_session);
+		upnp_session_destroy(call);
 		call->upnp_session=NULL;
 	}
 }

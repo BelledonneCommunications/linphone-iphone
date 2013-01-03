@@ -66,7 +66,6 @@ static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
-void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
 /* relative path where is stored local ring*/
@@ -1307,13 +1306,20 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
-void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
+void linphone_core_get_public_ip(LinphoneCore *lc, const char *dest, char *result){
 	const char *ip;
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
 	    && (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
+#ifdef BUILD_UPNP
+	else if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp
+		&& lc->upnp.state == LinphoneUpnpStateOk) {
+		ip = upnp_igd_get_external_ipaddress(lc->upnp.upnp_igd_ctxt);
+		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
+	}
+#endif
 	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
 		return;
 	/*else fallback to SAL routine that will attempt to find the most realistic interface */
@@ -1334,7 +1340,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		ms_error("Could not parse identity contact !");
 		url=linphone_address_new("sip:unknown@unkwownhost");
 	}
-	linphone_core_get_local_ip(lc, NULL, tmp);
+	linphone_core_get_public_ip(lc, NULL, tmp);
 	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 		ms_warning("Local loopback network only !");
 		lc->sip_conf.loopback_only=TRUE;
@@ -2006,7 +2012,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 				linphone_call_stop_media_streams_for_ice_gathering(call);
 			}
 			if (call->upnp_session != NULL) {
-				ms_warning("uPnP mapping has not finished yet, proceeded with the call withoutt uPnP anyway.");
+				ms_warning("uPnP mapping has not finished yet, proceeded with the call without uPnP anyway.");
 				linphone_call_delete_upnp_session(call);
 			}
 			linphone_core_start_invite(lc,call);
@@ -2639,9 +2645,14 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject;
 	call->camera_active=call->params.has_video;
-	if (call->ice_session != NULL)
+	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
-
+	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
+	}
+#endif
 	if (call->params.in_conference){
 		subject="Conference";
 	}else{
@@ -2756,6 +2767,11 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 		}
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
+	}
+#endif
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
@@ -3124,8 +3140,14 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	linphone_call_make_local_media_description(lc,call);
-	if (call->ice_session != NULL)
+	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
+	}
+#endif
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -3203,8 +3225,14 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
 	linphone_call_make_local_media_description(lc,the_call);
-	if (call->ice_session != NULL)
+	if (call->ice_session != NULL) {
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
+	}
+#endif
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
