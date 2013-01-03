@@ -625,7 +625,7 @@ int linphone_dial_plan_lookup_ccc_from_e164(const char* e164) {
 				found++;
 			}
 		}
-	} while (found>1 || found==0);
+	} while ((found>1 || found==0) && i < sizeof(dial_plan->ccc));
 	if (found==1) {
 		return atoi(elected_dial_plan->ccc);
 	} else {
