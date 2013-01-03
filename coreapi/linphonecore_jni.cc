@@ -55,22 +55,14 @@ static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
 
 #ifdef ANDROID
-static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
-	int prio;
- 	char str[4096];
+void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
+	char str[4096];
 	char *current;
 	char *next;
-	switch(lev){
-	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
-	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
-	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
-	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
-	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
-	default:		prio = ANDROID_LOG_DEFAULT;	break;
-	}
- 	vsnprintf(str, sizeof(str) - 1, fmt, args);
- 	str[sizeof(str) - 1] = '\0';
- 	if (strlen(str) < 512) {
+
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+	if (strlen(str) < 512) {
 		__android_log_write(prio, LogDomain, str);
 	} else {
 		current = str;
@@ -81,6 +73,19 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 		}
 		__android_log_write(prio, LogDomain, current);
 	}
+}
+
+static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	int prio;
+	switch(lev){
+	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
+	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+	default:		prio = ANDROID_LOG_DEFAULT;	break;
+	}
+	linphone_android_log_handler(prio, fmt, args);
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
@@ -105,7 +110,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIE
 		,jstring  jdebugTag) {
 	if (isDebug) {
 		LogDomain = env->GetStringUTFChars(jdebugTag, NULL);
-		linphone_core_enable_logs_with_cb(linphone_android_log_handler);
+		linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
 	} else {
 		linphone_core_disable_logs();
 	}
