@@ -187,6 +187,7 @@ void linphone_gtk_send_text(LinphoneChatRoom *cr){
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
+	GHashTable *hash=g_object_get_data(G_OBJECT(main_window),"history");
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *text=linphone_gtk_get_widget(chat_view,"textview");
 	int idx;
@@ -205,6 +206,19 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	g_object_set_data(G_OBJECT(chat_view),"from_chatroom",linphone_address_as_string_uri_only(with));
 	g_object_set_data(G_OBJECT(chat_view),"list",l);
 
+	gchar *buf=g_hash_table_lookup(hash,linphone_address_as_string_uri_only(with));
+	if(buf != NULL){
+        GtkTextIter start;
+        GtkTextIter end;
+        
+        GtkTextBuffer *text_buffer;
+        text_buffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+        gtk_text_buffer_get_bounds(text_buffer, &start, &end);
+        g_object_set_data(G_OBJECT(chat_view),"cr",cr);
+        gtk_text_buffer_delete (text_buffer, &start, &end);
+        gtk_text_buffer_insert(text_buffer,&start,buf,-1);
+	}
+	
 	GtkWidget *button = linphone_gtk_get_widget(chat_view,"send");
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_send_text,cr);
 
@@ -220,6 +234,8 @@ LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with){
 	return cr;
 }
 
+
+
 void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view){
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GHashTable *hash=g_object_get_data(G_OBJECT(main_window),"history");
@@ -231,14 +247,12 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
         GtkTextIter end;
         gchar *buf=g_hash_table_lookup(hash,linphone_address_as_string_uri_only(uri));
         GtkTextBuffer *text_buffer;
-        text_view=GTK_TEXT_VIEW(linphone_gtk_get_widget(chat_view,"textview"));
-        text_buffer=gtk_text_view_get_buffer (text_view);
-        gtk_text_buffer_get_bounds (text_buffer, &start, &end);
+        text_buffer=gtk_text_view_get_buffer(text_view);
+        gtk_text_buffer_get_bounds(text_buffer, &start, &end);
         g_object_set_data(G_OBJECT(chat_view),"cr",cr);
         gtk_text_buffer_delete (text_buffer, &start, &end);
         if(buf!=NULL){
             gtk_text_buffer_insert(text_buffer,&start,buf,-1);
-            printf("buf non nul\n");
         } else {
                 g_object_set_data(G_OBJECT(chat_view),"from_message",NULL);
                 GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
@@ -249,7 +263,6 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
             }
 
         g_object_set_data(G_OBJECT(chat_view),"from_chatroom",linphone_address_as_string_uri_only(uri));
-        ms_free(buf);
 	}
 }
 
