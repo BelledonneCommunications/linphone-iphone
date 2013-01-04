@@ -31,7 +31,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	int idx = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"idx"));
 	g_return_if_fail(w!=NULL);
 	gtk_notebook_remove_page (GTK_NOTEBOOK(nb),idx);
-	linphone_gtk_update_chat_picture();
+	linphone_gtk_update_chat_picture(FALSE);
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	gtk_widget_destroy(w);
 }
@@ -289,6 +289,7 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
         w=linphone_gtk_init_chatroom(room,from);
         g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)w);
     }
+	
 
 	#ifdef HAVE_GTK_OSX
 	/* Notified when a new message is sent */
@@ -303,8 +304,8 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
 		}
 	}
 	#endif
-
 	linphone_gtk_push_text(w,from,message,FALSE,room);
+	//linphone_gtk_update_chat_picture(TRUE);
 	//gtk_window_present(GTK_WINDOW(w));
 	/*gtk_window_set_urgency_hint(GTK_WINDOW(w),TRUE);*/
 }
