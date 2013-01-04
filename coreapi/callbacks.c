@@ -253,6 +253,12 @@ static void call_received(SalOp *h){
 		return;
 	}
 
+	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) && (call->upnp_session != NULL)) {
+		/* Defer ringing until the end of the ICE candidates gathering process. */
+		ms_message("Defer ringing to gather uPnP candidates");
+		return;
+	}
+
 	linphone_core_notify_incoming_call(lc,call);
 }
 
@@ -325,6 +331,11 @@ static void call_accepted(SalOp *op){
 	if (call->ice_session != NULL) {
 		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(op));
 	}
+#ifdef BUILD_UPNP
+	if (call->upnp_session != NULL) {
+		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op));
+	}
+#endif //BUILD_UPNP
 
 	md=sal_call_get_final_media_description(op);
 	call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
@@ -418,6 +429,7 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 	}
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
+		linphone_core_update_upnp_from_remote_media_description(call, rmd);
 		linphone_core_update_local_media_description_from_upnp(call->localdesc,call->upnp_session);
 	}
 #endif
@@ -515,6 +527,10 @@ static void call_terminated(SalOp *op, const char *from){
 		lc->vtable.show(lc);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call terminated."));
+
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(call);
+#endif //BUILD_UPNP
 
 	linphone_call_set_state(call, LinphoneCallEnd,"Call ended");
 }

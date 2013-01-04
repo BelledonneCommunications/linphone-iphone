@@ -72,6 +72,7 @@ typedef struct _UpnpContext {
 } UpnpContext;
 
 void linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session);
+int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call);
 int upnp_call_process(LinphoneCall *call);
 UpnpSession* upnp_session_new();

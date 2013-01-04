@@ -444,7 +444,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->op=sal_op_new(lc->sal);
 	sal_op_set_user_pointer(call->op,call);
 	call->core=lc;
-	linphone_core_get_public_ip(lc,linphone_address_get_domain(to),call->localip);
+	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	call->params=*params;
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
@@ -491,7 +491,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	linphone_address_clean(from);
-	linphone_core_get_public_ip(lc,linphone_address_get_domain(from),call->localip);
+	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
@@ -524,9 +524,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
 		call->upnp_session = upnp_session_new(call);
-		if (call->ice_session != NULL) {
+		if (call->upnp_session != NULL) {
 			linphone_call_init_media_streams(call);
-			if (linphone_core_update_upnp(call->core,call)<0) {
+			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
 				/* uPnP port mappings failed, proceed with the call anyway. */
 				linphone_call_delete_upnp_session(call);
 			}

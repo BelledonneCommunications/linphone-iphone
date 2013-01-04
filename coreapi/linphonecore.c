@@ -1306,7 +1306,7 @@ int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact)
 
 
 /*result must be an array of chars at least LINPHONE_IPADDR_SIZE */
-void linphone_core_get_public_ip(LinphoneCore *lc, const char *dest, char *result){
+void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result){
 	const char *ip;
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress
 	    && (ip=linphone_core_get_nat_address_resolved(lc))!=NULL){
@@ -1318,6 +1318,7 @@ void linphone_core_get_public_ip(LinphoneCore *lc, const char *dest, char *resul
 		&& lc->upnp.state == LinphoneUpnpStateOk) {
 		ip = upnp_igd_get_external_ipaddress(lc->upnp.upnp_igd_ctxt);
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
+		return;
 	}
 #endif
 	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
@@ -1340,7 +1341,7 @@ static void update_primary_contact(LinphoneCore *lc){
 		ms_error("Could not parse identity contact !");
 		url=linphone_address_new("sip:unknown@unkwownhost");
 	}
-	linphone_core_get_public_ip(lc, NULL, tmp);
+	linphone_core_get_local_ip(lc, NULL, tmp);
 	if (strcmp(tmp,"127.0.0.1")==0 || strcmp(tmp,"::1")==0 ){
 		ms_warning("Local loopback network only !");
 		lc->sip_conf.loopback_only=TRUE;
@@ -2268,6 +2269,7 @@ static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphonePr
 
 int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
 	bool_t ice_ready = FALSE;
+	bool_t upnp_ready = FALSE;
 	bool_t ping_ready = FALSE;
 
 	if (call->ice_session != NULL) {
@@ -2275,13 +2277,20 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	} else {
 		ice_ready = TRUE;
 	}
+#ifdef BUILD_UPNP
+	if (call->upnp_session != NULL) {
+		if (call->upnp_session->state == LinphoneUpnpStateOk) upnp_ready = TRUE;
+	} else {
+		upnp_ready = TRUE;
+	}
+#endif //BUILD_UPNP
 	if (call->ping_op != NULL) {
 		if (call->ping_replied == TRUE) ping_ready = TRUE;
 	} else {
 		ping_ready = TRUE;
 	}
 
-	if ((ice_ready == TRUE) && (ping_ready == TRUE)) {
+	if ((ice_ready == TRUE) && (upnp_ready == TRUE) && (ping_ready == TRUE)) {
 		return linphone_core_start_invite(lc, call);
 	}
 	return 0;
@@ -2843,6 +2852,14 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 
 #if BUILD_UPNP
 	if(call->upnp_session != NULL) {
+		if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
+			linphone_call_init_video_stream(call);
+			video_stream_prepare_video(call->videostream);
+			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op))<0) {
+				/* uPnP update failed, proceed with the call anyway. */
+				linphone_call_delete_upnp_session(call);
+			} else return 0;
+		}
 	}
 #endif //BUILD_UPNP
 
@@ -4961,6 +4978,10 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
 	sip_setup_unregister_all();
 
+#ifdef BUILD_UPNP
+	upnp_context_uninit(lc);
+#endif
+
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);
 	
@@ -4972,9 +4993,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 #ifdef TUNNEL_ENABLED
 	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
-#endif
-#ifdef BUILD_UPNP
-	upnp_context_uninit(lc);
 #endif
 }
 

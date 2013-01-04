@@ -268,7 +268,7 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 		LCSipTransports tr;
 		LinphoneAddress *contact;
 		
-		linphone_core_get_public_ip(obj->lc,host,localip);
+		linphone_core_get_local_ip(obj->lc,host,localip);
 		contact=linphone_address_new(obj->reg_identity);
 		linphone_address_set_domain (contact,localip);
 		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
