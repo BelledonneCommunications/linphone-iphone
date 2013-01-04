@@ -4,7 +4,6 @@ UI_FILES=	about.ui \
 		contact.ui \
 		parameters.ui \
 		sip_account.ui \
-		chatroom.ui \
 		call_logs.ui \
 		log.ui \
 		buddylookup.ui \

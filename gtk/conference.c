@@ -22,7 +22,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "linphone.h"
 
 #define PADDING_PIXELS 4
@@ -48,27 +48,32 @@ static void init_local_participant(GtkWidget *participant){
 
 static GtkWidget *get_conference_tab(GtkWidget *mw){
 	GtkWidget *box=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"conference_tab");
-	if (box==NULL){
-		box=gtk_vbox_new(FALSE,0);
-		GtkWidget *participant=linphone_gtk_create_widget("main","callee_frame");
-		gtk_box_set_homogeneous(GTK_BOX(box),TRUE);
-		init_local_participant(participant);
-		gtk_box_pack_start(GTK_BOX(box),participant,FALSE,FALSE,PADDING_PIXELS);
-		gtk_widget_show(box);
-		g_object_set_data(G_OBJECT(mw),"conference_tab",box);
-		gtk_notebook_append_page(GTK_NOTEBOOK(linphone_gtk_get_widget(mw,"viewswitch")),box,
-		                         create_conference_label());
+	GtkWidget *conf_frame=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	if(conf_frame!=NULL){
+		if (box==NULL){
+			GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
+			box=gtk_vbox_new(FALSE,0);
+			GtkWidget *participant=linphone_gtk_create_widget("main","callee_frame");
+			gtk_box_set_homogeneous(GTK_BOX(box),TRUE);
+			init_local_participant(participant);
+			gtk_box_pack_start(GTK_BOX(box),participant,FALSE,FALSE,PADDING_PIXELS);
+			gtk_widget_show(box);
+			g_object_set_data(G_OBJECT(mw),"conference_tab",box);
+			gtk_box_pack_start(GTK_BOX(conf_box),box,FALSE,FALSE,PADDING_PIXELS);
+		}
 	}
 	return box;
 }
 
 static GtkWidget *find_conferencee_from_call(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkWidget *tab=get_conference_tab(mw);
+	get_conference_tab(mw);
+	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
 	GList *elem;
 	GtkWidget *ret=NULL;
 	if (call!=NULL){
-		GList *l=gtk_container_get_children(GTK_CONTAINER(tab));
+		GList *l=gtk_container_get_children(GTK_CONTAINER(conf_box));
 		for(elem=l;elem!=NULL;elem=elem->next){
 			GtkWidget *frame=(GtkWidget*)elem->data;
 			if (call==g_object_get_data(G_OBJECT(frame),"call")){
@@ -84,14 +89,25 @@ static GtkWidget *find_conferencee_from_call(LinphoneCall *call){
 
 void linphone_gtk_set_in_conference(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkWidget *participant=find_conferencee_from_call(call);
-	
+	GtkWidget *viewswitch=linphone_gtk_get_widget(mw,"viewswitch");
+	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	g_object_set_data(G_OBJECT(mw),"is_conf",GINT_TO_POINTER(TRUE));
+	if(conf_frame==NULL){
+		conf_frame=linphone_gtk_create_widget("main","conf_frame");
+		GtkWidget *button_conf=linphone_gtk_get_widget(conf_frame,"terminate_conf");
+		GtkWidget *image=create_pixmap("stopcall-red.png");
+		gtk_button_set_image(GTK_BUTTON(button_conf),image);
+		g_signal_connect_swapped(G_OBJECT(button_conf),"clicked",(GCallback)linphone_gtk_terminate_call,NULL);
+		g_object_set_data(G_OBJECT(mw),"conf_frame",(gpointer)conf_frame);
+		gtk_notebook_append_page(GTK_NOTEBOOK(viewswitch),conf_frame,
+		                      create_conference_label());
+	}
+	GtkWidget *participant=find_conferencee_from_call(call);	
+	GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
 	if (participant==NULL){
-		GtkWidget *tab=get_conference_tab(mw);
 		const LinphoneAddress *addr=linphone_call_get_remote_address(call);
 		participant=linphone_gtk_create_widget("main","callee_frame");
 		GtkWidget *sound_meter;
-		GtkWidget *viewswitch=linphone_gtk_get_widget(mw,"viewswitch");
 		gchar *markup;
 		if (linphone_address_get_display_name(addr)!=NULL){
 			markup=g_strdup_printf("<b>%s</b>",linphone_address_get_display_name(addr));
@@ -103,16 +119,13 @@ void linphone_gtk_set_in_conference(LinphoneCall *call){
 		gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(participant,"callee_name_label")),markup);
 		g_free(markup);
 		sound_meter=linphone_gtk_get_widget(participant,"sound_indicator");
-		linphone_gtk_init_audio_meter(sound_meter, (get_volume_t) linphone_call_get_play_volume, call);
-		gtk_box_pack_start(GTK_BOX(tab),participant,FALSE,FALSE,PADDING_PIXELS);
+		linphone_gtk_init_audio_meter(sound_meter, (get_volume_t) linphone_call_get_play_volume, call);	
+		gtk_box_pack_start(GTK_BOX(conf_box),participant,FALSE,FALSE,PADDING_PIXELS);
 		g_object_set_data_full(G_OBJECT(participant),"call",linphone_call_ref(call),(GDestroyNotify)linphone_call_unref);
-		gtk_widget_show(participant);
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(viewswitch),
-			                          gtk_notebook_page_num(GTK_NOTEBOOK(viewswitch),tab));
+		gtk_notebook_page_num(GTK_NOTEBOOK(viewswitch),conf_frame));
 	}
 }
-
-
 
 void linphone_gtk_terminate_conference_participant(LinphoneCall *call){
 	GtkWidget *frame=find_conferencee_from_call(call);
@@ -123,20 +136,23 @@ void linphone_gtk_terminate_conference_participant(LinphoneCall *call){
 
 void linphone_gtk_unset_from_conference(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkWidget *box=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"conference_tab");
+	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
 	GtkWidget *frame;
-	if (box==NULL) return; /*conference tab already destroyed*/
+	if (conf_box==NULL) return; /*conference tab already destroyed*/
 	frame=find_conferencee_from_call(call);
 	GList *children;
 	if (frame){
 		gtk_widget_destroy(frame);
 	}
-	children=gtk_container_get_children(GTK_CONTAINER(box));
+	children=gtk_container_get_children(GTK_CONTAINER(conf_box));
 	if (g_list_length(children)==2){
 		/*the conference is terminated */
-		gtk_widget_destroy(box);
-		g_object_set_data(G_OBJECT(mw),"conference_tab",NULL);
+		gtk_widget_destroy(conf_box);
+		g_object_set_data(G_OBJECT(mw),"conference_tab",NULL);		
 	}
+	gtk_widget_destroy(conf_frame);
 	g_list_free(children);
+	g_object_set_data(G_OBJECT(mw),"is_conf",GINT_TO_POINTER(FALSE));
+	g_object_set_data(G_OBJECT(mw),"conf_frame",NULL);
 }
-
