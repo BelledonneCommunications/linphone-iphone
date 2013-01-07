@@ -237,7 +237,9 @@ int upnp_context_init(LinphoneCore *lc) {
 
 void upnp_context_uninit(LinphoneCore *lc) {
 	UpnpContext *lupnp = &lc->upnp;
-	linphone_core_remove_iterate_hook(lc, linphone_core_upnp_hook, lc);
+
+	// Not need, all hooks are removed before
+	//linphone_core_remove_iterate_hook(lc, linphone_core_upnp_hook, lc);
 
 	if(lupnp->sip_udp != NULL) {
 		upnp_port_binding_release(lupnp->sip_udp);
@@ -738,7 +740,6 @@ MSList *upnp_config_list_port_bindings(struct _LpConfig *lpc) {
 	UpnpPortBinding *port;
 	bool_t valid;
 	MSList *elem;
-	MSList *prev_elem;
 	LpItem *item;
 	LpSection *sec=lp_config_find_section(lpc, UPNP_SECTION_NAME);
 	if(sec == NULL)
@@ -767,7 +768,6 @@ MSList *upnp_config_list_port_bindings(struct _LpConfig *lpc) {
 		} else {
 			valid = FALSE;
 		}
-		prev_elem = elem;
 		elem = ms_list_next(elem);
 		if(!valid) {
 			ms_warning("uPnP configuration invalid line: %s", item->key);
