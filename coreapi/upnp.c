@@ -549,6 +549,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 								port_mapping->external_port,
 								port_mapping->local_port);
 			lp_config_set_string(lc->config, UPNP_SECTION_NAME, key, "uPnP");
+			upnp_port_binding_log(ORTP_DEBUG, "Configuration: Added port binding", port_mapping);
 		}
 		if(port_mapping->state == LinphoneUpnpStateRemoving) {
 			snprintf(key, sizeof(key), "%s-%d-%d",
@@ -556,6 +557,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 								port_mapping->external_port,
 								port_mapping->local_port);
 			lp_config_set_string(lc->config, UPNP_SECTION_NAME, key, NULL);
+			upnp_port_binding_log(ORTP_DEBUG, "Configuration: Removed port binding", port_mapping);
 		}
 	}
 	ms_list_for_each(lupnp->pending_configs,(void (*)(void*))upnp_port_binding_release);
@@ -635,8 +637,9 @@ void upnp_port_binding_log(int level, const char *msg, const UpnpPortBinding *po
 }
 
 bool_t upnp_port_binding_equal(const UpnpPortBinding *port1, const UpnpPortBinding *port2) {
-	return port1->protocol == port2->protocol && port1->local_port == port2->local_port &&
-			port1->external_port && port2->external_port;
+	return port1->protocol == port2->protocol &&
+			port1->local_port == port2->local_port &&
+			port1->external_port == port2->external_port;
 }
 
 UpnpPortBinding *upnp_port_binding_retain(UpnpPortBinding *port) {
@@ -772,10 +775,9 @@ int upnp_config_add_port_binding(LinphoneCore *lc, const UpnpPortBinding *port) 
 	UpnpContext *lupnp = &lc->upnp;
 	MSList *list = lupnp->pending_configs;
 	UpnpPortBinding *list_port;
-	bool_t remove;
+	bool_t remove = FALSE;
 	bool_t add = TRUE;
 	while(list != NULL) {
-		remove = FALSE;
 		list_port = (UpnpPortBinding *)list->data;
 		if(upnp_port_binding_equal(list_port, port) == TRUE) {
 			if(list_port->state == LinphoneUpnpStateAdding) {
@@ -805,10 +807,9 @@ int upnp_config_remove_port_binding(LinphoneCore *lc, const UpnpPortBinding *por
 	UpnpContext *lupnp = &lc->upnp;
 	MSList *list = lupnp->pending_configs;
 	UpnpPortBinding *list_port;
-	bool_t remove;
+	bool_t remove = FALSE;
 	bool_t add = TRUE;
 	while(list != NULL) {
-		remove = FALSE;
 		list_port = (UpnpPortBinding *)list->data;
 		if(upnp_port_binding_equal(list_port, port)) {
 			if(list_port->state == LinphoneUpnpStateRemoving) {
