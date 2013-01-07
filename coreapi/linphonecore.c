@@ -2659,8 +2659,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #ifdef VIDEO_ENABLED
 		bool_t has_video = call->params.has_video;
 		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
-			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
-			call->videostream->ice_check_list = NULL;
+			ice_session_remove_check_list(call->ice_session, call->videostream->ms.ice_check_list);
+			call->videostream->ms.ice_check_list = NULL;
 		}
 		call->params = *params;
 		linphone_call_make_local_media_description(lc, call);
@@ -2899,7 +2899,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
-	if (!was_ringing && call->audiostream->ticker==NULL){
+	if (!was_ringing && call->audiostream->ms.ticker==NULL){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
@@ -4490,7 +4490,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 	if (file!=NULL) {
 		lc->play_file=ms_strdup(file);
-		if (call && call->audiostream && call->audiostream->ticker)
+		if (call && call->audiostream && call->audiostream->ms.ticker)
 			audio_stream_play(call->audiostream,file);
 	}
 }
