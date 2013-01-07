@@ -132,6 +132,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	case UPNP_IGD_PORT_MAPPING_ADD_FAILURE:
 		mapping = (upnp_igd_port_mapping *) arg;
 		port_mapping = (UpnpPortBinding*) mapping->cookie;
+		port_mapping->external_port = -1; //Force a new random port
 		if(upnp_context_send_add_port_binding(lc, port_mapping) != 0) {
 			upnp_port_binding_log(ORTP_ERROR, "Can't add port binding", port_mapping);
 		}
@@ -188,6 +189,7 @@ int upnp_context_init(LinphoneCore *lc) {
 		lupnp->sip_udp = upnp_port_binding_new();
 		lupnp->sip_udp->protocol = UPNP_IGD_IP_PROTOCOL_UDP;
 		lupnp->sip_udp->local_port = transport.udp_port;
+		lupnp->sip_udp->external_port = transport.udp_port;
 	} else {
 		lupnp->sip_udp = NULL;
 	}
@@ -195,6 +197,7 @@ int upnp_context_init(LinphoneCore *lc) {
 		lupnp->sip_tcp = upnp_port_binding_new();
 		lupnp->sip_tcp->protocol = UPNP_IGD_IP_PROTOCOL_TCP;
 		lupnp->sip_tcp->local_port = transport.tcp_port;
+		lupnp->sip_tcp->external_port = transport.tcp_port;
 	} else {
 		lupnp->sip_tcp = NULL;
 	}
@@ -202,6 +205,7 @@ int upnp_context_init(LinphoneCore *lc) {
 		lupnp->sip_tls = upnp_port_binding_new();
 		lupnp->sip_tls->protocol = UPNP_IGD_IP_PROTOCOL_TCP;
 		lupnp->sip_tls->local_port = transport.tls_port;
+		lupnp->sip_tls->external_port = transport.tls_port;
 	} else {
 		lupnp->sip_tls = NULL;
 	}
@@ -257,7 +261,6 @@ int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) 
 	upnp_igd_port_mapping mapping;
 	int ret;
 	if(port->state == LinphoneUpnpStateIdle) {
-		port->external_port = -1;
 		port->retry = 0;
 		port->state = LinphoneUpnpStateAdding;
 	} else if(port->state != LinphoneUpnpStateAdding) {
@@ -272,7 +275,7 @@ int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) 
 		mapping.local_port = port->local_port;
 		mapping.local_host = port->local_addr;
 		if(port->external_port == -1)
-			mapping.remote_port = rand()%1024 + 1024; // TODO: use better method
+			mapping.remote_port = rand()%(0xffff - 1024) + 1024; // TODO: use better method
 		else
 			mapping.remote_port = port->external_port;
 		mapping.remote_host = "";
@@ -339,9 +342,11 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		strncpy(call->upnp_session->audio->rtp->local_addr, local_addr, LINPHONE_IPADDR_SIZE);
 		strncpy(call->upnp_session->audio->rtp->external_addr, external_addr, LINPHONE_IPADDR_SIZE);
 		call->upnp_session->audio->rtp->local_port = call->audio_port;
+		call->upnp_session->audio->rtp->external_port = call->audio_port;
 		strncpy(call->upnp_session->audio->rtcp->local_addr, local_addr, LINPHONE_IPADDR_SIZE);
 		strncpy(call->upnp_session->audio->rtcp->external_addr, external_addr, LINPHONE_IPADDR_SIZE);
 		call->upnp_session->audio->rtcp->local_port = call->audio_port+1;
+		call->upnp_session->audio->rtcp->external_port = call->audio_port+1;
 		if(call->upnp_session->audio->rtp->state == LinphoneUpnpStateIdle && audio) {
 			// Add audio port binding
 			upnp_context_send_add_port_binding(lc, call->upnp_session->audio->rtp);
@@ -363,9 +368,11 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		strncpy(call->upnp_session->video->rtp->local_addr, local_addr, LINPHONE_IPADDR_SIZE);
 		strncpy(call->upnp_session->video->rtp->external_addr, external_addr, LINPHONE_IPADDR_SIZE);
 		call->upnp_session->video->rtp->local_port = call->video_port;
+		call->upnp_session->video->rtp->external_port = call->video_port;
 		strncpy(call->upnp_session->video->rtcp->local_addr, local_addr, LINPHONE_IPADDR_SIZE);
 		strncpy(call->upnp_session->video->rtcp->external_addr, external_addr, LINPHONE_IPADDR_SIZE);
 		call->upnp_session->video->rtcp->local_port = call->video_port+1;
+		call->upnp_session->video->rtcp->external_port = call->video_port+1;
 		if(call->upnp_session->video->rtp->state == LinphoneUpnpStateIdle && video) {
 			// Add video port binding
 			upnp_context_send_add_port_binding(lc, call->upnp_session->video->rtp);

@@ -1219,7 +1219,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 #ifdef BUILD_UPNP
 	upnp_context_init(lc);
-#endif
+#endif  //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -1320,7 +1320,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
-#endif
+#endif  //BUILD_UPNP
 	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
 		return;
 	/*else fallback to SAL routine that will attempt to find the most realistic interface */
@@ -2504,7 +2504,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		} else {
 			defer = TRUE;
 		}
-#endif
+#endif //BUILD_UPNP
 	}
 
 	if (call->dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
@@ -2661,7 +2661,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
-#endif
+#endif //BUILD_UPNP
 	if (call->params.in_conference){
 		subject="Conference";
 	}else{
@@ -2780,7 +2780,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
-#endif
+#endif //BUILD_UPNP
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
@@ -3164,7 +3164,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
-#endif
+#endif //BUILD_UPNP
 	if (sal_media_description_has_dir(call->resultdesc,SalStreamSendRecv)){
 		sal_media_description_set_dir(call->localdesc,SalStreamSendOnly);
 		subject="Call on hold";
@@ -3249,7 +3249,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
 	}
-#endif
+#endif //BUILD_UPNP
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_media_description_set_dir(call->localdesc,SalStreamSendRecv);
 	if (call->params.in_conference && !call->current_params.in_conference) subject="Conference";
@@ -4980,7 +4980,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 #ifdef BUILD_UPNP
 	upnp_context_uninit(lc);
-#endif
+#endif  //BUILD_UPNP
 
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);

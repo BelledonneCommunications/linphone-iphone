@@ -42,7 +42,7 @@ extern "C" {
 #include "mediastreamer2/msconference.h"
 #ifdef BUILD_UPNP
 #include "upnp.h"
-#endif
+#endif  //BUILD_UPNP
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION

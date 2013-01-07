@@ -287,7 +287,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
 	}
-#endif
+#endif  //BUILD_UPNP
 	linphone_address_destroy(addr);
 	call->localdesc=md;
 	if (old_md) sal_media_description_unref(old_md);
