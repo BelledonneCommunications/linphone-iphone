@@ -1132,6 +1132,12 @@ extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(
 	env->ReleaseStringUTFChars(jiso, iso);
 	return (jint) prefix;
 }
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromE164(JNIEnv* env, jobject thiz, jlong proxyCfg, jstring je164) {
+	const char* e164 = env->GetStringUTFChars(je164, NULL);
+	int prefix = linphone_dial_plan_lookup_ccc_from_e164(e164);
+	env->ReleaseStringUTFChars(je164, e164);
+	return (jint) prefix;
+}
 extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getDomain(JNIEnv* env
 																			,jobject thiz
 																			,jlong proxyCfg) {
