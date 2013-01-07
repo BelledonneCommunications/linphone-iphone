@@ -1787,8 +1787,10 @@ int main(int argc, char *argv[]){
 		if (strncmp(lang,"zh",2)==0){
 			workaround_gtk_entry_chinese_bug=TRUE;
 		}
-#else
+#elif __APPLE__
 		setenv("LANG",lang,1);
+#else
+		setenv("LANGUAGE",lang,1);
 #endif
 	}
 

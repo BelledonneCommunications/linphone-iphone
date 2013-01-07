@@ -1141,7 +1141,7 @@
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkButton" id="dtmf_hash">
+                                                  <object class="GtkButton" id="dtmf_#">
                                                     <property name="label" translatable="yes">#</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
@@ -1173,7 +1173,7 @@
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkButton" id="dtmf_star">
+                                                  <object class="GtkButton" id="dtmf_*">
                                                     <property name="label" translatable="yes">*</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
