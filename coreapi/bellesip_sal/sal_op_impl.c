@@ -108,30 +108,26 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	sal_op_send_request(op,request);
 }
-static bool_t is_request_creating_dialog(belle_sip_request_t* request) {
-	return strcmp("INVITE",belle_sip_request_get_method(request))==0
-			||
-			strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0;
-}
+
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
-	if (!op->dialog || belle_sip_dialog_get_state(op->dialog)!=BELLE_SIP_DIALOG_CONFIRMED) {
+	if (!op->dialog) {
 		/*don't put route header if dialog is in confirmed state*/
 		if (sal_op_get_route_address(op)) {
 			route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
 		}
 	}
+
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
-	/*in case DIALOG is in state NULL create a new dialog*/
-	if (!op->dialog  && is_request_creating_dialog(request)) {
-		op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
+	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0) {
 		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
-		belle_sip_dialog_set_application_data(op->dialog,op);
-	} else if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
+	}
+	
+	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL);
@@ -199,5 +195,16 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 		return TRUE;
 	} else {
 		return FALSE;
+	}
+}
+void set_or_update_dialog(SalOp* op, const belle_sip_response_event_t* event) {
+	/*check if dialog has changed*/
+	if (belle_sip_response_event_get_dialog(event) != op->dialog) {
+		ms_message("Dialog set from [%p] to [%p] for op [%p]",op->dialog,belle_sip_response_event_get_dialog(event),op);
+		/*fixme, shouldn't we cancel previous dialog*/
+		if (op->dialog)belle_sip_object_unref(op->dialog);
+		op->dialog=belle_sip_response_event_get_dialog(event);
+		belle_sip_dialog_set_application_data(op->dialog,op);
+		belle_sip_object_ref(op->dialog);
 	}
 }

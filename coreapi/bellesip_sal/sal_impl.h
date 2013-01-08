@@ -75,6 +75,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
 
 
 void sal_op_call_fill_cbs(SalOp*op);
+void set_or_update_dialog(SalOp* op, const belle_sip_response_event_t* event);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);

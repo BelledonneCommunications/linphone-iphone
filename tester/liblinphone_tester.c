@@ -643,7 +643,7 @@ static void call_early_media() {
 
 int init_test_suite () {
 
-CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
+CU_pSuite pSuite = CU_add_suite("Setup", init, uninit);
 
 
 	if (NULL == CU_add_test(pSuite, "linphone address tester", linphone_address_test)) {
@@ -652,6 +652,8 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 	if (NULL == CU_add_test(pSuite, "linphone core init/uninit tester", core_init_test)) {
 		return CU_get_error();
 	}
+
+	pSuite = CU_add_suite("Register", init, uninit);
 	if (NULL == CU_add_test(pSuite, "simple register tester", simple_register)) {
 		return CU_get_error();
 	}
@@ -670,6 +672,8 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
 	}
+
+	pSuite = CU_add_suite("Call", init, uninit);
 	if (NULL == CU_add_test(pSuite, "call_early_declined", call_early_declined)) {
 			return CU_get_error();
 	}
@@ -694,9 +698,13 @@ CU_pSuite pSuite = CU_add_suite("liblinphone", init, uninit);
 	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
 			return CU_get_error();
 	}
+
+	pSuite = CU_add_suite("Message", init, uninit);
 	if (NULL == CU_add_test(pSuite, "text_message", text_message)) {
 			return CU_get_error();
 	}
+
+	pSuite = CU_add_suite("Presence", init, uninit);
 	if (NULL == CU_add_test(pSuite, "simple_subscribe", simple_subscribe)) {
 			return CU_get_error();
 	}

@@ -424,7 +424,11 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
 		return;
 	}
-
+	set_or_update_dialog(op_base,event);
+	if (!op->dialog) {
+		ms_message("presence op [%p] receive out of dialog answer [%i]",op,code);
+		return;
+	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
 
 
@@ -432,7 +436,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {
-			ms_error("op [%p] receive an unexpected answer [%i]",op,code);
+			ms_error("presence op [%p] receive an unexpected answer [%i]",op,code);
 			break;
 		}
 		case BELLE_SIP_DIALOG_CONFIRMED: {
@@ -456,7 +460,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 			}
 		break;
 		default: {
-			ms_error("op [%p] receive answer [%i] not implemented",op,code);
+			ms_error("presence op [%p] receive answer [%i] not implemented",op,code);
 		}
 		/* no break */
 	}
@@ -569,7 +573,7 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 
 /*presence publish */
 int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status){
-	ms_fatal("sal_publish not implemented yet");
+	ms_error("sal_publish not implemented yet");
 	return -1;
 }
 /*presence Subscribe/notify*/
@@ -590,7 +594,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	return sal_op_send_request(op,req);
 }
 int sal_unsubscribe(SalOp *op){
-	belle_sip_request_t* req=belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE");
+	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE"):NULL; /*cannot create request if dialog not set yet*/
 	if (!req) {
 		ms_error("Cannot unsubscribe to [%s]",sal_op_get_to(op));
 		return -1;

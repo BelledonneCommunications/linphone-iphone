@@ -87,6 +87,9 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op=(SalOp*)ctx;
 	if (op->dialog)  {
+		op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
+		op->state=SalOpStateTerminated;
+		belle_sip_object_unref(op->dialog);
 		op->dialog=NULL;
 	}
 }
@@ -168,31 +171,30 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		}
 		return;
 	}
-	/*check if dialog has changed*/
-	if (belle_sip_response_event_get_dialog(event) != op->dialog) {
-		ms_message("Dialog as changed from [%p] to [%p] for op [%p], updating",op->dialog,belle_sip_response_event_get_dialog(event),op);
-		/*fixme, shouldn't we cancel previous dialog*/
-		belle_sip_object_unref(op->dialog);
-		op->dialog=belle_sip_response_event_get_dialog(event);
-		belle_sip_object_ref(op->dialog);
-	}
+	set_or_update_dialog(op,event);
+
 	/*check if op is terminating*/
-	dialog_state=belle_sip_dialog_get_state(op->dialog);
+
 
 	if (op->state == SalOpStateTerminating
-			&& (dialog_state==BELLE_SIP_DIALOG_NULL
-			|| dialog_state==BELLE_SIP_DIALOG_EARLY)) {
+			&& (!op->dialog
+					|| belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_NULL
+					|| belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_EARLY)) {
 		cancelling_invite(op);
 
 		return;
 	}
-	/*else dialog*/
 
+	if (!op->dialog) {
+		ms_message("call op [%p] receive out of dialog answer [%i]",op,code);
+		return;
+	}
+	dialog_state=belle_sip_dialog_get_state(op->dialog);
 
 		switch(dialog_state) {
 
 		case BELLE_SIP_DIALOG_NULL: {
-			ms_error("op [%p] receive an unexpected answer [%i]",op,code);
+			ms_error("call op [%p] receive an unexpected answer [%i]",op,code);
 			break;
 		}
 		case BELLE_SIP_DIALOG_EARLY: {
@@ -200,7 +202,7 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 				handle_sdp_from_response(op,response);
 				op->base.root->callbacks.call_ringing(op);
 			} else {
-				ms_error("op [%p] receive an unexpected answer [%i]",op,code);
+				ms_error("call op [%p] receive an unexpected answer [%i]",op,code);
 			}
 			break;
 		}
@@ -229,13 +231,13 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 
 			case SalOpStateTerminated:
 			default:
-				ms_error("op [%p] receive answer [%i] not implemented",op,code);
+				ms_error("call op [%p] receive answer [%i] not implemented",op,code);
 			}
 		break;
 		}
 		case BELLE_SIP_DIALOG_TERMINATED:
 		default: {
-			ms_error("op [%p] receive answer [%i] not implemented",op,code);
+			ms_error("call op [%p] receive answer [%i] not implemented",op,code);
 		}
 		/* no break */
 	}
@@ -253,7 +255,7 @@ static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_tra
 	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 	resp=belle_sip_response_create_from_request(request,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
-	op->state=SalOpStateTerminated;
+
 	return;
 }
 static void unsupported_method(belle_sip_server_transaction_t* server_transaction,belle_sip_request_t* request) {
@@ -283,7 +285,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_header_t* replace_header;
 	belle_sip_dialog_state_t dialog_state;
-
+	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
 
 	if (!op->dialog) {
@@ -335,7 +337,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			}
 		} else {
 			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY");
-			unsupported_method(server_transaction,belle_sip_request_event_get_request(event));
+			unsupported_method(server_transaction,req);
 		}
 		break;
 	}
@@ -358,7 +360,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		}*/
 			op->base.root->callbacks.call_ack(op);
 		} else if(strcmp("BYE",belle_sip_request_get_method(req))==0) {
-			call_terminated(op,server_transaction,belle_sip_request_event_get_request(event),200);
+			resp=belle_sip_response_create_from_request(req,200);
+			belle_sip_server_transaction_send_response(server_transaction,resp);
+			/*call end is notified by dialog deletion*/
 		} else if(strcmp("INVITE",belle_sip_request_get_method(req))==0) {
 			/*re-invite*/
 			if (op->base.remote_media){
@@ -374,6 +378,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			op->base.root->callbacks.call_updating(op);
 		} else {
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
+			unsupported_method(server_transaction,req);
 		}
 		break;
 	default: {
@@ -425,11 +430,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 
 	sal_op_call_fill_cbs(op);
 	sal_op_send_request(op,req);
-	/*op->pending_inv_client_trans = client_transaction = belle_sip_provider_create_client_transaction(prov,req);
-	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
-	op->dialog=belle_sip_provider_create_dialog(prov,BELLE_SIP_TRANSACTION(client_transaction));
-	belle_sip_client_transaction_send_request(client_transaction);
-	 */
+
 	return 0;
 }
 void sal_op_call_fill_cbs(SalOp*op) {
@@ -588,7 +589,7 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 	return -1;
 }
 int sal_call_terminate(SalOp *op){
-	belle_sip_dialog_state_t dialog_state=belle_sip_dialog_get_state(op->dialog);
+	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
 	op->state=SalOpStateTerminating;
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
@@ -605,7 +606,7 @@ int sal_call_terminate(SalOp *op){
 				cancelling_invite(op);
 				break;
 			} else {
-				ms_error("Don't know how to termination NUL dialog [%p]",op->dialog);
+				ms_error("Don't know how to termination NUlL dialog for op [%p]",op);
 			}
 			break;
 		}

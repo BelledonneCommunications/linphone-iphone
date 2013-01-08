@@ -64,10 +64,10 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
 	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_get_dialog(event);
 	SalOp* op = belle_sip_dialog_get_application_data(dialog);
-	if (op->callbacks.process_dialog_terminated) {
+	if (op && op->callbacks.process_dialog_terminated) {
 		op->callbacks.process_dialog_terminated(op,event);
 	} else {
-		ms_error("sal process_dialog_terminated not implemented yet");
+		ms_error("sal process_dialog_terminated no op found for this dialog [%p], ignoring",dialog);
 	}
 }
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
