@@ -52,13 +52,31 @@ extern "C" void libmsbcg729_init();
 #endif /*ANDROID*/
 
 static JavaVM *jvm=0;
+static const char* LogDomain = "Linphone";
 
 #ifdef ANDROID
-static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
-	int prio;
- 	char str[4096];
+void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
+	char str[4096];
 	char *current;
 	char *next;
+
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+	if (strlen(str) < 512) {
+		__android_log_write(prio, LogDomain, str);
+	} else {
+		current = str;
+		while ((next = strchr(current, '\n')) != NULL) {
+			*next = '\0';
+			__android_log_write(prio, LogDomain, current);
+			current = next + 1;
+		}
+		__android_log_write(prio, LogDomain, current);
+	}
+}
+
+static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	int prio;
 	switch(lev){
 	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
 	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
@@ -67,19 +85,7 @@ static void linphone_android_log_handler(OrtpLogLevel lev, const char *fmt, va_l
 	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
 	default:		prio = ANDROID_LOG_DEFAULT;	break;
 	}
- 	vsnprintf(str, sizeof(str) - 1, fmt, args);
- 	str[sizeof(str) - 1] = '\0';
- 	if (strlen(str) < 512) {
-		__android_log_write(prio, LOG_DOMAIN, str);
-	} else {
-		current = str;
-		while ((next = strchr(current, '\n')) != NULL) {
-			*next = '\0';
-			__android_log_write(prio, LOG_DOMAIN, current);
-			current = next + 1;
-		}
-		__android_log_write(prio, LOG_DOMAIN, current);
-	}
+	linphone_android_log_handler(prio, fmt, args);
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
@@ -100,9 +106,11 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 //LinphoneFactory
 extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIEnv*  env
 		,jobject  thiz
-		,jboolean isDebug) {
+		,jboolean isDebug
+		,jstring  jdebugTag) {
 	if (isDebug) {
-		linphone_core_enable_logs_with_cb(linphone_android_log_handler);
+		LogDomain = env->GetStringUTFChars(jdebugTag, NULL);
+		linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
 	} else {
 		linphone_core_disable_logs();
 	}
@@ -1122,6 +1130,12 @@ extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(
 	const char* iso = env->GetStringUTFChars(jiso, NULL);
 	int prefix = linphone_dial_plan_lookup_ccc_from_iso(iso);
 	env->ReleaseStringUTFChars(jiso, iso);
+	return (jint) prefix;
+}
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromE164(JNIEnv* env, jobject thiz, jlong proxyCfg, jstring je164) {
+	const char* e164 = env->GetStringUTFChars(je164, NULL);
+	int prefix = linphone_dial_plan_lookup_ccc_from_e164(e164);
+	env->ReleaseStringUTFChars(je164, e164);
 	return (jint) prefix;
 }
 extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getDomain(JNIEnv* env
@@ -2163,6 +2177,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 	vpol.automatically_initiate = autoInitiate;
 	vpol.automatically_accept = autoAccept;
 	linphone_core_set_video_policy((LinphoneCore *)lc, &vpol);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStaticPicture(JNIEnv *env, jobject thiz, jlong lc, jstring path) {
+	const char *cpath = env->GetStringUTFChars(path, NULL);
+	linphone_core_set_static_picture((LinphoneCore *)lc, cpath);
+	env->ReleaseStringUTFChars(path, cpath);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {

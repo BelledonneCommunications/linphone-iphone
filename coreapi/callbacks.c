@@ -59,14 +59,14 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 		rtp_addr = (new_audiodesc->rtp_addr[0] != '\0') ? new_audiodesc->rtp_addr : new_md->addr;
 		rtcp_addr = (new_audiodesc->rtcp_addr[0] != '\0') ? new_audiodesc->rtcp_addr : new_md->addr;
 		ms_message("Change audio stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_audiodesc->rtp_port, rtcp_addr, new_audiodesc->rtcp_port);
-		rtp_session_set_remote_addr_full(call->audiostream->session, rtp_addr, new_audiodesc->rtp_port, rtcp_addr, new_audiodesc->rtcp_port);
+		rtp_session_set_remote_addr_full(call->audiostream->ms.session, rtp_addr, new_audiodesc->rtp_port, rtcp_addr, new_audiodesc->rtcp_port);
 	}
 #ifdef VIDEO_ENABLED
 	if (call->videostream && new_videodesc) {
 		rtp_addr = (new_videodesc->rtp_addr[0] != '\0') ? new_videodesc->rtp_addr : new_md->addr;
 		rtcp_addr = (new_videodesc->rtcp_addr[0] != '\0') ? new_videodesc->rtcp_addr : new_md->addr;
 		ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
-		rtp_session_set_remote_addr_full(call->videostream->session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
+		rtp_session_set_remote_addr_full(call->videostream->ms.session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 	}
 #endif
 
@@ -100,35 +100,44 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		call->media_pending=TRUE;
 	}
 	call->resultdesc=new_md;
-	if ((call->audiostream && call->audiostream->ticker) || (call->videostream && call->videostream->ticker)){
+	if ((call->audiostream && call->audiostream->ms.ticker) || (call->videostream && call->videostream->ms.ticker)){
 		/* we already started media: check if we really need to restart it*/
 		if (oldmd){
 			int md_changed = media_parameters_changed(call, oldmd, new_md);
-			if ((md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) && !call->playing_ringbacktone) {
-				/*as nothing has changed, keep the oldmd */
-				call->resultdesc=oldmd;
-				sal_media_description_unref(new_md);
-				if (call->all_muted){
-					ms_message("Early media finished, unmuting inputs...");
-					/*we were in early media, now we want to enable real media */
-					linphone_call_enable_camera (call,linphone_call_camera_enabled (call));
-					if (call->audiostream)
-						linphone_core_mute_mic (lc, linphone_core_is_mic_muted(lc));
-#ifdef VIDEO_ENABLED
-					if (call->videostream && call->camera_active)
-						video_stream_change_camera(call->videostream,lc->video_conf.device );
-#endif
-				}
-				ms_message("No need to restart streams, SDP is unchanged.");
-				return;
-			} else if ((md_changed == SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) && !call->playing_ringbacktone) {
-				call->resultdesc = oldmd;
-				ms_message("Network parameters have changed, update them.");
-				linphone_core_update_streams_destinations(lc, call, oldmd, new_md);
-				sal_media_description_unref(new_md);
-				return;
-			}else{
+			if ((md_changed & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED) || call->playing_ringbacktone) {
 				ms_message("Media descriptions are different, need to restart the streams.");
+			} else {
+				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
+					/*as nothing has changed, keep the oldmd */
+					call->resultdesc=oldmd;
+					sal_media_description_unref(new_md);
+					if (call->all_muted){
+						ms_message("Early media finished, unmuting inputs...");
+						/*we were in early media, now we want to enable real media */
+						linphone_call_enable_camera (call,linphone_call_camera_enabled (call));
+						if (call->audiostream)
+							linphone_core_mute_mic (lc, linphone_core_is_mic_muted(lc));
+#ifdef VIDEO_ENABLED
+						if (call->videostream && call->camera_active)
+							video_stream_change_camera(call->videostream,lc->video_conf.device );
+#endif
+					}
+					ms_message("No need to restart streams, SDP is unchanged.");
+					return;
+				}
+				else {
+					if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) {
+						ms_message("Network parameters have changed, update them.");
+						linphone_core_update_streams_destinations(lc, call, oldmd, new_md);
+					}
+					if (md_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED) {
+						ms_message("Crypto parameters have changed, update them.");
+						linphone_call_update_crypto_parameters(call, oldmd, new_md);
+					}
+					call->resultdesc = oldmd;
+					sal_media_description_unref(new_md);
+					return;
+				}
 			}
 		}
 		linphone_call_stop_media_streams (call);
