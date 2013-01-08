@@ -2714,20 +2714,20 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 					return err;
 				}
 			}
-		}
 #ifdef BUILD_UPNP
-		if(call->upnp_session != NULL) {
-			ms_message("Defer call update to add uPnP port mappings");
-			linphone_call_init_video_stream(call);
-			video_stream_prepare_video(call->videostream);
-			if (linphone_core_update_upnp(lc, call)<0) {
-				/* uPnP port mappings failed, proceed with the call anyway. */
-				linphone_call_delete_upnp_session(call);
-			} else {
-				return err;
+			if(call->upnp_session != NULL) {
+				ms_message("Defer call update to add uPnP port mappings");
+				linphone_call_init_video_stream(call);
+				video_stream_prepare_video(call->videostream);
+				if (linphone_core_update_upnp(lc, call)<0) {
+					/* uPnP port mappings failed, proceed with the call anyway. */
+					linphone_call_delete_upnp_session(call);
+				} else {
+					return err;
+				}
 			}
-		}
 #endif //BUILD_UPNP
+		}
 #endif
 		err = linphone_core_start_update_call(lc, call);
 	}else{
@@ -3000,6 +3000,11 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 		lc->ringstream=NULL;
 	}
 	linphone_call_stop_media_streams(call);
+
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(call);
+#endif //BUILD_UPNP
+
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call aborted") );
 	linphone_call_set_state(call,LinphoneCallError,error);
@@ -4958,6 +4963,11 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		usleep(50000);
 #endif
 	}
+
+#ifdef BUILD_UPNP
+	upnp_context_uninit(lc);
+#endif  //BUILD_UPNP
+
 	if (lc->friends)
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
@@ -4982,10 +4992,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
 	sip_setup_unregister_all();
-
-#ifdef BUILD_UPNP
-	upnp_context_uninit(lc);
-#endif  //BUILD_UPNP
 
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);

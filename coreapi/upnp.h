@@ -65,10 +65,17 @@ typedef struct _UpnpContext {
 	UpnpPortBinding *sip_tls;
 	UpnpPortBinding *sip_udp;
 	UpnpState state;
-	UpnpState old_state;
-	MSList *pending_configs;
+	MSList *removing_configs;
+	MSList *adding_configs;
+	MSList *pending_bindings;
+
+	bool_t clean; // True if at the next loop clean the port bindings
+	bool_t cleaning; // True if the cleaning processing;
+	bool_t emit; // True if at the next loop emit the port bindings
 
 	ms_mutex_t mutex;
+	ms_cond_t cond;
+
 } UpnpContext;
 
 void linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session);
