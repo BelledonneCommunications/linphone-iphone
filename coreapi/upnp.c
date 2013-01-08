@@ -347,6 +347,7 @@ int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) 
 		mapping.protocol = port->protocol;
 
 		port->retry++;
+		upnp_port_binding_log(ORTP_DEBUG, "Adding port binding...", port);
 		ret = upnp_igd_add_port_mapping(lupnp->upnp_igd_ctxt, &mapping);
 	}
 	if(ret != 0) {
@@ -377,6 +378,7 @@ int upnp_context_send_remove_port_binding(LinphoneCore *lc, UpnpPortBinding *por
 		mapping.remote_host = "";
 		mapping.protocol = port->protocol;
 		port->retry++;
+		upnp_port_binding_log(ORTP_DEBUG, "Removing port binding...", port);
 		ret = upnp_igd_delete_port_mapping(lupnp->upnp_igd_ctxt, &mapping);
 	}
 	if(ret != 0) {
