@@ -321,6 +321,7 @@ void upnp_context_uninit(LinphoneCore *lc) {
 int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) {
 	UpnpContext *lupnp = &lc->upnp;
 	upnp_igd_port_mapping mapping;
+	char description[128];
 	int ret;
 	if(port->state == LinphoneUpnpStateIdle) {
 		port->retry = 0;
@@ -339,11 +340,15 @@ int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) 
 		mapping.local_port = port->local_port;
 		mapping.local_host = port->local_addr;
 		if(port->external_port == -1)
-			mapping.remote_port = rand()%(0xffff - 1024) + 1024; // TODO: use better method
+			mapping.remote_port = rand()%(0xffff - 1024) + 1024;
 		else
 			mapping.remote_port = port->external_port;
 		mapping.remote_host = "";
-		mapping.description = PACKAGE_NAME;
+		snprintf(description, 128, "%s %s at %s:%d",
+				PACKAGE_NAME,
+				(port->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP": "UDP",
+				port->local_addr, port->local_port);
+		mapping.description = description;
 		mapping.protocol = port->protocol;
 
 		port->retry++;
