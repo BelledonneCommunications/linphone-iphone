@@ -382,8 +382,10 @@ static void set_tls_options(Sal *ctx){
 
 void sal_set_dscp(Sal *ctx, int dscp){
 	ctx->dscp=dscp;
+#ifdef HAVE_EXOSIP_DSCP
 	if (dscp!=-1)
 		eXosip_set_option(EXOSIP_OPT_SET_DSCP,&ctx->dscp);
+#endif
 }
 
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){

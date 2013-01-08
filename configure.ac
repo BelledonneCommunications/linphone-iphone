@@ -370,6 +370,17 @@ fi
 dnl setup flags for exosip library
 LP_SETUP_EXOSIP
 
+dnl check exosip support of DSCP in exosip
+AC_MSG_CHECKING([for DSCP support in exosip])
+AC_TRY_COMPILE([#include <eXosip2/eXosip.h>],
+[int dscp=0;eXosip_set_option(EXOSIP_OPT_SET_DSCP,&dscp);],
+has_exosip_dscp=yes,has_exosip_dscp=no)
+AC_MSG_RESULT($has_exosip_dscp)
+if test "$has_exosip_dscp" = "yes" ; then
+    AC_DEFINE( HAVE_EXOSIP_DSCP, 1, [Define if exosip dscp available] )
+fi
+
+
 if test "$console_ui" = "true" ; then
 dnl check gnu readline
 LP_CHECK_READLINE
