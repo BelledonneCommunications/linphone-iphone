@@ -1792,6 +1792,9 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 }
 
 //CallParams
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_isLowBandwidthEnabled(JNIEnv *env, jobject thiz, jlong cp) {
+	return (jboolean) linphone_call_params_low_bandwidth_enabled((LinphoneCallParams *)cp);
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
 	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
