@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 3.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-26 18:38+0200\n"
+"POT-Creation-Date: 2013-01-08 10:35+0100\n"
 "PO-Revision-Date: 2012-12-27 10:14+0200\n"
 "Last-Translator: Isratine Citizen <genghiskhan@gmx.ca>\n"
 "Language-Team: Rahut <genghiskhan@gmx.ca>\n"
@@ -19,21 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: ../gtk/calllogs.c:71
+#: ../gtk/calllogs.c:82
+#, fuzzy
+msgid "Aborted"
+msgstr "ננטשה"
+
+#: ../gtk/calllogs.c:85
+#, fuzzy
+msgid "Missed"
+msgstr "הוחמצה"
+
+# דחיה
+#: ../gtk/calllogs.c:88
+#, fuzzy
+msgid "Declined"
+msgstr "לדחות"
+
+#: ../gtk/calllogs.c:94
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] "דקה %i"
 msgstr[1] "%i דקות"
 
-#: ../gtk/calllogs.c:74
+#: ../gtk/calllogs.c:97
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "שניה %i"
 msgstr[1] "%i שניות"
 
-#: ../gtk/calllogs.c:77
+#: ../gtk/calllogs.c:100
 #, c-format
 msgid ""
 "<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
@@ -42,11 +58,20 @@ msgstr ""
 "<big><b>%s</b></big>\t<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
 "%s\t%s %s\t"
 
-#: ../gtk/calllogs.c:79
+#: ../gtk/calllogs.c:102
 msgid "n/a"
 msgstr "לא זמין (n/a)"
 
-#: ../gtk/conference.c:33 ../gtk/incall_view.c:185
+#: ../gtk/calllogs.c:105
+#, fuzzy, c-format
+msgid ""
+"<big><b>%s</b></big>\t<small><i>%s</i></small>\t\n"
+"%s\t%s"
+msgstr ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
+"%s\t%s %s\t"
+
+#: ../gtk/conference.c:33 ../gtk/main.ui.h:13
 msgid "Conference"
 msgstr "ועידה"
 
@@ -59,44 +84,42 @@ msgstr "אני"
 msgid "Couldn't find pixmap file: %s"
 msgstr "לא ניתן למצוא קובץ ‫pixmap: ‫%s"
 
-# שוחחו
-#: ../gtk/chat.c:27
-#, c-format
-msgid "Chat with %s"
-msgstr "שיחה עם %s"
-
 # cli
-#: ../gtk/main.c:84
+#: ../gtk/main.c:89
 #, fuzzy
 msgid "log to stdout some debug information while running."
 msgstr "רשום אל stdout מידע ניפוי שגיאות מסוים בזמן ביצוע."
 
 # cli
-#: ../gtk/main.c:91
+#: ../gtk/main.c:96
 #, fuzzy
 msgid "path to a file to write logs into."
 msgstr "נתיב אל קובץ שברצונך לרשום אליו את הרשומות."
 
+#: ../gtk/main.c:103
+msgid "Start linphone with video disabled."
+msgstr ""
+
 # cli
-#: ../gtk/main.c:98
+#: ../gtk/main.c:110
 #, fuzzy
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "התחל במגש המערכת בלבד, אל תציג את הממשק הראשי."
 
 # cli
-#: ../gtk/main.c:105
+#: ../gtk/main.c:117
 #, fuzzy
 msgid "address to call right now"
 msgstr "כתובת להתקשרות ברגע זה"
 
 # cli
-#: ../gtk/main.c:112
+#: ../gtk/main.c:124
 #, fuzzy
 msgid "if set automatically answer incoming calls"
 msgstr "באם אפשרות זו נקבעת ענה אוטומטית לקריאות נכנסות"
 
 # cli
-#: ../gtk/main.c:119
+#: ../gtk/main.c:131
 #, fuzzy
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
@@ -105,14 +128,14 @@ msgstr ""
 "ציין מדור העבודה (אמור להיות מבוסס על ההתקנה, למשל: c:\\Program Files"
 "\\Linphone)"
 
-#: ../gtk/main.c:465
+#: ../gtk/main.c:498
 #, c-format
 msgid "Call with %s"
 msgstr "התקשרות באמצעות %s"
 
 # הקשר שלהם
 # אם התשובה
-#: ../gtk/main.c:820
+#: ../gtk/main.c:871
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -125,7 +148,7 @@ msgstr ""
 "שלך ?\n"
 "היה ותשובתך תהיה לא, אדם זה יהיה מסומן באופן זמני ברשימה השחורה."
 
-#: ../gtk/main.c:898
+#: ../gtk/main.c:948
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -135,59 +158,64 @@ msgstr ""
 " בתחום <i>%s</i>:"
 
 # שיחה
-#: ../gtk/main.c:998
+#: ../gtk/main.c:1051
 msgid "Call error"
 msgstr "שגיאת קריאה"
 
 # Conversation ended
-#: ../gtk/main.c:1001 ../coreapi/linphonecore.c:2433
+#: ../gtk/main.c:1054 ../coreapi/linphonecore.c:2949
 msgid "Call ended"
 msgstr "שיחה הסתיימה"
 
-#: ../gtk/main.c:1004 ../coreapi/linphonecore.c:199
+#: ../gtk/main.c:1057 ../coreapi/linphonecore.c:244
 msgid "Incoming call"
 msgstr "קריאה נכנסת"
 
-#: ../gtk/main.c:1006 ../gtk/incall_view.c:294 ../gtk/main.ui.h:21
+#: ../gtk/main.c:1059 ../gtk/incall_view.c:451 ../gtk/main.ui.h:6
 msgid "Answer"
 msgstr "לענות"
 
 # דחיה
-#: ../gtk/main.c:1008 ../gtk/main.ui.h:29
+#: ../gtk/main.c:1061 ../gtk/main.ui.h:7
 msgid "Decline"
 msgstr "לדחות"
 
 # Conversation paused
-#: ../gtk/main.c:1014
+#: ../gtk/main.c:1067
 msgid "Call paused"
 msgstr "שיחה הושהתה"
 
-#: ../gtk/main.c:1014
+#: ../gtk/main.c:1067
 #, c-format
 msgid "<span size=\"large\">by %s</span>"
 msgstr "<span size=\"large\">מאת %s</span>"
 
-#: ../gtk/main.c:1170
+#: ../gtk/main.c:1116
+#, c-format
+msgid "%s proposed to start video. Do you accept ?"
+msgstr ""
+
+#: ../gtk/main.c:1278
 msgid "Website link"
 msgstr "קישור אתר רשת"
 
 # ‫Linphone - וידאופון במרשתת
-#: ../gtk/main.c:1210
+#: ../gtk/main.c:1318
 msgid "Linphone - a video internet phone"
 msgstr "‫Linphone - וידאופון אינטרנטי"
 
-#: ../gtk/main.c:1302
+#: ../gtk/main.c:1410
 #, c-format
 msgid "%s (Default)"
 msgstr "‫%s (משתמטת)"
 
-#: ../gtk/main.c:1580 ../coreapi/callbacks.c:702
+#: ../gtk/main.c:1714 ../coreapi/callbacks.c:774
 #, c-format
 msgid "We are transferred to %s"
 msgstr "אנחנו מועברים אל %s"
 
 # קריאות שמע
-#: ../gtk/main.c:1590
+#: ../gtk/main.c:1724
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -195,170 +223,182 @@ msgstr ""
 "לא אותרו כרטיסי קול במחשב זה.\n"
 "לא תהיה ביכולתך לשלוח או לקבל שיחות שמע."
 
-#: ../gtk/main.c:1691
+#: ../gtk/main.c:1833
 msgid "A free SIP video-phone"
 msgstr "וידאופון SIP חופשי"
 
-#: ../gtk/friendlist.c:203
+#: ../gtk/friendlist.c:335
 msgid "Add to addressbook"
 msgstr "הוסף אל ספר כתובות"
 
-#: ../gtk/friendlist.c:377 ../gtk/propertybox.c:297 ../gtk/contact.ui.h:3
-msgid "Name"
-msgstr "שם"
-
-#: ../gtk/friendlist.c:393
+#: ../gtk/friendlist.c:509
 msgid "Presence status"
 msgstr "מצב נוכחות"
 
+#: ../gtk/friendlist.c:526 ../gtk/propertybox.c:362 ../gtk/contact.ui.h:1
+msgid "Name"
+msgstr "שם"
+
+#: ../gtk/friendlist.c:538
+msgid "Call"
+msgstr "קריאה"
+
+#: ../gtk/friendlist.c:543
+msgid "Chat"
+msgstr ""
+
 # a name or a number
-#: ../gtk/friendlist.c:432
+#: ../gtk/friendlist.c:573
 #, c-format
 msgid "Search in %s directory"
 msgstr "חיפוש במדור %s"
 
 # איש־קשר
-#: ../gtk/friendlist.c:646
+#: ../gtk/friendlist.c:730
 msgid "Invalid sip contact !"
 msgstr "כתובת sip לא תקפה !"
 
 # צור קשר עם
-#: ../gtk/friendlist.c:691
+#: ../gtk/friendlist.c:775
 #, c-format
 msgid "Call %s"
 msgstr "התקשר אל %s"
 
-#: ../gtk/friendlist.c:692
+#: ../gtk/friendlist.c:776
 #, c-format
 msgid "Send text to %s"
 msgstr "שלח טקסט אל %s"
 
-#: ../gtk/friendlist.c:693
+#: ../gtk/friendlist.c:777
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "ערוך איש קשר '%s'"
 
-#: ../gtk/friendlist.c:694
+#: ../gtk/friendlist.c:778
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "מחק איש קשר '%s'"
 
-#: ../gtk/friendlist.c:736
+#: ../gtk/friendlist.c:820
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "הוסף איש קשר חדש מן מדור %s"
 
 # קצב תדר תדירות מהירות
-#: ../gtk/propertybox.c:303
+#: ../gtk/propertybox.c:368
 msgid "Rate (Hz)"
 msgstr "שיעור (הרץ)"
 
-#: ../gtk/propertybox.c:309
+#: ../gtk/propertybox.c:374
 msgid "Status"
 msgstr "מצב"
 
 # שיעור סיביות מינימלי
-#: ../gtk/propertybox.c:315
+#: ../gtk/propertybox.c:380
 msgid "Min bitrate (kbit/s)"
 msgstr "קצב נתונים מינימלי (קי״ב/שנ׳)"
 
-#: ../gtk/propertybox.c:322
+#: ../gtk/propertybox.c:387
 msgid "Parameters"
 msgstr "פרמטרים"
 
-#: ../gtk/propertybox.c:365 ../gtk/propertybox.c:508
+#: ../gtk/propertybox.c:430 ../gtk/propertybox.c:573
 msgid "Enabled"
 msgstr "מופעל"
 
-#: ../gtk/propertybox.c:367 ../gtk/propertybox.c:508
+#: ../gtk/propertybox.c:432 ../gtk/propertybox.c:573
 msgid "Disabled"
 msgstr "לא מופעל"
 
-#: ../gtk/propertybox.c:554
+#: ../gtk/propertybox.c:619
 msgid "Account"
 msgstr "חשבון"
 
-#: ../gtk/propertybox.c:694
+#: ../gtk/propertybox.c:759
 msgid "English"
 msgstr "English"
 
-#: ../gtk/propertybox.c:695
+#: ../gtk/propertybox.c:760
 msgid "French"
 msgstr "Français"
 
-#: ../gtk/propertybox.c:696
+#: ../gtk/propertybox.c:761
 msgid "Swedish"
 msgstr "Svenska"
 
-#: ../gtk/propertybox.c:697
+#: ../gtk/propertybox.c:762
 msgid "Italian"
 msgstr "Italiano"
 
-#: ../gtk/propertybox.c:698
+#: ../gtk/propertybox.c:763
 msgid "Spanish"
 msgstr "Español"
 
 # português do Brasil
-#: ../gtk/propertybox.c:699
+#: ../gtk/propertybox.c:764
 msgid "Brazilian Portugese"
 msgstr "português brasileiro"
 
-#: ../gtk/propertybox.c:700
+#: ../gtk/propertybox.c:765
 msgid "Polish"
 msgstr "Polski"
 
-#: ../gtk/propertybox.c:701
+#: ../gtk/propertybox.c:766
 msgid "German"
 msgstr "Deutsch"
 
-#: ../gtk/propertybox.c:702
+#: ../gtk/propertybox.c:767
 msgid "Russian"
 msgstr "Русский"
 
-#: ../gtk/propertybox.c:703
+#: ../gtk/propertybox.c:768
 msgid "Japanese"
 msgstr "日本語"
 
-#: ../gtk/propertybox.c:704
+#: ../gtk/propertybox.c:769
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: ../gtk/propertybox.c:705
+#: ../gtk/propertybox.c:770
 msgid "Hungarian"
 msgstr "Magyar"
 
-#: ../gtk/propertybox.c:706
+#: ../gtk/propertybox.c:771
 msgid "Czech"
 msgstr "Česky"
 
-#: ../gtk/propertybox.c:707
+#: ../gtk/propertybox.c:772
 msgid "Chinese"
 msgstr "中文"
 
 # 繁体字
-#: ../gtk/propertybox.c:708
+#: ../gtk/propertybox.c:773
 msgid "Traditional Chinese"
 msgstr "繁體字"
 
-#: ../gtk/propertybox.c:709
+#: ../gtk/propertybox.c:774
 msgid "Norwegian"
 msgstr "norsk"
 
+#: ../gtk/propertybox.c:775
+msgid "Hebrew"
+msgstr ""
+
 # selected הנבחרת
-#: ../gtk/propertybox.c:766
+#: ../gtk/propertybox.c:842
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "עליך לאתחל את לינפון כדי שהשפה החדשה תיכנס לתוקף."
 
-#: ../gtk/propertybox.c:836
+#: ../gtk/propertybox.c:912
 msgid "None"
 msgstr "ללא"
 
-#: ../gtk/propertybox.c:840
+#: ../gtk/propertybox.c:916
 msgid "SRTP"
 msgstr ""
 
-#: ../gtk/propertybox.c:846
+#: ../gtk/propertybox.c:922
 msgid "ZRTP"
 msgstr ""
 
@@ -432,7 +472,7 @@ msgstr "הזן את שם משתמשך אצל linphone.org"
 msgid "Username:"
 msgstr "שם משתמש:"
 
-#: ../gtk/setupwizard.c:93 ../gtk/password.ui.h:2
+#: ../gtk/setupwizard.c:93 ../gtk/password.ui.h:4
 msgid "Password:"
 msgstr "סיסמה:"
 
@@ -457,29 +497,29 @@ msgid "Proxy"
 msgstr "פרוקסי"
 
 # נדרשים
-#: ../gtk/setupwizard.c:293
+#: ../gtk/setupwizard.c:297
 msgid "(*) Required fields"
 msgstr "(*) שדות חובה"
 
-#: ../gtk/setupwizard.c:294
+#: ../gtk/setupwizard.c:298
 msgid "Username: (*)"
 msgstr "שם משתמש: (*)"
 
-#: ../gtk/setupwizard.c:296
+#: ../gtk/setupwizard.c:300
 msgid "Password: (*)"
 msgstr "סיסמה: (*)"
 
-#: ../gtk/setupwizard.c:298
+#: ../gtk/setupwizard.c:302
 msgid "Email: (*)"
 msgstr "דוא״ל: (*)"
 
-#: ../gtk/setupwizard.c:300
+#: ../gtk/setupwizard.c:304
 msgid "Confirm your password: (*)"
 msgstr "אימות סיסמתך: (*)"
 
 # אינו בר־השגה
 # לשוב אחורה
-#: ../gtk/setupwizard.c:364
+#: ../gtk/setupwizard.c:368
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
@@ -488,12 +528,12 @@ msgstr ""
 "נא לחזור ולנסות שוב."
 
 # תודה רבה
-#: ../gtk/setupwizard.c:375
+#: ../gtk/setupwizard.c:379
 msgid "Thank you. Your account is now configured and ready for use."
 msgstr "תודה לך. חשבונך מוגדר ומוכן לשימוש כעת."
 
 # לאחר מכן
-#: ../gtk/setupwizard.c:383
+#: ../gtk/setupwizard.c:387
 msgid ""
 "Please validate your account by clicking on the link we just sent you by "
 "email.\n"
@@ -504,140 +544,192 @@ msgstr ""
 
 # Wizard אשף
 # סייע
-#: ../gtk/setupwizard.c:553
+#: ../gtk/setupwizard.c:554
 msgid "Welcome to the account setup assistant"
 msgstr "ברוך בואך אל אשף הגדרת החשבון"
 
-#: ../gtk/setupwizard.c:558
+#: ../gtk/setupwizard.c:559
 msgid "Account setup assistant"
 msgstr "אשף הגדרת חשבון"
 
 # שלב
-#: ../gtk/setupwizard.c:564
+#: ../gtk/setupwizard.c:565
 msgid "Configure your account (step 1/1)"
 msgstr "הגדרת חשבונך (צעד 1/1)"
 
-#: ../gtk/setupwizard.c:569
+#: ../gtk/setupwizard.c:570
 msgid "Enter your sip username (step 1/1)"
 msgstr "הזנת שם משתמש sip (צעד 1/1)"
 
-#: ../gtk/setupwizard.c:573
+#: ../gtk/setupwizard.c:574
 msgid "Enter account information (step 1/2)"
 msgstr "הזנת מידע חשבון (צעד 1/2)"
 
 # תקפות
-#: ../gtk/setupwizard.c:582
+#: ../gtk/setupwizard.c:583
 msgid "Validation (step 2/2)"
 msgstr "אימות (צעד 2/2)"
 
-#: ../gtk/setupwizard.c:587
+#: ../gtk/setupwizard.c:588
 msgid "Error"
 msgstr "שגיאה"
 
-#: ../gtk/setupwizard.c:591
+#: ../gtk/setupwizard.c:592
 msgid "Terminating"
 msgstr "מסיים כעת"
 
-#: ../gtk/incall_view.c:69
+#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:90
 #, c-format
 msgid "Call #%i"
 msgstr "שיחה מס׳ %i"
 
-#: ../gtk/incall_view.c:129
+#: ../gtk/incall_view.c:150
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr "העברה אל שיחה מס׳ %i עם %s"
 
-#: ../gtk/incall_view.c:157
-msgid "Transfer"
-msgstr "העברה"
+#: ../gtk/incall_view.c:209 ../gtk/incall_view.c:212
+#, fuzzy
+msgid "Not used"
+msgstr "לא נמצא"
 
-#: ../gtk/incall_view.c:273
+#: ../gtk/incall_view.c:219
+msgid "ICE not activated"
+msgstr ""
+
+#: ../gtk/incall_view.c:221
+#, fuzzy
+msgid "ICE failed"
+msgstr "קריאה נכשלה."
+
+#: ../gtk/incall_view.c:223
+msgid "ICE in progress"
+msgstr ""
+
+#: ../gtk/incall_view.c:225
+msgid "Going through one or more NATs"
+msgstr ""
+
+#: ../gtk/incall_view.c:227
+#, fuzzy
+msgid "Direct"
+msgstr "מכוון מחדש"
+
+#: ../gtk/incall_view.c:229
+msgid "Through a relay server"
+msgstr ""
+
+#: ../gtk/incall_view.c:238 ../gtk/incall_view.c:242
+#, c-format
+msgid ""
+"download: %f\n"
+"upload: %f (kbit/s)"
+msgstr ""
+
+#: ../gtk/incall_view.c:341 ../gtk/main.ui.h:12
+msgid "Hang up"
+msgstr ""
+
+#: ../gtk/incall_view.c:430
 msgid "<b>Calling...</b>"
 msgstr "<b>מתקשר כעת...</b>"
 
-#: ../gtk/incall_view.c:276 ../gtk/incall_view.c:484
+#: ../gtk/incall_view.c:433 ../gtk/incall_view.c:646
 msgid "00::00::00"
 msgstr "‭00::00::00"
 
-#: ../gtk/incall_view.c:287
+#: ../gtk/incall_view.c:444
 msgid "<b>Incoming call</b>"
 msgstr "<b>קריאה נכנסת</b>"
 
-#: ../gtk/incall_view.c:324
+#: ../gtk/incall_view.c:481
 msgid "good"
 msgstr "טובה"
 
 # רגילה
-#: ../gtk/incall_view.c:326
+#: ../gtk/incall_view.c:483
 msgid "average"
 msgstr "ממוצעת"
 
 # weak חלשה חלושה רפויה רופפת
-#: ../gtk/incall_view.c:328
+#: ../gtk/incall_view.c:485
 msgid "poor"
 msgstr "דלה"
 
-#: ../gtk/incall_view.c:330
+#: ../gtk/incall_view.c:487
 msgid "very poor"
 msgstr "דלה מאוד"
 
 # רעה
-#: ../gtk/incall_view.c:332
+#: ../gtk/incall_view.c:489
 msgid "too bad"
 msgstr "גרועה מדי"
 
-#: ../gtk/incall_view.c:333 ../gtk/incall_view.c:349
+#: ../gtk/incall_view.c:490 ../gtk/incall_view.c:506
 msgid "unavailable"
 msgstr "לא זמינה"
 
 # באמצעות
-#: ../gtk/incall_view.c:449
+#: ../gtk/incall_view.c:605
 msgid "Secured by SRTP"
 msgstr "מאובטחת על ידי SRTP"
 
-#: ../gtk/incall_view.c:455
+#: ../gtk/incall_view.c:611
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "מאובטחת על ידי ZRTP - [אות אימות: %s]"
 
 # set or unset verification state of ZRTP SAS.
-#: ../gtk/incall_view.c:461
+#: ../gtk/incall_view.c:617
 msgid "Set unverified"
 msgstr "הגדר כלא מאומתת"
 
-#: ../gtk/incall_view.c:461 ../gtk/main.ui.h:49
+#: ../gtk/incall_view.c:617 ../gtk/main.ui.h:5
 msgid "Set verified"
 msgstr "הגדר כמאומתת"
 
-#: ../gtk/incall_view.c:482
+#: ../gtk/incall_view.c:641
 msgid "In conference"
 msgstr "בשיחת ועידה"
 
-#: ../gtk/incall_view.c:482
+#: ../gtk/incall_view.c:641
 msgid "<b>In call</b>"
 msgstr "<b>בשיחה כעת</b>"
 
-#: ../gtk/incall_view.c:501
+#: ../gtk/incall_view.c:669
 msgid "<b>Paused call</b>"
 msgstr "<b>שיחה מושהית</b>"
 
 # שעות %02i דקות %02i שניות %02i
 # Force LTR time format (hours::minutes::seconds) with LRO chatacter (U+202D)
-#: ../gtk/incall_view.c:513
+#: ../gtk/incall_view.c:682
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "‭%02i::%02i::%02i"
 
-#: ../gtk/incall_view.c:529
+#: ../gtk/incall_view.c:699
 msgid "<b>Call ended.</b>"
 msgstr "<b>שיחה הסתיימה.</b>"
 
-#: ../gtk/incall_view.c:586
+#: ../gtk/incall_view.c:731
+msgid "Transfer in progress"
+msgstr ""
+
+#: ../gtk/incall_view.c:734
+#, fuzzy
+msgid "Transfer done."
+msgstr "העברה"
+
+#: ../gtk/incall_view.c:737
+#, fuzzy
+msgid "Transfer failed."
+msgstr "העברה"
+
+#: ../gtk/incall_view.c:781
 msgid "Resume"
 msgstr "חזרה"
 
-#: ../gtk/incall_view.c:593 ../gtk/main.ui.h:45
+#: ../gtk/incall_view.c:788 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr "השהיה"
 
@@ -646,232 +738,246 @@ msgstr "השהיה"
 msgid "Please enter login information for %s"
 msgstr "נא להזין מידע התחברות עבור %s"
 
-#: ../gtk/main.ui.h:1
-msgid "#"
-msgstr ""
-
-#: ../gtk/main.ui.h:2
-msgid "*"
-msgstr ""
-
-#: ../gtk/main.ui.h:3
-msgid "0"
-msgstr ""
-
-#: ../gtk/main.ui.h:4
-msgid "1"
-msgstr ""
-
-#: ../gtk/main.ui.h:5
-msgid "2"
-msgstr "2 (דהו)"
-
-#: ../gtk/main.ui.h:6
-msgid "3"
-msgstr "3 (אבג)"
-
-#: ../gtk/main.ui.h:7
-msgid "4"
-msgstr "4 (מנ)"
-
-#: ../gtk/main.ui.h:8
-msgid "5"
-msgstr "5 (יכל)"
-
-#: ../gtk/main.ui.h:9
-msgid "6"
-msgstr "6 (זחט)"
-
-#: ../gtk/main.ui.h:10
-msgid "7"
-msgstr "7 (רשת)"
-
-#: ../gtk/main.ui.h:11
-msgid "8"
-msgstr "8 (צק)"
-
-#: ../gtk/main.ui.h:12
-msgid "9"
-msgstr "9 (סעפ)"
-
-#: ../gtk/main.ui.h:13
-msgid "<b>Add contacts from directory</b>"
-msgstr "<b>הוסף אנשי קשר מן מדור</b>"
-
 # מתקשר Caller
 # זה ש: נתקשר או מתוקשר או הותקשר?
-#: ../gtk/main.ui.h:14
+#: ../gtk/main.ui.h:1
 msgid "<b>Callee name</b>"
 msgstr "<b>שם המקבל</b>"
 
-#: ../gtk/main.ui.h:15
-msgid "<b>Welcome !</b>"
-msgstr "<b>ברוך בואך !</b>"
+#: ../gtk/main.ui.h:2
+msgid "Send"
+msgstr "שיגור"
 
-#: ../gtk/main.ui.h:16
-msgid "A"
-msgstr ""
+#: ../gtk/main.ui.h:3
+#, fuzzy
+msgid "End conference"
+msgstr "בשיחת ועידה"
 
-#: ../gtk/main.ui.h:17
-msgid "ADSL"
-msgstr "‫ADSL"
-
-#: ../gtk/main.ui.h:18
-msgid "Account assistant"
-msgstr "אשף חשבון"
-
-#: ../gtk/main.ui.h:19
-msgid "Add contact"
-msgstr "הוספת איש קשר"
-
-#: ../gtk/main.ui.h:20
-msgid "All users"
-msgstr "כל המשתמשים"
-
-#: ../gtk/main.ui.h:22
-msgid "Automatically log me in"
-msgstr "חבר אותי אוטומטית"
-
-#: ../gtk/main.ui.h:23
-msgid "B"
-msgstr ""
-
-#: ../gtk/main.ui.h:24 ../gtk/parameters.ui.h:21
-msgid "C"
-msgstr ""
-
-#: ../gtk/main.ui.h:25
-msgid "Call quality rating"
-msgstr "אומדן איכות שיחה"
-
-#: ../gtk/main.ui.h:26
-msgid "Check _Updates"
-msgstr "בדיקת _עדכונים"
-
-#: ../gtk/main.ui.h:27
-msgid "Contacts"
-msgstr "אנשי קשר"
-
-#: ../gtk/main.ui.h:28
-msgid "D"
-msgstr ""
-
-# משתמט
-#: ../gtk/main.ui.h:30
-msgid "Default"
-msgstr "ברירת מחדל"
-
-#: ../gtk/main.ui.h:31
-msgid "Duration"
-msgstr "משך זמן"
-
-#: ../gtk/main.ui.h:32
-msgid "Enable self-view"
-msgstr "אפשר ראות-עצמית"
-
-#: ../gtk/main.ui.h:33
-msgid "Enable video"
-msgstr "הפעל וידאו"
-
-# הזנת
-#: ../gtk/main.ui.h:34
-msgid "Enter username, phone number, or full sip address"
-msgstr "נא להזין שם משתמש, מספר טלפון, או כתובת sip מלאה"
-
-#: ../gtk/main.ui.h:35
-msgid "Fiber Channel"
-msgstr "ערוץ סיב"
-
-#: ../gtk/main.ui.h:36
-msgid "In call"
-msgstr "בשיחה כעת"
-
-#: ../gtk/main.ui.h:37
-msgid "Initiate a new call"
-msgstr "התחלת שיחה חדשה"
-
-# מרשתת
-#: ../gtk/main.ui.h:38
-msgid "Internet connection:"
-msgstr "חיבור אינטרנט:"
-
-#: ../gtk/main.ui.h:39
-msgid "Keypad"
-msgstr "לוח מקשים"
-
-#: ../gtk/main.ui.h:40
-msgid "Login information"
-msgstr "מידע התחברות"
-
-# עיון
-#: ../gtk/main.ui.h:41
-msgid "Lookup:"
-msgstr "חיפוש:"
-
-# הזהות הנוכחית שלי
-#: ../gtk/main.ui.h:42
-msgid "My current identity:"
-msgstr "זהותי הנוכחית:"
-
-#: ../gtk/main.ui.h:43
-msgid "Online users"
-msgstr "משתמשים מקוונים"
-
-#: ../gtk/main.ui.h:44
-msgid "Password"
-msgstr "סיסמה"
-
-# קריאות אחרונות
-#: ../gtk/main.ui.h:46
-msgid "Recent calls"
-msgstr "שיחות אחרונות"
-
-#: ../gtk/main.ui.h:47
-msgid "SIP address or phone number:"
-msgstr "כתובת SIP או מספר טלפון"
-
-#: ../gtk/main.ui.h:48
-msgid "Search"
-msgstr "חיפוש"
-
-#: ../gtk/main.ui.h:50
-msgid "Show debug window"
-msgstr "הצג חלון ניפוי שגיאות"
-
-#: ../gtk/main.ui.h:51
-msgid "Username"
-msgstr "שם משתמש"
-
-#: ../gtk/main.ui.h:52
-msgid "_Help"
-msgstr "_עזרה"
-
-#: ../gtk/main.ui.h:53
-msgid "_Homepage"
-msgstr "_עמוד הבית"
-
-#: ../gtk/main.ui.h:54
-msgid "_Options"
-msgstr "_אפשרויות"
-
-# במסגרת
-#: ../gtk/main.ui.h:55
-msgid "in"
-msgstr "בקרב"
-
-#: ../gtk/main.ui.h:56
+#: ../gtk/main.ui.h:4
 msgid "label"
 msgstr "תוויות"
 
-# Should be updated to 2012 2013
-# כל הזכויות שמורות (C) ‫Belledonne Communications, ‫2010\n
-#: ../gtk/about.ui.h:1
-msgid "(C) Belledonne Communications,2010\n"
-msgstr "‫(C) ‫Belledonne Communications,‫2010\n"
+#: ../gtk/main.ui.h:8
+msgid "Video"
+msgstr ""
 
-#: ../gtk/about.ui.h:3
+#: ../gtk/main.ui.h:10
+msgid "Mute"
+msgstr ""
+
+#: ../gtk/main.ui.h:11
+msgid "Transfer"
+msgstr "העברה"
+
+#: ../gtk/main.ui.h:14
+msgid "In call"
+msgstr "בשיחה כעת"
+
+#: ../gtk/main.ui.h:15
+msgid "Duration"
+msgstr "משך זמן"
+
+#: ../gtk/main.ui.h:16
+msgid "Call quality rating"
+msgstr "אומדן איכות שיחה"
+
+#: ../gtk/main.ui.h:17
+msgid "_Options"
+msgstr "_אפשרויות"
+
+#: ../gtk/main.ui.h:18
+msgid "Always start video"
+msgstr ""
+
+#: ../gtk/main.ui.h:19
+msgid "Enable self-view"
+msgstr "אפשר ראות-עצמית"
+
+#: ../gtk/main.ui.h:20
+msgid "_Help"
+msgstr "_עזרה"
+
+#: ../gtk/main.ui.h:21
+msgid "Show debug window"
+msgstr "הצג חלון ניפוי שגיאות"
+
+#: ../gtk/main.ui.h:22
+msgid "_Homepage"
+msgstr "_עמוד הבית"
+
+#: ../gtk/main.ui.h:23
+msgid "Check _Updates"
+msgstr "בדיקת _עדכונים"
+
+#: ../gtk/main.ui.h:24
+msgid "Account assistant"
+msgstr "אשף חשבון"
+
+#: ../gtk/main.ui.h:25
+msgid "SIP address or phone number:"
+msgstr "כתובת SIP או מספר טלפון"
+
+#: ../gtk/main.ui.h:26
+msgid "Initiate a new call"
+msgstr "התחלת שיחה חדשה"
+
+#: ../gtk/main.ui.h:27 ../gtk/parameters.ui.h:48
+msgid "Add"
+msgstr "הוסף"
+
+#: ../gtk/main.ui.h:28 ../gtk/parameters.ui.h:49
+msgid "Edit"
+msgstr "ערוך"
+
+#: ../gtk/main.ui.h:29
+msgid "D"
+msgstr ""
+
+#: ../gtk/main.ui.h:30
+msgid "#"
+msgstr ""
+
+#: ../gtk/main.ui.h:31
+msgid "0"
+msgstr ""
+
+#: ../gtk/main.ui.h:32
+msgid "*"
+msgstr ""
+
+#: ../gtk/main.ui.h:33 ../gtk/parameters.ui.h:7
+msgid "C"
+msgstr ""
+
+#: ../gtk/main.ui.h:34
+msgid "9"
+msgstr "9 (סעפ)"
+
+#: ../gtk/main.ui.h:35
+msgid "8"
+msgstr "8 (צק)"
+
+#: ../gtk/main.ui.h:36
+msgid "7"
+msgstr "7 (רשת)"
+
+#: ../gtk/main.ui.h:37
+msgid "B"
+msgstr ""
+
+#: ../gtk/main.ui.h:38
+msgid "6"
+msgstr "6 (זחט)"
+
+#: ../gtk/main.ui.h:39
+msgid "5"
+msgstr "5 (יכל)"
+
+#: ../gtk/main.ui.h:40
+msgid "4"
+msgstr "4 (מנ)"
+
+#: ../gtk/main.ui.h:41
+msgid "A"
+msgstr ""
+
+#: ../gtk/main.ui.h:42
+msgid "3"
+msgstr "3 (אבג)"
+
+#: ../gtk/main.ui.h:43
+msgid "2"
+msgstr "2 (דהו)"
+
+#: ../gtk/main.ui.h:44
+msgid "1"
+msgstr ""
+
+#: ../gtk/main.ui.h:45
+msgid "Search"
+msgstr "חיפוש"
+
+#: ../gtk/main.ui.h:46
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>הוסף אנשי קשר מן מדור</b>"
+
+#: ../gtk/main.ui.h:47
+msgid "Add contact"
+msgstr "הוספת איש קשר"
+
+#: ../gtk/main.ui.h:48
+msgid "Keypad"
+msgstr "לוח מקשים"
+
+# קריאות אחרונות
+#: ../gtk/main.ui.h:49
+msgid "Recent calls"
+msgstr "שיחות אחרונות"
+
+# הזהות הנוכחית שלי
+#: ../gtk/main.ui.h:50
+msgid "My current identity:"
+msgstr "זהותי הנוכחית:"
+
+#: ../gtk/main.ui.h:51 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "שם משתמש"
+
+#: ../gtk/main.ui.h:52 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "סיסמה"
+
+# מרשתת
+#: ../gtk/main.ui.h:53
+msgid "Internet connection:"
+msgstr "חיבור אינטרנט:"
+
+#: ../gtk/main.ui.h:54
+msgid "Automatically log me in"
+msgstr "חבר אותי אוטומטית"
+
+#: ../gtk/main.ui.h:55
+msgid "Login information"
+msgstr "מידע התחברות"
+
+#: ../gtk/main.ui.h:56
+msgid "<b>Welcome !</b>"
+msgstr "<b>ברוך בואך !</b>"
+
+#: ../gtk/main.ui.h:57
+msgid "All users"
+msgstr "כל המשתמשים"
+
+#: ../gtk/main.ui.h:58
+msgid "Online users"
+msgstr "משתמשים מקוונים"
+
+#: ../gtk/main.ui.h:59
+msgid "ADSL"
+msgstr "‫ADSL"
+
+#: ../gtk/main.ui.h:60
+msgid "Fiber Channel"
+msgstr "ערוץ סיב"
+
+# משתמט
+#: ../gtk/main.ui.h:61
+msgid "Default"
+msgstr "ברירת מחדל"
+
+#: ../gtk/main.ui.h:62
+msgid "Delete"
+msgstr ""
+
+#: ../gtk/about.ui.h:1
 msgid "About linphone"
 msgstr "אודות לינפון"
+
+# Should be updated to 2012 2013
+# כל הזכויות שמורות (C) ‫Belledonne Communications, ‫2010\n
+#: ../gtk/about.ui.h:2
+msgid "(C) Belledonne Communications,2010\n"
+msgstr "‫(C) ‫Belledonne Communications,‫2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
@@ -892,21 +998,21 @@ msgid ""
 "hu: anonymous\n"
 msgstr ""
 
-#: ../gtk/contact.ui.h:1
-msgid "<b>Contact information</b>"
-msgstr "<b>מידע איש קשר</b>"
-
 #: ../gtk/contact.ui.h:2
-msgid "Allow this contact to see my presence status"
-msgstr "הרשה לאיש קשר זה לראות את מצב הנוכחות שלי"
-
-#: ../gtk/contact.ui.h:4
 msgid "SIP Address"
 msgstr "כתובת ‫SIP"
 
-#: ../gtk/contact.ui.h:5
+#: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
 msgstr "הצג את מצב נוכחותו של איש קשר זה"
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr "הרשה לאיש קשר זה לראות את מצב הנוכחות שלי"
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr "<b>מידע איש קשר</b>"
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
@@ -921,237 +1027,227 @@ msgid "Linphone - Authentication required"
 msgstr "‫Linphone - נדרש אימות"
 
 # תחום
-#: ../gtk/password.ui.h:3
+#: ../gtk/password.ui.h:2
 msgid "Please enter the domain password"
 msgstr "נא להזין את סיסמת המתחם"
 
-#: ../gtk/password.ui.h:4
+#: ../gtk/password.ui.h:3
 msgid "UserID"
 msgstr "זהות משתמש (‫UID)"
 
-# קריאה חוזרת
-#: ../gtk/call_logs.ui.h:1
-msgid "Call back"
-msgstr "חיוג חוזר"
-
 # קריאות
-#: ../gtk/call_logs.ui.h:2
+#: ../gtk/call_logs.ui.h:1
 msgid "Call history"
 msgstr "היסטוריית שיחות"
 
-#: ../gtk/call_logs.ui.h:3
+#: ../gtk/call_logs.ui.h:2
 msgid "Clear all"
 msgstr "טיהור מוחלט"
 
-#: ../gtk/sip_account.ui.h:1
-msgid "Configure a SIP account"
-msgstr "הגדרת חשבון ‫SIP"
+# קריאה חוזרת
+#: ../gtk/call_logs.ui.h:3
+msgid "Call back"
+msgstr "חיוג חוזר"
 
-#: ../gtk/sip_account.ui.h:2
+#: ../gtk/sip_account.ui.h:1
 msgid "Linphone - Configure a SIP account"
 msgstr "‫Linphone - הגדרת חשבון ‫SIP"
 
-#: ../gtk/sip_account.ui.h:3
-msgid "Looks like sip:<proxy hostname>"
-msgstr "נראה כמו ‪sip:<proxy hostname>"
-
-#: ../gtk/sip_account.ui.h:4
-msgid "Looks like sip:<username>@<domain>"
-msgstr "נראה כמו ‪sip:<username>@<domain>"
-
-#: ../gtk/sip_account.ui.h:5
-msgid "Publish presence information"
-msgstr "פרסם מידע נוכחות"
-
-#: ../gtk/sip_account.ui.h:6
-msgid "Register"
-msgstr "רישום"
-
-#: ../gtk/sip_account.ui.h:7
-msgid "Registration duration (sec):"
-msgstr "משך רישום (בשניות):"
-
-#: ../gtk/sip_account.ui.h:8
-msgid "Route (optional):"
-msgstr "ניתוב (רשות):"
-
-#: ../gtk/sip_account.ui.h:9
-msgid "SIP Proxy address:"
-msgstr "כתובת SIP Proxy:"
-
-#: ../gtk/sip_account.ui.h:10
+#: ../gtk/sip_account.ui.h:2
 msgid "Your SIP identity:"
 msgstr "זהות ה־SIP שלך:"
 
-#: ../gtk/sip_account.ui.h:11
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
+msgstr "נראה כמו ‪sip:<username>@<domain>"
+
+#: ../gtk/sip_account.ui.h:4
 msgid "sip:"
 msgstr ""
 
-#: ../gtk/chatroom.ui.h:1
-msgid "Send"
-msgstr "שיגור"
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "כתובת SIP Proxy:"
 
-# ללא הגבלה
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
+msgstr "נראה כמו ‪sip:<proxy hostname>"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Route (optional):"
+msgstr "ניתוב (רשות):"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Registration duration (sec):"
+msgstr "משך רישום (בשניות):"
+
+#: ../gtk/sip_account.ui.h:9
+msgid "Register"
+msgstr "רישום"
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Publish presence information"
+msgstr "פרסם מידע נוכחות"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Configure a SIP account"
+msgstr "הגדרת חשבון ‫SIP"
+
 #: ../gtk/parameters.ui.h:1
-msgid "0 stands for \"unlimited\""
-msgstr "0 מסמל \"בלי הגבלה\""
+msgid "default soundcard"
+msgstr "כרטיס קול משתמט"
 
 #: ../gtk/parameters.ui.h:2
-msgid "<b>Audio</b>"
-msgstr "<b>שמע</b>"
+msgid "a sound card"
+msgstr "כרטיס קול"
 
-# פס רוחב
-# טווח תדרים
 #: ../gtk/parameters.ui.h:3
-msgid "<b>Bandwidth control</b>"
-msgstr "<b>בקרת רוחב פס</b>"
+msgid "default camera"
+msgstr "מצלמה משתמטת"
 
 #: ../gtk/parameters.ui.h:4
-msgid "<b>Codecs</b>"
-msgstr "<b>קודקים</b>"
-
-#: ../gtk/parameters.ui.h:5
-msgid "<b>Default identity</b>"
-msgstr "<b>זהות משתמטת</b>"
-
-#: ../gtk/parameters.ui.h:6
-msgid "<b>Language</b>"
-msgstr "<b>שפה</b>"
-
-#: ../gtk/parameters.ui.h:7
-msgid "<b>Level</b>"
-msgstr "<b>רמה</b>"
-
-#: ../gtk/parameters.ui.h:8
-msgid "<b>NAT and Firewall</b>"
-msgstr "<b>‫NAT וחומת אש</b>"
-
-#: ../gtk/parameters.ui.h:9
-msgid "<b>Network protocol and ports</b>"
-msgstr "<b>פרוטוקולי רשת עבודה ופורטים</b>"
-
-#: ../gtk/parameters.ui.h:10
-msgid "<b>Privacy</b>"
-msgstr "<b>פרטיות</b>"
-
-# חשבונות מתווכים
-#: ../gtk/parameters.ui.h:11
-msgid "<b>Proxy accounts</b>"
-msgstr "<b>חשבונות Proxy</b>"
-
-# מוביל
-#: ../gtk/parameters.ui.h:12
-msgid "<b>Transport</b>"
-msgstr "<b>טרנספורט</b>"
-
-#: ../gtk/parameters.ui.h:13
-msgid "<b>Video</b>"
-msgstr "<b>וידאו</b>"
-
-# שיטה ניחוש
-#: ../gtk/parameters.ui.h:14
-msgid ""
-"<i>Adaptive rate control is a technique to dynamically guess the available "
-"bandwidth during a call.</i>"
-msgstr ""
-"<i>בקרת קצב מסתגלת הינה טכניקה להשערה דינמית של רוחב הפס הזמין במהלך שיחה.</"
-"i>"
-
-#: ../gtk/parameters.ui.h:15
-msgid "ALSA special device (optional):"
-msgstr "התקן ALSA מיוחד (רשות):"
-
-#: ../gtk/parameters.ui.h:16
-msgid "Add"
-msgstr "הוסף"
-
-#: ../gtk/parameters.ui.h:17
-msgid "Audio RTP/UDP:"
-msgstr "שמע RTP/UDP:"
-
-#: ../gtk/parameters.ui.h:18
-msgid "Audio codecs"
-msgstr "קודקים של שמע"
-
-#: ../gtk/parameters.ui.h:19
-msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr "מאחורי NAT \\ חומת־אש (ציון כתובת שער (Gateway IP) למטה)"
-
-# שימוש ב־STUN
-# utilize
-#: ../gtk/parameters.ui.h:20
-msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
-
-#: ../gtk/parameters.ui.h:22
 msgid "CIF"
 msgstr ""
 
-#: ../gtk/parameters.ui.h:23
-msgid "Capture device:"
-msgstr "התקן לכידה:"
+#: ../gtk/parameters.ui.h:5
+msgid "Audio codecs"
+msgstr "קודקים של שמע"
 
-#: ../gtk/parameters.ui.h:24
-msgid "Codecs"
-msgstr "קודקים"
+#: ../gtk/parameters.ui.h:6
+msgid "Video codecs"
+msgstr "קודקים של וידאו"
 
-#: ../gtk/parameters.ui.h:25
-msgid "Direct connection to the Internet"
-msgstr "חיבור ישיר אל האינטרנט"
+#: ../gtk/parameters.ui.h:8
+msgid "SIP (UDP)"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:26
-msgid "Disable"
-msgstr "נטרל"
+#: ../gtk/parameters.ui.h:9
+msgid "SIP (TCP)"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:27
-msgid "Done"
-msgstr "סיום"
+#: ../gtk/parameters.ui.h:10
+msgid "SIP (TLS)"
+msgstr ""
 
-# האם KiB means kibibyte?
-# קי״ב (1024) אל מול ק״ב (1000)
-#: ../gtk/parameters.ui.h:28
-msgid "Download speed limit in Kbit/sec:"
-msgstr "מגבלת מהירות הורדה בקי״ב/שנ׳:"
+#: ../gtk/parameters.ui.h:11
+msgid "Settings"
+msgstr "הגדרות"
 
-#: ../gtk/parameters.ui.h:29
-msgid "Edit"
-msgstr "ערוך"
+# שידור
+#: ../gtk/parameters.ui.h:12
+msgid "Set Maximum Transmission Unit:"
+msgstr "הגדר יחידת תמסורת מרבית:"
 
-#: ../gtk/parameters.ui.h:30
-msgid "Enable"
-msgstr "אפשר"
+#: ../gtk/parameters.ui.h:13
+msgid "Send DTMFs as SIP info"
+msgstr "שלח טזמ״תים (DTMFs) כמידע SIP"
 
-#: ../gtk/parameters.ui.h:31
-msgid "Enable adaptive rate control"
-msgstr "אפשר בקרת קצב מסתגלת"
+#: ../gtk/parameters.ui.h:14
+msgid "Use IPv6 instead of IPv4"
+msgstr "השתמש בפרוטוקול IPv6 במקום בפרוטוקול IPv4"
 
-#: ../gtk/parameters.ui.h:32
-msgid "Enable echo cancellation"
-msgstr "אפשר ביטול הד"
+# מוביל
+#: ../gtk/parameters.ui.h:15
+msgid "<b>Transport</b>"
+msgstr "<b>טרנספורט</b>"
 
-#: ../gtk/parameters.ui.h:33
-msgid "Erase all passwords"
-msgstr "מחק סיסמאות"
-
-#: ../gtk/parameters.ui.h:34
-msgid "Manage SIP Accounts"
-msgstr "ניהול חשבונות ‫SIP"
-
-#: ../gtk/parameters.ui.h:35
+#: ../gtk/parameters.ui.h:16
 msgid "Media encryption type"
 msgstr "סוג הצפנת מדיה"
 
-#: ../gtk/parameters.ui.h:36
-msgid "Multimedia settings"
-msgstr "הגדרות מולטימדיה"
+# מנהרה
+#: ../gtk/parameters.ui.h:17
+msgid "Tunnel"
+msgstr ""
 
-#: ../gtk/parameters.ui.h:37
+#: ../gtk/parameters.ui.h:18
+msgid "Video RTP/UDP:"
+msgstr "וידאו RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:19
+msgid "Audio RTP/UDP:"
+msgstr "שמע RTP/UDP:"
+
+#: ../gtk/parameters.ui.h:20
+msgid "DSCP fields"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:21
+msgid "Fixed"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "<b>Network protocol and ports</b>"
+msgstr "<b>פרוטוקולי רשת עבודה ופורטים</b>"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Direct connection to the Internet"
+msgstr "חיבור ישיר אל האינטרנט"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "מאחורי NAT \\ חומת־אש (ציון כתובת שער (Gateway IP) למטה)"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Public IP address:"
+msgstr "כתובת IP פומבית:"
+
+# שימוש ב־STUN
+# utilize
+#: ../gtk/parameters.ui.h:26
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
+
+# שימוש ב־STUN
+# utilize
+#: ../gtk/parameters.ui.h:27
+#, fuzzy
+msgid "Behind NAT / Firewall (use ICE)"
+msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Stun server:"
+msgstr "שרת STUN:"
+
+#: ../gtk/parameters.ui.h:29
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>‫NAT וחומת אש</b>"
+
+#: ../gtk/parameters.ui.h:30
 msgid "Network settings"
 msgstr "הגדרות רשת עבודה"
 
-#: ../gtk/parameters.ui.h:38
+#: ../gtk/parameters.ui.h:31
+msgid "Ring sound:"
+msgstr "צליל צלצול:"
+
+#: ../gtk/parameters.ui.h:32
+msgid "ALSA special device (optional):"
+msgstr "התקן ALSA מיוחד (רשות):"
+
+#: ../gtk/parameters.ui.h:33
+msgid "Capture device:"
+msgstr "התקן לכידה:"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Ring device:"
+msgstr "התקן צלצול:"
+
+#: ../gtk/parameters.ui.h:35
 msgid "Playback device:"
 msgstr "התקן פס קול:"
+
+#: ../gtk/parameters.ui.h:36
+msgid "Enable echo cancellation"
+msgstr "אפשר ביטול הד"
+
+#: ../gtk/parameters.ui.h:37
+msgid "<b>Audio</b>"
+msgstr "<b>שמע</b>"
+
+#: ../gtk/parameters.ui.h:38
+msgid "Video input device:"
+msgstr "התקן קלט וידאו:"
 
 # רצויה
 #: ../gtk/parameters.ui.h:39
@@ -1159,140 +1255,141 @@ msgid "Prefered video resolution:"
 msgstr "רזולוציית וידאו מועדפת:"
 
 #: ../gtk/parameters.ui.h:40
-msgid "Public IP address:"
-msgstr "כתובת IP פומבית:"
+msgid "<b>Video</b>"
+msgstr "<b>וידאו</b>"
 
 #: ../gtk/parameters.ui.h:41
-msgid ""
-"Register to FONICS\n"
-"virtual network !"
-msgstr ""
-"רישום אל FONICS\n"
-"רשת עבודה וירטואלית !"
+msgid "Multimedia settings"
+msgstr "הגדרות מולטימדיה"
 
-#: ../gtk/parameters.ui.h:43
-msgid "Remove"
-msgstr "הסר"
-
-#: ../gtk/parameters.ui.h:44
-msgid "Ring device:"
-msgstr "התקן צלצול:"
-
-#: ../gtk/parameters.ui.h:45
-msgid "Ring sound:"
-msgstr "צליל צלצול:"
-
-#: ../gtk/parameters.ui.h:46
-msgid "SIP (TCP)"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:47
-msgid "SIP (TLS)"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:48
-msgid "SIP (UDP)"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:49
-msgid "Send DTMFs as SIP info"
-msgstr "שלח טזמ״תים (DTMFs) כמידע SIP"
-
-# שידור
-#: ../gtk/parameters.ui.h:50
-msgid "Set Maximum Transmission Unit:"
-msgstr "הגדר יחידת תמסורת מרבית:"
-
-#: ../gtk/parameters.ui.h:51
-msgid "Settings"
-msgstr "הגדרות"
-
-#: ../gtk/parameters.ui.h:52
-msgid "Show advanced settings"
-msgstr "הצג הגדרות מתקדמות"
-
-#: ../gtk/parameters.ui.h:53
-msgid "Stun server:"
-msgstr "שרת STUN:"
-
-#: ../gtk/parameters.ui.h:54
+#: ../gtk/parameters.ui.h:42
 msgid "This section defines your SIP address when not using a SIP account"
 msgstr "חלק זה מגדיר את כתובת ה־SIP כאשר אינך עושה שימוש בחשבון SIP"
 
-# מנהרה
-#: ../gtk/parameters.ui.h:55
-msgid "Tunnel"
-msgstr ""
-
-# האם KiB means kibibyte?
-#: ../gtk/parameters.ui.h:56
-msgid "Upload speed limit in Kbit/sec:"
-msgstr "מגבלת מהירות העלאה בקי״ב/שנ׳:"
-
-#: ../gtk/parameters.ui.h:57
-msgid "Use IPv6 instead of IPv4"
-msgstr "השתמש בפרוטוקול IPv6 במקום בפרוטוקול IPv4"
-
-#: ../gtk/parameters.ui.h:58
-msgid "User interface"
-msgstr "ממשק משתמש"
-
-#: ../gtk/parameters.ui.h:59
-msgid "Video RTP/UDP:"
-msgstr "וידאו RTP/UDP:"
-
-#: ../gtk/parameters.ui.h:60
-msgid "Video codecs"
-msgstr "קודקים של וידאו"
-
-#: ../gtk/parameters.ui.h:61
-msgid "Video input device:"
-msgstr "התקן קלט וידאו:"
-
-#: ../gtk/parameters.ui.h:62
-msgid "Wizard"
-msgstr "אשף"
-
-#: ../gtk/parameters.ui.h:63
+#: ../gtk/parameters.ui.h:43
 msgid "Your display name (eg: John Doe):"
 msgstr "שם התצוגה שלך (למשל: יורם יהודה):"
 
-#: ../gtk/parameters.ui.h:64
-msgid "Your resulting SIP address:"
-msgstr "כתובת SIP נובעת:"
-
-#: ../gtk/parameters.ui.h:65
+#: ../gtk/parameters.ui.h:44
 msgid "Your username:"
 msgstr "שם המשתמש שלך:"
 
+#: ../gtk/parameters.ui.h:45
+msgid "Your resulting SIP address:"
+msgstr "כתובת SIP נובעת:"
+
+#: ../gtk/parameters.ui.h:46
+msgid "<b>Default identity</b>"
+msgstr "<b>זהות משתמטת</b>"
+
+#: ../gtk/parameters.ui.h:47
+msgid "Wizard"
+msgstr "אשף"
+
+#: ../gtk/parameters.ui.h:50
+msgid "Remove"
+msgstr "הסר"
+
+# חשבונות מתווכים
+#: ../gtk/parameters.ui.h:51
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>חשבונות Proxy</b>"
+
+#: ../gtk/parameters.ui.h:52
+msgid "Erase all passwords"
+msgstr "מחק סיסמאות"
+
+#: ../gtk/parameters.ui.h:53
+msgid "<b>Privacy</b>"
+msgstr "<b>פרטיות</b>"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Manage SIP Accounts"
+msgstr "ניהול חשבונות ‫SIP"
+
+#: ../gtk/parameters.ui.h:55 ../gtk/tunnel_config.ui.h:4
+msgid "Enable"
+msgstr "אפשר"
+
+#: ../gtk/parameters.ui.h:56 ../gtk/tunnel_config.ui.h:5
+msgid "Disable"
+msgstr "נטרל"
+
+#: ../gtk/parameters.ui.h:57
+msgid "<b>Codecs</b>"
+msgstr "<b>קודקים</b>"
+
+# ללא הגבלה
+#: ../gtk/parameters.ui.h:58
+msgid "0 stands for \"unlimited\""
+msgstr "0 מסמל \"בלי הגבלה\""
+
+# האם KiB means kibibyte?
+#: ../gtk/parameters.ui.h:59
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "מגבלת מהירות העלאה בקי״ב/שנ׳:"
+
+# האם KiB means kibibyte?
+# קי״ב (1024) אל מול ק״ב (1000)
+#: ../gtk/parameters.ui.h:60
+msgid "Download speed limit in Kbit/sec:"
+msgstr "מגבלת מהירות הורדה בקי״ב/שנ׳:"
+
+#: ../gtk/parameters.ui.h:61
+msgid "Enable adaptive rate control"
+msgstr "אפשר בקרת קצב מסתגלת"
+
+# שיטה ניחוש
+#: ../gtk/parameters.ui.h:62
+msgid ""
+"<i>Adaptive rate control is a technique to dynamically guess the available "
+"bandwidth during a call.</i>"
+msgstr ""
+"<i>בקרת קצב מסתגלת הינה טכניקה להשערה דינמית של רוחב הפס הזמין במהלך שיחה.</"
+"i>"
+
+# פס רוחב
+# טווח תדרים
+#: ../gtk/parameters.ui.h:63
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>בקרת רוחב פס</b>"
+
+#: ../gtk/parameters.ui.h:64
+msgid "Codecs"
+msgstr "קודקים"
+
+#: ../gtk/parameters.ui.h:65
+msgid "<b>Language</b>"
+msgstr "<b>שפה</b>"
+
 #: ../gtk/parameters.ui.h:66
-msgid "a sound card"
-msgstr "כרטיס קול"
+msgid "Show advanced settings"
+msgstr "הצג הגדרות מתקדמות"
 
 #: ../gtk/parameters.ui.h:67
-msgid "default camera"
-msgstr "מצלמה משתמטת"
+msgid "<b>Level</b>"
+msgstr "<b>רמה</b>"
 
 #: ../gtk/parameters.ui.h:68
-msgid "default soundcard"
-msgstr "כרטיס קול משתמט"
+msgid "User interface"
+msgstr "ממשק משתמש"
 
 #: ../gtk/parameters.ui.h:69
-msgid "edit"
-msgstr "עריכה"
+msgid "Done"
+msgstr "סיום"
 
-# חיפוש מאן דהו
 #: ../gtk/buddylookup.ui.h:1
-msgid "<b>Search somebody</b>"
-msgstr "<b>חיפוש אחר מישהו</b>"
+msgid "Search contacts in directory"
+msgstr "חיפוש אנשי קשר בתוך מדור"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
 msgstr "הוסף אל הרשימה שלי"
 
+# חיפוש מאן דהו
 #: ../gtk/buddylookup.ui.h:3
-msgid "Search contacts in directory"
-msgstr "חיפוש אנשי קשר בתוך מדור"
+msgid "<b>Search somebody</b>"
+msgstr "<b>חיפוש אחר מישהו</b>"
 
 #: ../gtk/waiting.ui.h:1
 msgid "Linphone"
@@ -1302,20 +1399,96 @@ msgstr "Linphone"
 msgid "Please wait"
 msgstr "נא להמתין"
 
-#: ../coreapi/linphonecore.c:187
+#: ../gtk/dscp_settings.ui.h:1
+#, fuzzy
+msgid "Dscp settings"
+msgstr "הגדרות"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr ""
+
+#: ../gtk/dscp_settings.ui.h:3
+#, fuzzy
+msgid "Audio RTP stream"
+msgstr "שמע RTP/UDP:"
+
+#: ../gtk/dscp_settings.ui.h:4
+#, fuzzy
+msgid "Video RTP stream"
+msgstr "וידאו RTP/UDP:"
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:1
+msgid "Call statistics"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:2
+#, fuzzy
+msgid "Audio codec"
+msgstr "קודקים של שמע"
+
+#: ../gtk/call_statistics.ui.h:3
+#, fuzzy
+msgid "Video codec"
+msgstr "קודקים של וידאו"
+
+#: ../gtk/call_statistics.ui.h:4
+msgid "Audio IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:5
+#, fuzzy
+msgid "Media connectivity"
+msgstr "סוג הצפנת מדיה"
+
+#: ../gtk/call_statistics.ui.h:6
+msgid "Video IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:7
+#, fuzzy
+msgid "<b>Call statistics and information</b>"
+msgstr "<b>מידע איש קשר</b>"
+
+#: ../gtk/tunnel_config.ui.h:1
+#, fuzzy
+msgid "Configure VoIP tunnel"
+msgstr "הגדרת חשבון ‫SIP"
+
+#: ../gtk/tunnel_config.ui.h:2
+msgid "Host"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:3
+msgid "Port"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:6
+msgid "<b>Configure tunnel</b>"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:9
+msgid "<b>Configure http proxy (optional)</b>"
+msgstr ""
+
+#: ../coreapi/linphonecore.c:232
 msgid "aborted"
 msgstr "ננטשה"
 
-#: ../coreapi/linphonecore.c:190
+#: ../coreapi/linphonecore.c:235
 msgid "completed"
 msgstr "הסתיימה"
 
-#: ../coreapi/linphonecore.c:193
+#: ../coreapi/linphonecore.c:238
 msgid "missed"
 msgstr "הוחמצה"
 
 # needs to be tested
-#: ../coreapi/linphonecore.c:198
+#: ../coreapi/linphonecore.c:243
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1330,24 +1503,24 @@ msgstr ""
 "מצב: %s\n"
 "משך: %i mn %i sec\n"
 
-#: ../coreapi/linphonecore.c:199
+#: ../coreapi/linphonecore.c:244
 msgid "Outgoing call"
 msgstr "קריאה יוצאת"
 
-#: ../coreapi/linphonecore.c:1105
+#: ../coreapi/linphonecore.c:1226
 msgid "Ready"
 msgstr "מוכן"
 
-#: ../coreapi/linphonecore.c:1848
+#: ../coreapi/linphonecore.c:2074
 msgid "Looking for telephone number destination..."
 msgstr "מחפש כעת עבור יעד מספר טלפון..."
 
-#: ../coreapi/linphonecore.c:1851
+#: ../coreapi/linphonecore.c:2077
 msgid "Could not resolve this number."
 msgstr "לא ניתן לפתור את מספר זה."
 
 # לרוב
-#: ../coreapi/linphonecore.c:1895
+#: ../coreapi/linphonecore.c:2121
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1355,41 +1528,53 @@ msgstr ""
 "לא ניתן היה לפענח את הכתובת שניתנה. כתובת sip בדרך כלל נראית כך: sip:"
 "user@domain"
 
-#: ../coreapi/linphonecore.c:2052
+#: ../coreapi/linphonecore.c:2312
 msgid "Contacting"
 msgstr "מתקשר כעת"
 
-#: ../coreapi/linphonecore.c:2059
+#: ../coreapi/linphonecore.c:2319
 msgid "Could not call"
 msgstr "לא ניתן להתקשר"
 
 # מספר השיחות המקבילות המרבי
-#: ../coreapi/linphonecore.c:2167
+#: ../coreapi/linphonecore.c:2429
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "הגענו אל המספר המרבי של שיחות מקבילות, עמך הסליחה"
 
+#: ../coreapi/linphonecore.c:2573
+msgid "is contacting you"
+msgstr "מתקשר/ת אליך"
+
+#: ../coreapi/linphonecore.c:2574
+msgid " and asked autoanswer."
+msgstr " ומבקש/ת מענה אוטומטי."
+
+#: ../coreapi/linphonecore.c:2574
+msgid "."
+msgstr ""
+
 # פרמטרי קריאה
-#: ../coreapi/linphonecore.c:2297
+#: ../coreapi/linphonecore.c:2636
 msgid "Modifying call parameters..."
 msgstr "מתאים כעת פרמטרים של שיחה..."
 
-#: ../coreapi/linphonecore.c:2393
+#: ../coreapi/linphonecore.c:2908
 msgid "Connected."
 msgstr "מקושר."
 
-#: ../coreapi/linphonecore.c:2416
+#: ../coreapi/linphonecore.c:2931
 msgid "Call aborted"
 msgstr "קריאה בוטלה"
 
-#: ../coreapi/linphonecore.c:2557
+#: ../coreapi/linphonecore.c:3102
 msgid "Could not pause the call"
 msgstr "לא ניתן להשהות את השיחה"
 
-#: ../coreapi/linphonecore.c:2562
+#: ../coreapi/linphonecore.c:3107
 msgid "Pausing the current call..."
 msgstr "משהה כעת שיחה נוכחית..."
 
-#: ../coreapi/misc.c:147
+#: ../coreapi/misc.c:148
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -1401,7 +1586,7 @@ msgstr ""
 "נעדר ולינפון זקוק לו. נא להריץ את הפקודה\n"
 "‫'modprobe snd-pcm-oss' כמשתמש שורש (משתמש על) כדי להטעינו."
 
-#: ../coreapi/misc.c:150
+#: ../coreapi/misc.c:151
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -1414,9 +1599,13 @@ msgstr ""
 "‫'modprobe snd-mixer-oss' כמשתמש שורש (משתמש על) כדי להטעינו."
 
 # במהלך (או) באמצע חיפוש...
-#: ../coreapi/misc.c:479
+#: ../coreapi/misc.c:496
 msgid "Stun lookup in progress..."
 msgstr "בדיקת STUN מצויה כעת בעיצומה..."
+
+#: ../coreapi/misc.c:630
+msgid "ICE local candidates gathering in progress..."
+msgstr ""
 
 #: ../coreapi/friend.c:33
 msgid "Online"
@@ -1471,7 +1660,7 @@ msgstr "בהמתנה"
 msgid "Unknown-bug"
 msgstr "תקלה לא ידועה"
 
-#: ../coreapi/proxy.c:196
+#: ../coreapi/proxy.c:204
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
@@ -1479,7 +1668,7 @@ msgstr ""
 "כתובת sip proxy שהוזנה הינה שגויה, זו צריכה להתחיל עם‭\"sip:\" ‬ לאחר שם מארח."
 
 # כמו למשל
-#: ../coreapi/proxy.c:202
+#: ../coreapi/proxy.c:210
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1488,52 +1677,40 @@ msgstr ""
 "זו צריכה להיראות כמו sip:username@proxydomain, למשל sip:alice@example.net"
 
 # בשם כ־
-#: ../coreapi/proxy.c:702
+#: ../coreapi/proxy.c:1053
 #, c-format
 msgid "Could not login as %s"
 msgstr "לא ניתן להתחבר בזהות %s"
 
-#: ../coreapi/callbacks.c:206
-msgid "is contacting you"
-msgstr "מתקשר/ת אליך"
-
-#: ../coreapi/callbacks.c:207
-msgid " and asked autoanswer."
-msgstr " ומבקש/ת מענה אוטומטי."
-
-#: ../coreapi/callbacks.c:207
-msgid "."
-msgstr ""
-
-#: ../coreapi/callbacks.c:266
+#: ../coreapi/callbacks.c:276
 msgid "Remote ringing."
 msgstr "צלצול מרוחק."
 
-#: ../coreapi/callbacks.c:282
+#: ../coreapi/callbacks.c:296
 msgid "Remote ringing..."
 msgstr "צלצול מרוחק..."
 
 # A SIP state
-#: ../coreapi/callbacks.c:293
+#: ../coreapi/callbacks.c:307
 msgid "Early media."
 msgstr "מדיה מוקדמת."
 
-#: ../coreapi/callbacks.c:331
+#: ../coreapi/callbacks.c:352
 #, c-format
 msgid "Call with %s is paused."
 msgstr "שיחה עם %s מושהית."
 
-#: ../coreapi/callbacks.c:342
+#: ../coreapi/callbacks.c:365
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "קריאה נענתה על ידי %s - בהמתנה."
 
 # renewed
-#: ../coreapi/callbacks.c:357
+#: ../coreapi/callbacks.c:376
 msgid "Call resumed."
 msgstr "קריאה חודשה."
 
-#: ../coreapi/callbacks.c:362
+#: ../coreapi/callbacks.c:381
 #, c-format
 msgid "Call answered by %s."
 msgstr "קריאה נענתה על ידי %s."
@@ -1541,102 +1718,145 @@ msgstr "קריאה נענתה על ידי %s."
 # לא תואם
 # אי תאימות
 # אי התאמה
-#: ../coreapi/callbacks.c:377
+#: ../coreapi/callbacks.c:396
 msgid "Incompatible, check codecs..."
 msgstr "חוסר תאימות, נא לבדוק קודקים..."
 
-#: ../coreapi/callbacks.c:432
-msgid "We are being paused..."
-msgstr "אנחנו כעת מושהים..."
-
-#: ../coreapi/callbacks.c:436
-msgid "We have been resumed..."
+#: ../coreapi/callbacks.c:437
+#, fuzzy
+msgid "We have been resumed."
 msgstr "חזרנו..."
 
+#: ../coreapi/callbacks.c:446
+msgid "We are paused by other party."
+msgstr ""
+
 # באופן מרוחק
-#: ../coreapi/callbacks.c:441
-msgid "Call has been updated by remote..."
+#: ../coreapi/callbacks.c:452
+#, fuzzy
+msgid "Call is updated by remote."
 msgstr "שיחה עודכנה מרחוק..."
 
-#: ../coreapi/callbacks.c:473
+#: ../coreapi/callbacks.c:521
 msgid "Call terminated."
 msgstr "קריאה הסתיימה."
 
-#: ../coreapi/callbacks.c:480
+#: ../coreapi/callbacks.c:528
 msgid "User is busy."
 msgstr "משתמש עסוק כעת."
 
-#: ../coreapi/callbacks.c:481
+#: ../coreapi/callbacks.c:529
 msgid "User is temporarily unavailable."
 msgstr "משתמש לא זמין זמנית."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:483
+#: ../coreapi/callbacks.c:531
 msgid "User does not want to be disturbed."
 msgstr "משתמש לא מעוניין שיפריעו לו."
 
-#: ../coreapi/callbacks.c:484
+#: ../coreapi/callbacks.c:532
 msgid "Call declined."
 msgstr "קריאה סורבה."
 
-#: ../coreapi/callbacks.c:496
+#: ../coreapi/callbacks.c:544
 msgid "No response."
 msgstr "אין תגובה."
 
-#: ../coreapi/callbacks.c:500
+#: ../coreapi/callbacks.c:548
 msgid "Protocol error."
 msgstr "שגיאת פרוטוקול."
 
-#: ../coreapi/callbacks.c:516
+#: ../coreapi/callbacks.c:564
 msgid "Redirected"
 msgstr "מכוון מחדש"
 
-#: ../coreapi/callbacks.c:550
-msgid "No common codecs"
-msgstr "אין קודקים משותפים"
+# לא תואם
+# אי תאימות
+# אי התאמה
+#: ../coreapi/callbacks.c:600
+#, fuzzy
+msgid "Incompatible media parameters."
+msgstr "חוסר תאימות, נא לבדוק קודקים..."
 
-#: ../coreapi/callbacks.c:556
+#: ../coreapi/callbacks.c:606
 msgid "Call failed."
 msgstr "קריאה נכשלה."
 
 # הרשמה אצל %s הושלמה בהצלחה.
-#: ../coreapi/callbacks.c:633
+#: ../coreapi/callbacks.c:701
 #, c-format
 msgid "Registration on %s successful."
 msgstr "רישום אצל %s הושלם בהצלחה."
 
-#: ../coreapi/callbacks.c:634
+#: ../coreapi/callbacks.c:702
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "אי רישום אצל %s סוים."
 
 # Pas de réponse
 # no response in defined time
-#: ../coreapi/callbacks.c:650
+#: ../coreapi/callbacks.c:722
 msgid "no response timeout"
 msgstr "אין היענות תוך זמן מוגדר"
 
-#: ../coreapi/callbacks.c:653
+#: ../coreapi/callbacks.c:725
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "רישום אצל %s נכשל: %s"
 
-#: ../coreapi/sal_eXosip2.c:870 ../coreapi/sal_eXosip2.c:872
-msgid "Authentication failure"
-msgstr "כשל באימות"
-
-#: ../coreapi/linphonecall.c:128
+#: ../coreapi/linphonecall.c:129
 #, c-format
 msgid "Authentication token is %s"
 msgstr "אות האימות הינה %s"
 
 # האם כדאי לחקות את הטלפונים הניידים? שיחות של נענו
-#: ../coreapi/linphonecall.c:1573
+#: ../coreapi/linphonecall.c:2124
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "החמצת שיחה %i."
 msgstr[1] "החמצת %i שיחות."
+
+# שוחחו
+#~ msgid "Chat with %s"
+#~ msgstr "שיחה עם %s"
+
+#~ msgid "Contacts"
+#~ msgstr "אנשי קשר"
+
+#~ msgid "Enable video"
+#~ msgstr "הפעל וידאו"
+
+# הזנת
+#~ msgid "Enter username, phone number, or full sip address"
+#~ msgstr "נא להזין שם משתמש, מספר טלפון, או כתובת sip מלאה"
+
+# עיון
+#~ msgid "Lookup:"
+#~ msgstr "חיפוש:"
+
+# במסגרת
+#~ msgid "in"
+#~ msgstr "בקרב"
+
+#~ msgid ""
+#~ "Register to FONICS\n"
+#~ "virtual network !"
+#~ msgstr ""
+#~ "רישום אל FONICS\n"
+#~ "רשת עבודה וירטואלית !"
+
+#~ msgid "edit"
+#~ msgstr "עריכה"
+
+#~ msgid "We are being paused..."
+#~ msgstr "אנחנו כעת מושהים..."
+
+#~ msgid "No common codecs"
+#~ msgstr "אין קודקים משותפים"
+
+#~ msgid "Authentication failure"
+#~ msgstr "כשל באימות"
 
 #~ msgid "Please choose a username:"
 #~ msgstr "נא לבחור שם משתמש:"
@@ -1674,12 +1894,6 @@ msgstr[1] "החמצת %i שיחות."
 
 #~ msgid "Now ready !"
 #~ msgstr "מוכן כעת !"
-
-#~ msgid "Call"
-#~ msgstr "קריאה"
-
-#~ msgid "Not found"
-#~ msgstr "לא נמצא"
 
 #~ msgid ""
 #~ "Pause all calls\n"

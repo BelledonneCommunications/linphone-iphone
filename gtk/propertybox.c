@@ -772,6 +772,7 @@ static LangCodes supported_langs[]={
 	{	"zh_CN" ,	N_("Chinese")	},
 	{	"zh_TW"	,	N_("Traditional Chinese")	},
 	{	"nb_NO"	,	N_("Norwegian")	},
+	{	"he"	,	N_("Hebrew")	},
 	{	NULL	,	NULL		}
 };
 

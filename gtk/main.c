@@ -1427,7 +1427,7 @@ void linphone_gtk_load_identities(void){
 }
 
 static void linphone_gtk_dtmf_pressed(GtkButton *button){
-	const char *label=gtk_button_get_label(button);
+	const char *label=(char *)g_object_get_data(G_OBJECT(button),"label");
 	GtkWidget *uri_bar=linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(button)),"uribar");
 	int pos=-1;
 	gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
@@ -1611,6 +1611,28 @@ static gboolean on_window_state_event(GtkWidget *w, GdkEventWindowState *event){
 }
 #endif
 
+void linphone_gtk_init_dtmf_table(GtkWidget *mw){
+	GtkWidget *dtmf_table=linphone_gtk_get_widget(mw,"dtmf_table");
+	gtk_widget_set_direction(dtmf_table, GTK_TEXT_DIR_LTR);
+
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_A")),"label","A");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_B")),"label","B");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_C")),"label","C");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_D")),"label","D");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_1")),"label","1");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_2")),"label","2");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_3")),"label","3");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_4")),"label","4");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_5")),"label","5");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_6")),"label","6");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_7")),"label","7");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_8")),"label","8");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_9")),"label","9");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_0")),"label","0");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_#")),"label","#");
+	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_*")),"label","*");
+	
+}
 
 static void linphone_gtk_init_main_window(){
 	GtkWidget *main_window;
@@ -1624,7 +1646,8 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_connect_digits();
 	main_window=linphone_gtk_get_main_window();
 	linphone_gtk_call_log_update(main_window);
-	
+
+	linphone_gtk_init_dtmf_table(main_window);
 	linphone_gtk_update_call_buttons (NULL);
 	g_object_set_data(G_OBJECT(main_window),"is_conf",GINT_TO_POINTER(FALSE));
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/

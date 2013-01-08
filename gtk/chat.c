@@ -68,17 +68,14 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from, const cha
 		const char *display=linphone_address_get_display_name(from);
 		if (display==NULL || display[0]=='\0') {
 			display=linphone_address_get_username(from);
-		}
-		gtk_text_buffer_insert(buffer,&iter,display,-1);
-		//gtk_text_buffer_apply_tag_by_name(b,"bold",&begin,&iter);
+		}	
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,display,-1,"bold",NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,":",-1);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_object_set_data(G_OBJECT(w),"from_message",linphone_address_as_string(from));
 	}
-
-	//gtk_text_buffer_apply_tag_by_name(b,me ? "green" : "blue" ,&begin,&iter);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_get_iter_at_offset(buffer,&begin,off);
 	if(me){
@@ -218,6 +215,12 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
         gtk_text_buffer_delete (text_buffer, &start, &end);
         gtk_text_buffer_insert(text_buffer,&start,buf,-1);
 	}
+
+	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+	                                  "right","justification", GTK_JUSTIFY_RIGHT,NULL);
+
+	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+	                                  "bold","weight", PANGO_WEIGHT_BOLD,NULL);
 	
 	GtkWidget *button = linphone_gtk_get_widget(chat_view,"send");
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_send_text,cr);
