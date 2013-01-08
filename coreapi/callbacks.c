@@ -628,6 +628,11 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		/*resume to the call that send us the refer automatically*/
 		linphone_core_resume_call(lc,call->referer);
 	}
+
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(call);
+#endif //BUILD_UPNP
+
 	if (sr == SalReasonDeclined) {
 		call->reason=LinphoneReasonDeclined;
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
