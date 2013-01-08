@@ -610,6 +610,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 	ms_mutex_lock(&lupnp->mutex);
 
 	if(lupnp->clean && !lupnp->cleaning) {
+		ms_message("uPnP IGD: Clean port mappings");
 		lupnp->clean = FALSE;
 		// Remove old mapping
 		list = upnp_config_list_port_bindings(lc->config);
@@ -627,6 +628,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 	}
 
 	if(lupnp->emit) {
+		ms_message("uPnP IGD: Update port mappings");
 		lupnp->emit = FALSE;
 
 		/* Force port bindings */
