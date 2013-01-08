@@ -3018,6 +3018,11 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 
 	linphone_call_stop_media_streams(call);
+
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(call);
+#endif //BUILD_UPNP
+
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Call ended") );
 	linphone_call_set_state(call,LinphoneCallEnd,"Call terminated");

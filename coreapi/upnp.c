@@ -527,7 +527,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 		// Remove old mapping
 		port_bindings = upnp_config_list_port_bindings(lc->config);
 		if(port_bindings != NULL) {
-			for(port_bindings_item = port_bindings;port_bindings_item!=NULL;port_bindings_item=port_bindings_item->next) {
+			for(port_bindings_item = port_bindings;port_bindings_item != NULL; port_bindings_item = port_bindings_item->next) {
 				port_mapping = (UpnpPortBinding *)port_bindings_item->data;
 				//TODO: Don't send id it's udp/tcp/tls port binding
 				upnp_context_send_remove_port_binding(lc, port_mapping);
