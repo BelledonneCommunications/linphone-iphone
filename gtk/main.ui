@@ -834,7 +834,7 @@
                         <property name="use_action_appearance">False</property>
                         <property name="image">image12</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="linphone_gtk_display_wizard" swapped="no"/>
+                        <signal name="activate" handler="linphone_gtk_show_assistant" swapped="no"/>
                       </object>
                     </child>
                   </object>

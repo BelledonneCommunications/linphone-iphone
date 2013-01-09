@@ -25,6 +25,7 @@ static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w);
 static const int PASSWORD_MIN_SIZE = 6;
 static const int LOGIN_MIN_SIZE = 4;
 
+static GtkWidget *the_assistant=NULL;
 static GdkPixbuf *ok;
 static GdkPixbuf *notok;
 
@@ -400,7 +401,7 @@ static int is_account_validated(GtkWidget *page) {
 }
 
 static void linphone_gtk_assistant_closed(GtkWidget *w){
-	gtk_widget_destroy(w);
+	linphone_gtk_close_assistant();
 }
 
 static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page){
@@ -531,8 +532,17 @@ static LinphoneAccountCreator *linphone_gtk_assistant_get_creator(GtkWidget*w){
 	return (LinphoneAccountCreator*)g_object_get_data(G_OBJECT(w),"creator");
 }
 
-GtkWidget * linphone_gtk_create_assistant(void){
-	GtkWidget *w=gtk_assistant_new();
+void linphone_gtk_close_assistant(void){
+	if(the_assistant==NULL)
+		return;
+	gtk_widget_destroy(the_assistant);	
+	the_assistant = NULL;
+}
+
+void linphone_gtk_show_assistant(void){
+	if(the_assistant!=NULL)
+		return;
+	GtkWidget *w=the_assistant=gtk_assistant_new();
 	gtk_window_set_resizable (GTK_WINDOW(w), FALSE);
 
 	ok = create_pixbuf(linphone_gtk_get_ui_config("ok","ok.png"));
@@ -597,7 +607,5 @@ GtkWidget * linphone_gtk_create_assistant(void){
 	g_signal_connect(G_OBJECT(w),"prepare",(GCallback)linphone_gtk_assistant_prepare,NULL);
 
 	gtk_widget_show(w);
-
-	return w;
 }
 
