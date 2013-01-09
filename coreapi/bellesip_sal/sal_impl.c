@@ -37,6 +37,8 @@ static void sal_add_pending_auth(Sal *sal, SalOp *op){
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 	belle_sip_request_t* request;
 	bool_t is_within_dialog=FALSE;
+	belle_sip_list_t* auth_list=NULL;
+	belle_sip_auth_event_t* auth_event;
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
 		request = belle_sip_dialog_create_request_from(op->dialog,(const belle_sip_request_t *)op->request);
 		is_within_dialog=TRUE;
@@ -46,7 +48,7 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION);
 
 	}
-	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response,&auth_list)) {
 		if (is_within_dialog) {
 			sal_op_resend_request(op,request);
 		} else {
@@ -57,6 +59,12 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 		if (is_within_dialog) {
 			belle_sip_object_unref(request);
 		}
+		if (op->auth_info) sal_auth_info_delete(op->auth_info);
+		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
+		op->auth_info=sal_auth_info_new();
+		op->auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(auth_event)) ;
+		op->auth_info->username = ms_strdup(belle_sip_auth_event_get_username(auth_event)) ;
+		belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
 		sal_add_pending_auth(op->base.root,op);
 	}
 
@@ -172,6 +180,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
+	belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+	belle_sip_header_contact_t* original_contact;
 	belle_sip_header_address_t* contact_address=NULL;
 	belle_sip_header_via_t* via_header;
 	belle_sip_uri_t* contact_uri;
@@ -198,19 +208,29 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		received = belle_sip_header_via_get_received(via_header);
 		rport = belle_sip_header_via_get_rport(via_header);
 		if (!sal_op_get_contact(op)) {
-			/*hmm update contact from via*/
-			contact_address=belle_sip_header_address_new();
-			contact_uri=belle_sip_uri_create(NULL,belle_sip_header_via_get_host(via_header));
-			belle_sip_header_address_set_uri(contact_address,contact_uri);
+			/*check if contqct set in reauest*/
 
-			if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
-				belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
+			if ((original_contact=belle_sip_message_get_header_by_type(request,belle_sip_header_contact_t))) {
+				/*no contact set yet, try to see if sip tack has an updated one*/
+				contact_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(original_contact)));
+				sal_op_set_contact_address(op,(const SalAddress *)contact_address);
+				belle_sip_object_unref(contact_address);
+			} else {
+
+				/*hmm update contact from via, maybe useless, some op may not need any contact at all*/
+				contact_address=belle_sip_header_address_new();
+				contact_uri=belle_sip_uri_create(NULL,belle_sip_header_via_get_host(via_header));
+				belle_sip_header_address_set_uri(contact_address,contact_uri);
+
+				if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
+					belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
+				}
+				if (belle_sip_header_via_get_listening_port(via_header)
+						!= belle_sip_listening_point_get_well_known_port(belle_sip_header_via_get_transport(via_header))) {
+					belle_sip_uri_set_port(contact_uri,belle_sip_header_via_get_listening_port(via_header) );
+				}
+				contact_updated=TRUE;
 			}
-			if (belle_sip_header_via_get_listening_port(via_header)
-					!= belle_sip_listening_point_get_well_known_port(belle_sip_header_via_get_transport(via_header))) {
-				belle_sip_uri_set_port(contact_uri,belle_sip_header_via_get_listening_port(via_header) );
-			}
-			contact_updated=TRUE;
 		}
 
 		if (received!=NULL || rport>0) {

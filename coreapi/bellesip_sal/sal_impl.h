@@ -54,7 +54,7 @@ struct SalOp{
 	belle_sip_response_t* response;
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_client_transaction_t* pending_inv_client_trans;
-	SalAuthInfo auth_info;
+	SalAuthInfo* auth_info;
 	unsigned long int  registration_refresh_timer;
 	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;

@@ -4749,7 +4749,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_free(config->proxies);
 	config->proxies=NULL;
 
-	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);	/*mark the end */
+	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 
 	ms_list_for_each(lc->auth_info,(void (*)(void*))linphone_auth_info_destroy);
 	ms_list_free(lc->auth_info);

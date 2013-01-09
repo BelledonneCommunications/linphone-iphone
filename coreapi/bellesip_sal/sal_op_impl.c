@@ -31,6 +31,7 @@ void sal_op_release(SalOp *op){
 	if (op->registration_refresh_timer>0) {
 		belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
 	}
+	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	__sal_op_free(op);
 	return ;
 }
@@ -46,8 +47,8 @@ void sal_op_cancel_authentication(SalOp *h){
 }
 
 int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **username){
-	*realm=op->auth_info.realm;
-	*username=op->auth_info.username;
+	*realm=op->auth_info?op->auth_info->realm:NULL;
+	*username=op->auth_info?op->auth_info->username:NULL;
 	return 0;
 }
 
@@ -130,7 +131,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
-		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL);
+		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
 	}
 	return belle_sip_client_transaction_send_request(client_transaction);
 

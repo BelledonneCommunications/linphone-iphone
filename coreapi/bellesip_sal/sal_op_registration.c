@@ -50,9 +50,11 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 
 		contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
 		if (contact_header_list) {
-			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)original_contact);
+			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_not_equals, (const void*)original_contact);
 			if (!contact_header_list) {
-				contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_equals, (const void*)sal_op_get_contact_address(op));
+				/*reset header list*/
+				contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
+				contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_not_equals, (const void*)sal_op_get_contact_address(op));
 			}
 			if (!contact_header_list) {
 				tmp_string=belle_sip_object_to_string(BELLE_SIP_OBJECT(original_contact));
@@ -119,7 +121,6 @@ static void send_register_request_with_expires(SalOp* op, belle_sip_request_t* r
 
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
-
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
 	sal_op_set_route(op,proxy);
