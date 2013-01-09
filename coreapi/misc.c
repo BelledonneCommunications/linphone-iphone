@@ -881,10 +881,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				ice_session_add_check_list(call->ice_session, cl);
 				switch (stream->type) {
 					case SalAudio:
-						if (call->audiostream != NULL) call->audiostream->ice_check_list = cl;
+						if (call->audiostream != NULL) call->audiostream->ms.ice_check_list = cl;
 						break;
 					case SalVideo:
-						if (call->videostream != NULL) call->videostream->ice_check_list = cl;
+						if (call->videostream != NULL) call->videostream->ms.ice_check_list = cl;
 						break;
 					default:
 						break;

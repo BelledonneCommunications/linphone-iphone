@@ -189,10 +189,18 @@ static bool_t payload_list_equals(const MSList *l1, const MSList *l2){
 
 int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStreamDescription *sd2) {
 	int result = SAL_MEDIA_DESCRIPTION_UNCHANGED;
+	int i;
 
 	/* A different proto should result in SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED but the encryption change
 	   needs a stream restart for now, so use SAL_MEDIA_DESCRIPTION_CODEC_CHANGED */
 	if (sd1->proto != sd2->proto) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
+		if ((sd1->crypto[i].tag != sd2->crypto[i].tag)
+			|| (sd1->crypto[i].algo != sd2->crypto[i].algo)
+			|| (strncmp(sd1->crypto[i].master_key, sd2->crypto[i].master_key, sizeof(sd1->crypto[i].master_key) - 1))) {
+			result |= SAL_MEDIA_DESCRIPTION_CRYPTO_CHANGED;
+		}
+	}
 
 	if (sd1->type != sd2->type) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (strcmp(sd1->rtp_addr, sd2->rtp_addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;

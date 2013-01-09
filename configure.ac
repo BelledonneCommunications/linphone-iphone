@@ -97,7 +97,7 @@ fi
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW"
+ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW he"
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -395,6 +395,17 @@ if test "$build_ssl" = "true"; then
 fi
 dnl setup flags for exosip library
 LP_SETUP_EXOSIP
+
+dnl check exosip support of DSCP in exosip
+AC_MSG_CHECKING([for DSCP support in exosip])
+AC_TRY_COMPILE([#include <eXosip2/eXosip.h>],
+[int dscp=0;eXosip_set_option(EXOSIP_OPT_SET_DSCP,&dscp);],
+has_exosip_dscp=yes,has_exosip_dscp=no)
+AC_MSG_RESULT($has_exosip_dscp)
+if test "$has_exosip_dscp" = "yes" ; then
+    AC_DEFINE( HAVE_EXOSIP_DSCP, 1, [Define if exosip dscp available] )
+fi
+
 
 if test "$console_ui" = "true" ; then
 dnl check gnu readline

@@ -777,6 +777,7 @@ static LangCodes supported_langs[]={
 	{	"zh_CN" ,	N_("Chinese")	},
 	{	"zh_TW"	,	N_("Traditional Chinese")	},
 	{	"nb_NO"	,	N_("Norwegian")	},
+	{	"he"	,	N_("Hebrew")	},
 	{	NULL	,	NULL		}
 };
 
@@ -799,7 +800,12 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 	const char *all_langs="C " LINPHONE_ALL_LANGS;
 	const char *name;
 	int i=0,index=0;
-	const char *cur_lang=getenv("LANG");
+	const char *cur_lang;
+	#if defined(WIN32) || defined(__APPLE__)
+		cur_lang=getenv("LANG");
+	#else
+		cur_lang=getenv("LANGUAGE");
+	#endif
 	int cur_lang_index=-1;
 	char text[256]={0};
 	if (cur_lang==NULL) cur_lang="C";
@@ -823,7 +829,12 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 void linphone_gtk_lang_changed(GtkComboBox *combo){
 	const char *selected=gtk_combo_box_get_active_text(combo);
 	char code[10];
-	const char *cur_lang=getenv("LANG");
+	const char *cur_lang;
+	#if defined(WIN32) || defined(__APPLE__)
+		cur_lang=getenv("LANG");
+	#else
+		cur_lang=getenv("LANGUAGE");
+	#endif
 	if (selected!=NULL){
 		sscanf(selected,"%s",code);
 		if (cur_lang==NULL) cur_lang="C";
@@ -1294,4 +1305,3 @@ void linphone_gtk_dscp_edit_response(GtkWidget *dialog, guint response_id){
 	}
 	gtk_widget_destroy(dialog);
 }
-

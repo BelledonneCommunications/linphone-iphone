@@ -294,6 +294,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
+void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
@@ -511,6 +512,7 @@ struct _LinphoneCore
 	Sal *sal;
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
+	RtpProfile *default_profile;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;

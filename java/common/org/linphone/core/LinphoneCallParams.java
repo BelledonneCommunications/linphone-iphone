@@ -65,4 +65,11 @@ public interface LinphoneCallParams {
 	 * that it is achievable by the codec selected after SDP handshake. Video is automatically disabled.
 	**/
 	void enableLowBandwidth(boolean enable);
+	
+	/**
+	 * Use to know if this call has been configured in low bandwidth mode.
+	 * <br> When enabled, this param may transform a call request with video in audio only mode.
+	 * @return true if low bandwidth has been configured/detected
+	 */
+	boolean isLowBandwidthEnabled();
 }

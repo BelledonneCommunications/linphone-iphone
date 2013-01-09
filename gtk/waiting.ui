@@ -6,7 +6,6 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
-    <property name="icon">linphone2.png</property>
     <property name="deletable">False</property>
     <child>
       <object class="GtkFrame" id="frame1">
