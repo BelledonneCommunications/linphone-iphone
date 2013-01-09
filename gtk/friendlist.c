@@ -621,10 +621,10 @@ void linphone_gtk_show_friends(void){
 	GtkListStore *store=NULL;
 	GtkTreeIter iter;
 	const MSList *itf;
-	GtkWidget *filter=linphone_gtk_get_widget(mw,"search_bar");
+	//GtkWidget *filter=linphone_gtk_get_widget(mw,"search_bar");
 	LinphoneCore *core=linphone_gtk_get_core();
-	const gchar *search=NULL;
-	gboolean lookup=FALSE;
+	//const gchar *search=NULL;
+	//gboolean lookup=FALSE;
 	MSList *sorted;
 
 	linphone_gtk_show_directory_search();
@@ -636,10 +636,10 @@ void linphone_gtk_show_friends(void){
 	store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)));
 	gtk_list_store_clear(store);
 
-	search=gtk_entry_get_text(GTK_ENTRY(filter));
-	if (search==NULL || search[0]=='\0')
-		lookup=FALSE;
-	else lookup=TRUE;
+	//search=gtk_entry_get_text(GTK_ENTRY(filter));
+	//if (search==NULL || search[0]=='\0')
+	//	lookup=FALSE;
+	//else lookup=TRUE;
 
 	sorted=sort_friend_list(linphone_core_get_friend_list(core));
 
@@ -650,12 +650,12 @@ void linphone_gtk_show_friends(void){
 		const char *name=linphone_address_get_display_name(f_uri);
 		const char *display=name;
 		char *escaped=NULL;
-		if (lookup){
+		/*if (lookup){
 			if (strstr(uri,search)==NULL){
 				ms_free(uri);
 				continue;
 			}
-		}
+		}*/
 		//BuddyInfo *bi;
 		gboolean send_subscribe=linphone_friend_get_send_subscribe(lf);
 		if (name==NULL || name[0]=='\0') {

@@ -724,9 +724,14 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	gtk_widget_set_visible(button,add_call);
 
 	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
-
-	linphone_gtk_enable_transfer_button(lc,call_list_size>1);
-	linphone_gtk_enable_conference_button(lc,call_list_size>1);
+	GtkWidget *conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
+	if(conf_frame==NULL){
+		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
+		linphone_gtk_enable_conference_button(lc,call_list_size>1);
+	} else {
+		linphone_gtk_enable_transfer_button(lc,FALSE);
+		linphone_gtk_enable_conference_button(lc,FALSE);
+	}
 	update_video_title();
 	if (call) linphone_gtk_update_video_button(call);
 }
@@ -1497,7 +1502,7 @@ static void linphone_gtk_configure_main_window(){
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
 		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
 		add_call_icon=linphone_gtk_get_ui_config("add_call_icon","addcall-green.png");
-		//stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png");
+		//stop_call_icon=linphone_gtk_get_ui_config("stop_call_icon","stopcall-small.png");
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);

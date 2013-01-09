@@ -387,28 +387,29 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="spk_audiolevel">
-                        <property name="width_request">90</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="pack_type">end</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkImage" id="incall_spk_icon">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="stock">gtk-missing-image</property>
-                        <property name="icon-size">1</property>
+                        <property name="icon-size">0</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="spk_audiolevel">
+                        <property name="width_request">90</property>
+                        <property name="height_request">10</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">1</property>
                         <property name="pack_type">end</property>
                         <property name="position">3</property>
                       </packing>
@@ -416,7 +417,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -480,6 +481,7 @@
                     <child>
                       <object class="GtkButton" id="hold_call">
                         <property name="label" translatable="yes">Pause</property>
+                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
@@ -497,7 +499,6 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="relief">half</property>
                         <signal name="clicked" handler="linphone_gtk_mute_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -596,14 +597,15 @@
             <child>
               <object class="GtkProgressBar" id="quality_indicator">
                 <property name="width_request">90</property>
+                <property name="height_request">10</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <property name="tooltip_text" translatable="yes">Call quality rating</property>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
@@ -944,9 +946,6 @@
                         <property name="position">2</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -963,29 +962,22 @@
                       <object class="GtkVBox" id="vbox12">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="border_width">4</property>
                         <child>
-                          <object class="GtkEntry" id="search_bar">
+                          <object class="GtkLabel" id="contact">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="invisible_char">●</property>
-                            <property name="shadow_type">none</property>
-                            <property name="invisible_char_set">True</property>
-                            <property name="primary_icon_activatable">False</property>
-                            <property name="secondary_icon_activatable">False</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
-                            <signal name="changed" handler="linphone_gtk_show_friends" swapped="no"/>
+                            <property name="can_focus">False</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_STRUCTURE_MASK</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Contacts</property>
+                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">4</property>
+                            <property name="fill">False</property>
+                            <property name="padding">3</property>
                             <property name="position">0</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindow1">
@@ -1000,7 +992,7 @@
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="reorderable">True</property>
                                 <property name="enable_search">False</property>
-                                <property name="search_column">0</property>
+                                <property name="search_column">1</property>
                                 <signal name="button-press-event" handler="linphone_gtk_contact_list_button_pressed" swapped="no"/>
                                 <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
                                 <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
@@ -1011,7 +1003,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -1073,7 +1065,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">3</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
