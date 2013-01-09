@@ -1218,7 +1218,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
 #ifdef BUILD_UPNP
-	upnp_context_init(lc);
+	lc->upnp = upnp_context_new(lc);
 #endif  //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
@@ -1314,9 +1314,9 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		return;
 	}
 #ifdef BUILD_UPNP
-	else if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp
-		&& lc->upnp.state == LinphoneUpnpStateOk) {
-		ip = upnp_igd_get_external_ipaddress(lc->upnp.upnp_igd_ctxt);
+	else if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
+			upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
+		ip = upnp_context_get_external_ipaddress(lc->upnp);
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
@@ -2279,7 +2279,7 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	}
 #ifdef BUILD_UPNP
 	if (call->upnp_session != NULL) {
-		if (call->upnp_session->state == LinphoneUpnpStateOk) upnp_ready = TRUE;
+		if (upnp_session_get_state(call->upnp_session) == LinphoneUpnpStateOk) upnp_ready = TRUE;
 	} else {
 		upnp_ready = TRUE;
 	}
@@ -4965,7 +4965,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 
 #ifdef BUILD_UPNP
-	upnp_context_uninit(lc);
+	upnp_context_destroy(lc->upnp);
+	lc->upnp = NULL;
 #endif  //BUILD_UPNP
 
 	if (lc->friends)

@@ -34,58 +34,21 @@ typedef enum {
 	LinphoneUpnpStateKo,
 } UpnpState;
 
+typedef struct _UpnpSession UpnpSession;
+typedef struct _UpnpContext UpnpContext;
 
-typedef struct _UpnpPortBinding {
-	ms_mutex_t mutex;
-	UpnpState state;
-	upnp_igd_ip_protocol protocol;
-	char local_addr[LINPHONE_IPADDR_SIZE];
-	int local_port;
-	char external_addr[LINPHONE_IPADDR_SIZE];
-	int external_port;
-	int retry;
-	int ref;
-} UpnpPortBinding;
-
-typedef struct _UpnpStream {
-	UpnpPortBinding *rtp;
-	UpnpPortBinding *rtcp;
-	UpnpState state;
-} UpnpStream;
-
-typedef struct _UpnpSession {
-	UpnpStream *audio;
-	UpnpStream *video;
-	UpnpState state;
-} UpnpSession;
-
-typedef struct _UpnpContext {
-	upnp_igd_context *upnp_igd_ctxt;
-	UpnpPortBinding *sip_tcp;
-	UpnpPortBinding *sip_tls;
-	UpnpPortBinding *sip_udp;
-	UpnpState state;
-	MSList *removing_configs;
-	MSList *adding_configs;
-	MSList *pending_bindings;
-
-	bool_t clean; // True if at the next loop clean the port bindings
-	bool_t cleaning; // True if the cleaning processing;
-	bool_t emit; // True if at the next loop emit the port bindings
-
-	ms_mutex_t mutex;
-	ms_cond_t cond;
-
-} UpnpContext;
-
-void linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session);
+int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session);
 int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call);
-int upnp_call_process(LinphoneCall *call);
-UpnpSession* upnp_session_new();
-void upnp_session_destroy(LinphoneCall* call);
 
-int upnp_context_init(LinphoneCore *lc);
-void upnp_context_uninit(LinphoneCore *lc);
+int upnp_call_process(LinphoneCall *call);
+UpnpSession* upnp_session_new(LinphoneCall *call);
+void upnp_session_destroy(UpnpSession* session);
+UpnpState upnp_session_get_state(UpnpSession *session);
+
+UpnpContext *upnp_context_new(LinphoneCore *lc);
+void upnp_context_destroy(UpnpContext *ctx);
+UpnpState upnp_context_get_state(UpnpContext *ctx);
+const char *upnp_context_get_external_ipaddress(UpnpContext *ctx);
 
 #endif //LINPHONE_UPNP_H

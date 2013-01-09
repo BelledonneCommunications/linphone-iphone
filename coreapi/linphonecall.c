@@ -1698,7 +1698,7 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 #ifdef BUILD_UPNP
 void linphone_call_delete_upnp_session(LinphoneCall *call){
 	if(call->upnp_session!=NULL) {
-		upnp_session_destroy(call);
+		upnp_session_destroy(call->upnp_session);
 		call->upnp_session=NULL;
 	}
 }

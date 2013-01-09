@@ -578,7 +578,7 @@ struct _LinphoneCore
 	char* device_id;
 	MSList *last_recv_msg_ids;
 #ifdef BUILD_UPNP
-	UpnpContext upnp;
+	UpnpContext *upnp;
 #endif //BUILD_UPNP
 };
 

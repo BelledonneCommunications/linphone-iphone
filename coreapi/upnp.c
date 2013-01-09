@@ -48,6 +48,57 @@ LpSection *lp_config_find_section(LpConfig *lpconfig, const char *name);
 void lp_section_remove_item(LpSection *sec, LpItem *item);
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
 
+
+/*
+ * uPnP Definitions
+ */
+
+typedef struct _UpnpPortBinding {
+	ms_mutex_t mutex;
+	UpnpState state;
+	upnp_igd_ip_protocol protocol;
+	char local_addr[LINPHONE_IPADDR_SIZE];
+	int local_port;
+	char external_addr[LINPHONE_IPADDR_SIZE];
+	int external_port;
+	int retry;
+	int ref;
+} UpnpPortBinding;
+
+typedef struct _UpnpStream {
+	UpnpPortBinding *rtp;
+	UpnpPortBinding *rtcp;
+	UpnpState state;
+} UpnpStream;
+
+struct _UpnpSession {
+	LinphoneCall *call;
+	UpnpStream *audio;
+	UpnpStream *video;
+	UpnpState state;
+};
+
+struct _UpnpContext {
+	LinphoneCore *lc;
+	upnp_igd_context *upnp_igd_ctxt;
+	UpnpPortBinding *sip_tcp;
+	UpnpPortBinding *sip_tls;
+	UpnpPortBinding *sip_udp;
+	UpnpState state;
+	MSList *removing_configs;
+	MSList *adding_configs;
+	MSList *pending_bindings;
+
+	bool_t clean; // True if at the next loop clean the port bindings
+	bool_t cleaning; // True if the cleaning processing;
+	bool_t emit; // True if at the next loop emit the port bindings
+
+	ms_mutex_t mutex;
+	ms_cond_t cond;
+
+};
+
+
 bool_t linphone_core_upnp_hook(void *data);
 
 UpnpPortBinding *upnp_port_binding_new();
@@ -58,11 +109,11 @@ void upnp_port_binding_log(int level, const char *msg, const UpnpPortBinding *po
 void upnp_port_binding_release(UpnpPortBinding *port);
 
 MSList *upnp_config_list_port_bindings(struct _LpConfig *lpc);
-void upnp_config_add_port_binding(LinphoneCore *lc, const UpnpPortBinding *port);
-void upnp_config_remove_port_binding(LinphoneCore *lc, const UpnpPortBinding *port);
+void upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port);
+void upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port);
 
-int upnp_context_send_remove_port_binding(LinphoneCore *lc, UpnpPortBinding *port);
-int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port);
+int upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortBinding *port);
+int upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBinding *port);
 
 
 /**
@@ -89,8 +140,7 @@ void linphone_upnp_igd_print(void *cookie, upnp_igd_print_level level, const cha
 }
 
 void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
-	LinphoneCore *lc = (LinphoneCore *)cookie;
-	UpnpContext *lupnp = &lc->upnp;
+	UpnpContext *lupnp = (UpnpContext *)cookie;
 	upnp_igd_port_mapping *mapping = NULL;
 	UpnpPortBinding *port_mapping = NULL;
 	const char *ip_address = NULL;
@@ -128,7 +178,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 		port_mapping->external_port = mapping->remote_port;
 		port_mapping->state = LinphoneUpnpStateOk;
 		upnp_port_binding_log(ORTP_MESSAGE, "Added port binding", port_mapping);
-		upnp_config_add_port_binding(lc, port_mapping);
+		upnp_config_add_port_binding(lupnp, port_mapping);
 
 		lupnp->pending_bindings = ms_list_remove(lupnp->pending_bindings, port_mapping);
 		upnp_port_binding_release(port_mapping);
@@ -137,7 +187,8 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	case UPNP_IGD_PORT_MAPPING_ADD_FAILURE:
 		mapping = (upnp_igd_port_mapping *) arg;
 		port_mapping = (UpnpPortBinding*) mapping->cookie;
-		if(upnp_context_send_add_port_binding(lc, port_mapping) != 0) {
+		port_mapping->external_port = -1; //Force random external port
+		if(upnp_context_send_add_port_binding(lupnp, port_mapping) != 0) {
 			upnp_port_binding_log(ORTP_ERROR, "Can't add port binding", port_mapping);
 		}
 
@@ -150,7 +201,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 		port_mapping = (UpnpPortBinding*) mapping->cookie;
 		port_mapping->state = LinphoneUpnpStateIdle;
 		upnp_port_binding_log(ORTP_MESSAGE, "Removed port binding", port_mapping);
-		upnp_config_remove_port_binding(lc, port_mapping);
+		upnp_config_remove_port_binding(lupnp, port_mapping);
 
 		lupnp->pending_bindings = ms_list_remove(lupnp->pending_bindings, port_mapping);
 		upnp_port_binding_release(port_mapping);
@@ -159,9 +210,9 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	case UPNP_IGD_PORT_MAPPING_REMOVE_FAILURE:
 		mapping = (upnp_igd_port_mapping *) arg;
 		port_mapping = (UpnpPortBinding*) mapping->cookie;
-		if(upnp_context_send_remove_port_binding(lc, port_mapping) != 0) {
+		if(upnp_context_send_remove_port_binding(lupnp, port_mapping) != 0) {
 			upnp_port_binding_log(ORTP_ERROR, "Can't remove port binding", port_mapping);
-			upnp_config_remove_port_binding(lc, port_mapping);
+			upnp_config_remove_port_binding(lupnp, port_mapping);
 		}
 
 		lupnp->pending_bindings = ms_list_remove(lupnp->pending_bindings, port_mapping);
@@ -187,14 +238,15 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
  * uPnP Context
  */
 
-int upnp_context_init(LinphoneCore *lc) {
+UpnpContext* upnp_context_new(LinphoneCore *lc) {
 	LCSipTransports transport;
-	UpnpContext *lupnp = &lc->upnp;
+	UpnpContext *lupnp = (UpnpContext *)ms_new0(UpnpContext,1);
 	const char *ip_address;
 
 	ms_mutex_init(&lupnp->mutex, NULL);
 	ms_cond_init(&lupnp->cond, NULL);
 
+	lupnp->lc = lc;
 	lupnp->pending_bindings = NULL;
 	lupnp->adding_configs = NULL;
 	lupnp->removing_configs = NULL;
@@ -202,7 +254,7 @@ int upnp_context_init(LinphoneCore *lc) {
 	lupnp->cleaning = FALSE;
 	lupnp->emit = FALSE;
 	lupnp->state = LinphoneUpnpStateIdle;
-	ms_message("uPnP IGD: Init");
+	ms_message("uPnP IGD: New %p for core %p", lupnp, lc);
 
 	linphone_core_get_sip_transports(lc, &transport);
 	if(transport.udp_port != 0) {
@@ -230,14 +282,14 @@ int upnp_context_init(LinphoneCore *lc) {
 		lupnp->sip_tls = NULL;
 	}
 
-	linphone_core_add_iterate_hook(lc, linphone_core_upnp_hook, lc);
+	linphone_core_add_iterate_hook(lc, linphone_core_upnp_hook, lupnp);
 
 	lupnp->upnp_igd_ctxt = NULL;
-	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, lc);
+	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, lupnp);
 	if(lupnp->upnp_igd_ctxt == NULL) {
 		lupnp->state = LinphoneUpnpStateKo;
 		ms_error("Can't create uPnP IGD context");
-		return -1;
+		return NULL;
 	}
 
 	ip_address = upnp_igd_get_local_ipaddress(lupnp->upnp_igd_ctxt);
@@ -252,12 +304,10 @@ int upnp_context_init(LinphoneCore *lc) {
 	}
 
 	lupnp->state = LinphoneUpnpStatePending;
-	return 0;
+	return lupnp;
 }
 
-void upnp_context_uninit(LinphoneCore *lc) {
-	UpnpContext *lupnp = &lc->upnp;
-
+void upnp_context_destroy(UpnpContext *lupnp) {
 	/*
 	 * Not need, all hooks are removed before
 	 * linphone_core_remove_iterate_hook(lc, linphone_core_upnp_hook, lc);
@@ -265,15 +315,15 @@ void upnp_context_uninit(LinphoneCore *lc) {
 
 	/* Send port binding removes */
 	if(lupnp->sip_udp != NULL) {
-		upnp_context_send_remove_port_binding(lc, lupnp->sip_udp);
+		upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp);
 		lupnp->sip_udp = NULL;
 	}
 	if(lupnp->sip_tcp != NULL) {
-		upnp_context_send_remove_port_binding(lc, lupnp->sip_tcp);
+		upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tcp);
 		lupnp->sip_tcp = NULL;
 	}
 	if(lupnp->sip_tls != NULL) {
-		upnp_context_send_remove_port_binding(lc, lupnp->sip_tls);
+		upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tls);
 		lupnp->sip_tcp = NULL;
 	}
 
@@ -288,7 +338,7 @@ void upnp_context_uninit(LinphoneCore *lc) {
 	}
 
 	/* Run one time the hook for configuration update */
-	linphone_core_upnp_hook(lc);
+	linphone_core_upnp_hook(lupnp);
 
 	/* Release port bindings */
 	if(lupnp->sip_udp != NULL) {
@@ -315,11 +365,19 @@ void upnp_context_uninit(LinphoneCore *lc) {
 	ms_mutex_destroy(&lupnp->mutex);
 	ms_cond_destroy(&lupnp->cond);
 
-	ms_message("uPnP IGD: Uninit");
+	ms_message("uPnP IGD: destroy %p", lupnp);
+	ms_free(lupnp);
 }
 
-int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) {
-	UpnpContext *lupnp = &lc->upnp;
+UpnpState upnp_context_get_state(UpnpContext *ctx) {
+	return ctx->state;
+}
+
+const char* upnp_context_get_external_ipaddress(UpnpContext *ctx) {
+	return upnp_igd_get_external_ipaddress(ctx->upnp_igd_ctxt);
+}
+
+int upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBinding *port) {
 	upnp_igd_port_mapping mapping;
 	char description[128];
 	int ret;
@@ -361,8 +419,7 @@ int upnp_context_send_add_port_binding(LinphoneCore *lc, UpnpPortBinding *port) 
 	return ret;
 }
 
-int upnp_context_send_remove_port_binding(LinphoneCore *lc, UpnpPortBinding *port) {
-	UpnpContext *lupnp = &lc->upnp;
+int upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortBinding *port) {
 	upnp_igd_port_mapping mapping;
 	int ret;
 	if(port->state == LinphoneUpnpStateOk) {
@@ -398,9 +455,13 @@ int upnp_context_send_remove_port_binding(LinphoneCore *lc, UpnpPortBinding *por
 
 int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool_t video) {
 	LinphoneCore *lc = call->core;
-	UpnpContext *lupnp = &lc->upnp;
+	UpnpContext *lupnp = lc->upnp;
 	int ret = -1;
 	const char *local_addr, *external_addr;
+
+	if(lupnp == NULL) {
+		return ret;
+	}
 
 	ms_mutex_lock(&lupnp->mutex);
 	// Don't handle when the call
@@ -426,17 +487,17 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		}
 		if(call->upnp_session->audio->rtp->state == LinphoneUpnpStateIdle && audio) {
 			// Add audio port binding
-			upnp_context_send_add_port_binding(lc, call->upnp_session->audio->rtp);
+			upnp_context_send_add_port_binding(lupnp, call->upnp_session->audio->rtp);
 		} else if(call->upnp_session->audio->rtp->state == LinphoneUpnpStateOk && !audio) {
 			// Remove audio port binding
-			upnp_context_send_remove_port_binding(lc, call->upnp_session->audio->rtp);
+			upnp_context_send_remove_port_binding(lupnp, call->upnp_session->audio->rtp);
 		}
 		if(call->upnp_session->audio->rtcp->state == LinphoneUpnpStateIdle && audio) {
 			// Add audio port binding
-			upnp_context_send_add_port_binding(lc, call->upnp_session->audio->rtcp);
+			upnp_context_send_add_port_binding(lupnp, call->upnp_session->audio->rtcp);
 		} else if(call->upnp_session->audio->rtcp->state == LinphoneUpnpStateOk && !audio) {
 			// Remove audio port binding
-			upnp_context_send_remove_port_binding(lc, call->upnp_session->audio->rtcp);
+			upnp_context_send_remove_port_binding(lupnp, call->upnp_session->audio->rtcp);
 		}
 
 		/*
@@ -456,17 +517,17 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		}
 		if(call->upnp_session->video->rtp->state == LinphoneUpnpStateIdle && video) {
 			// Add video port binding
-			upnp_context_send_add_port_binding(lc, call->upnp_session->video->rtp);
+			upnp_context_send_add_port_binding(lupnp, call->upnp_session->video->rtp);
 		} else if(call->upnp_session->video->rtp->state == LinphoneUpnpStateOk && !video) {
 			// Remove video port binding
-			upnp_context_send_remove_port_binding(lc, call->upnp_session->video->rtp);
+			upnp_context_send_remove_port_binding(lupnp, call->upnp_session->video->rtp);
 		}
 		if(call->upnp_session->video->rtcp->state == LinphoneUpnpStateIdle && video) {
 			// Add video port binding
-			upnp_context_send_add_port_binding(lc, call->upnp_session->video->rtcp);
+			upnp_context_send_add_port_binding(lupnp, call->upnp_session->video->rtcp);
 		} else if(call->upnp_session->video->rtcp->state == LinphoneUpnpStateOk && !video) {
 			// Remove video port binding
-			upnp_context_send_remove_port_binding(lc, call->upnp_session->video->rtcp);
+			upnp_context_send_remove_port_binding(lupnp, call->upnp_session->video->rtcp);
 		}
 	}
 
@@ -505,9 +566,13 @@ int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call) {
 
 int upnp_call_process(LinphoneCall *call) {
 	LinphoneCore *lc = call->core;
-	UpnpContext *lupnp = &lc->upnp;
+	UpnpContext *lupnp = lc->upnp;
 	int ret = -1;
 	UpnpState oldState;
+
+	if(lupnp == NULL) {
+		return ret;
+	}
 
 	ms_mutex_lock(&lupnp->mutex);
 
@@ -604,23 +669,22 @@ bool_t linphone_core_upnp_hook(void *data) {
 	MSList *list = NULL;
 	MSList *item;
 	UpnpPortBinding *port_mapping;
-	LinphoneCore *lc = (LinphoneCore *)data;
+	UpnpContext *lupnp = (UpnpContext *)data;
 	LinphoneCall *call;
-	UpnpContext *lupnp = &lc->upnp;
 	ms_mutex_lock(&lupnp->mutex);
 
 	if(lupnp->clean && !lupnp->cleaning) {
 		ms_message("uPnP IGD: Clean port mappings");
 		lupnp->clean = FALSE;
 		// Remove old mapping
-		list = upnp_config_list_port_bindings(lc->config);
+		list = upnp_config_list_port_bindings(lupnp->lc->config);
 		if(list == NULL) {
 			lupnp->emit = TRUE;
 		} else {
 			lupnp->cleaning = TRUE;
 			for(item = list;item != NULL; item = item->next) {
 				port_mapping = (UpnpPortBinding *)item->data;
-				upnp_context_send_remove_port_binding(lc, port_mapping);
+				upnp_context_send_remove_port_binding(lupnp, port_mapping);
 			}
 			ms_list_for_each(list,(void (*)(void*))upnp_port_binding_release);
 			list = ms_list_free(list);
@@ -634,17 +698,17 @@ bool_t linphone_core_upnp_hook(void *data) {
 		/* Force port bindings */
 		if(lupnp->sip_udp != NULL) {
 			lupnp->sip_udp->state = LinphoneUpnpStateIdle;
-			upnp_context_send_add_port_binding(lc, lupnp->sip_udp);
+			upnp_context_send_add_port_binding(lupnp, lupnp->sip_udp);
 		}
 		if(lupnp->sip_tcp != NULL) {
 			lupnp->sip_udp->state = LinphoneUpnpStateIdle;
-			upnp_context_send_add_port_binding(lc, lupnp->sip_tcp);
+			upnp_context_send_add_port_binding(lupnp, lupnp->sip_tcp);
 		}
 		if(lupnp->sip_tls != NULL) {
 			lupnp->sip_udp->state = LinphoneUpnpStateIdle;
-			upnp_context_send_add_port_binding(lc, lupnp->sip_tls);
+			upnp_context_send_add_port_binding(lupnp, lupnp->sip_tls);
 		}
-		list = lc->calls;
+		list = lupnp->lc->calls;
 		while(list != NULL) {
 			call = (LinphoneCall *)list->data;
 			call->upnp_session->audio->rtp->state = LinphoneUpnpStateIdle;
@@ -663,7 +727,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 					(port_mapping->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
 							port_mapping->external_port,
 							port_mapping->local_port);
-		lp_config_set_string(lc->config, UPNP_SECTION_NAME, key, "uPnP");
+		lp_config_set_string(lupnp->lc->config, UPNP_SECTION_NAME, key, "uPnP");
 		upnp_port_binding_log(ORTP_DEBUG, "Configuration: Added port binding", port_mapping);
 	}
 	ms_list_for_each(lupnp->adding_configs,(void (*)(void*))upnp_port_binding_release);
@@ -676,7 +740,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 					(port_mapping->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
 							port_mapping->external_port,
 							port_mapping->local_port);
-		lp_config_set_string(lc->config, UPNP_SECTION_NAME, key, NULL);
+		lp_config_set_string(lupnp->lc->config, UPNP_SECTION_NAME, key, NULL);
 		upnp_port_binding_log(ORTP_DEBUG, "Configuration: Removed port binding", port_mapping);
 	}
 	ms_list_for_each(lupnp->removing_configs,(void (*)(void*))upnp_port_binding_release);
@@ -686,7 +750,7 @@ bool_t linphone_core_upnp_hook(void *data) {
 	return TRUE;
 }
 
-void linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session) {
+int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *desc, UpnpSession *session) {
 	int i;
 	SalStreamDescription *stream;
 	UpnpStream *upnpStream;
@@ -710,6 +774,7 @@ void linphone_core_update_local_media_description_from_upnp(SalMediaDescription 
 			}
 		}
 	}
+	return 0;
 }
 
 
@@ -806,37 +871,42 @@ void upnp_stream_destroy(UpnpStream* stream) {
  * uPnP Session
  */
 
-UpnpSession* upnp_session_new() {
+UpnpSession* upnp_session_new(LinphoneCall* call) {
 	UpnpSession *session = ms_new0(UpnpSession,1);
+	session->call = call;
 	session->state = LinphoneUpnpStateIdle;
 	session->audio = upnp_stream_new();
 	session->video = upnp_stream_new();
 	return session;
 }
 
-void upnp_session_destroy(LinphoneCall* call) {
-	LinphoneCore *lc = call->core;
+void upnp_session_destroy(UpnpSession *session) {
+	LinphoneCore *lc = session->call->core;
 
-	/* Remove bindings */
-	if(call->upnp_session->audio->rtp->state != LinphoneUpnpStateKo && call->upnp_session->audio->rtp->state != LinphoneUpnpStateIdle) {
-		upnp_context_send_remove_port_binding(lc, call->upnp_session->audio->rtp);
-	}
-	if(call->upnp_session->audio->rtcp->state != LinphoneUpnpStateKo && call->upnp_session->audio->rtcp->state != LinphoneUpnpStateIdle) {
-		upnp_context_send_remove_port_binding(lc, call->upnp_session->audio->rtcp);
-	}
-	if(call->upnp_session->video->rtp->state != LinphoneUpnpStateKo && call->upnp_session->video->rtp->state != LinphoneUpnpStateIdle) {
-		upnp_context_send_remove_port_binding(lc, call->upnp_session->video->rtp);
-	}
-	if(call->upnp_session->video->rtcp->state != LinphoneUpnpStateKo && call->upnp_session->video->rtcp->state != LinphoneUpnpStateIdle) {
-		upnp_context_send_remove_port_binding(lc, call->upnp_session->video->rtcp);
+	if(lc->upnp != NULL) {
+		/* Remove bindings */
+		if(session->audio->rtp->state != LinphoneUpnpStateKo && session->audio->rtp->state != LinphoneUpnpStateIdle) {
+			upnp_context_send_remove_port_binding(lc->upnp, session->audio->rtp);
+		}
+		if(session->audio->rtcp->state != LinphoneUpnpStateKo && session->audio->rtcp->state != LinphoneUpnpStateIdle) {
+			upnp_context_send_remove_port_binding(lc->upnp, session->audio->rtcp);
+		}
+		if(session->video->rtp->state != LinphoneUpnpStateKo && session->video->rtp->state != LinphoneUpnpStateIdle) {
+			upnp_context_send_remove_port_binding(lc->upnp, session->video->rtp);
+		}
+		if(session->video->rtcp->state != LinphoneUpnpStateKo && session->video->rtcp->state != LinphoneUpnpStateIdle) {
+			upnp_context_send_remove_port_binding(lc->upnp, session->video->rtcp);
+		}
 	}
 
-	upnp_stream_destroy(call->upnp_session->audio);
-	upnp_stream_destroy(call->upnp_session->video);
-	ms_free(call->upnp_session);
-	call->upnp_session = NULL;
+	upnp_stream_destroy(session->audio);
+	upnp_stream_destroy(session->video);
+	ms_free(session);
 }
 
+UpnpState upnp_session_get_state(UpnpSession *session) {
+	return session->state;
+}
 
 /*
  * uPnP Config
@@ -889,8 +959,7 @@ MSList *upnp_config_list_port_bindings(struct _LpConfig *lpc) {
 	return retList;
 }
 
-void upnp_config_add_port_binding(LinphoneCore *lc, const UpnpPortBinding *port) {
-	UpnpContext *lupnp = &lc->upnp;
+void upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port) {
 	MSList *list;
 	UpnpPortBinding *list_port;
 
@@ -918,8 +987,7 @@ void upnp_config_add_port_binding(LinphoneCore *lc, const UpnpPortBinding *port)
 	lupnp->adding_configs = ms_list_append(lupnp->adding_configs, list_port);
 }
 
-void upnp_config_remove_port_binding(LinphoneCore *lc, const UpnpPortBinding *port) {
-	UpnpContext *lupnp = &lc->upnp;
+void upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port) {
 	MSList *list;
 	UpnpPortBinding *list_port;
 
