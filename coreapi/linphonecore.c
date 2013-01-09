@@ -2722,6 +2722,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 		}
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
+	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
@@ -2751,6 +2752,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
  * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+	SalMediaDescription *remote_desc;
 #ifdef VIDEO_ENABLED
 	bool_t old_has_video = call->params.has_video;
 #endif
@@ -2758,6 +2760,16 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
 		return -1;
+	}
+	remote_desc = sal_call_get_remote_media_description(call->op);
+	ms_warning("linphone_core_accept_update(): rmt_id=%u, rmt_ver=%u, call->rmt_id=%u, call->rmt_ver=%u",
+			remote_desc->session_id, remote_desc->session_ver, call->remote_session_id, call->remote_session_ver);
+	if ((remote_desc->session_id == call->remote_session_id) && (remote_desc->session_ver == call->remote_session_ver)) {
+		/* Remote has sent an INVITE with the same SDP as before, so send a 200 OK with the same SDP as before. */
+		ms_warning("Send same SDP as before!");
+		sal_call_accept(call->op);
+		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+		return 0;
 	}
 	if (params==NULL){
 		call->params.has_video=lc->video_policy.automatically_accept || call->current_params.has_video;
@@ -2772,11 +2784,11 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		ms_warning("Video isn't supported in conference");
 		call->params.has_video = FALSE;
 	}
-	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
 	call->camera_active=call->params.has_video;
 	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
-		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
 #ifdef VIDEO_ENABLED
 		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
@@ -2903,6 +2915,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
+	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));

@@ -434,9 +434,16 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
 	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
+	const char *sess;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int nb_ice_candidates;
+
+	/* Get session information. */
+	sess = sdp_message_o_sess_id_get(msg);
+	if (sess) desc->session_id = strtoul(sess, NULL, 10);
+	sess = sdp_message_o_sess_version_get(msg);
+	if (sess) desc->session_ver = strtoul(sess, NULL, 10);
 
 	rtp_addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (rtp_addr)
