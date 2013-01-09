@@ -456,7 +456,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	}
 #ifdef BUILD_UPNP
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
-		call->upnp_session = upnp_session_new(call);
+		call->upnp_session = linphone_upnp_session_new(call);
 	}
 #endif //BUILD_UPNP
 	call->camera_active=params->has_video;
@@ -523,7 +523,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			break;
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-		call->upnp_session = upnp_session_new(call);
+		call->upnp_session = linphone_upnp_session_new(call);
 		if (call->upnp_session != NULL) {
 			linphone_call_init_media_streams(call);
 			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
@@ -1698,7 +1698,7 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 #ifdef BUILD_UPNP
 void linphone_call_delete_upnp_session(LinphoneCall *call){
 	if(call->upnp_session!=NULL) {
-		upnp_session_destroy(call->upnp_session);
+		linphone_upnp_session_destroy(call->upnp_session);
 		call->upnp_session=NULL;
 	}
 }
@@ -2016,7 +2016,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	}
 
 #ifdef BUILD_UPNP
-	upnp_call_process(call);
+	linphone_upnp_call_process(call);
 #endif //BUILD_UPNP
 
 #ifdef VIDEO_ENABLED

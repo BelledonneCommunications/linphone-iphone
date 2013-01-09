@@ -26,13 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef enum {
 	LinphoneUpnpStateIdle,
-	LinphoneUpnpStatePending,
+	LinphoneUpnpStatePending, // Only used by uPnP context
 	LinphoneUpnpStateAdding,   // Only used by port binding
 	LinphoneUpnpStateRemoving, // Only used by port binding
 	LinphoneUpnpStateNotAvailable,  // Only used by uPnP context
 	LinphoneUpnpStateOk,
 	LinphoneUpnpStateKo,
-} UpnpState;
+} LinphoneUpnpState;
 
 typedef struct _UpnpSession UpnpSession;
 typedef struct _UpnpContext UpnpContext;
@@ -41,14 +41,14 @@ int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *
 int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
 int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call);
 
-int upnp_call_process(LinphoneCall *call);
-UpnpSession* upnp_session_new(LinphoneCall *call);
-void upnp_session_destroy(UpnpSession* session);
-UpnpState upnp_session_get_state(UpnpSession *session);
+int linphone_upnp_call_process(LinphoneCall *call);
+UpnpSession* linphone_upnp_session_new(LinphoneCall *call);
+void linphone_upnp_session_destroy(UpnpSession* session);
+LinphoneUpnpState linphone_upnp_session_get_state(UpnpSession *session);
 
-UpnpContext *upnp_context_new(LinphoneCore *lc);
-void upnp_context_destroy(UpnpContext *ctx);
-UpnpState upnp_context_get_state(UpnpContext *ctx);
-const char *upnp_context_get_external_ipaddress(UpnpContext *ctx);
+UpnpContext *linphone_upnp_context_new(LinphoneCore *lc);
+void linphone_upnp_context_destroy(UpnpContext *ctx);
+LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *ctx);
+const char *linphone_upnp_context_get_external_ipaddress(UpnpContext *ctx);
 
 #endif //LINPHONE_UPNP_H
