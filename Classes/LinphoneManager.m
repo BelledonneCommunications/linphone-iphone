@@ -1375,6 +1375,90 @@ static void audioRouteChangeListenerCallback (
 	}
 }
 
+
+- (BOOL)reconfigureProxyConfigs {
+	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
+	//bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
+    /* MODIFICATION always enable outbound*/
+	bool isOutboundProxy=TRUE;// [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
+	/**/
+	
+	//clear auth info list
+	linphone_core_clear_all_auth_info(theLinphoneCore);
+    //clear existing proxy config
+    linphone_core_clear_proxy_config(theLinphoneCore);
+	if (username && [username length] >0) {
+        NSString* domain = configuration.network.domain;
+		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		
+        /* MODIFICATION use config address */
+		NSString* proxyAddress = nil;// [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
+        if([[LinphoneManager getWifiData] isEqualToData:configuration.homeAP]) {
+            proxyAddress = configuration.network.localAddress;
+        } else {
+            proxyAddress = configuration.network.globalAddress;
+        }
+        /**/
+		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
+		} else {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
+		}
+		
+		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		
+		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
+        bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
+		//possible valid config detected
+		LinphoneProxyConfig* proxyCfg;
+		proxyCfg = linphone_proxy_config_new();
+        
+		// add username password
+		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAuthInfo *info;
+		if (from !=0){
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
+			linphone_core_add_auth_info(theLinphoneCore,info);
+		}
+		linphone_address_destroy(from);
+		
+		// configure proxy entries
+		linphone_proxy_config_set_identity(proxyCfg,identity);
+		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
+		linphone_proxy_config_enable_register(proxyCfg,true);
+		linphone_proxy_config_expires(proxyCfg, 600);
+		
+		if (isOutboundProxy)
+			linphone_proxy_config_set_route(proxyCfg,proxy);
+		
+		if ([prefix length]>0) {
+			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		}
+		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
+		
+        NSString *instance = [NSString stringWithFormat:@"instance=%@", [[UIDevice currentDevice] uniqueDeviceIdentifier]];
+        linphone_proxy_config_set_contact_parameters(proxyCfg, [instance UTF8String]);
+        
+		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
+		//set to default proxy
+		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
+		
+	} else {
+		/*if (configCheckDisable == false ) {
+         UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Warning",nil)
+         message:NSLocalizedString(@"It seems you have not configured any proxy server from settings",nil)
+         delegate:self
+         cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+         otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
+         [error show];
+         [error release];
+         }*/
+	}
+    return 0;
+}
+
 - (BOOL)reconfigureLinphone {
     return [self reconfigureLinphoneIfNeeded:currentSettings];
 }
@@ -1459,88 +1543,8 @@ static void audioRouteChangeListenerCallback (
 	
 	
 	//configure sip account
-	
-	//madatory parameters
-	
-	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
-	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
-	//bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
-    /* MODIFICATION always enable outbound*/
-	bool isOutboundProxy=TRUE;// [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
-	/**/
-	
-	//clear auth info list
-	linphone_core_clear_all_auth_info(theLinphoneCore);
-    //clear existing proxy config
-    linphone_core_clear_proxy_config(theLinphoneCore);
-	if (username && [username length] >0) {
-        NSString* domain = configuration.network.domain;
-		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
-        /* MODIFICATION use config address */
-		NSString* proxyAddress = nil;// [[NSUserDefaults standardUserDefaults] stringForKey:@"proxy_preference"];
-        if([[LinphoneManager getWifiData] isEqualToData:configuration.homeAP]) {
-            proxyAddress = configuration.network.localAddress;
-        } else {
-            proxyAddress = configuration.network.globalAddress;
-        }
-        /**/
-		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
-		} else {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
-		}
-		
-		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
-		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
-        bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
-		//possible valid config detected
-		LinphoneProxyConfig* proxyCfg;
-		proxyCfg = linphone_proxy_config_new();
-        
-		// add username password
-		LinphoneAddress *from = linphone_address_new(identity);
-		LinphoneAuthInfo *info;
-		if (from !=0){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
-			linphone_core_add_auth_info(theLinphoneCore,info);
-		}
-		linphone_address_destroy(from);
-		
-		// configure proxy entries
-		linphone_proxy_config_set_identity(proxyCfg,identity);
-		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
-		linphone_proxy_config_enable_register(proxyCfg,true);
-		linphone_proxy_config_expires(proxyCfg, 600);
-		
-		if (isOutboundProxy)
-			linphone_proxy_config_set_route(proxyCfg,proxy);
-		
-		if ([prefix length]>0) {
-			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		linphone_proxy_config_set_dial_escape_plus(proxyCfg,substitute_plus_by_00);
-		
-        NSString *instance = [NSString stringWithFormat:@"instance=%@", [[UIDevice currentDevice] uniqueDeviceIdentifier]];
-        linphone_proxy_config_set_contact_parameters(proxyCfg, [instance UTF8String]);
-        
-		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
-		//set to default proxy
-		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
-		
-	} else {
-		/*if (configCheckDisable == false ) {
-			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Warning",nil)
-															message:NSLocalizedString(@"It seems you have not configured any proxy server from settings",nil)
-														   delegate:self
-												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-												  otherButtonTitles:NSLocalizedString(@"Never remind",nil),nil];
-			[error show];
-            [error release];
-		}*/
-	}
+    [self reconfigureProxyConfigs];
+
 	
 	//Configure Codecs
 	

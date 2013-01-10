@@ -170,6 +170,7 @@ typedef struct _LinphoneManagerSounds {
 
 /* MODIFICATION: Add NSUSerdefault settings */
 - (BOOL)reconfigureLinphone;
+- (BOOL)reconfigureProxyConfigs;
 /**/
 /* MODIFICATION: Disable addressbook
 @property (readonly) FastAddressBook* fastAddressBook;

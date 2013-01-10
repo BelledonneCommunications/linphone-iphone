@@ -267,6 +267,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
         }
         linphone_core_set_upload_bandwidth(lc, upload);
         linphone_core_set_download_bandwidth(lc, download);
+        [[LinphoneManager instance] reconfigureProxyConfigs];
     }
 }
 
