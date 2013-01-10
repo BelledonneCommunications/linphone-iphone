@@ -64,29 +64,11 @@
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
-			<string>domain_preference</string>
+			<string>ipgateway_preference</string>
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Domain</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>Key</key>
-			<string>proxy_preference</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Proxy</string>
+			<string>IP-Gateway</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -162,9 +144,19 @@
 			<key>Key</key>
 			<string>lockdoors_preference</string>
 			<key>Title</key>
-			<string>Lock doors</string>
+			<string>Hide Lock door</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Hide Switch Light</string>
+			<key>Key</key>
+			<string>switchlight_preference</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
