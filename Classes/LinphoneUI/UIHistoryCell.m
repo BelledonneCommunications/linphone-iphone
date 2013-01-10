@@ -91,6 +91,8 @@
         NSString *image = [history.images objectAtIndex:0];
         [iconImage setImage:nil];
         [iconImage loadImage:[[LinphoneManager instance].configuration getImageUrl:image]];
+    } else {
+        [iconImage setImage:nil];
     }
 }
 
