@@ -207,14 +207,11 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 	store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(item)));
 	if (gtk_tree_selection_get_selected (select, &model, &iter)){
 		GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(w,"viewswitch");
-		gtk_tree_model_get(model,&iter,FRIEND_CHATROOM,&cr,-1);
 		const LinphoneAddress *uri;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
 		uri=linphone_friend_get_address(lf);
 		if(cr == NULL){
 			cr=linphone_gtk_create_chatroom(uri);
-			gtk_list_store_set(store,&iter, FRIEND_CHATROOM,cr,-1);
-			gtk_list_store_set(store,&iter, FRIEND_CHAT_CONVERSATION,NULL,-1);
 		}
 		page=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
 		if(page==NULL){
