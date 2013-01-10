@@ -1750,7 +1750,6 @@ static void linphone_gtk_quit(void){
 #ifdef BUILD_WIZARD
 		linphone_gtk_close_assistant();
 #endif
-		linphone_gtk_destroy_main_window();
 		linphone_gtk_uninit_instance();
 		linphone_gtk_destroy_log_window();
 		linphone_core_destroy(the_core);
