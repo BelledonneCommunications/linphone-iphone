@@ -261,12 +261,13 @@ static void call_received(SalOp *h){
 		ms_message("Defer ringing to gather ICE candidates");
 		return;
 	}
-
+#ifdef BUILD_UPNP
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) && (call->upnp_session != NULL)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather uPnP candidates");
 		return;
 	}
+#endif //BUILD_UPNP
 
 	linphone_core_notify_incoming_call(lc,call);
 }
