@@ -2699,6 +2699,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #ifdef VIDEO_ENABLED
 		bool_t has_video = call->params.has_video;
+
+		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
 			if (call->ice_session != NULL) {
 				ice_session_remove_check_list(call->ice_session, call->videostream->ms.ice_check_list);
@@ -2713,8 +2715,11 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 #endif //BUILD_UPNP
 		}
+
 		call->params = *params;
 		linphone_call_make_local_media_description(lc, call);
+
+		// Video adding
 		if (!has_video && call->params.has_video) {
 			if (call->ice_session != NULL) {
 				/* Defer call update until the ICE candidates gathering process has finished. */
@@ -2861,19 +2866,22 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 				} else return 0;
 			}
 		}
-#endif
+#endif //VIDEO_ENABLED
 	}
 
 #if BUILD_UPNP
 	if(call->upnp_session != NULL) {
+		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+#ifdef VIDEO_ENABLED
 		if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
 			linphone_call_init_video_stream(call);
 			video_stream_prepare_video(call->videostream);
-			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op))<0) {
+			if (linphone_core_update_upnp(lc, call)<0) {
 				/* uPnP update failed, proceed with the call anyway. */
 				linphone_call_delete_upnp_session(call);
 			} else return 0;
 		}
+#endif //VIDEO_ENABLED
 	}
 #endif //BUILD_UPNP
 
