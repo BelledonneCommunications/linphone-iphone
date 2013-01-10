@@ -170,6 +170,11 @@
 	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"YES", @"start_at_boot_preference",
 								 @"YES", @"backgroundmode_preference",
+#ifdef DEBUG
+								 @"YES",@"debugenable_preference",
+#else
+								 @"NO",@"debugenable_preference",
+#endif
                                  nil];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 	
