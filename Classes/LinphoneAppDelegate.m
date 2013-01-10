@@ -145,6 +145,7 @@
                                  @"ringtone_01_1600", @"ringtone_preference",
                                  @"ringtone_01_1600", @"level_ringtone_preference",
                                  @"NO", @"lockdoors_preference",
+                                 @"NO", @"switchlight_preference",
                                  majorVersion, @"version_preference",
                                  nil];
     

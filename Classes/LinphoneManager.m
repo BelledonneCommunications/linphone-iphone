@@ -474,7 +474,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
                 data->notification = [[UILocalNotification alloc] init];
                 if (data->notification) {
                     data->notification.repeatInterval = 0;
-                    data->notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), address];
+                    data->notification.alertBody = [NSString stringWithFormat:@"%@", address];
                     data->notification.alertAction = NSLocalizedString(@"Answer", nil);
                     data->notification.soundName = ringtone;
                     data->notification.userInfo = [NSDictionary dictionaryWithObject:callId forKey:@"callId"];
@@ -601,7 +601,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
 			notif.repeatInterval = 0;
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), configuration.levelPushButton.name];
+			notif.alertBody = [NSString stringWithFormat:@"%@", configuration.levelPushButton.name];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = ringtone;
 			
@@ -1463,7 +1463,6 @@ static void audioRouteChangeListenerCallback (
 	//madatory parameters
 	
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
-	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
 	//bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
     /* MODIFICATION always enable outbound*/
@@ -1474,7 +1473,8 @@ static void audioRouteChangeListenerCallback (
 	linphone_core_clear_all_auth_info(theLinphoneCore);
     //clear existing proxy config
     linphone_core_clear_proxy_config(theLinphoneCore);
-	if (username && [username length] >0 && domain && [domain length]>0) {
+	if (username && [username length] >0) {
+        NSString* domain = configuration.network.domain;
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		

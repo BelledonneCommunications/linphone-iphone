@@ -424,6 +424,8 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                             }
                         }
                         [[NSUserDefaults standardUserDefaults] synchronize];
+                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ipgateway_preference"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[[NSURL URLWithString:urlString] host] forKey:@"ipgateway_preference"];
                     } else {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];

@@ -177,7 +177,7 @@
     
     /* init gradients for lightsButton */
     {
-        bool enabled = (usr != nil && usr.switchlight);
+        bool enabled = (usr != nil && usr.switchlight && ![[NSUserDefaults standardUserDefaults] boolForKey:@"switchlight_preference"]);
         UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
         UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
         

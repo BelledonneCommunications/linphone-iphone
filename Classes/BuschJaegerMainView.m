@@ -318,8 +318,8 @@ static BuschJaegerMainView* mainViewInstance=nil;
 - (void)displayMessage:(id)message {
     if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
-        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Dring !",nil)
-                                                        message: [NSString stringWithFormat:NSLocalizedString(@"%@ ring!",nil), [LinphoneManager instance].configuration.levelPushButton.name]
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Welcome"
+                                                        message: [NSString stringWithFormat:@"%@", [LinphoneManager instance].configuration.levelPushButton.name]
                                                        delegate:nil
                                               cancelButtonTitle:NSLocalizedString(@"Continue",nil)
                                               otherButtonTitles:nil,nil];
