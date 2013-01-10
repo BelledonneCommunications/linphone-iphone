@@ -1254,4 +1254,6 @@ void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason err
 	cfg->error = error;
 }
 
-
+const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
+	return cfg->op?(const LinphoneAddress*) sal_op_get_service_route(cfg->op):NULL;
+}

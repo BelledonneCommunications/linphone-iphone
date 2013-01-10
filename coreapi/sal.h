@@ -229,6 +229,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *remote_media;
 	void *user_pointer;
 	const char* call_id;
+	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
 } SalOpBase;
 
 
@@ -415,6 +416,9 @@ const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
 const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 const char* sal_op_get_call_id(const SalOp *op);
+
+const SalAddress* sal_op_get_service_route(const SalOp *op);
+void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);

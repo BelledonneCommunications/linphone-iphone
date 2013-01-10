@@ -2421,7 +2421,6 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 **/
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
-	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL,*dest_proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
@@ -2437,7 +2436,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		return NULL;
 	}
 	linphone_core_get_default_proxy(lc,&proxy);
-	route=linphone_core_get_route(lc);
+
 
 	real_url=linphone_address_as_string(addr);
 	dest_proxy=linphone_core_lookup_known_proxy(lc,addr);
@@ -2459,7 +2458,15 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
 	call->dest_proxy=dest_proxy;
-	sal_op_set_route(call->op,route);
+
+	if (linphone_core_get_route(lc)) {
+		sal_op_set_route(call->op,linphone_core_get_route(lc));
+	} else if (proxy && linphone_proxy_config_get_service_route(proxy)) {
+		/*set service route*/
+		sal_op_set_route_address(call->op,linphone_proxy_config_get_service_route(proxy));
+	} /*else, no route*/
+
+
 
 	if(linphone_core_add_call(lc,call)!= 0)
 	{

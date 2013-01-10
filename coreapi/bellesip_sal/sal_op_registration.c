@@ -39,6 +39,9 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 	belle_sip_request_t* original_request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_header_contact_t* original_contact=belle_sip_message_get_header_by_type(original_request,belle_sip_header_contact_t);
 	const belle_sip_list_t* contact_header_list;
+	belle_sip_header_service_route_t* service_route;
+	belle_sip_header_address_t* service_route_address=NULL;
+
 	int response_code = belle_sip_response_get_status_code(response);
 	int expires=-1;
 	char* tmp_string;
@@ -77,6 +80,12 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 				ms_message("Neither Expires header nor corresponding Contact header found, using expires value [%i] from request",expires);
 			}
 		}
+		/*check service route rfc3608*/
+		if ((service_route=belle_sip_message_get_header_by_type(response,belle_sip_header_service_route_t))) {
+			service_route_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(service_route)));
+		}
+		sal_op_set_service_route(op,(const SalAddress*)service_route_address);
+		if (service_route_address) belle_sip_object_unref(service_route_address);
 
 		op->base.root->callbacks.register_success(op,expires>0);
 		/*always cancel pending refresh if any*/
@@ -92,6 +101,18 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 	}
 
 	default:{
+
+		/* from rfc3608, 6.1.
+		If the UA refreshes the registration, the stored value of the Service-
+		   Route is updated according to the Service-Route header field of the
+		   latest 200 class response.  If there is no Service-Route header field
+		   in the response, the UA clears any service route for that address-
+		   of-record previously stored by the UA.  If the re-registration
+		   request is refused or if an existing registration expires and the UA
+		   chooses not to re-register, the UA SHOULD discard any stored service
+		   route for that address-of-record. */
+		sal_op_set_service_route(op,NULL);
+
 		ms_error("Unexpected answer [%s] for registration request bound to [%s]",belle_sip_response_get_reason_phrase(response),op->base.from);
 		op->base.root->callbacks.register_failure(op,SalErrorFailure,SalReasonUnknown,belle_sip_response_get_reason_phrase(response));
 		break;

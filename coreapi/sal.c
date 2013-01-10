@@ -395,6 +395,9 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->remote_media);
 	if (b->call_id)
 		ms_free((void*)b->call_id);
+	if (b->service_route) {
+		sal_address_destroy(b->service_route);
+	}
 	ms_free(op);
 }
 
@@ -460,4 +463,13 @@ const char* sal_reason_to_string(const SalReason reason) {
 	case SalReasonUnknown: return "SalReasonUnknown";
 	default: return "Unkown reason";
 	}
+}
+const SalAddress* sal_op_get_service_route(const SalOp *op) {
+	return ((SalOpBase*)op)->service_route;
+}
+void sal_op_set_service_route(SalOp *op,const SalAddress* service_route) {
+	if (((SalOpBase*)op)->service_route)
+		sal_address_destroy(((SalOpBase*)op)->service_route);
+
+	((SalOpBase*)op)->service_route=service_route?sal_address_clone(service_route):NULL;
 }
