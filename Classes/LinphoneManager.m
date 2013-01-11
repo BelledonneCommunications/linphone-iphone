@@ -875,7 +875,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
     
-    // Disable H26
+    // Disable H264
     {
         PayloadType *pt=linphone_core_find_payload_type(theLinphoneCore,"h264",90000,-1);
 		if (pt) {
