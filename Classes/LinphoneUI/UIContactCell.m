@@ -80,7 +80,9 @@
     CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
     CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);
     CFStringRef lLocalizedLastName = (lLastName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
-    
+    CFStringRef lOrganization = ABRecordCopyValue(contact, kABPersonOrganizationProperty);
+    CFStringRef lLocalizedOrganization = (lOrganization != nil)?ABAddressBookCopyLocalizedLabel(lOrganization):nil;
+
     if(lLocalizedFirstName != nil)
         [firstNameLabel setText: (NSString *)lLocalizedFirstName];
     else
@@ -91,6 +93,14 @@
     else
         [lastNameLabel setText: @""];
     
+    if(lLocalizedFirstName == nil && lLocalizedLastName == nil) {
+        [firstNameLabel setText: (NSString *)lLocalizedOrganization];
+    }
+    
+    if(lLocalizedOrganization != nil)
+        CFRelease(lLocalizedOrganization);
+    if(lOrganization != nil)
+        CFRelease(lOrganization);
     if(lLocalizedLastName != nil)
         CFRelease(lLocalizedLastName);
     if(lLastName != nil)

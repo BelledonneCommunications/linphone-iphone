@@ -168,7 +168,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
                  forState:(UIControlStateHighlighted | UIControlStateSelected)];
     
-    [LinphoneUtils buttonFixStates:linphoneButton];
+    [linphoneButton setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+					forState:UIControlStateNormal];
+	
+	[LinphoneUtils buttonFixStates:linphoneButton];
     
     // Set selected+over background: IB lack !
     [allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"] 

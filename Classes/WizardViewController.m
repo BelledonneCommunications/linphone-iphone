@@ -374,7 +374,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)checkUserExist:(NSString*)username {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC check_account %@", username];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC check_account %@", username];
     
     NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
@@ -389,7 +389,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)createAccount:(NSString*)identity password:(NSString*)password email:(NSString*)email {
     NSString *useragent = [LinphoneManager getUserAgent];
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent];
     
     NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
@@ -403,7 +403,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)checkAccountValidation:(NSString*)identity {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC check_account_validated %@", identity];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC check_account_validated %@", identity];
     
     NSURL *URL = [NSURL URLWithString: [[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
     XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL: URL];
@@ -659,7 +659,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - XMLRPCConnectionDelegate Functions
 
 - (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-    [LinphoneLogger log:LinphoneLoggerDebug format:@"XMLRPC %@: %@", [request method], [response body]];
+    [LinphoneLogger log:LinphoneLoggerLog format:@"XMLRPC %@: %@", [request method], [response body]];
     [waitView setHidden:true];
     if ([response isFault]) {
         NSString *errorString = [NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
