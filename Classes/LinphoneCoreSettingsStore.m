@@ -431,7 +431,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     NSArray* matches = [regex matchesInString:text options:0 range:NSMakeRange(0, [text length])];
     if([matches count] == 1) {
         NSTextCheckingResult *match = [matches objectAtIndex:0];
-        NSLog(@"%d", [match numberOfRanges]);
         bool range = [match rangeAtIndex:2].length > 0;
         if(!range) {
             NSRange rangeMinPort = [match rangeAtIndex:1];
@@ -503,7 +502,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionSRTP);
 	else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
 		linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionZRTP);
-	else linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
+	else
+        linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
 	
     NSString* stun_server = [self stringForKey:@"stun_preference"];
     if ([stun_server length] > 0){

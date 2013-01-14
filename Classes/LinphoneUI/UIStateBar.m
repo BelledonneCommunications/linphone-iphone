@@ -19,8 +19,7 @@
 
 #import "UIStateBar.h"
 #import "LinphoneManager.h"
-
-#include "linphonecore.h"
+#import "PhoneMainView.h"
 
 @implementation UIStateBar
 
@@ -28,6 +27,7 @@
 @synthesize registrationStateLabel;
 @synthesize callQualityImage;
 @synthesize callSecurityImage;
+@synthesize callSecurityButton;
 
 NSTimer *callQualityTimer;
 NSTimer *callSecurityTimer;
@@ -40,11 +40,20 @@ NSTimer *callSecurityTimer;
     if(self != nil) {
         self->callSecurityImage = nil;
         self->callQualityImage = nil;
+        self->securitySheet = nil;
     }
     return self;
 }
 
 - (void) dealloc {
+    if(securitySheet) {
+        [securitySheet release];
+    }
+    [registrationStateImage release];
+    [registrationStateLabel release];
+    [callQualityImage release];
+    [callSecurityImage release];
+    [callSecurityButton release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [callQualityTimer invalidate];
     [callQualityTimer release];
@@ -183,6 +192,9 @@ NSTimer *callSecurityTimer;
     }
     const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
     if(list == NULL) {
+        if(securitySheet) {
+            [securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
+        }
         [callSecurityImage setHidden:true];
         return;
     }
@@ -234,6 +246,42 @@ NSTimer *callSecurityTimer;
         [callQualityImage setImage:image];
     } else {
         [callQualityImage setHidden:true];
+    }
+}
+
+
+#pragma mark - Action Functions
+
+- (IBAction)doSecurityClick:(id)sender {
+    if([LinphoneManager isLcReady] && linphone_core_get_calls_nb([LinphoneManager getLc])) {
+        LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+        if(call != NULL) {
+            LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+            if(enc == LinphoneMediaEncryptionZRTP) {
+                bool valid = linphone_call_get_authentication_token_verified(call);
+                NSString *message = nil;
+                if(valid) {
+                    message = NSLocalizedString(@"Remove trust in the peer?",nil);
+                } else {
+                    message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with the peer:\n%s",nil),
+                               linphone_call_get_authentication_token(call)];
+                }
+                if(securitySheet == nil) {
+                    securitySheet = [[DTActionSheet alloc] initWithTitle:message];
+                    [securitySheet addButtonWithTitle:NSLocalizedString(@"Ok",nil) block:^(){
+                        linphone_call_set_authentication_token_verified(call, !valid);
+                        [securitySheet release];
+                        securitySheet = nil;
+                    }];
+                    
+                    [securitySheet addDestructiveButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:^(){
+                        [securitySheet release];
+                        securitySheet = nil;
+                    }];
+                    [securitySheet showInView:[PhoneMainView instance].view];
+                }
+            }
+        }
     }
 }
 

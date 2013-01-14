@@ -19,13 +19,18 @@
 
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
+#import "DTActionSheet.h"
 
 @interface UIStateBar : TPMultiLayoutViewController {
+    DTActionSheet *securitySheet;
 }
 
 @property (nonatomic, retain) IBOutlet UIImageView* registrationStateImage;
 @property (nonatomic, retain) IBOutlet UILabel*     registrationStateLabel;
 @property (nonatomic, retain) IBOutlet UIImageView* callQualityImage;
 @property (nonatomic, retain) IBOutlet UIImageView* callSecurityImage;
+@property (nonatomic, retain) IBOutlet UIButton* callSecurityButton;
+
+- (IBAction)doSecurityClick:(id)sender;
 
 @end

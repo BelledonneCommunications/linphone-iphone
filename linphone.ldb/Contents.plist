@@ -12175,7 +12175,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-12-06T16:35:25Z</date>
+					<date>2013-01-14T08:36:33Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12185,7 +12185,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>5d8dda6d0a22dfa9f07da63202a55cbb
+					<string>8ce7c7423abd4610ddda73d40d929ed3
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -12940,6 +12940,34 @@ La cause était: %2$@</string>
 								<string>Communication issue (%@)</string>
 								<key>fr</key>
 								<string>Problème de communication (%@)</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Confirm the following SAS with the peer:
+%s</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Confirm the following SAS with the peer:
+%s</string>
+								<key>fr</key>
+								<string>Confirmer le SAS suivant avec l'interlocuteur:
+%s</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -14067,6 +14095,31 @@ La cause était: %2$@</string>
 								<string>Remove</string>
 								<key>fr</key>
 								<string>Supprimer</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Remove trust in the peer?</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Remove trust in the peer?</string>
+								<key>fr</key>
+								<string>Supprimer la confiance dans l'interlocuteur?</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
