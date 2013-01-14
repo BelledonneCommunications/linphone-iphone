@@ -563,17 +563,29 @@ static UICompositeViewDescription *compositeDescription = nil;
         [values removeObject:@"tls"];
         [dict setObject:values forKey:@"Values"];
         return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
-    } else if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-        NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-        [titles removeObject:@"ZRTP"];
-        [titles removeObject:@"SRTP"];
-        [dict setObject:titles forKey:@"Titles"];
-        NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-        [values removeObject:@"ZRTP"];
-        [values removeObject:@"SRTP"];
-        [dict setObject:values forKey:@"Values"];
-        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+    }
+#else
+    if([LinphoneManager isLcReady]) {
+        if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+            if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
+                NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+                [titles removeObject:@"ZRTP"];
+                [dict setObject:titles forKey:@"Titles"];
+                NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+                [values removeObject:@"ZRTP"];
+                [dict setObject:values forKey:@"Values"];
+            }
+            if(!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
+                NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+                [titles removeObject:@"SRTP"];
+                [dict setObject:titles forKey:@"Titles"];
+                NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+                [values removeObject:@"SRTP"];
+                [dict setObject:values forKey:@"Values"];
+            }
+            return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+        }
     }
 #endif //HAVE_SSL
     

@@ -12175,7 +12175,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-11T15:09:49Z</date>
+					<date>2013-01-14T10:12:24Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -15509,6 +15509,59 @@ Raison: %2$s</string>
 							<dict>
 								<key>en</key>
 								<string>This device is not configured for sending Email. Please configure the Mail settings in the Settings app.</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Confirm the following SAS with the peer:
+%s</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Confirm the following SAS with the peer:
+%s</string>
+								<key>fr</key>
+								<string>Confirmer le SAS suivant avec l'interlocuteur:
+%s</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Remove trust in the peer?</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Remove trust in the peer?</string>
+								<key>fr</key>
+								<string>Supprimer la confiance dans l'interlocuteur?</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
