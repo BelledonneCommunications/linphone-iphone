@@ -12175,7 +12175,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-14T10:12:24Z</date>
+					<date>2013-01-14T13:24:47Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -15562,6 +15562,31 @@ Raison: %2$s</string>
 								<string>Remove trust in the peer?</string>
 								<key>fr</key>
 								<string>Supprimer la confiance dans l'interlocuteur?</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Settings</string>
+								<key>fr</key>
+								<string>Options</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
