@@ -12175,7 +12175,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-14T08:36:33Z</date>
+					<date>2013-01-14T12:21:14Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -12185,7 +12185,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>8ce7c7423abd4610ddda73d40d929ed3
+					<string>84262943eea3c4fe4997634207e98892
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -14145,6 +14145,31 @@ La cause était: %2$@</string>
 								<string>Select picture source</string>
 								<key>fr</key>
 								<string>Selectionner une source d'image</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Settings</string>
+								<key>fr</key>
+								<string>Options</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
