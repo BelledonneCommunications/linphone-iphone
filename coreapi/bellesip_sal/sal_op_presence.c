@@ -424,7 +424,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
 		return;
 	}
-	set_or_update_dialog(op_base,event);
+	set_or_update_dialog(op_base,belle_sip_response_event_get_dialog(event));
 	if (!op->dialog) {
 		ms_message("presence op [%p] receive out of dialog answer [%i]",op,code);
 		return;

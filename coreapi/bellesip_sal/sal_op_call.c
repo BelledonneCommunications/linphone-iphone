@@ -33,7 +33,7 @@ static void sdp_process(SalOp *h){
 			belle_sip_object_unref(h->sdp_answer);
 		}
 		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
-		h->sdp_answer=media_description_to_sdp(h->result);
+		h->sdp_answer=(belle_sdp_session_description_t *)belle_sip_object_ref(media_description_to_sdp(h->result));
 		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
 		 It should contains media parameters constraint from the remote offer, not our response*/
 		strcpy(h->result->addr,h->base.remote_media->addr);
@@ -171,7 +171,7 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		}
 		return;
 	}
-	set_or_update_dialog(op,event);
+	set_or_update_dialog(op,belle_sip_response_event_get_dialog(event));
 
 	/*check if op is terminating*/
 
@@ -180,6 +180,7 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 			&& (!op->dialog
 					|| belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_NULL
 					|| belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_EARLY)) {
+		/*FIXME if DIALOG_CONFIRM then ACK+BYE*/
 		cancelling_invite(op);
 
 		return;
@@ -278,7 +279,7 @@ static void process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
-	belle_sip_object_ref(server_transaction);
+	if (server_transaction) belle_sip_object_ref(server_transaction); /*ACK does'nt create srv transaction*/
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
 	op->pending_server_trans=server_transaction;
 	belle_sdp_session_description_t* sdp;
@@ -289,8 +290,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_header_t* call_info;
 
 	if (!op->dialog) {
-		op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(op->pending_server_trans));
-		belle_sip_dialog_set_application_data(op->dialog,op);
+		set_or_update_dialog(op,belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(op->pending_server_trans)));
 		ms_message("new incoming call from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);

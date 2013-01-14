@@ -32,6 +32,7 @@ void sal_op_release(SalOp *op){
 		belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
 	}
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
+	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
 	__sal_op_free(op);
 	return ;
 }
@@ -198,13 +199,13 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 		return FALSE;
 	}
 }
-void set_or_update_dialog(SalOp* op, const belle_sip_response_event_t* event) {
+void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 	/*check if dialog has changed*/
-	if (belle_sip_response_event_get_dialog(event) != op->dialog) {
-		ms_message("Dialog set from [%p] to [%p] for op [%p]",op->dialog,belle_sip_response_event_get_dialog(event),op);
+	if (dialog  != op->dialog) {
+		ms_message("Dialog set from [%p] to [%p] for op [%p]",op->dialog,dialog,op);
 		/*fixme, shouldn't we cancel previous dialog*/
 		if (op->dialog)belle_sip_object_unref(op->dialog);
-		op->dialog=belle_sip_response_event_get_dialog(event);
+		op->dialog=dialog;
 		belle_sip_dialog_set_application_data(op->dialog,op);
 		belle_sip_object_ref(op->dialog);
 	}

@@ -425,7 +425,6 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack,addr,port,sal_transport_to_string(tr));
 	if (lp) {
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
-		belle_sip_object_unref(lp);
 	} else {
 		return -1;
 	}

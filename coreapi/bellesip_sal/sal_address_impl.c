@@ -22,15 +22,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalAddress * sal_address_new(const char *uri){
 	belle_sip_header_address_t*  result;
 	if (uri) {
-		return (SalAddress *)belle_sip_header_address_parse (uri);
+		result=belle_sip_header_address_parse (uri);
 	} else {
 		result = belle_sip_header_address_new();
 		belle_sip_header_address_set_uri(result,belle_sip_uri_new());
-		return (SalAddress *)result;
 	}
+	belle_sip_object_ref(result);
+	return (SalAddress *)result;
 }
 SalAddress * sal_address_clone(const SalAddress *addr){
-	return (SalAddress *) belle_sip_object_clone(BELLE_SIP_OBJECT(addr));
+	return (SalAddress *) belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(addr)));
 }
 const char *sal_address_get_scheme(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
