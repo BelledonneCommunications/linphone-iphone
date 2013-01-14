@@ -938,8 +938,13 @@ int sal_call_terminate(SalOp *h){
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
-	if (h->terminated) return;
-    if (h->pending_auth){
+       bool_t terminating=FALSE;
+       if (h->pending_auth && strcmp(h->pending_auth->request->sip_method,"BYE")==0) {
+               terminating=TRUE;
+       }
+       if (h->terminated && !terminating) return;
+
+       if (h->pending_auth){
 		push_auth_to_exosip(info);
 		
         /*FIXME exosip does not take into account this update register message*/
