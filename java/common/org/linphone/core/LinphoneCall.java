@@ -32,7 +32,7 @@ public interface LinphoneCall {
 	 */
 	static class State {
 		
-		static private Vector values = new Vector();
+		static private Vector<State> values = new Vector<State>();
 		private final int mValue;
 		public final int value() {return mValue;}
 		
@@ -268,6 +268,11 @@ public interface LinphoneCall {
 	boolean isInConference();
 	
 	float getPlayVolume();
+
+	/**
+	 * Obtain the remote user agent string. 
+	 */
+	String getRemoteUserAgent();
 	
 	/**
 	 * Take a photo of currently received video and write it into a jpeg file.

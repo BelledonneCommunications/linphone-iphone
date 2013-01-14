@@ -119,7 +119,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 		if (addr==NULL)
 			addr=linphone_address_new(server_addr);
 		if (addr){
-			obj->reg_proxy=linphone_address_as_string_uri_only(addr);
+			obj->reg_proxy=linphone_address_as_string(addr);
 			linphone_address_destroy(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);
@@ -625,7 +625,7 @@ int linphone_dial_plan_lookup_ccc_from_e164(const char* e164) {
 				found++;
 			}
 		}
-	} while (found>1 || found==0);
+	} while ((found>1 || found==0) && i < sizeof(dial_plan->ccc));
 	if (found==1) {
 		return atoi(elected_dial_plan->ccc);
 	} else {
@@ -981,7 +981,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
 	}
 	if (obj->contact_params!=NULL){
-		lp_config_set_string(config,key,"contact_params",obj->contact_params);
+		lp_config_set_string(config,key,"contact_parameters",obj->contact_params);
 	}
 	lp_config_set_int(config,key,"reg_expires",obj->expires);
 	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);

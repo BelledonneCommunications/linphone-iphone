@@ -382,8 +382,10 @@ static void set_tls_options(Sal *ctx){
 
 void sal_set_dscp(Sal *ctx, int dscp){
 	ctx->dscp=dscp;
+#ifdef HAVE_EXOSIP_DSCP
 	if (dscp!=-1)
 		eXosip_set_option(EXOSIP_OPT_SET_DSCP,&ctx->dscp);
+#endif
 }
 
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
@@ -395,12 +397,12 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
-		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);
 		break;
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-			keepalive=-1;	
+		keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
@@ -936,8 +938,13 @@ int sal_call_terminate(SalOp *h){
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
-	if (h->terminated) return;
-    if (h->pending_auth){
+       bool_t terminating=FALSE;
+       if (h->pending_auth && strcmp(h->pending_auth->request->sip_method,"BYE")==0) {
+               terminating=TRUE;
+       }
+       if (h->terminated && !terminating) return;
+
+       if (h->pending_auth){
 		push_auth_to_exosip(info);
 		
         /*FIXME exosip does not take into account this update register message*/
@@ -2233,11 +2240,21 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 }
 
 static void sal_register_add_route(osip_message_t *msg, const char *proxy){
-	char tmp[256]={0};
-	snprintf(tmp,sizeof(tmp)-1,"<%s;lr>",proxy);
-	
+	osip_route_t *route;
+
 	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
-	osip_message_set_route(msg,tmp);
+	
+	osip_route_init(&route);
+	if (osip_route_parse(route,proxy)==0){
+		osip_uri_param_t *lr_param = NULL;
+		osip_uri_uparam_get_byname(route->url, "lr", &lr_param);
+		if (lr_param == NULL){
+			osip_uri_uparam_add(route->url,osip_strdup("lr"),NULL);
+		}
+		osip_list_add(&msg->routes,route,0);
+		return;
+	}
+	osip_route_free(route);
 }
 
 

@@ -145,4 +145,10 @@ public interface LinphoneProxyConfig {
 	 * @param country iso code
 	 */
 	public int lookupCCCFromIso(String iso);
+	
+	/**
+	 * Return the international prefix for the given country
+	 * @param e164 phone number
+	 */
+	public int lookupCCCFromE164(String e164);
 }

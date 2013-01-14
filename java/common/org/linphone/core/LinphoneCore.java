@@ -31,7 +31,7 @@ public interface LinphoneCore {
 	 */
 	static public class GlobalState {
 		
-		static private Vector values = new Vector();
+		static private Vector<GlobalState> values = new Vector<GlobalState>();
 		/**
 		 * Off
 		 */
@@ -76,7 +76,7 @@ public interface LinphoneCore {
 	 */
 	static public class RegistrationState {
 		
-		private static Vector values = new Vector();
+		private static Vector<RegistrationState> values = new Vector<RegistrationState>();
 		/**
 		 * None
 		 */
@@ -124,7 +124,7 @@ public interface LinphoneCore {
 	 */
 	static public class FirewallPolicy {
 		
-		static private Vector values = new Vector();
+		static private Vector<FirewallPolicy> values = new Vector<FirewallPolicy>();
 		/**
 		 * No firewall is assumed.
 		 */
@@ -191,7 +191,7 @@ public interface LinphoneCore {
 	 */
 	static public final class MediaEncryption {
 		
-		static private Vector values = new Vector();
+		static private Vector<MediaEncryption> values = new Vector<MediaEncryption>();
 		/**
 		 * None
 		 */
@@ -230,7 +230,7 @@ public interface LinphoneCore {
 	 */
 	static public class EcCalibratorStatus {
 		
-		static private Vector values = new Vector();
+		static private Vector<EcCalibratorStatus> values = new Vector<EcCalibratorStatus>();
 		/* Do not change the values of these constants or the strings associated with them to prevent breaking
 		   the collection of echo canceller calibration results during the wizard! */
 		public static final int IN_PROGRESS_STATUS=0;
@@ -278,6 +278,12 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+
+	/**
+	 * Set the context of creation of the LinphoneCore.
+	 */
+	public void setContext(Object context);
+
 	/**
 	 * clear all added proxy configs
 	 */
@@ -417,7 +423,9 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException 
 	 */
 	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
-	
+
+	public void startRinging();
+
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
@@ -472,7 +480,7 @@ public interface LinphoneCore {
 	 * @return true is mic is muted
 	 */
 	boolean isMicMuted();
-	
+
 	/**
 	 * Initiate a dtmf signal if in call
 	 * @param number
@@ -524,7 +532,7 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoCancellationEnabled();
 	/**
-	 * Get echo limiter status (another method of doing echo suppressionn, more brute force)
+	 * Get echo limiter status (another method of doing echo suppression, more brute force)
 	 * @return true if echo limiter is enabled
 	 */
 	boolean isEchoLimiterEnabled();
@@ -537,13 +545,13 @@ public interface LinphoneCore {
 	 */
 	Transports getSignalingTransportPorts();
 	/**
-	 * not implemented
+	 * Activates or deactivates the speaker.
 	 * @param value
 	 */
 	void enableSpeaker(boolean value);
 	/**
-	 * not implemented
-	 * @return
+	 * Tells whether the speaker is activated.
+	 * @return true if speaker enabled, false otherwise
 	 */
 	boolean isSpeakerEnabled();
 	/**
@@ -778,7 +786,9 @@ public interface LinphoneCore {
 	LinphoneProxyConfig[] getProxyConfigList();
 	
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
-	
+
+	void setStaticPicture(String path);
+
 	void setUserAgent(String name, String version);
 	
 	void setCpuCount(int count);

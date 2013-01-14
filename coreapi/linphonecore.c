@@ -707,11 +707,12 @@ static PayloadType * find_payload(RtpProfile *prof, const char *mime_type, int c
 	return candidate;
 }
 
-static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadType **ret){
+static bool_t get_codec(LinphoneCore *lc, const char* type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
 	int rate,channels,enabled;
 	PayloadType *pt;
+	LpConfig *config=lc->config;
 
 	*ret=NULL;
 	snprintf(codeckey,50,"%s_%i",type,index);
@@ -722,7 +723,7 @@ static bool_t get_codec(LpConfig *config, const char* type, int index, PayloadTy
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
 	channels=lp_config_get_int(config,codeckey,"channels",0);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	pt=find_payload(&av_profile,mime,rate,channels,fmtp);
+	pt=find_payload(lc->default_profile,mime,rate,channels,fmtp);
 	if (pt && enabled ) pt->flags|=PAYLOAD_TYPE_ENABLED;
 	//ms_message("Found codec %s/%i",pt->mime_type,pt->clock_rate);
 	if (pt==NULL) ms_warning("Ignoring codec config %s/%i with fmtp=%s because unsupported",
@@ -768,10 +769,10 @@ static int codec_compare(const PayloadType *a, const PayloadType *b){
 	return 0;
 }
 
-static MSList *add_missing_codecs(SalStreamType mtype, MSList *l){
+static MSList *add_missing_codecs(LinphoneCore *lc, SalStreamType mtype, MSList *l){
 	int i;
 	for(i=0;i<RTP_PROFILE_MAX_PAYLOADS;++i){
-		PayloadType *pt=rtp_profile_get_payload(&av_profile,i);
+		PayloadType *pt=rtp_profile_get_payload(lc->default_profile,i);
 		if (pt){
 			if (mtype==SalVideo && pt->type!=PAYLOAD_VIDEO)
 				pt=NULL;
@@ -812,22 +813,22 @@ static void codecs_config_read(LinphoneCore *lc)
 	PayloadType *pt;
 	MSList *audio_codecs=NULL;
 	MSList *video_codecs=NULL;
-	for (i=0;get_codec(lc->config,"audio_codec",i,&pt);i++){
+	for (i=0;get_codec(lc,"audio_codec",i,&pt);i++){
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
 			}else audio_codecs=codec_append_if_new(audio_codecs,pt);
 		}
 	}
-	audio_codecs=add_missing_codecs(SalAudio,audio_codecs);
-	for (i=0;get_codec(lc->config,"video_codec",i,&pt);i++){
+	audio_codecs=add_missing_codecs(lc,SalAudio,audio_codecs);
+	for (i=0;get_codec(lc,"video_codec",i,&pt);i++){
 		if (pt){
 			if (!ms_filter_codec_supported(pt->mime_type)){
 				ms_warning("Codec %s is not supported by mediastreamer2, removed.",pt->mime_type);
 			}else video_codecs=codec_append_if_new(video_codecs,(void *)pt);
 		}
 	}
-	video_codecs=add_missing_codecs(SalVideo,video_codecs);
+	video_codecs=add_missing_codecs(lc,SalVideo,video_codecs);
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
 	linphone_core_update_allocated_audio_bandwidth(lc);
@@ -1074,7 +1075,7 @@ static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *con
 	ms_message("assigning %s/%i payload type number %i",pt->mime_type,pt->clock_rate,number);
 	payload_type_set_number(pt,number);
 	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
-	rtp_profile_set_payload(&av_profile,number,pt);
+	rtp_profile_set_payload(lc->default_profile,number,pt);
 	lc->payload_types=ms_list_append(lc->payload_types,pt);
 }
 
@@ -1092,6 +1093,8 @@ static void linphone_core_handle_static_payloads(LinphoneCore *lc){
 }
 
 static void linphone_core_free_payload_types(LinphoneCore *lc){
+	rtp_profile_clear_all(lc->default_profile);
+	rtp_profile_destroy(lc->default_profile);
 	ms_list_for_each(lc->payload_types,(void (*)(void*))payload_type_destroy);
 	ms_list_free(lc->payload_types);
 	lc->payload_types=NULL;
@@ -1125,6 +1128,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	lc->dyn_pt=96;
+	lc->default_profile=rtp_profile_new("default profile");
 	linphone_core_assign_payload_type(lc,&payload_type_pcmu8000,0,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_gsm,3,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_pcma8000,8,NULL);
@@ -1671,9 +1675,10 @@ static void apply_user_agent(LinphoneCore *lc){
  *
  * @ingroup misc
 **/
-void linphone_core_set_user_agent(const char *name, const char *ver){
+void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char *ver){
 	strncpy(_ua_name,name,sizeof(_ua_name)-1);
 	strncpy(_ua_version,ver,sizeof(_ua_version));
+	apply_user_agent(lc);
 }
 
 const char *linphone_core_get_user_agent_name(void){
@@ -2654,8 +2659,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #ifdef VIDEO_ENABLED
 		bool_t has_video = call->params.has_video;
 		if ((call->ice_session != NULL) && (call->videostream != NULL) && !params->has_video) {
-			ice_session_remove_check_list(call->ice_session, call->videostream->ice_check_list);
-			call->videostream->ice_check_list = NULL;
+			ice_session_remove_check_list(call->ice_session, call->videostream->ms.ice_check_list);
+			call->videostream->ms.ice_check_list = NULL;
 		}
 		call->params = *params;
 		linphone_call_make_local_media_description(lc, call);
@@ -2882,8 +2887,11 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		sal_op_set_contact(call->op,contact);
 
 	if (params){
+		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
 		call->params=*params;
-		call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
+		// There might not be a md if the INVITE was lacking an SDP
+		// In this case we use the parameters as is.
+		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 		call->camera_active=call->params.has_video;
 		linphone_call_make_local_media_description(lc,call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
@@ -2891,7 +2899,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	
 	if (call->audiostream==NULL)
 		linphone_call_init_media_streams(call);
-	if (!was_ringing && call->audiostream->ticker==NULL){
+	if (!was_ringing && call->audiostream->ms.ticker==NULL){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
@@ -4482,7 +4490,7 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	}
 	if (file!=NULL) {
 		lc->play_file=ms_strdup(file);
-		if (call && call->audiostream && call->audiostream->ticker)
+		if (call && call->audiostream && call->audiostream->ms.ticker)
 			audio_stream_play(call->audiostream,file);
 	}
 }

@@ -174,6 +174,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	public float getPlayVolume() {
 		return getPlayVolume(nativePtr);
 	}
+
+	private native String getRemoteUserAgent(long nativePtr);
+	public String getRemoteUserAgent() {
+		return getRemoteUserAgent(nativePtr);
+	}
 	
 	private native void takeSnapshot(long nativePtr, String path);
 	public void takeSnapshot(String path) {

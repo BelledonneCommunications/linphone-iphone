@@ -901,8 +901,6 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
 void linphone_core_enable_logs(FILE *file);
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
-/*sets the user-agent string in sip messages, must be set before linphone_core_new() or linphone_core_init() */
-void linphone_core_set_user_agent(const char *ua_name, const char *version);
 const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);
 const char *linphone_core_get_user_agent_version(void);
@@ -931,6 +929,9 @@ void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id)
 const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
 
 #endif
+
+/*sets the user-agent string in sip messages, ideally called just after linphone_core_new() or linphone_core_init() */
+void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
@@ -1234,7 +1235,6 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 **/
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
-bool_t linphone_core_is_audio_muted(LinphoneCore *lc);
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
 bool_t linphone_core_get_rtp_no_xmit_on_audio_mute(const LinphoneCore *lc);

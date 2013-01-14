@@ -40,7 +40,7 @@ abstract public class LinphoneCoreFactory {
 	public static final synchronized LinphoneCoreFactory instance() {
 		try {
 			if (theLinphoneCoreFactory == null) {
-				Class lFactoryClass = Class.forName(factoryName);
+				Class<?> lFactoryClass = Class.forName(factoryName);
 				theLinphoneCoreFactory = (LinphoneCoreFactory) lFactoryClass.newInstance();
 			}
 		} catch (Exception e) {
@@ -72,8 +72,9 @@ abstract public class LinphoneCoreFactory {
 	/**
 	 * Enable verbose traces
 	 * @param enable 
+	 * @param tag
 	 */
-	abstract public  void setDebugMode(boolean enable);
+	abstract public  void setDebugMode(boolean enable, String tag);
 	
 	abstract public void setLogHandler(LinphoneLogHandler handler);
 	/**

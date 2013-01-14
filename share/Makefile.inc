@@ -14,7 +14,7 @@ $(linphone_help)/manual.html:
 	sgmltools $(srcdir)/manual.sgml
 
 install-data-local:
-			$(mkdir_p) $(DESTDIR)$(linphone_manualdir)
+			$(MKDIR_P) $(DESTDIR)$(linphone_manualdir)
 			-cp -f $(linphone_help)/*.html $(DESTDIR)/$(linphone_manualdir)/.
 			-cp -f $(linphone_help)/*.css $(DESTDIR)/$(linphone_manualdir)/.
 

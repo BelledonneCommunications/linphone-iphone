@@ -104,9 +104,9 @@ void JitterBufferResetCommand::exec(Daemon *app, const char *args){
 				}
 				istr>>streamtype;
 				if (streamtype=="video"){
-					rtprecv=call->videostream ? call->videostream->rtprecv : NULL;
+					rtprecv=call->videostream ? call->videostream->ms.rtprecv : NULL;
 				}else{
-					rtprecv=call->audiostream ? call->audiostream->rtprecv : NULL;
+					rtprecv=call->audiostream ? call->audiostream->ms.rtprecv : NULL;
 				}
 			}else{
 				AudioStream *stream=app->findAudioStream(arg2);
@@ -114,7 +114,7 @@ void JitterBufferResetCommand::exec(Daemon *app, const char *args){
 					app->sendResponse(Response("No such stream id"));
 					return;
 				}
-				rtprecv=stream->rtprecv;
+				rtprecv=stream->ms.rtprecv;
 			}
 			if (rtprecv==NULL){
 				app->sendResponse(Response("No such active stream"));
