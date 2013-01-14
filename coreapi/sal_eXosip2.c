@@ -397,12 +397,12 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
-		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);
 		break;
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-			keepalive=-1;	
+		keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
