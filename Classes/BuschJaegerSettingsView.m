@@ -117,8 +117,7 @@
 }
 
 - (IBAction)onManualClick:(id)sender {
-    [[BuschJaegerMainView instance].manualSettingsView reset];
-    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].manualSettingsView animated:FALSE];
+    [self reloadConfiguration];
 }
 
 - (IBAction)onBackClick:(id)sender {
@@ -128,17 +127,24 @@
 
 #pragma mark -
 
-- (void)setConfiguration:(NSString*)address username:(NSString*)username password:(NSString*)password {
+- (void)reloadConfiguration {
+
+    NSString *address = [[NSUserDefaults standardUserDefaults] stringForKey:@"ipgateway_preference"];
+    NSString *username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
+    NSString *password = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
     
-    NSRange range = [address rangeOfString:@"http://"];
-    if (range.location == NSNotFound)
-    {
-        address = [@"http://" stringByAppendingString:address];
-    }
+    if ([address length] != 0 && [username length] != 0 && [password length] != 0) {
     
-    NSString *dataString = [NSString stringWithFormat:@"URL=%@/config.ini USER=%@ PW=%@", address, username, password];
-    if([[[LinphoneManager instance] configuration] parseQRCode:dataString delegate:self]) {
-        [waitView setHidden:FALSE];
+        NSRange range = [address rangeOfString:@"http://"];
+        if (range.location == NSNotFound)
+        {
+            address = [@"http://" stringByAppendingString:address];
+        }
+    
+        NSString *dataString = [NSString stringWithFormat:@"URL=%@/config.ini USER=%@ PW=%@", address, username, password];
+        if([[[LinphoneManager instance] configuration] parseQRCode:dataString delegate:self]) {
+            [waitView setHidden:FALSE];
+        }
     }
 }
 

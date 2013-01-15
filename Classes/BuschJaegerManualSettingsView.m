@@ -107,7 +107,7 @@
 - (IBAction)onValidClick:(id)sender {
     if([[addressField text] length] && [[usernameField text] length] && [[passwordField text] length]) {
         [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
-        [[BuschJaegerMainView instance].settingsView setConfiguration:[addressField text] username:[usernameField text] password:[passwordField text]];
+        [[BuschJaegerMainView instance].settingsView reloadConfiguration];
     }
 }
 

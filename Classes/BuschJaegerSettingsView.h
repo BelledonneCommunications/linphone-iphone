@@ -36,6 +36,6 @@
 - (IBAction)onManualClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
 
-- (void)setConfiguration:(NSString*)address username:(NSString*)username password:(NSString*)password;
+- (void)reloadConfiguration;
 
 @end

@@ -111,6 +111,8 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D2D7FD5D16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */; };
+		D2D7FD5E16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */; };
 		D304B3EA16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
 		D304B3EB16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
 		D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
@@ -213,8 +215,6 @@
 		D37CD31215E21E330028869A /* BuschJaegerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */; };
 		D37CD31715E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
 		D37CD31815E21E330028869A /* BuschJaegerSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */; };
-		D37CD31915E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
-		D37CD31A15E21E330028869A /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */; };
 		D37CD31B15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
 		D37CD31C15E21E330028869A /* BuschJaegerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D37CD30A15E21E330028869A /* BuschJaegerUtils.m */; };
 		D37CD32815E220620028869A /* buschjaeger_icon_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D37CD32315E220620028869A /* buschjaeger_icon_57.png */; };
@@ -590,6 +590,7 @@
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* buschjaeger-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "buschjaeger-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		D2D7FD5F16A52F6A0031322D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerManualSettingsView.xib; sourceTree = "<group>"; };
 		D30B942616358DD600D53C46 /* BuschJaegerManualSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerManualSettingsView.h; sourceTree = "<group>"; };
@@ -655,7 +656,6 @@
 		D37CD30215E21E320028869A /* BuschJaegerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerConfiguration.m; sourceTree = "<group>"; };
 		D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerSettingsView.h; sourceTree = "<group>"; };
 		D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerSettingsView.m; sourceTree = "<group>"; };
-		D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D37CD30915E21E330028869A /* BuschJaegerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerUtils.h; sourceTree = "<group>"; };
 		D37CD30A15E21E330028869A /* BuschJaegerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerUtils.m; sourceTree = "<group>"; };
 		D37CD32315E220620028869A /* buschjaeger_icon_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = buschjaeger_icon_57.png; path = Resources/buschjaeger_icon_57.png; sourceTree = "<group>"; };
@@ -885,7 +885,7 @@
 				D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */,
 				D37CD30615E21E320028869A /* BuschJaegerSettingsView.h */,
 				D37CD30715E21E320028869A /* BuschJaegerSettingsView.m */,
-				D37CD30815E21E330028869A /* BuschJaegerSettingsView.xib */,
+				D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */,
 				D37CD39F15E245290028869A /* BuschJaegerStationTableViewController.h */,
 				D37CD3A015E2452B0028869A /* BuschJaegerStationTableViewController.m */,
 				D37CD30915E21E330028869A /* BuschJaegerUtils.h */,
@@ -1602,7 +1602,7 @@
 				D37CD2F115E21CB30028869A /* bj_settings.png in Resources */,
 				D37CD2F315E21CB30028869A /* bj_start_call.png in Resources */,
 				D37CD30F15E21E330028869A /* BuschJaegerCallView.xib in Resources */,
-				D37CD31915E21E330028869A /* BuschJaegerSettingsView.xib in Resources */,
+				D2D7FD5D16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */,
 				D37CD32815E220620028869A /* buschjaeger_icon_57.png in Resources */,
 				D37CD32A15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */,
 				D37CD32C15E220620028869A /* buschjaeger_icon_72.png in Resources */,
@@ -1663,7 +1663,7 @@
 				D37CD2F215E21CB30028869A /* bj_settings.png in Resources */,
 				D37CD2F415E21CB30028869A /* bj_start_call.png in Resources */,
 				D37CD31015E21E330028869A /* BuschJaegerCallView.xib in Resources */,
-				D37CD31A15E21E330028869A /* BuschJaegerSettingsView.xib in Resources */,
+				D2D7FD5E16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */,
 				D37CD32915E220620028869A /* buschjaeger_icon_57.png in Resources */,
 				D37CD32B15E220620028869A /* buschjaeger_icon_57@2x.png in Resources */,
 				D37CD32D15E220620028869A /* buschjaeger_icon_72.png in Resources */,
@@ -1864,6 +1864,14 @@
 				2214783C1386A2030020F8B8 /* en */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D2D7FD5F16A52F6A0031322D /* en */,
+			);
+			name = BuschJaegerSettingsView.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
