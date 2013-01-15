@@ -2461,9 +2461,25 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	if (linphone_core_get_route(lc)) {
 		sal_op_set_route(call->op,linphone_core_get_route(lc));
-	} else if (proxy && linphone_proxy_config_get_service_route(proxy)) {
+	}
+/*
+* rfc3608
+6.1.  Procedures at the UA
+
+ /.../
+   For example, some devices will use locally-configured
+   explicit loose routing to reach a next-hop proxy, and others will use
+   a default outbound-proxy routing rule.  However, for the result to
+   function, the combination MUST provide valid routing in the local
+   environment.  In general, the service route set is appended to any
+   locally configured route needed to egress the access proxy chain.
+   Systems designers must match the service routing policy of their
+   nodes with the basic SIP routing policy in order to get a workable
+   system.
+*/
+	if (proxy && linphone_proxy_config_get_service_route(proxy)) {
 		/*set service route*/
-		sal_op_set_route_address(call->op,linphone_proxy_config_get_service_route(proxy));
+		sal_op_add_route_address(call->op,linphone_proxy_config_get_service_route(proxy));
 	} /*else, no route*/
 
 

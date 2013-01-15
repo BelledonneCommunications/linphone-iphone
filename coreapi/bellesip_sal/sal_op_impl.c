@@ -115,10 +115,11 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
+	MSList* iterator;
 	if (!op->dialog) {
 		/*don't put route header if dialog is in confirmed state*/
-		if (sal_op_get_route_address(op)) {
-			route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_route_address(op)));
+		for(iterator=(MSList*)sal_op_get_route_addresses(op);iterator!=NULL;iterator=iterator->next) {
+			route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(iterator->data));
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
 		}
 	}

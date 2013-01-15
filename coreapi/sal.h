@@ -215,7 +215,7 @@ void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_
 typedef struct SalOpBase{
 	Sal *root;
 	char *route; /*or request-uri for REGISTER*/
-	SalAddress* route_address;
+	MSList* route_addresses; /*list of SalAddress* */
 	char *contact;
 	SalAddress* contact_address;
 	char *from;
@@ -391,6 +391,7 @@ void sal_op_set_contact(SalOp *op, const char *contact);
 void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
 void sal_op_set_route(SalOp *op, const char *route);
 void sal_op_set_route_address(SalOp *op, const SalAddress* address);
+void sal_op_add_route_address(SalOp *op, const SalAddress* address);
 void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_from_address(SalOp *op, const SalAddress *from);
 void sal_op_set_to(SalOp *op, const char *to);
@@ -407,7 +408,7 @@ const SalAddress *sal_op_get_to_address(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
-const SalAddress* sal_op_get_route_address(const SalOp *op);
+const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);

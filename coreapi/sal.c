@@ -273,15 +273,33 @@ void sal_op_set_contact(SalOp *op, const char *contact){
 }
 
 void sal_op_set_route(SalOp *op, const char *route){
-	SET_PARAM(op,route);
+	char* route_string=(void *)0;
+	SalOpBase* op_base = (SalOpBase*)op;
+	if (op_base->route_addresses) {
+		ms_list_for_each(op_base->route_addresses,(void (*)(void *))sal_address_destroy);
+		op_base->route_addresses=ms_list_free(op_base->route_addresses);
+	}
+	if (route) {
+		op_base->route_addresses=ms_list_append(NULL,NULL);
+		assign_address((SalAddress**)&(op_base->route_addresses->data),route);
+		route_string=sal_address_as_string((SalAddress*)op_base->route_addresses->data); \
+	}
+	assign_string(&op_base->route,route_string); \
+	if(route_string) ortp_free(route_string);
 }
-const SalAddress* sal_op_get_route_address(const SalOp *op) {
-	return ((SalOpBase*)op)->route_address;
+const MSList* sal_op_get_route_addresses(const SalOp *op) {
+	return ((SalOpBase*)op)->route_addresses;
 }
 void sal_op_set_route_address(SalOp *op, const SalAddress *address){
 	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
 	sal_op_set_route(op,address_string);
 	ms_free(address_string);
+}
+void sal_op_add_route_address(SalOp *op, const SalAddress *address){
+	SalOpBase* op_base = (SalOpBase*)op;
+	if (op_base->route_addresses) {
+		op_base->route_addresses=ms_list_append(op_base->route_addresses,(void*)address);
+	}
 }
 void sal_op_set_from(SalOp *op, const char *from){
 	SET_PARAM(op,from);
