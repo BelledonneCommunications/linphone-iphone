@@ -65,6 +65,7 @@ static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
+
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
@@ -2549,6 +2550,19 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
+	if (linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP){
+		int i;
+		for(i=0;i<md->nstreams;i++){
+			SalStreamDescription *sd=&md->streams[i];
+			if (sd->proto!=SalProtoRtpSavp){
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	char *barmesg;
 	char *tmp;
@@ -2560,10 +2574,12 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_make_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
-	if (md && sal_media_description_empty(md)){
-		sal_call_decline(call->op,SalReasonMedia,NULL);
-		linphone_call_unref(call);
-		return;
+	if (md){
+		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
+			sal_call_decline(call->op,SalReasonMedia,NULL);
+			linphone_call_unref(call);
+			return;
+		}
 	}
 
 	from_parsed=linphone_address_new(sal_op_get_from(call->op));
