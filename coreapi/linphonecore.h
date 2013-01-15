@@ -1429,7 +1429,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
  */
 bool_t linphone_core_tunnel_available(void);
 
-typedef struct LinphoneTunnel LinphoneTunnel;
+typedef struct _LinphoneTunnel LinphoneTunnel;
 /**
 * get tunnel instance if available
 */
