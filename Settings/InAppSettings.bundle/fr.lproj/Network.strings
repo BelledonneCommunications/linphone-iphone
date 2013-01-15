@@ -1,0 +1,62 @@
+/* Wifi only */
+"Wifi only" = "Uniquement Wifi";
+
+/* Edge optimization */
+"Edge optimization" = "Optimisation Edge";
+
+/* Stun Server */
+"Stun Server" = "Serveur Stun";
+
+/* ICE */
+"ICE" = "ICE";
+
+/* Random Port */
+"Random Port" = "Port Aléatoire";
+
+/* Port */
+"Port" = "Port";
+
+/* Audio Port(s) */
+"Audio Port(s)" = "Port(s) Audio";
+
+/* Video Port(s) */
+"Video Port(s)" = "Port(s) Vidéo";
+
+/* Transport */
+"Transport" = "Transport";
+
+/* Media Encryption */
+"Media Encryption" = "Chiffrement";
+
+/* Push Notifications */
+"Push Notification" = "Push Notification";
+
+/* Transport */
+"Transport" = "Transport";
+
+/* UDP */
+"UDP" = "UDP";
+
+/* TCP */
+"TCP" = "TCP";
+
+/* TLS */
+"TLS" = "TLS";
+
+/* None */
+"None" = "Aucun";
+
+/* SRTP */
+"SRTP" = "SRTP";
+
+/* ZRTP */
+"ZRTP" = "ZRTP";
+
+/* Limits */
+"Limits" = "Limites";
+
+/* Upload bandwidth */
+"Upload bandwidth" = "Débit montant";
+
+/* Download bandwidth */
+"Download bandwidth" = "Débit descendant";

@@ -1,0 +1,46 @@
+[net]
+download_bw=512
+upload_bw=512
+mtu=1300
+activate_edge_workarounds=0
+edge_ping_time=200
+edge_bw=10
+
+[sip]
+guess_hostname=1
+inc_timeout=45
+use_info=0
+use_ipv6=0
+register_only_when_network_is_up=1
+auto_net_state_mon=0
+keepalive_period=30000
+ping_with_options=0
+
+[rtp]
+audio_jitt_comp=60
+video_jitt_comp=60
+nortp_timeout=30
+
+[sound]
+playback_dev_id=AU: Audio Unit Receiver
+ringer_dev_id=AQ: Audio Queue Device
+capture_dev_id=AU: Audio Unit Receiver
+echocancellation=0
+dtmf_player_amp=0.007
+
+[misc]
+history_max_size=30
+max_calls=3
+
+[wizard]
+service_url=https://www.linphone.org/wizard.php
+domain=sip.linphone.org
+proxy=sip.linphone.org:5223
+password_length=6
+username_length=4
+expires=604800
+push_notification=1
+transport=tls
+sharing_server=https://www.linphone.org:444/upload.php
+ice=0
+stun=stun.linphone.org

@@ -1,6 +1,6 @@
 /* UILinphone.h
  *
- * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
+ * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -10,21 +10,33 @@
  *  This program is distributed in the hope that it will be useful,     
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
+ *  GNU Library General Public License for more details.                
  *                                                                      
  *  You should have received a copy of the GNU General Public License   
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */       
+ */ 
 
-#import "UICallButton.h"
-#import "UIHangUpButton.h"
-#import "UIDigitButton.h"
-#import "UIToggleButton.h"
-#import "UIMuteButton.h"
-#import "UISpeakerButton.h"
-#import "UIDuration.h"
-#import "UIEraseButton.h"
-#import "LinphoneUIDelegates.h"
-#import "UICamSwitch.h"
-#import "UIPauseResumeButton.h"
+#import <UIKit/UIColor.h>
+
+#define LINPHONE_MAIN_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
+#define LINPHONE_TABLE_CELL_BACKGROUND_COLOR [UIColor colorWithRed:207.0f/255.0f green:76.0f/255.0f blue:41.0f/255.0f alpha:1.0f]
+
+@interface UIColor (LightAndDark)
+
+- (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am;
+
+- (UIColor *)lumColor:(float)mult;
+
+- (UIColor *)lighterColor;
+
+- (UIColor *)darkerColor;
+
+@end
+
+
+@interface UIImage (ForceDecode)
+
++ (UIImage *)decodedImageWithImage:(UIImage *)image;
+
+@end

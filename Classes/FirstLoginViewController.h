@@ -18,23 +18,19 @@
  */              
 
 #import <UIKit/UIKit.h>
-#import "LinphoneAppDelegate.h"
-#import "LinphoneUIDelegates.h"
 
+#import "UICompositeViewController.h"
 
-@interface FirstLoginViewController : UIViewController <UITextFieldDelegate,LinphoneUIRegistrationDelegate>{
-	UIButton* ok;
-	UIButton* site;
-	UITextField* username;
-	UIView* activityIndicator;
-	
-	
+@interface FirstLoginViewController : UIViewController<UITextFieldDelegate, UICompositeViewDelegate> {
 }
--(void) doOk:(id)sender;
 
-@property (nonatomic, retain) IBOutlet UIButton* ok;
-@property (nonatomic, retain) IBOutlet UIButton* site;
-@property (nonatomic, retain) IBOutlet UITextField* username;
-@property (nonatomic, retain) IBOutlet UITextField* passwd;
-@property (nonatomic, retain) IBOutlet UIView* activityIndicator;
+- (IBAction)onLoginClick:(id)sender;
+- (IBAction)onSiteClick:(id)sender;
+
+@property (nonatomic, retain) IBOutlet UIButton* loginButton;
+@property (nonatomic, retain) IBOutlet UIButton* siteButton;
+@property (nonatomic, retain) IBOutlet UITextField* usernameField;
+@property (nonatomic, retain) IBOutlet UITextField* passwordField;
+@property (nonatomic, retain) IBOutlet UIView* waitView;
+
 @end

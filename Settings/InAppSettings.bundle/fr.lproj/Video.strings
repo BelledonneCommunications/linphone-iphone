@@ -1,0 +1,24 @@
+/* Automatically start video */
+"Automatically start" = "Démarrage automatique";
+
+/* Automatically accept video */
+"Automatically accept" = "Acceptation automatique";
+
+/* Show self view */
+"Show self view" = "Se voir";
+
+/* Show preview */
+"Show preview" = "Activer la prévisualisation";
+
+/* Codecs */
+"Codecs" = "Codecs";
+
+/* mpeg4 */
+"mpeg4" = "mpeg4";
+
+/* h264 */
+"h264" = "h264";
+
+/* VP8 */
+"VP8" = "VP8";
+

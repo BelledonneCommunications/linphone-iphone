@@ -21,20 +21,62 @@
 
 
 @implementation UIEraseButton
--(void) touchUp:(id) sender {
-	if ([mAddress.text length] > 0) {
-		[mAddress setText:[mAddress.text substringToIndex:[mAddress.text length]-1]];
-	}
+
+@synthesize addressField;
+
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUIEraseButton {
+	[self addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchDown];
 }
 
--(void) initWithAddressField:(UITextField*) address {
-	mAddress = address;
-	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUIEraseButton];
+    }
+    return self;
 }
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUIEraseButton];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUIEraseButton];
+	}
+    return self;
+}	
 
 - (void)dealloc {
     [super dealloc];
+	[addressField release];
 }
 
+
+#pragma mark - Action Functions
+
+-(void) touchDown:(id) sender {
+  	if ([addressField.text length] > 0) {
+		[addressField setText:[addressField.text substringToIndex:[addressField.text length]-1]];
+	}  
+}
+
+
+#pragma mark - UILongTouchButtonDelegate Functions
+
+- (void)onRepeatTouch {
+}
+
+- (void)onLongTouch {
+    [addressField setText:@""];
+}
 
 @end

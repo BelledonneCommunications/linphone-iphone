@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IsSecure</key>
+			<false/>
+			<key>Key</key>
+			<string>prefix_preference</string>
+			<key>Title</key>
+			<string>Prefix</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>substitute_+_by_00_preference</string>
+			<key>Title</key>
+			<string>Substitue + by 00</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Send inband DTMFs</string>
+			<key>Key</key>
+			<string>rfc_dtmf_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Send SIP INFO DTMFs</string>
+			<key>Key</key>
+			<string>sipinfo_dtmf_preference</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>incoming_call_timeout_preference</string>
+			<key>Title</key>
+			<string>Incoming call timeout</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>30</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>in_call_timeout_preference</string>
+			<key>Title</key>
+			<string>In call timeout</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+	</array>
+</dict>
+</plist>

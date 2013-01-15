@@ -1,0 +1,57 @@
+/* SIP account */
+"SIP account" = "SIP account";
+
+/* Wizard */
+"Wizard" = "Run assistant";
+
+/* User name */
+"User name" = "User name";
+
+/* Password */
+"Password" = "Password";
+
+/* Domain */
+"Domain" = "Domain";
+
+/* Proxy */
+"Proxy" = "Proxy";
+
+/* Outbound proxy */
+"Outbound proxy" = "Outbound proxy";
+
+/* Settings */
+"Settings" = "Settings";
+
+/* Enable video */
+"Enable video" = "Enable video";
+
+/* Audio */
+"Audio" = "Audio";
+
+/* Video */
+"Video" = "Video";
+
+/* Call */
+"Call" = "Call";
+
+/* Network */
+"Network" = "Network";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/*  */
+"" = "";
+
+/* About */
+"About" = "About";
+
+/* Quit */
+"Quit" = "Quit";
+
+/* Release */
+"Release" = "Release";
+
+/* Clear cache */
+"Clear cache" = "Clear cache";
+

@@ -17,12 +17,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */       
 
-#import "UISpeakerButton.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "UISpeakerButton.h"
+#import "Utils.h"
+#import "LinphoneManager.h"
+
 #include "linphonecore.h"
 
 @implementation UISpeakerButton
-static AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
+
+
+#pragma mark - Static Functions
 
 static void audioRouteChangeListenerCallback (
                                        void                   *inUserData,                                 // 1
@@ -31,67 +36,63 @@ static void audioRouteChangeListenerCallback (
                                        const void             *inPropertyValue                             // 4
                                        ) {
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
-    [(UISpeakerButton*)inUserData reset];  
-   
+    UISpeakerButton* button = (UISpeakerButton*)inUserData;
+    [button update];
 }
 
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char *)name{
-   [super initWithOnImage:onImage offImage:offImage debugName:name];
-   
-   AudioSessionInitialize(NULL, NULL, NULL, NULL);
-   OSStatus lStatus = AudioSessionAddPropertyListener(routeChangeID, audioRouteChangeListenerCallback, self);
-   if (lStatus) {
-       ms_error ("cannot register route change handler [%ld]",lStatus);
-   }
+- (void)initUISpeakerButton {
+    AudioSessionInitialize(NULL, NULL, NULL, NULL);
+    OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+    if (lStatus) {
+        [LinphoneLogger logc:LinphoneLoggerError format:"cannot register route change handler [%ld]",lStatus];
+    }
 }
 
-
--(void) onOn {
-	//redirect audio to speaker
-	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
-	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-							 , sizeof (audioRouteOverride)
-							 , &audioRouteOverride);
-	
-}
--(void) onOff {
-	UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
-	AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
-							 , sizeof (audioRouteOverride)
-							 , &audioRouteOverride);
-}
--(bool) isInitialStateOn {
-    CFStringRef lNewRoute=CFSTR("Unknown");
-    UInt32 lNewRouteSize = sizeof(lNewRoute);
-    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute
-                                                ,&lNewRouteSize
-                                                ,&lNewRoute);
-    if (!lStatus && CFStringGetLength(lNewRoute) > 0) {
-        char route[64];
-        CFStringGetCString(lNewRoute, route,sizeof(route), kCFStringEncodingUTF8);
-        ms_message("Current audio route is [%s]",route);
-        return (    kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("Speaker"),0) 
-                ||  kCFCompareEqualTo == CFStringCompare (lNewRoute,CFSTR("SpeakerAndMicrophone"),0));
-    } else 
-        return false;
+- (id)init {
+    self = [super init];
+    if (self) {
+		[self initUISpeakerButton];
+    }
+    return self;
 }
 
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+		[self initUISpeakerButton];
+    }
+    return self;
+}
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super initWithCoder:decoder];
+    if (self) {
+		[self initUISpeakerButton];
+	}
+    return self;
+}	
 
 - (void)dealloc {
-    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(routeChangeID, audioRouteChangeListenerCallback, self);
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
 	if (lStatus) {
-		ms_error ("cannot un register route change handler [%ld]",lStatus);
+		[LinphoneLogger logc:LinphoneLoggerError format:"cannot un register route change handler [%ld]", lStatus];
 	}
 	[super dealloc];
 }
 
+
+#pragma mark - UIToggleButtonDelegate Functions
+
+- (void)onOn {
+	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+}
+
+- (void)onOff {
+    [[LinphoneManager instance] setSpeakerEnabled:FALSE];
+}
+
+- (bool)onUpdate {
+    return [[LinphoneManager instance] speakerEnabled];
+}
 
 @end

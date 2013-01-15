@@ -1,4 +1,4 @@
-openssl_version=1.0.0a
+openssl_version=1.0.1c
 OPENSSL_BUILD_DIR?=$(BUILDER_BUILD_DIR)/externals/openssl
 
 ifneq (,$(findstring mingw,$(host)))

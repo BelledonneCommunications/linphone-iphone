@@ -18,8 +18,8 @@
  */       
 
 #import <UIKit/UIKit.h>
-#import "UIToggleButton.h"
 
+#import "UIToggleButton.h"
 
 @interface UISpeakerButton : UIToggleButton<UIToggleButtonDelegate> {
 

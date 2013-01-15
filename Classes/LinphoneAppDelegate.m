@@ -1,4 +1,4 @@
-/* linphoneAppDelegate.m
+/* LinphoneAppDelegate.m
  *
  * Copyright (C) 2009  Belledonne Comunications, Grenoble, France
  *
@@ -17,223 +17,229 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */                                                                           
 
-#import "PhoneViewController.h"
+#import "PhoneMainView.h"
 #import "linphoneAppDelegate.h"
-#import "ContactPickerDelegate.h"
 #import "AddressBook/ABPerson.h"
 
 #import "CoreTelephony/CTCallCenter.h"
 #import "CoreTelephony/CTCall.h"
 
 #import "ConsoleViewController.h"
-#import "MoreViewController.h"
-#include "CallHistoryTableViewController.h"
+#import "LinphoneCoreSettingsStore.h"
 
 #include "LinphoneManager.h"
 #include "linphonecore.h"
 
-#if __clang__ && __arm__
-extern int __divsi3(int a, int b);
-int __aeabi_idiv(int a, int b) {
-	return __divsi3(a,b);
+@implementation UILinphoneWindow
+
+@end
+
+@implementation LinphoneAppDelegate
+
+@synthesize started;
+
+
+#pragma mark - Lifecycle Functions
+
+- (id)init {
+    self = [super init];
+    if(self != nil) {
+        self->started = FALSE;
+    }
+    return self;
 }
-#endif
 
-@implementation linphoneAppDelegate
+- (void)dealloc {
+	[super dealloc];
+}
 
-@synthesize window;
-@synthesize myTabBarController;
-@synthesize myPeoplePickerController;
-@synthesize myPhoneViewController;
 
--(void)applicationWillResignActive:(UIApplication *)application {
+#pragma mark - 
+
+
+
+- (void)applicationDidEnterBackground:(UIApplication *)application{
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidEnterBackground"];
+	if(![LinphoneManager isLcReady]) return;
+	[[LinphoneManager instance] enterBackgroundMode];
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application {
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationWillResignActive"];
+    if(![LinphoneManager isLcReady]) return;
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    if (call == NULL)
-        return;
+	
+	
+    if (call){
+		/* save call context */
+		LinphoneManager* instance = [LinphoneManager instance];
+		instance->currentCallContextBeforeGoingBackground.call = call;
+		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
     
-    /* save call context */
-    LinphoneManager* instance = [LinphoneManager instance];
-    instance->currentCallContextBeforeGoingBackground.call = call;
-    instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
+		const LinphoneCallParams* params = linphone_call_get_current_params(call);
+		if (linphone_call_params_video_enabled(params)) {
+			linphone_call_enable_camera(call, false);
+		}
+	}
     
-    const LinphoneCallParams* params = linphone_call_get_current_params(call);
-    if (linphone_call_params_video_enabled(params)) {
-        linphone_call_enable_camera(call, false);
+    if (![[LinphoneManager instance] resignActive]) {
+
     }
     
 }
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    if (![[LinphoneManager instance] enterBackgroundMode]) {
-		
-    }
-}
+
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
-		// autoboot disabled, doing nothing
-        return;
-    } else if ([LinphoneManager instance] == nil) {
-        [self startApplication];
-    }
+	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
+    [self startApplication];
     
 	[[LinphoneManager instance] becomeActive];
     
+    
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
-    if (call == NULL)
-        return;
     
-    LinphoneManager* instance = [LinphoneManager instance];
-    if (call == instance->currentCallContextBeforeGoingBackground.call) {
-        const LinphoneCallParams* params = linphone_call_get_current_params(call);
-        if (linphone_call_params_video_enabled(params)) {
-            linphone_call_enable_camera(
+	if (call){
+		LinphoneManager* instance = [LinphoneManager instance];
+		if (call == instance->currentCallContextBeforeGoingBackground.call) {
+			const LinphoneCallParams* params = linphone_call_get_current_params(call);
+			if (linphone_call_params_video_enabled(params)) {
+				linphone_call_enable_camera(
                                         call, 
                                         instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
-        }
-        instance->currentCallContextBeforeGoingBackground.call = 0;
-		[myPhoneViewController displayCall:call InProgressFromUI:nil forUser:nil withDisplayName:nil];
-    }
+			}
+			instance->currentCallContextBeforeGoingBackground.call = 0;
+		}
+	}
 }
 
-- (void) loadDefaultSettings:(NSDictionary *) appDefaults {
+
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge];
     
-    NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
-    if(!settingsBundle) {
-        NSLog(@"Could not find Settings.bundle");
-        return;
-    }
-    
-    NSMutableDictionary *rootSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
-	NSMutableDictionary *audioSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"audio.plist"]];
-	NSMutableDictionary *videoSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"video.plist"]];
-    NSMutableDictionary *advancedSettings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Advanced.plist"]];
-
-    NSMutableArray *preferences = [rootSettings objectForKey:@"PreferenceSpecifiers"];
-    [preferences addObjectsFromArray:[audioSettings objectForKey:@"PreferenceSpecifiers"]];
-    [preferences addObjectsFromArray:[videoSettings objectForKey:@"PreferenceSpecifiers"]];
-    [preferences addObjectsFromArray:[advancedSettings objectForKey:@"PreferenceSpecifiers"]];
-	
-    NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
-
-    for(NSDictionary *prefSpecification in preferences) {
-        NSString *key = [prefSpecification objectForKey:@"Key"];
-        if(key && [prefSpecification objectForKey:@"DefaultValue"]) {
-            [defaultsToRegister setObject:[prefSpecification objectForKey:@"DefaultValue"] forKey:key];
-        }
-    }
-    [defaultsToRegister addEntriesFromDictionary:appDefaults];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
-    [defaultsToRegister release];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
--(void) setupUI {
-    //as defined in PhoneMainView.xib		
-	//dialer
-	myPhoneViewController = (PhoneViewController*) [myTabBarController.viewControllers objectAtIndex: DIALER_TAB_INDEX];
-	myPhoneViewController.myTabBarController =  myTabBarController;
-	//Call history
-	myCallHistoryTableViewController = [[CallHistoryTableViewController alloc]  initWithNibName:@"CallHistoryTableViewController" 
-																						 bundle:[NSBundle mainBundle]];
-	UINavigationController *aCallHistNavigationController = [[UINavigationController alloc] initWithRootViewController:myCallHistoryTableViewController];
-	aCallHistNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:HISTORY_TAB_INDEX] tabBarItem];
-	
-	//people picker delegates
-	myContactPickerDelegate = [[ContactPickerDelegate alloc] init];
-	//people picker
-	myPeoplePickerController = [[[ABPeoplePickerNavigationController alloc] init] autorelease];
-	[myPeoplePickerController setDisplayedProperties:[NSArray arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
-	[myPeoplePickerController setPeoplePickerDelegate:myContactPickerDelegate];
-	//copy tab bar item
-	myPeoplePickerController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:CONTACTS_TAB_INDEX] tabBarItem]; 
-	
-	//more tab 
-	MoreViewController *moreViewController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:[NSBundle mainBundle]];
-	UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:moreViewController];
-    [moreViewController release];
-	//copy tab bar item
-	aNavigationController.tabBarItem = [(UIViewController*)[myTabBarController.viewControllers objectAtIndex:MORE_TAB_INDEX] tabBarItem]; 
-	
-	//insert contact controller
-	NSMutableArray* newArray = [NSMutableArray arrayWithArray:self.myTabBarController.viewControllers];
-	[newArray replaceObjectAtIndex:CONTACTS_TAB_INDEX withObject:myPeoplePickerController];
-	[newArray replaceObjectAtIndex:MORE_TAB_INDEX withObject:aNavigationController];
-    [aNavigationController release];
-	[newArray replaceObjectAtIndex:HISTORY_TAB_INDEX withObject:aCallHistNavigationController];
-    [aCallHistNavigationController release];
-	
-	[myTabBarController setSelectedIndex:DIALER_TAB_INDEX];
-	[myTabBarController setViewControllers:newArray animated:NO];
-	
-	[window addSubview:myTabBarController.view];
-	
-	[window makeKeyAndVisible];
-	
-	[[LinphoneManager instance] setCallDelegate:myPhoneViewController];
-    
-    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-}
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{    
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"NO", @"enable_first_login_view_preference", //
-#ifdef HAVE_AMR                                 
-                                 @"YES",@"amr_8k_preference", // enable amr by default if compiled with
+	//work around until we can access lpconfig without linphonecore
+	NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"YES", @"start_at_boot_preference",
+								 @"YES", @"backgroundmode_preference",
+#ifdef DEBUG
+								 @"YES",@"debugenable_preference",
+#else
+								 @"NO",@"debugenable_preference",
 #endif
-#ifdef HAVE_G729                                 
-                                 @"YES",@"g729_preference", // enable amr by default if compiled with
-#endif                                 
-								 //@"+33",@"countrycode_preference",
                                  nil];
+	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+	
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground
+        && (![[NSUserDefaults standardUserDefaults] boolForKey:@"start_at_boot_preference"] ||
+            ![[NSUserDefaults standardUserDefaults] boolForKey:@"backgroundmode_preference"])) {
+            // autoboot disabled, doing nothing
+            return YES;
+        }
     
-    [self loadDefaultSettings: appDefaults];
-    
-    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] 
-		&& [UIApplication sharedApplication].applicationState ==  UIApplicationStateBackground 
-        && [[NSUserDefaults standardUserDefaults] boolForKey:@"disable_autoboot_preference"]) {
-		// autoboot disabled, doing nothing
-	} else {
-        [self startApplication];
-    }
-
+    [self startApplication];
+	NSDictionary *remoteNotif =[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotif){
+		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
+		[self processRemoteNotification:remoteNotif];
+	}
     return YES;
 }
 
--(void) startApplication {
-    /* explicitely instanciate LinphoneManager */
-    LinphoneManager* lm = [[LinphoneManager alloc] init];
-    assert(lm == [LinphoneManager instance]);
-    
-    [self setupUI];
-
-	[[LinphoneManager instance]	startLibLinphone];
-
-	[[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound];
+- (void)startApplication {
+    // Restart Linphone Core if needed
+    if(![LinphoneManager isLcReady]) {
+        [[LinphoneManager instance]	startLibLinphone];
+    }
+    if([LinphoneManager isLcReady]) {
+        
+        
+        // Only execute one time at application start
+        if(!started) {
+            started = TRUE;
+            [[PhoneMainView instance] startUp];
+        }
+    }
 }
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	
 }
 
-- (void)dealloc {
-	[window release];
-	[myPeoplePickerController release];
-	[super dealloc];
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    [self startApplication];
+    if([LinphoneManager isLcReady]) {
+        if([[url scheme] isEqualToString:@"sip"]) {
+            // Go to ChatRoom view
+            DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+            if(controller != nil) {
+                [controller setAddress:[url absoluteString]];
+            }
+        }
+    }
+	return YES;
+}
+
+- (void)processRemoteNotification:(NSDictionary*)userInfo{
+	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+    if(aps != nil) {
+        NSDictionary *alert = [aps objectForKey:@"alert"];
+        if(alert != nil) {
+            NSString *loc_key = [alert objectForKey:@"loc-key"];
+			/*if we receive a remote notification, it is because our TCP background socket was no more working.
+			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
+			LinphoneCore *lc = [LinphoneManager getLc];
+			linphone_core_set_network_reachable(lc, FALSE);
+			linphone_core_set_network_reachable(lc, TRUE);
+            if(loc_key != nil) {
+                if([loc_key isEqualToString:@"IM_MSG"]) {
+                    [[PhoneMainView instance] addInhibitedEvent:kLinphoneTextReceived];
+                    [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+                } else if([loc_key isEqualToString:@"IC_MSG"]) {
+                    //it's a call
+					NSString *callid=[userInfo objectForKey:@"call-id"];
+                    if (callid)
+						[[LinphoneManager instance] enableAutoAnswerForCallId:callid];
+					else
+						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
+                }
+            }
+        }
+    }
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Receive %@", userInfo];
+	[self processRemoteNotification:userInfo];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    LinphoneCall* call;
-	[(NSData*)([notification.userInfo objectForKey:@"call"])  getBytes:&call];
-    if (!call) {
-        ms_warning("Local notification received with nil call");
-        return;
+    if([notification.userInfo objectForKey:@"callId"] != nil) {
+        [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
+    } else if([notification.userInfo objectForKey:@"chat"] != nil) {
+        NSString *remoteContact = (NSString*)[notification.userInfo objectForKey:@"chat"];
+        // Go to ChatRoom view
+        [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+        ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);
+        if(controller != nil) {
+            [controller setRemoteAddress:remoteContact];
+        }
     }
-	linphone_core_accept_call([LinphoneManager getLc], call);	
 }
 
 
+#pragma mark - PushNotification Functions
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+    [LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification: Token %@", deviceToken];
+    [[LinphoneManager instance] setPushNotificationToken:deviceToken];
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+    [LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: Error %@", [error localizedDescription]];
+    [[LinphoneManager instance] setPushNotificationToken:nil];
+}
 
 @end

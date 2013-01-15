@@ -16,21 +16,17 @@
  *  along with this program; if not, write to the Free Software         
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
+
 #import <UIKit/UIKit.h>
-#include "linphonecore.h"
 
-@interface UIDigitButton : UIButton {
-@private
-	char  mDigit;
-	UITextField* mAddress;
-    
-    bool_t sendDtmfDuringCall;
+#import "UILongTouchButton.h"
 
+
+@interface UIDigitButton : UILongTouchButton<UILongTouchButtonDelegate> {
 }
--(void) initWithNumber:(char)digit ;
--(void) initWithNumber:(char)digit addressField:(UITextField*) address dtmf:(bool_t)send;
 
-
-@property bool_t sendDtmfDuringCall;
+@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property char digit;
+@property bool dtmf;
 
 @end

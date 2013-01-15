@@ -20,23 +20,17 @@
 #import <UIKit/UIKit.h>
 
 @protocol UIToggleButtonDelegate 
-	-(void) onOn;
-	-(void) onOff;
-	-(bool) isInitialStateOn;
+	- (void)onOn;
+	- (void)onOff;
+	- (bool)onUpdate;
 @end
 
-@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {
-@private
-	UIImage* mOnImage;
-	UIImage* mOffImage;
-	bool mIsOn;
-    const char* debugName;
-	
-	
+@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {	
 }
--(void) initWithOnImage:(UIImage*) onImage offImage:(UIImage*) offImage debugName:(const char*) name;
--(bool) reset;
--(bool) isOn;
--(bool) toggle;
+
+- (bool)update;
+- (void)setOn;
+- (void)setOff;
+- (bool)toggle;
 
 @end

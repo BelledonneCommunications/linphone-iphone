@@ -19,13 +19,15 @@
 
 #import "UIBluetoothButton.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "Utils.h"
+
 #include "linphonecore.h"
 
 @implementation UIBluetoothButton
 #define check_auresult(au,method) \
-if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
+if (au!=0) [LinphoneLogger logc:LinphoneLoggerError format:"UIBluetoothButton error for %s: ret=%ld",method,au]
 
--(void) onOn {
+- (void)onOn {
 	//redirect audio to bluetooth
 
 	UInt32 size = sizeof(CFStringRef);
@@ -42,7 +44,8 @@ if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
 	check_auresult(result,"set kAudioSessionProperty_OverrideCategoryEnableBluetoothInput 1");
 
 }
--(void) onOff {
+
+- (void)onOff {
 	//redirect audio to bluetooth
 	int allowBluetoothInput = 0;
 	OSStatus result =  AudioSessionSetProperty (
@@ -58,22 +61,13 @@ if (au!=0) ms_error("UIBluetoothButton error for %s: ret=%ld",method,au)
 
 	
 }
--(bool) isInitialStateOn {
+
+- (bool)onUpdate {
 	return false;
 }
-
-
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
 
 - (void)dealloc {
     [super dealloc];
 }
-
 
 @end

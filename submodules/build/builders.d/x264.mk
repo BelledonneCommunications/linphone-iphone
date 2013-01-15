@@ -48,7 +48,7 @@ x264_dir?=externals/x264
 #	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
 #	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 
-$(BUILDER_BUILD_DIR)/$(x264_dir)/configure:
+$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& rsync -av --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
@@ -66,7 +66,7 @@ clean-x264:
 
 veryclean-x264:
 	-cd $(BUILDER_BUILD_DIR)/$(x264_dir) && make distclean
-	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
+	cd $(BUILDER_SRC_DIR)/$(x264_dir)/ \
 	&& git checkout common/arm/asm.S \
 	&& rm -f patched
 	rm -rf $(BUILDER_BUILD_DIR)/$(x264_dir)

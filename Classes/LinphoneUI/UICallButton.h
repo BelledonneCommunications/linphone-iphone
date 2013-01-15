@@ -21,12 +21,8 @@
 
 
 @interface UICallButton : UIButton {
-@private
-	UITextField* mAddress;    
 }
--(void) initWithAddress:(UITextField*) address;
 
-+(void) enableTransforMode:(BOOL) enable;
-+(BOOL) transforModeEnabled;
+@property (nonatomic, retain) IBOutlet UITextField* addressField;
 
 @end

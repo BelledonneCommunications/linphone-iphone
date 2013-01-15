@@ -19,13 +19,23 @@
 
 #import <UIKit/UIKit.h>
 
+#ifdef DEBUG
+
+// Dump exception
+void uncaughtExceptionHandler(NSException *exception) {
+    NSLog(@"Crash: %@", exception);
+    NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+    // Internal error reporting
+}
+
+#endif
 
 int main(int argc, char *argv[]) {
-    
-	
+#ifdef DEBUG
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+#endif
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     int retVal = UIApplicationMain(argc, argv, nil, nil);
 	[pool release];
     return retVal;
 }
-

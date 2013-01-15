@@ -17,20 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */              
 
-
 #import <UIKit/UIKit.h>
-#import "LogView.h"
+#import "UICompositeViewController.h"
 
-
-@interface ConsoleViewController : UIViewController <LogView> {
-	UITextView* logs;
-	UIView*		logsView;
-	
-	
+@interface ConsoleViewController : UIViewController<UICompositeViewDelegate, UIWebViewDelegate> {
 }
--(void) doAction;
-@property (nonatomic, retain) IBOutlet UITextView* logs;
-@property (nonatomic, retain) IBOutlet UIView*	logsView;
 
+@property (nonatomic, retain) IBOutlet UIWebView* logsView;
 
 @end

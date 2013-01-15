@@ -8,31 +8,62 @@
 	<string>Linphone</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>icone-linphone-57.png</string>
-		<string>icone-linphone-72.png</string>
+		<string>linphone_icon_57.png</string>
+		<string>linphone_icon_72.png</string>
+		<string>linphone_icon_57@2x.png</string>
+		<string>linphone_icon_72@2x.png</string>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>linphone_icon_57.png</string>
+				<string>linphone_icon_72.png</string>
+				<string>linphone_icon_57@2x.png</string>
+				<string>linphone_icon_72@2x.png</string>
+			</array>
+		</dict>
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>org.linphone.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>fr</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.5.2</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>3.5.99</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLIconFile</key>
+			<string>linphone_icon_72@2x</string>
+			<key>CFBundleURLName</key>
+			<string>org.linphone.phone</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sip</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>1.3</string>
+	<string>2.0.1</string>
 	<key>NSMainNibFile</key>
-	<string>PhoneMainView</string>
+	<string>LinphoneApp</string>
 	<key>NSMainNibFile~ipad</key>
-	<string>MainScreenWithVideoPreview</string>
+	<string>LinphoneApp</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>
@@ -40,6 +71,10 @@
 		<string>voip</string>
 		<string>audio</string>
 	</array>
+	<key>UILaunchImageFile~ipad</key>
+	<string>linphone_splashscreen</string>
+	<key>UILaunchImageFile~iphone</key>
+	<string>linphone_splashscreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>wifi</string>
@@ -47,5 +82,21 @@
 	</array>
 	<key>UIRequiresPersistentWiFi</key>
 	<true/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleBlackOpaque</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>

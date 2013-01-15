@@ -1,0 +1,17 @@
+/* Prefix */
+"Prefix" = "Préfixe";
+
+/* Substitue + by 00 */
+"Substitue + by 00" = "Remplacer + par 00";
+
+/* Send inband DTMFs */
+"Send inband DTMFs" = "Envoyer des DTMFs dans le flux";
+
+/* Send SIP INFO DTMFs */
+"Send SIP INFO DTMFs" = "Envoyer des DTMFs en SIP INFO";
+
+/* Incoming call timeout */
+"Incoming call timeout" = "Durée max. sonnerie";
+
+/* In call timeout */
+"In call timeout" = "Durée max. appel";

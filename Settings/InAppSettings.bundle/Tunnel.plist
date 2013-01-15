@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>DefaultValue</key>
+			<string>off</string>
+			<key>Titles</key>
+			<array>
+				<string>Off</string>
+				<string>On</string>
+				<string>WWAN</string>
+				<string>Auto</string>
+			</array>
+			<key>Key</key>
+			<string>tunnel_mode_preference</string>
+			<key>Title</key>
+			<string>Mode</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>off</string>
+				<string>on</string>
+				<string>wwan</string>
+				<string>auto</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_address_preference</string>
+			<key>Title</key>
+			<string>Address</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_port_preference</string>
+			<key>Title</key>
+			<string>Port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+	</array>
+</dict>
+</plist>
