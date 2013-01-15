@@ -1399,7 +1399,7 @@ static void audioRouteChangeListenerCallback (
         } else {
             proxyAddress = configuration.network.globalAddress;
         }
-        proxyAddress = [NSString stringWithFormat:@"sip:%@;maddr=%@", domain, proxyAddress] ;
+        proxyAddress = [NSString stringWithFormat:@"<sip:%@;maddr=%@>", domain, proxyAddress] ;
 		
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
