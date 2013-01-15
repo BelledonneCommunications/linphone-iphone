@@ -25,6 +25,7 @@
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
+#include "commands/contact.h"
 #include "commands/dtmf.h"
 #include "commands/firewall-policy.h"
 #include "commands/help.h"
@@ -360,6 +361,7 @@ void Daemon::removeAudioStream(int id) {
 
 void Daemon::initCommands() {
 	mCommands.push_back(new RegisterCommand());
+	mCommands.push_back(new ContactCommand());
 	mCommands.push_back(new RegisterStatusCommand());
 	mCommands.push_back(new UnregisterCommand());
 	mCommands.push_back(new CallCommand());

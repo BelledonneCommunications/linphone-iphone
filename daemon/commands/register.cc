@@ -1,22 +1,26 @@
 #include "register.h"
+#include "linphonecore.h"
+#include "private.h"
+#include "lpconfig.h"
+
 
 using namespace std;
 
 RegisterCommand::RegisterCommand() :
-		DaemonCommand("register", "register <identity> <proxy-address> <password>", "Register the daemon to a SIP proxy.") {
-	addExample(new DaemonCommandExample("register sip:daemon-test@sip.linphone.org sip.linphone.org password",
+		DaemonCommand("register", "register <identity> <proxy-address> <password> <userid> <realm>", "Register the daemon to a SIP proxy. If one of the parameters <password>, <userid> and <realm> is not needed, send the string \"NULL\"") {
+	addExample(new DaemonCommandExample("register sip:daemon-test@sip.linphone.org sip.linphone.org password bob linphone.org",
 						"Status: Ok\n\n"
 						"Id: 1"));
 }
 void RegisterCommand::exec(Daemon *app, const char *args) {
 	LinphoneCore *lc = app->getCore();
-	char proxy[256] = { 0 }, identity[128] = { 0 }, password[64] = { 0 };
-	if (sscanf(args, "%255s %127s %63s", identity, proxy, password) >= 2) {
+	char proxy[256] = { 0 }, identity[128] = { 0 }, password[64] = { 0 }, userid[128] = { 0 }, realm[128] = { 0 };
+	if (sscanf(args, "%255s %127s %63s %127s %127s", identity, proxy, password, userid, realm) >= 2) {
 		LinphoneProxyConfig *cfg = linphone_proxy_config_new();
 		if (password[0] != '\0') {
 			LinphoneAddress *from = linphone_address_new(identity);
 			if (from != NULL) {
-				LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from), NULL, password, NULL, NULL); /*create authentication structure from identity*/
+				LinphoneAuthInfo *info = linphone_auth_info_new(linphone_address_get_username(from), userid, password, NULL, realm); /*create authentication structure from identity*/
 				linphone_core_add_auth_info(lc, info); /*add authentication info to LinphoneCore*/
 				linphone_address_destroy(from);
 				linphone_auth_info_destroy(info);

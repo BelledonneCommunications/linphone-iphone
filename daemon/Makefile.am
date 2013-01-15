@@ -31,6 +31,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/unregister.cc \
 			commands/quit.cc \
 			commands/version.cc \
+			commands/contact.cc \
 			daemon.h \
 			commands/adaptive-jitter-compensation.h \
 			commands/answer.h \
@@ -59,6 +60,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/terminate.h \
 			commands/unregister.h \
 			commands/quit.h \
+			commands/contact.h \
 			commands/version.h
 
 linphone_daemon_pipetest_SOURCES=daemon-pipetest.c
