@@ -1399,12 +1399,7 @@ static void audioRouteChangeListenerCallback (
         } else {
             proxyAddress = configuration.network.globalAddress;
         }
-        /**/
-		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
-		} else {
-			proxyAddress = [NSString stringWithFormat:@"sip:%@",proxyAddress] ;
-		}
+        proxyAddress = [NSString stringWithFormat:@"sip:%@;maddr=%@", domain, proxyAddress] ;
 		
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
@@ -1425,12 +1420,12 @@ static void audioRouteChangeListenerCallback (
 		
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg,identity);
-		linphone_proxy_config_set_server_addr(proxyCfg,proxy);
+		linphone_proxy_config_set_server_addr(proxyCfg, proxy);
 		linphone_proxy_config_enable_register(proxyCfg,true);
 		linphone_proxy_config_expires(proxyCfg, 600);
 		
 		if (isOutboundProxy)
-			linphone_proxy_config_set_route(proxyCfg,proxy);
+			linphone_proxy_config_set_route(proxyCfg, proxy);
 		
 		if ([prefix length]>0) {
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
