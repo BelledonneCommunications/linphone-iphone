@@ -1399,10 +1399,16 @@ static void audioRouteChangeListenerCallback (
         } else {
             proxyAddress = configuration.network.globalAddress;
         }
-        proxyAddress = [NSString stringWithFormat:@"<sip:%@;maddr=%@>", domain, proxyAddress] ;
+        
+        // Explode the address
+        NSArray *array = [proxyAddress componentsSeparatedByString:@":"];
+        if([array count] == 2) {
+            proxyAddress = [NSString stringWithFormat:@"<sip:%@:%@;maddr=%@>", domain, [array objectAtIndex:1], [array objectAtIndex:0]];
+        } else if([array count] == 2) {
+            proxyAddress = [NSString stringWithFormat:@"<sip:%@;maddr=%@>", domain, [array objectAtIndex:0]];
+        }
 		
 		const char* proxy = [proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
 		NSString* prefix = [[NSUserDefaults standardUserDefaults] stringForKey:@"prefix_preference"];
         bool substitute_plus_by_00 = [[NSUserDefaults standardUserDefaults] boolForKey:@"substitute_+_by_00_preference"];
 		//possible valid config detected
