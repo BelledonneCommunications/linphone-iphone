@@ -237,6 +237,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
+	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);

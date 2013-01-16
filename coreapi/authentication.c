@@ -131,7 +131,7 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	sprintf(key,"auth_info_%i",pos);
 	lp_config_clean_section(config,key);
 	
-	if (obj==NULL){
+	if (obj==NULL || lp_config_get_int(config, "sip", "store_auth_info", 1) == 0){
 		return;
 	}		
 	if (obj->username!=NULL){

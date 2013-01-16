@@ -866,4 +866,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void setUseRfc2833ForDtmfs(boolean use) {
 		setUseRfc2833ForDtmfs(nativePtr, use);
 	}
+
+	private native long getConfig(long ptr);
+	public LpConfig getConfig() {
+		long configPtr=getConfig(nativePtr);
+		return new LpConfigImpl(configPtr);
+	}
 }

@@ -83,7 +83,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 	
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {
-        write("Message ["+message+"] received from ["+from.asString()+"]");
+        //Deprecated
 	}
 
 	
@@ -153,8 +153,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
-		// TODO Auto-generated method stub
-		
+		write("Message [" + message.getMessage() + "] received from [" + message.getFrom().asString() + "]");
 	}
 
 
