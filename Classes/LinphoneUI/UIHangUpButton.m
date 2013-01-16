@@ -20,7 +20,6 @@
 #import "UIHangUpButton.h"
 #import "LinphoneManager.h"
 
-
 @implementation UIHangUpButton
 
 

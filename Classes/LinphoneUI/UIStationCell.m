@@ -20,6 +20,7 @@
 #import "UIStationCell.h"
 #import "BuschJaegerUtils.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIView+RoundUIView.h"
 
 @implementation UIStationCell
 
@@ -29,18 +30,6 @@
 @synthesize cellBackgroundView;
 
 #pragma mark - Lifecycle Functions
-
-- (void)roundView:(UIView *)view onCorner:(UIRectCorner)rectCorner radius:(float)radius
-{
-    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:view.bounds
-                                                   byRoundingCorners:rectCorner
-                                                         cornerRadii:CGSizeMake(radius, radius)];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = view.bounds;
-    maskLayer.path = maskPath.CGPath;
-    [view.layer setMask:maskLayer];
-    [maskLayer release];
-}
 
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
@@ -57,7 +46,8 @@
         
         CAGradientLayer *overlayButtonShineLayer;
         
-        [self roundView:cellBackgroundView onCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
+//        [self roundView:cellBackgroundView onCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
+        [cellBackgroundView makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
         
         overlayButtonShineLayer = [CAGradientLayer layer];
         overlayButtonShineLayer.name = @"BuschJaegerLayer";
