@@ -567,6 +567,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
 #endif
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
+	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
 	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
@@ -3699,6 +3700,13 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_certificates(lc->sal,yesno);
+}
+
+/**
+ * Specify whether the tls server certificate common name must be verified when connecting to a SIP/TLS server.
+**/
+void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
+	sal_verify_server_cn(lc->sal,yesno);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){

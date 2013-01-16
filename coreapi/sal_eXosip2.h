@@ -48,6 +48,7 @@ struct Sal{
 	bool_t use_101;
 	bool_t reuse_authorization;
 	bool_t verify_server_certs;
+	bool_t verify_server_cn;
 	bool_t expire_old_contact;
 	bool_t add_dates;
 };
