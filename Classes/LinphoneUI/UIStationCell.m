@@ -30,6 +30,18 @@
 
 #pragma mark - Lifecycle Functions
 
+- (void)roundView:(UIView *)view onCorner:(UIRectCorner)rectCorner radius:(float)radius
+{
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:view.bounds
+                                                   byRoundingCorners:rectCorner
+                                                         cornerRadii:CGSizeMake(radius, radius)];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame = view.bounds;
+    maskLayer.path = maskPath.CGPath;
+    [view.layer setMask:maskLayer];
+    [maskLayer release];
+}
+
 - (id)initWithIdentifier:(NSString*)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
         NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIStationCell"
@@ -42,12 +54,10 @@
         
         CALayer *layer = cellBackgroundView.layer;
         layer.name = @"BuschJaegerLayer";
-        layer.cornerRadius = 8.0f;
-        layer.masksToBounds = YES;
-        layer.borderWidth = 1.0f;
-        layer.borderColor = [UIColor colorWithWhite:0.5f alpha:0.2f].CGColor;
         
         CAGradientLayer *overlayButtonShineLayer;
+        
+        [self roundView:cellBackgroundView onCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
         
         overlayButtonShineLayer = [CAGradientLayer layer];
         overlayButtonShineLayer.name = @"BuschJaegerLayer";
@@ -57,19 +67,29 @@
                                                                 alpha:1.0].CGColor,
                                           (id)[UIColor colorWithWhite:1.0f
                                                                 alpha:1.0f].CGColor,
-                                          (id)[UIColor colorWithRed:0.0f green:0.0f blue:0.5f
-                                                                alpha:0.8f].CGColor,
-                                          (id)[UIColor colorWithRed:0.0f green:0.0f blue:0.2f
-                                                                alpha:0.8f].CGColor,
+                                          (id)[UIColor colorWithRed:0x2f/255.0f green:0x48/255.0f blue:0x63/255.0f
+                                                                alpha:1].CGColor,
+                                          (id)[UIColor colorWithRed:0x1c/255.0f green:0x27/255.0f blue:0x3b/255.0f
+                                                              alpha:1].CGColor,
                                           nil];
         overlayButtonShineLayer.locations = [NSArray arrayWithObjects:
                                              [NSNumber numberWithFloat:0.0f],
-                                             [NSNumber numberWithFloat:0.1f],
-                                             [NSNumber numberWithFloat:0.101f],
+                                             [NSNumber numberWithFloat:0.02f],
+                                             [NSNumber numberWithFloat:0.021f],
                                              [NSNumber numberWithFloat:1.0f],
                                              nil];
         [layer addSublayer:overlayButtonShineLayer];
         
+        UIView * shadow = [[UIView alloc] initWithFrame:cellBackgroundView.frame];
+        shadow.userInteractionEnabled = NO; // Modify this if needed
+        shadow.layer.shadowColor = [[UIColor blackColor] CGColor];
+        shadow.layer.shadowOffset = CGSizeMake(2, 2);
+        shadow.layer.shadowRadius = 5.0f;
+        shadow.layer.masksToBounds = NO;
+        shadow.clipsToBounds = NO;
+        shadow.layer.shadowOpacity = 0.9f;
+        [cellBackgroundView.superview insertSubview:shadow belowSubview:cellBackgroundView];
+        [shadow addSubview:cellBackgroundView];
     }
     return self;
 }

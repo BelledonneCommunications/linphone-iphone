@@ -30,5 +30,4 @@
 @property (retain, nonatomic) IBOutlet UIView *cellBackgroundView;
 
 - (id)initWithIdentifier:(NSString*)identifier;
-
 @end
