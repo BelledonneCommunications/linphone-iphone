@@ -109,7 +109,7 @@
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
         [BuschJaegerUtils createGradientForButton:microButton withTopColor:col1 bottomColor:col2];
-        [microButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(microButton.bounds.size.height/2.0)];
+        [microButton makeRoundWithCorner:(UIRectCornerBottomRight|UIRectCornerTopRight) radius:(microButton.bounds.size.height/2.0)];
     }
     {
         UIColor* col1 = BUSCHJAEGER_RED_COLOR;
@@ -118,7 +118,7 @@
         [BuschJaegerUtils createGradientForButton:endOrRejectCallButton withTopColor:col1 bottomColor:col2];
         [BuschJaegerUtils createGradientForButton:declineButton withTopColor:col1 bottomColor:col2];
         [endOrRejectCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(endOrRejectCallButton.bounds.size.height/2.0)];
-        [declineButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(declineButton.bounds.size.height/2.0)];
+        [declineButton makeRoundWithCorner:(UIRectCornerBottomRight|UIRectCornerTopRight) radius:(declineButton.bounds.size.height/2.0)];
 
     }
     {
@@ -126,7 +126,7 @@
         UIColor* col2 = BUSCHJAEGER_GREEN_COLOR;
         
         [BuschJaegerUtils createGradientForButton:takeCallButton withTopColor:col1 bottomColor:col2];
-        [takeCallButton makeRoundWithCorner:(UIRectCornerBottomRight|UIRectCornerTopRight) radius:(takeCallButton.bounds.size.height/2.0)];
+        [takeCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(takeCallButton.bounds.size.height/2.0)];
     }
     
     linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
