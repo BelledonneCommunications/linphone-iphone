@@ -23,9 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 
-#ifdef TUNNEL_ENABLED
-#include "linphone_tunnel.h"
-#endif
 
 extern "C" {
 #include "mediastreamer2/mediastream.h"
@@ -33,6 +30,8 @@ extern "C" {
 #include "mediastreamer2/msjava.h"
 #include "private.h"
 #include <cpu-features.h>
+
+#include "lpconfig.h"
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -2225,3 +2224,17 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  e
 	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
 	return jvalue;
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jlong) linphone_core_get_config((LinphoneCore *)lc);
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject thiz, jlong lpc,
+		jstring section, jstring key, jint value) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        lp_config_set_int((LpConfig *)lpc, csection, ckey, (int) value);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+}
+
