@@ -71,57 +71,6 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
 	}
  	va_end(args);
 }
-/*
-static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
-	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
-	va_list args;	
-	va_start(args, fmt);	
-	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);
-	va_end(args);
-}
-
-static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
-	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
-	int sl = strlen(xmlCtx->warningBuffer);
-	va_list args;	
-	va_start(args, fmt);	
-	vsnprintf(xmlCtx->warningBuffer + sl, LPC2XML_BZ-sl, fmt, args);
-	va_end(args);
-}*/
-
-#if 0
-static void dumpNodes(int level, xmlNode * a_node, lpc2xml_context *ctx) {
-	xmlNode *cur_node = NULL;
-
-	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-		if (cur_node->type == XML_ELEMENT_NODE) {
-			lpc2xml_log(ctx, LPC2XML_DEBUG, "node level: %d type: Element, name: %s", level, cur_node->name);
-		} else {
-			lpc2xml_log(ctx, LPC2XML_DEBUG, "node level: %d type: %d, name: %s", level, cur_node->type, cur_node->name);
-		}
-
-		dumpNodes(level + 1, cur_node->children, ctx);
-	}
-}
-#endif
-
-#if 0
-static void dumpNode(xmlNode *node, lpc2xml_context *ctx) {
-		lpc2xml_log(ctx, LPC2XML_DEBUG, "node type: %d, name: %s", node->type, node->name);
-}
-
-static void dumpAttr(xmlNode *node, lpc2xml_context *ctx) {
-		lpc2xml_log(ctx, LPC2XML_DEBUG, "attr name: %s value:%s", node->name, node->children->content);
-}
-
-static void dumpContent(xmlNode *node, lpc2xml_context *ctx) {
-		lpc2xml_log(ctx, LPC2XML_DEBUG, "content: %s", node->children->content);
-}
-
-
-
-#endif
 
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
@@ -203,7 +152,7 @@ static int processDoc(xmlDoc *doc, lpc2xml_context *ctx) {
 		lpc2xml_log(ctx, LPC2XML_ERROR, "Can't create \"config\" element");
 		return -1;
 	}
-	xmlNs *lpc_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd", (const xmlChar *)"lpc");
+	xmlNs *lpc_ns = xmlNewNs(root_node, (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd", NULL);
 	if(lpc_ns == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create lpc namespace");
 	} else {
@@ -213,7 +162,7 @@ static int processDoc(xmlDoc *doc, lpc2xml_context *ctx) {
 	if(lpc_ns == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create xsi namespace");
 	}
-	xmlAttr *schemaLocation = xmlNewNsProp(root_node, xsi_ns, (const xmlChar *)"schemaLocation", (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd ");
+	xmlAttr *schemaLocation = xmlNewNsProp(root_node, xsi_ns, (const xmlChar *)"schemaLocation", (const xmlChar *)"http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd");
 	if(schemaLocation == NULL) {
 		lpc2xml_log(ctx, LPC2XML_WARNING, "Can't create schemaLocation");
 	}
