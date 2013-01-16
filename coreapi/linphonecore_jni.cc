@@ -2126,8 +2126,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 		jstring jHost, jint port, jint mirror, jint delay) {
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
 	if (!tunnel) return;
+
 	const char* cHost=env->GetStringUTFChars(jHost, NULL);
-	linphone_tunnel_add_server_and_mirror(tunnel, cHost, port, mirror, delay);
+	LinphoneTunnelConfig *tunnelconfig = linphone_tunnel_config_new();
+	linphone_tunnel_config_set_host(tunnelconfig, cHost);
+	linphone_tunnel_config_set_port(tunnelconfig, port);
+	linphone_tunnel_config_set_delay(tunnelconfig, delay);
+	linphone_tunnel_config_set_remote_udp_mirror_port(tunnelconfig, mirror);
+	linphone_tunnel_add_server(tunnel, tunnelconfig);
 	env->ReleaseStringUTFChars(jHost, cHost);
 }
 
@@ -2149,7 +2155,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetHttpProxy(JNIEn
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAutoDetect(JNIEnv *env,jobject thiz,jlong pCore) {
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_auto_detect(tunnel);
-
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelCleanServers(JNIEnv *env,jobject thiz,jlong pCore) {
