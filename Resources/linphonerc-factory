@@ -25,6 +25,7 @@ use_info=1
 use_rfc2833=0
 put_date=1
 chat_use_call_dialogs=0
+verify_server_cn=0
   
 [rtp]
 audio_jitt_comp=60
