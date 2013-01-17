@@ -109,7 +109,8 @@ LinphoneChatRoom *linphone_gtk_start_chat(GtkTreeView* t);
 void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view);
 void linphone_gtk_send_text();
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
-void linphone_gtk_update_chat_picture(gboolean active);
+void linphone_gtk_create_chat_picture(gboolean active);
+void linphone_gtk_update_chat_picture();
 void linphone_gtk_chat_set_conversation(const LinphoneAddress *uri,gchar *conversation);
 gchar * linphone_gtk_chat_get_conversation(const LinphoneAddress *uri);
 

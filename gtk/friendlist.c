@@ -171,7 +171,7 @@ static void linphone_gtk_call_selected(GtkTreeView *treeview){
 					"start_call"));
 }
 
-void linphone_gtk_update_chat_picture(gboolean active){
+void linphone_gtk_create_chat_picture(gboolean active){
 	GtkTreeIter iter;
 	GtkWidget *w = linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
@@ -182,6 +182,31 @@ void linphone_gtk_update_chat_picture(gboolean active){
 				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_chat_picture(),-1);
 			} else {
 				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_active_chat_picture(),-1);
+			}
+		}while(gtk_tree_model_iter_next(model,&iter));
+	}
+}
+
+void linphone_gtk_update_chat_picture(){
+	GtkTreeIter iter;
+	GtkListStore *store=NULL;
+	GtkWidget *w = linphone_gtk_get_main_window();
+	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
+	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+	GtkWidget *chat_view=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
+	LinphoneFriend *lf=NULL;
+	LinphoneAddress *uri=(LinphoneAddress *)g_object_get_data(G_OBJECT(friendlist),"from");
+	store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)));
+	if (gtk_tree_model_get_iter_first(model,&iter)) {
+		do{
+			gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
+			if(chat_view!=NULL){
+				if(g_strcmp0(linphone_address_as_string(linphone_friend_get_address(lf)),
+					linphone_address_as_string(uri))==0){
+						gtk_list_store_set(store,&iter,FRIEND_CHAT,create_active_chat_picture(),-1);
+				} else {
+					gtk_list_store_set(store,&iter,FRIEND_CHAT,create_chat_picture(),-1);
+				}
 			}
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
@@ -214,6 +239,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 			cr=linphone_gtk_create_chatroom(uri);
 		}
 		page=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
+		g_object_set_data(G_OBJECT(friendlist),"from",(gpointer)uri);
 		if(page==NULL){
 			page=linphone_gtk_init_chatroom(cr,uri);
 			g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)page);
@@ -221,7 +247,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 			linphone_gtk_load_chatroom(cr,uri,page);
 		}
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,page));
-		linphone_gtk_update_chat_picture(FALSE);
+		linphone_gtk_create_chat_picture(FALSE);
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
 		gtk_list_store_set(store,&iter,FRIEND_CHAT,create_active_chat_picture(),-1);
 	}
@@ -669,6 +695,7 @@ void linphone_gtk_show_friends(void){
 		escaped=g_markup_escape_text(uri,-1);
 		gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
 		g_free(escaped);
+		linphone_gtk_update_chat_picture();
 		//bi=linphone_friend_get_info(lf);
 		/*if (bi!=NULL && bi->image_data!=NULL){
 			GdkPixbuf *pbuf=
@@ -890,7 +917,7 @@ static gint tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y){
         for (node = columns;  node != NULL && col == NULL;  node = node->next){
             GtkTreeViewColumn *checkcol = (GtkTreeViewColumn*) node->data;
 			gtk_tree_view_column_cell_get_size(checkcol,NULL,NULL,NULL,NULL,&height);
-            if (x >= colx  &&  x < (colx + checkcol->width) && y < height*coly){
+            if (x >= colx  &&  x < (colx + checkcol->width) && y < (height+2)*coly){
                 col = checkcol;
                 gint num = get_col_number_from_tree_view_column(col);
 				return num;
