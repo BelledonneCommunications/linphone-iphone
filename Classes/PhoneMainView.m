@@ -288,7 +288,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
         }
 		case LinphoneCallEnd: 
         {
-            [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
                 DialerViewController *controller = DYNAMIC_CAST([self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
@@ -526,16 +525,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
                                           otherButtonTitles:nil];
     [error show];
     [error release];
-}
-
-- (void)dismissIncomingCall:(LinphoneCall*)call {
-    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
-
-    if(appData != nil && appData->notification != nil) {
-        // cancel local notif if needed
-        [[UIApplication sharedApplication] cancelLocalNotification:appData->notification];
-        [appData->notification release];
-    }
 }
 
 - (void)addInhibitedEvent:(id)event {

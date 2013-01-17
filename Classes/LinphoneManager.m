@@ -455,16 +455,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			}
 		}
 	}
-	
-	
-	if(state == LinphoneCallReleased) {
-        if(data != NULL) {
-            [data release];
-            linphone_call_set_user_pointer(call, NULL);
-        }
-    }
- 
-    
+
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
@@ -474,7 +465,20 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
 			incallBgTask=0;
-		}
+		}       
+        if(data != nil && data->notification != nil) {
+            // cancel local notif if needed
+            [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+            [data->notification release];
+            data->notification = nil;
+        }
+    }
+    
+	if(state == LinphoneCallReleased) {
+        if(data != NULL) {
+            [data release];
+            linphone_call_set_user_pointer(call, NULL);
+        }
     }
     
     // Enable speaker when video
