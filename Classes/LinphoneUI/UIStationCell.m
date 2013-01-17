@@ -46,7 +46,6 @@
         
         CAGradientLayer *overlayButtonShineLayer;
         
-//        [self roundView:cellBackgroundView onCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
         [cellBackgroundView makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
         
         overlayButtonShineLayer = [CAGradientLayer layer];
@@ -76,6 +75,7 @@
         shadow.layer.shadowOffset = CGSizeMake(2, 2);
         shadow.layer.shadowRadius = 5.0f;
         shadow.layer.masksToBounds = NO;
+        shadow.layer.name = @"BuschJaegerLayer";
         shadow.clipsToBounds = NO;
         shadow.layer.shadowOpacity = 0.9f;
         [cellBackgroundView.superview insertSubview:shadow belowSubview:cellBackgroundView];
