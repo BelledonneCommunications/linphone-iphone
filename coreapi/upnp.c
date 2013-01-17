@@ -19,34 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "upnp.h"
 #include "private.h"
+#include "lpconfig.h"
 
 #define UPNP_ADD_MAX_RETRY 4
 #define UPNP_REMOVE_MAX_RETRY 4
 #define UPNP_SECTION_NAME "uPnP"
-
-/* Define private types */
-typedef struct _LpItem{
-	char *key;
-	char *value;
-} LpItem;
-
-typedef struct _LpSection{
-	char *name;
-	MSList *items;
-} LpSection;
-
-typedef struct _LpConfig{
-	FILE *file;
-	char *filename;
-	MSList *sections;
-	int modified;
-	int readonly;
-} LpConfig;
-
-/* Declare private functions */
-LpSection *lp_config_find_section(LpConfig *lpconfig, const char *name);
-void lp_section_remove_item(LpSection *sec, LpItem *item);
-void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
 
 /*
  * uPnP Definitions
@@ -145,8 +122,15 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	const char *ip_address = NULL;
 	const char *connection_status = NULL;
 	bool_t nat_enabled = FALSE;
+	LinphoneUpnpState old_state;
+
+	if(lupnp == NULL || lupnp->upnp_igd_ctxt == NULL) {
+		ms_error("uPnP IGD: Invalid context in callback");
+		return;
+	}
+
 	ms_mutex_lock(&lupnp->mutex);
-	LinphoneUpnpState old_state = lupnp->state;
+	old_state = lupnp->state;
 
 	switch(event) {
 	case UPNP_IGD_EXTERNAL_IPADDRESS_CHANGED:
@@ -315,6 +299,8 @@ UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	}
 
 	lupnp->state = LinphoneUpnpStatePending;
+	upnp_igd_start(lupnp->upnp_igd_ctxt);
+
 	return lupnp;
 }
 
@@ -956,51 +942,46 @@ LinphoneUpnpState linphone_upnp_session_get_state(UpnpSession *session) {
  * uPnP Config
  */
 
-MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc) {
+struct linphone_upnp_config_list_port_bindings_struct {
+	struct _LpConfig *lpc;
+	MSList *retList;
+};
+
+static void linphone_upnp_config_list_port_bindings_cb(const char *entry, struct linphone_upnp_config_list_port_bindings_struct *cookie) {
 	char protocol_str[4]; // TCP or UDP
 	upnp_igd_ip_protocol protocol;
 	int external_port;
 	int local_port;
-	MSList *retList = NULL;
+	bool_t valid = TRUE;
 	UpnpPortBinding *port;
-	bool_t valid;
-	MSList *elem;
-	LpItem *item;
-	LpSection *sec=lp_config_find_section(lpc, UPNP_SECTION_NAME);
-	if(sec == NULL)
-		return retList;
-
-	elem = sec->items;
-	while(elem != NULL) {
-		item=(LpItem*)elem->data;
-		valid = TRUE;
-		if(sscanf(item->key, "%3s-%i-%i", protocol_str, &external_port, &local_port) == 3) {
-			if(strcasecmp(protocol_str, "TCP") == 0) {
-				protocol = UPNP_IGD_IP_PROTOCOL_TCP;
-			} else if(strcasecmp(protocol_str, "UDP") == 0) {
-				protocol = UPNP_IGD_IP_PROTOCOL_UDP;
-			} else {
-				valid = FALSE;
-			}
-			if(valid) {
-				port = linphone_upnp_port_binding_new();
-				port->state = LinphoneUpnpStateOk;
-				port->protocol = protocol;
-				port->external_port = external_port;
-				port->local_port = local_port;
-				retList = ms_list_append(retList, port);
-			}
+	if(sscanf(entry, "%3s-%i-%i", protocol_str, &external_port, &local_port) == 3) {
+		if(strcasecmp(protocol_str, "TCP") == 0) {
+			protocol = UPNP_IGD_IP_PROTOCOL_TCP;
+		} else if(strcasecmp(protocol_str, "UDP") == 0) {
+			protocol = UPNP_IGD_IP_PROTOCOL_UDP;
 		} else {
 			valid = FALSE;
 		}
-		elem = ms_list_next(elem);
-		if(!valid) {
-			ms_warning("uPnP configuration invalid line: %s", item->key);
-			lp_section_remove_item(sec, item);
+		if(valid) {
+			port = linphone_upnp_port_binding_new();
+			port->state = LinphoneUpnpStateOk;
+			port->protocol = protocol;
+			port->external_port = external_port;
+			port->local_port = local_port;
+			cookie->retList = ms_list_append(cookie->retList, port);
 		}
+	} else {
+		valid = FALSE;
 	}
+	if(!valid) {
+		ms_warning("uPnP configuration invalid line: %s", entry);
+	}
+}
 
-	return retList;
+MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc) {
+	struct linphone_upnp_config_list_port_bindings_struct cookie = {lpc, NULL};
+	lp_config_for_each_entry(lpc, UPNP_SECTION_NAME, (void(*)(const char *, void*))linphone_upnp_config_list_port_bindings_cb, &cookie);
+	return cookie.retList;
 }
 
 void linphone_upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port) {
