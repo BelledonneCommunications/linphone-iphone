@@ -40,7 +40,7 @@ int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lpc);
 
 int lpc2xml_convert_file(lpc2xml_context* context, const char *filename);
 int lpc2xml_convert_fd(lpc2xml_context* context, int fd);
-int lpc2xml_convert_string(lpc2xml_context* context, unsigned char **content);
+int lpc2xml_convert_string(lpc2xml_context* context, char **content);
 
 
 #endif //LPC2XML_H_

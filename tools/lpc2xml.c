@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpc2xml.h"
 #include <string.h>
 #include <libxml/xmlsave.h>
-
+#include <libxml/xmlversion.h>
 
 #define LPC2XML_BZ 2048
 
@@ -216,7 +216,7 @@ int lpc2xml_convert_fd(lpc2xml_context* context, int fd) {
 	return ret;
 }
 
-int lpc2xml_convert_string(lpc2xml_context* context, unsigned char **content) {
+int lpc2xml_convert_string(lpc2xml_context* context, char **content) {
 	int ret = 0;
 	xmlBufferPtr buffer = xmlBufferCreate();
 	xmlSaveCtxtPtr save_ctx = xmlSaveToBuffer(buffer, "UTF-8", XML_SAVE_FORMAT);
@@ -226,7 +226,11 @@ int lpc2xml_convert_string(lpc2xml_context* context, unsigned char **content) {
 	}
 	xmlSaveClose(save_ctx);
 	if(ret == 0) {
-		*content = xmlBufferDetach(buffer);
+#if LIBXML_VERSION >= 20800
+		*content = (char *)xmlBufferDetach(buffer);
+#else
+		*content = strdup((const char *)xmlBufferContent(buffer));
+#endif
 	}
 	xmlBufferFree(buffer);
 	return ret;
