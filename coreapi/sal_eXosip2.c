@@ -282,6 +282,7 @@ Sal * sal_init(){
 	sal->reuse_authorization=FALSE;
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
+	sal->verify_server_cn=TRUE;
 	sal->expire_old_contact=FALSE;
 	sal->add_dates=FALSE;
 	sal->dscp=-1;
@@ -377,6 +378,9 @@ static void set_tls_options(Sal *ctx){
 	}                       
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(ctx->verify_server_certs);
+#endif
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(ctx->verify_server_cn);
 #endif
 }
 
@@ -496,6 +500,13 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ctx->verify_server_certs=verify;
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(verify);
+#endif
+}
+
+void sal_verify_server_cn(Sal *ctx, bool_t verify){
+	ctx->verify_server_cn=verify;
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(verify);
 #endif
 }
 

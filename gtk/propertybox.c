@@ -880,17 +880,33 @@ void linphone_gtk_ui_level_toggled(GtkWidget *w) {
 	linphone_gtk_ui_level_adapt(top);
 }
 
+static void linphone_gtk_set_media_encryption_mandatory_sensitive(GtkWidget *propbox, gboolean val){
+	GtkWidget *w=linphone_gtk_get_widget(propbox,"media_encryption_mandatory");
+	gtk_widget_set_sensitive(w,val);
+}
+
 static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 	char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
 	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *toplevel=gtk_widget_get_toplevel(combo);
 	if (selected!=NULL){
-		if (strcasecmp(selected,"SRTP")==0)
+		if (strcasecmp(selected,"SRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionSRTP);
-		else if (strcasecmp(selected,"ZRTP")==0)
+			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,TRUE);
+		}else if (strcasecmp(selected,"ZRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
-		else linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
+			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
+		}
+		else {
+			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
+			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
+		}
 		g_free(selected);
 	}else g_warning("gtk_combo_box_get_active_text() returned NULL");
+}
+
+void linphone_gtk_set_media_encryption_mandatory(GtkWidget *button){
+	linphone_core_set_media_encryption_mandatory(linphone_gtk_get_core(),gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)));
 }
 
 static void linphone_gtk_show_media_encryption(GtkWidget *pb){
@@ -928,21 +944,30 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		/*hide this setting*/
 		gtk_widget_hide(combo);
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"media_encryption_label"));
+		gtk_widget_hide(linphone_gtk_get_widget(pb,"media_encryption_mandatory"));
 	}else{
 		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		switch(menc){
 			case LinphoneMediaEncryptionNone:
 				gtk_combo_box_set_active(GTK_COMBO_BOX(combo),0);
+				linphone_gtk_set_media_encryption_mandatory_sensitive(pb,FALSE);
 			break;
 			case LinphoneMediaEncryptionSRTP:
-				if (srtp_id!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),srtp_id);
+				if (srtp_id!=-1) {
+					gtk_combo_box_set_active(GTK_COMBO_BOX(combo),srtp_id);
+					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,TRUE);
+				}
 			break;
 			case LinphoneMediaEncryptionZRTP:
-				if (zrtp_id!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),zrtp_id);
+				if (zrtp_id!=-1) {
+					gtk_combo_box_set_active(GTK_COMBO_BOX(combo),zrtp_id);
+					linphone_gtk_set_media_encryption_mandatory_sensitive(pb,FALSE);
+				}
 			break;
 		}
 		g_signal_connect(G_OBJECT(combo),"changed",(GCallback)linphone_gtk_media_encryption_changed,NULL);
 	}
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory")),linphone_core_is_media_encryption_mandatory(lc));
 	g_object_unref(G_OBJECT(model));
 }
 
@@ -1152,44 +1177,22 @@ void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
         gtk_widget_destroy(pb);
 }
 
-
-static void tunnel_get_server_host_and_port(LinphoneTunnel *tunnel, char *host, int size, int *port){
-	char *colon;
-	char *addresses;
-	char *str1;
-	char *address;
-	const char* configured_addresses;
-
-	configured_addresses=linphone_tunnel_get_servers(tunnel);
-
-	if (configured_addresses==NULL){
-		host[0]=0;
-		*port=0;
-		return;
-	}
-	addresses=ms_strdup(configured_addresses);
-	str1=addresses;
-	address=strtok(str1," "); // Not thread safe
-	if (!address) return;
-	colon=strchr(address, ':');
-	if (!colon) return;
-	*colon++='\0';
-	*port=atoi(colon);
-	strncpy(host,address,size);
-	ms_free(addresses);
-}
-
-
 void linphone_gtk_edit_tunnel(GtkButton *button){
 	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
-	char host[128]={'\0'};
+	const MSList *configs;
+	const char *host = NULL;
 	int port=0;
 	
 	if (!tunnel) return;
 	
-	tunnel_get_server_host_and_port(tunnel, host, sizeof(host), &port);
+	configs = linphone_tunnel_get_servers(tunnel);
+	if(configs != NULL) {
+		LinphoneTunnelConfig *ltc = (LinphoneTunnelConfig *)configs->data;
+		host = linphone_tunnel_config_get_host(ltc);
+		port = linphone_tunnel_config_get_port(ltc);
+	}
 
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"host")),host);
 	if (port==0) port=443;
@@ -1222,6 +1225,7 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
+	LinphoneTunnelConfig *config=linphone_tunnel_config_new();
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"port")));
 	gboolean enabled=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"radio_enable")));
@@ -1235,7 +1239,9 @@ void linphone_gtk_tunnel_ok(GtkButton *button){
 	if (host && *host=='\0') host=NULL;
 	if (http_port==0) http_port=8080;
 	linphone_tunnel_clean_servers(tunnel);
-	linphone_tunnel_add_server(tunnel,host,port);
+	linphone_tunnel_config_set_host(config, host);
+	linphone_tunnel_config_set_port(config, port);
+	linphone_tunnel_add_server(tunnel, config);
 	linphone_tunnel_enable(tunnel,enabled);
 	linphone_tunnel_set_http_proxy(tunnel,http_host,http_port,username,password);
 	

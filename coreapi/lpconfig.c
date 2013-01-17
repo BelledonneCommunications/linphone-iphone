@@ -109,7 +109,7 @@ static bool_t is_first_char(const char *start, const char *pos){
 	return TRUE;
 }
 
-LpSection *lp_config_find_section(LpConfig *lpconfig, const char *name){
+LpSection *lp_config_find_section(const LpConfig *lpconfig, const char *name){
 	LpSection *sec;
 	MSList *elem;
 	/*printf("Looking for section %s\n",name);*/
@@ -123,7 +123,7 @@ LpSection *lp_config_find_section(LpConfig *lpconfig, const char *name){
 	return NULL;
 }
 
-LpItem *lp_section_find_item(LpSection *sec, const char *name){
+LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 	MSList *elem;
 	LpItem *item;
 	/*printf("Looking for item %s\n",name);*/
@@ -260,7 +260,7 @@ void lp_section_remove_item(LpSection *sec, LpItem *item){
 	lp_item_destroy(item);
 }
 
-const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const char *key, const char *default_string){
+const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string){
 	LpSection *sec;
 	LpItem *item;
 	sec=lp_config_find_section(lpconfig,section);
@@ -271,7 +271,7 @@ const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const 
 	return default_string;
 }
 
-bool_t lp_config_get_range(LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
+bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max) {
 	const char *str = lp_config_get_string(lpconfig, section, key, NULL);
 	if (str != NULL) {
 		char *minusptr = strchr(str, '-');
@@ -290,7 +290,7 @@ bool_t lp_config_get_range(LpConfig *lpconfig, const char *section, const char *
 	}
 }
 
-int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, int default_value){
+int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 		int ret=0;
@@ -302,7 +302,7 @@ int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, i
 	else return default_value;
 }
 
-int64_t lp_config_get_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
+int64_t lp_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
 #ifdef WIN32
@@ -314,7 +314,7 @@ int64_t lp_config_get_int64(LpConfig *lpconfig,const char *section, const char *
 	else return default_value;
 }
 
-float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *key, float default_value){
+float lp_config_get_float(const LpConfig *lpconfig,const char *section, const char *key, float default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	float ret=default_value;
 	if (str==NULL) return default_value;
@@ -404,9 +404,30 @@ int lp_config_sync(LpConfig *lpconfig){
 	return 0;
 }
 
-int lp_config_has_section(LpConfig *lpconfig, const char *section){
+int lp_config_has_section(const LpConfig *lpconfig, const char *section){
 	if (lp_config_find_section(lpconfig,section)!=NULL) return 1;
 	return 0;
+}
+
+void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx) {
+	LpSection *sec;
+	MSList *elem;
+	for (elem=lpconfig->sections;elem!=NULL;elem=ms_list_next(elem)){
+		sec=(LpSection*)elem->data;
+		callback(sec->name, ctx);
+	}
+}
+
+void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx) {
+	LpItem *item;
+	MSList *elem;
+	LpSection *sec=lp_config_find_section(lpconfig,section);
+	if (sec!=NULL){
+		for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+			item=(LpItem*)elem->data;
+			callback(item->key, ctx);
+		}
+	}
 }
 
 void lp_config_clean_section(LpConfig *lpconfig, const char *section){

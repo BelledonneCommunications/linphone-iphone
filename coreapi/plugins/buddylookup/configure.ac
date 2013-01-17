@@ -22,7 +22,7 @@ AC_ARG_ENABLE(strict,
 [wall_werror=yes]
 )
 
-dnl AC_CONFIG_HEADER([config.h])
+dnl AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
