@@ -1614,7 +1614,12 @@ static void audioRouteChangeListenerCallback (
     [currentSettings release];
     currentSettings = newSettings;
     [currentSettings retain];
-    
+ 
+    [self reloadSounds];
+    return YES;
+}
+
+- (void)reloadSounds {
     /* Configure sounds */
     if(sounds.call) {
         AudioServicesDisposeSystemSoundID(sounds.call);
@@ -1641,7 +1646,7 @@ static void audioRouteChangeListenerCallback (
         }
     }
     
-    return YES;
+   
 }
 
 // no proxy configured alert

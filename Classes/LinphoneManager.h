@@ -152,7 +152,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)acceptCall:(LinphoneCall *)call;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
-
+- (void)reloadSounds;
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
 - (NSString*)lpConfigStringForKey:(NSString*)key;
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;

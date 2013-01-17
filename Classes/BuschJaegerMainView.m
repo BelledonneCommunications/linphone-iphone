@@ -297,6 +297,7 @@ static BuschJaegerMainView* mainViewInstance=nil;
         case LinphoneCallError:
 		case LinphoneCallEnd:
         {
+            [self dismissIncomingCall:call];
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
                 [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
             }
@@ -306,6 +307,16 @@ static BuschJaegerMainView* mainViewInstance=nil;
         default:
             break;
 	}
+}
+
+- (void)dismissIncomingCall:(LinphoneCall*)call {
+    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
+    
+    if(appData != nil && appData->notification != nil) {
+        // cancel local notif if needed
+        [[UIApplication sharedApplication] cancelLocalNotification:appData->notification];
+        [appData->notification release];
+    }
 }
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
