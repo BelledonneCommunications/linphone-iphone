@@ -1,4 +1,5 @@
 #include "audio-stream-start.h"
+#include "private.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 	char addr[256];
 	int port;
 	int payload_type;
+	RtpProfile *default_profile=app->getCore()->default_profile;
 	if (sscanf(args, "%255s %d %d", addr, &port, &payload_type) == 3) {
 		int local_port = linphone_core_get_audio_port(app->getCore());
 		int jitt = linphone_core_get_audio_jittcomp(app->getCore());
@@ -21,7 +23,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 		MSSndCardManager *manager = ms_snd_card_manager_get();
 		MSSndCard *capture_card = ms_snd_card_manager_get_card(manager, linphone_core_get_capture_device(app->getCore()));
 		MSSndCard *play_card = ms_snd_card_manager_get_card(manager, linphone_core_get_playback_device(app->getCore()));
-		PayloadType *oldpt=rtp_profile_get_payload(&av_profile,payload_type);
+		PayloadType *oldpt=rtp_profile_get_payload(default_profile,payload_type);
 		PayloadType *pt;
 		AudioStream *stream = audio_stream_new(local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
 		
@@ -31,11 +33,11 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 				snprintf(fmtp,sizeof(fmtp)-1,"ptime=%i",ptime);
 				pt=payload_type_clone(oldpt);
 				payload_type_append_send_fmtp(pt,fmtp);
-				rtp_profile_set_payload(&av_profile,payload_type,pt);
+				rtp_profile_set_payload(default_profile,payload_type,pt);
 			}
 		}
-		int err=audio_stream_start_now(stream, &av_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller);
-		if (oldpt) rtp_profile_set_payload(&av_profile,payload_type,oldpt);
+		int err=audio_stream_start_now(stream, default_profile, addr, port, port + 1, payload_type, jitt, play_card, capture_card, echo_canceller);
+		if (oldpt) rtp_profile_set_payload(default_profile,payload_type,oldpt);
 		if (err != 0) {
 			app->sendResponse(Response("Error during audio stream creation."));
 			return;
