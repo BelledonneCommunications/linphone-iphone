@@ -53,10 +53,13 @@ GtkWidget*create_pixmap(const gchar     *filename);
 GtkWidget *_gtk_image_new_from_memory_at_scale(const void *data, gint len, gint w, gint h, gboolean preserve_ratio);
 GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint w, gint h, gboolean preserve_ratio);
 
+void linphone_gtk_destroy_window(GtkWidget *window);
 GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
-GtkWidget * linphone_gtk_create_assistant(void);
+
+void linphone_gtk_show_assistant(void);
+void linphone_gtk_close_assistant(void);
 
 LinphoneCore *linphone_gtk_get_core(void);
 GtkWidget *linphone_gtk_get_main_window();
@@ -104,9 +107,10 @@ void linphone_gtk_status_icon_set_blinking(gboolean val);
 void linphone_gtk_notify(LinphoneCall *call, const char *msg);
 LinphoneChatRoom *linphone_gtk_start_chat(GtkTreeView* t);
 void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view);
-void linphone_gtk_send_text(LinphoneChatRoom *cr);
+void linphone_gtk_send_text();
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
-void linphone_gtk_update_chat_picture(gboolean active);
+void linphone_gtk_create_chat_picture(gboolean active);
+void linphone_gtk_update_chat_picture();
 void linphone_gtk_chat_set_conversation(const LinphoneAddress *uri,gchar *conversation);
 gchar * linphone_gtk_chat_get_conversation(const LinphoneAddress *uri);
 

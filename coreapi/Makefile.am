@@ -57,6 +57,7 @@ if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
 
+liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
 liblinphone_la_SOURCES+=linphone_tunnel.cc TunnelManager.cc TunnelManager.hh 
 else

@@ -20,19 +20,19 @@ package org.linphone.core.tutorials;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
+import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCore.GlobalState;
-import org.linphone.core.LinphoneCore.RegistrationState;
 
 
 /**
@@ -50,7 +50,7 @@ import org.linphone.core.LinphoneCore.RegistrationState;
  * @author Guillaume Beraudo
  *
  */
-public class TutorialChatRoom implements LinphoneCoreListener {
+public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessage.StateListener {
 	private boolean running;
 	private TutorialNotifier TutorialNotifier;
 
@@ -83,7 +83,7 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
 	
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {
-        write("Message ["+message+"] received from ["+from.asString()+"]");
+        //Deprecated
 	}
 
 	
@@ -118,7 +118,8 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 			LinphoneChatRoom chatRoom = lc.createChatRoom(destinationSipAddress);
 			
 			// Send message
-			chatRoom.sendMessage("Hello world");
+			LinphoneChatMessage chatMessage = chatRoom.createLinphoneChatMessage("Hello world");
+			chatRoom.sendMessage(chatMessage, this);
 			
 			// main loop for receiving notifications and doing background linphonecore work
 			running = true;
@@ -153,8 +154,13 @@ public class TutorialChatRoom implements LinphoneCoreListener {
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
-		// TODO Auto-generated method stub
-		
+		write("Message [" + message.getMessage() + "] received from [" + message.getFrom().asString() + "]");
+	}
+
+	@Override
+	public void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg,
+			org.linphone.core.LinphoneChatMessage.State state) {
+		write("Sent message [" + msg.getMessage() + "] new state is " + state.toString());
 	}
 
 

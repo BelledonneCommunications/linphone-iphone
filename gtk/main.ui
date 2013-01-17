@@ -113,6 +113,7 @@
                   <object class="GtkTextView" id="textview">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="border_width">4</property>
                   </object>
                 </child>
               </object>
@@ -834,7 +835,7 @@
                         <property name="use_action_appearance">False</property>
                         <property name="image">image12</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="linphone_gtk_display_wizard" swapped="no"/>
+                        <signal name="activate" handler="linphone_gtk_show_assistant" swapped="no"/>
                       </object>
                     </child>
                   </object>

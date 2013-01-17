@@ -282,6 +282,7 @@ Sal * sal_init(){
 	sal->reuse_authorization=FALSE;
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
+	sal->verify_server_cn=TRUE;
 	sal->expire_old_contact=FALSE;
 	sal->add_dates=FALSE;
 	sal->dscp=-1;
@@ -378,6 +379,9 @@ static void set_tls_options(Sal *ctx){
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(ctx->verify_server_certs);
 #endif
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(ctx->verify_server_cn);
+#endif
 }
 
 void sal_set_dscp(Sal *ctx, int dscp){
@@ -397,12 +401,12 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
-		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);
 		break;
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-			keepalive=-1;	
+		keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
@@ -496,6 +500,13 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ctx->verify_server_certs=verify;
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(verify);
+#endif
+}
+
+void sal_verify_server_cn(Sal *ctx, bool_t verify){
+	ctx->verify_server_cn=verify;
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(verify);
 #endif
 }
 
@@ -938,8 +949,13 @@ int sal_call_terminate(SalOp *h){
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
-	if (h->terminated) return;
-    if (h->pending_auth){
+       bool_t terminating=FALSE;
+       if (h->pending_auth && strcmp(h->pending_auth->request->sip_method,"BYE")==0) {
+               terminating=TRUE;
+       }
+       if (h->terminated && !terminating) return;
+
+       if (h->pending_auth){
 		push_auth_to_exosip(info);
 		
         /*FIXME exosip does not take into account this update register message*/

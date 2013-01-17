@@ -23,8 +23,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
  
-#ifndef LINPHONETUNNELMANAGER_H
-#define LINPHONETUNNELMANAGER_H
+#ifndef LINPHONETUNNEL_H
+#define LINPHONETUNNEL_H
 
 #include "linphonecore.h"
 
@@ -48,34 +48,108 @@ extern "C"
 {
 #endif
 
+typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
+
 /**
- * Add a tunnel server. At least one should be provided to be able to connect.
- * When several addresses are provided, the tunnel client may try each of them until it gets connected.
- * @param  tunnel object
- * @param host server ip address
+ * Create a new tunnel configuration
+ */
+LinphoneTunnelConfig *linphone_tunnel_config_new();
+
+/**
+ * Set address of server.
+ *
+ * @param tunnel configuration object
+ * @param host tunnel server ip address
+ */
+void linphone_tunnel_config_set_host(LinphoneTunnelConfig *tunnel, const char *host);
+
+/**
+ * Get address of server.
+ *
+ * @param tunnel configuration object
+ */
+const char *linphone_tunnel_config_get_host(const LinphoneTunnelConfig *tunnel);
+
+/**
+ * Set tls port of server.
+ *
+ * @param tunnel configuration object
  * @param port tunnel server tls port, recommended value is 443
  */
-void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port);
+void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunnel, int port);
+
 /**
- *Add tunnel server with auto detection capabilities
+ * Get tls port of server.
  *
- * @param  tunnel object
- * @param host tunnel server ip address
- * @param port tunnel server tls port, recommended value is 443
- * @param remote_udp_mirror_port remote port on the tunnel server side used to test udp reachability
+ * @param tunnel configuration object
+ */
+int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel);
+
+/**
+ * Set the remote port on the tunnel server side used to test udp reachability. 
+ *
+ * @param tunnel configuration object
+ * @param remote_udp_mirror_port remote port on the tunnel server side used to test udp reachability, set to -1 to disable the feature
+ */
+void linphone_tunnel_config_set_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel, int remote_udp_mirror_port);
+
+/**
+ * Get the remote port on the tunnel server side used to test udp reachability.
+ *
+ * @param tunnel configuration object
+ */
+int linphone_tunnel_config_get_remote_udp_mirror_port(const LinphoneTunnelConfig *tunnel);
+
+/**
+ * Set the udp packet round trip delay in ms for a tunnel configuration.
+ *
+ * @param tunnel configuration object
  * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
  */
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror_port, int delay);
+void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunnel, int delay);
+
+/**
+ * Get the udp packet round trip delay in ms for a tunnel configuration.
+ * 
+ * @param tunnel configuration object
+ */
+int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
+
+/**
+ * Destroy a tunnel configuration
+ *
+ * @param tunnel configuration object
+ */
+void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
+
+/**
+ * Add tunnel server configuration
+ *
+ * @param tunnel object
+ * @param tunnel_config object
+ */
+void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
+
+/**
+ * Remove tunnel server configuration
+ * 
+ * @param tunnel object
+ * @param tunnel_config object
+ */
+void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config);
+
 /**
  * @param  tunnel object
  * returns a string of space separated list of host:port of tunnel server addresses
  * */
-char *linphone_tunnel_get_servers(LinphoneTunnel *tunnel);
+const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel);
+
 /**
  * @param  tunnel object
  * Removes all tunnel server address previously entered with addServer()
 **/
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
+
 /**
  * Sets whether tunneling of SIP and RTP is required.
  * @param  tunnel object
@@ -84,11 +158,13 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel);
  *
 **/
 void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled);
+
 /**
  * @param  tunnel object
  * Returns a boolean indicating whether tunneled operation is enabled.
 **/
 bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
+
 /**
  * @param  tunnel object
  * Forces reconnection to the tunnel server.
@@ -97,6 +173,7 @@ bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
  * the lost connection to be closed and new connection to be issued.
 **/
 void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
+
 /**
  * Start tunnel need detection.
  * @param  tunnel object
@@ -129,8 +206,6 @@ void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int
 void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel*tunnel, const char* username,const char* passwd);
 
 
-void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
-
 /**
  * @}
 **/
@@ -140,5 +215,5 @@ void linphone_tunnel_enable_logs(LinphoneTunnel *tunnel, bool_t enabled);
 #endif
 
 
-#endif
+#endif //LINPHONETUNNEL_H
 

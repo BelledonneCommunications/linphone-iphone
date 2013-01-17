@@ -40,6 +40,10 @@ AC_CHECK_LIB([eXosip2],[eXosip_tls_verify_certificate],
 	[AC_DEFINE([HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE],[1],[Defined when eXosip_tls_verify_certificate is available])],
 	[AC_MSG_WARN([Could not find eXosip_tls_verify_certificate in eXosip2 !])],
 	[-losipparser2 -losip2 ])
+AC_CHECK_LIB([eXosip2],[eXosip_tls_verify_cn],
+	[AC_DEFINE([HAVE_EXOSIP_TLS_VERIFY_CN],[1],[Defined when eXosip_tls_verify_certificate is available])],
+	[AC_MSG_WARN([Could not find eXosip_tls_verify_cn in eXosip2 !])],
+	[-losipparser2 -losip2 ])
 AC_CHECK_LIB([eXosip2],[eXosip_trylock],
 	[AC_DEFINE([HAVE_EXOSIP_TRYLOCK],[1],[Defined when eXosip_get_socket is available])],
 	[],

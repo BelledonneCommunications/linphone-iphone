@@ -38,14 +38,15 @@ LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 }
 
-void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port){
+
+void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
 }
 
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay){
+void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
 }
 
-char *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
-	return NULL;
+const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
+        return NULL;
 }
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
@@ -55,8 +56,9 @@ void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
 }
 
 bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
-	return FALSE;
+        return FALSE;
 }
+
 
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
 }

@@ -29,58 +29,199 @@
 #include "private.h"
 #include "lpconfig.h"
 
-
 LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 	return lc->tunnel;
 }
 
-static inline belledonnecomm::TunnelManager *bcTunnel(LinphoneTunnel *tunnel){
-	return (belledonnecomm::TunnelManager *)tunnel;
-}
-
-static inline _LpConfig *config(LinphoneTunnel *tunnel){
-	return ((belledonnecomm::TunnelManager *)tunnel)->getLinphoneCore()->config;
-}
+struct _LinphoneTunnel {
+	belledonnecomm::TunnelManager *manager;
+	MSList *config_list;
+};
 
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
-	LinphoneTunnel* tunnel= (LinphoneTunnel*) new belledonnecomm::TunnelManager(lc);
+	LinphoneTunnel* tunnel = ms_new0(LinphoneTunnel, 1);
+	tunnel->manager = new belledonnecomm::TunnelManager(lc);
 	return tunnel;
 }
 
+static inline belledonnecomm::TunnelManager *bcTunnel(LinphoneTunnel *tunnel){
+	return tunnel->manager;
+}
+
+static inline _LpConfig *config(LinphoneTunnel *tunnel){
+	return tunnel->manager->getLinphoneCore()->config;
+}
+
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
-	delete bcTunnel(tunnel);
+	delete tunnel->manager;
+	ms_free(tunnel);
 }
 
-static void add_server_to_config(LinphoneTunnel *tunnel, const char *host, int port){
-	const char *orig=lp_config_get_string(config(tunnel),"tunnel","server_addresses", NULL);
+static char *linphone_tunnel_config_to_string(const LinphoneTunnelConfig *tunnel_config) {
+	char *str = NULL;
+	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
+		str = ms_strdup_printf("%s:%d:%d:%d", 
+			linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config),
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+			linphone_tunnel_config_get_delay(tunnel_config));
+	} else {
+		str = ms_strdup_printf("%s:%d",
+			linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config));
+	}
+	return str;
+}
+
+static LinphoneTunnelConfig *linphone_tunnel_config_from_string(const char *str) {
+	LinphoneTunnelConfig *tunnel_config = NULL;
+	char * dstr = ms_strdup(str);
+	const char *host = NULL;
+	int port = -1;
+	int remote_udp_mirror_port = -1;
+	int delay = -1;
+	int pos = 0;
+	char *pch;
+	pch = strtok(dstr, ":");
+	while(pch != NULL) {
+		switch(pos) {
+		case 0:
+			host = pch;
+			break;
+		case 1:
+			port = atoi(pch);
+			break;
+		case 2:
+			remote_udp_mirror_port = atoi(pch);
+			break;
+		case 3:
+			delay = atoi(pch);
+			break;	
+		default:
+			// Abort
+			pos = 0;
+			break;
+			
+		}
+		++pos;
+		pch = strtok(NULL, ":");
+	}
+	if(pos >= 2) {
+		tunnel_config = linphone_tunnel_config_new();
+		linphone_tunnel_config_set_host(tunnel_config, host);
+		linphone_tunnel_config_set_port(tunnel_config, port);
+	}
+	if(pos >= 3) {
+		linphone_tunnel_config_set_remote_udp_mirror_port(tunnel_config, remote_udp_mirror_port);
+	}
+	if(pos == 4) {
+		linphone_tunnel_config_set_delay(tunnel_config, delay);
+	}
+	ms_free(dstr);	
+	return tunnel_config;
+}
+
+
+static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
+	MSList *elem = tunnel->config_list;
+	char *tmp = NULL, *old_tmp = NULL, *tc_str = NULL;
+	while(elem != NULL) {
+		LinphoneTunnelConfig *tunnel_config = (LinphoneTunnelConfig *)elem->data;
+		tc_str = linphone_tunnel_config_to_string(tunnel_config);
+		if(tmp != NULL) {
+			old_tmp = tmp;
+			tmp = ms_strdup_printf("%s %s", old_tmp, tc_str);
+			ms_free(old_tmp);
+			ms_free(tc_str);
+		} else {
+			tmp = tc_str;
+		}
+		elem = elem->next;
+	}
+	lp_config_set_string(config(tunnel), "tunnel", "server_addresses", tmp);
+	if(tmp != NULL) {
+		ms_free(tmp);
+	}
+}
+
+
+static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
+	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) == -1) {
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+			linphone_tunnel_config_get_port(tunnel_config));
+	} else {
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+			linphone_tunnel_config_get_port(tunnel_config), 
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config), 
+			linphone_tunnel_config_get_delay(tunnel_config));
+	}
+	tunnel->config_list = ms_list_append(tunnel->config_list, tunnel_config);
+}
+
+
+static void linphone_tunnel_load_config(LinphoneTunnel *tunnel){
+	const char * confaddress = lp_config_get_string(config(tunnel), "tunnel", "server_addresses", NULL);
 	char *tmp;
-	if (orig){
-		tmp=ms_strdup_printf("%s %s:%i",orig,host,port);
-	}else tmp=ms_strdup_printf("%s:%i",host, port);
-	lp_config_set_string(config(tunnel),"tunnel","server_addresses",tmp);
-	ms_free(tmp);
+	const char *it;
+	LinphoneTunnelConfig *tunnel_config;
+	int adv;
+	if(confaddress != NULL) {
+		tmp = ms_strdup(confaddress);
+		it = confaddress;
+		while(confaddress[0] != '\0') {
+			int ret = sscanf(it,"%s%n", tmp, &adv);
+			if (ret >= 1){
+				it += adv;
+				tunnel_config = linphone_tunnel_config_from_string(tmp);
+				if(tunnel_config != NULL) {
+					linphone_tunnel_add_server_intern(tunnel, tunnel_config);
+				} else {
+					ms_error("Tunnel server address incorrectly specified from config file: %s", tmp);
+				}
+			} else break;
+		}
+		ms_free(tmp);
+	}
 }
 
-void linphone_tunnel_add_server(LinphoneTunnel *tunnel, const char *host, int port){
-	bcTunnel(tunnel)->addServer(host, port);
-	add_server_to_config(tunnel,host,port);
+static void linphone_tunnel_refresh_config(LinphoneTunnel *tunnel) {
+	MSList *old_list = tunnel->config_list;
+	tunnel->config_list = NULL;
+	bcTunnel(tunnel)->cleanServers();
+	while(old_list != NULL) {
+		LinphoneTunnelConfig *tunnel_config = (LinphoneTunnelConfig *)old_list->data;
+		linphone_tunnel_add_server_intern(tunnel, tunnel_config);
+		old_list = old_list->next;
+	}
 }
 
-void linphone_tunnel_add_server_and_mirror(LinphoneTunnel *tunnel, const char *host, int port, int remote_udp_mirror, int delay){
-	bcTunnel(tunnel)->addServer(host, port, remote_udp_mirror, delay);
-	/*FIXME, udp-mirror feature not saved in config*/
-	add_server_to_config(tunnel,host,port);
+void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
+	linphone_tunnel_add_server_intern(tunnel, tunnel_config);
+	linphone_tunnel_save_config(tunnel);
 }
 
-char *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
-	const char *tmp=lp_config_get_string(config(tunnel),"tunnel","server_addresses",NULL);
-	if (tmp) return ms_strdup(tmp);
-	return NULL;
+void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
+	MSList *elem = ms_list_find(tunnel->config_list, tunnel_config);
+	if(elem != NULL) {
+		tunnel->config_list = ms_list_remove(tunnel->config_list, tunnel_config);
+		linphone_tunnel_config_destroy(tunnel_config);		
+		linphone_tunnel_refresh_config(tunnel);
+		linphone_tunnel_save_config(tunnel);
+	}	
+}
+
+const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
+	return tunnel->config_list;
 }
 
 void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->cleanServers();
-	lp_config_set_string(config(tunnel),"tunnel","server_addresses",NULL);
+	
+	/* Free the list */
+	ms_list_for_each(tunnel->config_list, (void (*)(void *))linphone_tunnel_config_destroy); 
+	tunnel->config_list = ms_list_free(tunnel->config_list);
+	
+	linphone_tunnel_save_config(tunnel);
 }
 
 void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
@@ -169,28 +310,6 @@ void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
 	bcTunnel(tunnel)->autoDetect();
 }
 
-static void tunnel_add_servers_from_config(LinphoneTunnel *tunnel, const char* confaddress){
-	char *tmp=(char*)ms_malloc0(strlen(confaddress)+1);
-	const char *it=confaddress;
-	int adv;
-	do{
-		int ret=sscanf(it,"%s%n",tmp,&adv);
-		if (ret>=1){
-			it+=adv;
-			char *port=strchr(tmp,':');
-			if (!port){
-				ms_error("Tunnel server addresses incorrectly specified from config file: %s",it);
-				break;
-			}else{
-				*port='\0';
-				port++;
-				bcTunnel(tunnel)->addServer(tmp, atoi(port));
-			}
-		}else break;
-	}while(1);
-	ms_free(tmp);
-}
-
 static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
 	ortp_logv(level,fmt,args);
 }
@@ -201,10 +320,8 @@ static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
  */
 void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	bool_t enabled=(bool_t)lp_config_get_int(config(tunnel),"tunnel","enabled",FALSE);
-	const char* addresses=lp_config_get_string(config(tunnel),"tunnel","server_addresses", NULL);
 	linphone_tunnel_enable_logs_with_handler(tunnel,TRUE,my_ortp_logv);
-	if (addresses)
-		tunnel_add_servers_from_config(tunnel,addresses);
+	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable(tunnel, enabled);
 }
 

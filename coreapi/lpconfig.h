@@ -73,7 +73,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename);
  * @ingroup misc
  * The default value string is returned if the config item isn't found.
 **/
-const char *lp_config_get_string(LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
+const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 /**
  * Retrieves a configuration item as a range, given its section, key, and default min and max values.
@@ -82,14 +82,14 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename);
  * @return TRUE if the value is successfully parsed as a range, FALSE otherwise.
  * If FALSE is returned, min and max are filled respectively with default_min and default_max values.
  */
-bool_t lp_config_get_range(LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max);
+bool_t lp_config_get_range(const LpConfig *lpconfig, const char *section, const char *key, int *min, int *max, int default_min, int default_max);
 /**
  * Retrieves a configuration item as an integer, given its section, key, and default value.
  * 
  * @ingroup misc
  * The default integer value is returned if the config item isn't found.
 **/
-int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, int default_value);
+int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value);
 
 /**
  * Retrieves a configuration item as a 64 bit integer, given its section, key, and default value.
@@ -97,7 +97,7 @@ int lp_config_get_int(LpConfig *lpconfig,const char *section, const char *key, i
  * @ingroup misc
  * The default integer value is returned if the config item isn't found.
 **/
-int64_t lp_config_get_int64(LpConfig *lpconfig,const char *section, const char *key, int64_t default_value);
+int64_t lp_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value);
 
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
@@ -107,7 +107,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename);
  * @ingroup misc
  * The default float value is returned if the config item isn't found.
 **/
-float lp_config_get_float(LpConfig *lpconfig,const char *section, const char *key, float default_value);
+float lp_config_get_float(const LpConfig *lpconfig,const char *section, const char *key, float default_value);
 /**
  * Sets a string config item 
  *
@@ -158,13 +158,26 @@ int lp_config_sync(LpConfig *lpconfig);
  *
  * @ingroup misc
 **/
-int lp_config_has_section(LpConfig *lpconfig, const char *section);
+int lp_config_has_section(const LpConfig *lpconfig, const char *section);
 /**
  * Removes every pair of key,value in a section and remove the section.
  *
  * @ingroup misc
 **/
 void lp_config_clean_section(LpConfig *lpconfig, const char *section);
+/**
+ * Call a function for each section present in the configuration.
+ *
+ * @ingroup misc
+**/
+void lp_config_for_each_section(const LpConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx);
+/**
+ * Call a function for each entry present in a section configuration.
+ *
+ * @ingroup misc
+**/
+void lp_config_for_each_entry(const LpConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx);
+
 /*tells whether uncommited (with lp_config_sync()) modifications exist*/
 int lp_config_needs_commit(const LpConfig *lpconfig);
 void lp_config_destroy(LpConfig *cfg);

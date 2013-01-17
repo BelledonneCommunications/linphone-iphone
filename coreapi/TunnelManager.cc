@@ -107,6 +107,10 @@ void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPor
 }
 
 void TunnelManager::addServer(const char *ip, int port) {
+	if (ip == NULL) {
+		ip = "";
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+	}
 	mServerAddrs.push_back(ServerAddr(ip,port));
 	if (mTunnelClient) mTunnelClient->addServer(ip,port);
 }

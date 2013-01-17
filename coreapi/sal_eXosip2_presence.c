@@ -209,108 +209,108 @@ static void mk_presence_body (const SalPresenceStatus online_status, const char 
 
 	  if (online_status==SalPresenceOnline)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"online\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"open\" />\n"
+"<msnsubstatus substatus=\"online\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status == SalPresenceBusy ||
 			  online_status == SalPresenceDonotdisturb)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"busy\" />\n\
-</address>\n\
-</atom>\n</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"inuse\" />\n"
+"<msnsubstatus substatus=\"busy\" />\n"
+"</address>\n"
+"</atom>\n</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceBerightback)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"berightback\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"open\" />\n"
+"<msnsubstatus substatus=\"berightback\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status == SalPresenceAway ||
 			  online_status == SalPresenceMoved)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"open\" />\n"
+"<msnsubstatus substatus=\"away\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceOnthephone)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"onthephone\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"inuse\" />\n"
+"<msnsubstatus substatus=\"onthephone\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceOuttolunch)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"outtolunch\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"open\" />\n"
+"<msnsubstatus substatus=\"outtolunch\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"closed\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\" priority=\"0.800000\">\n"
+"<status status=\"closed\" />\n"
+"<msnsubstatus substatus=\"away\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 	  }
 	  break;
     } 
@@ -323,108 +323,108 @@ static void mk_presence_body (const SalPresenceStatus online_status, const char 
 
 	  if (online_status==SalPresenceOnline)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"online\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"open\" />\n"
+"<msnsubstatus substatus=\"online\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status == SalPresenceBusy ||
 			  online_status == SalPresenceDonotdisturb)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"busy\" />\n\
-</address>\n\
-</atom>\n</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"inuse\" />\n"
+"<msnsubstatus substatus=\"busy\" />\n"
+"</address>\n"
+"</atom>\n</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceBerightback)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"berightback\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"inactive\" />\n"
+"<msnsubstatus substatus=\"berightback\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status == SalPresenceAway ||
 			  online_status == SalPresenceMoved)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"idle\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"inactive\" />\n"
+"<msnsubstatus substatus=\"idle\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceOnthephone)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"onthephone\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"inuse\" />\n"
+"<msnsubstatus substatus=\"onthephone\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else if (online_status==SalPresenceOuttolunch)
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"outtolunch\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"inactive\" />\n"
+"<msnsubstatus substatus=\"outtolunch\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 
 	  }
 	  else
 	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"closed\" />\n\
-<msnsubstatus substatus=\"offline\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
+		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n"
+"<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n"
+"<presence>\n"
+"<presentity uri=\"%s;method=SUBSCRIBE\" />\n"
+"<atom id=\"%i\">\n"
+"<address uri=\"%s\">\n"
+"<status status=\"closed\" />\n"
+"<msnsubstatus substatus=\"offline\" />\n"
+"</address>\n"
+"</atom>\n"
+"</presence>", contact_info, atom_id, contact_info);
 	  }
 	break;
 	}
@@ -432,118 +432,118 @@ static void mk_presence_body (const SalPresenceStatus online_status, const char 
 
 	if (online_status==SalPresenceOnline)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else if (online_status == SalPresenceBusy ||
 			online_status == SalPresenceDonotdisturb)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:busy/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"<dm:person id=\"sg89aep\">\n"
+"<rpid:activities><rpid:busy/></rpid:activities>\n"
+"</dm:person>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else if (online_status==SalPresenceBerightback)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:in-transit/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"<dm:person id=\"sg89aep\">\n"
+"<rpid:activities><rpid:in-transit/></rpid:activities>\n"
+"</dm:person>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else if (online_status == SalPresenceAway ||
 			online_status == SalPresenceMoved)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:away/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"<dm:person id=\"sg89aep\">\n"
+"<rpid:activities><rpid:away/></rpid:activities>\n"
+"</dm:person>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else if (online_status==SalPresenceOnthephone)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:on-the-phone/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"<dm:person id=\"sg89aep\">\n"
+"<rpid:activities><rpid:on-the-phone/></rpid:activities>\n"
+"</dm:person>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else if (online_status==SalPresenceOuttolunch)
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"7777\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"78787878\">\n\
-<rpid:activities><rpid:meal/></rpid:activities>\n\
-<rpid:note>Out to lunch</rpid:note> \n\
-</dm:person>\n\
-</presence>",
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"7777\">\n"
+"<status><basic>open</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"<dm:person id=\"78787878\">\n"
+"<rpid:activities><rpid:meal/></rpid:activities>\n"
+"<rpid:note>Out to lunch</rpid:note> \n"
+"</dm:person>\n"
+"</presence>",
 contact_info, contact_info);
 	}
 	else
 	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>closed</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-</presence>\n", contact_info, contact_info);
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" "
+"xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" "
+"xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" "
+"entity=\"%s\">\n"
+"<tuple id=\"sg89ae\">\n"
+"<status><basic>closed</basic></status>\n"
+"<contact priority=\"0.8\">%s</contact>\n"
+"</tuple>\n"
+"</presence>\n", contact_info, contact_info);
 	}
 	break;
     }

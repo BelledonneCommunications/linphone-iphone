@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Simon Morlat <simon.morlat@linphone.org>, 2001.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Linphone 0.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 10:35+0100\n"
+"POT-Creation-Date: 2011-12-05 12:41+0100\n"
 "PO-Revision-Date: 2002-12-06 17:33+0100\n"
 "Last-Translator: Simon Morlat <simon.morlat@linphone.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -16,19 +16,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../gtk/calllogs.c:82
-#, fuzzy
 msgid "Aborted"
-msgstr "abandonné"
+msgstr "Abandonné"
 
 #: ../gtk/calllogs.c:85
-#, fuzzy
 msgid "Missed"
-msgstr "manqué"
+msgstr "Manqué"
 
 #: ../gtk/calllogs.c:88
-#, fuzzy
 msgid "Declined"
-msgstr "Refuser"
+msgstr "Refusé"
 
 #: ../gtk/calllogs.c:94
 #, c-format
@@ -62,7 +59,8 @@ msgid ""
 "%s\t%s"
 msgstr ""
 
-#: ../gtk/conference.c:33 ../gtk/main.ui.h:13
+#: ../gtk/conference.c:33
+#: ../gtk/main.ui.h:13
 msgid "Conference"
 msgstr "Conférence"
 
@@ -70,7 +68,9 @@ msgstr "Conférence"
 msgid "Me"
 msgstr "Moi"
 
-#: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
+#: ../gtk/support.c:49
+#: ../gtk/support.c:73
+#: ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr "Icone non trouvée: %s"
@@ -100,12 +100,8 @@ msgid "if set automatically answer incoming calls"
 msgstr "si positionné, répond automatiquement aux appels entrants"
 
 #: ../gtk/main.c:131
-msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Spécifie un répertoire de travail (qui devrait être le répertoire "
-"d'installation, par exemple c:\\Program Files\\Linphone)"
+msgid "Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)"
+msgstr "Spécifie un répertoire de travail (qui devrait être le répertoire d'installation, par exemple c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:498
 #, c-format
@@ -116,15 +112,12 @@ msgstr "Appel avec %s"
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact "
-"list ?\n"
+"Would you allow him to see your presence status or add him to your contact list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 "%s souhaite vous ajouter à sa liste de contact.\n"
-"Souhaitez vous l'autoriser à voir votre information de présence et l'ajouter "
-"à votre liste également ?\n"
-"Si vous répondez non, cette personne sera mise temporairement sur liste "
-"noire."
+"Souhaitez vous l'autoriser à voir votre information de présence et l'ajouter à votre liste également ?\n"
+"Si vous répondez non, cette personne sera mise temporairement sur liste noire."
 
 #: ../gtk/main.c:948
 #, c-format
@@ -139,19 +132,24 @@ msgstr ""
 msgid "Call error"
 msgstr "Erreur lors de l'appel"
 
-#: ../gtk/main.c:1054 ../coreapi/linphonecore.c:2949
+#: ../gtk/main.c:1054
+#: ../coreapi/linphonecore.c:2949
 msgid "Call ended"
 msgstr "Appel terminé."
 
-#: ../gtk/main.c:1057 ../coreapi/linphonecore.c:244
+#: ../gtk/main.c:1057
+#: ../coreapi/linphonecore.c:244
 msgid "Incoming call"
 msgstr "Appel entrant"
 
-#: ../gtk/main.c:1059 ../gtk/incall_view.c:451 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1059
+#: ../gtk/incall_view.c:451
+#: ../gtk/main.ui.h:6
 msgid "Answer"
 msgstr "Répondre"
 
-#: ../gtk/main.c:1061 ../gtk/main.ui.h:7
+#: ../gtk/main.c:1061
+#: ../gtk/main.ui.h:7
 msgid "Decline"
 msgstr "Refuser"
 
@@ -182,7 +180,8 @@ msgstr "Linphone - un téléphone video pour l'internet"
 msgid "%s (Default)"
 msgstr "%s (par défaut)"
 
-#: ../gtk/main.c:1714 ../coreapi/callbacks.c:774
+#: ../gtk/main.c:1714
+#: ../coreapi/callbacks.c:774
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Transfert vers %s"
@@ -201,13 +200,15 @@ msgstr "Un visiophone libre"
 
 #: ../gtk/friendlist.c:335
 msgid "Add to addressbook"
-msgstr ""
+msgstr "Ajouter au carnet d'adresse"
 
 #: ../gtk/friendlist.c:509
 msgid "Presence status"
 msgstr "Info de présence"
 
-#: ../gtk/friendlist.c:526 ../gtk/propertybox.c:362 ../gtk/contact.ui.h:1
+#: ../gtk/friendlist.c:526
+#: ../gtk/propertybox.c:362
+#: ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "Nom"
 
@@ -269,11 +270,13 @@ msgstr "Débit min. (kbit/s)"
 msgid "Parameters"
 msgstr "Paramètres"
 
-#: ../gtk/propertybox.c:430 ../gtk/propertybox.c:573
+#: ../gtk/propertybox.c:430
+#: ../gtk/propertybox.c:573
 msgid "Enabled"
 msgstr "Activé"
 
-#: ../gtk/propertybox.c:432 ../gtk/propertybox.c:573
+#: ../gtk/propertybox.c:432
+#: ../gtk/propertybox.c:573
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -283,7 +286,7 @@ msgstr "Compte"
 
 #: ../gtk/propertybox.c:759
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #: ../gtk/propertybox.c:760
 msgid "French"
@@ -291,31 +294,31 @@ msgstr "Français"
 
 #: ../gtk/propertybox.c:761
 msgid "Swedish"
-msgstr ""
+msgstr "Suédois"
 
 #: ../gtk/propertybox.c:762
 msgid "Italian"
-msgstr ""
+msgstr "Italien"
 
 #: ../gtk/propertybox.c:763
 msgid "Spanish"
-msgstr ""
+msgstr "Espagnol"
 
 #: ../gtk/propertybox.c:764
 msgid "Brazilian Portugese"
-msgstr ""
+msgstr "Portugais brésilien"
 
 #: ../gtk/propertybox.c:765
 msgid "Polish"
-msgstr ""
+msgstr "Polonais"
 
 #: ../gtk/propertybox.c:766
 msgid "German"
-msgstr ""
+msgstr "Allemand"
 
 #: ../gtk/propertybox.c:767
 msgid "Russian"
-msgstr ""
+msgstr "Russe"
 
 #: ../gtk/propertybox.c:768
 msgid "Japanese"
@@ -323,15 +326,15 @@ msgstr "日本語"
 
 #: ../gtk/propertybox.c:769
 msgid "Dutch"
-msgstr ""
+msgstr "Néérlandais"
 
 #: ../gtk/propertybox.c:770
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongrois"
 
 #: ../gtk/propertybox.c:771
 msgid "Czech"
-msgstr ""
+msgstr "Tchèque"
 
 #: ../gtk/propertybox.c:772
 msgid "Chinese"
@@ -339,22 +342,19 @@ msgstr "简体中文"
 
 #: ../gtk/propertybox.c:773
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Chinois traditionnel"
 
 #: ../gtk/propertybox.c:774
 msgid "Norwegian"
-msgstr ""
+msgstr "Norvégien"
 
 #: ../gtk/propertybox.c:775
 msgid "Hebrew"
-msgstr ""
+msgstr "Hébreu"
 
 #: ../gtk/propertybox.c:842
-msgid ""
-"You need to restart linphone for the new language selection to take effect."
-msgstr ""
-"La nouvelle selection de langue prendra effet au prochain démarrage de "
-"linphone."
+msgid "You need to restart linphone for the new language selection to take effect."
+msgstr "La nouvelle selection de langue prendra effet au prochain démarrage de linphone."
 
 #: ../gtk/propertybox.c:912
 msgid "None"
@@ -432,7 +432,8 @@ msgstr ""
 msgid "Username:"
 msgstr "Nom d'utilisateur:"
 
-#: ../gtk/setupwizard.c:93 ../gtk/password.ui.h:4
+#: ../gtk/setupwizard.c:93
+#: ../gtk/password.ui.h:4
 msgid "Password:"
 msgstr "Mot de passe:"
 
@@ -441,14 +442,12 @@ msgid "Enter your account informations"
 msgstr ""
 
 #: ../gtk/setupwizard.c:120
-#, fuzzy
 msgid "Username*"
-msgstr "Nom d'utilisateur"
+msgstr "Nom d'utilisateur*"
 
 #: ../gtk/setupwizard.c:121
-#, fuzzy
 msgid "Password*"
-msgstr "Mot de passe"
+msgstr "Mot de passe*"
 
 #: ../gtk/setupwizard.c:124
 msgid "Domain*"
@@ -463,14 +462,12 @@ msgid "(*) Required fields"
 msgstr ""
 
 #: ../gtk/setupwizard.c:298
-#, fuzzy
 msgid "Username: (*)"
-msgstr "Nom d'utilisateur:"
+msgstr "Nom d'utilisateur: (*)"
 
 #: ../gtk/setupwizard.c:300
-#, fuzzy
 msgid "Password: (*)"
-msgstr "Mot de passe:"
+msgstr "Mot de passe: (*)"
 
 #: ../gtk/setupwizard.c:302
 msgid "Email: (*)"
@@ -492,8 +489,7 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:387
 msgid ""
-"Please validate your account by clicking on the link we just sent you by "
-"email.\n"
+"Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
 msgstr ""
 
@@ -524,13 +520,14 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:588
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: ../gtk/setupwizard.c:592
 msgid "Terminating"
 msgstr ""
 
-#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:90
+#: ../gtk/incall_view.c:69
+#: ../gtk/incall_view.c:90
 #, c-format
 msgid "Call #%i"
 msgstr "Appel #%i"
@@ -540,7 +537,8 @@ msgstr "Appel #%i"
 msgid "Transfer to call #%i with %s"
 msgstr "Transférer vers l'appel #%i avec %s"
 
-#: ../gtk/incall_view.c:209 ../gtk/incall_view.c:212
+#: ../gtk/incall_view.c:209
+#: ../gtk/incall_view.c:212
 #, fuzzy
 msgid "Not used"
 msgstr "Non trouvé"
@@ -571,14 +569,16 @@ msgstr "Redirection"
 msgid "Through a relay server"
 msgstr ""
 
-#: ../gtk/incall_view.c:238 ../gtk/incall_view.c:242
+#: ../gtk/incall_view.c:238
+#: ../gtk/incall_view.c:242
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
 
-#: ../gtk/incall_view.c:341 ../gtk/main.ui.h:12
+#: ../gtk/incall_view.c:341
+#: ../gtk/main.ui.h:12
 msgid "Hang up"
 msgstr ""
 
@@ -586,7 +586,8 @@ msgstr ""
 msgid "<b>Calling...</b>"
 msgstr "<b>Tentative d'appel...</b>"
 
-#: ../gtk/incall_view.c:433 ../gtk/incall_view.c:646
+#: ../gtk/incall_view.c:433
+#: ../gtk/incall_view.c:646
 msgid "00::00::00"
 msgstr ""
 
@@ -614,7 +615,8 @@ msgstr "très faible"
 msgid "too bad"
 msgstr "nulle"
 
-#: ../gtk/incall_view.c:490 ../gtk/incall_view.c:506
+#: ../gtk/incall_view.c:490
+#: ../gtk/incall_view.c:506
 msgid "unavailable"
 msgstr "indisponible"
 
@@ -631,7 +633,8 @@ msgstr "Sécurisé par ZRTP- [jeton: %s]"
 msgid "Set unverified"
 msgstr "Marquer comme non vérifié"
 
-#: ../gtk/incall_view.c:617 ../gtk/main.ui.h:5
+#: ../gtk/incall_view.c:617
+#: ../gtk/main.ui.h:5
 msgid "Set verified"
 msgstr "Marquer comme vérifié"
 
@@ -661,20 +664,19 @@ msgid "Transfer in progress"
 msgstr ""
 
 #: ../gtk/incall_view.c:734
-#, fuzzy
 msgid "Transfer done."
-msgstr "Transfert"
+msgstr "Transfert terminé"
 
 #: ../gtk/incall_view.c:737
-#, fuzzy
 msgid "Transfer failed."
-msgstr "Transfert"
+msgstr "Transfert échoué"
 
 #: ../gtk/incall_view.c:781
 msgid "Resume"
 msgstr "Reprendre"
 
-#: ../gtk/incall_view.c:788 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:788
+#: ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr "Pause"
 
@@ -692,9 +694,8 @@ msgid "Send"
 msgstr "Envoyer"
 
 #: ../gtk/main.ui.h:3
-#, fuzzy
 msgid "End conference"
-msgstr "En conférence"
+msgstr "Fin de conférence"
 
 #: ../gtk/main.ui.h:4
 msgid "label"
@@ -702,7 +703,7 @@ msgstr ""
 
 #: ../gtk/main.ui.h:8
 msgid "Video"
-msgstr ""
+msgstr "Vidéo"
 
 #: ../gtk/main.ui.h:10
 msgid "Mute"
@@ -758,17 +759,19 @@ msgstr ""
 
 #: ../gtk/main.ui.h:25
 msgid "SIP address or phone number:"
-msgstr "Addresse SIP ou numéro"
+msgstr "Adresse SIP ou numéro"
 
 #: ../gtk/main.ui.h:26
 msgid "Initiate a new call"
 msgstr "Démarrer un nouvel appel"
 
-#: ../gtk/main.ui.h:27 ../gtk/parameters.ui.h:48
+#: ../gtk/main.ui.h:27
+#: ../gtk/parameters.ui.h:48
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../gtk/main.ui.h:28 ../gtk/parameters.ui.h:49
+#: ../gtk/main.ui.h:28
+#: ../gtk/parameters.ui.h:49
 msgid "Edit"
 msgstr "Editer"
 
@@ -788,7 +791,8 @@ msgstr ""
 msgid "*"
 msgstr ""
 
-#: ../gtk/main.ui.h:33 ../gtk/parameters.ui.h:7
+#: ../gtk/main.ui.h:33
+#: ../gtk/parameters.ui.h:7
 msgid "C"
 msgstr ""
 
@@ -860,11 +864,13 @@ msgstr "Appels récents"
 msgid "My current identity:"
 msgstr "Mon identité sip:"
 
-#: ../gtk/main.ui.h:51 ../gtk/tunnel_config.ui.h:7
+#: ../gtk/main.ui.h:51
+#: ../gtk/tunnel_config.ui.h:7
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../gtk/main.ui.h:52 ../gtk/tunnel_config.ui.h:8
+#: ../gtk/main.ui.h:52
+#: ../gtk/tunnel_config.ui.h:8
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -1113,7 +1119,7 @@ msgstr "<b>Protocoles réseaux et ports</b>"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Direct connection to the Internet"
-msgstr "Connection directe à l'Internet"
+msgstr "Connexion directe à l'Internet"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Behind NAT / Firewall (specify gateway IP below)"
@@ -1121,7 +1127,7 @@ msgstr "Derrière un pare-feu (spécifier la passerelle ci dessous)"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Public IP address:"
-msgstr "Addresse IP publique:"
+msgstr "Adresse IP publique:"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Behind NAT / Firewall (use STUN to resolve)"
@@ -1190,9 +1196,7 @@ msgstr "Paramètres multimedia"
 
 #: ../gtk/parameters.ui.h:42
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Cette rubrique permet de définir son addresse SIP lorsqu'on ne possède pas "
-"de compte SIP"
+msgstr "Cette rubrique permet de définir son addresse SIP lorsqu'on ne possède pas de compte SIP"
 
 #: ../gtk/parameters.ui.h:43
 msgid "Your display name (eg: John Doe):"
@@ -1234,11 +1238,13 @@ msgstr "<b>Sécurité</b>"
 msgid "Manage SIP Accounts"
 msgstr "Gérer mes comptes SIP"
 
-#: ../gtk/parameters.ui.h:55 ../gtk/tunnel_config.ui.h:4
+#: ../gtk/parameters.ui.h:55
+#: ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
 msgstr "Activer"
 
-#: ../gtk/parameters.ui.h:56 ../gtk/tunnel_config.ui.h:5
+#: ../gtk/parameters.ui.h:56
+#: ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
 msgstr "Désactiver"
 
@@ -1263,13 +1269,8 @@ msgid "Enable adaptive rate control"
 msgstr "Activer le control de débit adaptatif."
 
 #: ../gtk/parameters.ui.h:62
-msgid ""
-"<i>Adaptive rate control is a technique to dynamically guess the available "
-"bandwidth during a call.</i>"
-msgstr ""
-"<i>Le control de débit adaptatif est une technique pour adapter la qualité "
-"de l'audio et de la video en fonction de la bande passante disponible, "
-"durant l'appel.</i>"
+msgid "<i>Adaptive rate control is a technique to dynamically guess the available bandwidth during a call.</i>"
+msgstr "<i>Le control de débit adaptatif est une technique pour adapter la qualité de l'audio et de la video en fonction de la bande passante disponible, durant l'appel.</i>"
 
 #: ../gtk/parameters.ui.h:63
 msgid "<b>Bandwidth control</b>"
@@ -1350,9 +1351,8 @@ msgid "Audio codec"
 msgstr "Codecs audio"
 
 #: ../gtk/call_statistics.ui.h:3
-#, fuzzy
 msgid "Video codec"
-msgstr "Codecs video"
+msgstr "Codecs vidéo"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
@@ -1437,11 +1437,8 @@ msgid "Could not resolve this number."
 msgstr "La destination n'a pu être trouvée."
 
 #: ../coreapi/linphonecore.c:2121
-msgid ""
-"Could not parse given sip address. A sip url usually looks like sip:"
-"user@domain"
-msgstr ""
-"Adresse SIP mal formulée. Une address sip ressemble à <sip:nom@domaine>"
+msgid "Could not parse given sip address. A sip url usually looks like sip:user@domain"
+msgstr "Adresse SIP mal formulée. Une address sip ressemble à <sip:nom@domaine>"
 
 #: ../coreapi/linphonecore.c:2312
 msgid "Contacting"
@@ -1569,12 +1566,8 @@ msgid "Unknown-bug"
 msgstr "Bug inconnu"
 
 #: ../coreapi/proxy.c:204
-msgid ""
-"The sip proxy address you entered is invalid, it must start with \"sip:\" "
-"followed by a hostname."
-msgstr ""
-"L'addresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" "
-"suivie par un nom de domaine."
+msgid "The sip proxy address you entered is invalid, it must start with \"sip:\" followed by a hostname."
+msgstr "L'addresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" suivie par un nom de domaine."
 
 #: ../coreapi/proxy.c:210
 msgid ""
@@ -1582,8 +1575,7 @@ msgid ""
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 "L'identité SIP que vous avez fourni est invalide.\n"
-"Elle doit être de la forme sip:username@domain, comme par example sip:"
-"alice@example.net"
+"Elle doit être de la forme sip:username@domain, comme par example sip:alice@example.net"
 
 #: ../coreapi/proxy.c:1053
 #, c-format
