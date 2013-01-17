@@ -150,7 +150,7 @@ AC_ARG_ENABLE(tools,
 
 dnl check libxml2 (needed for tools)
 if test "$build_tools" != "false" ; then
-	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[],
+	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0 >= 2.9 ],[],
 	[
 		if test "$build_tools" = "true" ; then
 			AC_MSG_ERROR([Could not found libxml2, tools cannot be compiled.])
