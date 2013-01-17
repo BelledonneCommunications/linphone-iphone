@@ -279,7 +279,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 								"italic","style", PANGO_STYLE_ITALIC,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"small","size",8*PANGO_SCALE,NULL);
+	                           	"small","size",9*PANGO_SCALE,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 	                           	"font_grey","foreground-gdk",&color,NULL);
 	
@@ -351,6 +351,7 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
     } else {
         w=linphone_gtk_init_chatroom(room,from);
         g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)w);
+		g_object_set_data(G_OBJECT(friendlist),"from",(gpointer)from);
     }
 
 	const char *display=linphone_address_get_display_name(from);
