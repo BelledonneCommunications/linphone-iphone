@@ -1708,6 +1708,14 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 #endif
 }
 
+void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call) {
+	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+	if (remote_desc) {
+		call->remote_session_id = remote_desc->session_id;
+		call->remote_session_ver = remote_desc->session_ver;
+	}
+}
+
 void linphone_call_delete_ice_session(LinphoneCall *call){
 	if (call->ice_session != NULL) {
 		ice_session_destroy(call->ice_session);

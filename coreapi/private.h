@@ -148,6 +148,8 @@ struct _LinphoneCall
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
 	int ping_time;
+	unsigned int remote_session_id;
+	unsigned int remote_session_ver;
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
@@ -286,6 +288,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
+void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
