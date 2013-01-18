@@ -84,6 +84,19 @@ IT_PROG_INTLTOOL([0.40], [no-xml])
 AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 dnl Initialize libtool
 LT_INIT([win32-dll shared disable-static])
+dnl Enable library dependencies linking
+AC_ARG_ENABLE(deplibs-link,
+      [AS_HELP_STRING([--disable-deplibs-link ], [Disable library dependencies linking (might break builds)])],
+      [enable_deplibs_linking="$enableval"],
+      [enable_deplibs_linking="yes"])
+AC_MSG_NOTICE([Enable library dependencies linking: $enable_interlib_deps])
+if test "${enable_deplibs_linking}" == "yes"; then
+      link_all_deplibs=yes
+      link_all_deplibs_CXX=yes
+else
+      link_all_deplibs=no
+      link_all_deplibs_CXX=no
+fi
 
 AC_CONFIG_COMMANDS([libtool-hacking],[
 if test "$mingw_found" = "yes" ; then

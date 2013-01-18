@@ -26,11 +26,8 @@ endif
 
 linphonec_SOURCES=linphonec.c linphonec.h commands.c
 linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS)
-linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la $(READLINE_LIBS)  \
-		$(MEDIASTREAMER_LIBS) \
-		$(ORTP_LIBS) \
-		$(SPEEX_LIBS) \
-		$(OSIP_LIBS) \
+linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la \
+		$(READLINE_LIBS)  \
 		$(X11_LIBS)
 
 if BUILD_WIN32
