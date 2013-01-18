@@ -1707,8 +1707,6 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call) {
 	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
 	if (remote_desc) {
-		ms_warning("linphone_call_update_remote_session_id_and_ver(): id=%u, ver=%u",
-				remote_desc->session_id, remote_desc->session_ver);
 		call->remote_session_id = remote_desc->session_id;
 		call->remote_session_ver = remote_desc->session_ver;
 	}

@@ -2753,6 +2753,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	SalMediaDescription *remote_desc;
+	bool_t keep_sdp_version;
 #ifdef VIDEO_ENABLED
 	bool_t old_has_video = call->params.has_video;
 #endif
@@ -2762,11 +2763,10 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		return -1;
 	}
 	remote_desc = sal_call_get_remote_media_description(call->op);
-	ms_warning("linphone_core_accept_update(): rmt_id=%u, rmt_ver=%u, call->rmt_id=%u, call->rmt_ver=%u",
-			remote_desc->session_id, remote_desc->session_ver, call->remote_session_id, call->remote_session_ver);
-	if ((remote_desc->session_id == call->remote_session_id) && (remote_desc->session_ver == call->remote_session_ver)) {
+	keep_sdp_version = lp_config_get_int(lc->config, "sip", "keep_sdp_version", 0);
+	if (keep_sdp_version &&(remote_desc->session_id == call->remote_session_id) && (remote_desc->session_ver == call->remote_session_ver)) {
 		/* Remote has sent an INVITE with the same SDP as before, so send a 200 OK with the same SDP as before. */
-		ms_warning("Send same SDP as before!");
+		ms_warning("SDP version has not changed, send same SDP as before.");
 		sal_call_accept(call->op);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 		return 0;
