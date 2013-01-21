@@ -922,11 +922,14 @@ bool_t linphone_core_tunnel_available(void){
 }
 
 /**
- * Enable adaptive rate control (experimental feature, audio-only).
+ * Enable adaptive rate control.
+ * 
+ * @ingroup media_parameters
  *
  * Adaptive rate control consists in using RTCP feedback provided information to dynamically
- * control the output bitrate of the encoders, so that we can adapt to the network conditions and
- * available bandwidth.
+ * control the output bitrate of the audio and video encoders, so that we can adapt to the network conditions and
+ * available bandwidth. Control of the audio encoder is done in case of audio-only call, and control of the video encoder is done for audio & video calls.
+ * Adaptive rate control feature is enabled by default.
 **/
 void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled){
 	lp_config_set_int(lc->config,"net","adaptive_rate_control",(int)enabled);
@@ -934,6 +937,8 @@ void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled
 
 /**
  * Returns whether adaptive rate control is enabled.
+ * 
+ * @ingroup media_parameters
  *
  * See linphone_core_enable_adaptive_rate_control().
 **/
@@ -1006,14 +1011,18 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
 }
 /**
- * Set audio packetization time linphone expects to receive from peer
+ * Set audio packetization time linphone expects to receive from peer.
+ * A value of zero means that ptime is not specified.
+ * @ingroup media_parameters
  */
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime) {
 	lp_config_set_int(lc->config,"rtp","download_ptime",ptime);
 }
 
 /**
- * Get audio packetization time linphone expects to receive from peer
+ * Get audio packetization time linphone expects to receive from peer.
+ * A value of zero means that ptime is not specified.
+ * @ingroup media_parameters
  */
 int linphone_core_get_download_ptime(LinphoneCore *lc) {
 	return lp_config_get_int(lc->config,"rtp","download_ptime",0);
@@ -1023,6 +1032,7 @@ int linphone_core_get_download_ptime(LinphoneCore *lc) {
  * Set audio packetization time linphone will send (in absence of requirement from peer)
  * A value of 0 stands for the current codec default packetization time.
  *
+ * @ingroup media_parameters
 **/
 void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime){
 	lp_config_set_int(lc->config,"rtp","upload_ptime",ptime);
@@ -1032,6 +1042,8 @@ void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime){
  * Set audio packetization time linphone will send (in absence of requirement from peer)
  * A value of 0 stands for the current codec default packetization time.
  *
+ * 
+ * @ingroup media_parameters
 **/
 int linphone_core_get_upload_ptime(LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","upload_ptime",0);
@@ -1265,6 +1277,7 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
  * structure holding the codec information.
  * It is possible to make copy of the list with ms_list_copy() in order to modify it
  * (such as the order of codecs).
+ * @ingroup media_parameters
 **/
 const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc)
 {
@@ -1278,6 +1291,7 @@ const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc)
  * structure holding the codec information.
  * It is possible to make copy of the list with ms_list_copy() in order to modify it
  * (such as the order of codecs).
+ * @ingroup media_parameters
 **/
 const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc)
 {
@@ -1567,6 +1581,7 @@ void linphone_core_set_audio_port(LinphoneCore *lc, int port)
 
 /**
  * Sets the UDP port range from which to randomly select the port used for audio streaming.
+ * @ingroup media_parameters
  */
 void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port)
 {
@@ -1585,6 +1600,7 @@ void linphone_core_set_video_port(LinphoneCore *lc, int port){
 
 /**
  * Sets the UDP port range from which to randomly select the port used for video streaming.
+ * @ingroup media_parameters
  */
 void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port)
 {
@@ -2054,6 +2070,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 /**
  * Interpret a call destination as supplied by the user, and returns a fully qualified
  * LinphoneAddress.
+ * 
+ * @ingroup call_control
  *
  * A sip address should look like DisplayName <sip:username@domain:port> .
  * Basically this function performs the following tasks
@@ -2498,6 +2516,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 /**
  * Performs a simple call transfer to the specified destination.
  *
+ * @ingroup call_control
  * The remote endpoint is expected to issue a new call to the specified destination.
  * The current call remains active and thus can be later paused or terminated.
 **/
@@ -2528,6 +2547,8 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
  * @param lc linphone core object
  * @param call a running call you want to transfer
  * @param dest a running call whose remote person will receive the transfer
+ * 
+ * @ingroup call_control
  *
  * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
  * The destination call is a call previously established to introduce the transfered person.
@@ -3024,6 +3045,9 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 
 /**
  * Decline a pending incoming call, with a reason.
+ * 
+ * @ingroup call_control
+ * 
  * @param lc the linphone core
  * @param call the LinphoneCall, must be in the IncomingReceived state.
  * @param reason the reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
@@ -3143,6 +3167,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 
 /**
  * Pause all currently running calls.
+ * @ingroup call_control
 **/
 int linphone_core_pause_all_calls(LinphoneCore *lc){
 	const MSList *elem;
@@ -3219,6 +3244,8 @@ static int remote_address_compare(LinphoneCall *call, const LinphoneAddress *rad
  * @param lc
  * @param remote_address
  * @return the LinphoneCall of the call if found
+ * 
+ * @ingroup call_control
  */
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address){
 	LinphoneAddress *raddr=linphone_address_new(remote_address);
@@ -3692,18 +3719,18 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
  * @param path
  * @param lc The LinphoneCore object
  *
- * @ingroup media_parameters
+ * @ingroup initializing
 **/
 void linphone_core_set_root_ca(LinphoneCore *lc,const char *path){
 	sal_set_root_ca(lc->sal, path);
 }
 
 /**
- * Gets the path to a file or folder containing trusted root CAs (PEM format)
+ * Gets the path to a file or folder containing the trusted root CAs (PEM format)
  *
  * @param lc The LinphoneCore object
  *
- * @ingroup media_parameters
+ * @ingroup initializing
 **/
 const char *linphone_core_get_root_ca(LinphoneCore *lc){
 	return sal_get_root_ca(lc->sal);
@@ -3711,6 +3738,8 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 
 /**
  * Specify whether the tls server certificate must be verified when connecting to a SIP/TLS server.
+ * 
+ * @ingroup initializing
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_certificates(lc->sal,yesno);
@@ -3718,6 +3747,7 @@ void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 
 /**
  * Specify whether the tls server certificate common name must be verified when connecting to a SIP/TLS server.
+ * @ingroup initializing
 **/
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_cn(lc->sal,yesno);
@@ -4641,6 +4671,12 @@ void *linphone_core_get_user_data(LinphoneCore *lc){
 	return lc->data;
 }
 
+
+/**
+ * Associate a user pointer to the linphone core.
+ *
+ * @ingroup initializing
+**/
 void linphone_core_set_user_data(LinphoneCore *lc, void *userdata){
 	lc->data=userdata;
 }
@@ -4649,6 +4685,13 @@ int linphone_core_get_mtu(const LinphoneCore *lc){
 	return lc->net_conf.mtu;
 }
 
+/**
+ * Sets the maximum transmission unit size in bytes.
+ * This information is useful for sending RTP packets.
+ * Default value is 1500.
+ * 
+ * @ingroup media_parameters
+**/
 void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 	lc->net_conf.mtu=mtu;
 	if (mtu>0){

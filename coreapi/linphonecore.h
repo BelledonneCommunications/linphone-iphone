@@ -1006,16 +1006,8 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 
 void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
-/**
- * set audio packetization time linphone expect to receive from peer
- * @ingroup media_parameters
- *
- */
+
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
-/**
- * get audio packetization time linphone expect to receive from peer, 0 means unspecified
- * @ingroup media_parameters
- */
 int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
 void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
@@ -1046,7 +1038,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
  */
 #define LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS -1
 /**
- * Get payload type  from mime type and clock rate
+ * Get payload type from mime type and clock rate
  * @ingroup media_parameters
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * @param lc #LinphoneCore object
