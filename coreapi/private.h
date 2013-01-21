@@ -148,6 +148,8 @@ struct _LinphoneCall
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
 	int ping_time;
+	unsigned int remote_session_id;
+	unsigned int remote_session_ver;
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
@@ -293,6 +295,7 @@ void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
+void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
@@ -306,6 +309,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
+bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
 void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg, LinphoneReason error);
 bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
@@ -402,6 +406,7 @@ typedef struct sip_config
 	bool_t register_only_when_network_is_up;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
+	bool_t tcp_tls_keepalive;
 } sip_config_t;
 
 typedef struct rtp_config

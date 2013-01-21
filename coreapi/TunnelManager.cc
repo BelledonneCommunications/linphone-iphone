@@ -107,6 +107,10 @@ void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPor
 }
 
 void TunnelManager::addServer(const char *ip, int port) {
+	if (ip == NULL) {
+		ip = "";
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+	}
 	mServerAddrs.push_back(ServerAddr(ip,port));
 	if (mTunnelClient) mTunnelClient->addServer(ip,port);
 }
@@ -253,7 +257,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		//force transport to udp
 		LCSipTransports lTransport;
 		
-		lTransport.udp_port=15060;
+		lTransport.udp_port=(0xDFFF&random())+1024;
 		lTransport.tcp_port=0;
 		lTransport.tls_port=0;
 		lTransport.dtls_port=0;

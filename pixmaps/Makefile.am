@@ -11,10 +11,10 @@ status-orange.png \
 status-red.png \
 status-offline.png \
 call.png \
-chat.png \
+chat.png active_chat.png\
 chat_message_inprogress.png chat_message_delivered.png chat_message_not_delivered.png\
 contact-orange.png dialer-orange.png history-orange.png\
-startcall-green.png stopcall-red.png addcall-green.png linphone.icns \
+startcall-green.png startcall-small.png stopcall-red.png stopcall-small.png addcall-green.png linphone.icns \
 contact_starred.png contact_unstarred.png \
 speaker.png \
 ok.png \

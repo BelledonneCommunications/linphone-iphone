@@ -344,7 +344,8 @@ static void call_accepted(SalOp *op){
 		linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 		if (call->referer) linphone_core_notify_refer_state(lc,call->referer,call);
 	}
-	if (md && !sal_media_description_empty(md)){
+	if (md && !sal_media_description_empty(md) && !linphone_core_incompatible_security(lc,md)){
+		linphone_call_update_remote_session_id_and_ver(call);
 		if (sal_media_description_has_dir(md,SalStreamSendOnly) ||
 		    sal_media_description_has_dir(md,SalStreamInactive)){
 			if (lc->vtable.display_status){
@@ -393,7 +394,7 @@ static void call_accepted(SalOp *op){
 	}else{
 		/*send a bye*/
 		ms_error("Incompatible SDP offer received in 200Ok, need to abort the call");
-		linphone_core_abort_call(lc,call,_("Incompatible, check codecs..."));
+		linphone_core_abort_call(lc,call,_("Incompatible, check codecs or security settings..."));
 	}
 }
 
@@ -425,6 +426,7 @@ static void call_accept_update(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_update_ice_from_remote_media_description(call,rmd);
 		linphone_core_update_local_media_description_from_ice(call->localdesc,call->ice_session);
 	}
+	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md))

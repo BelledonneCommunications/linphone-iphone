@@ -53,10 +53,8 @@ linphone_SOURCES+=	\
 			setupwizard.c
 endif
 
-linphone_LDADD=$(ORTP_LIBS) \
-		$(MEDIASTREAMER_LIBS) \
-		$(top_builddir)/coreapi/liblinphone.la \
-			$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) 
+linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS)
 
 
 if BUILD_WIN32

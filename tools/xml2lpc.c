@@ -78,7 +78,7 @@ static void xml2lpc_log(xml2lpc_context *xmlCtx, int level, const char *fmt, ...
  	va_end(args);
 }
 
-static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {	
+static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->errorBuffer);
 	va_list args;	
@@ -87,7 +87,7 @@ static void xml2lpc_genericxml_error(void *ctx, const char *fmt, ...) {
 	va_end(args);
 }
 
-static void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {	
+static void xml2lpc_genericxml_warning(void *ctx, const char *fmt, ...) {
 	xml2lpc_context *xmlCtx = (xml2lpc_context *)ctx;
 	int sl = strlen(xmlCtx->warningBuffer);
 	va_list args;	
@@ -214,11 +214,11 @@ static int processDoc(xmlNode *node, xml2lpc_context *ctx) {
 	return 0;
 }
 
-static int internal_convert_xml2lpc(xmlDoc *doc, xml2lpc_context *ctx) {
+static int internal_convert_xml2lpc(xml2lpc_context *ctx) {
 	xml2lpc_log(ctx, XML2LPC_DEBUG, "Parse started");
-	xmlNode *rootNode = xmlDocGetRootElement(doc);
+	xmlNode *rootNode = xmlDocGetRootElement(ctx->doc);
 	//dumpNodes(0, rootNode, cbf, ctx);
-        int ret = processDoc(rootNode, ctx);
+	int ret = processDoc(rootNode, ctx);
 	xml2lpc_log(ctx, XML2LPC_DEBUG, "Parse ended ret:%d", ret);
 	return ret;
 }
@@ -230,10 +230,10 @@ int xml2lpc_validate(xml2lpc_context *xmlCtx) {
 	validCtx = xmlSchemaNewValidCtxt(xmlSchemaParse(parserCtx));
 	xmlSchemaSetValidErrors(validCtx, xml2lpc_genericxml_error, xml2lpc_genericxml_warning, xmlCtx);
 	int ret =  xmlSchemaValidateDoc(validCtx, xmlCtx->doc);
-	if(ret >0) {
+	if(ret > 0) {
 		xml2lpc_log(xmlCtx, XML2LPC_WARNING, "%s", xmlCtx->warningBuffer);
 		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "%s", xmlCtx->errorBuffer);
-	} else {
+	} else if(ret < 0) {
 		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "Internal error");
 	}
 	xmlSchemaFreeValidCtxt(validCtx);
@@ -243,7 +243,7 @@ int xml2lpc_validate(xml2lpc_context *xmlCtx) {
 int xml2lpc_convert(xml2lpc_context *xmlCtx, LpConfig *lpc) {
 	xml2lpc_context_clear_logs(xmlCtx);
 	xmlCtx->lpc = lpc;
-	return internal_convert_xml2lpc(xmlCtx->doc, xmlCtx);
+	return internal_convert_xml2lpc(xmlCtx);
 }
 
 int xml2lpc_set_xml_file(xml2lpc_context* xmlCtx, const char *filename) {

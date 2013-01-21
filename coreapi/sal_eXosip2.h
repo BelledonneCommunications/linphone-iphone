@@ -30,6 +30,7 @@ int sdp_to_media_description(sdp_message_t *sdp, SalMediaDescription *desc);
 
 struct Sal{
 	SalCallbacks callbacks;
+	SalTransport transport;
 	MSList *calls; /*MSList of SalOp */
 	MSList *registers;/*MSList of SalOp */
 	MSList *out_subscribes;/*MSList of SalOp */
@@ -48,8 +49,10 @@ struct Sal{
 	bool_t use_101;
 	bool_t reuse_authorization;
 	bool_t verify_server_certs;
+	bool_t verify_server_cn;
 	bool_t expire_old_contact;
 	bool_t add_dates;
+	bool_t tcp_tls_keepalive;
 };
 
 struct SalOp{

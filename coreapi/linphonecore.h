@@ -1209,6 +1209,7 @@ void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
+void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_root_ca(LinphoneCore *lc);
 void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
@@ -1429,7 +1430,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
  */
 bool_t linphone_core_tunnel_available(void);
 
-typedef struct LinphoneTunnel LinphoneTunnel;
+typedef struct _LinphoneTunnel LinphoneTunnel;
 /**
 * get tunnel instance if available
 */

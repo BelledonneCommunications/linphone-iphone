@@ -1667,18 +1667,20 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalAudio);
 	if (old_stream && new_stream) {
 		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalAudio);
-		int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
-		if (crypto_idx >= 0) {
-			audio_stream_enable_srtp(call->audiostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
-			call->audiostream_encrypted = TRUE;
-		} else {
-			ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
-			call->audiostream_encrypted = FALSE;
-		}
-		for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
-			old_stream->crypto[i].tag = new_stream->crypto[i].tag;
-			old_stream->crypto[i].algo = new_stream->crypto[i].algo;
-			strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+		if (local_st_desc) {
+			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
+			if (crypto_idx >= 0) {
+				audio_stream_enable_srtp(call->audiostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
+				call->audiostream_encrypted = TRUE;
+			} else {
+				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
+				call->audiostream_encrypted = FALSE;
+			}
+			for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
+				old_stream->crypto[i].tag = new_stream->crypto[i].tag;
+				old_stream->crypto[i].algo = new_stream->crypto[i].algo;
+				strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+			}
 		}
 	}
 
@@ -1687,21 +1689,31 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalVideo);
 	if (old_stream && new_stream) {
 		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, SalProtoRtpSavp, SalVideo);
-		int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
-		if (crypto_idx >= 0) {
-			video_stream_enable_strp(call->videostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
-			call->videostream_encrypted = TRUE;
-		} else {
-			ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
-			call->videostream_encrypted = FALSE;
-		}
-		for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
-			old_stream->crypto[i].tag = new_stream->crypto[i].tag;
-			old_stream->crypto[i].algo = new_stream->crypto[i].algo;
-			strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+		if (local_st_desc) {
+			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
+			if (crypto_idx >= 0) {
+				video_stream_enable_strp(call->videostream, new_stream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key, new_stream->crypto[0].master_key);
+				call->videostream_encrypted = TRUE;
+			} else {
+				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
+				call->videostream_encrypted = FALSE;
+			}
+			for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
+				old_stream->crypto[i].tag = new_stream->crypto[i].tag;
+				old_stream->crypto[i].algo = new_stream->crypto[i].algo;
+				strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
+			}
 		}
 	}
 #endif
+}
+
+void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call) {
+	SalMediaDescription *remote_desc = sal_call_get_remote_media_description(call->op);
+	if (remote_desc) {
+		call->remote_session_id = remote_desc->session_id;
+		call->remote_session_ver = remote_desc->session_ver;
+	}
 }
 
 void linphone_call_delete_ice_session(LinphoneCall *call){

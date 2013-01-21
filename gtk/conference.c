@@ -95,7 +95,7 @@ void linphone_gtk_set_in_conference(LinphoneCall *call){
 	if(conf_frame==NULL){
 		conf_frame=linphone_gtk_create_widget("main","conf_frame");
 		GtkWidget *button_conf=linphone_gtk_get_widget(conf_frame,"terminate_conf");
-		GtkWidget *image=create_pixmap("stopcall-red.png");
+		GtkWidget *image=create_pixmap("stopcall-small.png");
 		gtk_button_set_image(GTK_BUTTON(button_conf),image);
 		g_signal_connect_swapped(G_OBJECT(button_conf),"clicked",(GCallback)linphone_gtk_terminate_call,NULL);
 		g_object_set_data(G_OBJECT(mw),"conf_frame",(gpointer)conf_frame);

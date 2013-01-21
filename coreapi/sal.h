@@ -362,6 +362,7 @@ ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 /**
  * returns keepalive period in ms
  * 0 desactiaved
@@ -378,6 +379,7 @@ void sal_use_101(Sal *ctx, bool_t use_101);
 void sal_set_root_ca(Sal* ctx, const char* rootCa);
 const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
+void sal_verify_server_cn(Sal *ctx, bool_t verify);
 
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);

@@ -65,6 +65,7 @@ static void linphone_core_run_hooks(LinphoneCore *lc);
 static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
+
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
@@ -569,6 +570,7 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE));
 #endif
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
+	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
 	sal_set_dscp(lc->sal,linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
@@ -636,7 +638,8 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
-	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
+	lc->sip_conf.tcp_tls_keepalive=lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
+	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
@@ -2579,6 +2582,19 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 	return FALSE;
 }
 
+bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
+	if (linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP){
+		int i;
+		for(i=0;i<md->nstreams;i++){
+			SalStreamDescription *sd=&md->streams[i];
+			if (sd->proto!=SalProtoRtpSavp){
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	char *barmesg;
 	char *tmp;
@@ -2590,10 +2606,12 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_make_local_media_description(lc,call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
-	if (md && sal_media_description_empty(md)){
-		sal_call_decline(call->op,SalReasonMedia,NULL);
-		linphone_call_unref(call);
-		return;
+	if (md){
+		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
+			sal_call_decline(call->op,SalReasonMedia,NULL);
+			linphone_call_unref(call);
+			return;
+		}
 	}
 
 	from_parsed=linphone_address_new(sal_op_get_from(call->op));
@@ -2752,6 +2770,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
 		}
 		linphone_core_update_local_media_description_from_ice(call->localdesc, call->ice_session);
 	}
+	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
@@ -2781,6 +2800,8 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call)
  * @return 0 if sucessful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
+	SalMediaDescription *remote_desc;
+	bool_t keep_sdp_version;
 #ifdef VIDEO_ENABLED
 	bool_t old_has_video = call->params.has_video;
 #endif
@@ -2788,6 +2809,15 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 		         linphone_call_state_to_string(call->state));
 		return -1;
+	}
+	remote_desc = sal_call_get_remote_media_description(call->op);
+	keep_sdp_version = lp_config_get_int(lc->config, "sip", "keep_sdp_version", 0);
+	if (keep_sdp_version &&(remote_desc->session_id == call->remote_session_id) && (remote_desc->session_ver == call->remote_session_ver)) {
+		/* Remote has sent an INVITE with the same SDP as before, so send a 200 OK with the same SDP as before. */
+		ms_warning("SDP version has not changed, send same SDP as before.");
+		sal_call_accept(call->op);
+		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
+		return 0;
 	}
 	if (params==NULL){
 		call->params.has_video=lc->video_policy.automatically_accept || call->current_params.has_video;
@@ -2802,11 +2832,11 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 		ms_warning("Video isn't supported in conference");
 		call->params.has_video = FALSE;
 	}
-	call->params.has_video &= linphone_core_media_description_contains_video_stream(sal_call_get_remote_media_description(call->op));
+	call->params.has_video &= linphone_core_media_description_contains_video_stream(remote_desc);
 	call->camera_active=call->params.has_video;
 	linphone_call_make_local_media_description(lc,call);
 	if (call->ice_session != NULL) {
-		linphone_core_update_ice_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
+		linphone_core_update_ice_from_remote_media_description(call, remote_desc);
 #ifdef VIDEO_ENABLED
 		if ((call->ice_session != NULL) &&!ice_session_candidates_gathered(call->ice_session)) {
 			if ((call->params.has_video) && (call->params.has_video != old_has_video)) {
@@ -2933,6 +2963,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
+	linphone_call_update_remote_session_id_and_ver(call);
 	sal_call_accept(call->op);
 	if (lc->vtable.display_status!=NULL)
 		lc->vtable.display_status(lc,_("Connected."));
@@ -3714,6 +3745,13 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 **/
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 	sal_verify_server_certificates(lc->sal,yesno);
+}
+
+/**
+ * Specify whether the tls server certificate common name must be verified when connecting to a SIP/TLS server.
+**/
+void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
+	sal_verify_server_cn(lc->sal,yesno);
 }
 
 static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
@@ -5173,6 +5211,7 @@ const char *linphone_error_to_string(LinphoneReason err){
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	if (enable > 0) {
+		sal_use_tcp_tls_keepalive(lc->sal,lc->sip_conf.tcp_tls_keepalive);
 		sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	} else {
 		sal_set_keepalive_period(lc->sal,0);

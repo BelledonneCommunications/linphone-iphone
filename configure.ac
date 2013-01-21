@@ -33,13 +33,12 @@ AM_INIT_AUTOMAKE
 AC_SUBST([LIBTOOL_DEPS])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
 AC_ISC_POSIX
 AC_PROG_CC
 AC_PROG_CXX
 AC_C_INLINE
-AM_PROG_CC_STDC
 AC_HEADER_STDC
 AM_PROG_CC_C_O
 AC_CHECK_PROGS(MD5SUM,[md5sum md5])
@@ -85,6 +84,19 @@ IT_PROG_INTLTOOL([0.40], [no-xml])
 AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 dnl Initialize libtool
 LT_INIT([win32-dll shared disable-static])
+dnl Enable library dependencies linking
+AC_ARG_ENABLE(deplibs-link,
+      [AS_HELP_STRING([--disable-deplibs-link ], [Disable library dependencies linking (might break builds)])],
+      [enable_deplibs_linking="$enableval"],
+      [enable_deplibs_linking="yes"])
+AC_MSG_NOTICE([Enable library dependencies linking: $enable_interlib_deps])
+if test "${enable_deplibs_linking}" == "yes"; then
+      link_all_deplibs=yes
+      link_all_deplibs_CXX=yes
+else
+      link_all_deplibs=no
+      link_all_deplibs_CXX=no
+fi
 
 AC_CONFIG_COMMANDS([libtool-hacking],[
 if test "$mingw_found" = "yes" ; then
@@ -369,6 +381,17 @@ if test "$build_ssl" = "true"; then
 fi
 dnl setup flags for exosip library
 LP_SETUP_EXOSIP
+
+dnl check exosip support of DSCP in exosip
+AC_MSG_CHECKING([for DSCP support in exosip])
+AC_TRY_COMPILE([#include <eXosip2/eXosip.h>],
+[int dscp=0;eXosip_set_option(EXOSIP_OPT_SET_DSCP,&dscp);],
+has_exosip_dscp=yes,has_exosip_dscp=no)
+AC_MSG_RESULT($has_exosip_dscp)
+if test "$has_exosip_dscp" = "yes" ; then
+    AC_DEFINE( HAVE_EXOSIP_DSCP, 1, [Define if exosip dscp available] )
+fi
+
 
 if test "$console_ui" = "true" ; then
 dnl check gnu readline

@@ -895,22 +895,22 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 void
 print_usage (int exit_status)
 {
-	fprintf (stdout, "\n\
-usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n\
-       linphonec -v\n\
-\n\
-  -b  file             specify path of readonly factory configuration file.\n\
-  -c  file             specify path of configuration file.\n\
-  -d  level            be verbose. 0 is no output. 6 is all output\n\
-  -l  logfile          specify the log file for your SIP phone\n\
-  -s  sipaddress       specify the sip call to do at startup\n\
-  -a                   enable auto answering for incoming calls\n\
-  -V                   enable video features globally (disabled by default)\n\
-  -C                   enable video capture only (disabled by default)\n\
-  -D                   enable video display only (disabled by default)\n\
-  -S                   show general state messages (disabled by default)\n\
-  --wid  windowid      force embedding of video window into provided windowid (disabled by default)\n\
-  -v or --version      display version and exits.\n");
+	fprintf (stdout, "\n"
+"usage: linphonec [-c file] [-s sipaddr] [-a] [-V] [-d level ] [-l logfile]\n"
+       "linphonec -v\n"
+"\n"
+"  -b  file             specify path of readonly factory configuration file.\n"
+"  -c  file             specify path of configuration file.\n"
+"  -d  level            be verbose. 0 is no output. 6 is all output\n"
+"  -l  logfile          specify the log file for your SIP phone\n"
+"  -s  sipaddress       specify the sip call to do at startup\n"
+"  -a                   enable auto answering for incoming calls\n"
+"  -V                   enable video features globally (disabled by default)\n"
+"  -C                   enable video capture only (disabled by default)\n"
+"  -D                   enable video display only (disabled by default)\n"
+"  -S                   show general state messages (disabled by default)\n"
+"  --wid  windowid      force embedding of video window into provided windowid (disabled by default)\n"
+"  -v or --version      display version and exits.\n");
 
   	exit(exit_status);
 }

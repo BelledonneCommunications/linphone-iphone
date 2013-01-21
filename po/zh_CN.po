@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-05 12:41+0100\n"
+"POT-Creation-Date: 2013-01-08 10:35+0100\n"
 "PO-Revision-Date: 2011-01-08 23:51+0800\n"
 "Last-Translator: Aron Xu <happyaron.xu@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -18,30 +18,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../gtk/calllogs.c:71
+#: ../gtk/calllogs.c:82
+#, fuzzy
+msgid "Aborted"
+msgstr "中断"
+
+#: ../gtk/calllogs.c:85
+#, fuzzy
+msgid "Missed"
+msgstr "丢失"
+
+#: ../gtk/calllogs.c:88
+#, fuzzy
+msgid "Declined"
+msgstr "拒绝"
+
+#: ../gtk/calllogs.c:94
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] ""
 
-#: ../gtk/calllogs.c:74
+#: ../gtk/calllogs.c:97
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] ""
 
-#: ../gtk/calllogs.c:77
+#: ../gtk/calllogs.c:100
 #, c-format
 msgid ""
 "<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s %s\t"
 msgstr ""
 
-#: ../gtk/calllogs.c:79
+#: ../gtk/calllogs.c:102
 msgid "n/a"
 msgstr ""
 
-#: ../gtk/conference.c:33 ../gtk/incall_view.c:183
+#: ../gtk/calllogs.c:105
+#, c-format
+msgid ""
+"<big><b>%s</b></big>\t<small><i>%s</i></small>\t\n"
+"%s\t%s"
+msgstr ""
+
+#: ../gtk/conference.c:33 ../gtk/main.ui.h:13
 msgid "Conference"
 msgstr ""
 
@@ -55,43 +77,42 @@ msgstr "静音"
 msgid "Couldn't find pixmap file: %s"
 msgstr "无法打开位图文件：%s"
 
-#: ../gtk/chat.c:27
-#, c-format
-msgid "Chat with %s"
-msgstr "与 %s 通话"
-
-#: ../gtk/main.c:83
+#: ../gtk/main.c:89
 msgid "log to stdout some debug information while running."
 msgstr "运行时向标准输出记录调试信息。"
 
-#: ../gtk/main.c:90
+#: ../gtk/main.c:96
 msgid "path to a file to write logs into."
 msgstr ""
 
-#: ../gtk/main.c:97
+#: ../gtk/main.c:103
+msgid "Start linphone with video disabled."
+msgstr ""
+
+#: ../gtk/main.c:110
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "启动到系统托盘，不显示主界面。"
 
-#: ../gtk/main.c:104
+#: ../gtk/main.c:117
 msgid "address to call right now"
 msgstr "现在呼叫的地址"
 
-#: ../gtk/main.c:111
+#: ../gtk/main.c:124
 msgid "if set automatically answer incoming calls"
 msgstr "是否设置呼叫自动应答"
 
-#: ../gtk/main.c:118
+#: ../gtk/main.c:131
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
 msgstr "指定工作目录(应为安装目录例如 C:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:464
+#: ../gtk/main.c:498
 #, c-format
 msgid "Call with %s"
 msgstr "与 %s 通话"
 
-#: ../gtk/main.c:815
+#: ../gtk/main.c:871
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -103,63 +124,68 @@ msgstr ""
 "您是否允许他看到您的在线状态或者将它加为您的联系人允许?\n"
 "如果您回答否，则会将该人临时性的放入黑名单"
 
-#: ../gtk/main.c:893
+#: ../gtk/main.c:948
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr "请输入 %s@%s 的密码："
 
-#: ../gtk/main.c:993
+#: ../gtk/main.c:1051
 #, fuzzy
 msgid "Call error"
 msgstr "呼叫历史"
 
-#: ../gtk/main.c:996 ../coreapi/linphonecore.c:2406
+#: ../gtk/main.c:1054 ../coreapi/linphonecore.c:2949
 msgid "Call ended"
 msgstr "呼叫结束"
 
-#: ../gtk/main.c:999 ../coreapi/linphonecore.c:199
+#: ../gtk/main.c:1057 ../coreapi/linphonecore.c:244
 msgid "Incoming call"
 msgstr "呼入"
 
-#: ../gtk/main.c:1001 ../gtk/incall_view.c:292 ../gtk/main.ui.h:20
+#: ../gtk/main.c:1059 ../gtk/incall_view.c:451 ../gtk/main.ui.h:6
 msgid "Answer"
 msgstr ""
 
-#: ../gtk/main.c:1003 ../gtk/main.ui.h:29
+#: ../gtk/main.c:1061 ../gtk/main.ui.h:7
 msgid "Decline"
 msgstr "拒绝"
 
-#: ../gtk/main.c:1009
+#: ../gtk/main.c:1067
 #, fuzzy
 msgid "Call paused"
 msgstr "中断"
 
-#: ../gtk/main.c:1009
+#: ../gtk/main.c:1067
 #, c-format
 msgid "<span size=\"large\">by %s</span>"
 msgstr ""
 
-#: ../gtk/main.c:1165
+#: ../gtk/main.c:1116
+#, c-format
+msgid "%s proposed to start video. Do you accept ?"
+msgstr ""
+
+#: ../gtk/main.c:1278
 msgid "Website link"
 msgstr "网站"
 
-#: ../gtk/main.c:1205
+#: ../gtk/main.c:1318
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - 互联网视频电话"
 
-#: ../gtk/main.c:1295
+#: ../gtk/main.c:1410
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (默认)"
 
-#: ../gtk/main.c:1566 ../coreapi/callbacks.c:700
+#: ../gtk/main.c:1714 ../coreapi/callbacks.c:774
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:1576
+#: ../gtk/main.c:1724
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -167,162 +193,175 @@ msgstr ""
 "未在此计算机上检测到声卡。\n"
 "您无法发送或接收音频呼叫。"
 
-#: ../gtk/main.c:1663
+#: ../gtk/main.c:1833
 msgid "A free SIP video-phone"
 msgstr "免费的 SIP 视频电话"
 
-#: ../gtk/friendlist.c:203
+#: ../gtk/friendlist.c:335
 msgid "Add to addressbook"
 msgstr ""
 
-#: ../gtk/friendlist.c:258 ../gtk/propertybox.c:296 ../gtk/contact.ui.h:3
-msgid "Name"
-msgstr "名称"
-
-#: ../gtk/friendlist.c:271
+#: ../gtk/friendlist.c:509
 msgid "Presence status"
 msgstr "在线状态"
 
-#: ../gtk/friendlist.c:308
+#: ../gtk/friendlist.c:526 ../gtk/propertybox.c:362 ../gtk/contact.ui.h:1
+msgid "Name"
+msgstr "名称"
+
+#: ../gtk/friendlist.c:538
+#, fuzzy
+msgid "Call"
+msgstr "呼叫 %s"
+
+#: ../gtk/friendlist.c:543
+msgid "Chat"
+msgstr ""
+
+#: ../gtk/friendlist.c:573
 #, c-format
 msgid "Search in %s directory"
 msgstr "在 %s 目录中查找 "
 
-#: ../gtk/friendlist.c:568
+#: ../gtk/friendlist.c:730
 msgid "Invalid sip contact !"
 msgstr "无效的 SIP 联系人！"
 
-#: ../gtk/friendlist.c:613
+#: ../gtk/friendlist.c:775
 #, c-format
 msgid "Call %s"
 msgstr "呼叫 %s"
 
-#: ../gtk/friendlist.c:614
+#: ../gtk/friendlist.c:776
 #, c-format
 msgid "Send text to %s"
 msgstr "发送消息给 %s"
 
-#: ../gtk/friendlist.c:615
+#: ../gtk/friendlist.c:777
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "编辑联系人 %s"
 
-#: ../gtk/friendlist.c:616
+#: ../gtk/friendlist.c:778
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "删除联系人 %s"
 
-#: ../gtk/friendlist.c:658
+#: ../gtk/friendlist.c:820
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "从 %s 目录增加联系人 "
 
-#: ../gtk/propertybox.c:302
+#: ../gtk/propertybox.c:368
 msgid "Rate (Hz)"
 msgstr "采样率(Hz)"
 
-#: ../gtk/propertybox.c:308
+#: ../gtk/propertybox.c:374
 msgid "Status"
 msgstr "状态"
 
-#: ../gtk/propertybox.c:314
+#: ../gtk/propertybox.c:380
 msgid "Min bitrate (kbit/s)"
 msgstr "最小比特率(kbit/s)"
 
-#: ../gtk/propertybox.c:321
+#: ../gtk/propertybox.c:387
 msgid "Parameters"
 msgstr "参数"
 
-#: ../gtk/propertybox.c:364 ../gtk/propertybox.c:507
+#: ../gtk/propertybox.c:430 ../gtk/propertybox.c:573
 msgid "Enabled"
 msgstr "启用"
 
-#: ../gtk/propertybox.c:366 ../gtk/propertybox.c:507
+#: ../gtk/propertybox.c:432 ../gtk/propertybox.c:573
 msgid "Disabled"
 msgstr "禁用"
 
-#: ../gtk/propertybox.c:553
+#: ../gtk/propertybox.c:619
 msgid "Account"
 msgstr "帐户"
 
-#: ../gtk/propertybox.c:693
+#: ../gtk/propertybox.c:759
 msgid "English"
 msgstr "英语"
 
-#: ../gtk/propertybox.c:694
+#: ../gtk/propertybox.c:760
 msgid "French"
 msgstr "法语"
 
-#: ../gtk/propertybox.c:695
+#: ../gtk/propertybox.c:761
 msgid "Swedish"
 msgstr "瑞典语"
 
-#: ../gtk/propertybox.c:696
+#: ../gtk/propertybox.c:762
 msgid "Italian"
 msgstr "意大利语"
 
-#: ../gtk/propertybox.c:697
+#: ../gtk/propertybox.c:763
 msgid "Spanish"
 msgstr "西班牙语"
 
-#: ../gtk/propertybox.c:698
+#: ../gtk/propertybox.c:764
 msgid "Brazilian Portugese"
 msgstr "巴西葡萄牙语"
 
-#: ../gtk/propertybox.c:699
+#: ../gtk/propertybox.c:765
 msgid "Polish"
 msgstr "波兰语"
 
-#: ../gtk/propertybox.c:700
+#: ../gtk/propertybox.c:766
 msgid "German"
 msgstr "德语"
 
-#: ../gtk/propertybox.c:701
+#: ../gtk/propertybox.c:767
 msgid "Russian"
 msgstr "俄语"
 
-#: ../gtk/propertybox.c:702
+#: ../gtk/propertybox.c:768
 msgid "Japanese"
 msgstr "日语"
 
-#: ../gtk/propertybox.c:703
+#: ../gtk/propertybox.c:769
 msgid "Dutch"
 msgstr "荷兰语"
 
-#: ../gtk/propertybox.c:704
+#: ../gtk/propertybox.c:770
 msgid "Hungarian"
 msgstr "匈牙利语"
 
-#: ../gtk/propertybox.c:705
+#: ../gtk/propertybox.c:771
 msgid "Czech"
 msgstr "捷克语"
 
-#: ../gtk/propertybox.c:706
+#: ../gtk/propertybox.c:772
 msgid "Chinese"
 msgstr "中文"
 
-#: ../gtk/propertybox.c:707
+#: ../gtk/propertybox.c:773
 msgid "Traditional Chinese"
 msgstr ""
 
-#: ../gtk/propertybox.c:708
+#: ../gtk/propertybox.c:774
 msgid "Norwegian"
 msgstr ""
 
-#: ../gtk/propertybox.c:765
+#: ../gtk/propertybox.c:775
+msgid "Hebrew"
+msgstr ""
+
+#: ../gtk/propertybox.c:842
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "您需要重启 linphone 以使语言选择生效。"
 
-#: ../gtk/propertybox.c:835
+#: ../gtk/propertybox.c:912
 msgid "None"
 msgstr ""
 
-#: ../gtk/propertybox.c:839
+#: ../gtk/propertybox.c:916
 msgid "SRTP"
 msgstr ""
 
-#: ../gtk/propertybox.c:845
+#: ../gtk/propertybox.c:922
 msgid "ZRTP"
 msgstr ""
 
@@ -365,7 +404,7 @@ msgid "Found %i contact"
 msgid_plural "Found %i contacts"
 msgstr[0] "找到 %i 联系方式"
 
-#: ../gtk/setupwizard.c:25
+#: ../gtk/setupwizard.c:33
 msgid ""
 "Welcome !\n"
 "This assistant will help you to use a SIP account for your calls."
@@ -373,171 +412,275 @@ msgstr ""
 "欢迎使用 Linphone！\n"
 "设置向导将帮助您配置打网络电话的 SIP 帐户。"
 
-#: ../gtk/setupwizard.c:34
-msgid "Create an account by choosing a username"
+#: ../gtk/setupwizard.c:42
+#, fuzzy
+msgid "Create an account on linphone.org"
 msgstr "通过选择一个用户名创建一个新的帐户"
 
-#: ../gtk/setupwizard.c:35
-msgid "I have already an account and just want to use it"
+#: ../gtk/setupwizard.c:43
+#, fuzzy
+msgid "I have already a linphone.org account and I just want to use it"
 msgstr "我已经有一个帐户，并想使用原来的帐户"
 
-#: ../gtk/setupwizard.c:53
-msgid "Please choose a username:"
-msgstr "请选择用户名："
+#: ../gtk/setupwizard.c:44
+#, fuzzy
+msgid "I have already a sip account and I just want to use it"
+msgstr "我已经有一个帐户，并想使用原来的帐户"
 
-#: ../gtk/setupwizard.c:54
+#: ../gtk/setupwizard.c:84
+msgid "Enter your linphone.org username"
+msgstr ""
+
+#: ../gtk/setupwizard.c:91
 msgid "Username:"
 msgstr "用户名:"
 
-#: ../gtk/setupwizard.c:92
-#, c-format
-msgid "Checking if '%s' is available..."
-msgstr "检查 %s 是否可用..."
+#: ../gtk/setupwizard.c:93 ../gtk/password.ui.h:4
+msgid "Password:"
+msgstr "密码："
 
-#: ../gtk/setupwizard.c:97 ../gtk/setupwizard.c:164
-msgid "Please wait..."
-msgstr "请稍候..."
+#: ../gtk/setupwizard.c:113
+msgid "Enter your account informations"
+msgstr ""
 
-#: ../gtk/setupwizard.c:101
-msgid "Sorry this username already exists. Please try a new one."
-msgstr "对不起，该用户已经存在，请换一个尝试。"
+#: ../gtk/setupwizard.c:120
+#, fuzzy
+msgid "Username*"
+msgstr "用户名"
 
-#: ../gtk/setupwizard.c:103 ../gtk/setupwizard.c:168
-msgid "Ok !"
-msgstr "成功！"
+#: ../gtk/setupwizard.c:121
+#, fuzzy
+msgid "Password*"
+msgstr "密码"
 
-#: ../gtk/setupwizard.c:106 ../gtk/setupwizard.c:171
-msgid "Communication problem, please try again later."
-msgstr "连接错误，请稍后重试。"
+#: ../gtk/setupwizard.c:124
+msgid "Domain*"
+msgstr ""
 
-#: ../gtk/setupwizard.c:134
+#: ../gtk/setupwizard.c:125
+msgid "Proxy"
+msgstr ""
+
+#: ../gtk/setupwizard.c:297
+msgid "(*) Required fields"
+msgstr ""
+
+#: ../gtk/setupwizard.c:298
+#, fuzzy
+msgid "Username: (*)"
+msgstr "用户名:"
+
+#: ../gtk/setupwizard.c:300
+#, fuzzy
+msgid "Password: (*)"
+msgstr "密码："
+
+#: ../gtk/setupwizard.c:302
+msgid "Email: (*)"
+msgstr ""
+
+#: ../gtk/setupwizard.c:304
+msgid "Confirm your password: (*)"
+msgstr ""
+
+#: ../gtk/setupwizard.c:368
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr ""
+
+#: ../gtk/setupwizard.c:379
 msgid "Thank you. Your account is now configured and ready for use."
 msgstr "谢谢，您的帐户已经配置完毕，可以使用。"
 
-#: ../gtk/setupwizard.c:228
+#: ../gtk/setupwizard.c:387
+msgid ""
+"Please validate your account by clicking on the link we just sent you by "
+"email.\n"
+"Then come back here and press Next button."
+msgstr ""
+
+#: ../gtk/setupwizard.c:554
 msgid "Welcome to the account setup assistant"
 msgstr "欢迎使用帐户设置向导"
 
-#: ../gtk/setupwizard.c:232
+#: ../gtk/setupwizard.c:559
 msgid "Account setup assistant"
 msgstr "帐户设置向导"
 
-#: ../gtk/setupwizard.c:236
-msgid "Choosing a username"
-msgstr "选择用户名："
+#: ../gtk/setupwizard.c:565
+#, fuzzy
+msgid "Configure your account (step 1/1)"
+msgstr "配置 SIP 帐户"
 
-#: ../gtk/setupwizard.c:240
-msgid "Verifying"
-msgstr "验证中"
+#: ../gtk/setupwizard.c:570
+msgid "Enter your sip username (step 1/1)"
+msgstr ""
 
-#: ../gtk/setupwizard.c:244
-msgid "Confirmation"
-msgstr "确认"
+#: ../gtk/setupwizard.c:574
+msgid "Enter account information (step 1/2)"
+msgstr ""
 
-#: ../gtk/setupwizard.c:249
-msgid "Creating your account"
-msgstr "正在创建您的帐户"
+#: ../gtk/setupwizard.c:583
+msgid "Validation (step 2/2)"
+msgstr ""
 
-#: ../gtk/setupwizard.c:253
-msgid "Now ready !"
-msgstr "就绪！"
+#: ../gtk/setupwizard.c:588
+msgid "Error"
+msgstr ""
 
-#: ../gtk/incall_view.c:69
+#: ../gtk/setupwizard.c:592
+#, fuzzy
+msgid "Terminating"
+msgstr "终止呼叫"
+
+#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:90
 #, fuzzy, c-format
 msgid "Call #%i"
 msgstr "呼叫 %s"
 
-#: ../gtk/incall_view.c:127
+#: ../gtk/incall_view.c:150
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr ""
 
-#: ../gtk/incall_view.c:155
-msgid "Transfer"
+#: ../gtk/incall_view.c:209 ../gtk/incall_view.c:212
+#, fuzzy
+msgid "Not used"
+msgstr "未找到"
+
+#: ../gtk/incall_view.c:219
+msgid "ICE not activated"
 msgstr ""
 
-#: ../gtk/incall_view.c:271
+#: ../gtk/incall_view.c:221
+#, fuzzy
+msgid "ICE failed"
+msgstr "ICE 过滤器"
+
+#: ../gtk/incall_view.c:223
+msgid "ICE in progress"
+msgstr ""
+
+#: ../gtk/incall_view.c:225
+msgid "Going through one or more NATs"
+msgstr ""
+
+#: ../gtk/incall_view.c:227
+#, fuzzy
+msgid "Direct"
+msgstr "已重定向"
+
+#: ../gtk/incall_view.c:229
+msgid "Through a relay server"
+msgstr ""
+
+#: ../gtk/incall_view.c:238 ../gtk/incall_view.c:242
+#, c-format
+msgid ""
+"download: %f\n"
+"upload: %f (kbit/s)"
+msgstr ""
+
+#: ../gtk/incall_view.c:341 ../gtk/main.ui.h:12
+msgid "Hang up"
+msgstr ""
+
+#: ../gtk/incall_view.c:430
 msgid "<b>Calling...</b>"
 msgstr "<b>正在呼叫...</b>"
 
-#: ../gtk/incall_view.c:274 ../gtk/incall_view.c:482
+#: ../gtk/incall_view.c:433 ../gtk/incall_view.c:646
 msgid "00::00::00"
 msgstr "00::00::00"
 
-#: ../gtk/incall_view.c:285
+#: ../gtk/incall_view.c:444
 #, fuzzy
 msgid "<b>Incoming call</b>"
 msgstr "呼入"
 
-#: ../gtk/incall_view.c:322
+#: ../gtk/incall_view.c:481
 msgid "good"
 msgstr ""
 
-#: ../gtk/incall_view.c:324
+#: ../gtk/incall_view.c:483
 msgid "average"
 msgstr ""
 
-#: ../gtk/incall_view.c:326
+#: ../gtk/incall_view.c:485
 msgid "poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:328
+#: ../gtk/incall_view.c:487
 msgid "very poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:330
+#: ../gtk/incall_view.c:489
 msgid "too bad"
 msgstr ""
 
-#: ../gtk/incall_view.c:331 ../gtk/incall_view.c:347
+#: ../gtk/incall_view.c:490 ../gtk/incall_view.c:506
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:447
+#: ../gtk/incall_view.c:605
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:453
+#: ../gtk/incall_view.c:611
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:459
+#: ../gtk/incall_view.c:617
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:459 ../gtk/main.ui.h:49
+#: ../gtk/incall_view.c:617 ../gtk/main.ui.h:5
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:480
+#: ../gtk/incall_view.c:641
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:480
+#: ../gtk/incall_view.c:641
 #, fuzzy
 msgid "<b>In call</b>"
 msgstr "<b>正在呼叫</b>"
 
-#: ../gtk/incall_view.c:499
+#: ../gtk/incall_view.c:669
 #, fuzzy
 msgid "<b>Paused call</b>"
 msgstr "<b>正在呼叫</b>"
 
-#: ../gtk/incall_view.c:511
+#: ../gtk/incall_view.c:682
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "%02i::%02i::%02i"
 
-#: ../gtk/incall_view.c:527
+#: ../gtk/incall_view.c:699
 msgid "<b>Call ended.</b>"
 msgstr "<b>通话结束。</b>"
 
-#: ../gtk/incall_view.c:584
+#: ../gtk/incall_view.c:731
+msgid "Transfer in progress"
+msgstr ""
+
+#: ../gtk/incall_view.c:734
+msgid "Transfer done."
+msgstr ""
+
+#: ../gtk/incall_view.c:737
+#, fuzzy
+msgid "Transfer failed."
+msgstr "呼叫失败。"
+
+#: ../gtk/incall_view.c:781
 msgid "Resume"
 msgstr ""
 
-#: ../gtk/incall_view.c:591 ../gtk/main.ui.h:45
+#: ../gtk/incall_view.c:788 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr ""
 
@@ -547,234 +690,249 @@ msgid "Please enter login information for %s"
 msgstr "请输入 %s 的登录信息"
 
 #: ../gtk/main.ui.h:1
-msgid "#"
-msgstr "#"
-
-#: ../gtk/main.ui.h:2
-msgid "*"
-msgstr "*"
-
-#: ../gtk/main.ui.h:3
-msgid "0"
-msgstr "0"
-
-#: ../gtk/main.ui.h:4
-msgid "1"
-msgstr "1"
-
-#: ../gtk/main.ui.h:5
-msgid "2"
-msgstr "2"
-
-#: ../gtk/main.ui.h:6
-msgid "3"
-msgstr "3"
-
-#: ../gtk/main.ui.h:7
-msgid "4"
-msgstr "4"
-
-#: ../gtk/main.ui.h:8
-msgid "5"
-msgstr "5"
-
-#: ../gtk/main.ui.h:9
-msgid "6"
-msgstr "6"
-
-#: ../gtk/main.ui.h:10
-msgid "7"
-msgstr "7"
-
-#: ../gtk/main.ui.h:11
-msgid "8"
-msgstr "8"
-
-#: ../gtk/main.ui.h:12
-msgid "9"
-msgstr "9"
-
-#: ../gtk/main.ui.h:13
-msgid "<b>Add contacts from directory</b>"
-msgstr "<b>从目录增加联系人</b>"
-
-#: ../gtk/main.ui.h:14
 #, fuzzy
 msgid "<b>Callee name</b>"
 msgstr "<b>通话结束。</b>"
 
+#: ../gtk/main.ui.h:2
+msgid "Send"
+msgstr "发送"
+
+#: ../gtk/main.ui.h:3
+msgid "End conference"
+msgstr ""
+
+#: ../gtk/main.ui.h:4
+msgid "label"
+msgstr "标签"
+
+#: ../gtk/main.ui.h:8
+msgid "Video"
+msgstr ""
+
+#: ../gtk/main.ui.h:10
+msgid "Mute"
+msgstr ""
+
+#: ../gtk/main.ui.h:11
+msgid "Transfer"
+msgstr ""
+
+#: ../gtk/main.ui.h:14
+msgid "In call"
+msgstr "呼入"
+
 #: ../gtk/main.ui.h:15
-msgid "<b>Welcome !</b>"
-msgstr "<b>欢迎！</b>"
+msgid "Duration"
+msgstr "通话时间"
 
 #: ../gtk/main.ui.h:16
-msgid "A"
-msgstr "A"
-
-#: ../gtk/main.ui.h:17
-msgid "ADSL"
-msgstr ""
-
-#: ../gtk/main.ui.h:18
-#, fuzzy
-msgid "Add contact"
-msgstr "找到 %i 联系方式"
-
-#: ../gtk/main.ui.h:19
-msgid "All users"
-msgstr ""
-
-#: ../gtk/main.ui.h:21
-msgid "Automatically log me in"
-msgstr "自动登录"
-
-#: ../gtk/main.ui.h:22
-msgid "B"
-msgstr "B"
-
-#: ../gtk/main.ui.h:23 ../gtk/parameters.ui.h:21
-msgid "C"
-msgstr "C"
-
-#: ../gtk/main.ui.h:24
-#, fuzzy
-msgid "Call"
-msgstr "呼叫 %s"
-
-#: ../gtk/main.ui.h:25
 msgid "Call quality rating"
 msgstr ""
 
-#: ../gtk/main.ui.h:26
+#: ../gtk/main.ui.h:17
+msgid "_Options"
+msgstr ""
+
+#: ../gtk/main.ui.h:18
+msgid "Always start video"
+msgstr ""
+
+#: ../gtk/main.ui.h:19
+msgid "Enable self-view"
+msgstr "启用自视"
+
+#: ../gtk/main.ui.h:20
+msgid "_Help"
+msgstr ""
+
+#: ../gtk/main.ui.h:21
+#, fuzzy
+msgid "Show debug window"
+msgstr "Linphone 调试窗口"
+
+#: ../gtk/main.ui.h:22
+#, fuzzy
+msgid "_Homepage"
+msgstr "主页"
+
+#: ../gtk/main.ui.h:23
 #, fuzzy
 msgid "Check _Updates"
 msgstr "检查更新"
 
-#: ../gtk/main.ui.h:27
-msgid "Contacts"
-msgstr "联系人"
+#: ../gtk/main.ui.h:24
+#, fuzzy
+msgid "Account assistant"
+msgstr "帐户设置向导"
 
-#: ../gtk/main.ui.h:28
+#: ../gtk/main.ui.h:25
+msgid "SIP address or phone number:"
+msgstr "SIP 地址或电话号码："
+
+#: ../gtk/main.ui.h:26
+msgid "Initiate a new call"
+msgstr ""
+
+#: ../gtk/main.ui.h:27 ../gtk/parameters.ui.h:48
+msgid "Add"
+msgstr "添加"
+
+#: ../gtk/main.ui.h:28 ../gtk/parameters.ui.h:49
+msgid "Edit"
+msgstr "编辑"
+
+#: ../gtk/main.ui.h:29
 msgid "D"
 msgstr "D"
 
 #: ../gtk/main.ui.h:30
-msgid "Default"
-msgstr "默认"
+msgid "#"
+msgstr "#"
 
 #: ../gtk/main.ui.h:31
-msgid "Duration"
-msgstr "通话时间"
+msgid "0"
+msgstr "0"
 
 #: ../gtk/main.ui.h:32
-msgid "Enable self-view"
-msgstr "启用自视"
+msgid "*"
+msgstr "*"
 
-#: ../gtk/main.ui.h:33
-#, fuzzy
-msgid "Enable video"
-msgstr "启用"
+#: ../gtk/main.ui.h:33 ../gtk/parameters.ui.h:7
+msgid "C"
+msgstr "C"
 
 #: ../gtk/main.ui.h:34
-msgid "Enter username, phone number, or full sip address"
-msgstr "请输入用户名、电话号码或完整的 SIP 地址"
+msgid "9"
+msgstr "9"
 
 #: ../gtk/main.ui.h:35
-#, fuzzy
-msgid "Fiber Channel"
-msgstr ""
-"ADSL\n"
-"光纤"
+msgid "8"
+msgstr "8"
 
 #: ../gtk/main.ui.h:36
-msgid "In call"
-msgstr "呼入"
+msgid "7"
+msgstr "7"
 
 #: ../gtk/main.ui.h:37
-msgid "Initiate a new call"
-msgstr ""
+msgid "B"
+msgstr "B"
 
 #: ../gtk/main.ui.h:38
-msgid "Internet connection:"
-msgstr "网络连接："
+msgid "6"
+msgstr "6"
 
 #: ../gtk/main.ui.h:39
+msgid "5"
+msgstr "5"
+
+#: ../gtk/main.ui.h:40
+msgid "4"
+msgstr "4"
+
+#: ../gtk/main.ui.h:41
+msgid "A"
+msgstr "A"
+
+#: ../gtk/main.ui.h:42
+msgid "3"
+msgstr "3"
+
+#: ../gtk/main.ui.h:43
+msgid "2"
+msgstr "2"
+
+#: ../gtk/main.ui.h:44
+msgid "1"
+msgstr "1"
+
+#: ../gtk/main.ui.h:45
+msgid "Search"
+msgstr "搜索"
+
+#: ../gtk/main.ui.h:46
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>从目录增加联系人</b>"
+
+#: ../gtk/main.ui.h:47
+#, fuzzy
+msgid "Add contact"
+msgstr "找到 %i 联系方式"
+
+#: ../gtk/main.ui.h:48
 msgid "Keypad"
 msgstr "数字键盘"
 
-#: ../gtk/main.ui.h:40
-msgid "Login information"
-msgstr "登录信息"
+#: ../gtk/main.ui.h:49
+#, fuzzy
+msgid "Recent calls"
+msgstr "呼入"
 
-#: ../gtk/main.ui.h:41
-msgid "Lookup:"
-msgstr "查找："
-
-#: ../gtk/main.ui.h:42
+#: ../gtk/main.ui.h:50
 msgid "My current identity:"
 msgstr "当前地址："
 
-#: ../gtk/main.ui.h:43
+#: ../gtk/main.ui.h:51 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "用户名"
+
+#: ../gtk/main.ui.h:52 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "密码"
+
+#: ../gtk/main.ui.h:53
+msgid "Internet connection:"
+msgstr "网络连接："
+
+#: ../gtk/main.ui.h:54
+msgid "Automatically log me in"
+msgstr "自动登录"
+
+#: ../gtk/main.ui.h:55
+msgid "Login information"
+msgstr "登录信息"
+
+#: ../gtk/main.ui.h:56
+msgid "<b>Welcome !</b>"
+msgstr "<b>欢迎！</b>"
+
+#: ../gtk/main.ui.h:57
+msgid "All users"
+msgstr ""
+
+#: ../gtk/main.ui.h:58
 #, fuzzy
 msgid "Online users"
 msgstr ""
 "全部用户\n"
 "在线用户"
 
-#: ../gtk/main.ui.h:44
-msgid "Password"
-msgstr "密码"
-
-#: ../gtk/main.ui.h:46
-#, fuzzy
-msgid "Recent calls"
-msgstr "呼入"
-
-#: ../gtk/main.ui.h:47
-msgid "SIP address or phone number:"
-msgstr "SIP 地址或电话号码："
-
-#: ../gtk/main.ui.h:48
-msgid "Search"
-msgstr "搜索"
-
-#: ../gtk/main.ui.h:50
-#, fuzzy
-msgid "Show debug window"
-msgstr "Linphone 调试窗口"
-
-#: ../gtk/main.ui.h:51
-msgid "Username"
-msgstr "用户名"
-
-#: ../gtk/main.ui.h:52
-msgid "_Help"
+#: ../gtk/main.ui.h:59
+msgid "ADSL"
 msgstr ""
 
-#: ../gtk/main.ui.h:53
+#: ../gtk/main.ui.h:60
 #, fuzzy
-msgid "_Homepage"
-msgstr "主页"
-
-#: ../gtk/main.ui.h:54
-msgid "_Options"
+msgid "Fiber Channel"
 msgstr ""
+"ADSL\n"
+"光纤"
 
-#: ../gtk/main.ui.h:55
-msgid "in"
-msgstr "于"
+#: ../gtk/main.ui.h:61
+msgid "Default"
+msgstr "默认"
 
-#: ../gtk/main.ui.h:56
-msgid "label"
-msgstr "标签"
+#: ../gtk/main.ui.h:62
+msgid "Delete"
+msgstr ""
 
 #: ../gtk/about.ui.h:1
-msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
-
-#: ../gtk/about.ui.h:3
 msgid "About linphone"
 msgstr "关于 Linphone"
+
+#: ../gtk/about.ui.h:2
+msgid "(C) Belledonne Communications,2010\n"
+msgstr ""
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
@@ -807,25 +965,29 @@ msgstr ""
 "hu: anonymous\n"
 "zh_CN: Jiang Honglei <hongleij@126.com> 和 Aron Xu <happyaron.xu@gmail.com>\n"
 
-#: ../gtk/contact.ui.h:1
-msgid "<b>Contact information</b>"
-msgstr "<b>联系人信息</b>"
-
 #: ../gtk/contact.ui.h:2
-msgid "Allow this contact to see my presence status"
-msgstr "允许此人看到我的在线状态"
-
-#: ../gtk/contact.ui.h:4
 msgid "SIP Address"
 msgstr "SIP 地址"
 
-#: ../gtk/contact.ui.h:5
+#: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
 msgstr "显示该联系人的在线状态"
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr "允许此人看到我的在线状态"
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr "<b>联系人信息</b>"
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
 msgstr "Linphone 调试窗口"
+
+#: ../gtk/log.ui.h:2
+msgid "Scroll to end"
+msgstr ""
 
 #: ../gtk/password.ui.h:1
 #, fuzzy
@@ -833,361 +995,358 @@ msgid "Linphone - Authentication required"
 msgstr "Linphone - 需要认证"
 
 #: ../gtk/password.ui.h:2
-msgid "Password:"
-msgstr "密码："
-
-#: ../gtk/password.ui.h:3
 msgid "Please enter the domain password"
 msgstr "请输入密码"
 
-#: ../gtk/password.ui.h:4
+#: ../gtk/password.ui.h:3
 msgid "UserID"
 msgstr "用户 ID"
 
 #: ../gtk/call_logs.ui.h:1
+msgid "Call history"
+msgstr "呼叫历史"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Clear all"
+msgstr ""
+
+#: ../gtk/call_logs.ui.h:3
 #, fuzzy
 msgid "Call back"
 msgstr "呼叫 %s"
 
-#: ../gtk/call_logs.ui.h:2
-msgid "Call history"
-msgstr "呼叫历史"
-
-#: ../gtk/call_logs.ui.h:3
-msgid "Clear all"
-msgstr ""
-
 #: ../gtk/sip_account.ui.h:1
-msgid "Configure a SIP account"
-msgstr "配置 SIP 帐户"
-
-#: ../gtk/sip_account.ui.h:2
 msgid "Linphone - Configure a SIP account"
 msgstr "Linphone - 配置 SIP 帐户"
 
-#: ../gtk/sip_account.ui.h:3
-msgid "Looks like sip:<proxy hostname>"
-msgstr "类似于 sip:<代理主机名>"
-
-#: ../gtk/sip_account.ui.h:4
-msgid "Looks like sip:<username>@<domain>"
-msgstr "类似于 sip:<用户名>@<域>"
-
-#: ../gtk/sip_account.ui.h:5
-msgid "Publish presence information"
-msgstr "发布在线状态"
-
-#: ../gtk/sip_account.ui.h:6
-msgid "Register"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:7
-msgid "Registration duration (sec):"
-msgstr "注册间隔(秒)："
-
-#: ../gtk/sip_account.ui.h:8
-msgid "Route (optional):"
-msgstr "路由(可选)："
-
-#: ../gtk/sip_account.ui.h:9
-msgid "SIP Proxy address:"
-msgstr "SIP 代理地址："
-
-#: ../gtk/sip_account.ui.h:10
+#: ../gtk/sip_account.ui.h:2
 msgid "Your SIP identity:"
 msgstr "您的 SIP 地址："
 
-#: ../gtk/sip_account.ui.h:11
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
+msgstr "类似于 sip:<用户名>@<域>"
+
+#: ../gtk/sip_account.ui.h:4
 msgid "sip:"
 msgstr "sip:"
 
-#: ../gtk/chatroom.ui.h:1
-msgid "Send"
-msgstr "发送"
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "SIP 代理地址："
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
+msgstr "类似于 sip:<代理主机名>"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Route (optional):"
+msgstr "路由(可选)："
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Registration duration (sec):"
+msgstr "注册间隔(秒)："
+
+#: ../gtk/sip_account.ui.h:9
+msgid "Register"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Publish presence information"
+msgstr "发布在线状态"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Configure a SIP account"
+msgstr "配置 SIP 帐户"
 
 #: ../gtk/parameters.ui.h:1
-msgid "0 stands for \"unlimited\""
-msgstr "0 表示 “没有限制”"
+msgid "default soundcard"
+msgstr "默认声卡"
 
 #: ../gtk/parameters.ui.h:2
-msgid "<b>Audio</b>"
-msgstr "<b>音频</b>"
+#, fuzzy
+msgid "a sound card"
+msgstr "声卡\n"
 
 #: ../gtk/parameters.ui.h:3
-msgid "<b>Bandwidth control</b>"
-msgstr "<b>带宽控制</b>"
+msgid "default camera"
+msgstr "默认摄像头"
 
 #: ../gtk/parameters.ui.h:4
-msgid "<b>Codecs</b>"
-msgstr "<b>编解码器</b>"
+msgid "CIF"
+msgstr "CIF"
 
 #: ../gtk/parameters.ui.h:5
-msgid "<b>Default identity</b>"
-msgstr "<b>默认帐户</b>"
-
-#: ../gtk/parameters.ui.h:6
-msgid "<b>Language</b>"
-msgstr "<b>语言</b>"
-
-#: ../gtk/parameters.ui.h:7
-msgid "<b>Level</b>"
-msgstr "<b>级别</b>"
-
-#: ../gtk/parameters.ui.h:8
-msgid "<b>NAT and Firewall</b>"
-msgstr "<b>NAT 及防火墙</b>"
-
-#: ../gtk/parameters.ui.h:9
-msgid "<b>Network protocol and ports</b>"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:10
-msgid "<b>Privacy</b>"
-msgstr "<b>隐私</b>"
-
-#: ../gtk/parameters.ui.h:11
-msgid "<b>Proxy accounts</b>"
-msgstr "<b>代理帐户</b>"
-
-#: ../gtk/parameters.ui.h:12
-msgid "<b>Transport</b>"
-msgstr "<b>传输协议</b>"
-
-#: ../gtk/parameters.ui.h:13
-msgid "<b>Video</b>"
-msgstr "<b>视频</b>"
-
-#: ../gtk/parameters.ui.h:14
-msgid ""
-"<i>Adaptive rate control is a technique to dynamically guess the available "
-"bandwidth during a call.</i>"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:15
-msgid "ALSA special device (optional):"
-msgstr "ALSA 特殊设备(可选)："
-
-#: ../gtk/parameters.ui.h:16
-msgid "Add"
-msgstr "添加"
-
-#: ../gtk/parameters.ui.h:17
-msgid "Audio RTP/UDP:"
-msgstr "音频 RTP/UDP："
-
-#: ../gtk/parameters.ui.h:18
 #, fuzzy
 msgid "Audio codecs"
 msgstr ""
 "音频编解码器\n"
 "视频编解码器"
 
-#: ../gtk/parameters.ui.h:19
-msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr "在 NAT 或防火墙后(填写网关 IP)"
-
-#: ../gtk/parameters.ui.h:20
-msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "在 NAT 或防火墙后(使用 STUN 解决)"
-
-#: ../gtk/parameters.ui.h:22
-msgid "CIF"
-msgstr "CIF"
-
-#: ../gtk/parameters.ui.h:23
-msgid "Capture device:"
-msgstr "录音设备："
-
-#: ../gtk/parameters.ui.h:24
-msgid "Codecs"
-msgstr "编解码器"
-
-#: ../gtk/parameters.ui.h:25
-msgid "Direct connection to the Internet"
-msgstr "直接连接到互联网"
-
-#: ../gtk/parameters.ui.h:26
-msgid "Disable"
-msgstr "禁用"
-
-#: ../gtk/parameters.ui.h:27
-msgid "Done"
-msgstr "完成"
-
-#: ../gtk/parameters.ui.h:28
-msgid "Download speed limit in Kbit/sec:"
-msgstr "下载速率限制 kbit/s："
-
-#: ../gtk/parameters.ui.h:29
-msgid "Edit"
-msgstr "编辑"
-
-#: ../gtk/parameters.ui.h:30
-msgid "Enable"
-msgstr "启用"
-
-#: ../gtk/parameters.ui.h:31
-msgid "Enable adaptive rate control"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:32
-msgid "Enable echo cancellation"
-msgstr "启用回声抑制"
-
-#: ../gtk/parameters.ui.h:33
-msgid "Erase all passwords"
-msgstr "清除所有密码"
-
-#: ../gtk/parameters.ui.h:34
-msgid "Manage SIP Accounts"
-msgstr "SIP 帐户管理"
-
-#: ../gtk/parameters.ui.h:35
-msgid "Media encryption type"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:36
-msgid "Multimedia settings"
-msgstr "音视频设置"
-
-#: ../gtk/parameters.ui.h:37
-msgid "Network settings"
-msgstr "网络设置"
-
-#: ../gtk/parameters.ui.h:38
-msgid "Playback device:"
-msgstr "回放设备："
-
-#: ../gtk/parameters.ui.h:39
-msgid "Prefered video resolution:"
-msgstr "视频分辨率："
-
-#: ../gtk/parameters.ui.h:40
-msgid "Public IP address:"
-msgstr "公网 IP 地址："
-
-#: ../gtk/parameters.ui.h:41
-msgid ""
-"Register to FONICS\n"
-"virtual network !"
-msgstr ""
-"注册到 FONICS\n"
-"虚拟网络!"
-
-#: ../gtk/parameters.ui.h:43
-msgid "Remove"
-msgstr "移除"
-
-#: ../gtk/parameters.ui.h:44
-msgid "Ring device:"
-msgstr "响铃设备："
-
-#: ../gtk/parameters.ui.h:45
-msgid "Ring sound:"
-msgstr "铃声文件："
-
-#: ../gtk/parameters.ui.h:46
-#, fuzzy
-msgid "SIP (TCP)"
-msgstr "SIP (UDP)："
-
-#: ../gtk/parameters.ui.h:47
-#, fuzzy
-msgid "SIP (TLS)"
-msgstr "SIP (UDP)："
-
-#: ../gtk/parameters.ui.h:48
-#, fuzzy
-msgid "SIP (UDP)"
-msgstr "SIP (UDP)："
-
-#: ../gtk/parameters.ui.h:49
-msgid "Send DTMFs as SIP info"
-msgstr "以 SIP 消息发送 DTMF"
-
-#: ../gtk/parameters.ui.h:50
-msgid "Set Maximum Transmission Unit:"
-msgstr "设置最大传输单元(MTU)："
-
-#: ../gtk/parameters.ui.h:51
-msgid "Settings"
-msgstr "设置"
-
-#: ../gtk/parameters.ui.h:52
-msgid "Show advanced settings"
-msgstr "显示高级设置"
-
-#: ../gtk/parameters.ui.h:53
-msgid "Stun server:"
-msgstr "Stun 服务器："
-
-#: ../gtk/parameters.ui.h:54
-msgid "This section defines your SIP address when not using a SIP account"
-msgstr "该段在您不使用SIP帐户时的SIP地址"
-
-#: ../gtk/parameters.ui.h:55
-msgid "Upload speed limit in Kbit/sec:"
-msgstr "上传速率限制 kbit/s："
-
-#: ../gtk/parameters.ui.h:56
-msgid "Use IPv6 instead of IPv4"
-msgstr "使用 IPv6 而非 IPv4"
-
-#: ../gtk/parameters.ui.h:57
-msgid "User interface"
-msgstr "用户界面"
-
-#: ../gtk/parameters.ui.h:58
-msgid "Video RTP/UDP:"
-msgstr "视频 RTP/UDP："
-
-#: ../gtk/parameters.ui.h:59
+#: ../gtk/parameters.ui.h:6
 #, fuzzy
 msgid "Video codecs"
 msgstr ""
 "音频编解码器\n"
 "视频编解码器"
 
-#: ../gtk/parameters.ui.h:60
+#: ../gtk/parameters.ui.h:8
+#, fuzzy
+msgid "SIP (UDP)"
+msgstr "SIP (UDP)："
+
+#: ../gtk/parameters.ui.h:9
+#, fuzzy
+msgid "SIP (TCP)"
+msgstr "SIP (UDP)："
+
+#: ../gtk/parameters.ui.h:10
+#, fuzzy
+msgid "SIP (TLS)"
+msgstr "SIP (UDP)："
+
+#: ../gtk/parameters.ui.h:11
+msgid "Settings"
+msgstr "设置"
+
+#: ../gtk/parameters.ui.h:12
+msgid "Set Maximum Transmission Unit:"
+msgstr "设置最大传输单元(MTU)："
+
+#: ../gtk/parameters.ui.h:13
+msgid "Send DTMFs as SIP info"
+msgstr "以 SIP 消息发送 DTMF"
+
+#: ../gtk/parameters.ui.h:14
+msgid "Use IPv6 instead of IPv4"
+msgstr "使用 IPv6 而非 IPv4"
+
+#: ../gtk/parameters.ui.h:15
+msgid "<b>Transport</b>"
+msgstr "<b>传输协议</b>"
+
+#: ../gtk/parameters.ui.h:16
+msgid "Media encryption type"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:17
+msgid "Tunnel"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:18
+msgid "Video RTP/UDP:"
+msgstr "视频 RTP/UDP："
+
+#: ../gtk/parameters.ui.h:19
+msgid "Audio RTP/UDP:"
+msgstr "音频 RTP/UDP："
+
+#: ../gtk/parameters.ui.h:20
+msgid "DSCP fields"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:21
+msgid "Fixed"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:22
+msgid "<b>Network protocol and ports</b>"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:23
+msgid "Direct connection to the Internet"
+msgstr "直接连接到互联网"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Behind NAT / Firewall (specify gateway IP below)"
+msgstr "在 NAT 或防火墙后(填写网关 IP)"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Public IP address:"
+msgstr "公网 IP 地址："
+
+#: ../gtk/parameters.ui.h:26
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "在 NAT 或防火墙后(使用 STUN 解决)"
+
+#: ../gtk/parameters.ui.h:27
+#, fuzzy
+msgid "Behind NAT / Firewall (use ICE)"
+msgstr "在 NAT 或防火墙后(使用 STUN 解决)"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Stun server:"
+msgstr "Stun 服务器："
+
+#: ../gtk/parameters.ui.h:29
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>NAT 及防火墙</b>"
+
+#: ../gtk/parameters.ui.h:30
+msgid "Network settings"
+msgstr "网络设置"
+
+#: ../gtk/parameters.ui.h:31
+msgid "Ring sound:"
+msgstr "铃声文件："
+
+#: ../gtk/parameters.ui.h:32
+msgid "ALSA special device (optional):"
+msgstr "ALSA 特殊设备(可选)："
+
+#: ../gtk/parameters.ui.h:33
+msgid "Capture device:"
+msgstr "录音设备："
+
+#: ../gtk/parameters.ui.h:34
+msgid "Ring device:"
+msgstr "响铃设备："
+
+#: ../gtk/parameters.ui.h:35
+msgid "Playback device:"
+msgstr "回放设备："
+
+#: ../gtk/parameters.ui.h:36
+msgid "Enable echo cancellation"
+msgstr "启用回声抑制"
+
+#: ../gtk/parameters.ui.h:37
+msgid "<b>Audio</b>"
+msgstr "<b>音频</b>"
+
+#: ../gtk/parameters.ui.h:38
 msgid "Video input device:"
 msgstr "视频输入设备："
 
-#: ../gtk/parameters.ui.h:61
+#: ../gtk/parameters.ui.h:39
+msgid "Prefered video resolution:"
+msgstr "视频分辨率："
+
+#: ../gtk/parameters.ui.h:40
+msgid "<b>Video</b>"
+msgstr "<b>视频</b>"
+
+#: ../gtk/parameters.ui.h:41
+msgid "Multimedia settings"
+msgstr "音视频设置"
+
+#: ../gtk/parameters.ui.h:42
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "该段在您不使用SIP帐户时的SIP地址"
+
+#: ../gtk/parameters.ui.h:43
 msgid "Your display name (eg: John Doe):"
 msgstr "您的显示名："
 
-#: ../gtk/parameters.ui.h:62
-msgid "Your resulting SIP address:"
-msgstr "您的 SIP 地址结果："
-
-#: ../gtk/parameters.ui.h:63
+#: ../gtk/parameters.ui.h:44
 msgid "Your username:"
 msgstr "您的用户名："
 
+#: ../gtk/parameters.ui.h:45
+msgid "Your resulting SIP address:"
+msgstr "您的 SIP 地址结果："
+
+#: ../gtk/parameters.ui.h:46
+msgid "<b>Default identity</b>"
+msgstr "<b>默认帐户</b>"
+
+#: ../gtk/parameters.ui.h:47
+msgid "Wizard"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:50
+msgid "Remove"
+msgstr "移除"
+
+#: ../gtk/parameters.ui.h:51
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>代理帐户</b>"
+
+#: ../gtk/parameters.ui.h:52
+msgid "Erase all passwords"
+msgstr "清除所有密码"
+
+#: ../gtk/parameters.ui.h:53
+msgid "<b>Privacy</b>"
+msgstr "<b>隐私</b>"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Manage SIP Accounts"
+msgstr "SIP 帐户管理"
+
+#: ../gtk/parameters.ui.h:55 ../gtk/tunnel_config.ui.h:4
+msgid "Enable"
+msgstr "启用"
+
+#: ../gtk/parameters.ui.h:56 ../gtk/tunnel_config.ui.h:5
+msgid "Disable"
+msgstr "禁用"
+
+#: ../gtk/parameters.ui.h:57
+msgid "<b>Codecs</b>"
+msgstr "<b>编解码器</b>"
+
+#: ../gtk/parameters.ui.h:58
+msgid "0 stands for \"unlimited\""
+msgstr "0 表示 “没有限制”"
+
+#: ../gtk/parameters.ui.h:59
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "上传速率限制 kbit/s："
+
+#: ../gtk/parameters.ui.h:60
+msgid "Download speed limit in Kbit/sec:"
+msgstr "下载速率限制 kbit/s："
+
+#: ../gtk/parameters.ui.h:61
+msgid "Enable adaptive rate control"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:62
+msgid ""
+"<i>Adaptive rate control is a technique to dynamically guess the available "
+"bandwidth during a call.</i>"
+msgstr ""
+
+#: ../gtk/parameters.ui.h:63
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>带宽控制</b>"
+
 #: ../gtk/parameters.ui.h:64
-#, fuzzy
-msgid "a sound card"
-msgstr "声卡\n"
+msgid "Codecs"
+msgstr "编解码器"
 
 #: ../gtk/parameters.ui.h:65
-msgid "default camera"
-msgstr "默认摄像头"
+msgid "<b>Language</b>"
+msgstr "<b>语言</b>"
 
 #: ../gtk/parameters.ui.h:66
-msgid "default soundcard"
-msgstr "默认声卡"
+msgid "Show advanced settings"
+msgstr "显示高级设置"
+
+#: ../gtk/parameters.ui.h:67
+msgid "<b>Level</b>"
+msgstr "<b>级别</b>"
+
+#: ../gtk/parameters.ui.h:68
+msgid "User interface"
+msgstr "用户界面"
+
+#: ../gtk/parameters.ui.h:69
+msgid "Done"
+msgstr "完成"
 
 #: ../gtk/buddylookup.ui.h:1
-msgid "<b>Search somebody</b>"
-msgstr "<b>找人</b>"
+msgid "Search contacts in directory"
+msgstr "查找联系人"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
 msgstr "添加为联系人"
 
 #: ../gtk/buddylookup.ui.h:3
-msgid "Search contacts in directory"
-msgstr "查找联系人"
+msgid "<b>Search somebody</b>"
+msgstr "<b>找人</b>"
 
 #: ../gtk/waiting.ui.h:1
 msgid "Linphone"
@@ -1197,19 +1356,99 @@ msgstr "Linphone"
 msgid "Please wait"
 msgstr "请稍候"
 
-#: ../coreapi/linphonecore.c:187
+#: ../gtk/dscp_settings.ui.h:1
+#, fuzzy
+msgid "Dscp settings"
+msgstr "设置"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr ""
+
+#: ../gtk/dscp_settings.ui.h:3
+#, fuzzy
+msgid "Audio RTP stream"
+msgstr "音频重采样"
+
+#: ../gtk/dscp_settings.ui.h:4
+#, fuzzy
+msgid "Video RTP stream"
+msgstr "视频 RTP/UDP："
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:1
+#, fuzzy
+msgid "Call statistics"
+msgstr "呼叫详情"
+
+#: ../gtk/call_statistics.ui.h:2
+#, fuzzy
+msgid "Audio codec"
+msgstr ""
+"音频编解码器\n"
+"视频编解码器"
+
+#: ../gtk/call_statistics.ui.h:3
+#, fuzzy
+msgid "Video codec"
+msgstr ""
+"音频编解码器\n"
+"视频编解码器"
+
+#: ../gtk/call_statistics.ui.h:4
+msgid "Audio IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:5
+msgid "Media connectivity"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:6
+msgid "Video IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:7
+#, fuzzy
+msgid "<b>Call statistics and information</b>"
+msgstr "<b>联系人信息</b>"
+
+#: ../gtk/tunnel_config.ui.h:1
+#, fuzzy
+msgid "Configure VoIP tunnel"
+msgstr "配置 SIP 帐户"
+
+#: ../gtk/tunnel_config.ui.h:2
+msgid "Host"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:3
+msgid "Port"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:6
+msgid "<b>Configure tunnel</b>"
+msgstr ""
+
+#: ../gtk/tunnel_config.ui.h:9
+msgid "<b>Configure http proxy (optional)</b>"
+msgstr ""
+
+#: ../coreapi/linphonecore.c:232
 msgid "aborted"
 msgstr "中断"
 
-#: ../coreapi/linphonecore.c:190
+#: ../coreapi/linphonecore.c:235
 msgid "completed"
 msgstr "完成"
 
-#: ../coreapi/linphonecore.c:193
+#: ../coreapi/linphonecore.c:238
 msgid "missed"
 msgstr "丢失"
 
-#: ../coreapi/linphonecore.c:198
+#: ../coreapi/linphonecore.c:243
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1224,23 +1463,23 @@ msgstr ""
 "状态：%s\n"
 "状态：%i 分 %i 秒\n"
 
-#: ../coreapi/linphonecore.c:199
+#: ../coreapi/linphonecore.c:244
 msgid "Outgoing call"
 msgstr "呼出"
 
-#: ../coreapi/linphonecore.c:1088
+#: ../coreapi/linphonecore.c:1226
 msgid "Ready"
 msgstr "就绪"
 
-#: ../coreapi/linphonecore.c:1831
+#: ../coreapi/linphonecore.c:2074
 msgid "Looking for telephone number destination..."
 msgstr "查询电话号码目的地..."
 
-#: ../coreapi/linphonecore.c:1834
+#: ../coreapi/linphonecore.c:2077
 msgid "Could not resolve this number."
 msgstr "该号码无法解析。"
 
-#: ../coreapi/linphonecore.c:1878
+#: ../coreapi/linphonecore.c:2121
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1248,42 +1487,54 @@ msgstr ""
 "无法解析给定的 SIP 地址，SIP 地址应有如下格式：\n"
 "sip:用户名@域名"
 
-#: ../coreapi/linphonecore.c:2025
+#: ../coreapi/linphonecore.c:2312
 msgid "Contacting"
 msgstr "联系中"
 
-#: ../coreapi/linphonecore.c:2032
+#: ../coreapi/linphonecore.c:2319
 #, fuzzy
 msgid "Could not call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:2140
+#: ../coreapi/linphonecore.c:2429
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2270
+#: ../coreapi/linphonecore.c:2573
+msgid "is contacting you"
+msgstr "正在联系您"
+
+#: ../coreapi/linphonecore.c:2574
+msgid " and asked autoanswer."
+msgstr " 并询问了自动回答。"
+
+#: ../coreapi/linphonecore.c:2574
+msgid "."
+msgstr "."
+
+#: ../coreapi/linphonecore.c:2636
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2366
+#: ../coreapi/linphonecore.c:2908
 msgid "Connected."
 msgstr "已连接。"
 
-#: ../coreapi/linphonecore.c:2389
+#: ../coreapi/linphonecore.c:2931
 #, fuzzy
 msgid "Call aborted"
 msgstr "中断"
 
-#: ../coreapi/linphonecore.c:2530
+#: ../coreapi/linphonecore.c:3102
 #, fuzzy
 msgid "Could not pause the call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:2535
+#: ../coreapi/linphonecore.c:3107
 msgid "Pausing the current call..."
 msgstr ""
 
-#: ../coreapi/misc.c:147
+#: ../coreapi/misc.c:148
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the pcm oss emulation module\n"
@@ -1294,7 +1545,7 @@ msgstr ""
 "ALSA 是最佳选择，然而 Linphone 必须的 PCM OSS 模拟模块缺失。\n"
 "请以 root 用户运行 modprobe snd-pcm-oss 载入它。"
 
-#: ../coreapi/misc.c:150
+#: ../coreapi/misc.c:151
 msgid ""
 "Your computer appears to be using ALSA sound drivers.\n"
 "This is the best choice. However the mixer oss emulation module\n"
@@ -1305,9 +1556,13 @@ msgstr ""
 "ALSA 是最佳选择，然而 Linphone 必须的 Mixer OSS 模拟模块缺失。\n"
 "请以 root 用户运行 modprobe snd-mixer-oss 载入它。"
 
-#: ../coreapi/misc.c:478
+#: ../coreapi/misc.c:496
 msgid "Stun lookup in progress..."
 msgstr "正在进行 Stun 查找..."
+
+#: ../coreapi/misc.c:630
+msgid "ICE local candidates gathering in progress..."
+msgstr ""
 
 #: ../coreapi/friend.c:33
 msgid "Online"
@@ -1357,13 +1612,13 @@ msgstr "挂起"
 msgid "Unknown-bug"
 msgstr "未知错误"
 
-#: ../coreapi/proxy.c:192
+#: ../coreapi/proxy.c:204
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr "您输入的 SIP 代理地址无效，它必须是以“sip:”开头，并紧随一个主机名。"
 
-#: ../coreapi/proxy.c:198
+#: ../coreapi/proxy.c:210
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
@@ -1371,147 +1626,196 @@ msgstr ""
 "您输入的地址无效。\n"
 "它应具有“sip:用户名@代理域”的形式，例如 sip:alice@example.net"
 
-#: ../coreapi/proxy.c:690
+#: ../coreapi/proxy.c:1053
 #, c-format
 msgid "Could not login as %s"
 msgstr "无法登录为 %s"
 
-#: ../coreapi/callbacks.c:206
-msgid "is contacting you"
-msgstr "正在联系您"
-
-#: ../coreapi/callbacks.c:207
-msgid " and asked autoanswer."
-msgstr " 并询问了自动回答。"
-
-#: ../coreapi/callbacks.c:207
-msgid "."
-msgstr "."
-
-#: ../coreapi/callbacks.c:266
+#: ../coreapi/callbacks.c:276
 msgid "Remote ringing."
 msgstr "响铃。"
 
-#: ../coreapi/callbacks.c:282
+#: ../coreapi/callbacks.c:296
 #, fuzzy
 msgid "Remote ringing..."
 msgstr "响铃。"
 
-#: ../coreapi/callbacks.c:293
+#: ../coreapi/callbacks.c:307
 msgid "Early media."
 msgstr ""
 
-#: ../coreapi/callbacks.c:331
+#: ../coreapi/callbacks.c:352
 #, fuzzy, c-format
 msgid "Call with %s is paused."
 msgstr "与 %s 通话"
 
-#: ../coreapi/callbacks.c:342
+#: ../coreapi/callbacks.c:365
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:357
+#: ../coreapi/callbacks.c:376
 #, fuzzy
 msgid "Call resumed."
 msgstr "呼叫结束"
 
-#: ../coreapi/callbacks.c:362
+#: ../coreapi/callbacks.c:381
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:432
-msgid "We are being paused..."
+#: ../coreapi/callbacks.c:396
+msgid "Incompatible, check codecs..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:436
-msgid "We have been resumed..."
+#: ../coreapi/callbacks.c:437
+msgid "We have been resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:441
-msgid "Call has been updated by remote..."
+#: ../coreapi/callbacks.c:446
+msgid "We are paused by other party."
 msgstr ""
 
-#: ../coreapi/callbacks.c:473
+#: ../coreapi/callbacks.c:452
+msgid "Call is updated by remote."
+msgstr ""
+
+#: ../coreapi/callbacks.c:521
 msgid "Call terminated."
 msgstr "通话结束。"
 
-#: ../coreapi/callbacks.c:480
+#: ../coreapi/callbacks.c:528
 msgid "User is busy."
 msgstr "被叫正忙。"
 
-#: ../coreapi/callbacks.c:481
+#: ../coreapi/callbacks.c:529
 msgid "User is temporarily unavailable."
 msgstr "您呼叫的用户暂时无法接通。"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:483
+#: ../coreapi/callbacks.c:531
 msgid "User does not want to be disturbed."
 msgstr "用户已开启免打扰功能。"
 
-#: ../coreapi/callbacks.c:484
+#: ../coreapi/callbacks.c:532
 msgid "Call declined."
 msgstr "呼叫被拒绝。"
 
-#: ../coreapi/callbacks.c:496
+#: ../coreapi/callbacks.c:544
 msgid "No response."
 msgstr "没有响应。"
 
-#: ../coreapi/callbacks.c:500
+#: ../coreapi/callbacks.c:548
 msgid "Protocol error."
 msgstr "协议错误。"
 
-#: ../coreapi/callbacks.c:516
+#: ../coreapi/callbacks.c:564
 msgid "Redirected"
 msgstr "已重定向"
 
-#: ../coreapi/callbacks.c:526
-msgid "Not found"
-msgstr "未找到"
+#: ../coreapi/callbacks.c:600
+msgid "Incompatible media parameters."
+msgstr ""
 
-#: ../coreapi/callbacks.c:551
-msgid "No common codecs"
-msgstr "未找到常用编解码器"
-
-#: ../coreapi/callbacks.c:557
+#: ../coreapi/callbacks.c:606
 msgid "Call failed."
 msgstr "呼叫失败。"
 
-#: ../coreapi/callbacks.c:631
+#: ../coreapi/callbacks.c:701
 #, c-format
 msgid "Registration on %s successful."
 msgstr "成功注册到 %s"
 
-#: ../coreapi/callbacks.c:632
+#: ../coreapi/callbacks.c:702
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "已在 %s 解除注册。"
 
-#: ../coreapi/callbacks.c:648
+#: ../coreapi/callbacks.c:722
 msgid "no response timeout"
 msgstr "没有响应，超时"
 
-#: ../coreapi/callbacks.c:651
+#: ../coreapi/callbacks.c:725
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "注册到 %s 失败: %s"
 
-#: ../coreapi/sal_eXosip2.c:873 ../coreapi/sal_eXosip2.c:875
-#, fuzzy
-msgid "Authentication failure"
-msgstr "Linphone - 需要认证"
-
-#: ../coreapi/linphonecall.c:128
+#: ../coreapi/linphonecall.c:129
 #, fuzzy, c-format
 msgid "Authentication token is %s"
 msgstr "Linphone - 需要认证"
 
-#: ../coreapi/linphonecall.c:1560
+#: ../coreapi/linphonecall.c:2124
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "您错过了 %i 个呼叫。"
+
+#~ msgid "Chat with %s"
+#~ msgstr "与 %s 通话"
+
+#~ msgid "Please choose a username:"
+#~ msgstr "请选择用户名："
+
+#~ msgid "Checking if '%s' is available..."
+#~ msgstr "检查 %s 是否可用..."
+
+#~ msgid "Please wait..."
+#~ msgstr "请稍候..."
+
+#~ msgid "Sorry this username already exists. Please try a new one."
+#~ msgstr "对不起，该用户已经存在，请换一个尝试。"
+
+#~ msgid "Ok !"
+#~ msgstr "成功！"
+
+#~ msgid "Communication problem, please try again later."
+#~ msgstr "连接错误，请稍后重试。"
+
+#~ msgid "Choosing a username"
+#~ msgstr "选择用户名："
+
+#~ msgid "Verifying"
+#~ msgstr "验证中"
+
+#~ msgid "Confirmation"
+#~ msgstr "确认"
+
+#~ msgid "Creating your account"
+#~ msgstr "正在创建您的帐户"
+
+#~ msgid "Now ready !"
+#~ msgstr "就绪！"
+
+#~ msgid "Contacts"
+#~ msgstr "联系人"
+
+#, fuzzy
+#~ msgid "Enable video"
+#~ msgstr "启用"
+
+#~ msgid "Enter username, phone number, or full sip address"
+#~ msgstr "请输入用户名、电话号码或完整的 SIP 地址"
+
+#~ msgid "Lookup:"
+#~ msgstr "查找："
+
+#~ msgid "in"
+#~ msgstr "于"
+
+#~ msgid ""
+#~ "Register to FONICS\n"
+#~ "virtual network !"
+#~ msgstr ""
+#~ "注册到 FONICS\n"
+#~ "虚拟网络!"
+
+#~ msgid "No common codecs"
+#~ msgstr "未找到常用编解码器"
+
+#, fuzzy
+#~ msgid "Authentication failure"
+#~ msgstr "Linphone - 需要认证"
 
 #~ msgid "Unmute"
 #~ msgstr "取消静音"
@@ -1585,9 +1889,6 @@ msgstr[0] "您错过了 %i 个呼叫。"
 
 #~ msgid "A filter that send several inputs to one output."
 #~ msgstr "将多个输入发送至单个输出。"
-
-#~ msgid "Audio resampler"
-#~ msgstr "音频重采样"
 
 #~ msgid "RTP output filter"
 #~ msgstr "RTP 输出过滤器"
@@ -1695,9 +1996,6 @@ msgstr[0] "您错过了 %i 个呼叫。"
 #~ msgid "A SDL-based video display"
 #~ msgstr "通用视频显示"
 
-#~ msgid "ICE filter"
-#~ msgstr "ICE 过滤器"
-
 #~ msgid "A webcam grabber based on directshow."
 #~ msgstr "使用 DirectShow 的摄像头抓取器"
 
@@ -1741,17 +2039,11 @@ msgstr[0] "您错过了 %i 个呼叫。"
 #~ msgid "Assistant"
 #~ msgstr "配置向导"
 
-#~ msgid "Call Details"
-#~ msgstr "呼叫详情"
-
 #~ msgid "Show debug messages"
 #~ msgstr "显示调试信息"
 
 #~ msgid "Start call"
 #~ msgstr "开始呼叫"
-
-#~ msgid "Terminate call"
-#~ msgstr "终止呼叫"
 
 #~ msgid "_Modes"
 #~ msgstr "模式(_M)"

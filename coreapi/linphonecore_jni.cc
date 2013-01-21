@@ -23,9 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore_utils.h"
 #include <ortp/zrtp.h>
 
-#ifdef TUNNEL_ENABLED
-#include "linphone_tunnel.h"
-#endif
 
 extern "C" {
 #include "mediastreamer2/mediastream.h"
@@ -33,6 +30,8 @@ extern "C" {
 #include "mediastreamer2/msjava.h"
 #include "private.h"
 #include <cpu-features.h>
+
+#include "lpconfig.h"
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -1792,6 +1791,9 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getStunServer(JNIEnv 
 }
 
 //CallParams
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_isLowBandwidthEnabled(JNIEnv *env, jobject thiz, jlong cp) {
+	return (jboolean) linphone_call_params_low_bandwidth_enabled((LinphoneCallParams *)cp);
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableLowBandwidth(JNIEnv *env, jobject thiz, jlong cp, jboolean enable) {
 	linphone_call_params_enable_low_bandwidth((LinphoneCallParams *)cp, enable);
@@ -2123,8 +2125,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 		jstring jHost, jint port, jint mirror, jint delay) {
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel;
 	if (!tunnel) return;
+
 	const char* cHost=env->GetStringUTFChars(jHost, NULL);
-	linphone_tunnel_add_server_and_mirror(tunnel, cHost, port, mirror, delay);
+	LinphoneTunnelConfig *tunnelconfig = linphone_tunnel_config_new();
+	linphone_tunnel_config_set_host(tunnelconfig, cHost);
+	linphone_tunnel_config_set_port(tunnelconfig, port);
+	linphone_tunnel_config_set_delay(tunnelconfig, delay);
+	linphone_tunnel_config_set_remote_udp_mirror_port(tunnelconfig, mirror);
+	linphone_tunnel_add_server(tunnel, tunnelconfig);
 	env->ReleaseStringUTFChars(jHost, cHost);
 }
 
@@ -2146,7 +2154,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelSetHttpProxy(JNIEn
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAutoDetect(JNIEnv *env,jobject thiz,jlong pCore) {
 	LinphoneTunnel *tunnel=((LinphoneCore *) pCore)->tunnel; if (!tunnel) return;
 	linphone_tunnel_auto_detect(tunnel);
-
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelCleanServers(JNIEnv *env,jobject thiz,jlong pCore) {
@@ -2217,3 +2224,17 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  e
 	jstring jvalue =env->NewStringUTF(linphone_core_get_version());
 	return jvalue;
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jlong) linphone_core_get_config((LinphoneCore *)lc);
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject thiz, jlong lpc,
+		jstring section, jstring key, jint value) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        lp_config_set_int((LpConfig *)lpc, csection, ckey, (int) value);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+}
+

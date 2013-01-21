@@ -282,6 +282,7 @@ Sal * sal_init(){
 	sal->reuse_authorization=FALSE;
 	sal->rootCa = 0;
 	sal->verify_server_certs=TRUE;
+	sal->verify_server_cn=TRUE;
 	sal->expire_old_contact=FALSE;
 	sal->add_dates=FALSE;
 	sal->dscp=-1;
@@ -378,12 +379,17 @@ static void set_tls_options(Sal *ctx){
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(ctx->verify_server_certs);
 #endif
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(ctx->verify_server_cn);
+#endif
 }
 
 void sal_set_dscp(Sal *ctx, int dscp){
 	ctx->dscp=dscp;
+#ifdef HAVE_EXOSIP_DSCP
 	if (dscp!=-1)
 		eXosip_set_option(EXOSIP_OPT_SET_DSCP,&ctx->dscp);
+#endif
 }
 
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
@@ -391,16 +397,17 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	int keepalive = ctx->keepalive_period;
-	
+
+	ctx->transport = tr;
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
-		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);	
+		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &keepalive);
 		break;
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-			keepalive=-1;	
+		if (!ctx->tcp_tls_keepalive) keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
@@ -494,6 +501,13 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ctx->verify_server_certs=verify;
 #ifdef HAVE_EXOSIP_TLS_VERIFY_CERTIFICATE
 	eXosip_tls_verify_certificate(verify);
+#endif
+}
+
+void sal_verify_server_cn(Sal *ctx, bool_t verify){
+	ctx->verify_server_cn=verify;
+#ifdef HAVE_EXOSIP_TLS_VERIFY_CN
+	eXosip_tls_verify_cn(verify);
 #endif
 }
 
@@ -936,8 +950,13 @@ int sal_call_terminate(SalOp *h){
 }
 
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info){
-	if (h->terminated) return;
-    if (h->pending_auth){
+       bool_t terminating=FALSE;
+       if (h->pending_auth && strcmp(h->pending_auth->request->sip_method,"BYE")==0) {
+               terminating=TRUE;
+       }
+       if (h->terminated && !terminating) return;
+
+       if (h->pending_auth){
 		push_auth_to_exosip(info);
 		
         /*FIXME exosip does not take into account this update register message*/
@@ -2494,9 +2513,24 @@ void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
 
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled) {
+	ctx->tcp_tls_keepalive = enabled;
+}
+
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
-	ctx->keepalive_period=value;
-	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+	switch (ctx->transport) {
+		case SalTransportUDP:
+			ctx->keepalive_period = value;
+			break;
+		case SalTransportTCP:
+		case SalTransportTLS:
+			if (ctx->tcp_tls_keepalive) ctx->keepalive_period = value;
+			else ctx->keepalive_period = -1;
+			break;
+		default:
+			break;
+	}
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
 }
 unsigned int sal_get_keepalive_period(Sal *ctx) {
 	return ctx->keepalive_period;

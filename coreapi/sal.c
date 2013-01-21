@@ -152,6 +152,7 @@ static bool_t payload_type_equals(const PayloadType *p1, const PayloadType *p2){
 	if (strcmp(p1->mime_type,p2->mime_type)!=0) return FALSE;
 	if (p1->clock_rate!=p2->clock_rate) return FALSE;
 	if (p1->channels!=p2->channels) return FALSE;
+	if (payload_type_get_number(p1) != payload_type_get_number(p2)) return FALSE;
 	/*
 	 Do not compare fmtp right now: they are modified internally when the call is started
 	*/

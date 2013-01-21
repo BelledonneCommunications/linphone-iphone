@@ -20,8 +20,8 @@ package org.linphone.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.linphone.CpuUtils;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
@@ -43,6 +43,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("avutil");
 		loadOptionalLibrary("swscale");
 		loadOptionalLibrary("avcore");
+
+		System.loadLibrary("neon");
 		
 		if (!hasNeonInCpuFeatures()) {
 			boolean noNeonLibrariesLoaded = loadOptionalLibrary("avcodecnoneon");
@@ -151,28 +153,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	public static boolean hasNeonInCpuFeatures()
 	{
-		ProcessBuilder cmd;
-		boolean result = false;
-		
-		try {
-			String[] args = {"/system/bin/cat", "/proc/cpuinfo"};
-			cmd = new ProcessBuilder(args);
-	
-		   Process process = cmd.start();
-		   InputStream in = process.getInputStream();
-		   byte[] re = new byte[1024];
-		   while(in.read(re) != -1){
-			   String line = new String(re);
-			   if (line.contains("Features")) {
-				   result = line.contains("neon");
-				   break;
-			   }
-		   }
-		   in.close();
-		} catch(IOException ex){
-			ex.printStackTrace();
-		}
-		return result;
+		CpuUtils cpu = new CpuUtils();
+		return cpu.isCpuNeon();
 	}
 	
 	public static boolean isArmv7()

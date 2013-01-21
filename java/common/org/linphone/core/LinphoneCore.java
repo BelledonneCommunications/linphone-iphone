@@ -876,4 +876,10 @@ public interface LinphoneCore {
 	 * Enable/Disable the use of inband DTMFs
 	 */
 	void setUseRfc2833ForDtmfs(boolean use);
+
+	/**
+	 * @return returns LpConfig object to read/write to the config file: usefull if you wish to extend
+	 * the config file with your own sections
+	 */
+	LpConfig getConfig();
 }
