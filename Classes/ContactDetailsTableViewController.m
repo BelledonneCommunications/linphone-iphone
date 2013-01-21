@@ -59,10 +59,11 @@ enum _ContactSections {
     ContactSections_None = 0,
     ContactSections_Number,
     ContactSections_Sip,
+    ContactSections_Email,
     ContactSections_MAX
 };
 
-static const int contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number, ContactSections_Sip};
+static const int contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number, ContactSections_Sip, ContactSections_Email};
 
 @synthesize footerController;
 @synthesize headerController;
@@ -84,7 +85,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 - (id)init {
     self = [super init];
     if (self) {
-		[self initContactDetailsTableViewController];
+        [self initContactDetailsTableViewController];
     }
     return self;
 }
@@ -92,10 +93,10 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self initContactDetailsTableViewController];
-	}
+        [self initContactDetailsTableViewController];
+    }
     return self;
-}	
+}   
 
 - (void)dealloc {
     if(contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
@@ -139,6 +140,8 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         return [dataCache objectAtIndex:0];
     } else if(contactSections[section] == ContactSections_Sip) {
         return [dataCache objectAtIndex:1];
+    } else if(contactSections[section] == ContactSections_Email) {
+        return [dataCache objectAtIndex:2];
     }
     return nil;
 }
@@ -205,6 +208,24 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
                 CFRelease(lDict);
             }
             CFRelease(lMap);   
+        }
+        [dataCache addObject:subArray];
+    }
+    
+    // Email
+    {
+        ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+        NSMutableArray *subArray = [NSMutableArray array];
+        if(lMap) {
+            for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
+                ABMultiValueIdentifier identifier = ABMultiValueGetIdentifierAtIndex(lMap, i);
+                CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
+                Entry *entry = [[Entry alloc] initWithData:identifier];
+                [subArray addObject: entry];
+                [entry release];
+                CFRelease(lDict);
+            }
+            CFRelease(lMap);
         }
         [dataCache addObject:subArray];
     }
@@ -276,6 +297,30 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             [LinphoneLogger log:LinphoneLoggerError format:@"Can't add entry: %@", [error localizedDescription]];
         }
         CFRelease(lMap);
+    } else if(contactSections[section] == ContactSections_Email) {
+        ABMultiValueIdentifier identifier;
+        ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+        ABMutableMultiValueRef lMap;
+        if(lcMap != NULL) {
+            lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+        } else {
+            lMap = ABMultiValueCreateMutable(kABStringPropertyType);
+        }
+        CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
+        if(!ABMultiValueAddValueAndLabel(lMap, [value copy], label, &identifier)) {
+            added = false;
+        }
+        
+        if(added  && ABRecordSetValue(contact, kABPersonEmailProperty, lMap, (CFErrorRef*)&error)) {
+            Entry *entry = [[Entry alloc] initWithData:identifier];
+            [sectionArray addObject:entry];
+            [entry release];
+        } else {
+            added = false;
+            [LinphoneLogger log:LinphoneLoggerLog format:@"Can't add entry: %@", [error localizedDescription]];
+        }
+        CFRelease(lMap);
     }
     
     if (added && animated) {
@@ -314,6 +359,15 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             }
             CFRelease(lDict);
             CFRelease(lMap);
+        } else if(contactSections[section] == ContactSections_Email) {
+            ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+            if(![(NSString*) valueRef length]) {
+                [self removeEntry:tableview path:[NSIndexPath indexPathForRow:row inSection:section] animated:animated];
+            }
+            CFRelease(valueRef);
+            CFRelease(lMap);
         }
     }
     if(contactDetailsDelegate != nil) {
@@ -340,6 +394,14 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         ABMultiValueRemoveValueAndLabelAtIndex(lMap, index);
         ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
         CFRelease(lMap);
+    } else if(contactSections[[indexPath section]] == ContactSections_Email) {
+        ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+        ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+        CFRelease(lcMap);
+        int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+        ABMultiValueRemoveValueAndLabelAtIndex(lMap, index);
+        ABRecordSetValue(contact, kABPersonEmailProperty, lMap, nil);
+        CFRelease(lMap);
     }
     [sectionArray removeObjectAtIndex:[indexPath row]];
     
@@ -364,6 +426,12 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 - (void)addSipField:(NSString*)address {
     int i = 0;
     while(i < ContactSections_MAX && contactSections[i] != ContactSections_Sip) ++i;
+    [self addEntry:[self tableView] section:i animated:FALSE value:address];
+}
+
+- (void)addEmailField:(NSString*)address {
+    int i = 0;
+    while(i < ContactSections_MAX && contactSections[i] != ContactSections_Email) ++i;
     [self addEntry:[self tableView] section:i animated:FALSE value:address];
 }
 
@@ -428,6 +496,20 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         }
         CFRelease(lDict);
         CFRelease(lMap);
+    } else if(contactSections[[indexPath section]] == ContactSections_Email) {
+        ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+        int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+        CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+        if(labelRef != NULL) {
+            label = [ContactDetailsTableViewController localizeLabel:(NSString*) labelRef];
+            CFRelease(labelRef);
+        }
+        CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+        if(valueRef != NULL) {
+            value = [ContactDetailsTableViewController localizeLabel:(NSString*) valueRef];
+            CFRelease(valueRef);
+        }
+        CFRelease(lMap);
     }
     [cell.textLabel setText:label];
     [cell.detailTextLabel setText:value];
@@ -438,6 +520,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     } else if(contactSections[[indexPath section]] == ContactSections_Sip){
         [cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
         [cell.detailTextField setPlaceholder:NSLocalizedString(@"SIP address", nil)];
+    } else if(contactSections[[indexPath section]] == ContactSections_Email) {
+        [cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Email address", nil)];
     }
     return cell;
 }
@@ -464,6 +549,15 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             CFStringRef valueRef = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
             dest = [FastAddressBook normalizeSipURI:[NSString stringWithString:(NSString*) valueRef]];
             CFRelease(lDict);
+            CFRelease(lMap);
+        } else if(contactSections[[indexPath section]] == ContactSections_Email) {
+            ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            CFStringRef valueRef = ABMultiValueCopyValueAtIndex(lMap, index);
+            if(valueRef != NULL) {
+                dest = [FastAddressBook normalizeSipURI:[NSString stringWithString:(NSString*) valueRef]];
+                CFRelease(valueRef);
+            }
             CFRelease(lMap);
         }
         if(dest != nil) {
@@ -503,6 +597,15 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
                 CFRelease(labelRef);
             }
             CFRelease(lMap);
+        } else if(contactSections[[indexPath section]] == ContactSections_Email) {
+            ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            CFStringRef labelRef = ABMultiValueCopyLabelAtIndex(lMap, index);
+            if(labelRef != NULL) {
+                key = [NSString stringWithString:(NSString*) labelRef];
+                CFRelease(labelRef);
+            }
+            CFRelease(lMap);
         }
         if(key != nil) {
             if(editingIndexPath != nil) {
@@ -523,9 +626,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     [LinphoneUtils findAndResignFirstResponder:[self tableView]];
     if (editingStyle == UITableViewCellEditingStyleInsert) {
         [tableView beginUpdates];
-		[self addEntry:tableView section:[indexPath section] animated:TRUE];
+        [self addEntry:tableView section:[indexPath section] animated:TRUE];
         [tableView  endUpdates];
-	} else if (editingStyle == UITableViewCellEditingStyleDelete) {
+    } else if (editingStyle == UITableViewCellEditingStyleDelete) {
         [tableView beginUpdates];
         [self removeEntry:tableView path:indexPath animated:TRUE];
         [tableView  endUpdates];
@@ -550,13 +653,15 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     if(editing) {
         for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
             if(contactSections[section] == ContactSections_Number ||
-               contactSections[section] == ContactSections_Sip)
+               contactSections[section] == ContactSections_Sip ||
+               contactSections[section] == ContactSections_Email)
             [self addEntry:self.tableView section:section animated:animated];
         }
     } else {
         for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
             if(contactSections[section] == ContactSections_Number ||
-               contactSections[section] == ContactSections_Sip)
+               contactSections[section] == ContactSections_Sip ||
+               contactSections[section] == ContactSections_Email)
             [self removeEmptyEntry:self.tableView section:section animated:animated];
         }
     }
@@ -572,9 +677,9 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     int last_index = [[self getSectionData:[indexPath section]] count] - 1;
-	if (indexPath.row == last_index) {
-		return UITableViewCellEditingStyleInsert;
-	}
+    if (indexPath.row == last_index) {
+        return UITableViewCellEditingStyleInsert;
+    }
     return UITableViewCellEditingStyleDelete;
 }
 
@@ -600,6 +705,8 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         return NSLocalizedString(@"Phone numbers", nil);
     } else if(contactSections[section] == ContactSections_Sip) {
         return NSLocalizedString(@"SIP addresses", nil);
+    } else if(contactSections[section] == ContactSections_Email) {
+        return NSLocalizedString(@"Email addresses", nil);
     }
     return nil;
 }
@@ -656,6 +763,14 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
             ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
             CFRelease(lMap);
+        } else if(contactSections[[editingIndexPath section]] == ContactSections_Email) {
+            ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+            ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            ABMultiValueReplaceLabelAtIndex(lMap, (CFStringRef)(value), index);
+            ABRecordSetValue(contact, kABPersonEmailProperty, lMap, nil);
+            CFRelease(lMap);
         }
         [self.tableView beginUpdates];
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject: editingIndexPath] withRowAnimation:FALSE];
@@ -709,6 +824,14 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
             CFRelease(lDict);
             ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
+            CFRelease(lMap);
+        } else if(contactSections[[path section]] == ContactSections_Email) {
+            ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
+            ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+            int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+            ABMultiValueReplaceValueAtIndex(lMap, (CFStringRef)value, index);
+            ABRecordSetValue(contact, kABPersonEmailProperty, lMap, nil);
             CFRelease(lMap);
         }
         [cell.detailTextLabel setText:value];
