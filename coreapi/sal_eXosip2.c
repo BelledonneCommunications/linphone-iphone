@@ -397,7 +397,8 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	int keepalive = ctx->keepalive_period;
-	
+
+	ctx->transport = tr;
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
@@ -406,7 +407,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-		keepalive=-1;
+		if (!ctx->tcp_tls_keepalive) keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
@@ -2512,9 +2513,24 @@ void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
 
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled) {
+	ctx->tcp_tls_keepalive = enabled;
+}
+
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
-	ctx->keepalive_period=value;
-	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+	switch (ctx->transport) {
+		case SalTransportUDP:
+			ctx->keepalive_period = value;
+			break;
+		case SalTransportTCP:
+		case SalTransportTLS:
+			if (ctx->tcp_tls_keepalive) ctx->keepalive_period = value;
+			else ctx->keepalive_period = -1;
+			break;
+		default:
+			break;
+	}
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
 }
 unsigned int sal_get_keepalive_period(Sal *ctx) {
 	return ctx->keepalive_period;

@@ -635,7 +635,8 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
-	sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
+	lc->sip_conf.tcp_tls_keepalive=lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
+	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
 	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
@@ -5170,6 +5171,7 @@ const char *linphone_error_to_string(LinphoneReason err){
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	if (enable > 0) {
+		sal_use_tcp_tls_keepalive(lc->sal,lc->sip_conf.tcp_tls_keepalive);
 		sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
 	} else {
 		sal_set_keepalive_period(lc->sal,0);

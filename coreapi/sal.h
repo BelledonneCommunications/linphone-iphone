@@ -343,6 +343,7 @@ ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 /**
  * returns keepalive period in ms
  * 0 desactiaved
