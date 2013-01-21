@@ -257,7 +257,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		//force transport to udp
 		LCSipTransports lTransport;
 		
-		lTransport.udp_port=15060;
+		lTransport.udp_port=(0xDFFF&random())+1024;
 		lTransport.tcp_port=0;
 		lTransport.tls_port=0;
 		lTransport.dtls_port=0;
