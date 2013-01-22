@@ -215,14 +215,17 @@ LpConfig * lp_config_new(const char *filename){
 		lpconfig->filename=ortp_strdup(filename);
 		lpconfig->file=fopen(filename,"rw");
 		if (lpconfig->file!=NULL){
+			struct stat fileStat;
 			lp_config_parse(lpconfig,lpconfig->file);
-			fclose(lpconfig->file);			
+			fclose(lpconfig->file);
 #if !defined(_WIN32_WCE)
-			/* make existing configuration files non-group/world-accessible */
-			if (chmod(filename, S_IRUSR | S_IWUSR) == -1)
-				ms_warning("unable to correct permissions on "
-				  	  "configuration file: %s",
-					   strerror(errno));
+			if ((stat(filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
+				/* make existing configuration files non-group/world-accessible */
+				if (chmod(filename, S_IRUSR | S_IWUSR) == -1) {
+					ms_warning("unable to correct permissions on "
+					"configuration file: %s", strerror(errno));
+				}
+			}
 #endif /*_WIN32_WCE*/
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
