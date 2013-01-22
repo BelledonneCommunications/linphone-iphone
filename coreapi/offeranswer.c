@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "sal.h"
 #include "offeranswer.h"
+#include "private.h"
 
 static bool_t only_telephone_event(const MSList *l){
 	for(;l!=NULL;l=l->next){
@@ -267,22 +268,23 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
  * and the returned response (remote).
 **/
 int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
-									const SalMediaDescription *remote_answer,
-    							SalMediaDescription *result){
-    	int i,j;
-    
+					const SalMediaDescription *remote_answer,
+					SalMediaDescription *result){
+	int i,j;
+
 	const SalStreamDescription *ls,*rs;
-	for(i=0,j=0;i<local_offer->nstreams;++i){
+	for(i=0,j=0;i<local_offer->n_total_streams;++i){
 		ms_message("Processing for stream %i",i);
 		ls=&local_offer->streams[i];
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
-	if (rs) {
+		if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
 			++j;
 		}
 		else ms_warning("No matching stream for %i",i);
 	}
-	result->nstreams=j;
+	result->n_active_streams=j;
+	result->n_total_streams=local_offer->n_total_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
 	return 0;
@@ -294,12 +296,13 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
  * The returned media description is an answer and should be sent to the offerer.
 **/
 int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
-						const SalMediaDescription *remote_offer,
-    					SalMediaDescription *result, bool_t one_matching_codec){
+					const SalMediaDescription *remote_offer,
+					SalMediaDescription *result, bool_t one_matching_codec){
 	int i;
 	const SalStreamDescription *ls=NULL,*rs;
-							
-	for(i=0;i<remote_offer->nstreams;++i){
+
+	result->n_active_streams=0;
+	for(i=0;i<remote_offer->n_total_streams;++i){
 		rs=&remote_offer->streams[i];
 		if (rs->proto!=SalProtoUnknown){
 			ls=sal_media_description_find_stream((SalMediaDescription*)local_capabilities,rs->proto,rs->type);
@@ -310,6 +313,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+			result->n_active_streams++;
 		}
 		else {
 			/* create an inactive stream for the answer, as there where no matching stream a local capability */
@@ -322,7 +326,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			}
 		}
 	}
-	result->nstreams=i;
+	result->n_total_streams=i;
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
 	result->bandwidth=local_capabilities->bandwidth;

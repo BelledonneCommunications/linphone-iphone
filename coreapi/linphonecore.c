@@ -2576,7 +2576,7 @@ bool_t linphone_core_inc_invite_pending(LinphoneCore*lc){
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md){
 	if (linphone_core_is_media_encryption_mandatory(lc) && linphone_core_get_media_encryption(lc)==LinphoneMediaEncryptionSRTP){
 		int i;
-		for(i=0;i<md->nstreams;i++){
+		for(i=0;i<md->n_active_streams;i++){
 			SalStreamDescription *sd=&md->streams[i];
 			if (sd->proto!=SalProtoRtpSavp){
 				return TRUE;

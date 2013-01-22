@@ -41,14 +41,14 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < old_md->nstreams; i++) {
+	for (i = 0; i < old_md->n_active_streams; i++) {
 		if (old_md->streams[i].type == SalAudio) {
 			old_audiodesc = &old_md->streams[i];
 		} else if (old_md->streams[i].type == SalVideo) {
 			old_videodesc = &old_md->streams[i];
 		}
 	}
-	for (i = 0; i < new_md->nstreams; i++) {
+	for (i = 0; i < new_md->n_active_streams; i++) {
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
 		} else if (new_md->streams[i].type == SalVideo) {
@@ -591,7 +591,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 					if (call->state==LinphoneCallOutgoingInit || call->state==LinphoneCallOutgoingProgress){
 						/* clear SRTP local params */
 						call->params.media_encryption = LinphoneMediaEncryptionNone;
-						for(i=0; i<call->localdesc->nstreams; i++) {
+						for(i=0; i<call->localdesc->n_active_streams; i++) {
 							call->localdesc->streams[i].proto = SalProtoRtpAvp;
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 						}

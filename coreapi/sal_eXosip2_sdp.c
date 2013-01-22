@@ -394,7 +394,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
 	sdp_message_t *msg=create_generic_sdp(desc);
-	for(i=0;i<desc->nstreams;++i){
+	for(i=0;i<desc->n_total_streams;++i){
 		add_line(msg,i,&desc->streams[i]);
 	}
 	return msg;
@@ -463,6 +463,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		}
 	}
 
+	desc->n_active_streams = 0;
+
 	/* for each m= line */
 	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
 	{
@@ -486,6 +488,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			strncpy(stream->rtp_addr,rtp_addr,sizeof(stream->rtp_addr));
 		if (rtp_port)
 			stream->rtp_port=atoi(rtp_port);
+		if (stream->rtp_port > 0)
+			desc->n_active_streams++;
 		
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
@@ -609,6 +613,6 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			}
 		}
 	}
-	desc->nstreams=i;
+	desc->n_total_streams=i;
 	return 0;
 }

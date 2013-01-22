@@ -178,7 +178,8 @@ typedef struct SalMediaDescription{
 	int refcount;
 	char addr[64];
 	char username[64];
-	int nstreams;
+	int n_active_streams;
+	int n_total_streams;
 	int bandwidth;
 	unsigned int session_ver;
 	unsigned int session_id;

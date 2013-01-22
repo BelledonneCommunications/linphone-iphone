@@ -76,7 +76,7 @@ void sal_media_description_unref(SalMediaDescription *md){
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type){
 	int i;
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
@@ -84,17 +84,13 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 }
 
 bool_t sal_media_description_empty(const SalMediaDescription *md){
-	int i;
-	for(i=0;i<md->nstreams;++i){
-		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->rtp_port!=0) return FALSE;
-	}
+	if (md->n_active_streams > 0) return FALSE;
 	return TRUE;
 }
 
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		ss->dir=stream_dir;
 	}
@@ -110,7 +106,7 @@ static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
 
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (ss->dir==stream_dir) return TRUE;
 		/*compatibility check for phones that only used the null address and no attributes */
@@ -224,9 +220,9 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
-	if (md1->nstreams != md2->nstreams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->n_total_streams != md2->n_total_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
-	for(i = 0; i < md1->nstreams; ++i){
+	for(i = 0; i < md1->n_total_streams; ++i){
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
 	}
 	return result;
