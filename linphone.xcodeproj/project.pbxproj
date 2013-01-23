@@ -2292,6 +2292,32 @@
 		D3F9A9DA15AEEB940045320F /* history_notification.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_notification.png; path = Resources/history_notification.png; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
+		FD61C851169EAC63001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ChatRoomViewController.xib; sourceTree = "<group>"; };
+		FD61C853169FBBB6001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ChatViewController.xib; sourceTree = "<group>"; };
+		FD61C855169FBD1C001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ContactDetailsLabelViewController.xib; sourceTree = "<group>"; };
+		FD61C857169FBD74001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ContactDetailsViewController.xib; sourceTree = "<group>"; };
+		FD61C859169FC1DD001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ContactsViewController.xib; sourceTree = "<group>"; };
+		FD61C85C169FC2CE001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/DialerViewController.xib; sourceTree = "<group>"; };
+		FD61C85E169FC39D001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = "ru.lproj/DialerViewController~ipad.xib"; sourceTree = "<group>"; };
+		FD61C860169FC419001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/FirstLoginViewController.xib; sourceTree = "<group>"; };
+		FD61C862169FC495001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/HistoryDetailsViewController.xib; sourceTree = "<group>"; };
+		FD61C86E169FE759001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/HistoryViewController.xib; sourceTree = "<group>"; };
+		FD61C870169FE8F7001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ImageViewController.xib; sourceTree = "<group>"; };
+		FD61C872169FE934001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/InCallViewController.xib; sourceTree = "<group>"; };
+		FD61C874169FE995001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/IncomingCallViewController.xib; sourceTree = "<group>"; };
+		FD61C876169FEA1C001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = "ru.lproj/IncomingCallViewController~ipad.xib"; sourceTree = "<group>"; };
+		FD61C878169FEAF1001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/WizardViewController.xib; sourceTree = "<group>"; };
+		FD61C87A169FEC49001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = "ru.lproj/WizardViewController~ipad.xib"; sourceTree = "<group>"; };
+		FD61C87C169FECC6001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/WizardViews.xib; sourceTree = "<group>"; };
+		FD61C87E169FFB54001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UICallBar.xib; sourceTree = "<group>"; };
+		FD61C88016A00BA8001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = "ru.lproj/UICallBar~ipad.xib"; sourceTree = "<group>"; };
+		FD61C88216A00E69001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UICallCell.xib; sourceTree = "<group>"; };
+		FD61C88416A02406001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UIConferenceHeader.xib; sourceTree = "<group>"; };
+		FD61C88616A024BC001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UIContactDetailsFooter.xib; sourceTree = "<group>"; };
+		FD61C88816A02529001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UIContactDetailsHeader.xib; sourceTree = "<group>"; };
+		FD61C88A16A0257F001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/UIMainBar.xib; sourceTree = "<group>"; };
+		FD61C88C16A027D5001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = "ru.lproj/UIMainBar~ipad.xib"; sourceTree = "<group>"; };
+		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3659,6 +3685,7 @@
 				German,
 				en,
 				fr,
+				ru,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -4965,6 +4992,7 @@
 			children = (
 				2214783C1386A2030020F8B8 /* en */,
 				D381885815FE44A700C3EDCA /* fr */,
+				FD979F30169E84670022A8B4 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4974,6 +5002,7 @@
 			children = (
 				D37EE10F16035793003608A6 /* en */,
 				D37EE11116036197003608A6 /* fr */,
+				FD61C870169FE8F7001AA2D6 /* ru */,
 			);
 			name = ImageViewController.xib;
 			sourceTree = "<group>";
@@ -4983,6 +5012,7 @@
 			children = (
 				D38187AF15FE340100C3EDCA /* en */,
 				D381882B15FE447200C3EDCA /* fr */,
+				FD61C851169EAC63001AA2D6 /* ru */,
 			);
 			name = ChatRoomViewController.xib;
 			sourceTree = "<group>";
@@ -4992,6 +5022,7 @@
 			children = (
 				D38187B315FE340500C3EDCA /* en */,
 				D381882C15FE447200C3EDCA /* fr */,
+				FD61C853169FBBB6001AA2D6 /* ru */,
 			);
 			name = ChatViewController.xib;
 			sourceTree = "<group>";
@@ -5001,6 +5032,7 @@
 			children = (
 				D38187B715FE341B00C3EDCA /* en */,
 				D381882D15FE447200C3EDCA /* fr */,
+				FD61C855169FBD1C001AA2D6 /* ru */,
 			);
 			name = ContactDetailsLabelViewController.xib;
 			sourceTree = "<group>";
@@ -5010,6 +5042,7 @@
 			children = (
 				D38187BB15FE342200C3EDCA /* en */,
 				D381882E15FE447200C3EDCA /* fr */,
+				FD61C857169FBD74001AA2D6 /* ru */,
 			);
 			name = ContactDetailsViewController.xib;
 			sourceTree = "<group>";
@@ -5019,6 +5052,7 @@
 			children = (
 				D38187BF15FE342800C3EDCA /* en */,
 				D381882F15FE447200C3EDCA /* fr */,
+				FD61C859169FC1DD001AA2D6 /* ru */,
 			);
 			name = ContactsViewController.xib;
 			sourceTree = "<group>";
@@ -5028,6 +5062,7 @@
 			children = (
 				D38187C315FE345B00C3EDCA /* en */,
 				D381883015FE447200C3EDCA /* fr */,
+				FD61C85C169FC2CE001AA2D6 /* ru */,
 			);
 			name = DialerViewController.xib;
 			sourceTree = "<group>";
@@ -5037,6 +5072,7 @@
 			children = (
 				D38187C715FE345F00C3EDCA /* en */,
 				D381883115FE447200C3EDCA /* fr */,
+				FD61C85E169FC39D001AA2D6 /* ru */,
 			);
 			name = "DialerViewController~ipad.xib";
 			sourceTree = "<group>";
@@ -5046,6 +5082,7 @@
 			children = (
 				D38187CB15FE346400C3EDCA /* en */,
 				D381883215FE447200C3EDCA /* fr */,
+				FD61C860169FC419001AA2D6 /* ru */,
 			);
 			name = FirstLoginViewController.xib;
 			sourceTree = "<group>";
@@ -5055,6 +5092,7 @@
 			children = (
 				D38187CF15FE346700C3EDCA /* en */,
 				D381883315FE447200C3EDCA /* fr */,
+				FD61C862169FC495001AA2D6 /* ru */,
 			);
 			name = HistoryDetailsViewController.xib;
 			sourceTree = "<group>";
@@ -5064,6 +5102,7 @@
 			children = (
 				D38187D315FE346B00C3EDCA /* en */,
 				D381883415FE447200C3EDCA /* fr */,
+				FD61C86E169FE759001AA2D6 /* ru */,
 			);
 			name = HistoryViewController.xib;
 			sourceTree = "<group>";
@@ -5073,6 +5112,7 @@
 			children = (
 				D38187DB15FE347700C3EDCA /* en */,
 				D381883615FE447200C3EDCA /* fr */,
+				FD61C874169FE995001AA2D6 /* ru */,
 			);
 			name = IncomingCallViewController.xib;
 			sourceTree = "<group>";
@@ -5082,6 +5122,7 @@
 			children = (
 				D38187DF15FE348A00C3EDCA /* en */,
 				D381883715FE447200C3EDCA /* fr */,
+				FD61C878169FEAF1001AA2D6 /* ru */,
 			);
 			name = WizardViewController.xib;
 			sourceTree = "<group>";
@@ -5091,6 +5132,7 @@
 			children = (
 				D38187E315FE349700C3EDCA /* en */,
 				D381884615FE448400C3EDCA /* fr */,
+				FD61C87E169FFB54001AA2D6 /* ru */,
 			);
 			name = UICallBar.xib;
 			sourceTree = "<group>";
@@ -5100,6 +5142,7 @@
 			children = (
 				D38187E715FE349D00C3EDCA /* en */,
 				D381884715FE448400C3EDCA /* fr */,
+				FD61C88016A00BA8001AA2D6 /* ru */,
 			);
 			name = "UICallBar~ipad.xib";
 			sourceTree = "<group>";
@@ -5109,6 +5152,7 @@
 			children = (
 				D38187F215FE354000C3EDCA /* en */,
 				D381884915FE448400C3EDCA /* fr */,
+				FD61C88416A02406001AA2D6 /* ru */,
 			);
 			name = UIConferenceHeader.xib;
 			sourceTree = "<group>";
@@ -5118,6 +5162,7 @@
 			children = (
 				D38187F615FE354700C3EDCA /* en */,
 				D381884A15FE448400C3EDCA /* fr */,
+				FD61C88616A024BC001AA2D6 /* ru */,
 			);
 			name = UIContactDetailsFooter.xib;
 			sourceTree = "<group>";
@@ -5127,6 +5172,7 @@
 			children = (
 				D38187FA15FE355D00C3EDCA /* en */,
 				D381884C15FE448400C3EDCA /* fr */,
+				FD61C88A16A0257F001AA2D6 /* ru */,
 			);
 			name = UIMainBar.xib;
 			sourceTree = "<group>";
@@ -5136,6 +5182,7 @@
 			children = (
 				D38187FE15FE356100C3EDCA /* en */,
 				D381884D15FE448400C3EDCA /* fr */,
+				FD61C88C16A027D5001AA2D6 /* ru */,
 			);
 			name = "UIMainBar~ipad.xib";
 			sourceTree = "<group>";
@@ -5145,6 +5192,7 @@
 			children = (
 				D381881315FE3F0B00C3EDCA /* en */,
 				D381884815FE448400C3EDCA /* fr */,
+				FD61C88216A00E69001AA2D6 /* ru */,
 			);
 			name = UICallCell.xib;
 			sourceTree = "<group>";
@@ -5154,6 +5202,7 @@
 			children = (
 				D381881715FE3F7F00C3EDCA /* en */,
 				D381884B15FE448400C3EDCA /* fr */,
+				FD61C88816A02529001AA2D6 /* ru */,
 			);
 			name = UIContactDetailsHeader.xib;
 			sourceTree = "<group>";
@@ -5163,6 +5212,7 @@
 			children = (
 				D381881B15FE3FCA00C3EDCA /* en */,
 				D381883515FE447200C3EDCA /* fr */,
+				FD61C872169FE934001AA2D6 /* ru */,
 			);
 			name = InCallViewController.xib;
 			sourceTree = "<group>";
@@ -5172,6 +5222,7 @@
 			children = (
 				D3D5126B160B3A8E00946DF8 /* en */,
 				D3D51273160B3E5000946DF8 /* fr */,
+				FD61C87C169FECC6001AA2D6 /* ru */,
 			);
 			name = WizardViews.xib;
 			sourceTree = "<group>";
@@ -5181,6 +5232,7 @@
 			children = (
 				D3D5126F160B3AD400946DF8 /* en */,
 				D3D51272160B3E5000946DF8 /* fr */,
+				FD61C87A169FEC49001AA2D6 /* ru */,
 			);
 			name = "WizardViewController~ipad.xib";
 			sourceTree = "<group>";
@@ -5190,6 +5242,7 @@
 			children = (
 				D3D52A721614480700DEB00A /* en */,
 				D3D52A8D16144C0B00DEB00A /* fr */,
+				FD61C876169FEA1C001AA2D6 /* ru */,
 			);
 			name = "IncomingCallViewController~ipad.xib";
 			sourceTree = "<group>";
