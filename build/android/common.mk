@@ -35,10 +35,15 @@ LOCAL_SRC_FILES := \
 	siplogin.c \
 	address.c \
 	linphonecore_jni.cc \
+	bellesip_sal/sal_address_impl.c \
+	bellesip_sal/sal_impl.c \
+	bellesip_sal/sal_op_call.c \
+	bellesip_sal/sal_op_impl.c \
+	bellesip_sal/sal_op_message.c \
+	bellesip_sal/sal_op_presence.c \
+	bellesip_sal/sal_op_registration.c \
+	bellesip_sal/sal_sdp.c \
 	sal.c \
-	sal_eXosip2.c \
-	sal_eXosip2_presence.c \
-	sal_eXosip2_sdp.c \
 	offeranswer.c \
 	callbacks.c \
 	linphonecall.c \
@@ -54,14 +59,10 @@ LOCAL_CFLAGS += \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
 	-DINET6 \
-	-DOSIP_MT \
-	-DHAVE_EXOSIP_GET_VERSION \
-	-DHAVE_EXOSIP_RESET_TRANSPORTS \
 	-DENABLE_TRACE \
+	-DHAVE_CONFIG_H \
 	-DLINPHONE_VERSION=\"$(LINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DHAVE_EXOSIP_TRYLOCK=1 \
-	-DHAVE_EXOSIP_TLS_VERIFY_CERTIFICATE=1 
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -79,10 +80,10 @@ endif
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
+	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
-	$(LOCAL_PATH)/../../externals/exosip/include \
-	$(LOCAL_PATH)/../../externals/osip/include \
+	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen
 
 LOCAL_LDLIBS += -llog -ldl
@@ -93,8 +94,7 @@ LOCAL_STATIC_LIBRARIES := \
 	cpufeatures \
 	libmediastreamer2 \
 	libortp \
-	libeXosip2 \
-	libosip2 \
+	libbellesip \
 	libgsm 
 
 ifeq ($(BUILD_TUNNEL),1)
