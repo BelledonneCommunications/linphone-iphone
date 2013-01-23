@@ -495,6 +495,15 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify){
 	ms_error("sal_verify_server_certificates not implemented yet");
 	return ;
 }
+void sal_verify_server_cn(Sal *ctx, bool_t verify){
+	ms_error("sal_verify_server_cn not implemented yet");
+	return ;
+}
+
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled) {
+	ms_error("sal_use_tcp_tls_keepalive not implemented yet");
+	return ;
+}
 
 int sal_iterate(Sal *sal){
 	/*FIXME should be zero*/
