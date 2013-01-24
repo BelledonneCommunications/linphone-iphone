@@ -14279,6 +14279,39 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Confirm the following SAS with the peer:
+%s</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Confirm the following SAS with the peer:
+%s</string>
+								<key>fr</key>
+								<string>Confirmer le SAS suivant avec l'interlocuteur:
+%s</string>
+								<key>ru</key>
+								<string>Подтвердите SAS собеседника:
+%s</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>ru</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Continue</string>
 							<key>localizations</key>
 							<dict>
@@ -15580,6 +15613,64 @@ La cause était: %2$@</string>
 							<key>flags</key>
 							<integer>0</integer>
 							<key>key</key>
+							<string>Remove trust in the peer?</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Remove trust in the peer?</string>
+								<key>fr</key>
+								<string>Supprimer la confiance dans l'interlocuteur?</string>
+								<key>ru</key>
+								<string>Перестать доверять собеседнику?</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>ru</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Settings</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Settings</string>
+								<key>fr</key>
+								<string>Options</string>
+								<key>ru</key>
+								<string>Настройки</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array>
+								<string>ru</string>
+							</array>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>No comment provided by engineer.</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
 							<string>Select picture source</string>
 							<key>localizations</key>
 							<dict>
@@ -16150,84 +16241,6 @@ Activer l'application dans Réglages &gt; Confidentialité &gt; Contacts</string
 							<dict>
 								<key>en</key>
 								<string>© 2010-2012 Belledonne Communications </string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Confirm the following SAS with the peer:
-%s</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Confirm the following SAS with the peer:
-%s</string>
-								<key>fr</key>
-								<string>Confirmer le SAS suivant avec l'interlocuteur:
-%s</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Remove trust in the peer?</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Remove trust in the peer?</string>
-								<key>fr</key>
-								<string>Supprimer la confiance dans l'interlocuteur?</string>
-							</dict>
-							<key>snapshots</key>
-							<dict/>
-						</dict>
-						<dict>
-							<key>change date</key>
-							<date>2001-01-01T00:00:00Z</date>
-							<key>changed values</key>
-							<array/>
-							<key>class</key>
-							<string>BLStringKeyObject</string>
-							<key>comment</key>
-							<string>No comment provided by engineer.</string>
-							<key>errors</key>
-							<array/>
-							<key>flags</key>
-							<integer>0</integer>
-							<key>key</key>
-							<string>Settings</string>
-							<key>localizations</key>
-							<dict>
-								<key>en</key>
-								<string>Settings</string>
-								<key>fr</key>
-								<string>Options</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
