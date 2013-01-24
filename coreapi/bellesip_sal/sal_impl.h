@@ -55,7 +55,7 @@ struct SalOp{
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_client_transaction_t* pending_inv_client_trans;
 	SalAuthInfo* auth_info;
-	unsigned long int  registration_refresh_timer;
+	belle_sip_refresher_t*  registration_refresher;
 	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;
 	belle_sip_header_address_t *replaces;
@@ -83,7 +83,7 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
 
 bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size);
-
+void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) ;
 /*presence*/
 void sal_op_presence_fill_cbs(SalOp*op);
 

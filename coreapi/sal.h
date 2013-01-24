@@ -488,4 +488,7 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
 void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin);
 void __sal_op_free(SalOp *b);
 
+/*test api*/
+/*0 for no error*/
+void sal_set_send_error(Sal *sal,int value);
 #endif

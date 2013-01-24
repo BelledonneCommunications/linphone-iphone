@@ -346,6 +346,9 @@ const char *sal_op_get_contact(const SalOp *op){
 }
 
 const char *sal_op_get_route(const SalOp *op){
+#ifdef BELLE_SIP
+ms_fatal("sal_op_get_route not supported, use sal_op_get_route_addresses instead");
+#endif
 	return ((SalOpBase*)op)->route;
 }
 

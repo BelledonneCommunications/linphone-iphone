@@ -23,11 +23,12 @@ SalAddress * sal_address_new(const char *uri){
 	belle_sip_header_address_t*  result;
 	if (uri) {
 		result=belle_sip_header_address_parse (uri);
+		/*may return NULL*/
 	} else {
 		result = belle_sip_header_address_new();
 		belle_sip_header_address_set_uri(result,belle_sip_uri_new());
 	}
-	belle_sip_object_ref(result);
+	if (result) belle_sip_object_ref(result);
 	return (SalAddress *)result;
 }
 SalAddress * sal_address_clone(const SalAddress *addr){

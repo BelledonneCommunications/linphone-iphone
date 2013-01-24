@@ -534,3 +534,6 @@ int sal_reset_transports(Sal *ctx){
 void sal_set_dscp(Sal *ctx, int dscp){
 	ms_warning("sal_set_dscp not implemented");
 }
+void  sal_set_send_error(Sal *sal,int value) {
+	 belle_sip_stack_set_send_error(sal->stack,value);
+}

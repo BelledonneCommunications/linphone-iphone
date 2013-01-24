@@ -28,11 +28,12 @@ SalOp * sal_op_new(Sal *sal){
 
 void sal_op_release(SalOp *op){
 	if (op->request) belle_sip_object_unref(op->request);
-	if (op->registration_refresh_timer>0) {
-		belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->registration_refresh_timer);
-	}
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
+	if (op->registration_refresher) {
+		belle_sip_refresher_stop(op->registration_refresher);
+		belle_sip_object_unref(op->registration_refresher);
+	}
 	__sal_op_free(op);
 	return ;
 }
@@ -115,12 +116,19 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
+	belle_sip_uri_t* outbound_proxy=NULL;
 	MSList* iterator;
 	if (!op->dialog) {
 		/*don't put route header if dialog is in confirmed state*/
 		for(iterator=(MSList*)sal_op_get_route_addresses(op);iterator!=NULL;iterator=iterator->next) {
-			route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(iterator->data));
-			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+			if(!outbound_proxy) {
+				/*first toute is outbound proxy*/
+				outbound_proxy=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(iterator->data));
+			} else {
+				/*next are Route headers*/
+				route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(iterator->data));
+				belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+			}
 		}
 	}
 
@@ -135,26 +143,11 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
 	}
-	return belle_sip_client_transaction_send_request(client_transaction);
+	return belle_sip_client_transaction_send_request_to(client_transaction,outbound_proxy/*might be null*/);
 
 }
-/*return TRUE if error code*/
-bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
-	int code = belle_sip_response_get_status_code(response);
-	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
-	*sal_err=SalErrorUnknown;
-	*sal_reason = SalReasonUnknown;
 
-	if (reason_header){
-		snprintf(reason
-				,reason_size
-				,"%s %s"
-				,belle_sip_response_get_reason_phrase(response)
-				,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
-	} else {
-		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
-	}
-	if (code >=400) {
+void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
 		switch(code) {
 		case 400:
 			*sal_err=SalErrorUnknown;
@@ -195,6 +188,25 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 			}else *sal_err=SalErrorNoResponse;
 			/* no break */
 		}
+}
+/*return TRUE if error code*/
+bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
+	int code = belle_sip_response_get_status_code(response);
+	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
+	*sal_err=SalErrorUnknown;
+	*sal_reason = SalReasonUnknown;
+
+	if (reason_header){
+		snprintf(reason
+				,reason_size
+				,"%s %s"
+				,belle_sip_response_get_reason_phrase(response)
+				,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
+	} else {
+		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
+	}
+	if (code>400) {
+		sal_compute_sal_errors_from_code(code,sal_err,sal_reason);
 		return TRUE;
 	} else {
 		return FALSE;
