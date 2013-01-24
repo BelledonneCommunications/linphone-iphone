@@ -40,6 +40,8 @@ void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 		case BELLE_SIP_LOG_DEBUG:
 			ortp_level=ORTP_DEBUG;
 		break;
+		default:
+			break;
 	}
 	if (ortp_log_level_enabled(ortp_level)){
 		ortp_logv(ortp_level,fmt,args);
