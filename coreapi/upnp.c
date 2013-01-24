@@ -308,8 +308,10 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	/*
 	 * Not need, all hooks are removed before
 	 * linphone_core_remove_iterate_hook(lc, linphone_core_upnp_hook, lc);
-     */
+	 */
 
+	ms_mutex_lock(&lupnp->mutex);
+	
 	/* Send port binding removes */
 	if(lupnp->sip_udp != NULL) {
 		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp);
@@ -325,9 +327,10 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	}
 
 	/* Wait all pending bindings are done */
-	ms_message("uPnP IGD: Wait all pending port bindings ...");
-	ms_mutex_lock(&lupnp->mutex);
-	ms_cond_wait(&lupnp->empty_cond, &lupnp->mutex);
+	if(lupnp->pending_bindings != NULL) {
+		ms_message("uPnP IGD: Wait all pending port bindings ...");
+		ms_cond_wait(&lupnp->empty_cond, &lupnp->mutex);
+	}
 	ms_mutex_unlock(&lupnp->mutex);
 
 	if(lupnp->upnp_igd_ctxt != NULL) {
