@@ -20,6 +20,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+
+void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
+	int ortp_level;
+	switch(lev) {
+		case BELLE_SIP_LOG_FATAL:
+			ortp_level=ORTP_FATAL;
+		break;
+		case BELLE_SIP_LOG_ERROR:
+			ortp_level=ORTP_ERROR;
+		break;
+		case BELLE_SIP_LOG_WARNING:
+			ortp_level=ORTP_WARNING;
+		break;
+		case BELLE_SIP_LOG_MESSAGE:
+			ortp_level=ORTP_MESSAGE;
+		break;
+		case BELLE_SIP_LOG_DEBUG:
+			ortp_level=ORTP_DEBUG;
+		break;
+	}
+	if (ortp_log_level_enabled(ortp_level)){
+		ortp_logv(ortp_level,fmt,args);
+	}
+}
+
 void sal_enable_logs(){
 	belle_sip_set_log_level(BELLE_SIP_LOG_MESSAGE);
 }
@@ -345,6 +371,7 @@ Sal * sal_init(){
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
 	belle_sip_header_user_agent_add_product(sal->user_agent,stack_string);
 	belle_sip_object_ref(sal->user_agent);
+	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
 	sal->listener_callbacks.process_dialog_terminated=process_dialog_terminated;
