@@ -585,7 +585,7 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 	LinphoneCore *lc = call->core;
 	UpnpContext *lupnp = lc->upnp;
 	int ret = -1;
-	LinphoneUpnpState oldState, newState;
+	LinphoneUpnpState oldState = 0, newState = 0;
 
 	if(lupnp == NULL) {
 		return ret;
