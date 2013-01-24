@@ -70,13 +70,13 @@
                     <child>
                       <object class="GtkProgressBar" id="sound_indicator">
                         <property name="width_request">90</property>
-                        <property name="height_request">10</property>
+                        <property name="height_request">30</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">False</property>
+                        <property name="fill">True</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -155,7 +155,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkImage" id="image13">
+                          <object class="GtkImage" id="send_picture">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="stock">gtk-ok</property>
@@ -273,26 +273,23 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="in_call_uri">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">label</property>
+                        <property name="justify">center</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="in_call_uri">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">label</property>
-                    <property name="justify">center</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -354,6 +351,32 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHButtonBox" id="keypad_bar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkButton" id="keypad">
+                        <property name="label" translatable="yes">::</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="image_position">bottom</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -639,6 +662,26 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-connect</property>
+  </object>
+  <object class="GtkImage" id="image13">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
+  <object class="GtkImage" id="image14">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
+  <object class="GtkImage" id="image15">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
+  <object class="GtkImage" id="image16">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
@@ -1082,453 +1125,10 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <child>
-                          <object class="GtkHBox" id="hbox5">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <child>
-                              <object class="GtkVBox" id="vbox7">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <child>
-                                  <object class="GtkFrame" id="frame3">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label_xalign">0.5</property>
-                                    <property name="shadow_type">none</property>
-                                    <child>
-                                      <object class="GtkAlignment" id="alignment5">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="xscale">0</property>
-                                        <property name="yscale">0</property>
-                                        <child>
-                                          <object class="GtkAspectFrame" id="aspectframe1">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="label_xalign">0</property>
-                                            <child>
-                                              <object class="GtkTable" id="dtmf_table">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                <property name="border_width">4</property>
-                                                <property name="n_rows">4</property>
-                                                <property name="n_columns">4</property>
-                                                <property name="homogeneous">True</property>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_D">
-                                                    <property name="label" translatable="yes">D</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">3</property>
-                                                    <property name="right_attach">4</property>
-                                                    <property name="top_attach">3</property>
-                                                    <property name="bottom_attach">4</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_#">
-                                                    <property name="label" translatable="yes">#</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">2</property>
-                                                    <property name="right_attach">3</property>
-                                                    <property name="top_attach">3</property>
-                                                    <property name="bottom_attach">4</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_0">
-                                                    <property name="label" translatable="yes">0</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">1</property>
-                                                    <property name="right_attach">2</property>
-                                                    <property name="top_attach">3</property>
-                                                    <property name="bottom_attach">4</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_*">
-                                                    <property name="label" translatable="yes">*</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="top_attach">3</property>
-                                                    <property name="bottom_attach">4</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_C">
-                                                    <property name="label" translatable="yes">C</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">3</property>
-                                                    <property name="right_attach">4</property>
-                                                    <property name="top_attach">2</property>
-                                                    <property name="bottom_attach">3</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_9">
-                                                    <property name="label" translatable="yes">9</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">2</property>
-                                                    <property name="right_attach">3</property>
-                                                    <property name="top_attach">2</property>
-                                                    <property name="bottom_attach">3</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_8">
-                                                    <property name="label" translatable="yes">8</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">1</property>
-                                                    <property name="right_attach">2</property>
-                                                    <property name="top_attach">2</property>
-                                                    <property name="bottom_attach">3</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_7">
-                                                    <property name="label" translatable="yes">7</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="top_attach">2</property>
-                                                    <property name="bottom_attach">3</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_B">
-                                                    <property name="label" translatable="yes">B</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">3</property>
-                                                    <property name="right_attach">4</property>
-                                                    <property name="top_attach">1</property>
-                                                    <property name="bottom_attach">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_6">
-                                                    <property name="label" translatable="yes">6</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">2</property>
-                                                    <property name="right_attach">3</property>
-                                                    <property name="top_attach">1</property>
-                                                    <property name="bottom_attach">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_5">
-                                                    <property name="label" translatable="yes">5</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">1</property>
-                                                    <property name="right_attach">2</property>
-                                                    <property name="top_attach">1</property>
-                                                    <property name="bottom_attach">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_4">
-                                                    <property name="label" translatable="yes">4</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="top_attach">1</property>
-                                                    <property name="bottom_attach">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_A">
-                                                    <property name="label" translatable="yes">A</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">3</property>
-                                                    <property name="right_attach">4</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_3">
-                                                    <property name="label" translatable="yes">3</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">2</property>
-                                                    <property name="right_attach">3</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_2">
-                                                    <property name="label" translatable="yes">2</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="left_attach">1</property>
-                                                    <property name="right_attach">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="dtmf_1">
-                                                    <property name="label" translatable="yes">1</property>
-                                                    <property name="width_request">40</property>
-                                                    <property name="height_request">40</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <property name="use_action_appearance">False</property>
-                                                  </object>
-                                                </child>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child type="label_item">
-                                      <placeholder/>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkFrame" id="directory_search_box">
-                                    <property name="can_focus">False</property>
-                                    <property name="label_xalign">0</property>
-                                    <property name="shadow_type">none</property>
-                                    <child>
-                                      <object class="GtkHBox" id="directory_search_vbox">
-                                        <property name="can_focus">False</property>
-                                        <child>
-                                          <object class="GtkEntry" id="directory_search_entry">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="invisible_char">●</property>
-                                            <property name="invisible_char_set">True</property>
-                                            <property name="primary_icon_activatable">False</property>
-                                            <property name="secondary_icon_activatable">False</property>
-                                            <property name="primary_icon_sensitive">True</property>
-                                            <property name="secondary_icon_sensitive">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">True</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="directory_search_button">
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="use_action_appearance">False</property>
-                                            <property name="relief">none</property>
-                                            <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked" swapped="no"/>
-                                            <child>
-                                              <object class="GtkHBox" id="hbox12">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">False</property>
-                                                <child>
-                                                  <object class="GtkImage" id="directory_search_button_icon">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="stock">gtk-find</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">True</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkLabel" id="directory_search_button_label">
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">False</property>
-                                                    <property name="label" translatable="yes">Search</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">True</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                              </object>
-                                            </child>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child type="label">
-                                      <object class="GtkLabel" id="label14">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">&lt;b&gt;Add contacts from directory&lt;/b&gt;</property>
-                                        <property name="use_markup">True</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHButtonBox" id="hbuttonbox1">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <child>
-                                      <object class="GtkButton" id="add_contact_button">
-                                        <property name="label" translatable="yes">Add contact</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="use_action_appearance">False</property>
-                                        <property name="image">image10</property>
-                                        <signal name="clicked" handler="linphone_gtk_add_contact" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                          </object>
+                          <placeholder/>
                         </child>
                         <child type="tab">
-                          <object class="GtkHBox" id="hbox2">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkImage" id="keypad_tab_icon">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="stock">gtk-missing-image</property>
-                                <property name="icon-size">1</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="Keypad">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Keypad</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="tab_fill">False</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <child>
                           <object class="GtkVBox" id="keypad_frame">
@@ -1539,6 +1139,28 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
+                                <child>
+                                  <object class="GtkScrolledWindow" id="scrolledwindow2">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="hscrollbar_policy">never</property>
+                                    <child>
+                                      <object class="GtkTreeView" id="logs_view">
+                                        <property name="width_request">350</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="headers_visible">False</property>
+                                        <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
+                                        <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <object class="GtkHButtonBox" id="dialog-action_area1">
                                     <property name="visible">True</property>
@@ -1571,29 +1193,137 @@
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="pack_type">end</property>
-                                    <property name="position">0</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkScrolledWindow" id="scrolledwindow2">
+                                  <object class="GtkVBox" id="vbox7">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="hscrollbar_policy">never</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <child>
-                                      <object class="GtkTreeView" id="logs_view">
-                                        <property name="width_request">350</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="headers_visible">False</property>
-                                        <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
-                                        <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFrame" id="directory_search_box">
+                                        <property name="can_focus">False</property>
+                                        <property name="label_xalign">0</property>
+                                        <property name="shadow_type">none</property>
+                                        <child>
+                                          <object class="GtkHBox" id="directory_search_vbox">
+                                            <property name="can_focus">False</property>
+                                            <child>
+                                              <object class="GtkEntry" id="directory_search_entry">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="invisible_char">●</property>
+                                                <property name="invisible_char_set">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">True</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="directory_search_button">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="receives_default">True</property>
+                                                <property name="use_action_appearance">False</property>
+                                                <property name="relief">none</property>
+                                                <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked" swapped="no"/>
+                                                <child>
+                                                  <object class="GtkHBox" id="hbox12">
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">False</property>
+                                                    <child>
+                                                      <object class="GtkImage" id="directory_search_button_icon">
+                                                        <property name="visible">True</property>
+                                                        <property name="can_focus">False</property>
+                                                        <property name="stock">gtk-find</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="expand">True</property>
+                                                        <property name="fill">True</property>
+                                                        <property name="position">0</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkLabel" id="directory_search_button_label">
+                                                        <property name="visible">True</property>
+                                                        <property name="can_focus">False</property>
+                                                        <property name="label" translatable="yes">Search</property>
+                                                      </object>
+                                                      <packing>
+                                                        <property name="expand">True</property>
+                                                        <property name="fill">True</property>
+                                                        <property name="position">1</property>
+                                                      </packing>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child type="label">
+                                          <object class="GtkLabel" id="label14">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="label" translatable="yes">&lt;b&gt;Add contacts from directory&lt;/b&gt;</property>
+                                            <property name="use_markup">True</property>
+                                          </object>
+                                        </child>
                                       </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="padding">5</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkHButtonBox" id="hbuttonbox1">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <child>
+                                          <object class="GtkButton" id="add_contact_button">
+                                            <property name="label" translatable="yes">Add contact</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">True</property>
+                                            <property name="use_action_appearance">False</property>
+                                            <property name="image">image16</property>
+                                            <signal name="clicked" handler="linphone_gtk_add_contact" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">3</property>
+                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                               </object>
@@ -1654,7 +1384,6 @@
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="padding">4</property>
                         <property name="position">1</property>
                       </packing>
                     </child>

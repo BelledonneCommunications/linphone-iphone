@@ -194,12 +194,12 @@ void update_chat_state_message(LinphoneChatMessageState state){
 			default : result="Message in progress.. ";
 		}
 
-		GDateTime *dt=g_date_time_new_now_local();
+		/*GDateTime *dt=g_date_time_new_now_local();
 		char *time=g_date_time_format(dt,"%k:%M");
 		gchar result2[80];
-		sprintf(result2,"%s %s",result,time);
+		sprintf(result2,"%s %s",result,time);*/
 		
-		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result2,-1,
+		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result,-1,
 												"italic","right","small","font_grey",NULL);
 		list=g_list_remove(list,g_list_nth_data(list,0));
 		g_object_set_data(G_OBJECT(page),"list",list);
@@ -342,8 +342,8 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
     GtkWidget *w;
-	GDateTime *dt=g_date_time_new_now_local();
-	char *time=g_date_time_format(dt,"%k:%M");
+	/*GDateTime *dt=g_date_time_new_now_local();
+	char *time=g_date_time_format(dt,"%k:%M");*/
 
     w=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
     if(w!=NULL){
@@ -365,9 +365,9 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const 
 	#else
 	if(!gtk_window_is_active(GTK_WINDOW(main_window))){
 		if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"is_notified"))){
-			gchar result2[80];
-			sprintf(result2,"%s \n %s sent at %s",message,display,time);
-			linphone_gtk_notify(NULL,result2);
+			/*gchar result2[80];
+			sprintf(result2,"%s \n %s sent at %s",message,display,time);*/
+			linphone_gtk_notify(NULL,message);
 			g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(TRUE));
 		} else {
 			g_object_set_data(G_OBJECT(w),"is_notified",GINT_TO_POINTER(FALSE));

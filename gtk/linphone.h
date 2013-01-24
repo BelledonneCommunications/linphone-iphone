@@ -89,6 +89,7 @@ int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_set_ui_config_int(const char *key , int val);
 void linphone_gtk_visibility_set(const char *hiddens, const char *window_name, GtkWidget *w, gboolean show);
 
+void linphone_gtk_create_keypad(LinphoneCall *call);
 void linphone_gtk_open_browser(const char *url);
 void linphone_gtk_check_for_new_version(void);
 const char *linphone_gtk_get_lang(const char *config_file);
@@ -102,7 +103,6 @@ void linphone_gtk_terminate_call(GtkWidget *button);
 void update_tab_header(LinphoneCall *call,gboolean pause);
 
 void linphone_gtk_show_directory_search(void);
-
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void linphone_gtk_notify(LinphoneCall *call, const char *msg);
 LinphoneChatRoom *linphone_gtk_start_chat(GtkTreeView* t);
