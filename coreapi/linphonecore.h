@@ -285,6 +285,27 @@ enum _LinphoneIceState{
 typedef enum _LinphoneIceState LinphoneIceState;
 
 /**
+ * Enum describing uPnP states.
+ * @ingroup initializing
+**/
+enum _LinphoneUpnpState{
+	LinphoneUpnpStateIdle, /**< uPnP is not activate */
+	LinphoneUpnpStatePending, /**< uPnP process is in progress */
+	LinphoneUpnpStateAdding,   /**< Internal use: Only used by port binding */
+	LinphoneUpnpStateRemoving, /**< Internal use: Only used by port binding */
+	LinphoneUpnpStateNotAvailable,  /**< uPnP is not available */
+	LinphoneUpnpStateOk, /**< uPnP is enabled */
+	LinphoneUpnpStateKo, /**< uPnP processing has failed */
+};
+
+/**
+ * Enum describing uPnP states.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneUpnpState LinphoneUpnpState;
+
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
@@ -309,6 +330,7 @@ struct _LinphoneCallStats {
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
 	LinphoneIceState	ice_state; /**< State of ICE processing. */
+	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
 	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 };

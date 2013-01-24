@@ -24,16 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "sal.h"
 
-typedef enum {
-	LinphoneUpnpStateIdle,
-	LinphoneUpnpStatePending, // Only used by uPnP context
-	LinphoneUpnpStateAdding,   // Only used by port binding
-	LinphoneUpnpStateRemoving, // Only used by port binding
-	LinphoneUpnpStateNotAvailable,  // Only used by uPnP context
-	LinphoneUpnpStateOk,
-	LinphoneUpnpStateKo,
-} LinphoneUpnpState;
-
 typedef struct _UpnpSession UpnpSession;
 typedef struct _UpnpContext UpnpContext;
 
@@ -50,5 +40,6 @@ UpnpContext *linphone_upnp_context_new(LinphoneCore *lc);
 void linphone_upnp_context_destroy(UpnpContext *ctx);
 LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *ctx);
 const char *linphone_upnp_context_get_external_ipaddress(UpnpContext *ctx);
+void linphone_core_update_upnp_state_in_call_stats(LinphoneCall *call);
 
 #endif //LINPHONE_UPNP_H

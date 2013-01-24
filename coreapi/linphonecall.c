@@ -286,6 +286,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
+		linphone_core_update_upnp_state_in_call_stats(call);
 	}
 #endif  //BUILD_UPNP
 	linphone_address_destroy(addr);
@@ -421,6 +422,11 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
 	stats->received_rtcp = NULL;
 	stats->sent_rtcp = NULL;
 	stats->ice_state = LinphoneIceStateNotActivated;
+#ifdef BUILD_UPNP
+	stats->upnp_state = LinphoneUpnpStateIdle;
+#else
+	stats->upnp_state = LinphoneUpnpStateNotAvailable;
+#endif //BUILD_UPNP
 }
 
 

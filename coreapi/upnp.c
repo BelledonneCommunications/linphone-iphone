@@ -576,11 +576,16 @@ int linphone_core_update_upnp(LinphoneCore *lc, LinphoneCall *call) {
 	return linphone_core_update_upnp_audio_video(call, call->audiostream!=NULL, call->videostream!=NULL);
 }
 
+void linphone_core_update_upnp_state_in_call_stats(LinphoneCall *call) {
+	call->stats[LINPHONE_CALL_STATS_AUDIO].upnp_state = call->upnp_session->audio->state;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].upnp_state = call->upnp_session->video->state;
+}
+
 int linphone_upnp_call_process(LinphoneCall *call) {
 	LinphoneCore *lc = call->core;
 	UpnpContext *lupnp = lc->upnp;
 	int ret = -1;
-	LinphoneUpnpState oldState;
+	LinphoneUpnpState oldState, newState;
 
 	if(lupnp == NULL) {
 		return ret;
@@ -644,6 +649,7 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 		} else {
 			call->upnp_session->state = LinphoneUpnpStateIdle;
 		}
+		newState = call->upnp_session->state;
 
 		/* When change is done proceed update */
 		if(oldState != LinphoneUpnpStateOk && oldState != LinphoneUpnpStateKo &&
@@ -673,6 +679,14 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 	}
 
 	ms_mutex_unlock(&lupnp->mutex);
+
+	/*
+	 * Update uPnP call stats
+	 */
+	if(oldState != newState) {
+		linphone_core_update_upnp_state_in_call_stats(call);
+	}
+
 	return ret;
 }
 
