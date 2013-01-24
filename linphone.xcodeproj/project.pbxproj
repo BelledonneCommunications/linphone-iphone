@@ -119,6 +119,8 @@
 		D285B70516A7389300FB0C51 /* Default-Portrait@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */; };
 		D285B70716A738C700FB0C51 /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */; };
 		D2BB9B3C16A71070003C9FDE /* UIView+RoundUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BB9B3B16A71070003C9FDE /* UIView+RoundUIView.m */; };
+		D2BB9B4516B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */; };
+		D2BB9B4716B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */; };
 		D2D7FD5D16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */; };
 		D2D7FD5E16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */; };
 		D304B3EA16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
@@ -607,6 +609,8 @@
 		D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
 		D2BB9B3A16A71070003C9FDE /* UIView+RoundUIView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+RoundUIView.h"; sourceTree = "<group>"; };
 		D2BB9B3B16A71070003C9FDE /* UIView+RoundUIView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RoundUIView.m"; sourceTree = "<group>"; };
+		D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_114.png; sourceTree = "<group>"; };
+		D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_57.png; sourceTree = "<group>"; };
 		D2D7FD5F16A52F6A0031322D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerManualSettingsView.xib; sourceTree = "<group>"; };
@@ -1328,6 +1332,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */,
+				D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */,
 				D285B6FC16A7381700FB0C51 /* Default@2x.png */,
 				D285B6FE16A7382100FB0C51 /* Default.png */,
 				D285B70016A7386900FB0C51 /* Default-Portrait~ipad.png */,
@@ -1676,6 +1682,8 @@
 				D285B70316A7387D00FB0C51 /* Default-Landscape~ipad.png in Resources */,
 				D285B70516A7389300FB0C51 /* Default-Portrait@2x~ipad.png in Resources */,
 				D285B70716A738C700FB0C51 /* Default-Landscape@2x~ipad.png in Resources */,
+				D2BB9B4516B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png in Resources */,
+				D2BB9B4716B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
