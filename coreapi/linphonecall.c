@@ -302,6 +302,12 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
+		linphone_core_update_upnp_state_in_call_stats(call);
+	}
+#endif  //BUILD_UPNP
 	linphone_address_destroy(addr);
 	call->localdesc=md;
 	if (old_md) sal_media_description_unref(old_md);
@@ -435,6 +441,11 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
 	stats->received_rtcp = NULL;
 	stats->sent_rtcp = NULL;
 	stats->ice_state = LinphoneIceStateNotActivated;
+#ifdef BUILD_UPNP
+	stats->upnp_state = LinphoneUpnpStateIdle;
+#else
+	stats->upnp_state = LinphoneUpnpStateNotAvailable;
+#endif //BUILD_UPNP
 }
 
 
@@ -468,6 +479,11 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+		call->upnp_session = linphone_upnp_session_new(call);
+	}
+#endif //BUILD_UPNP
 	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -529,6 +545,19 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		case LinphonePolicyUseStun:
 			call->ping_time=linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
+			break;
+		case LinphonePolicyUseUpnp:
+#ifdef BUILD_UPNP
+		call->upnp_session = linphone_upnp_session_new(call);
+		if (call->upnp_session != NULL) {
+			linphone_call_init_media_streams(call);
+			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
+				/* uPnP port mappings failed, proceed with the call anyway. */
+				linphone_call_delete_upnp_session(call);
+			}
+		}
+#endif //BUILD_UPNP
+			break;
 		default:
 			break;
 	}
@@ -677,6 +706,9 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(obj);
+#endif //BUILD_UPNP
 	linphone_call_delete_ice_session(obj);
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
@@ -1746,6 +1778,15 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 	}
 }
 
+#ifdef BUILD_UPNP
+void linphone_call_delete_upnp_session(LinphoneCall *call){
+	if(call->upnp_session!=NULL) {
+		linphone_upnp_session_destroy(call->upnp_session);
+		call->upnp_session=NULL;
+	}
+}
+#endif //BUILD_UPNP
+
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
 	log->quality=audio_stream_get_average_quality_rating(st);
@@ -2056,6 +2097,11 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		report_bandwidth(call,as,vs);
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
 	}
+
+#ifdef BUILD_UPNP
+	linphone_upnp_call_process(call);
+#endif //BUILD_UPNP
+
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL) {
 		OrtpEvent *ev;

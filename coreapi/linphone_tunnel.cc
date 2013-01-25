@@ -23,9 +23,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef TUNNEL_ENABLED
 #include "TunnelManager.hh"
-#endif
 #include "linphone_tunnel.h"
 #include "linphonecore.h"
 #include "private.h"
@@ -34,67 +32,6 @@
 LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 	return lc->tunnel;
 }
-
-struct _LinphoneTunnelConfig {
-	char *host;
-	int port;
-	int remote_udp_mirror_port;
-	int delay;	
-};
-
-LinphoneTunnelConfig *linphone_tunnel_config_new() {
-	LinphoneTunnelConfig *ltc = ms_new0(LinphoneTunnelConfig,1);
-	ltc->remote_udp_mirror_port = 12345;
-	ltc->delay = 1000;
-	return ltc;
-}
-
-void linphone_tunnel_config_set_host(LinphoneTunnelConfig *tunnel, const char *host) {
-	if(tunnel->host != NULL) {
-		ms_free(tunnel->host);
-		tunnel->host = NULL;
-	}
-	if(host != NULL && strlen(host)) {
-		tunnel->host = ms_strdup(host);
-	}
-}
-
-const char *linphone_tunnel_config_get_host(LinphoneTunnelConfig *tunnel) {
-	return tunnel->host;
-}
-
-void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunnel, int port) {
-	tunnel->port = port;
-}
-
-int linphone_tunnel_config_get_port(LinphoneTunnelConfig *tunnel) {
-	return tunnel->port;
-}
-
-void linphone_tunnel_config_set_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel, int remote_udp_mirror_port) {
-	tunnel->remote_udp_mirror_port = remote_udp_mirror_port;
-}
-
-int linphone_tunnel_config_get_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel) {
-	return tunnel->remote_udp_mirror_port;
-}
-
-void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunnel, int delay) {
-	tunnel->delay = delay;
-}
-
-int linphone_tunnel_config_get_delay(LinphoneTunnelConfig *tunnel) {
-	return tunnel->delay;
-}
-
-void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel) {
-	if(tunnel->host != NULL) {
-		ms_free(tunnel->host);
-	}
-	ms_free(tunnel);
-}
-
-#ifdef TUNNEL_ENABLED
 
 struct _LinphoneTunnel {
 	belledonnecomm::TunnelManager *manager;
@@ -122,16 +59,16 @@ void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 
 static char *linphone_tunnel_config_to_string(const LinphoneTunnelConfig *tunnel_config) {
 	char *str = NULL;
-	if(tunnel_config->remote_udp_mirror_port != -1) {
+	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) != -1) {
 		str = ms_strdup_printf("%s:%d:%d:%d", 
-			tunnel_config->host,
-			tunnel_config->port,
-			tunnel_config->remote_udp_mirror_port,
-			tunnel_config->delay);
+			linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config),
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+			linphone_tunnel_config_get_delay(tunnel_config));
 	} else {
 		str = ms_strdup_printf("%s:%d",
-			tunnel_config->host,
-			tunnel_config->port);
+			linphone_tunnel_config_get_host(tunnel_config),
+			linphone_tunnel_config_get_port(tunnel_config));
 	}
 	return str;
 }
@@ -209,11 +146,14 @@ static void linphone_tunnel_save_config(LinphoneTunnel *tunnel) {
 
 
 static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config) {
-	if(tunnel_config->remote_udp_mirror_port == -1) {
-		bcTunnel(tunnel)->addServer(tunnel_config->host, tunnel_config->port);
+	if(linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config) == -1) {
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+			linphone_tunnel_config_get_port(tunnel_config));
 	} else {
-		bcTunnel(tunnel)->addServer(tunnel_config->host, tunnel_config->port, 
-			tunnel_config->remote_udp_mirror_port, tunnel_config->delay);
+		bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config), 
+			linphone_tunnel_config_get_port(tunnel_config), 
+			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config), 
+			linphone_tunnel_config_get_delay(tunnel_config));
 	}
 	tunnel->config_list = ms_list_append(tunnel->config_list, tunnel_config);
 }
@@ -384,61 +324,4 @@ void linphone_tunnel_configure(LinphoneTunnel *tunnel){
 	linphone_tunnel_load_config(tunnel);
 	linphone_tunnel_enable(tunnel, enabled);
 }
-
-#else
-
-/*stubs to avoid to have #ifdef TUNNEL_ENABLED in upper layers*/
-
-void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
-}
-
-
-void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
-}
-
-void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
-}
-
-const MSList *linphone_tunnel_get_servers(LinphoneTunnel *tunnel){
-	return NULL;
-}
-
-void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
-}
-
-bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
-	return FALSE;
-}
-
-
-void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
-}
-
-void linphone_tunnel_set_http_proxy_auth_info(LinphoneTunnel *tunnel, const char* username,const char* passwd){
-}
-
-void linphone_tunnel_set_http_proxy(LinphoneTunnel*tunnel, const char *host, int port, const char* username,const char* passwd){
-}
-
-void linphone_tunnel_get_http_proxy(LinphoneTunnel*tunnel,const char **host, int *port, const char **username, const char **passwd){
-}
-
-void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
-}
-
-void linphone_tunnel_configure(LinphoneTunnel *tunnel){
-}
-
-
-#endif
-
-
-
-
 

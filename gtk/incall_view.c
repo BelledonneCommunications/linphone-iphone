@@ -231,10 +231,29 @@ static const char *ice_state_to_string(LinphoneIceState ice_state){
 	return "invalid";
 }
 
+static const char *upnp_state_to_string(LinphoneUpnpState ice_state){
+	switch(ice_state){
+		case LinphoneUpnpStateIdle:
+			return _("uPnP not activated");
+		case LinphoneUpnpStatePending:
+			return _("uPnP in progress");
+		case LinphoneUpnpStateNotAvailable:
+			return _("uPnp not available");
+		case LinphoneUpnpStateOk:
+			return _("uPnP is running");
+		case LinphoneUpnpStateKo:
+			return _("uPnP failed");
+		default:
+			break;
+	}
+	return "invalid";
+}
+
 static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 	const LinphoneCallStats *as=linphone_call_get_audio_stats(call);
 	const LinphoneCallStats *vs=linphone_call_get_video_stats(call);
-	LinphoneIceState ice_state=as->ice_state;
+	const char *audio_media_connectivity = _("Direct");
+	const char *video_media_connectivity = _("Direct");
 	gchar *tmp=g_strdup_printf(_("download: %f\nupload: %f (kbit/s)"),
 		as->download_bandwidth,as->upload_bandwidth);
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_bandwidth_usage")),tmp);
@@ -243,7 +262,18 @@ static void _refresh_call_stats(GtkWidget *callstats, LinphoneCall *call){
 		vs->download_bandwidth,vs->upload_bandwidth);
 	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_bandwidth_usage")),tmp);
 	g_free(tmp);
-	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"media_connectivity")),ice_state_to_string(ice_state));
+	if(as->upnp_state != LinphoneUpnpStateNotAvailable && as->upnp_state != LinphoneUpnpStateIdle) {
+		audio_media_connectivity = upnp_state_to_string(as->upnp_state);
+	} else if(as->ice_state != LinphoneIceStateNotActivated) {
+		audio_media_connectivity = ice_state_to_string(as->ice_state);
+	}
+	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"audio_media_connectivity")),audio_media_connectivity);
+	if(vs->upnp_state != LinphoneUpnpStateNotAvailable && vs->upnp_state != LinphoneUpnpStateIdle) {
+			video_media_connectivity = upnp_state_to_string(vs->upnp_state);
+	} else if(vs->ice_state != LinphoneIceStateNotActivated) {
+		video_media_connectivity = ice_state_to_string(vs->ice_state);
+	}
+	gtk_label_set_text(GTK_LABEL(linphone_gtk_get_widget(callstats,"video_media_connectivity")),video_media_connectivity);
 }
 
 static gboolean refresh_call_stats(GtkWidget *callstats){

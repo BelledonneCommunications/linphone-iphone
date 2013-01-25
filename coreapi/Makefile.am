@@ -47,15 +47,21 @@ liblinphone_la_SOURCES=\
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c \
-	linphone_tunnel.cc \
 	$(GITVERSION_FILE)
+
+if BUILD_UPNP
+liblinphone_la_SOURCES+=upnp.c upnp.h
+endif
 	
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
 
+liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh 
+liblinphone_la_SOURCES+=linphone_tunnel.cc TunnelManager.cc TunnelManager.hh 
+else
+liblinphone_la_SOURCES+=linphone_tunnel_stubs.c
 endif
 
 

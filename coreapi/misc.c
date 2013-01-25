@@ -1021,14 +1021,15 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
 			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
 		{
-			getnameinfo(ifp->ifa_addr,
+			if(getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
 						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
-						address, size, NULL, 0, NI_NUMERICHOST);
-			if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
-				/*ms_message("getifaddrs() found %s",address);*/
-				ret++;
-				break;
+						address, size, NULL, 0, NI_NUMERICHOST) == 0) {
+				if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+					/*ms_message("getifaddrs() found %s",address);*/
+					ret++;
+					break;
+				}
 			}
 		}
 	}
@@ -1099,26 +1100,26 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+        strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
-	if (dest==NULL) {
-		/*we use getifaddrs for lookup of default interface */
-		int found_ifs;
-	
-		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
-		if (found_ifs==1){
-			return 0;
-		}else if (found_ifs<=0){
-			/*absolutely no network on this machine */
-			return -1;
-		}
-	}
+        if (dest==NULL) {
+                /*we use getifaddrs for lookup of default interface */
+                int found_ifs;
+
+                found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
+                if (found_ifs==1){
+                        return 0;
+                }else if (found_ifs<=0){
+                        /*absolutely no network on this machine */
+                        return -1;
+                }
+        }
 #endif
-	/*else use connect to find the best local ip address */
-	if (type==AF_INET)
-		dest="87.98.157.38"; /*a public IP address*/
-	else dest="2a00:1450:8002::68";
-	return get_local_ip_for_with_connect(type,dest,result);
+        /*else use connect to find the best local ip address */
+        if (type==AF_INET)
+                dest="87.98.157.38"; /*a public IP address*/
+        else dest="2a00:1450:8002::68";
+        return get_local_ip_for_with_connect(type,dest,result);
 }
 
 #ifndef WIN32
