@@ -301,7 +301,13 @@ static BuschJaegerMainView* mainViewInstance=nil;
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
                 [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
             }
-            [self updateIconBadge:nil];
+            LinphoneCallLog *log = linphone_call_get_call_log(call);
+            if(log != NULL && log->status == LinphoneCallMissed) {
+                // We can't use the comparison method, we can be in background mode and the application
+                // will no send/update the http request
+                int missed = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:++missed];
+            }
 			break;
         }
         default:

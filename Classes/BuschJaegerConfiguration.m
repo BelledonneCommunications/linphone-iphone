@@ -106,7 +106,6 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
         certificate = NULL;
         valid = FALSE;
         [self reloadCertificates];
-        homeAP = [[[NSUserDefaults standardUserDefaults] dataForKey:CONFIGURATION_HOME_AP_KEY] retain];
     }
     return self;
 }
@@ -361,6 +360,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 
 - (BOOL)loadFile:(NSString*)file {
     [self reset];
+    homeAP = [[[NSUserDefaults standardUserDefaults] dataForKey:CONFIGURATION_HOME_AP_KEY] retain];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *databaseDocumentPath = [LinphoneManager documentFile:file];
@@ -406,7 +406,6 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"username_preference"];
                         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"domain_preference"];
                         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"password_preference"];
-                        [[NSUserDefaults standardUserDefaults] removeObjectForKey:CONFIGURATION_HOME_AP_KEY];
                         [LinphoneLogger log:LinphoneLoggerDebug format:@"Download ok"];
                         if([self parseConfig:[NSString stringWithUTF8String:[data bytes]] delegate:delegate]) {
                             valid = TRUE;
@@ -480,11 +479,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
             NSError *error = nil;
             NSData *data  = nil;
             data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
-            if(data == nil) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [delegate buschJaegerConfigurationError:[error localizedDescription]];
-                });
-            } else {
+            if(data != nil) {
                 NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse*) response;
                 if(urlResponse.statusCode == 200) {
                     NSString *dataString = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding: NSUTF8StringEncoding];
@@ -594,6 +589,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
 
 
 - (BOOL)removeHistory:(History*)ahistory delegate:(id<BuschJaegerConfigurationDelegate>)delegate {
+    [history removeObject:ahistory];
     NSString *url = [NSString stringWithFormat:@"%@/cgi-bin/adduser.cgi?type=delhistory&id=%d", [self getGateway], ahistory.ID];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
     if(request != nil) {

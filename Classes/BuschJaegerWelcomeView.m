@@ -67,11 +67,20 @@
                                                  name:kLinphoneConfigurationUpdate
                                                object:nil];
     [self updateConfiguration:[LinphoneManager instance].configuration];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [self performSelector:@selector(reloadHistory) withObject:self afterDelay:1.0];
     [self reloadHistory];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillEnterForegroundNotification
+                                                  object:nil];
     
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -97,6 +106,10 @@
 
 
 #pragma mark - Event Functions
+
+- (void)applicationWillEnterForeground:(NSNotification*)notif {
+    [self reloadHistory];
+}
 
 - (void)configurationUpdateEvent: (NSNotification*) notif {
     BuschJaegerConfiguration *configuration = [notif.userInfo objectForKey:@"configuration"];

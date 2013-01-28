@@ -108,6 +108,7 @@
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
 - (void)buschJaegerConfigurationSuccess {
+    
 }
 
 - (void)buschJaegerConfigurationError:(NSString *)error {
