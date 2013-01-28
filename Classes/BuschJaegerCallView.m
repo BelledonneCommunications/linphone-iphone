@@ -129,9 +129,6 @@
         [takeCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(takeCallButton.bounds.size.height/2.0)];
     }
     
-    linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
-    linphone_core_set_native_preview_window_id([LinphoneManager getLc], 0);
-    
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
     
@@ -192,6 +189,8 @@
     }
     
     // Update on show
+    linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
+    linphone_core_set_native_preview_window_id([LinphoneManager getLc], 0);
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state animated:FALSE];

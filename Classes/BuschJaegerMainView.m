@@ -224,11 +224,9 @@ static BuschJaegerMainView* mainViewInstance=nil;
         [historyQueue addOperationWithBlock:^(void) {
             if([[LinphoneManager instance] configuration].valid) {
                 NSMutableSet *set = [[[LinphoneManager instance] configuration] getHistory];
-                if(set != nil) {
-                    int missed = [set count] - [[[LinphoneManager instance] configuration].history count];
-                    if(missed < 0) missed = 0;
-                    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:missed];
-                }
+                int missed = [set count] - [[[LinphoneManager instance] configuration].history count];
+                if(missed < 0) missed = 0;
+                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:missed];
             }
         }];
     }
@@ -300,13 +298,6 @@ static BuschJaegerMainView* mainViewInstance=nil;
             [self dismissIncomingCall:call];
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
                 [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
-            }
-            LinphoneCallLog *log = linphone_call_get_call_log(call);
-            if(log != NULL && log->status == LinphoneCallMissed) {
-                // We can't use the comparison method, we can be in background mode and the application
-                // will no send/update the http request
-                int missed = [[UIApplication sharedApplication] applicationIconBadgeNumber];
-                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:++missed];
             }
 			break;
         }

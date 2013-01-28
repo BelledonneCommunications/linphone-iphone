@@ -490,6 +490,13 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+        LinphoneCallLog *log = linphone_call_get_call_log(call);
+        if(log != NULL && log->status == LinphoneCallMissed) {
+            // We can't use the comparison method, we can be in background mode and the application
+            // will no send/update the http request
+            int missed = [[UIApplication sharedApplication] applicationIconBadgeNumber];
+            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:++missed];
+        }
         if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
             [self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
@@ -596,7 +603,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		&& [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
         
         
-        NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"], nil];
+        NSString *ringtone = [NSString stringWithFormat:@"%@.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"level_ringtone_preference"], nil];
         
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
