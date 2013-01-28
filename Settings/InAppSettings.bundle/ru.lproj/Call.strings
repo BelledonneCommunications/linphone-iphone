@@ -1,0 +1,17 @@
+/* Prefix */
+"Prefix" = "Префикс";
+
+/* Substitue + by 00 */
+"Substitue + by 00" = "Заменять + на 00";
+
+/* Send inband DTMFs */
+"Send inband DTMFs" = "Посылать DTMFs";
+
+/* Send SIP INFO DTMFs */
+"Send SIP INFO DTMFs" = "Посылать SIP INFO DTMF(ы)";
+
+/* Incoming call timeout */
+"Incoming call timeout" = "Время ожидания входящего звонка";
+
+/* In call timeout */
+"In call timeout" = "Время ожидания звонка";
