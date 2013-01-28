@@ -44,7 +44,7 @@ LOCAL_SRC_FILES := \
 	linphonecall.c \
 	conference.c \
 	ec-calibrator.c \
-	linphone_tunnel.cc
+	linphone_tunnel_config.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -100,12 +100,14 @@ LOCAL_STATIC_LIBRARIES := \
 ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../tunnel/include $(LOCAL_PATH)/../../tunnel/src
-LOCAL_SRC_FILES +=  TunnelManager.cc
+LOCAL_SRC_FILES +=  linphone_tunnel.cc TunnelManager.cc
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_SHARED_LIBRARIES += libtunnelclient
 else
 LOCAL_STATIC_LIBRARIES += libtunnelclient
 endif
+else
+LOCAL_SRC_FILES += linphone_tunnel_stubs.c
 endif
 
 
