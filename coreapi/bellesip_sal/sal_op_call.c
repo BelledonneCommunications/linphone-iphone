@@ -473,6 +473,12 @@ int sal_call_accept(SalOp*h){
 	belle_sip_response_t *response;
 	belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(h);
 	belle_sip_header_contact_t* contact_header;
+
+	if (!h->pending_server_trans) {
+		ms_error("No transaction to accept for op [%p]",h);
+		return -1;
+	}
+
 	/* sends a 200 OK */
 	response = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(h->pending_server_trans)),200);
 

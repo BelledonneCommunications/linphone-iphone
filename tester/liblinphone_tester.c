@@ -19,10 +19,11 @@
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
+#include "liblinphone_tester.h"
 
 
-const char *test_domain="sipopen.example.org";
-const char *auth_domain="sip.example.org";
+const char* test_domain="sipopen.example.org";
+const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 
@@ -40,7 +41,7 @@ static void core_init_test(void) {
 	linphone_core_destroy(lc);
 }
 
-static LinphoneAddress * create_linphone_address(const char * domain) {
+LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
 	linphone_address_set_username(addr,test_username);
@@ -54,66 +55,14 @@ static LinphoneAddress * create_linphone_address(const char * domain) {
 	return addr;
 }
 static void linphone_address_test(void) {
-	ms_free(create_linphone_address(NULL));
+	linphone_address_destroy(create_linphone_address(NULL));
 }
 
-typedef struct _stats {
-	int number_of_LinphoneRegistrationNone;
-	int number_of_LinphoneRegistrationProgress ;
-	int number_of_LinphoneRegistrationOk ;
-	int number_of_LinphoneRegistrationCleared ;
-	int number_of_LinphoneRegistrationFailed ;
-	int number_of_auth_info_requested ;
 
-
-	int number_of_LinphoneCallIncomingReceived;
-	int number_of_LinphoneCallOutgoingInit;
-	int number_of_LinphoneCallOutgoingProgress;
-	int number_of_LinphoneCallOutgoingRinging;
-	int number_of_LinphoneCallOutgoingEarlyMedia;
-	int number_of_LinphoneCallConnected;
-	int number_of_LinphoneCallStreamsRunning;
-	int number_of_LinphoneCallPausing;
-	int number_of_LinphoneCallPaused;
-	int number_of_LinphoneCallResuming;
-	int number_of_LinphoneCallRefered;
-	int number_of_LinphoneCallError;
-	int number_of_LinphoneCallEnd;
-	int number_of_LinphoneCallPausedByRemote;
-	int number_of_LinphoneCallUpdatedByRemote;
-	int number_of_LinphoneCallIncomingEarlyMedia;
-	int number_of_LinphoneCallUpdating;
-	int number_of_LinphoneCallReleased;
-
-	int number_of_LinphoneMessageReceived;
-
-	int number_of_NewSubscriptionRequest;
-	int number_of_NotifyReceived;
-}stats;
 static  stats global_stat;
 
-static void reset_counters( stats* counters) {
-	memset(counters,0,sizeof(stats));
-}
 
-static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-		ms_message("New registration state %s for user id [%s] at proxy [%s]\n"
-				,linphone_registration_state_to_string(cstate)
-				,linphone_proxy_config_get_identity(cfg)
-				,linphone_proxy_config_get_addr(cfg));
-		stats* counters = (stats*)linphone_core_get_user_data(lc);
-		switch (cstate) {
-		case LinphoneRegistrationNone:counters->number_of_LinphoneRegistrationNone++;break;
-		case LinphoneRegistrationProgress:counters->number_of_LinphoneRegistrationProgress++;break;
-		case LinphoneRegistrationOk:counters->number_of_LinphoneRegistrationOk++;break;
-		case LinphoneRegistrationCleared:counters->number_of_LinphoneRegistrationCleared++;break;
-		case LinphoneRegistrationFailed:counters->number_of_LinphoneRegistrationFailed++;break;
-		default:
-			CU_FAIL("unexpected event");break;
-		}
-
-}
-static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
+void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 					,username
 					,realm);
@@ -124,7 +73,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 }
 
-static LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
+LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
@@ -136,143 +85,12 @@ static LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
 	linphone_core_set_user_data(lc,&global_stat);
 	return lc;
 }
-static LinphoneCore* create_lc() {
-	return create_lc_with_auth(0);
-}
-static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
-	int retry=0;
-	LCSipTransports transport = {5070,5070,0,5071};
 
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	reset_counters(counters);
-	linphone_core_set_sip_transports(lc,&transport);
-	LinphoneProxyConfig* proxy_cfg;
-
-	proxy_cfg = linphone_proxy_config_new();
-
-	LinphoneAddress *from = create_linphone_address(domain);
-
-	linphone_proxy_config_set_identity(proxy_cfg,linphone_address_as_string(from));
-	const char* server_addr = linphone_address_get_domain(from);
-
-	linphone_proxy_config_enable_register(proxy_cfg,TRUE);
-	linphone_proxy_config_expires(proxy_cfg,1);
-	if (route) {
-		linphone_proxy_config_set_route(proxy_cfg,route);
-		linphone_proxy_config_set_server_addr(proxy_cfg,route);
-	} else {
-		linphone_proxy_config_set_server_addr(proxy_cfg,server_addr);
-	}
-	linphone_address_destroy(from);
-
-	linphone_core_add_proxy_config(lc,proxy_cfg);
-	linphone_core_set_default_proxy(lc,proxy_cfg);
-
-	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0) && retry++ <310) {
-		linphone_core_iterate(lc);
-		ms_usleep(100000);
-	}
-	CU_ASSERT_TRUE_FATAL(linphone_proxy_config_is_registered(proxy_cfg));
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1+(refresh!=0));
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
-
-}
-static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh_base(lc,refresh,domain,route);
-	linphone_core_destroy(lc);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,1);
-
-
+void reset_counters( stats* counters) {
+	memset(counters,0,sizeof(stats));
 }
 
-static void register_with_refresh_with_send_error(void) {
-	int retry=0;
-	LinphoneCore* lc = create_lc_with_auth(1);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
-	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-
-	register_with_refresh_base(lc,TRUE,auth_domain,NULL);
-	/*simultate a network error*/
-	sal_set_send_error(lc->sal, -1);
-	while (counters->number_of_LinphoneRegistrationFailed<1 && retry++ <20) {
-			linphone_core_iterate(lc);
-			ms_usleep(100000);
-	}
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
-	linphone_core_destroy(lc);
-
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
-
-}
-static void simple_register(){
-	LinphoneCore* lc = create_lc();
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh(lc,FALSE,NULL,NULL);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
-}
-
-
-/*take care of min expires configuration from server*/
-static void simple_register_with_refresh() {
-	LinphoneCore* lc = create_lc();
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh(lc,TRUE,NULL,NULL);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
-}
-
-static void simple_auth_register_with_refresh() {
-	LinphoneCore* lc = create_lc_with_auth(1);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh(lc,TRUE,auth_domain,NULL);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
-}
-
-static void simple_tcp_register(){
-	char route[256];
-	sprintf(route,"sip:%s;transport=tcp",test_domain);
-	LinphoneCore* lc = create_lc();
-	register_with_refresh(lc,FALSE,NULL,route);
-}
-static void simple_tls_register(){
-	char route[256];
-	sprintf(route,"sip:%s;transport=tls",test_domain);
-	LinphoneCore* lc = create_lc();
-	register_with_refresh(lc,FALSE,NULL,route);
-}
-
-static void simple_authenticated_register(){
-	LinphoneCore* lc = create_lc();
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
-	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh(lc,FALSE,auth_domain,NULL);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
-}
-
-
-
-static void authenticated_register_with_no_initial_credentials(){
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
-	memset (&v_table,0,sizeof(v_table));
-	v_table.registration_state_changed=registration_state_changed;
-	v_table.auth_info_requested=auth_info_requested;
-	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
-	linphone_core_set_user_data(lc,&global_stat);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	counters->number_of_auth_info_requested=0;
-	register_with_refresh(lc,FALSE,auth_domain,NULL);
-	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
-}
-
-
-static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count) {
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count) {
 	LinphoneCore* lc;
 	int retry=0;
 	lc =  linphone_core_new(v_table,NULL,file,NULL);
@@ -291,17 +109,8 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,proxy_count);
 	return lc;
 }
-static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
-	return configure_lc_from(v_table,"./tester/multi_account_lrc",3);
-}
-static void multiple_proxy(){
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
-	memset (&v_table,0,sizeof(LinphoneCoreVTable));
-	v_table.registration_state_changed=registration_state_changed;
-	lc=configure_lc(&v_table);
-	linphone_core_destroy(lc);
-}
+
+
 static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -358,7 +167,7 @@ static void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_NotifyReceived++;
 }
-static bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
+bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	int retry=0;
 	while (*counter<value && retry++ <20) {
 		if (lc_1) linphone_core_iterate(lc_1);
@@ -379,14 +188,9 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}
 }
-typedef struct _LinphoneCoreManager {
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
-	stats stat;
-	LinphoneAddress* identity;
-} LinphoneCoreManager;
 
-static LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
+
+LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
 	LinphoneProxyConfig* proxy;
 	memset (mgr,0,sizeof(LinphoneCoreManager));
@@ -403,279 +207,13 @@ static LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	linphone_address_clean(mgr->identity);
 	return mgr;
 }
-static void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
+void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	linphone_core_destroy(mgr->lc);
 	linphone_address_destroy(mgr->identity);
 	free(mgr);
 }
 
-static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
-	LinphoneProxyConfig* proxy;
-	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
-	int retry=0;
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
 
-
-	CU_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
-
-	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
-
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
-	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,1);
-
-	while ((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging<1
-			|| caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia<1)  && retry++ <20) {
-			linphone_core_iterate(caller_mgr->lc);
-			linphone_core_iterate(callee_mgr->lc);
-			ms_usleep(100000);
-	}
-
-
-	CU_ASSERT_TRUE_FATAL(caller_mgr->stat.number_of_LinphoneCallOutgoingRinging|caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia);
-
-	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
-	linphone_address_destroy(identity);
-
-	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
-
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
-	/*just to sleep*/
-	return wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,1)
-			&&
-			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,1);
-
-}
-static void simple_call() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	LinphoneCore* lc_marie=marie->lc;
-	LinphoneCore* lc_pauline=pauline->lc;
-	stats* stat_marie=&marie->stat;
-	stats* stat_pauline=&pauline->stat;
-
-
-
-	linphone_core_invite(lc_marie,"pauline");
-
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
-	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
-	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
-
-	LinphoneProxyConfig* proxy;
-	linphone_core_get_default_proxy(lc_marie,&proxy);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
-	linphone_address_destroy(identity);
-
-	linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
-
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
-	/*just to sleep*/
-	wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
-	linphone_core_terminate_all_calls(lc_pauline);
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-static void call_canceled() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
-	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
-
-	linphone_core_terminate_call(pauline->lc,out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonCanceled);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
-	linphone_call_unref(out_call);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-static void call_ringing_canceled() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
-	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
-
-	linphone_core_terminate_call(pauline->lc,out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	//CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
-	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
-	linphone_call_unref(out_call);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void call_early_declined() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
-	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
-	LinphoneCall* in_call=linphone_core_get_current_call(marie->lc);
-	linphone_call_ref(in_call);
-
-	linphone_core_terminate_call(marie->lc,in_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
-	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
-	linphone_call_unref(in_call);
-	linphone_call_unref(out_call);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void call_terminated_by_caller() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	CU_ASSERT_TRUE(call(pauline,marie));
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void call_paused_resumed() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-	LinphoneCall* call_obj;
-
-	CU_ASSERT_TRUE(call(pauline,marie));
-	call_obj = linphone_core_get_current_call(pauline->lc);
-
-	linphone_core_pause_call(pauline->lc,call_obj);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
-
-	linphone_core_resume_call(pauline->lc,call_obj);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void call_srtp() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-	linphone_core_set_media_encryption(marie->lc,LinphoneMediaEncryptionSRTP);
-	linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
-
-	CU_ASSERT_TRUE(call(pauline,marie));
-
-	CU_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),LinphoneMediaEncryptionSRTP);
-	CU_ASSERT_EQUAL(linphone_core_get_media_encryption(pauline->lc),LinphoneMediaEncryptionSRTP);
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-static void text_message() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
-	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
-static void simple_publish() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneProxyConfig* proxy;
-	linphone_core_get_default_proxy(marie->lc,&proxy);
-	linphone_proxy_config_edit(proxy);
-	linphone_proxy_config_enable_publish(proxy,TRUE);
-	linphone_proxy_config_done(proxy);
-	linphone_core_iterate(marie->lc);
-	linphone_core_manager_destroy(marie);
-}
-
-
-static void simple_subscribe() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-	const MSList* marie_friends = linphone_core_get_friend_list(marie->lc);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_friends);
-	LinphoneFriend* friend = (LinphoneFriend*) marie_friends->data;
-	linphone_friend_edit(friend);
-	linphone_friend_enable_subscribes(friend,TRUE);
-	linphone_friend_done(friend);
-
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyReceived,1));
-
-	linphone_core_manager_destroy(marie);
-	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
-
-	linphone_core_manager_destroy(pauline);
-}
-static void unsubscribe_while_subscribing() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneFriend* friend = linphone_friend_new_with_addr("sip:toto@git.linphone.org"); /*any unexisting address*/
-	linphone_friend_edit(friend);
-	linphone_friend_enable_subscribes(friend,TRUE);
-	linphone_friend_done(friend);
-	linphone_core_add_friend(marie->lc,friend);
-	linphone_core_iterate(marie->lc);
-	linphone_core_manager_destroy(marie);
-
-}
-
-static void call_early_media() {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
-
-	CU_ASSERT_TRUE(call(pauline,marie));
-
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
 
 int init_test_suite () {
 
@@ -689,78 +227,14 @@ CU_pSuite pSuite = CU_add_suite("Setup", init, uninit);
 		return CU_get_error();
 	}
 
-	pSuite = CU_add_suite("Register", init, uninit);
-	if (NULL == CU_add_test(pSuite, "simple_register_tester", simple_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "tcp register tester", simple_tcp_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "tls register tester", simple_tls_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple register with digest auth tester", simple_authenticated_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "register with digest auth tester without initial credentials", authenticated_register_with_no_initial_credentials)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_register_with_refresh", simple_register_with_refresh)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_auth_register_with_refresh", simple_auth_register_with_refresh)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "register_with_refresh_with_send_error", register_with_refresh_with_send_error)) {
-		return CU_get_error();
-	}
+	register_test_suite();
 
+	call_test_suite();
 
-	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
-		return CU_get_error();
-	}
+	message_test_suite();
 
-	pSuite = CU_add_suite("Call", init, uninit);
-	if (NULL == CU_add_test(pSuite, "call_early_declined", call_early_declined)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_canceled", call_canceled)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_ringing_canceled", call_ringing_canceled)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_call", simple_call)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_early_media", call_early_media)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_terminated_by_caller", call_terminated_by_caller)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_paused_resumed", call_paused_resumed)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
-			return CU_get_error();
-	}
+	presence_test_suite();
 
-	pSuite = CU_add_suite("Message", init, uninit);
-	if (NULL == CU_add_test(pSuite, "text_message", text_message)) {
-			return CU_get_error();
-	}
-
-	pSuite = CU_add_suite("Presence", init, uninit);
-	if (NULL == CU_add_test(pSuite, "simple_subscribe", simple_subscribe)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_publish", simple_publish)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "unsubscribe_while_subscribing", unsubscribe_while_subscribing)) {
-			return CU_get_error();
-	}
 	return 0;
 }
 int main (int argc, char *argv[]) {
