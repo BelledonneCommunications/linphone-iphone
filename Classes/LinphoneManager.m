@@ -467,10 +467,14 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			incallBgTask=0;
 		}       
         if(data != nil && data->notification != nil) {
-            // cancel local notif if needed
-            [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
-            [data->notification release];
-            data->notification = nil;
+            LinphoneCallLog *log = linphone_call_get_call_log(call);
+            
+            if(log == NULL || log->status != LinphoneCallMissed) {
+                // cancel local notif if needed
+                [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+                [data->notification release];
+                data->notification = nil;
+            }
         }
     }
     
