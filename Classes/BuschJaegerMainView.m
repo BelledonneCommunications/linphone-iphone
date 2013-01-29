@@ -346,7 +346,8 @@ static BuschJaegerMainView* mainViewInstance=nil;
         case LinphoneCallError:
 		case LinphoneCallEnd:
         {
-            if(linphone_call_get_reason(call) == LinphoneReasonBusy) {
+            int reason = linphone_call_get_reason(call);
+            if(reason == LinphoneReasonBusy) {
                 NSString *contactName = NSLocalizedString(@"Unknown", nil);
                 
                 // Extract caller address

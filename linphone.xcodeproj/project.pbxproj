@@ -125,6 +125,10 @@
 		D2D7FD5E16A52F6A0031322D /* BuschJaegerSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D7FD6016A52F6A0031322D /* BuschJaegerSettingsView.xib */; };
 		D304B3EA16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
 		D304B3EB16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */; };
+		D30B88C216B82A86003550ED /* bj_glow.png in Resources */ = {isa = PBXBuildFile; fileRef = D30B88C116B82A86003550ED /* bj_glow.png */; };
+		D30B88C316B82A86003550ED /* bj_glow.png in Resources */ = {isa = PBXBuildFile; fileRef = D30B88C116B82A86003550ED /* bj_glow.png */; };
+		D30B88C616B82AA1003550ED /* noimage.png in Resources */ = {isa = PBXBuildFile; fileRef = D30B88C516B82AA1003550ED /* noimage.png */; };
+		D30B88C716B82AA1003550ED /* noimage.png in Resources */ = {isa = PBXBuildFile; fileRef = D30B88C516B82AA1003550ED /* noimage.png */; };
 		D30B942316358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
 		D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */; };
 		D30B942816358DD600D53C46 /* BuschJaegerManualSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */; };
@@ -613,6 +617,8 @@
 		D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_57.png; sourceTree = "<group>"; };
 		D2D7FD5F16A52F6A0031322D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
+		D30B88C116B82A86003550ED /* bj_glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_glow.png; path = Resources/bj_glow.png; sourceTree = "<group>"; };
+		D30B88C516B82AA1003550ED /* noimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = noimage.png; path = Resources/noimage.png; sourceTree = "<group>"; };
 		D30B942216358C7F00D53C46 /* BuschJaegerManualSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BuschJaegerManualSettingsView.xib; sourceTree = "<group>"; };
 		D30B942616358DD600D53C46 /* BuschJaegerManualSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuschJaegerManualSettingsView.h; sourceTree = "<group>"; };
 		D30B942716358DD600D53C46 /* BuschJaegerManualSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuschJaegerManualSettingsView.m; sourceTree = "<group>"; };
@@ -1334,18 +1340,12 @@
 			children = (
 				D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */,
 				D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */,
-				D285B6FC16A7381700FB0C51 /* Default@2x.png */,
-				D285B6FE16A7382100FB0C51 /* Default.png */,
-				D285B70016A7386900FB0C51 /* Default-Portrait~ipad.png */,
-				D285B70216A7387C00FB0C51 /* Default-Landscape~ipad.png */,
-				D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */,
-				D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */,
-				D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */,
 				D37CD2C615E21CB30028869A /* bj_barcode.png */,
 				D37CD2C715E21CB30028869A /* bj_decline.png */,
 				D37CD2C915E21CB30028869A /* bj_door.png */,
 				D37CD2C815E21CB30028869A /* bj_door_hl.png */,
 				D37CD2CA15E21CB30028869A /* bj_end_call.png */,
+				D30B88C116B82A86003550ED /* bj_glow.png */,
 				D384467215E64CD600DF89DF /* bj_history.png */,
 				D37CD2CC15E21CB30028869A /* bj_light.png */,
 				D37CD2CB15E21CB30028869A /* bj_light_hl.png */,
@@ -1361,10 +1361,18 @@
 				D37CD32415E220620028869A /* buschjaeger_icon_57@2x.png */,
 				D37CD32515E220620028869A /* buschjaeger_icon_72.png */,
 				D37CD32615E220620028869A /* buschjaeger_icon_72@2x.png */,
+				D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */,
+				D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */,
+				D285B70216A7387C00FB0C51 /* Default-Landscape~ipad.png */,
+				D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */,
+				D285B70016A7386900FB0C51 /* Default-Portrait~ipad.png */,
+				D285B6FE16A7382100FB0C51 /* Default.png */,
+				D285B6FC16A7381700FB0C51 /* Default@2x.png */,
 				57F005C315EE2CCF00914747 /* linphonerc */,
 				D33BEE1C15FF711B004ED2AF /* linphonerc-factory */,
 				D33BEE1D15FF711B004ED2AF /* linphonerc-factory~ipad */,
 				D321FF9815E628CB0098B5F4 /* linphonerc~ipad */,
+				D30B88C516B82AA1003550ED /* noimage.png */,
 				D376EAE316008454007C8226 /* ringtone_01_1600.wav */,
 				D32EDD9E1600C8FC009A84C7 /* ringtone_01_1600_loop.wav */,
 				D376EAE416008454007C8226 /* ringtone_02_1600.wav */,
@@ -1684,6 +1692,8 @@
 				D285B70716A738C700FB0C51 /* Default-Landscape@2x~ipad.png in Resources */,
 				D2BB9B4516B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png in Resources */,
 				D2BB9B4716B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png in Resources */,
+				D30B88C216B82A86003550ED /* bj_glow.png in Resources */,
+				D30B88C616B82AA1003550ED /* noimage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1745,6 +1755,8 @@
 				D32EDDAC1600C8FC009A84C7 /* ringtone_05_1600_loop.wav in Resources */,
 				D30B942416358C7F00D53C46 /* BuschJaegerManualSettingsView.xib in Resources */,
 				D304B3EB16661793002DB909 /* BuschJaegerWelcomeView~ipad.xib in Resources */,
+				D30B88C316B82A86003550ED /* bj_glow.png in Resources */,
+				D30B88C716B82AA1003550ED /* noimage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

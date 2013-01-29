@@ -101,21 +101,24 @@
     
     [lightsButton setPlay:FALSE];
     [lightsButton setDigit:'2'];
-
-    [microButton setImage:[UIImage imageNamed:@"bj_mute_off.png"] forState:UIControlStateHighlighted | UIControlStateSelected];
     
     /* init gradients */
     {
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
+        [self.microButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:microButton];
         [BuschJaegerUtils createGradientForButton:microButton withTopColor:col1 bottomColor:col2];
         [microButton makeRoundWithCorner:(UIRectCornerBottomRight|UIRectCornerTopRight) radius:(microButton.bounds.size.height/2.0)];
     }
     {
         UIColor* col1 = BUSCHJAEGER_RED_COLOR;
         UIColor* col2 = BUSCHJAEGER_RED_COLOR2;
-        
+        [self.endOrRejectCallButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:endOrRejectCallButton];
         [BuschJaegerUtils createGradientForButton:endOrRejectCallButton withTopColor:col1 bottomColor:col2];
+        [self.declineButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:declineButton];
         [BuschJaegerUtils createGradientForButton:declineButton withTopColor:col1 bottomColor:col2];
         [endOrRejectCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(endOrRejectCallButton.bounds.size.height/2.0)];
         [declineButton makeRoundWithCorner:(UIRectCornerBottomRight|UIRectCornerTopRight) radius:(declineButton.bounds.size.height/2.0)];
@@ -124,11 +127,19 @@
     {
         UIColor* col1 = BUSCHJAEGER_GREEN_COLOR;
         UIColor* col2 = BUSCHJAEGER_GREEN_COLOR;
-        
+        [self.takeCallButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:takeCallButton];
         [BuschJaegerUtils createGradientForButton:takeCallButton withTopColor:col1 bottomColor:col2];
         [takeCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(takeCallButton.bounds.size.height/2.0)];
     }
-    
+    {
+        [BuschJaegerUtils createBuschJaegerButton:openDoorButton];
+        [self.openDoorButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    }
+    {
+        [BuschJaegerUtils createBuschJaegerButton:lightsButton];
+        [self.lightsButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    }
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
     
@@ -174,8 +185,8 @@
         UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
         UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
         
-        [self.openDoorButton setEnabled:enabled];
         [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
+        [self.openDoorButton setEnabled:enabled];
     }
     
     /* init gradients for lightsButton */
@@ -183,7 +194,6 @@
         bool enabled = (usr != nil && usr.switchlight && ![[NSUserDefaults standardUserDefaults] boolForKey:@"switchlight_preference"]);
         UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
         UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
-        
         [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
         [self.lightsButton setEnabled:enabled];
     }

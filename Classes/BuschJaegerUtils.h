@@ -42,4 +42,8 @@
 
 + (void)resizeGradient:(UIView*)view;
 
++ (void)createBuschJaegerButton:(UIButton *)button;
+
++ (UIImage*)mergeImage:(UIImage*)image1 image2:(UIImage*)image2;
+
 @end

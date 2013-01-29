@@ -85,4 +85,27 @@
     [BuschJaegerUtils resizeGradientLayer:view.layer];
 }
 
++ (void)createBuschJaegerButton:(UIButton *)button {
+    [button setImage:[BuschJaegerUtils mergeImage:[button imageForState:UIControlStateNormal] image2:[button imageForState:UIControlStateHighlighted]] forState:UIControlStateNormal | UIControlStateHighlighted];
+    
+    if([button imageForState:UIControlStateSelected] != nil) {
+         [button setImage:[BuschJaegerUtils mergeImage:[button imageForState:UIControlStateSelected] image2:[button imageForState:UIControlStateHighlighted]] forState:UIControlStateSelected | UIControlStateHighlighted];   
+    }
+}
+
++ (UIImage*)mergeImage:(UIImage*)image1 image2:(UIImage*)image2 {
+    int width = MAX(image1.size.width, image2.size.width);
+    int height = MAX(image1.size.height, image2.size.height);
+    CGSize newSize = CGSizeMake(width, height);
+    UIGraphicsBeginImageContext(newSize);
+    
+    [image1 drawInRect:CGRectMake((width - image1.size.width)/2, (height - image1.size.height)/2, image1.size.width, image1.size.height)];
+    
+    [image2 drawInRect:CGRectMake((width - image2.size.width)/2, (height - image2.size.height)/2, image2.size.width, image2.size.height)];
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    return newImage;
+}
 @end

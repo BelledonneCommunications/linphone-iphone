@@ -99,7 +99,8 @@
         [iconImage setImage:nil];
         [iconImage loadImage:[[LinphoneManager instance].configuration getImageUrl:image]];
     } else {
-        [iconImage setImage:nil];
+        UIImage *img = [UIImage imageNamed:@"noimage.png"];
+        [iconImage setImage:img];
     }
 }
 
