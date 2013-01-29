@@ -90,14 +90,21 @@ static BuschJaegerMainView* mainViewInstance=nil;
     assert (!mainViewInstance);
     mainViewInstance = self;
     loadCount = 0;
-    historyTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
-                                                    target: self
-                                                  selector: @selector(updateIconBadge:)
-                                                  userInfo: nil
-                                                   repeats: YES];
+    historyTimer = nil;
     historyQueue = [[NSOperationQueue alloc] init];
     historyQueue.name = @"History queue";
     historyQueue.maxConcurrentOperationCount = 1;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [self applicationWillEnterForeground:nil];
 }
 
 - (id)init {
@@ -125,6 +132,12 @@ static BuschJaegerMainView* mainViewInstance=nil;
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationWillEnterForegroundNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidEnterBackgroundNotification
+                                                  object:nil];
     [navigationController release];
     [callView release];
     [settingsView release];
@@ -236,6 +249,24 @@ static BuschJaegerMainView* mainViewInstance=nil;
 
 #pragma mark - Event Functions
 
+- (void)applicationWillEnterForeground:(NSNotification*)notif {
+    if(historyTimer != nil) {
+        historyTimer = [NSTimer scheduledTimerWithTimeInterval: 10.0
+                                                        target: self
+                                                      selector: @selector(updateIconBadge:)
+                                                      userInfo: nil
+                                                       repeats: YES];
+    }
+    
+}
+
+
+- (void)applicationWillEnterBackground:(NSNotification*)notif {
+    [historyTimer invalidate];
+    historyTimer = nil;
+}
+
+
 - (void)updateIconBadge:(id)info {
     if([historyQueue operationCount] == 0) {
         [historyQueue addOperationWithBlock:^(void) {
@@ -315,6 +346,35 @@ static BuschJaegerMainView* mainViewInstance=nil;
         case LinphoneCallError:
 		case LinphoneCallEnd:
         {
+            if(linphone_call_get_reason(call) == LinphoneReasonBusy) {
+                NSString *contactName = NSLocalizedString(@"Unknown", nil);
+                
+                // Extract caller address
+                const LinphoneAddress* addr = linphone_call_get_remote_address(call);
+                if(addr) {
+                    char *address = linphone_address_as_string_uri_only(addr);
+                    if(address != NULL) {
+                        contactName = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:address]];
+                        ms_free(address);
+                    }
+                }
+                
+                // Find caller in outdoor stations
+                NSSet *outstations = [[LinphoneManager instance] configuration].outdoorStations;
+                for(OutdoorStation *os in outstations) {
+                    if([[FastAddressBook normalizeSipURI:os.address] isEqualToString:contactName]) {
+                        contactName = os.name;
+                        break;
+                    }
+                }
+                UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Welcome"
+                                                                message: [NSString stringWithFormat:NSLocalizedString(@"%@ is busy",nil), contactName]
+                                                               delegate:nil
+                                                      cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                                      otherButtonTitles:nil,nil];
+                [error show];
+                [error release];
+            }
             [self dismissIncomingCall:call];
             if ((linphone_core_get_calls([LinphoneManager getLc]) == NULL)) {
                 [navigationController popToViewController:welcomeView animated:FALSE]; // No animation... Come back when Apple have learned how to create a good framework
@@ -353,7 +413,8 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                               otherButtonTitles:nil,nil];
         [error show];
         [error release];
-        AudioServicesPlayAlertSound([LinphoneManager instance].sounds.level);
+        // Not working during a call
+        // AudioServicesPlayAlertSound([LinphoneManager instance].sounds.level);
     }
 }
 

@@ -71,7 +71,7 @@
         if(layer.delegate == nil) {
             [layer setFrame:layer.superlayer.bounds];
         } else if([layer.delegate isKindOfClass:[UIView class]]) {
-            [layer setFrame:((UIView *)layer.delegate).bounds];
+            [layer setFrame:((UIView *)layer.delegate).frame];
         }
     }
     if([layer respondsToSelector:@selector(sublayers)]) {

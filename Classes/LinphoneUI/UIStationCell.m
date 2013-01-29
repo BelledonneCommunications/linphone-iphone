@@ -79,6 +79,7 @@
         shadow.layer.name = @"BuschJaegerLayer";
         shadow.clipsToBounds = NO;
         shadow.layer.shadowOpacity = 0.9f;
+        [cellBackgroundView setFrame:[shadow bounds]];
         [cellBackgroundView.superview insertSubview:shadow belowSubview:cellBackgroundView];
         [shadow addSubview:cellBackgroundView];
     }
