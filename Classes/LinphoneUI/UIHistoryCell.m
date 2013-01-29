@@ -37,14 +37,15 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            UIView *view = [[arrayOfViews objectAtIndex:0] retain];
+            [view setFrame:[self bounds]];
+            [self addSubview:view];
         }
+        NSLocale *local = [NSLocale currentLocale];
         
+        NSString *strFormatter = [[NSDateFormatter dateFormatFromTemplate:@"yyyyMMMMdd\nkms" options:0 locale:local] retain];
         dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-        NSLocale *locale = [NSLocale currentLocale];
-        [dateFormatter setLocale:locale];
+        [dateFormatter setDateFormat:strFormatter];
     }
     return self;
 }
@@ -81,6 +82,12 @@
         OutdoorStation *station = [[set allObjects] objectAtIndex:0];
         stationName = station.name;
     }
+    if(history.incoming) {
+        stationName = [NSString stringWithFormat:@"%@ \U00002199\U0000FE0E", stationName];
+    } else {
+        stationName = [NSString stringWithFormat:@"%@ \U00002197\U0000FE0E", stationName];
+    }
+    
     // Station
     [stationLabel setText:stationName];
     
@@ -94,6 +101,10 @@
     } else {
         [iconImage setImage:nil];
     }
+}
+
+-(void) layoutSubviews {
+    [super layoutSubviews];
 }
 
 

@@ -34,7 +34,9 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            UIView *view = [[arrayOfViews objectAtIndex:0] retain];
+            [view setFrame:[self bounds]];
+            [self addSubview:view];
         }
     }
     return self;

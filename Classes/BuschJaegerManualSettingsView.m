@@ -106,13 +106,17 @@
 
 - (IBAction)onValidClick:(id)sender {
     if([[addressField text] length] && [[usernameField text] length] && [[passwordField text] length]) {
-        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
-        [[BuschJaegerMainView instance].settingsView reloadConfiguration];
+        if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+            [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+            [[BuschJaegerMainView instance].settingsView reloadConfiguration];
+        }
     }
 }
 
 - (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
 }
 
 

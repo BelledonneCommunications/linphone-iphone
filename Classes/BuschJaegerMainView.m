@@ -183,7 +183,14 @@ static BuschJaegerMainView* mainViewInstance=nil;
                                              selector:@selector(textReceivedEvent:)
                                                  name:kLinphoneTextReceived
                                                object:nil];
-    // set observer
+    
+    // Set observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(dtmfReceivedEvent:)
+                                                 name:kLinphoneDtmfReceived
+                                               object:nil];
+    
+    // Set observer
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(networkUpdateEvent:)
                                                  name:kLinphoneNetworkUpdate
@@ -201,6 +208,16 @@ static BuschJaegerMainView* mainViewInstance=nil;
     // Remove observer
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:kLinphoneTextReceived
+                                                  object:nil];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneDtmfReceived
+                                                  object:nil];
+    
+    // Remove observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneNetworkUpdate
                                                   object:nil];
 }
 
@@ -238,6 +255,9 @@ static BuschJaegerMainView* mainViewInstance=nil;
     [self callUpdate:call state:state animated:TRUE];
 }
 
+- (void)dtmfReceivedEvent: (NSNotification*) notif {
+    [self displayDtmf:notif];
+}
 
 - (void)textReceivedEvent: (NSNotification*) notif {
     [self displayMessage:notif];
@@ -321,6 +341,19 @@ static BuschJaegerMainView* mainViewInstance=nil;
         || [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
         [[LinphoneManager instance] setSpeakerEnabled:TRUE];
         AudioServicesPlaySystemSound([LinphoneManager instance].sounds.call);
+    }
+}
+- (void)displayDtmf:(id)message {
+    if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
+		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
+        UIAlertView* error = [[UIAlertView alloc] initWithTitle:@"Welcome"
+                                                        message: [NSString stringWithFormat:@"%@", [LinphoneManager instance].configuration.levelPushButton.name]
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+                                              otherButtonTitles:nil,nil];
+        [error show];
+        [error release];
+        AudioServicesPlayAlertSound([LinphoneManager instance].sounds.level);
     }
 }
 

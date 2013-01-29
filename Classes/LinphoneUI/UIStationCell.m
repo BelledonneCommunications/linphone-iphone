@@ -38,15 +38,15 @@
                                                             options:nil];
         
         if ([arrayOfViews count] >= 1) {
-            [self addSubview:[[arrayOfViews objectAtIndex:0] retain]];
+            UIView *view = [[arrayOfViews objectAtIndex:0] retain];
+            [view setFrame:[self bounds]];
+            [self addSubview:view];
         }
         
         CALayer *layer = cellBackgroundView.layer;
         layer.name = @"BuschJaegerLayer";
         
         CAGradientLayer *overlayButtonShineLayer;
-        
-        [cellBackgroundView makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
         
         overlayButtonShineLayer = [CAGradientLayer layer];
         overlayButtonShineLayer.name = @"BuschJaegerLayer";
@@ -70,12 +70,13 @@
         [layer addSublayer:overlayButtonShineLayer];
         
         UIView * shadow = [[UIView alloc] initWithFrame:cellBackgroundView.frame];
+        shadow.autoresizingMask = cellBackgroundView.autoresizingMask;
         shadow.userInteractionEnabled = NO; // Modify this if needed
         shadow.layer.shadowColor = [[UIColor blackColor] CGColor];
         shadow.layer.shadowOffset = CGSizeMake(2, 2);
         shadow.layer.shadowRadius = 5.0f;
         shadow.layer.masksToBounds = NO;
-//        shadow.layer.name = @"BuschJaegerLayer";
+        shadow.layer.name = @"BuschJaegerLayer";
         shadow.clipsToBounds = NO;
         shadow.layer.shadowOpacity = 0.9f;
         [cellBackgroundView.superview insertSubview:shadow belowSubview:cellBackgroundView];
@@ -96,6 +97,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     [BuschJaegerUtils resizeGradient:self];
+    [cellBackgroundView makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerBottomRight) radius:7.0];
 }
 
 #pragma mark - Property Functions

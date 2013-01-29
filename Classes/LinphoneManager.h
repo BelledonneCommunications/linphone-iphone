@@ -38,6 +38,7 @@ extern const char *const LINPHONERC_APPLICATION_KEY;
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
 extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneDtmfReceived;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
 extern NSString *const kLinphoneMainViewChange;

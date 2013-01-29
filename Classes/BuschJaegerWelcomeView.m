@@ -23,19 +23,18 @@
 @implementation BuschJaegerWelcomeView
 
 @synthesize settingsButton;
-@synthesize historyButton;
 @synthesize stationTableController;
 @synthesize historyTableController;
 @synthesize waitView;
+@synthesize historyLeftSwipeGestureRecognizer;
 
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
     [settingsButton release];
-    [historyButton release];
     [stationTableController release];
     [historyTableController release];
-    
+    [historyLeftSwipeGestureRecognizer release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -48,15 +47,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    // Swipe history gesture for iphone devices
+    if(![LinphoneManager runningOnIpad]) {
+        historyLeftSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doHistorySwipe:)];
+        [historyLeftSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
+        [historyLeftSwipeGestureRecognizer setDelegate:self];
+        [self.view addGestureRecognizer:historyLeftSwipeGestureRecognizer];
+    }
+    
     [historyTableController.view setBackgroundColor:[UIColor clearColor]];
     [stationTableController.view setBackgroundColor:[UIColor clearColor]];
     
     [waitView setHidden:TRUE];
-    
-    if([LinphoneManager runningOnIpad]) {
-        [historyButton setHidden:TRUE];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -71,8 +74,8 @@
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:UIApplicationWillEnterForegroundNotification
                                                object:nil];
-    [self performSelector:@selector(reloadHistory) withObject:self afterDelay:1.0];
-    [self reloadHistory];
+    // Wait a bit for the gateway update
+    [self performSelector:@selector(reloadHistory) withObject:self afterDelay:2.0];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -120,7 +123,6 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ID" ascending:YES];
     NSArray *sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, nil];
     [stationTableController setStations:[configuration.outdoorStations sortedArrayUsingDescriptors:sortDescriptors]];
-    [historyButton setEnabled: configuration.network.localAddress != nil];
 }
 
 
@@ -148,15 +150,23 @@
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].settingsView animated:FALSE];
 }
 
-- (IBAction)historyClick:(id)sender {
+
+#pragma mark - Actions Functions
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (IBAction)doHistorySwipe:(UISwipeGestureRecognizer *)sender {
     [[BuschJaegerMainView instance].historyView reload];
     [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:FALSE];
 }
 
+
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
 - (void)buschJaegerConfigurationSuccess {
-    [[BuschJaegerMainView instance] updateIconBadge:nil];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     [waitView setHidden:TRUE];
     [self update];
 }

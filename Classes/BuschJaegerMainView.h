@@ -45,8 +45,6 @@
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryView *historyView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryDetailsView *historyDetailsView;
 
-- (void)updateIconBadge:(id)info;
-
 + (BuschJaegerMainView*) instance;
 
 @end

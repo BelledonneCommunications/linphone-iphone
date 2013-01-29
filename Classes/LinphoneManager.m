@@ -50,6 +50,7 @@ const char *const LINPHONERC_APPLICATION_KEY = "app";
 NSString *const kLinphoneCoreUpdate = @"LinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
 NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
+NSString *const kLinphoneDtmfReceived = @"LinphoneDtmfReceived";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
 /* MODIFICATION: Add buschjaeger configuration event */
@@ -575,6 +576,15 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 #pragma mark - Text Received Functions
 
+- (void)onDtmfReceived:(LinphoneCore *)lc call:(LinphoneCall *)call dtmf:(int)dtmf {
+    // Post event
+    NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                          [NSValue valueWithPointer:call], @"call",
+                          [NSNumber numberWithInt:dtmf], @"dtmf",
+                          nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDtmfReceived object:self userInfo:dict];
+}
+
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room  message:(LinphoneChatMessage*)msg {
     
     char *fromStr = linphone_address_as_string_uri_only(linphone_chat_message_get_from(msg));
@@ -639,6 +649,10 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
     [(LinphoneManager*)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
+}
+
+static void linphone_iphone_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
+    [(LinphoneManager*)linphone_core_get_user_data(lc) onDtmfReceived:lc call:call dtmf:dtmf];
 }
 
 
@@ -796,7 +810,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.display_url=NULL,
 	.text_received=NULL,
 	.message_received=linphone_iphone_message_received,
-	.dtmf_received=NULL,
+	.dtmf_received=linphone_iphone_dtmf_received,
     .transfer_state_changed=linphone_iphone_transfer_state_changed
 };
 

@@ -21,15 +21,13 @@
 #import "BuschJaegerHistoryTableViewController.h"
 #import "BuschJaegerConfiguration.h"
 
-@interface BuschJaegerHistoryView : UIViewController<BuschJaegerConfigurationDelegate> {
+@interface BuschJaegerHistoryView : UIViewController<BuschJaegerConfigurationDelegate, UIGestureRecognizerDelegate> {
     
 }
 
-@property (nonatomic, retain) IBOutlet UIView *backButton;
 @property (nonatomic, retain) IBOutlet UIView *waitView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryTableViewController *tableController;
-
-- (IBAction)onBackClick:(id)sender;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *backRightSwipeGestureRecognizer;
 
 - (void)reload;
 

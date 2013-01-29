@@ -68,8 +68,10 @@
 
 + (void)resizeGradientLayer:(CALayer*)layer {
     if(layer.name != nil && [layer.name compare:@"BuschJaegerLayer" options:0] == NSOrderedSame) {
-        if(layer.superlayer != nil) {
+        if(layer.delegate == nil) {
             [layer setFrame:layer.superlayer.bounds];
+        } else if([layer.delegate isKindOfClass:[UIView class]]) {
+            [layer setFrame:((UIView *)layer.delegate).bounds];
         }
     }
     if([layer respondsToSelector:@selector(sublayers)]) {
@@ -81,9 +83,6 @@
 
 + (void)resizeGradient:(UIView*)view {
     [BuschJaegerUtils resizeGradientLayer:view.layer];
-    for(UIView *subView in view.subviews) {
-        [BuschJaegerUtils resizeGradient:subView];
-    }
 }
 
 @end

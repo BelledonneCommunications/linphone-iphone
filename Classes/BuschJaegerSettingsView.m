@@ -21,6 +21,23 @@
 #import "BuschJaegerUtils.h"
 #import "BuschJaegerMainView.h"
 
+@interface ZBarReaderViewControllerEx : ZBarReaderViewController {
+    
+}
+@end
+
+@implementation ZBarReaderViewControllerEx
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return interfaceOrientation == UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+@end
+
 @implementation BuschJaegerSettingsView
 
 @synthesize scanButton;
@@ -32,8 +49,8 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initBuschJaegerSettingsView {
-    scanController = [[ZBarReaderViewController alloc] init];
-    scanController.supportedOrientationsMask = ZBarOrientationMaskAll;
+    scanController = [[ZBarReaderViewControllerEx alloc] init];
+    scanController.supportedOrientationsMask = ZBarOrientationMask(UIInterfaceOrientationPortrait);
     [scanController setReaderDelegate:self];
 }
 
@@ -121,7 +138,9 @@
 }
 
 - (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
 }
 
 
@@ -162,13 +181,17 @@
             }
         }
         if(handled) {
-            [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+            if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+                [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+            }
         }
     }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    if([BuschJaegerMainView instance].navigationController.topViewController == scanController) {
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
 }
 
 #pragma mark - BuschJaegerConfigurationDelegate Functions

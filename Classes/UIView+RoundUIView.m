@@ -12,8 +12,7 @@
 
 @implementation UIView (RoundUIView)
 
-- (void)makeRoundWithCorner:(UIRectCorner)rectCorner radius:(float)radius
-{
+- (void)makeRoundWithCorner:(UIRectCorner)rectCorner radius:(float)radius {
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                                    byRoundingCorners:rectCorner
                                                          cornerRadii:CGSizeMake(radius, radius)];

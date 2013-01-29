@@ -24,17 +24,16 @@
 
 @implementation BuschJaegerHistoryView
 
-@synthesize backButton;
 @synthesize waitView;
 @synthesize tableController;
-
+@synthesize backRightSwipeGestureRecognizer;
 
 #pragma mark - Lifecycle Functions 
 
 - (void)dealloc {
-    [backButton release];
     [waitView release];
     [tableController release];
+    [backRightSwipeGestureRecognizer release];
     
     [super dealloc];
 }
@@ -49,12 +48,12 @@
     
     [waitView setHidden:TRUE];
     
-    /* init gradients */
-    {
-        UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
-        UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
-        
-        [BuschJaegerUtils createGradientForView:backButton withTopColor:col1 bottomColor:col2 cornerRadius:BUSCHJAEGER_DEFAULT_CORNER_RADIUS];
+    // Swipe back for iphone devices
+    if(![LinphoneManager runningOnIpad]) {
+        backRightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doBackSwipe:)];
+        [backRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
+        [backRightSwipeGestureRecognizer setDelegate:self];
+        [self.view addGestureRecognizer:backRightSwipeGestureRecognizer];
     }
 }
 
@@ -74,14 +73,20 @@
     }
 }
 
-#pragma mark - Action Functions
 
-- (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+#pragma mark - Actions Functions
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
+- (IBAction)doBackSwipe:(UISwipeGestureRecognizer *)sender {
+    if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
+}
 
-#pragma mark - 
+#pragma mark -
 
 - (void)reload {
     [self view]; // Force view load
@@ -103,7 +108,7 @@
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
 - (void)buschJaegerConfigurationSuccess {
-    [[BuschJaegerMainView instance] updateIconBadge:nil];
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     [waitView setHidden:TRUE];
     [self update];
 }

@@ -30,6 +30,7 @@
 @synthesize backButton;
 @synthesize stationLabel;
 @synthesize dateLabel;
+@synthesize tableView;
 @synthesize imageView;
 @synthesize saveButton;
 @synthesize fullscreenView;
@@ -73,6 +74,7 @@
 
 - (void)dealloc {
     [tableController release];
+    [tableView release];
     [history release];
     [backButton release];
     [stationLabel release];
@@ -116,6 +118,10 @@
     [detailsTapGestureRecognizer setNumberOfTapsRequired:1];
     [detailsTapGestureRecognizer setNumberOfTouchesRequired:1];
     [imageView addGestureRecognizer:detailsTapGestureRecognizer];
+    
+    if([LinphoneManager runningOnIpad]) {
+        [tableView setRowHeight:[tableView rowHeight]*2.5];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -172,7 +178,9 @@
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)sender {
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
 }
 
 - (IBAction)onDeleteClick:(id)sender {
@@ -212,9 +220,9 @@
 	return [history.images count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)atableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *kCellId = @"UIHistoryCell";
-    UIHistoryDetailsCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+    UIHistoryDetailsCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
         cell = [[[UIHistoryDetailsCell alloc] initWithIdentifier:kCellId] autorelease];
         
@@ -233,8 +241,8 @@
 
 #pragma mark - UITableViewDelegate Functions
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+- (void)tableView:(UITableView *)atableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [atableView deselectRowAtIndexPath:indexPath animated:NO];
     currentIndex = [indexPath row];
     [fullscreenView setHidden:FALSE];
     [imageView setImage:nil];
@@ -244,8 +252,10 @@
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
 - (void)buschJaegerConfigurationSuccess {
-    [[BuschJaegerMainView instance].historyView reload];
-    [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+        [[BuschJaegerMainView instance].historyView reload];
+        [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
+    }
 }
 
 - (void)buschJaegerConfigurationError:(NSString *)error {

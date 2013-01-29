@@ -21,17 +21,17 @@
 #import "BuschJaegerStationTableViewController.h"
 #import "BuschJaegerHistoryTableViewController.h"
 
-@interface BuschJaegerWelcomeView : UIViewController<BuschJaegerConfigurationDelegate> {
+@interface BuschJaegerWelcomeView : UIViewController<BuschJaegerConfigurationDelegate, UIGestureRecognizerDelegate> {
 }
 
 @property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet UIButton* historyButton;
 @property (nonatomic, retain) IBOutlet BuschJaegerStationTableViewController *stationTableController;
 @property (nonatomic, retain) IBOutlet UIView *waitView;
 @property (nonatomic, retain) IBOutlet BuschJaegerHistoryTableViewController *historyTableController;
+@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *historyLeftSwipeGestureRecognizer;
+
 
 - (IBAction)settingsClick:(id)sender;
-- (IBAction)historyClick:(id)sender;
 
 - (void)reloadHistory;
 
