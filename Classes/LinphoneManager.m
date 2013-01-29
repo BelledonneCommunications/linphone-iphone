@@ -385,6 +385,34 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
         linphone_call_set_user_pointer(call, data);
     }
 	
+    const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+    NSString* address = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name
+        char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
+            if(contact) {
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+            ms_free(lAddress);
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName)
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName)
+                address = [NSString stringWithUTF8String:lUserName];
+        }
+    }
+    if(address == nil) {
+        address = @"Unknown";
+    }
+    
 	if (state == LinphoneCallIncomingReceived) {
         
 		/*first step is to re-enable ctcall center*/
@@ -404,33 +432,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			
 			LinphoneCallLog* callLog=linphone_call_get_call_log(call);
 			NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
-			const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-			NSString* address = nil;
-			if(addr != NULL) {
-				BOOL useLinphoneAddress = true;
-				// contact name
-				char* lAddress = linphone_address_as_string_uri_only(addr);
-				if(lAddress) {
-					NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-					ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
-					if(contact) {
-						address = [FastAddressBook getContactDisplayName:contact];
-						useLinphoneAddress = false;
-					}
-					ms_free(lAddress);
-				}
-				if(useLinphoneAddress) {
-					const char* lDisplayName = linphone_address_get_display_name(addr);
-					const char* lUserName = linphone_address_get_username(addr);
-					if (lDisplayName)
-						address = [NSString stringWithUTF8String:lDisplayName];
-					else if(lUserName)
-						address = [NSString stringWithUTF8String:lUserName];
-				}
-			}
-			if(address == nil) {
-				address = @"Unknown";
-			}
 			
 			if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
 				// case where a remote notification is not already received
@@ -468,13 +469,22 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		}       
         if(data != nil && data->notification != nil) {
             LinphoneCallLog *log = linphone_call_get_call_log(call);
+        
+            // cancel local notif if needed
+            [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+            [data->notification release];
+            data->notification = nil;
             
-            if(log == NULL || log->status != LinphoneCallMissed) {
-                // cancel local notif if needed
-                [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
-                [data->notification release];
-                data->notification = nil;
+            if(log == NULL || log->status == LinphoneCallMissed) {
+                UILocalNotification *notification = [[UILocalNotification alloc] init];
+                notification.repeatInterval = 0;
+                notification.alertBody = [NSString stringWithFormat:@"You miss %@ call", address];
+                notification.alertAction = NSLocalizedString(@"Show", nil);
+               notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:log->call_id] forKey:@"callLog"];
+                [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+                [notification release];
             }
+            
         }
     }
     
@@ -808,7 +818,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-
 	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
                                  [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
 	fastAddressBook = [[FastAddressBook alloc] init];
