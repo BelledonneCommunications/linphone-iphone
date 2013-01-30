@@ -137,7 +137,10 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message in progress.. ",-1,									
 		                                         "italic","right","small","font_grey",NULL);
 	} else {
-		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,ctime(&t),-1,									
+		struct tm *tm=localtime(&t);
+		char buf[80];
+		strftime(buf,80,"%H:%M",tm);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,									
 		                                         "italic","right","small","font_grey",NULL);
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);

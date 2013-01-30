@@ -1651,18 +1651,21 @@ void linphone_gtk_init_dtmf_table(GtkWidget *mw){
 }
 
 
-void linphone_gtk_create_keypad(LinphoneCall *call){
-	GtkWidget *w=(GtkWidget*)linphone_call_get_user_pointer(call);
+void linphone_gtk_create_keypad(GtkWidget *button){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
+	if(k!=NULL){
+		gtk_widget_destroy(k);
+	}
 	GtkWidget *keypad=linphone_gtk_create_window("keypad");
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
-	g_object_set_data(G_OBJECT(w),"keypad",(gpointer)keypad);
+	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);
 	gtk_widget_show(keypad);
 }
 
 static void linphone_gtk_init_main_window(){
 	GtkWidget *main_window;
-
 	linphone_gtk_configure_main_window();
 	linphone_gtk_manage_login();
 	load_uri_history();
@@ -1672,8 +1675,8 @@ static void linphone_gtk_init_main_window(){
 	main_window=linphone_gtk_get_main_window();
 	linphone_gtk_call_log_update(main_window);
 
-	//linphone_gtk_init_dtmf_table(main_window);
 	linphone_gtk_update_call_buttons (NULL);
+	g_object_set_data(G_OBJECT(main_window),"keypad",NULL);
 	g_object_set_data(G_OBJECT(main_window),"is_conf",GINT_TO_POINTER(FALSE));
 	/*prevent the main window from being destroyed by a user click on WM controls, instead we hide it*/
 	g_signal_connect (G_OBJECT (main_window), "delete-event",

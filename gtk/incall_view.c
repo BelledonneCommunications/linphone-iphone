@@ -361,13 +361,6 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	g_signal_connect(G_OBJECT(transfer),"clicked",(GCallback)transfer_button_clicked,call);
 	gtk_widget_hide(transfer);
 
-	GtkWidget *keypad = linphone_gtk_get_widget(call_view,"keypad");
-	//gtk_button_set_image(GTK_BUTTON(keypad),gtk_image_new_from_stock
-	//						 (GTK_STOCK_GO_FORWARD,GTK_ICON_SIZE_BUTTON));
-	
-	g_signal_connect_swapped(G_OBJECT(keypad),"clicked",(GCallback)linphone_gtk_create_keypad,call);
-	gtk_widget_hide(keypad);
-
 	GtkWidget *conf = linphone_gtk_get_widget(call_view,"conference_button");
 	gtk_button_set_image(GTK_BUTTON(conf),gtk_image_new_from_stock (GTK_STOCK_ADD,GTK_ICON_SIZE_BUTTON));
 	g_signal_connect(G_OBJECT(conf),"clicked",(GCallback)conference_button_clicked,call);
@@ -679,9 +672,6 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),in_conf ? _("In conference") : _("<b>In call</b>"));
-
-	/** keypad button **/
-	//gtk_widget_set_visible(linphone_gtk_get_widget(callview,"keypad"),!in_conf);
 	
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"conference_button"),!in_conf);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"transfer_button"),!in_conf);
@@ -755,14 +745,9 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"video_button"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"transfer_button"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"conference_button"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"keypad"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
-
-	GtkWidget *keypad=(GtkWidget *)g_object_get_data(G_OBJECT(callview),"keypad");
-	if(keypad!=NULL)
-		gtk_widget_destroy(keypad);
 
 	if (taskid!=0) g_source_remove(taskid);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,call);
