@@ -1510,7 +1510,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getRemoteUserAgent(JN
 	LinphoneCall *call = (LinphoneCall *)ptr;
 	const char *value=linphone_call_get_remote_user_agent(call);
 	jstring jvalue=NULL;
-	if (value) jvalue=env->NewStringUTF();
+	if (value) jvalue=env->NewStringUTF(value);
 	return jvalue;
 }
 
