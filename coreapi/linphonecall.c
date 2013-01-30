@@ -899,6 +899,16 @@ const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
 }
 
 /**
+ * Returns the far end's sip contact as a string, if available.
+**/
+const char *linphone_call_get_remote_contact(LinphoneCall *call){
+	if (call->op){
+		return sal_op_get_remote_contact(call->op);
+	}
+	return NULL;
+}
+
+/**
  * Returns true if this calls has received a transfer that has not been
  * executed yet.
  * Pending transfers are executed when this call is being paused or closed,

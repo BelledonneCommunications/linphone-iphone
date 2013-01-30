@@ -671,8 +671,11 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite ! Error code %d", err);
 		return -1;
 	}else{
+		char *tmp=NULL;
 		callid=osip_message_get_call_id(invite);
-		osip_call_id_to_str(callid,(char **)(&h->base.call_id));
+		osip_call_id_to_str(callid,&tmp);
+		h->base.call_id=ms_strdup(tmp);
+		osip_free(tmp);
 		sal_add_call(h->base.root,h);
 	}
 	return 0;
@@ -1014,6 +1017,19 @@ static void set_remote_ua(SalOp* op, osip_message_t *req){
 	}
 }
 
+static void set_remote_contact(SalOp* op, osip_message_t *req){
+	if (op->base.remote_contact==NULL){
+		osip_contact_t *h=NULL;
+		osip_message_get_contact(req,0,&h);
+		if (h){
+			char *tmp=NULL;
+			osip_contact_to_str(h,&tmp);
+			__sal_op_set_remote_contact(op,tmp);
+			osip_free(tmp);
+		}
+	}
+}
+
 static void set_replaces(SalOp *op, osip_message_t *req){
 	osip_header_t *h=NULL;
 
@@ -1051,12 +1067,17 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
 	osip_call_info_t *call_info;
-	char *tmp;
+	char *tmp=NULL;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+	
 	osip_call_id_t *callid=osip_message_get_call_id(ev->request);
-	osip_call_id_to_str(callid,(char**)(&op->base.call_id));
-
+	
+	osip_call_id_to_str(callid,&tmp);
+	op->base.call_id=ms_strdup(tmp);
+	osip_free(tmp);
+	
 	set_network_origin(op,ev->request);
+	set_remote_contact(op,ev->request);
 	set_remote_ua(op,ev->request);
 	set_replaces(op,ev->request);
 	
@@ -1234,6 +1255,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 
 	op->did=ev->did;
 	set_remote_ua(op,ev->response);
+	set_remote_contact(op,ev->response);
 
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){

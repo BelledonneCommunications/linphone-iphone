@@ -221,7 +221,8 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
-	const char* call_id;
+	char* call_id;
+	char *remote_contact;
 } SalOpBase;
 
 
@@ -385,6 +386,7 @@ const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
+const char *sal_op_get_remote_contact(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
@@ -442,7 +444,7 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 
 
 
-#define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
+#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
 
 /*misc*/
@@ -452,6 +454,7 @@ void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t ipl
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
+void __sal_op_set_remote_contact(SalOp *op, const char *ct);
 void __sal_op_free(SalOp *b);
 
 #endif

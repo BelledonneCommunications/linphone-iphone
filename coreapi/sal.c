@@ -273,6 +273,10 @@ const char *sal_op_get_contact(const SalOp *op){
 	return ((SalOpBase*)op)->contact;
 }
 
+const char *sal_op_get_remote_contact(const SalOp *op){
+	return ((SalOpBase*)op)->remote_contact;
+}
+
 const char *sal_op_get_route(const SalOp *op){
 	return ((SalOpBase*)op)->route;
 }
@@ -304,6 +308,9 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin){
 	assign_string(&((SalOpBase*)op)->origin,origin);
 }
 
+void __sal_op_set_remote_contact(SalOp *op, const char *ct){
+	assign_string(&((SalOpBase*)op)->remote_contact,ct);
+}
 
 void __sal_op_free(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
@@ -331,12 +338,16 @@ void __sal_op_free(SalOp *op){
 		ms_free(b->remote_ua);
 		b->remote_ua=NULL;
 	}
+	if (b->remote_contact){
+		ms_free(b->remote_contact);
+		b->remote_contact=NULL;
+	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
 	if (b->call_id)
-		ms_free((void*)b->call_id);
+		ms_free(b->call_id);
 	ms_free(op);
 }
 
