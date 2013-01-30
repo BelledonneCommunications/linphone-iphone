@@ -651,6 +651,9 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	} else if (sr == SalReasonNotFound) {
 		call->reason=LinphoneReasonNotFound;
 		linphone_call_set_state(call,LinphoneCallError,"User not found.");
+	} else if (sr == SalReasonBusy) {
+		call->reason=LinphoneReasonBusy;
+		linphone_call_set_state(call,LinphoneCallError,"User is busy.");
 	} else {
 		linphone_call_set_state(call,LinphoneCallError,msg);
 	}
