@@ -74,7 +74,7 @@ void linphone_gtk_fill_soundcards(GtkWidget *pb);
 void linphone_gtk_fill_webcams(GtkWidget *pb);
 void linphone_gtk_load_identities(void);
 LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
-void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 void linphone_gtk_call_log_update(GtkWidget *w);
 void linphone_gtk_create_log_window(void);
 void linphone_gtk_log_show(void);

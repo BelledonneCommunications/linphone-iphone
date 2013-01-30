@@ -230,7 +230,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.display_warning=linphone_gtk_display_warning;
 	vtable.display_url=linphone_gtk_display_url;
 	vtable.call_log_updated=linphone_gtk_call_log_updated;
-	vtable.text_received=linphone_gtk_text_received;
+	//vtable.text_received=linphone_gtk_text_received;
+	vtable.message_received=linphone_gtk_text_received;
 	vtable.refer_received=linphone_gtk_refer_received;
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;

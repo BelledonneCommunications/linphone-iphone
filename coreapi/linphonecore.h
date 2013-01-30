@@ -735,7 +735,14 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,co
  * Get text part of this message
  * @return text or NULL if no text.
  */
-const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+
+/**
+ * Get the time the message was sent
+ * @return time_t or NULL if no time
+ */
+time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
+
 /**
  * user pointer get function
  */

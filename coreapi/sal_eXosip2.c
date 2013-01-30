@@ -52,7 +52,6 @@ void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iple
 	}
 }
 
-
 static SalOp * sal_find_call(Sal *sal, int cid){
 	const MSList *elem;
 	SalOp *op;
@@ -1766,6 +1765,9 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 	return FALSE;
 }
 
+static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg=NULL;
@@ -1775,6 +1777,26 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	int external_body_size=0;
 	SalMessage salmsg;
 	char message_id[256]={0};
+	osip_header_t *date=NULL;
+	struct tm ret={};
+	char tmp1[80]={0};
+	char tmp2[80]={0};
+	int i,j;
+
+	osip_message_get_date(ev->request,0,&date);
+	if(date==NULL){
+		ms_error("Could not get the date of message");
+		return;
+	}
+	sscanf(date->hvalue,"%3c,%d%s%d%d:%d:%d",tmp1,&ret.tm_mday,tmp2,
+	             &ret.tm_year,&ret.tm_hour,&ret.tm_min,&ret.tm_sec);
+	ret.tm_year-=1900;
+	for(i=0;i<7;i++) { 
+		if(strcmp(tmp1,days[i])==0) ret.tm_wday=i; 
+	}
+	for(j=0;j<12;j++) { 
+		if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
+	}
 	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
@@ -1815,6 +1837,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
+	salmsg.time=mktime(&ret);
 	sal->callbacks.text_received(sal,&salmsg);
 	osip_free(from);
 }

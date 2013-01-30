@@ -83,6 +83,9 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
+	time_t t;
+	time(&t);
+	char buf[26];
 
 	if(op->cid == -1)
 	{
@@ -97,6 +100,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
+			osip_message_set_date(sip,ctime_r(&t,buf));
 			osip_message_set_content_type(sip,content_type);
 			if (msg) osip_message_set_body(sip,msg,strlen(msg));
 			sal_add_other(op->base.root,op,sip);

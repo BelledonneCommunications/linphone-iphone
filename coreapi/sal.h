@@ -195,6 +195,7 @@ typedef struct SalMessage{
 	const char *text;
 	const char *url;
 	const char *message_id;
+	time_t time;
 }SalMessage;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5

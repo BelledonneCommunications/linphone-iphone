@@ -103,13 +103,13 @@ void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc,
 	
 }
 
-void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url){
+void linphone_core_message_received(LinphoneCore *lc, const SalMessage *sal_msg){
 	MSList *elem;
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
 	char *cleanfrom;
 	LinphoneChatMessage* msg;
-	addr=linphone_address_new(from);
+	addr=linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
 		cr=(LinphoneChatRoom*)elem->data;
@@ -123,10 +123,12 @@ void linphone_core_message_received(LinphoneCore *lc, const char *from, const ch
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
 	}
-	msg = linphone_chat_room_create_message(cr, raw_msg);
+	msg = linphone_chat_room_create_message(cr, sal_msg->text);
 	linphone_chat_message_set_from(msg, cr->peer_url);
-	if (external_url) {
-		linphone_chat_message_set_external_body_url(msg, external_url);
+	msg->time=sal_msg->time;
+	
+	if (sal_msg->url) {
+		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
 	linphone_address_destroy(addr);
 	linphone_chat_room_message_received(cr,lc,msg);
@@ -221,6 +223,11 @@ void linphone_chat_message_set_from(LinphoneChatMessage* message, const Linphone
 LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message) {
 	return message->from;
 }
+
+time_t linphone_chat_message_get_time(const LinphoneChatMessage* message) {
+	return message->time;
+}
+
 const char * linphone_chat_message_get_text(const LinphoneChatMessage* message) {
 	return message->message;
 }
