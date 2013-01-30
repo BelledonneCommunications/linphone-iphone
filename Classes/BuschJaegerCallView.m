@@ -214,7 +214,7 @@
                                                      name:UIDeviceOrientationDidChangeNotification
                                                    object:nil];
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [self orientationUpdate:[[UIDevice currentDevice] orientation]];
+        [self orientationUpdate:[[UIApplication sharedApplication] statusBarOrientation]];
     }
     
     UIDevice *device = [UIDevice currentDevice];
@@ -252,7 +252,7 @@
 }
 
 - (void)orientationDidChange:(NSNotification*)notif {
-    [self orientationUpdate:[[UIDevice currentDevice] orientation]];
+    [self orientationUpdate:[[UIApplication sharedApplication] statusBarOrientation]];
 }
 
 
