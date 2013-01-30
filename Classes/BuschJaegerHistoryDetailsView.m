@@ -233,7 +233,7 @@
         [selectedBackgroundView setBorderColor:[UIColor clearColor]];
     }
 	
-    [cell.imageView setImage:[history.images objectAtIndex:[indexPath row]]];
+    [cell setCustomImage:[history.images objectAtIndex:[indexPath row]]];
     
     return cell;
 }

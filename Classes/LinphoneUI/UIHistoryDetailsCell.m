@@ -51,7 +51,7 @@
 
 #pragma mark - Property Functions
 
-- (void)setImage:(NSString *)aimage {
+- (void)setCustomImage:(NSString *)aimage {
     if(aimage == image) {
         return;
     }

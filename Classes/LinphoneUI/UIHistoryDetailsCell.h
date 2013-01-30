@@ -29,5 +29,6 @@
 @property (nonatomic, retain) IBOutlet UIRemoteImageView *imageView;
 
 - (id)initWithIdentifier:(NSString*)identifier;
+- (void)setCustomImage:(NSString *)aimage;
 
 @end
