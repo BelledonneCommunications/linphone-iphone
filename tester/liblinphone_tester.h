@@ -75,6 +75,11 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
 void reset_counters( stats* counters);
 
 void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
+void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg);
+void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
+void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
+void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;
 LinphoneAddress * create_linphone_address(const char * domain);

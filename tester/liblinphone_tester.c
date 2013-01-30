@@ -111,62 +111,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,in
 }
 
 
-static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
-	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
-	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
 
-	ms_message("call from [%s] to [%s], new state is [%s]",from,to,linphone_call_state_to_string(cstate));
-	ms_free(to);
-	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	switch (cstate) {
-	case LinphoneCallIncomingReceived:counters->number_of_LinphoneCallIncomingReceived++;break;
-	case LinphoneCallOutgoingInit :counters->number_of_LinphoneCallOutgoingInit++;break;
-	case LinphoneCallOutgoingProgress :counters->number_of_LinphoneCallOutgoingProgress++;break;
-	case LinphoneCallOutgoingRinging :counters->number_of_LinphoneCallOutgoingRinging++;break;
-	case LinphoneCallOutgoingEarlyMedia :counters->number_of_LinphoneCallOutgoingEarlyMedia++;break;
-	case LinphoneCallConnected :counters->number_of_LinphoneCallConnected++;break;
-	case LinphoneCallStreamsRunning :counters->number_of_LinphoneCallStreamsRunning++;break;
-	case LinphoneCallPausing :counters->number_of_LinphoneCallPausing++;break;
-	case LinphoneCallPaused :counters->number_of_LinphoneCallPaused++;break;
-	case LinphoneCallResuming :counters->number_of_LinphoneCallResuming++;break;
-	case LinphoneCallRefered :counters->number_of_LinphoneCallRefered++;break;
-	case LinphoneCallError :counters->number_of_LinphoneCallError++;break;
-	case LinphoneCallEnd :counters->number_of_LinphoneCallEnd++;break;
-	case LinphoneCallPausedByRemote :counters->number_of_LinphoneCallPausedByRemote++;break;
-	case LinphoneCallUpdatedByRemote :counters->number_of_LinphoneCallUpdatedByRemote++;break;
-	case LinphoneCallIncomingEarlyMedia :counters->number_of_LinphoneCallIncomingEarlyMedia++;break;
-	case LinphoneCallUpdating :counters->number_of_LinphoneCallUpdating++;break;
-	case LinphoneCallReleased :counters->number_of_LinphoneCallReleased++;break;
-	default:
-		CU_FAIL("unexpected event");break;
-	}
-}
-
-static void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
-	char* from=linphone_address_as_string(from_address);
-	ms_message("Message from [%s]  is [%s]",from,message);
-	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	counters->number_of_LinphoneMessageReceived++;
-}
-
-void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
-	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
-	ms_message("New subscription request  from [%s]  url [%s]",from,url);
-	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	counters->number_of_NewSubscriptionRequest++;
-	linphone_core_add_friend(lc,lf); /*accept subscription*/
-
-}
-static void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
-	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
-	ms_message("New Notify request  from [%s] ",from);
-	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
-	counters->number_of_NotifyReceived++;
-}
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	int retry=0;
 	while (*counter<value && retry++ <20) {

@@ -45,7 +45,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 		}
 
 }
-static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
+static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info) {
 	int retry=0;
 	LCSipTransports transport = {5070,5070,0,5071};
 
@@ -77,15 +77,22 @@ static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const ch
 
 	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0) && retry++ <310) {
 		linphone_core_iterate(lc);
+		if (counters->number_of_auth_info_requested>0 && late_auth_info) {
+			LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+		}
 		ms_usleep(100000);
 	}
 	CU_ASSERT_TRUE_FATAL(linphone_proxy_config_is_registered(proxy_cfg));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1+(refresh!=0));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
 
+}
+static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
+	register_with_refresh_base_2(lc,refresh,domain,route,FALSE);
 }
 static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
@@ -161,8 +168,6 @@ static void simple_authenticated_register(){
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
 
-
-
 static void authenticated_register_with_no_initial_credentials(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -177,6 +182,27 @@ static void authenticated_register_with_no_initial_credentials(){
 	register_with_refresh(lc,FALSE,auth_domain,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 }
+static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username) {
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
+					,username
+					,realm);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_auth_info_requested++;
+}
+
+static void authenticated_register_with_late_credentials(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	stats stat;
+	memset (&v_table,0,sizeof(v_table));
+	v_table.registration_state_changed=registration_state_changed;
+	v_table.auth_info_requested=auth_info_requested2;
+	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
+	linphone_core_set_user_data(lc,&stat);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	register_with_refresh_base_2(lc,FALSE,auth_domain,NULL,TRUE);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+}
 
 static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
 	return configure_lc_from(v_table,"./tester/multi_account_lrc",3);
@@ -188,6 +214,24 @@ static void multiple_proxy(){
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
+	linphone_core_destroy(lc);
+}
+
+static void network_state_change(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
+	v_table.registration_state_changed=registration_state_changed;
+	lc=configure_lc(&v_table);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	linphone_core_set_network_reachable(lc,FALSE);
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationNone,register_ok));
+	linphone_core_set_network_reachable(lc,TRUE);
+	wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*register_ok);
 	linphone_core_destroy(lc);
 }
 
@@ -209,6 +253,9 @@ int register_test_suite () {
 	if (NULL == CU_add_test(pSuite, "register with digest auth tester without initial credentials", authenticated_register_with_no_initial_credentials)) {
 		return CU_get_error();
 	}
+	if (NULL == CU_add_test(pSuite, "authenticated_register_with_late_credentials", authenticated_register_with_late_credentials)) {
+		return CU_get_error();
+	}
 	if (NULL == CU_add_test(pSuite, "simple_register_with_refresh", simple_register_with_refresh)) {
 		return CU_get_error();
 	}
@@ -220,6 +267,10 @@ int register_test_suite () {
 	}
 	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
+	}
+
+	if (NULL == CU_add_test(pSuite, "network_state_change", network_state_change)) {
+			return CU_get_error();
 	}
 
 	return 0;

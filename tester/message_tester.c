@@ -21,6 +21,14 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
+	char* from=linphone_address_as_string(from_address);
+	ms_message("Message from [%s]  is [%s]",from,message);
+	ms_free(from);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_LinphoneMessageReceived++;
+}
+
 
 static void text_message() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");

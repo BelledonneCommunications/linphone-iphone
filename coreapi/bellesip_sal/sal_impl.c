@@ -449,14 +449,27 @@ void sal_uninit(Sal* sal){
 	return ;
 };
 
-int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure){
+int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	int result;
-	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack,addr,port,sal_transport_to_string(tr));
+	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack
+																			,sal_address_get_domain(addr)
+																			,sal_address_get_port_int(addr)
+																			,sal_transport_to_string(sal_address_get_transport(addr)));
 	if (lp) {
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
 	} else {
 		return -1;
 	}
+	return result;
+}
+int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure) {
+	SalAddress* sal_addr = sal_address_new(NULL);
+	int result;
+	sal_address_set_domain(sal_addr,addr);
+	sal_address_set_port_int(sal_addr,port);
+	sal_address_set_transport(sal_addr,tr);
+	result = sal_add_listen_port(ctx,sal_addr);
+	sal_address_destroy(sal_addr);
 	return result;
 }
 static void remove_listening_point(belle_sip_listening_point_t* lp,belle_sip_provider_t* prov) {
@@ -557,8 +570,9 @@ const char *sal_get_root_ca(Sal* ctx) {
 	return  NULL;
 }
 int sal_reset_transports(Sal *ctx){
-	ms_warning("sal_reset_transports() not implemented in this version.");
-	return -1;
+	ms_message("reseting transport");
+	belle_sip_provider_clean_channels(ctx->prov);
+	return 0;
 }
 void sal_set_dscp(Sal *ctx, int dscp){
 	ms_warning("sal_set_dscp not implemented");
