@@ -181,7 +181,7 @@
             }
         }
         if(handled) {
-            if([BuschJaegerMainView instance].navigationController.topViewController == self) {
+            if([BuschJaegerMainView instance].navigationController.topViewController == scanController) {
                 [[BuschJaegerMainView instance].navigationController popViewControllerAnimated:FALSE];
             }
         }
