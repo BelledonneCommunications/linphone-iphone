@@ -158,8 +158,10 @@
 }
 
 - (IBAction)doHistorySwipe:(UISwipeGestureRecognizer *)sender {
-    [[BuschJaegerMainView instance].historyView reload];
-    [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:FALSE];
+    if([[LinphoneManager instance].configuration valid]) {
+        [[BuschJaegerMainView instance].historyView reload];
+        [[BuschJaegerMainView instance].navigationController  pushViewController:[BuschJaegerMainView instance].historyView animated:FALSE];
+    }
 }
 
 
