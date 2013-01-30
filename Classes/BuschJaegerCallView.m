@@ -134,11 +134,21 @@
     }
     {
         [BuschJaegerUtils createBuschJaegerButton:openDoorButton];
+        [self.openDoorButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled];
+        [self.openDoorButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled | UIControlStateHighlighted];
         [self.openDoorButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
+        UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
+        [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
     }
     {
         [BuschJaegerUtils createBuschJaegerButton:lightsButton];
+        [self.lightsButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled];
+        [self.lightsButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled | UIControlStateHighlighted];
         [self.lightsButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
+        UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
+        [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
     }
     videoZoomHandler = [[VideoZoomHandler alloc] init];
     [videoZoomHandler setup:videoView];
@@ -182,19 +192,12 @@
     /* init gradients for openDoorButton*/
     {
         bool enabled = (usr != nil && usr.opendoor && ![[NSUserDefaults standardUserDefaults] boolForKey:@"lockdoors_preference"]);
-        UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
-        UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
-        
-        [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
         [self.openDoorButton setEnabled:enabled];
     }
     
     /* init gradients for lightsButton */
     {
         bool enabled = (usr != nil && usr.switchlight && ![[NSUserDefaults standardUserDefaults] boolForKey:@"switchlight_preference"]);
-        UIColor* col1 = (enabled)?BUSCHJAEGER_NORMAL_COLOR:BUSCHJAEGER_GRAY_COLOR;
-        UIColor* col2 = (enabled)?BUSCHJAEGER_NORMAL_COLOR2:BUSCHJAEGER_GRAY_COLOR2;
-        [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
         [self.lightsButton setEnabled:enabled];
     }
     
@@ -214,7 +217,7 @@
                                                      name:UIDeviceOrientationDidChangeNotification
                                                    object:nil];
         [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        [self orientationUpdate:[[UIApplication sharedApplication] statusBarOrientation]];
+        [self orientationUpdate:[[UIDevice currentDevice] orientation]];
     }
     
     UIDevice *device = [UIDevice currentDevice];
@@ -252,28 +255,28 @@
 }
 
 - (void)orientationDidChange:(NSNotification*)notif {
-    [self orientationUpdate:[[UIApplication sharedApplication] statusBarOrientation]];
+    [self orientationUpdate:[[UIDevice currentDevice] orientation]];
 }
 
 
 #pragma mark -
 
-- (void)orientationUpdate:(UIInterfaceOrientation)orientation {
+- (void)orientationUpdate:(UIDeviceOrientation)orientation {
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.3f];
     CGRect frame = [self.view frame];
     switch (orientation) {
-        case UIInterfaceOrientationPortrait:
+        case UIDeviceOrientationPortrait:
             [self.view setTransform: CGAffineTransformMakeRotation(0)];
             break;
-        case UIInterfaceOrientationPortraitUpsideDown:
+        case UIDeviceOrientationPortraitUpsideDown:
             [self.view setTransform: CGAffineTransformMakeRotation(M_PI)];
             break;
-        case UIInterfaceOrientationLandscapeLeft:
-            [self.view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
-            break;
-        case UIInterfaceOrientationLandscapeRight:
+        case UIDeviceOrientationLandscapeLeft:
             [self.view setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            [self.view setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
             break;
         default:
             break;

@@ -477,7 +477,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
     NSString *url = ([self getCurrentRequestType] == BuschJaegerConfigurationRequestType_Local)? network.localHistory: network.globalHistory;
     url = [self addUserNameAndPasswordToUrl:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:5];
-    if(request != nil) {
+    if(request != nil && [cmdQueue operationCount] == 0) {
         [cmdQueue addOperationWithBlock: ^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;

@@ -108,6 +108,18 @@
     }
 }
 
+#pragma mark - UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (scrollView.contentOffset.y < -65.0f) {
+        if(![LinphoneManager runningOnIpad]) {
+            [[BuschJaegerMainView instance].historyView reload];
+        } else {
+            [[BuschJaegerMainView instance].welcomeView reloadHistory];
+        }
+    }
+}
+
 
 #pragma mark - BuschJaegerConfigurationDelegate Functions
 
