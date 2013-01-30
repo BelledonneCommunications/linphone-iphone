@@ -136,6 +136,9 @@
         } else {
             [waitView setHidden:TRUE];
         }
+    } else if(![LinphoneManager instance].configuration.valid) {
+        // Reset badge number in case of invalid configuration
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
     }
 }
 

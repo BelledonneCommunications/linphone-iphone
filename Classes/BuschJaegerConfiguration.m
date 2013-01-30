@@ -167,7 +167,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
             [levelPushButton release];
         }
         levelPushButton = [obj retain];
-    }else {
+    } else {
         [LinphoneLogger log:LinphoneLoggerWarning format:@"Unknown section: %@", section];
     }
 }
@@ -220,6 +220,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                     NSData *data  = nil;
                     data = [NSURLConnection sendSynchronousRequest:pemRequest returningResponse:&response error:&error delegate:self];
                     if(data == nil) {
+                        [self reset];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[error localizedDescription]];
                         });
@@ -246,6 +247,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                     data  = nil;
                     data = [NSURLConnection sendSynchronousRequest:derRequest returningResponse:&response error:&error delegate:self];
                     if(data == nil) {
+                        [self reset];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[error localizedDescription]];
                         });
@@ -395,6 +397,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                 NSData *data  = nil;
                 data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
                 if(data == nil) {
+                    [self reset];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [delegate buschJaegerConfigurationError:[error localizedDescription]];
                     });
@@ -426,6 +429,7 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                         [[NSUserDefaults standardUserDefaults] setObject:[[NSURL URLWithString:urlString] host] forKey:@"ipgateway_preference"];
                         [[NSUserDefaults standardUserDefaults] synchronize];
                     } else {
+                        [self reset];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                         });
