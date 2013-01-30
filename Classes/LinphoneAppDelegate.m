@@ -134,7 +134,7 @@
                                  @"YES", @"enable_video_preference",
                                  @"YES", @"start_video_preference",
                                  @"YES", @"h264_preference",
-                                 @"YES", @"vp8_preference",
+                                 @"NO", @"vp8_preference",
                                  @"NO", @"mpeg4_preference",
                                  @"YES", @"pcmu_preference",
                                  @"YES", @"pcma_preference",
