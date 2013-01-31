@@ -478,7 +478,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             if(log == NULL || log->status == LinphoneCallMissed) {
                 UILocalNotification *notification = [[UILocalNotification alloc] init];
                 notification.repeatInterval = 0;
-                notification.alertBody = [NSString stringWithFormat:@"You miss %@ call", address];
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"You miss %@ call", nil), address];
                 notification.alertAction = NSLocalizedString(@"Show", nil);
                notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:log->call_id] forKey:@"callLog"];
                 [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
