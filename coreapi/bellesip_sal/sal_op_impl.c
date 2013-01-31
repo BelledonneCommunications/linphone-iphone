@@ -34,6 +34,7 @@ void sal_op_release(SalOp *op){
 		belle_sip_refresher_stop(op->registration_refresher);
 		belle_sip_object_unref(op->registration_refresher);
 	}
+	if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
 	__sal_op_free(op);
 	return ;
 }
@@ -135,7 +136,9 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
 	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0) {
+		if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
 		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
+		belle_sip_object_ref(op->pending_inv_client_trans);
 	}
 	
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)

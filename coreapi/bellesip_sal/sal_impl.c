@@ -107,7 +107,17 @@ static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminat
 	}
 }
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	ms_error("process_io_error not implemented yet");
+	belle_sip_client_transaction_t*client_transaction;
+	SalOp* op;
+	if (belle_sip_object_is_instance_of(BELLE_SIP_OBJECT(belle_sip_io_error_event_get_source(event)),BELLE_SIP_TYPE_ID(belle_sip_client_transaction_t))) {
+		client_transaction=BELLE_SIP_CLIENT_TRANSACTION(belle_sip_io_error_event_get_source(event));
+		op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
+		if (op->callbacks.process_io_error) {
+				op->callbacks.process_io_error(op,event);
+		}
+	} else {
+		ms_error("process_io_error not implemented yet for non transaction");
+	}
 }
 static void process_request_event(void *sal, const belle_sip_request_event_t *event) {
 	SalOp* op=NULL;
@@ -579,4 +589,7 @@ void sal_set_dscp(Sal *ctx, int dscp){
 }
 void  sal_set_send_error(Sal *sal,int value) {
 	 belle_sip_stack_set_send_error(sal->stack,value);
+}
+void  sal_set_recv_error(Sal *sal,int value) {
+	 belle_sip_provider_set_recv_error(sal->prov,value);
 }

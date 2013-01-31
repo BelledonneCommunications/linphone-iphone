@@ -235,6 +235,25 @@ static void network_state_change(){
 	linphone_core_destroy(lc);
 }
 
+static void io_recv_error(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
+	v_table.registration_state_changed=registration_state_changed;
+	lc=configure_lc(&v_table);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	sal_set_recv_error(lc->sal, 0);
+
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-1 /*because 1 udp*/));
+	sal_set_recv_error(lc->sal, 1); /*reset*/
+
+	linphone_core_destroy(lc);
+}
+
 int register_test_suite () {
 
 	CU_pSuite pSuite = CU_add_suite("Register", NULL, NULL);
@@ -270,6 +289,9 @@ int register_test_suite () {
 	}
 
 	if (NULL == CU_add_test(pSuite, "network_state_change", network_state_change)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "io_recv_error_0", io_recv_error)) {
 			return CU_get_error();
 	}
 

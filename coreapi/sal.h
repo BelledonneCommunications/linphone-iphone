@@ -491,4 +491,6 @@ void __sal_op_free(SalOp *b);
 /*test api*/
 /*0 for no error*/
 void sal_set_send_error(Sal *sal,int value);
+/*1 for no error*/
+void sal_set_recv_error(Sal *sal,int value);
 #endif

@@ -21,7 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 static void register_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	ms_error("process_io_error not implemented yet");
+	SalOp* op = (SalOp*)user_ctx;
+	ms_error("register_process_io_error io error reported for [%s]",sal_op_get_proxy(op));
+	if (op->registration_refresher) {
+		op->base.root->callbacks.register_failure(op,SalErrorFailure,SalErrorFailure,"io error");
+	}
 }
 
 static void register_refresher_listener ( const belle_sip_refresher_t* refresher
@@ -46,53 +50,16 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
-/*	belle_sip_request_t* original_request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
-	belle_sip_header_expires_t* expires_header;
-	belle_sip_header_contact_t* original_contact=belle_sip_message_get_header_by_type(original_request,belle_sip_header_contact_t);
-	const belle_sip_list_t* contact_header_list;
-	char* tmp_string;*/
-
-
 	belle_sip_header_service_route_t* service_route;
 	belle_sip_header_address_t* service_route_address=NULL;
 
 	int response_code = belle_sip_response_get_status_code(response);
-	/*int expires=-1;*/
 	if (response_code<200) return;/*nothing to do*/
 
 
 	switch (response_code) {
 	case 200: {
 
-/*		contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
-		if (contact_header_list) {
-			contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_not_equals, (const void*)original_contact);
-			if (!contact_header_list) {
-				reset header list
-				contact_header_list = belle_sip_message_get_headers(BELLE_SIP_MESSAGE(response),BELLE_SIP_CONTACT);
-				contact_header_list = belle_sip_list_find_custom((belle_sip_list_t*)contact_header_list,(belle_sip_compare_func)belle_sip_header_contact_not_equals, (const void*)sal_op_get_contact_address(op));
-			}
-			if (!contact_header_list) {
-				tmp_string=belle_sip_object_to_string(BELLE_SIP_OBJECT(original_contact));
-				ms_error("no matching contact neither for [%s] nor [%s]", tmp_string, sal_op_get_contact(op));
-				belle_sip_free(tmp_string);
-			} else {
-				expires=belle_sip_header_contact_get_expires(BELLE_SIP_HEADER_CONTACT(contact_header_list->data));
-			}
-		}
-
-		if (expires<0 ) {
-			no contact with expire, looking for Expires header
-			if ((expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_EXPIRES))) {
-				expires = belle_sip_header_expires_get_expires(expires_header);
-			}
-		}
-		if (expires<0) {
-			if ((expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(original_request),BELLE_SIP_EXPIRES))) {
-				expires = belle_sip_header_expires_get_expires(expires_header);
-				ms_message("Neither Expires header nor corresponding Contact header found, using expires value [%i] from request",expires);
-			}
-		}*/
 		/*check service route rfc3608*/
 		if ((service_route=belle_sip_message_get_header_by_type(response,belle_sip_header_service_route_t))) {
 			service_route_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(service_route)));
