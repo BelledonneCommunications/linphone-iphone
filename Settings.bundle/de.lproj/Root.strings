@@ -5,13 +5,13 @@
 "Version" = "Version";
 
 /* Background mode */
-"Background mode" = "Always active";
+"Background mode" = "Immer aktiv";
 
 /* Hide Switch Light */
-"Hide Switch Light" = "Hide light switch";
+"Hide Switch Light" = "Lichtschalter ausblenden";
 
 /* Hide Lock door */
-"Hide Lock door" = "Hide door opener";
+"Hide Lock door" = "Türöffner ausblenden";
 
 /* Advanced */
 "Advanced" = "Advanced";
@@ -20,25 +20,25 @@
 "Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
 
 /* Level Ringtone */
-"Level Ringtone" = "Level Ringtone";
+"Level Ringtone" = "Klingelton Wohnung";
 
 /* Ringtone */
-"Ringtone" = "Ringtone appartment";
+"Ringtone" = "Klingelton Gebäude";
 
 /* Sounds */
-"Sounds" = "System settings";
+"Sounds" = "Systemeinstellungen";
 
 /* Password */
-"Password" = "Password";
+"Password" = "Passwort";
 
 /* IP-Gateway */
-"IP-Gateway" = "IP gateway address";
+"IP-Gateway" = "IP-Gateway Adresse";
 
 /* SIP account */
-"SIP account" = "Network settings";
+"SIP account" = "Netzwerkeinstellungen";
 
 /* Wizard */
 "Wizard" = "Wizard";
 
 /* User name */
-"User name" = "User name";
+"User name" = "Username";

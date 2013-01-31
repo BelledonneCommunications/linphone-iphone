@@ -2,16 +2,16 @@
 "Battery alert" = "Battery alert";
 
 /* Version */
-"Version" = "Version";
+"Version" = "Versio";
 
 /* Background mode */
-"Background mode" = "Always active";
+"Background mode" = "Aina aktiivinen";
 
 /* Hide Switch Light */
-"Hide Switch Light" = "Hide light switch";
+"Hide Switch Light" = "Valokytkimen piilottaminen";
 
 /* Hide Lock door */
-"Hide Lock door" = "Hide door opener";
+"Hide Lock door" = "Ovenavaajan piilottaminen";
 
 /* Advanced */
 "Advanced" = "Advanced";
@@ -20,25 +20,25 @@
 "Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
 
 /* Level Ringtone */
-"Level Ringtone" = "Level Ringtone";
+"Level Ringtone" = "Hälytysääni asunnossa";
 
 /* Ringtone */
-"Ringtone" = "Ringtone appartment";
+"Ringtone" = "Hälytysääni rakennuksessa";
 
 /* Sounds */
-"Sounds" = "System settings";
+"Sounds" = "Järjestelmäasetukset";
 
 /* Password */
-"Password" = "Password";
+"Password" = "Salasana";
 
 /* IP-Gateway */
-"IP-Gateway" = "IP gateway address";
+"IP-Gateway" = "IP-yhdysväyläosoite";
 
 /* SIP account */
-"SIP account" = "Network settings";
+"SIP account" = "Verkkoasetukset";
 
 /* Wizard */
 "Wizard" = "Wizard";
 
 /* User name */
-"User name" = "User name";
+"User name" = "Käyttäjänimi";
