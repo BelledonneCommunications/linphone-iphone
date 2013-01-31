@@ -491,13 +491,17 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         linphone_call_params_destroy(paramsCopy);
         [timer invalidate];
     }];
-    [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Decline", nil)  block:^() {
+    DTActionSheetBlock cancelBlock = ^() {
         [LinphoneLogger logc:LinphoneLoggerLog format:"User declined video proposal"];
         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
         linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
         linphone_call_params_destroy(paramsCopy);
         [timer invalidate];
-    }];
+    };
+    [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Decline", nil)  block:cancelBlock];
+    if([LinphoneManager runningOnIpad]) {
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Decline", nil)  block:cancelBlock];
+    }
     [sheet showInView:[PhoneMainView instance].view];
 }
 

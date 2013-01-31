@@ -583,7 +583,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                 if (level <= 0.2f && !callData->batteryWarningShown) {
                     [LinphoneLogger log:LinphoneLoggerLog format:@"Battery warning"];
                     DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
-                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
+                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil) block:nil];
                     [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
                         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
                         // stop video

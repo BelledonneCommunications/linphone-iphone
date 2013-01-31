@@ -281,7 +281,7 @@
                 [self update];
             }];
         }
-        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:nil];
         
         [sheet showInView:[PhoneMainView instance].view];
     }

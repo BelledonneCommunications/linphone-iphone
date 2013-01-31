@@ -393,7 +393,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                 [self saveAndSend:[UIImage imageWithData:data] url:url];
             }];
         }
-        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
             [waitView setHidden:TRUE];
             [sheet showInView:[PhoneMainView instance].view];
@@ -549,7 +549,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
             block(UIImagePickerControllerSourceTypePhotoLibrary);
         }];
 	}
-    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil)];
+    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel",nil) block:nil];
     
     [sheet showInView:[PhoneMainView instance].view];
 }
