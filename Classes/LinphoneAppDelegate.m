@@ -226,6 +226,26 @@
         if(controller != nil) {
             [controller setRemoteAddress:remoteContact];
         }
+    } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
+        NSString *callLog = (NSString*)[notification.userInfo objectForKey:@"callLog"];
+        LinphoneCallLog* theLog = NULL;
+        const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+        while(logs != NULL) {
+            LinphoneCallLog* log = (LinphoneCallLog *) logs->data;
+            if([callLog isEqualToString:[NSString stringWithUTF8String:log->call_id]]) {
+                theLog = log;
+                break;
+            }
+            logs = logs->next;
+        }
+        if(theLog != NULL) {
+            // Go to HistoryDetails view
+            [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
+            HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription] push:TRUE], HistoryDetailsViewController);
+            if(controller != nil) {
+                [controller setCallLog:theLog];
+            }
+        }
     }
 }
 
