@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>SIP account</string>
+			<string>Network settings</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -68,13 +68,13 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>IP-Gateway</string>
+			<string>IP gateway address</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Sounds</string>
+			<string>System settings</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -84,7 +84,7 @@
 			<key>Key</key>
 			<string>ringtone_preference</string>
 			<key>Title</key>
-			<string>Ringtone</string>
+			<string>Ringtone building</string>
 			<key>Titles</key>
 			<array>
 				<string>Ringtone 1</string>
@@ -110,7 +110,7 @@
 			<key>Key</key>
 			<string>level_ringtone_preference</string>
 			<key>Title</key>
-			<string>Level Ringtone</string>
+			<string>Ringtone appartment</string>
 			<key>Titles</key>
 			<array>
 				<string>Ringtone 1</string>
@@ -129,14 +129,6 @@
 				<string>ringtone_04_1600</string>
 				<string>ringtone_05_1600</string>
 			</array>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Advanced</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Welcome must be restarted for changes to take effect</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>

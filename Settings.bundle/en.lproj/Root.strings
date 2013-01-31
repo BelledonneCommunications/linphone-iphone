@@ -5,13 +5,13 @@
 "Version" = "Version";
 
 /* Background mode */
-"Background mode" = "Background mode";
+"Background mode" = "Always active";
 
 /* Hide Switch Light */
-"Hide Switch Light" = "Hide Switch Light";
+"Hide Switch Light" = "Hide light switch";
 
 /* Hide Lock door */
-"Hide Lock door" = "Hide Lock door";
+"Hide Lock door" = "Hide door opener";
 
 /* Advanced */
 "Advanced" = "Advanced";
@@ -26,16 +26,16 @@
 "Ringtone" = "Ringtone";
 
 /* Sounds */
-"Sounds" = "Sounds";
+"Sounds" = "System settings";
 
 /* Password */
 "Password" = "Password";
 
 /* IP-Gateway */
-"IP-Gateway" = "IP-Gateway";
+"IP-Gateway" = "IP gateway address";
 
 /* SIP account */
-"SIP account" = "SIP account";
+"SIP account" = "Network settings";
 
 /* Wizard */
 "Wizard" = "Wizard";
