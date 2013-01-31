@@ -1650,7 +1650,6 @@ void linphone_gtk_init_dtmf_table(GtkWidget *mw){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_*")),"label","*");
 }
 
-
 void linphone_gtk_create_keypad(GtkWidget *button){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");

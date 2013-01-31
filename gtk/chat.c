@@ -132,10 +132,11 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	
 
 	gtk_text_buffer_get_end_iter(buffer,&iter);
-	list=g_list_append(list,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
 	if(me){
+		list=g_list_append(list,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message in progress.. ",-1,									
 		                                         "italic","right","small","font_grey",NULL);
+		g_object_set_data(G_OBJECT(w),"list",list);
 	} else {
 		struct tm *tm=localtime(&t);
 		char buf[80];
@@ -145,7 +146,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	g_object_set_data(G_OBJECT(w),"list",list);
+	
 
 	GtkTextMark *mark=gtk_text_buffer_create_mark(buffer,NULL,&iter,FALSE);
 	gtk_text_view_scroll_mark_onscreen(text,mark);
@@ -201,7 +202,6 @@ void update_chat_state_message(LinphoneChatMessageState state){
 				break;
 			default : result="Message in progress.. ";
 		}
-		
 		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result,-1,
 												"italic","right","small","font_grey",NULL);
 		list=g_list_remove(list,g_list_nth_data(list,0));
