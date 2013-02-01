@@ -850,8 +850,30 @@
 							<string>15.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>de</key>
+								<string>Zurück</string>
 								<key>en</key>
 								<string>Back</string>
+								<key>es</key>
+								<string>Volver</string>
+								<key>fi</key>
+								<string>Takaisin</string>
+								<key>fr</key>
+								<string>Retour</string>
+								<key>it</key>
+								<string>Indietro</string>
+								<key>nb</key>
+								<string>Tilbake</string>
+								<key>nl</key>
+								<string>Terug</string>
+								<key>pl</key>
+								<string>Z powrotem</string>
+								<key>ru</key>
+								<string>Назад</string>
+								<key>sv</key>
+								<string>Tillbaka</string>
+								<key>zh-Hans</key>
+								<string>返回</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
