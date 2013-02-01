@@ -84,7 +84,7 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 #ifdef WIN32
 
 static inline char *my_ctime_r(const time_t *t, char *buf){
-	strcpy(buf,ctime_r(t));
+	strcpy(buf,ctime(t));
 	return buf;
 }
 
