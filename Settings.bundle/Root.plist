@@ -87,11 +87,11 @@
 			<string>Ringtone</string>
 			<key>Titles</key>
 			<array>
-				<string>Ringtone 1</string>
-				<string>Ringtone 2</string>
-				<string>Ringtone 3</string>
-				<string>Ringtone 4</string>
-				<string>Ringtone 5</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -113,11 +113,11 @@
 			<string>Level Ringtone</string>
 			<key>Titles</key>
 			<array>
-				<string>Ringtone 1</string>
-				<string>Ringtone 2</string>
-				<string>Ringtone 3</string>
-				<string>Ringtone 4</string>
-				<string>Ringtone 5</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
