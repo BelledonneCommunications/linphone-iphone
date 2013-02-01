@@ -737,6 +737,8 @@
 							<dict>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
+								<key>ru</key>
+								<string>Быстрая конфигурация с помощью QR-кода</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -779,6 +781,8 @@
 							<dict>
 								<key>en</key>
 								<string>Reload configuration</string>
+								<key>ru</key>
+								<string>Загрузить конфигурацию заново</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -902,6 +906,8 @@
 							<dict>
 								<key>en</key>
 								<string>Version</string>
+								<key>ru</key>
+								<string>Версия</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -923,6 +929,8 @@
 							<dict>
 								<key>en</key>
 								<string>Always active</string>
+								<key>ru</key>
+								<string>Всегда активен</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -944,6 +952,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide light switch</string>
+								<key>ru</key>
+								<string>Скрыть выключатель света</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -965,6 +975,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide door opener</string>
+								<key>ru</key>
+								<string>Скрыть устройство открытия двери</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1028,6 +1040,8 @@
 							<dict>
 								<key>en</key>
 								<string>Level Ringtone</string>
+								<key>ru</key>
+								<string>Звонок для квартиры</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1049,6 +1063,8 @@
 							<dict>
 								<key>en</key>
 								<string>Ringtone appartment</string>
+								<key>ru</key>
+								<string>Звонок для здания</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1070,6 +1086,8 @@
 							<dict>
 								<key>en</key>
 								<string>System settings</string>
+								<key>ru</key>
+								<string>Системные настройки</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1091,6 +1109,8 @@
 							<dict>
 								<key>en</key>
 								<string>Password</string>
+								<key>ru</key>
+								<string>Пароль</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1112,6 +1132,8 @@
 							<dict>
 								<key>en</key>
 								<string>IP gateway address</string>
+								<key>ru</key>
+								<string>Адрес межсетевого интерфейса IP</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1177,6 +1199,8 @@
 							<dict>
 								<key>en</key>
 								<string>User name</string>
+								<key>ru</key>
+								<string>Имя пользователя</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

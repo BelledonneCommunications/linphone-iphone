@@ -696,17 +696,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>2</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/BuschJaegerSettingsView/1/BuschJaegerSettingsView.xib</string>
+								<string>Classes/BuschJaegerSettingsView/2/BuschJaegerSettingsView.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-31T14:06:15Z</date>
+					<date>2013-02-01T13:55:08Z</date>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
@@ -714,7 +714,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>b1e91037d07ea3cba150bcb9f9a033ca
+					<string>8aaf9695ef80750a75bd0d9a8f4149e2
 </string>
 					<key>name</key>
 					<string>BuschJaegerSettingsView.xib</string>
@@ -737,8 +737,8 @@
 							<dict>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
-								<key>pl</key>
-								<string>Szybka konfiguracja z kodem QR</string>
+								<key>zh-Hans</key>
+								<string>使用 QR 码快速配置</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -781,8 +781,8 @@
 							<dict>
 								<key>en</key>
 								<string>Reload configuration</string>
-								<key>pl</key>
-								<string>Załaduj konfigurację na nowo</string>
+								<key>zh-Hans</key>
+								<string>重新加载设置</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -793,27 +793,27 @@
 					<key>versions</key>
 					<dict>
 						<key>de</key>
-						<string>1</string>
+						<string>2</string>
 						<key>en</key>
-						<string>1</string>
+						<string>2</string>
 						<key>es</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fi</key>
-						<string>1</string>
+						<string>2</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>2</string>
 						<key>it</key>
-						<string>1</string>
+						<string>2</string>
 						<key>nl</key>
-						<string>1</string>
+						<string>2</string>
 						<key>pl</key>
-						<string>1</string>
+						<string>2</string>
 						<key>ru</key>
-						<string>1</string>
+						<string>2</string>
 						<key>sv</key>
-						<string>1</string>
+						<string>2</string>
 						<key>zh_CN</key>
-						<string>1</string>
+						<string>2</string>
 					</dict>
 				</dict>
 			</array>
@@ -906,8 +906,8 @@
 							<dict>
 								<key>en</key>
 								<string>Version</string>
-								<key>pl</key>
-								<string>Wersja</string>
+								<key>zh-Hans</key>
+								<string>版本</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -929,8 +929,8 @@
 							<dict>
 								<key>en</key>
 								<string>Always active</string>
-								<key>pl</key>
-								<string>Zawsze aktywny</string>
+								<key>zh-Hans</key>
+								<string>总是激活</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -952,8 +952,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide light switch</string>
-								<key>pl</key>
-								<string>Ukryj wyłącznik oświetleniowy</string>
+								<key>zh-Hans</key>
+								<string>隐藏灯开关</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -975,8 +975,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide door opener</string>
-								<key>pl</key>
-								<string>Ukryj elektrozaczep</string>
+								<key>zh-Hans</key>
+								<string>隐藏开门器</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1040,8 +1040,8 @@
 							<dict>
 								<key>en</key>
 								<string>Level Ringtone</string>
-								<key>pl</key>
-								<string>Dźwięk dzwonka w mieszkaniu</string>
+								<key>zh-Hans</key>
+								<string>住宅铃声</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1063,8 +1063,8 @@
 							<dict>
 								<key>en</key>
 								<string>Ringtone appartment</string>
-								<key>pl</key>
-								<string>Dźwięk dzwonka w budynku</string>
+								<key>zh-Hans</key>
+								<string>大楼铃声</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1086,8 +1086,8 @@
 							<dict>
 								<key>en</key>
 								<string>System settings</string>
-								<key>pl</key>
-								<string>Ustawienia systemowe</string>
+								<key>zh-Hans</key>
+								<string>系统设置</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1109,8 +1109,8 @@
 							<dict>
 								<key>en</key>
 								<string>Password</string>
-								<key>pl</key>
-								<string>Hasło</string>
+								<key>zh-Hans</key>
+								<string>密码</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1132,8 +1132,8 @@
 							<dict>
 								<key>en</key>
 								<string>IP gateway address</string>
-								<key>pl</key>
-								<string>Adres bramy sieciowej IP</string>
+								<key>zh-Hans</key>
+								<string>IP 网关地址</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1155,8 +1155,8 @@
 							<dict>
 								<key>en</key>
 								<string>Network settings</string>
-								<key>pl</key>
-								<string>Ustawienia sieci</string>
+								<key>zh-Hans</key>
+								<string>网络设置</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1199,8 +1199,8 @@
 							<dict>
 								<key>en</key>
 								<string>User name</string>
-								<key>pl</key>
-								<string>Nazwa użytkownika</string>
+								<key>zh-Hans</key>
+								<string>用户名</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1232,7 +1232,7 @@
 	<key>languages</key>
 	<array>
 		<string>en</string>
-		<string>pl</string>
+		<string>zh-Hans</string>
 	</array>
 	<key>preferences</key>
 	<dict/>

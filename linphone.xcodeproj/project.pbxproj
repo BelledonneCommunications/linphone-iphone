@@ -620,8 +620,6 @@
 		D2DB3F9016BB9EE60017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = de; path = de.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3F9116BB9F130017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9216BB9F190017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9316BB9F1E0017955B /* da */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = da; path = da.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D2DB3F9416BB9F1E0017955B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9516BB9F230017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9616BB9F2A0017955B /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9716BB9F300017955B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -638,6 +636,8 @@
 		D2DB3FA216BB9F720017955B /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3FA316BB9F750017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pl; path = pl.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3FA416BB9F7B0017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fi; path = fi.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA516BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nb; path = nb.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA616BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B88C116B82A86003550ED /* bj_glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_glow.png; path = Resources/bj_glow.png; sourceTree = "<group>"; };
 		D30B88C516B82AA1003550ED /* noimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = noimage.png; path = Resources/noimage.png; sourceTree = "<group>"; };
@@ -1646,6 +1646,7 @@
 				pl,
 				fi,
 				"zh-Hans",
+				nb,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1952,7 +1953,6 @@
 				D2DB3F8F16BB99BB0017955B /* de */,
 				D2DB3F9116BB9F130017955B /* fr */,
 				D2DB3F9216BB9F190017955B /* es */,
-				D2DB3F9416BB9F1E0017955B /* da */,
 				D2DB3F9516BB9F230017955B /* it */,
 				D2DB3F9616BB9F2A0017955B /* sv */,
 				D2DB3F9716BB9F300017955B /* nl */,
@@ -1960,6 +1960,7 @@
 				D2DB3F9916BB9F3A0017955B /* pl */,
 				D2DB3F9A16BB9F420017955B /* fi */,
 				D2DB3F9C16BB9F4E0017955B /* zh-Hans */,
+				D2DB3FA616BC03C80017955B /* nb */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1969,7 +1970,6 @@
 			children = (
 				D2D7FD5F16A52F6A0031322D /* en */,
 				D2DB3F9016BB9EE60017955B /* de */,
-				D2DB3F9316BB9F1E0017955B /* da */,
 				D2DB3F9B16BB9F4E0017955B /* zh-Hans */,
 				D2DB3F9D16BB9F670017955B /* fr */,
 				D2DB3F9E16BB9F690017955B /* es */,
@@ -1979,6 +1979,7 @@
 				D2DB3FA216BB9F720017955B /* ru */,
 				D2DB3FA316BB9F750017955B /* pl */,
 				D2DB3FA416BB9F7B0017955B /* fi */,
+				D2DB3FA516BC03C80017955B /* nb */,
 			);
 			name = BuschJaegerSettingsView.xib;
 			sourceTree = "<group>";

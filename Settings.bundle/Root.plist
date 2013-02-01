@@ -84,7 +84,7 @@
 			<key>Key</key>
 			<string>ringtone_preference</string>
 			<key>Title</key>
-			<string>Ringtone building</string>
+			<string>Ringtone</string>
 			<key>Titles</key>
 			<array>
 				<string>Ringtone 1</string>
@@ -110,7 +110,7 @@
 			<key>Key</key>
 			<string>level_ringtone_preference</string>
 			<key>Title</key>
-			<string>Ringtone appartment</string>
+			<string>Level Ringtone</string>
 			<key>Titles</key>
 			<array>
 				<string>Ringtone 1</string>

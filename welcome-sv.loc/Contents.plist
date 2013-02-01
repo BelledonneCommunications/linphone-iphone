@@ -737,6 +737,8 @@
 							<dict>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
+								<key>sv</key>
+								<string>Snabbkonfiguration med QR-kod</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -779,6 +781,8 @@
 							<dict>
 								<key>en</key>
 								<string>Reload configuration</string>
+								<key>sv</key>
+								<string>Ladda konfigurationen på nytt</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -902,6 +906,8 @@
 							<dict>
 								<key>en</key>
 								<string>Version</string>
+								<key>sv</key>
+								<string>Version</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -923,6 +929,8 @@
 							<dict>
 								<key>en</key>
 								<string>Always active</string>
+								<key>sv</key>
+								<string>Alltid aktiv</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -944,6 +952,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide light switch</string>
+								<key>sv</key>
+								<string>Dölja ljusbrytare</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -965,6 +975,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide door opener</string>
+								<key>sv</key>
+								<string>Dölja dörröppnare</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1028,6 +1040,8 @@
 							<dict>
 								<key>en</key>
 								<string>Level Ringtone</string>
+								<key>sv</key>
+								<string>Signal lägenhet</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1049,6 +1063,8 @@
 							<dict>
 								<key>en</key>
 								<string>Ringtone appartment</string>
+								<key>sv</key>
+								<string>Signal byggnad</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1070,6 +1086,8 @@
 							<dict>
 								<key>en</key>
 								<string>System settings</string>
+								<key>sv</key>
+								<string>Systeminställningar</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1091,6 +1109,8 @@
 							<dict>
 								<key>en</key>
 								<string>Password</string>
+								<key>sv</key>
+								<string>Lösenord</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1112,6 +1132,8 @@
 							<dict>
 								<key>en</key>
 								<string>IP gateway address</string>
+								<key>sv</key>
+								<string>IP-gateway adress</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1177,6 +1199,8 @@
 							<dict>
 								<key>en</key>
 								<string>User name</string>
+								<key>sv</key>
+								<string>Användarnamn	</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

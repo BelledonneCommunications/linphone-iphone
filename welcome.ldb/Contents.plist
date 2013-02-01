@@ -762,17 +762,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/BuschJaegerSettingsView/1/BuschJaegerSettingsView.xib</string>
+								<string>Classes/BuschJaegerSettingsView/3/BuschJaegerSettingsView.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-31T14:06:15Z</date>
+					<date>2013-02-01T13:57:34Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -782,7 +782,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>b1e91037d07ea3cba150bcb9f9a033ca
+					<string>ed045ff11b74930fa59551dd08129fc2
 </string>
 					<key>name</key>
 					<string>BuschJaegerSettingsView.xib</string>
@@ -806,7 +806,7 @@
 							<key>localizations</key>
 							<dict>
 								<key>de</key>
-								<string>Schnellkonfiguration mit QR-Code</string>
+								<string>Schnell- konfiguration mit QR-Code</string>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
 								<key>es</key>
@@ -817,6 +817,10 @@
 								<string>Configuration rapide avec code QR</string>
 								<key>it</key>
 								<string>Configurazione rapida con codice QR</string>
+								<key>nb</key>
+								<string>Hurtig- konfigurasjon med QR-kode</string>
+								<key>nb_NO</key>
+								<string>Hurtigkonfigurasjon med QR-kode</string>
 								<key>nl</key>
 								<string>Snelle configuratie met QR-code</string>
 								<key>pl</key>
@@ -825,6 +829,8 @@
 								<string>Быстрая конфигурация с помощью QR-кода</string>
 								<key>sv</key>
 								<string>Snabbkonfiguration med QR-kod</string>
+								<key>zh-Hans</key>
+								<string>使用 QR 码快速配置</string>
 								<key>zh_CN</key>
 								<string>使用 QR 码快速配置</string>
 							</dict>
@@ -883,6 +889,10 @@
 								<string>Recharger la configuration</string>
 								<key>it</key>
 								<string>Ricarica configurazione</string>
+								<key>nb</key>
+								<string>Last inn konfigurasjon på nytt</string>
+								<key>nb_NO</key>
+								<string>Last inn konfigurasjon på nytt</string>
 								<key>nl</key>
 								<string>Configuratie opnieuw laden</string>
 								<key>pl</key>
@@ -891,6 +901,8 @@
 								<string>Загрузить конфигурацию заново</string>
 								<key>sv</key>
 								<string>Ladda konfigurationen på nytt</string>
+								<key>zh-Hans</key>
+								<string>重新加载设置</string>
 								<key>zh_CN</key>
 								<string>重新加载设置</string>
 							</dict>
@@ -905,27 +917,33 @@
 					<key>versions</key>
 					<dict>
 						<key>de</key>
-						<string>1</string>
+						<string>3</string>
 						<key>en</key>
-						<string>1</string>
+						<string>3</string>
 						<key>es</key>
-						<string>1</string>
+						<string>3</string>
 						<key>fi</key>
-						<string>1</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>3</string>
 						<key>it</key>
-						<string>1</string>
+						<string>3</string>
+						<key>nb</key>
+						<string>3</string>
+						<key>nb_NO</key>
+						<string>3</string>
 						<key>nl</key>
-						<string>1</string>
+						<string>3</string>
 						<key>pl</key>
-						<string>1</string>
+						<string>3</string>
 						<key>ru</key>
-						<string>1</string>
+						<string>3</string>
 						<key>sv</key>
-						<string>1</string>
+						<string>3</string>
+						<key>zh-Hans</key>
+						<string>3</string>
 						<key>zh_CN</key>
-						<string>1</string>
+						<string>3</string>
 					</dict>
 				</dict>
 			</array>
@@ -1036,6 +1054,8 @@
 								<string>Version</string>
 								<key>it</key>
 								<string>Versione</string>
+								<key>nb</key>
+								<string>Versjon</string>
 								<key>nl</key>
 								<string>Versie</string>
 								<key>pl</key>
@@ -1044,6 +1064,8 @@
 								<string>Версия</string>
 								<key>sv</key>
 								<string>Version</string>
+								<key>zh-Hans</key>
+								<string>版本</string>
 								<key>zh_CN</key>
 								<string>版本</string>
 							</dict>
@@ -1079,6 +1101,8 @@
 								<string>Toujours actif</string>
 								<key>it</key>
 								<string>Sempre attivo</string>
+								<key>nb</key>
+								<string>Alltid aktiv</string>
 								<key>nl</key>
 								<string>Altijd actief</string>
 								<key>pl</key>
@@ -1087,6 +1111,8 @@
 								<string>Всегда активен</string>
 								<key>sv</key>
 								<string>Alltid aktiv</string>
+								<key>zh-Hans</key>
+								<string>总是激活</string>
 								<key>zh_CN</key>
 								<string>总是激活</string>
 							</dict>
@@ -1122,6 +1148,8 @@
 								<string>Masquer l'interrupteur</string>
 								<key>it</key>
 								<string>Nascondi interruttori luce</string>
+								<key>nb</key>
+								<string>Skjul lysbryter</string>
 								<key>nl</key>
 								<string>Lichtschakelaar verbergen</string>
 								<key>pl</key>
@@ -1130,6 +1158,8 @@
 								<string>Скрыть выключатель света</string>
 								<key>sv</key>
 								<string>Dölja ljusbrytare</string>
+								<key>zh-Hans</key>
+								<string>隐藏灯开关</string>
 								<key>zh_CN</key>
 								<string>隐藏灯开关</string>
 							</dict>
@@ -1165,6 +1195,8 @@
 								<string>Masquer le système d'ouverture de porte</string>
 								<key>it</key>
 								<string>Nascondi apriporta</string>
+								<key>nb</key>
+								<string>Skjul døråpner</string>
 								<key>nl</key>
 								<string>Deuropener verbergen</string>
 								<key>pl</key>
@@ -1173,6 +1205,8 @@
 								<string>Скрыть устройство открытия двери</string>
 								<key>sv</key>
 								<string>Dölja dörröppnare</string>
+								<key>zh-Hans</key>
+								<string>隐藏开门器</string>
 								<key>zh_CN</key>
 								<string>隐藏开门器</string>
 							</dict>
@@ -1254,6 +1288,8 @@
 								<string>Mélodie de sonnerie appartement</string>
 								<key>it</key>
 								<string>Suoneria appartamento</string>
+								<key>nb</key>
+								<string>Ringetone bolig</string>
 								<key>nl</key>
 								<string>Beltoon appartement</string>
 								<key>pl</key>
@@ -1262,6 +1298,8 @@
 								<string>Звонок для квартиры</string>
 								<key>sv</key>
 								<string>Signal lägenhet</string>
+								<key>zh-Hans</key>
+								<string>住宅铃声</string>
 								<key>zh_CN</key>
 								<string>住宅铃声</string>
 							</dict>
@@ -1297,6 +1335,8 @@
 								<string>Mélodie de sonnerie bâtiment</string>
 								<key>it</key>
 								<string>Suoneria edificio</string>
+								<key>nb</key>
+								<string>Ringetone bygning</string>
 								<key>nl</key>
 								<string>Beltoon gebouw</string>
 								<key>pl</key>
@@ -1305,6 +1345,8 @@
 								<string>Звонок для здания</string>
 								<key>sv</key>
 								<string>Signal byggnad</string>
+								<key>zh-Hans</key>
+								<string>大楼铃声</string>
 								<key>zh_CN</key>
 								<string>大楼铃声</string>
 							</dict>
@@ -1340,6 +1382,8 @@
 								<string>Configuration système</string>
 								<key>it</key>
 								<string>Impostazioni sistema</string>
+								<key>nb</key>
+								<string>Systeminnstillinger</string>
 								<key>nl</key>
 								<string>Systeeminstellingen</string>
 								<key>pl</key>
@@ -1348,6 +1392,8 @@
 								<string>Системные настройки</string>
 								<key>sv</key>
 								<string>Systeminställningar</string>
+								<key>zh-Hans</key>
+								<string>系统设置</string>
 								<key>zh_CN</key>
 								<string>系统设置</string>
 							</dict>
@@ -1383,6 +1429,8 @@
 								<string>Mot de passe</string>
 								<key>it</key>
 								<string>Password</string>
+								<key>nb</key>
+								<string>Passord</string>
 								<key>nl</key>
 								<string>Wachtwoord</string>
 								<key>pl</key>
@@ -1391,6 +1439,8 @@
 								<string>Пароль</string>
 								<key>sv</key>
 								<string>Lösenord</string>
+								<key>zh-Hans</key>
+								<string>密码</string>
 								<key>zh_CN</key>
 								<string>密码</string>
 							</dict>
@@ -1426,6 +1476,8 @@
 								<string>Adresse de passerelle IP</string>
 								<key>it</key>
 								<string>Indirizzo gateway IP</string>
+								<key>nb</key>
+								<string>IP-gateway-adresse</string>
 								<key>nl</key>
 								<string>IP-gateway adres</string>
 								<key>pl</key>
@@ -1434,6 +1486,8 @@
 								<string>Адрес межсетевого интерфейса IP</string>
 								<key>sv</key>
 								<string>IP-gateway adress</string>
+								<key>zh-Hans</key>
+								<string>IP 网关地址</string>
 								<key>zh_CN</key>
 								<string>IP 网关地址</string>
 							</dict>
@@ -1469,6 +1523,8 @@
 								<string>Configuration réseau</string>
 								<key>it</key>
 								<string>Impostazioni rete</string>
+								<key>nb</key>
+								<string>Nettverksinnstillinger</string>
 								<key>nl</key>
 								<string>Netwerkinstellingen</string>
 								<key>pl</key>
@@ -1477,6 +1533,8 @@
 								<string>Настройки сети</string>
 								<key>sv</key>
 								<string>Nätverksinställningar</string>
+								<key>zh-Hans</key>
+								<string>网络设置</string>
 								<key>zh_CN</key>
 								<string>网络设置	</string>
 							</dict>
@@ -1524,7 +1582,7 @@
 							<key>localizations</key>
 							<dict>
 								<key>de</key>
-								<string>Username</string>
+								<string>Benutzername</string>
 								<key>en</key>
 								<string>User name</string>
 								<key>es</key>
@@ -1535,6 +1593,8 @@
 								<string>Nom d'utilisateur</string>
 								<key>it</key>
 								<string>Nome utente</string>
+								<key>nb</key>
+								<string>Brukernavn</string>
 								<key>nl</key>
 								<string>Gebruikersnaam</string>
 								<key>pl</key>
@@ -1543,6 +1603,8 @@
 								<string>Имя пользователя</string>
 								<key>sv</key>
 								<string>Användarnamn	</string>
+								<key>zh-Hans</key>
+								<string>用户名</string>
 								<key>zh_CN</key>
 								<string>用户名</string>
 							</dict>
@@ -1588,6 +1650,9 @@
 		<string>ru</string>
 		<string>sv</string>
 		<string>es</string>
+		<string>zh-Hans</string>
+		<string>nb_NO</string>
+		<string>nb</string>
 	</array>
 	<key>preferences</key>
 	<dict>

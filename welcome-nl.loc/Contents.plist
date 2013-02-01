@@ -737,6 +737,8 @@
 							<dict>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
+								<key>nl</key>
+								<string>Snelle configuratie met QR-code</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -779,6 +781,8 @@
 							<dict>
 								<key>en</key>
 								<string>Reload configuration</string>
+								<key>nl</key>
+								<string>Configuratie opnieuw laden</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -902,6 +906,8 @@
 							<dict>
 								<key>en</key>
 								<string>Version</string>
+								<key>nl</key>
+								<string>Versie</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -923,6 +929,8 @@
 							<dict>
 								<key>en</key>
 								<string>Always active</string>
+								<key>nl</key>
+								<string>Altijd actief</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -944,6 +952,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide light switch</string>
+								<key>nl</key>
+								<string>Lichtschakelaar verbergen</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -965,6 +975,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide door opener</string>
+								<key>nl</key>
+								<string>Deuropener verbergen</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1028,6 +1040,8 @@
 							<dict>
 								<key>en</key>
 								<string>Level Ringtone</string>
+								<key>nl</key>
+								<string>Beltoon appartement</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1049,6 +1063,8 @@
 							<dict>
 								<key>en</key>
 								<string>Ringtone appartment</string>
+								<key>nl</key>
+								<string>Beltoon gebouw</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1070,6 +1086,8 @@
 							<dict>
 								<key>en</key>
 								<string>System settings</string>
+								<key>nl</key>
+								<string>Systeeminstellingen</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1091,6 +1109,8 @@
 							<dict>
 								<key>en</key>
 								<string>Password</string>
+								<key>nl</key>
+								<string>Wachtwoord</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1112,6 +1132,8 @@
 							<dict>
 								<key>en</key>
 								<string>IP gateway address</string>
+								<key>nl</key>
+								<string>IP-gateway adres</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1177,6 +1199,8 @@
 							<dict>
 								<key>en</key>
 								<string>User name</string>
+								<key>nl</key>
+								<string>Gebruikersnaam</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

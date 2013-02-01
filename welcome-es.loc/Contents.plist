@@ -737,6 +737,8 @@
 							<dict>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
+								<key>es</key>
+								<string>Configuración rápida con el código QR</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -779,6 +781,8 @@
 							<dict>
 								<key>en</key>
 								<string>Reload configuration</string>
+								<key>es</key>
+								<string>Volver a cargar la configuración</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -902,6 +906,8 @@
 							<dict>
 								<key>en</key>
 								<string>Version</string>
+								<key>es</key>
+								<string>Versión</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -923,6 +929,8 @@
 							<dict>
 								<key>en</key>
 								<string>Always active</string>
+								<key>es</key>
+								<string>Siempre activo</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -944,6 +952,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide light switch</string>
+								<key>es</key>
+								<string>Ocultar el interruptor de luz</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -965,6 +975,8 @@
 							<dict>
 								<key>en</key>
 								<string>Hide door opener</string>
+								<key>es</key>
+								<string>Ocultar el abridor de puerta</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1028,6 +1040,8 @@
 							<dict>
 								<key>en</key>
 								<string>Level Ringtone</string>
+								<key>es</key>
+								<string>Timbre de la vivienda</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1049,6 +1063,8 @@
 							<dict>
 								<key>en</key>
 								<string>Ringtone appartment</string>
+								<key>es</key>
+								<string>Timbre del edificio</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1070,6 +1086,8 @@
 							<dict>
 								<key>en</key>
 								<string>System settings</string>
+								<key>es</key>
+								<string>Ajustes del sistema</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1091,6 +1109,8 @@
 							<dict>
 								<key>en</key>
 								<string>Password</string>
+								<key>es</key>
+								<string>Contraseña</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1112,6 +1132,8 @@
 							<dict>
 								<key>en</key>
 								<string>IP gateway address</string>
+								<key>es</key>
+								<string>Dirección del Gateway IP</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1177,6 +1199,8 @@
 							<dict>
 								<key>en</key>
 								<string>User name</string>
+								<key>es</key>
+								<string>Nombre de usuario</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
