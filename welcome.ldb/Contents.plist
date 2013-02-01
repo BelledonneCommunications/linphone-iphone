@@ -819,8 +819,6 @@
 								<string>Configurazione rapida con codice QR</string>
 								<key>nb</key>
 								<string>Hurtig- konfigurasjon med QR-kode</string>
-								<key>nb_NO</key>
-								<string>Hurtigkonfigurasjon med QR-kode</string>
 								<key>nl</key>
 								<string>Snelle configuratie met QR-code</string>
 								<key>pl</key>
@@ -828,10 +826,8 @@
 								<key>ru</key>
 								<string>Быстрая конфигурация с помощью QR-кода</string>
 								<key>sv</key>
-								<string>Snabbkonfiguration med QR-kod</string>
+								<string>Snabb- konfiguration med QR-kod</string>
 								<key>zh-Hans</key>
-								<string>使用 QR 码快速配置</string>
-								<key>zh_CN</key>
 								<string>使用 QR 码快速配置</string>
 							</dict>
 							<key>snapshots</key>
@@ -891,8 +887,6 @@
 								<string>Ricarica configurazione</string>
 								<key>nb</key>
 								<string>Last inn konfigurasjon på nytt</string>
-								<key>nb_NO</key>
-								<string>Last inn konfigurasjon på nytt</string>
 								<key>nl</key>
 								<string>Configuratie opnieuw laden</string>
 								<key>pl</key>
@@ -902,8 +896,6 @@
 								<key>sv</key>
 								<string>Ladda konfigurationen på nytt</string>
 								<key>zh-Hans</key>
-								<string>重新加载设置</string>
-								<key>zh_CN</key>
 								<string>重新加载设置</string>
 							</dict>
 							<key>snapshots</key>
@@ -1066,8 +1058,6 @@
 								<string>Version</string>
 								<key>zh-Hans</key>
 								<string>版本</string>
-								<key>zh_CN</key>
-								<string>版本</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1112,8 +1102,6 @@
 								<key>sv</key>
 								<string>Alltid aktiv</string>
 								<key>zh-Hans</key>
-								<string>总是激活</string>
-								<key>zh_CN</key>
 								<string>总是激活</string>
 							</dict>
 							<key>snapshots</key>
@@ -1160,8 +1148,6 @@
 								<string>Dölja ljusbrytare</string>
 								<key>zh-Hans</key>
 								<string>隐藏灯开关</string>
-								<key>zh_CN</key>
-								<string>隐藏灯开关</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1206,8 +1192,6 @@
 								<key>sv</key>
 								<string>Dölja dörröppnare</string>
 								<key>zh-Hans</key>
-								<string>隐藏开门器</string>
-								<key>zh_CN</key>
 								<string>隐藏开门器</string>
 							</dict>
 							<key>snapshots</key>
@@ -1300,8 +1284,6 @@
 								<string>Signal lägenhet</string>
 								<key>zh-Hans</key>
 								<string>住宅铃声</string>
-								<key>zh_CN</key>
-								<string>住宅铃声</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1346,8 +1328,6 @@
 								<key>sv</key>
 								<string>Signal byggnad</string>
 								<key>zh-Hans</key>
-								<string>大楼铃声</string>
-								<key>zh_CN</key>
 								<string>大楼铃声</string>
 							</dict>
 							<key>snapshots</key>
@@ -1394,8 +1374,6 @@
 								<string>Systeminställningar</string>
 								<key>zh-Hans</key>
 								<string>系统设置</string>
-								<key>zh_CN</key>
-								<string>系统设置</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1440,8 +1418,6 @@
 								<key>sv</key>
 								<string>Lösenord</string>
 								<key>zh-Hans</key>
-								<string>密码</string>
-								<key>zh_CN</key>
 								<string>密码</string>
 							</dict>
 							<key>snapshots</key>
@@ -1488,8 +1464,6 @@
 								<string>IP-gateway adress</string>
 								<key>zh-Hans</key>
 								<string>IP 网关地址</string>
-								<key>zh_CN</key>
-								<string>IP 网关地址</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1535,8 +1509,6 @@
 								<string>Nätverksinställningar</string>
 								<key>zh-Hans</key>
 								<string>网络设置</string>
-								<key>zh_CN</key>
-								<string>网络设置	</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1605,8 +1577,6 @@
 								<string>Användarnamn	</string>
 								<key>zh-Hans</key>
 								<string>用户名</string>
-								<key>zh_CN</key>
-								<string>用户名</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -1642,7 +1612,6 @@
 		<string>en</string>
 		<string>fr</string>
 		<string>de</string>
-		<string>zh_CN</string>
 		<string>fi</string>
 		<string>it</string>
 		<string>nl</string>
@@ -1651,7 +1620,6 @@
 		<string>sv</string>
 		<string>es</string>
 		<string>zh-Hans</string>
-		<string>nb_NO</string>
 		<string>nb</string>
 	</array>
 	<key>preferences</key>
