@@ -68,7 +68,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">Quick configuration with QR-code</string>
+								<string key="IBUIText">Быстрая конфигурация с помощью QR-кода</string>
 								<object class="NSColor" key="IBUITextColor" id="475419136">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
@@ -141,7 +141,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">Reload configuration</string>
+								<string key="IBUIText">Загрузить конфигурацию заново</string>
 								<reference key="IBUITextColor" ref="475419136"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">0</int>

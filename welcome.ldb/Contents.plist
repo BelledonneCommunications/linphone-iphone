@@ -805,12 +805,26 @@
 							<string>10.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>de</key>
+								<string>Schnellkonfiguration mit QR-Code</string>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
+								<key>es</key>
+								<string>Configuración rápida con el código QR</string>
 								<key>fi</key>
 								<string>Pikakonfigurointi QR-koodilla</string>
 								<key>fr</key>
 								<string>Configuration rapide avec code QR</string>
+								<key>it</key>
+								<string>Configurazione rapida con codice QR</string>
+								<key>nl</key>
+								<string>Snelle configuratie met QR-code</string>
+								<key>pl</key>
+								<string>Szybka konfiguracja z kodem QR</string>
+								<key>ru</key>
+								<string>Быстрая конфигурация с помощью QR-кода</string>
+								<key>sv</key>
+								<string>Snabbkonfiguration med QR-kod</string>
 								<key>zh_CN</key>
 								<string>使用 QR 码快速配置</string>
 							</dict>
@@ -857,12 +871,26 @@
 							<string>26.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>de</key>
+								<string>Konfiguration neu laden</string>
 								<key>en</key>
 								<string>Reload configuration</string>
+								<key>es</key>
+								<string>Volver a cargar la configuración</string>
 								<key>fi</key>
 								<string>Konfiguroinnin lataaminen uudelleen</string>
 								<key>fr</key>
 								<string>Recharger la configuration</string>
+								<key>it</key>
+								<string>Ricarica configurazione</string>
+								<key>nl</key>
+								<string>Configuratie opnieuw laden</string>
+								<key>pl</key>
+								<string>Załaduj konfigurację na nowo</string>
+								<key>ru</key>
+								<string>Загрузить конфигурацию заново</string>
+								<key>sv</key>
+								<string>Ladda konfigurationen på nytt</string>
 								<key>zh_CN</key>
 								<string>重新加载设置</string>
 							</dict>
@@ -1000,9 +1028,21 @@
 								<string>Version</string>
 								<key>en</key>
 								<string>Version</string>
+								<key>es</key>
+								<string>Versión</string>
 								<key>fi</key>
 								<string>Versio</string>
 								<key>fr</key>
+								<string>Version</string>
+								<key>it</key>
+								<string>Versione</string>
+								<key>nl</key>
+								<string>Versie</string>
+								<key>pl</key>
+								<string>Wersja</string>
+								<key>ru</key>
+								<string>Версия</string>
+								<key>sv</key>
 								<string>Version</string>
 								<key>zh_CN</key>
 								<string>版本</string>
@@ -1031,10 +1071,22 @@
 								<string>Immer aktiv</string>
 								<key>en</key>
 								<string>Always active</string>
+								<key>es</key>
+								<string>Siempre activo</string>
 								<key>fi</key>
 								<string>Aina aktiivinen</string>
 								<key>fr</key>
 								<string>Toujours actif</string>
+								<key>it</key>
+								<string>Sempre attivo</string>
+								<key>nl</key>
+								<string>Altijd actief</string>
+								<key>pl</key>
+								<string>Zawsze aktywny</string>
+								<key>ru</key>
+								<string>Всегда активен</string>
+								<key>sv</key>
+								<string>Alltid aktiv</string>
 								<key>zh_CN</key>
 								<string>总是激活</string>
 							</dict>
@@ -1062,10 +1114,22 @@
 								<string>Lichtschalter ausblenden</string>
 								<key>en</key>
 								<string>Hide light switch</string>
+								<key>es</key>
+								<string>Ocultar el interruptor de luz</string>
 								<key>fi</key>
 								<string>Valokytkimen piilottaminen</string>
 								<key>fr</key>
 								<string>Masquer l'interrupteur</string>
+								<key>it</key>
+								<string>Nascondi interruttori luce</string>
+								<key>nl</key>
+								<string>Lichtschakelaar verbergen</string>
+								<key>pl</key>
+								<string>Ukryj wyłącznik oświetleniowy</string>
+								<key>ru</key>
+								<string>Скрыть выключатель света</string>
+								<key>sv</key>
+								<string>Dölja ljusbrytare</string>
 								<key>zh_CN</key>
 								<string>隐藏灯开关</string>
 							</dict>
@@ -1093,10 +1157,22 @@
 								<string>Türöffner ausblenden</string>
 								<key>en</key>
 								<string>Hide door opener</string>
+								<key>es</key>
+								<string>Ocultar el abridor de puerta</string>
 								<key>fi</key>
 								<string>Ovenavaajan piilottaminen</string>
 								<key>fr</key>
 								<string>Masquer le système d'ouverture de porte</string>
+								<key>it</key>
+								<string>Nascondi apriporta</string>
+								<key>nl</key>
+								<string>Deuropener verbergen</string>
+								<key>pl</key>
+								<string>Ukryj elektrozaczep</string>
+								<key>ru</key>
+								<string>Скрыть устройство открытия двери</string>
+								<key>sv</key>
+								<string>Dölja dörröppnare</string>
 								<key>zh_CN</key>
 								<string>隐藏开门器</string>
 							</dict>
@@ -1170,10 +1246,22 @@
 								<string>Klingelton Wohnung</string>
 								<key>en</key>
 								<string>Level Ringtone</string>
+								<key>es</key>
+								<string>Timbre de la vivienda</string>
 								<key>fi</key>
 								<string>Hälytysääni asunnossa</string>
 								<key>fr</key>
 								<string>Mélodie de sonnerie appartement</string>
+								<key>it</key>
+								<string>Suoneria appartamento</string>
+								<key>nl</key>
+								<string>Beltoon appartement</string>
+								<key>pl</key>
+								<string>Dźwięk dzwonka w mieszkaniu</string>
+								<key>ru</key>
+								<string>Звонок для квартиры</string>
+								<key>sv</key>
+								<string>Signal lägenhet</string>
 								<key>zh_CN</key>
 								<string>住宅铃声</string>
 							</dict>
@@ -1201,10 +1289,22 @@
 								<string>Klingelton Gebäude</string>
 								<key>en</key>
 								<string>Ringtone appartment</string>
+								<key>es</key>
+								<string>Timbre del edificio</string>
 								<key>fi</key>
 								<string>Hälytysääni rakennuksessa</string>
 								<key>fr</key>
 								<string>Mélodie de sonnerie bâtiment</string>
+								<key>it</key>
+								<string>Suoneria edificio</string>
+								<key>nl</key>
+								<string>Beltoon gebouw</string>
+								<key>pl</key>
+								<string>Dźwięk dzwonka w budynku</string>
+								<key>ru</key>
+								<string>Звонок для здания</string>
+								<key>sv</key>
+								<string>Signal byggnad</string>
 								<key>zh_CN</key>
 								<string>大楼铃声</string>
 							</dict>
@@ -1232,10 +1332,22 @@
 								<string>Systemeinstellungen</string>
 								<key>en</key>
 								<string>System settings</string>
+								<key>es</key>
+								<string>Ajustes del sistema</string>
 								<key>fi</key>
 								<string>Järjestelmäasetukset</string>
 								<key>fr</key>
 								<string>Configuration système</string>
+								<key>it</key>
+								<string>Impostazioni sistema</string>
+								<key>nl</key>
+								<string>Systeeminstellingen</string>
+								<key>pl</key>
+								<string>Ustawienia systemowe</string>
+								<key>ru</key>
+								<string>Системные настройки</string>
+								<key>sv</key>
+								<string>Systeminställningar</string>
 								<key>zh_CN</key>
 								<string>系统设置</string>
 							</dict>
@@ -1263,10 +1375,22 @@
 								<string>Passwort</string>
 								<key>en</key>
 								<string>Password</string>
+								<key>es</key>
+								<string>Contraseña</string>
 								<key>fi</key>
 								<string>Salasana</string>
 								<key>fr</key>
 								<string>Mot de passe</string>
+								<key>it</key>
+								<string>Password</string>
+								<key>nl</key>
+								<string>Wachtwoord</string>
+								<key>pl</key>
+								<string>Hasło</string>
+								<key>ru</key>
+								<string>Пароль</string>
+								<key>sv</key>
+								<string>Lösenord</string>
 								<key>zh_CN</key>
 								<string>密码</string>
 							</dict>
@@ -1294,10 +1418,22 @@
 								<string>IP-Gateway Adresse</string>
 								<key>en</key>
 								<string>IP gateway address</string>
+								<key>es</key>
+								<string>Dirección del Gateway IP</string>
 								<key>fi</key>
 								<string>IP-yhdysväyläosoite</string>
 								<key>fr</key>
 								<string>Adresse de passerelle IP</string>
+								<key>it</key>
+								<string>Indirizzo gateway IP</string>
+								<key>nl</key>
+								<string>IP-gateway adres</string>
+								<key>pl</key>
+								<string>Adres bramy sieciowej IP</string>
+								<key>ru</key>
+								<string>Адрес межсетевого интерфейса IP</string>
+								<key>sv</key>
+								<string>IP-gateway adress</string>
 								<key>zh_CN</key>
 								<string>IP 网关地址</string>
 							</dict>
@@ -1391,10 +1527,22 @@
 								<string>Username</string>
 								<key>en</key>
 								<string>User name</string>
+								<key>es</key>
+								<string>Nombre de usuario</string>
 								<key>fi</key>
 								<string>Käyttäjänimi</string>
 								<key>fr</key>
 								<string>Nom d'utilisateur</string>
+								<key>it</key>
+								<string>Nome utente</string>
+								<key>nl</key>
+								<string>Gebruikersnaam</string>
+								<key>pl</key>
+								<string>Nazwa użytkownika</string>
+								<key>ru</key>
+								<string>Имя пользователя</string>
+								<key>sv</key>
+								<string>Användarnamn	</string>
 								<key>zh_CN</key>
 								<string>用户名</string>
 							</dict>
