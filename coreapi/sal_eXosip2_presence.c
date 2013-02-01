@@ -81,6 +81,17 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
+#ifdef WIN32
+
+static inline char *my_ctime_r(const time_t *t, char *buf){
+	strcpy(buf,ctime_r(t));
+	return buf;
+}
+
+#else
+#define my_ctime_r ctime_r
+#endif
+
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
 	time_t t;
@@ -100,7 +111,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
-			osip_message_set_date(sip,ctime_r(&t,buf));
+			osip_message_set_date(sip,my_ctime_r(&t,buf));
 			osip_message_set_content_type(sip,content_type);
 			if (msg) osip_message_set_body(sip,msg,strlen(msg));
 			sal_add_other(op->base.root,op,sip);
