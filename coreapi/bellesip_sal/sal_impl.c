@@ -216,6 +216,10 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 
 static void process_response_event(void *user_ctx, const belle_sip_response_event_t *event){
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
+	if (!client_transaction) {
+		ms_error("Unexpected stateless response, trashing");
+		return;
+	}
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
 	belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
@@ -355,12 +359,14 @@ static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *eve
 	}
 }
 static void process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
-/*	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
-	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(client_transaction);
+	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
+	belle_sip_server_transaction_t* server_transaction = belle_sip_transaction_terminated_event_get_server_transaction(event);
+
+/*	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(client_transaction);
 	if (op->calbacks.process_transaction_terminated) {
 		op->calbacks.process_transaction_terminated(op,event);
 	} else */{
-		ms_error("Unhandled transaction terminated [%p]",event);
+		ms_error("Unhandled transaction terminated [%p]",client_transaction!=NULL?(void*)client_transaction:(void*)server_transaction);
 	}
 }
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {

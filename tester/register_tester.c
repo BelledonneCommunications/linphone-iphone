@@ -202,6 +202,7 @@ static void authenticated_register_with_late_credentials(){
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	register_with_refresh_base_2(lc,FALSE,auth_domain,NULL,TRUE);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+	linphone_core_destroy(lc);
 }
 
 static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
@@ -235,6 +236,32 @@ static void network_state_change(){
 	linphone_core_destroy(lc);
 }
 
+static void transport_change(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+	LCSipTransports sip_tr;
+	LCSipTransports sip_tr_orig;
+	memset(&sip_tr,0,sizeof(sip_tr));
+
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
+	v_table.registration_state_changed=registration_state_changed;
+	lc=configure_lc(&v_table);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	linphone_core_get_sip_transports(lc,&sip_tr_orig);
+	sip_tr.udp_port=sip_tr_orig.udp_port;
+
+	/*keep only udp*/
+	linphone_core_set_sip_transports(lc,&sip_tr);
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+1));
+
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+2));
+
+	linphone_core_destroy(lc);
+}
+
 static void io_recv_error(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -248,7 +275,7 @@ static void io_recv_error(){
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	sal_set_recv_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-1 /*because 1 udp*/));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-1 /*because 1 udp*/));
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 
 	linphone_core_destroy(lc);
@@ -287,7 +314,9 @@ int register_test_suite () {
 	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
 		return CU_get_error();
 	}
-
+	if (NULL == CU_add_test(pSuite, "transport_change", transport_change)) {
+			return CU_get_error();
+	}
 	if (NULL == CU_add_test(pSuite, "network_state_change", network_state_change)) {
 			return CU_get_error();
 	}

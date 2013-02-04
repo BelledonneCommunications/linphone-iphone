@@ -300,6 +300,8 @@ void sal_op_add_route_address(SalOp *op, const SalAddress *address){
 	SalOpBase* op_base = (SalOpBase*)op;
 	if (op_base->route_addresses) {
 		op_base->route_addresses=ms_list_append(op_base->route_addresses,(void*)address);
+	} else {
+		sal_op_set_route_address(op,address);
 	}
 }
 void sal_op_set_from(SalOp *op, const char *from){

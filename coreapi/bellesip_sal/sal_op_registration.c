@@ -106,14 +106,14 @@ static void register_process_transaction_terminated(void *user_ctx, const belle_
 
 
 /*if expire = -1, does not change expires*/
-static void send_register_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires) {
+static int send_register_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires) {
 	belle_sip_header_expires_t* expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_EXPIRES);
 
 	if (!expires_header && expires>=0) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
 	}
 	if (expires_header) belle_sip_header_expires_set_expires(expires_header,expires);
-	sal_op_send_request(op,request);
+	return sal_op_send_request(op,request);
 }
 
 
@@ -131,8 +131,7 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_uri_t* req_uri = belle_sip_request_get_uri(req);
 	belle_sip_uri_set_user(req_uri,NULL); /*remove userinfo if any*/
 
-	send_register_request_with_expires(op,req,expires);
-	return 0;
+	return send_register_request_with_expires(op,req,expires);
 }
 
 int sal_register_refresh(SalOp *op, int expires){

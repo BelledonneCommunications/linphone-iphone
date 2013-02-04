@@ -2427,6 +2427,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL,*dest_proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
+	SalAddress *route=NULL;
+	SalAddress *proxy_addr=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
 	bool_t use_ice = FALSE;
@@ -2465,6 +2467,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (linphone_core_get_route(lc)) {
 		sal_op_set_route(call->op,linphone_core_get_route(lc));
 	}
+
 /*
 * rfc3608
 6.1.  Procedures at the UA
@@ -2485,7 +2488,27 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		sal_op_add_route_address(call->op,linphone_proxy_config_get_service_route(proxy));
 	} /*else, no route*/
 
+	if (!sal_op_get_route(call->op)) {
+		/*still no route, so try to build a route from proxy transport + identity host*/
+		route=sal_address_new(NULL);
+		/*first, get domain and port from requerst uri*/
+		sal_address_set_domain(route,sal_address_get_domain((SalAddress*)addr));
+		sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)addr));
+		/*next get transport either from request uri or from proxy if any*/
+		if (sal_address_get_transport((SalAddress*)addr)) {
+			sal_address_set_transport(route,sal_address_get_transport((SalAddress*)addr));
+		} else  {
+			if (dest_proxy)
+				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(dest_proxy));
+			else if (proxy)
+				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(proxy));
+			if (proxy_addr && sal_address_get_transport(proxy_addr))
+				sal_address_set_transport(route,sal_address_get_transport(proxy_addr));
+		}
 
+		sal_op_add_route_address(call->op,route);
+
+	}
 
 	if(linphone_core_add_call(lc,call)!= 0)
 	{

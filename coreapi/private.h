@@ -298,7 +298,7 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
-const char * linphone_core_get_route(LinphoneCore *lc);
+
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
