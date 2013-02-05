@@ -27,6 +27,15 @@ class LpConfigImpl implements LpConfig {
 	public LpConfigImpl(long ptr) {
 		nativePtr=ptr;
 	}
+	
+	private native long newLpConfigImpl(String file);
+	private native void delete(long ptr);
+	public LpConfigImpl(String file) {
+		nativePtr = newLpConfigImpl(file);
+	}
+	protected void finalize() throws Throwable {
+		delete(nativePtr);
+	}
 
 	private native void setInt(long ptr, String section, String key, int value);
 	public void setInt(String section, String key, int value) {

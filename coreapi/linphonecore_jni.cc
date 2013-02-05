@@ -2239,6 +2239,18 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, 
 	return (jlong) linphone_core_get_config((LinphoneCore *)lc);
 }
 
+extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env, jobject thiz, jstring file) {
+        const char *cfile = env->GetStringUTFChars(file, NULL);
+        LpConfig *lp = lp_config_new(cfile);
+	env->ReleaseStringUTFChars(file, cfile);
+	return (jlong) lp;
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_delete(JNIEnv *env, jobject thiz, jlong lpc) {
+	LpConfig *lp = (LpConfig *)lpc;
+	lp_config_destroy(lp);
+}
+
 extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject thiz, jlong lpc,
 		jstring section, jstring key, jint value) {
         const char *csection = env->GetStringUTFChars(section, NULL);
