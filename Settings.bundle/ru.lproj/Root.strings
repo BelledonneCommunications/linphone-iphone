@@ -1,0 +1,44 @@
+/* Battery alert */
+"Battery alert" = "Battery alert";
+
+/* Version */
+"Version" = "Версия";
+
+/* Background mode */
+"Background mode" = "Всегда активен";
+
+/* Hide Switch Light */
+"Hide Switch Light" = "Скрыть выключатель света";
+
+/* Hide Lock door */
+"Hide Lock door" = "Скрыть устройство открытия двери";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/* Welcome must be restarted for changes to take effect */
+"Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
+
+/* Level Ringtone */
+"Level Ringtone" = "Звонок для квартиры";
+
+/* Ringtone */
+"Ringtone" = "Звонок для здания";
+
+/* Sounds */
+"Sounds" = "Системные настройки";
+
+/* Password */
+"Password" = "Пароль";
+
+/* IP-Gateway */
+"IP-Gateway" = "Адрес межсетевого интерфейса IP";
+
+/* SIP account */
+"SIP account" = "Настройки сети";
+
+/* Wizard */
+"Wizard" = "Wizard";
+
+/* User name */
+"User name" = "Имя пользователя";

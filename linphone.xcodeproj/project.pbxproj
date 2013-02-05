@@ -616,6 +616,28 @@
 		D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_114.png; sourceTree = "<group>"; };
 		D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_57.png; sourceTree = "<group>"; };
 		D2D7FD5F16A52F6A0031322D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3F8F16BB99BB0017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9016BB9EE60017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = de; path = de.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3F9116BB9F130017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9216BB9F190017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9516BB9F230017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9616BB9F2A0017955B /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9716BB9F300017955B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9816BB9F350017955B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9916BB9F3A0017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9A16BB9F420017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9B16BB9F4E0017955B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/BuschJaegerSettingsView.xib"; sourceTree = "<group>"; };
+		D2DB3F9C16BB9F4E0017955B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		D2DB3F9D16BB9F670017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = fr.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3F9E16BB9F690017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = es; path = es.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3F9F16BB9F6B0017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = it; path = it.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA016BB9F6E0017955B /* sv */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sv; path = sv.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA116BB9F700017955B /* nl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nl; path = nl.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA216BB9F720017955B /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA316BB9F750017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pl; path = pl.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA416BB9F7B0017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fi; path = fi.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA516BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nb; path = nb.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D2DB3FA616BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B88C116B82A86003550ED /* bj_glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_glow.png; path = Resources/bj_glow.png; sourceTree = "<group>"; };
 		D30B88C516B82AA1003550ED /* noimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = noimage.png; path = Resources/noimage.png; sourceTree = "<group>"; };
@@ -1601,7 +1623,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "linphone" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1613,6 +1635,18 @@
 				French,
 				German,
 				en,
+				de,
+				fr,
+				es,
+				da,
+				it,
+				sv,
+				nl,
+				ru,
+				pl,
+				fi,
+				"zh-Hans",
+				nb,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1916,6 +1950,17 @@
 			isa = PBXVariantGroup;
 			children = (
 				2214783C1386A2030020F8B8 /* en */,
+				D2DB3F8F16BB99BB0017955B /* de */,
+				D2DB3F9116BB9F130017955B /* fr */,
+				D2DB3F9216BB9F190017955B /* es */,
+				D2DB3F9516BB9F230017955B /* it */,
+				D2DB3F9616BB9F2A0017955B /* sv */,
+				D2DB3F9716BB9F300017955B /* nl */,
+				D2DB3F9816BB9F350017955B /* ru */,
+				D2DB3F9916BB9F3A0017955B /* pl */,
+				D2DB3F9A16BB9F420017955B /* fi */,
+				D2DB3F9C16BB9F4E0017955B /* zh-Hans */,
+				D2DB3FA616BC03C80017955B /* nb */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1924,6 +1969,17 @@
 			isa = PBXVariantGroup;
 			children = (
 				D2D7FD5F16A52F6A0031322D /* en */,
+				D2DB3F9016BB9EE60017955B /* de */,
+				D2DB3F9B16BB9F4E0017955B /* zh-Hans */,
+				D2DB3F9D16BB9F670017955B /* fr */,
+				D2DB3F9E16BB9F690017955B /* es */,
+				D2DB3F9F16BB9F6B0017955B /* it */,
+				D2DB3FA016BB9F6E0017955B /* sv */,
+				D2DB3FA116BB9F700017955B /* nl */,
+				D2DB3FA216BB9F720017955B /* ru */,
+				D2DB3FA316BB9F750017955B /* pl */,
+				D2DB3FA416BB9F7B0017955B /* fi */,
+				D2DB3FA516BC03C80017955B /* nb */,
 			);
 			name = BuschJaegerSettingsView.xib;
 			sourceTree = "<group>";
@@ -1983,10 +2039,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -2225,10 +2286,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -2293,10 +2359,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -2360,10 +2431,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;

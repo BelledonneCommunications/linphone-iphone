@@ -1,0 +1,44 @@
+/* Battery alert */
+"Battery alert" = "Battery alert";
+
+/* Version */
+"Version" = "版本";
+
+/* Background mode */
+"Background mode" = "总是激活";
+
+/* Hide Switch Light */
+"Hide Switch Light" = "隐藏灯开关";
+
+/* Hide Lock door */
+"Hide Lock door" = "隐藏开门器";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/* Welcome must be restarted for changes to take effect */
+"Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
+
+/* Level Ringtone */
+"Level Ringtone" = "住宅铃声";
+
+/* Ringtone */
+"Ringtone" = "大楼铃声";
+
+/* Sounds */
+"Sounds" = "系统设置";
+
+/* Password */
+"Password" = "密码";
+
+/* IP-Gateway */
+"IP-Gateway" = "IP 网关地址";
+
+/* SIP account */
+"SIP account" = "网络设置\t";
+
+/* Wizard */
+"Wizard" = "Wizard";
+
+/* User name */
+"User name" = "用户名";

@@ -1,0 +1,44 @@
+/* Battery alert */
+"Battery alert" = "Battery alert";
+
+/* Version */
+"Version" = "Version";
+
+/* Background mode */
+"Background mode" = "Alltid aktiv";
+
+/* Hide Switch Light */
+"Hide Switch Light" = "Dölja ljusbrytare";
+
+/* Hide Lock door */
+"Hide Lock door" = "Dölja dörröppnare";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/* Welcome must be restarted for changes to take effect */
+"Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
+
+/* Level Ringtone */
+"Level Ringtone" = "Signal lägenhet";
+
+/* Ringtone */
+"Ringtone" = "Signal byggnad";
+
+/* Sounds */
+"Sounds" = "Systeminställningar";
+
+/* Password */
+"Password" = "Lösenord";
+
+/* IP-Gateway */
+"IP-Gateway" = "IP-gateway adress";
+
+/* SIP account */
+"SIP account" = "Nätverksinställningar";
+
+/* Wizard */
+"Wizard" = "Wizard";
+
+/* User name */
+"User name" = "Användarnamn\t";

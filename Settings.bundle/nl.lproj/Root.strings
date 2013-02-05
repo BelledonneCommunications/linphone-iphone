@@ -1,0 +1,44 @@
+/* Battery alert */
+"Battery alert" = "Battery alert";
+
+/* Version */
+"Version" = "Versie";
+
+/* Background mode */
+"Background mode" = "Altijd actief";
+
+/* Hide Switch Light */
+"Hide Switch Light" = "Lichtschakelaar verbergen";
+
+/* Hide Lock door */
+"Hide Lock door" = "Deuropener verbergen";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/* Welcome must be restarted for changes to take effect */
+"Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
+
+/* Level Ringtone */
+"Level Ringtone" = "Beltoon appartement";
+
+/* Ringtone */
+"Ringtone" = "Beltoon gebouw";
+
+/* Sounds */
+"Sounds" = "Systeeminstellingen";
+
+/* Password */
+"Password" = "Wachtwoord";
+
+/* IP-Gateway */
+"IP-Gateway" = "IP-gateway adres";
+
+/* SIP account */
+"SIP account" = "Netwerkinstellingen";
+
+/* Wizard */
+"Wizard" = "Wizard";
+
+/* User name */
+"User name" = "Gebruikersnaam";

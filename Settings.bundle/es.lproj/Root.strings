@@ -1,0 +1,44 @@
+/* Battery alert */
+"Battery alert" = "Battery alert";
+
+/* Version */
+"Version" = "Versión";
+
+/* Background mode */
+"Background mode" = "Siempre activo";
+
+/* Hide Switch Light */
+"Hide Switch Light" = "Ocultar el interruptor de luz";
+
+/* Hide Lock door */
+"Hide Lock door" = "Ocultar el abridor de puerta";
+
+/* Advanced */
+"Advanced" = "Advanced";
+
+/* Welcome must be restarted for changes to take effect */
+"Welcome must be restarted for changes to take effect" = "Welcome must be restarted for changes to take effect";
+
+/* Level Ringtone */
+"Level Ringtone" = "Timbre de la vivienda";
+
+/* Ringtone */
+"Ringtone" = "Timbre del edificio";
+
+/* Sounds */
+"Sounds" = "Ajustes del sistema";
+
+/* Password */
+"Password" = "Contraseña";
+
+/* IP-Gateway */
+"IP-Gateway" = "Dirección del Gateway IP";
+
+/* SIP account */
+"SIP account" = "Ajustes de red";
+
+/* Wizard */
+"Wizard" = "Wizard";
+
+/* User name */
+"User name" = "Nombre de usuario";
