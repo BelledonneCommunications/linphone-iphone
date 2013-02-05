@@ -350,11 +350,11 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 
 }
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
-/*	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
+	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
 	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
-	if (op->callbacks.process_timeout) {
+	if (op && op->callbacks.process_timeout) {
 		op->callbacks.process_timeout(op,event);
-	} else*/ {
+	} else {
 		ms_error("Unhandled event timeout [%p]",event);
 	}
 }

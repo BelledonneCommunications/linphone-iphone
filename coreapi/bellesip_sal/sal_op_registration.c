@@ -97,7 +97,13 @@ static void register_response_event(void *user_ctx, const belle_sip_response_eve
 }
 }
 static void register_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
-	ms_error("process_timeout not implemented yet");
+	SalOp* op = (SalOp*)user_ctx;
+	ms_error("register_process_timeout timeout error reported for [%s]",sal_op_get_proxy(op));
+	if (!op->registration_refresher) {
+		op->base.root->callbacks.register_failure(op,SalErrorNoResponse,SalReasonUnknown,"Request Timeout");
+	} else {
+		/*refresher will report error*/
+	}
 }
 static void register_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	ms_error("process_transaction_terminated not implemented yet");

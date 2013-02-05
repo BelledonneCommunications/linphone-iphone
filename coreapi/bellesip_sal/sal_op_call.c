@@ -86,9 +86,16 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 }
 static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op=(SalOp*)ctx;
+
 	if (op->dialog)  {
-		op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
-		op->state=SalOpStateTerminated;
+		if (belle_sip_dialog_get_previous_state(op->dialog) == BELLE_SIP_DIALOG_CONFIRMED) {
+			/*this is probably a "normal termination from a BYE*/
+			op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
+			op->state=SalOpStateTerminated;
+		} else {
+			/*let the process response handle this case*/
+		}
+
 		belle_sip_object_unref(op->dialog);
 		op->dialog=NULL;
 	}
@@ -124,48 +131,9 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		reason = ms_strdup_printf("%s %s",reason,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
 	}
 	if (code >=400) {
-		switch(code) {
-		case 400:
-			error=SalErrorUnknown;
-			break;
-		case 404:
-			error=SalErrorFailure;
-			sr=SalReasonNotFound;
-			break;
-		case 415:
-			error=SalErrorFailure;
-			sr=SalReasonMedia;
-			break;
-		case 422:
-			ms_error ("422 not implemented yet");;
-			break;
-		case 480:
-			error=SalErrorFailure;
-			sr=SalReasonTemporarilyUnavailable;
-			break;
-		case 486:
-			error=SalErrorFailure;
-			sr=SalReasonBusy;
-			break;
-		case 487:
-			break;
-		case 600:
-			error=SalErrorFailure;
-			sr=SalReasonDoNotDisturb;
-			break;
-		case 603:
-			error=SalErrorFailure;
-			sr=SalReasonDeclined;
-			break;
-		default:
-			if (code>0){
-				error=SalErrorFailure;
-				sr=SalReasonUnknown;
-			}else error=SalErrorNoResponse;
-			/* no break */
-		}
-
+		sal_compute_sal_errors_from_code(code,&error,&sr);
 		op->base.root->callbacks.call_failure(op,error,sr,reason,code);
+		op->state=SalOpStateTerminated;
 		if (reason_header != NULL){
 			ms_free(reason);
 		}
@@ -246,7 +214,14 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 
 }
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
-	ms_error("process_timeout not implemented yet");
+	SalOp* op=(SalOp*)user_ctx;
+	if (!op->dialog)  {
+		/*call terminated very early*/
+		op->base.root->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,"Request Timeout",408);
+		op->state=SalOpStateTerminated;
+	} else {
+		/*dialog will terminated shortly, nothing to do*/
+	}
 }
 static void call_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	ms_error("process_transaction_terminated not implemented yet");

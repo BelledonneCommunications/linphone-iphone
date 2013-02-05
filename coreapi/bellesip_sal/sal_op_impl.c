@@ -119,8 +119,8 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_header_route_t* route_header;
 	belle_sip_uri_t* outbound_proxy=NULL;
 	MSList* iterator;
-	if (!op->dialog) {
-		/*don't put route header if dialog is in confirmed state*/
+	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
+		/*don't put route header if  dialog is in confirmed state*/
 		for(iterator=(MSList*)sal_op_get_route_addresses(op);iterator!=NULL;iterator=iterator->next) {
 			if(!outbound_proxy) {
 				/*first toute is outbound proxy*/
