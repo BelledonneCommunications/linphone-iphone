@@ -133,19 +133,17 @@
         [takeCallButton makeRoundWithCorner:(UIRectCornerBottomLeft|UIRectCornerTopLeft) radius:(takeCallButton.bounds.size.height/2.0)];
     }
     {
-        [BuschJaegerUtils createBuschJaegerButton:openDoorButton];
         [self.openDoorButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled];
-        [self.openDoorButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled | UIControlStateHighlighted];
         [self.openDoorButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:openDoorButton];
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
         [BuschJaegerUtils createGradientForButton:openDoorButton withTopColor:col1 bottomColor:col2];
     }
     {
-        [BuschJaegerUtils createBuschJaegerButton:lightsButton];
         [self.lightsButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled];
-        [self.lightsButton setImage:[[[UIImage alloc] init] autorelease] forState:UIControlStateDisabled | UIControlStateHighlighted];
         [self.lightsButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [BuschJaegerUtils createBuschJaegerButton:lightsButton];
         UIColor* col1 = BUSCHJAEGER_NORMAL_COLOR;
         UIColor* col2 = BUSCHJAEGER_NORMAL_COLOR2;
         [BuschJaegerUtils createGradientForButton:lightsButton withTopColor:col1 bottomColor:col2];
