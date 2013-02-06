@@ -81,6 +81,7 @@ static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 	va_end(args);
 }
 
+/*
 static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
 	int sl = strlen(xmlCtx->warningBuffer);
@@ -89,6 +90,7 @@ static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 	vsnprintf(xmlCtx->warningBuffer + sl, LPC2XML_BZ-sl, fmt, args);
 	va_end(args);
 }
+*/
 
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
