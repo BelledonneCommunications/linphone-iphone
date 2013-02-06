@@ -696,17 +696,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>1</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/BuschJaegerSettingsView/1/BuschJaegerSettingsView.xib</string>
+								<string>Classes/BuschJaegerSettingsView/3/BuschJaegerSettingsView.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-31T14:06:15Z</date>
+					<date>2013-02-01T13:57:34Z</date>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
@@ -714,7 +714,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>b1e91037d07ea3cba150bcb9f9a033ca
+					<string>ed045ff11b74930fa59551dd08129fc2
 </string>
 					<key>name</key>
 					<string>BuschJaegerSettingsView.xib</string>
@@ -736,7 +736,7 @@
 							<key>localizations</key>
 							<dict>
 								<key>de</key>
-								<string>Schnellkonfiguration mit QR-Code</string>
+								<string>Schnell- konfiguration mit QR-Code</string>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
 							</dict>
@@ -758,6 +758,8 @@
 							<string>15.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>de</key>
+								<string>Zurück</string>
 								<key>en</key>
 								<string>Back</string>
 							</dict>
@@ -793,27 +795,33 @@
 					<key>versions</key>
 					<dict>
 						<key>de</key>
-						<string>1</string>
+						<string>3</string>
 						<key>en</key>
-						<string>1</string>
+						<string>3</string>
 						<key>es</key>
-						<string>1</string>
+						<string>3</string>
 						<key>fi</key>
-						<string>1</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>1</string>
+						<string>3</string>
 						<key>it</key>
-						<string>1</string>
+						<string>3</string>
+						<key>nb</key>
+						<string>3</string>
+						<key>nb_NO</key>
+						<string>3</string>
 						<key>nl</key>
-						<string>1</string>
+						<string>3</string>
 						<key>pl</key>
-						<string>1</string>
+						<string>3</string>
 						<key>ru</key>
-						<string>1</string>
+						<string>3</string>
 						<key>sv</key>
-						<string>1</string>
+						<string>3</string>
+						<key>zh-Hans</key>
+						<string>3</string>
 						<key>zh_CN</key>
-						<string>1</string>
+						<string>3</string>
 					</dict>
 				</dict>
 			</array>

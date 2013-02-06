@@ -220,6 +220,7 @@
 								<string key="NSFrameSize">{280, 40}</string>
 								<reference key="NSSuperview" ref="558519328"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<reference key="IBUIBackgroundColor" ref="446909226"/>
 								<bool key="IBUIOpaque">NO</bool>

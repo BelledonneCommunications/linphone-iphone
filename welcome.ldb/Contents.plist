@@ -805,6 +805,8 @@
 							<string>10.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Rychlá konfigurace s QR-kódem</string>
 								<key>de</key>
 								<string>Schnell- konfiguration mit QR-Code</string>
 								<key>en</key>
@@ -823,8 +825,12 @@
 								<string>Snelle configuratie met QR-code</string>
 								<key>pl</key>
 								<string>Szybka konfiguracja z kodem QR</string>
+								<key>pt</key>
+								<string>Configuração rápida com o código-QR</string>
 								<key>ru</key>
 								<string>Быстрая конфигурация с помощью QR-кода</string>
+								<key>sk</key>
+								<string>Rýchla konfigurácia s QR-kódom</string>
 								<key>sv</key>
 								<string>Snabb- konfiguration med QR-kod</string>
 								<key>zh-Hans</key>
@@ -850,6 +856,8 @@
 							<string>15.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Zpátky</string>
 								<key>de</key>
 								<string>Zurück</string>
 								<key>en</key>
@@ -870,6 +878,8 @@
 								<string>Z powrotem</string>
 								<key>ru</key>
 								<string>Назад</string>
+								<key>sk</key>
+								<string>Zpátky</string>
 								<key>sv</key>
 								<string>Tillbaka</string>
 								<key>zh-Hans</key>
@@ -895,6 +905,8 @@
 							<string>26.text</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Znovu nahrát konfiguraci	</string>
 								<key>de</key>
 								<string>Konfiguration neu laden</string>
 								<key>en</key>
@@ -913,8 +925,12 @@
 								<string>Configuratie opnieuw laden</string>
 								<key>pl</key>
 								<string>Załaduj konfigurację na nowo</string>
+								<key>pt</key>
+								<string>Atualização da configuração</string>
 								<key>ru</key>
 								<string>Загрузить конфигурацию заново</string>
+								<key>sk</key>
+								<string>Znovu nahrať konfiguráciu</string>
 								<key>sv</key>
 								<string>Ladda konfigurationen på nytt</string>
 								<key>zh-Hans</key>
@@ -930,6 +946,8 @@
 					<dict/>
 					<key>versions</key>
 					<dict>
+						<key>cs</key>
+						<string>3</string>
 						<key>de</key>
 						<string>3</string>
 						<key>en</key>
@@ -950,7 +968,11 @@
 						<string>3</string>
 						<key>pl</key>
 						<string>3</string>
+						<key>pt</key>
+						<string>3</string>
 						<key>ru</key>
+						<string>3</string>
+						<key>sk</key>
 						<string>3</string>
 						<key>sv</key>
 						<string>3</string>
@@ -1056,6 +1078,8 @@
 							<string>Version</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Verze</string>
 								<key>de</key>
 								<string>Version</string>
 								<key>en</key>
@@ -1074,8 +1098,12 @@
 								<string>Versie</string>
 								<key>pl</key>
 								<string>Wersja</string>
+								<key>pt</key>
+								<string>Versão</string>
 								<key>ru</key>
 								<string>Версия</string>
+								<key>sk</key>
+								<string>Verzia</string>
 								<key>sv</key>
 								<string>Version</string>
 								<key>zh-Hans</key>
@@ -1101,6 +1129,8 @@
 							<string>Background mode</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Aktivní</string>
 								<key>de</key>
 								<string>Immer aktiv</string>
 								<key>en</key>
@@ -1119,8 +1149,12 @@
 								<string>Altijd actief</string>
 								<key>pl</key>
 								<string>Zawsze aktywny</string>
+								<key>pt</key>
+								<string>Sempre ativo</string>
 								<key>ru</key>
 								<string>Всегда активен</string>
+								<key>sk</key>
+								<string>Aktívne</string>
 								<key>sv</key>
 								<string>Alltid aktiv</string>
 								<key>zh-Hans</key>
@@ -1146,6 +1180,8 @@
 							<string>Hide Switch Light</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Skrýt rozsvícení světla</string>
 								<key>de</key>
 								<string>Lichtschalter ausblenden</string>
 								<key>en</key>
@@ -1164,8 +1200,12 @@
 								<string>Lichtschakelaar verbergen</string>
 								<key>pl</key>
 								<string>Ukryj wyłącznik oświetleniowy</string>
+								<key>pt</key>
+								<string>Ocultar interruptor de luz</string>
 								<key>ru</key>
 								<string>Скрыть выключатель света</string>
+								<key>sk</key>
+								<string>Skryť rozsvietenie svetla</string>
 								<key>sv</key>
 								<string>Dölja ljusbrytare</string>
 								<key>zh-Hans</key>
@@ -1191,6 +1231,8 @@
 							<string>Hide Lock door</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Skrýt otevření dveří</string>
 								<key>de</key>
 								<string>Türöffner ausblenden</string>
 								<key>en</key>
@@ -1209,8 +1251,12 @@
 								<string>Deuropener verbergen</string>
 								<key>pl</key>
 								<string>Ukryj elektrozaczep</string>
+								<key>pt</key>
+								<string>Ocultar abertura de porta</string>
 								<key>ru</key>
 								<string>Скрыть устройство открытия двери</string>
+								<key>sk</key>
+								<string>Skryť otvorenie dverí</string>
 								<key>sv</key>
 								<string>Dölja dörröppnare</string>
 								<key>zh-Hans</key>
@@ -1282,6 +1328,8 @@
 							<string>Level Ringtone</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Vyzváněcí tón bytu</string>
 								<key>de</key>
 								<string>Klingelton Wohnung</string>
 								<key>en</key>
@@ -1300,8 +1348,12 @@
 								<string>Beltoon appartement</string>
 								<key>pl</key>
 								<string>Dźwięk dzwonka w mieszkaniu</string>
+								<key>pt</key>
+								<string>Campaínha do apartamento</string>
 								<key>ru</key>
 								<string>Звонок для квартиры</string>
+								<key>sk</key>
+								<string>Vyzváňací tón bytu</string>
 								<key>sv</key>
 								<string>Signal lägenhet</string>
 								<key>zh-Hans</key>
@@ -1327,6 +1379,8 @@
 							<string>Ringtone</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Vyzváněcí tón budovy</string>
 								<key>de</key>
 								<string>Klingelton Gebäude</string>
 								<key>en</key>
@@ -1345,8 +1399,12 @@
 								<string>Beltoon gebouw</string>
 								<key>pl</key>
 								<string>Dźwięk dzwonka w budynku</string>
+								<key>pt</key>
+								<string>Campaínha do edifício</string>
 								<key>ru</key>
 								<string>Звонок для здания</string>
+								<key>sk</key>
+								<string>Vyzváňací tón budovy</string>
 								<key>sv</key>
 								<string>Signal byggnad</string>
 								<key>zh-Hans</key>
@@ -1372,6 +1430,8 @@
 							<string>Sounds</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Nastavení systému</string>
 								<key>de</key>
 								<string>Systemeinstellungen</string>
 								<key>en</key>
@@ -1390,8 +1450,12 @@
 								<string>Systeeminstellingen</string>
 								<key>pl</key>
 								<string>Ustawienia systemowe</string>
+								<key>pt</key>
+								<string>Configurações do sistema</string>
 								<key>ru</key>
 								<string>Системные настройки</string>
+								<key>sk</key>
+								<string>Nastavenie systému</string>
 								<key>sv</key>
 								<string>Systeminställningar</string>
 								<key>zh-Hans</key>
@@ -1417,6 +1481,8 @@
 							<string>Password</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Heslo</string>
 								<key>de</key>
 								<string>Passwort</string>
 								<key>en</key>
@@ -1435,8 +1501,12 @@
 								<string>Wachtwoord</string>
 								<key>pl</key>
 								<string>Hasło</string>
+								<key>pt</key>
+								<string>Chave de acesso</string>
 								<key>ru</key>
 								<string>Пароль</string>
+								<key>sk</key>
+								<string>Heslo</string>
 								<key>sv</key>
 								<string>Lösenord</string>
 								<key>zh-Hans</key>
@@ -1462,6 +1532,8 @@
 							<string>IP-Gateway</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Adresa IP gateway</string>
 								<key>de</key>
 								<string>IP-Gateway Adresse</string>
 								<key>en</key>
@@ -1480,8 +1552,12 @@
 								<string>IP-gateway adres</string>
 								<key>pl</key>
 								<string>Adres bramy sieciowej IP</string>
+								<key>pt</key>
+								<string>Endereço da gateway IP</string>
 								<key>ru</key>
 								<string>Адрес межсетевого интерфейса IP</string>
+								<key>sk</key>
+								<string>Adresa IP gateway</string>
 								<key>sv</key>
 								<string>IP-gateway adress</string>
 								<key>zh-Hans</key>
@@ -1507,6 +1583,8 @@
 							<string>SIP account</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Nastavení sítě</string>
 								<key>de</key>
 								<string>Netzwerkeinstellungen</string>
 								<key>en</key>
@@ -1525,8 +1603,12 @@
 								<string>Netwerkinstellingen</string>
 								<key>pl</key>
 								<string>Ustawienia sieci</string>
+								<key>pt</key>
+								<string>Configurações da rede</string>
 								<key>ru</key>
 								<string>Настройки сети</string>
+								<key>sk</key>
+								<string>Nastavenie siete</string>
 								<key>sv</key>
 								<string>Nätverksinställningar</string>
 								<key>zh-Hans</key>
@@ -1575,6 +1657,8 @@
 							<string>User name</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Jméno uživatele</string>
 								<key>de</key>
 								<string>Benutzername</string>
 								<key>en</key>
@@ -1593,8 +1677,12 @@
 								<string>Gebruikersnaam</string>
 								<key>pl</key>
 								<string>Nazwa użytkownika</string>
+								<key>pt</key>
+								<string>Nome do utilizador</string>
 								<key>ru</key>
 								<string>Имя пользователя</string>
+								<key>sk</key>
+								<string>Meno používateľa</string>
 								<key>sv</key>
 								<string>Användarnamn	</string>
 								<key>zh-Hans</key>
@@ -1643,6 +1731,9 @@
 		<string>es</string>
 		<string>zh-Hans</string>
 		<string>nb</string>
+		<string>cs</string>
+		<string>sk</string>
+		<string>pt</string>
 	</array>
 	<key>preferences</key>
 	<dict>

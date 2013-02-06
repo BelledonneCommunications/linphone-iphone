@@ -696,17 +696,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>2</key>
+							<key>3</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/BuschJaegerSettingsView/2/BuschJaegerSettingsView.xib</string>
+								<string>Classes/BuschJaegerSettingsView/3/BuschJaegerSettingsView.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-02-01T13:55:08Z</date>
+					<date>2013-02-01T13:57:34Z</date>
 					<key>class</key>
 					<string>BLNibFileObject</string>
 					<key>errors</key>
@@ -714,7 +714,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>8aaf9695ef80750a75bd0d9a8f4149e2
+					<string>ed045ff11b74930fa59551dd08129fc2
 </string>
 					<key>name</key>
 					<string>BuschJaegerSettingsView.xib</string>
@@ -760,6 +760,8 @@
 							<dict>
 								<key>en</key>
 								<string>Back</string>
+								<key>zh-Hans</key>
+								<string>返回</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -793,27 +795,33 @@
 					<key>versions</key>
 					<dict>
 						<key>de</key>
-						<string>2</string>
+						<string>3</string>
 						<key>en</key>
-						<string>2</string>
+						<string>3</string>
 						<key>es</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fi</key>
-						<string>2</string>
+						<string>3</string>
 						<key>fr</key>
-						<string>2</string>
+						<string>3</string>
 						<key>it</key>
-						<string>2</string>
+						<string>3</string>
+						<key>nb</key>
+						<string>3</string>
+						<key>nb_NO</key>
+						<string>3</string>
 						<key>nl</key>
-						<string>2</string>
+						<string>3</string>
 						<key>pl</key>
-						<string>2</string>
+						<string>3</string>
 						<key>ru</key>
-						<string>2</string>
+						<string>3</string>
 						<key>sv</key>
-						<string>2</string>
+						<string>3</string>
+						<key>zh-Hans</key>
+						<string>3</string>
 						<key>zh_CN</key>
-						<string>2</string>
+						<string>3</string>
 					</dict>
 				</dict>
 			</array>

@@ -611,6 +611,12 @@
 		D285B70216A7387C00FB0C51 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape~ipad.png"; sourceTree = "<group>"; };
 		D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x~ipad.png"; sourceTree = "<group>"; };
 		D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
+		D29C666016C23C6A001EBE1A /* cs */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = cs; path = cs.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D29C666116C23C6A001EBE1A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D29C666216C23C78001EBE1A /* sk */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sk; path = sk.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D29C666316C23C78001EBE1A /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D29C666416C23C8D001EBE1A /* pt */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pt; path = pt.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
+		D29C666516C23C8D001EBE1A /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2BB9B3A16A71070003C9FDE /* UIView+RoundUIView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+RoundUIView.h"; sourceTree = "<group>"; };
 		D2BB9B3B16A71070003C9FDE /* UIView+RoundUIView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RoundUIView.m"; sourceTree = "<group>"; };
 		D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_114.png; sourceTree = "<group>"; };
@@ -1647,6 +1653,9 @@
 				fi,
 				"zh-Hans",
 				nb,
+				cs,
+				sk,
+				pt,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1961,6 +1970,9 @@
 				D2DB3F9A16BB9F420017955B /* fi */,
 				D2DB3F9C16BB9F4E0017955B /* zh-Hans */,
 				D2DB3FA616BC03C80017955B /* nb */,
+				D29C666116C23C6A001EBE1A /* cs */,
+				D29C666316C23C78001EBE1A /* sk */,
+				D29C666516C23C8D001EBE1A /* pt */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1980,6 +1992,9 @@
 				D2DB3FA316BB9F750017955B /* pl */,
 				D2DB3FA416BB9F7B0017955B /* fi */,
 				D2DB3FA516BC03C80017955B /* nb */,
+				D29C666016C23C6A001EBE1A /* cs */,
+				D29C666216C23C78001EBE1A /* sk */,
+				D29C666416C23C8D001EBE1A /* pt */,
 			);
 			name = BuschJaegerSettingsView.xib;
 			sourceTree = "<group>";
