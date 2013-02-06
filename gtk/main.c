@@ -1503,7 +1503,7 @@ static void linphone_gtk_configure_main_window(){
 	static const char *search_icon;
 	static gboolean update_check_menu;
 	static gboolean buttons_have_borders;
-	//static gboolean show_abcd;
+	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GHashTable *contacts_history;
 
@@ -1518,7 +1518,7 @@ static void linphone_gtk_configure_main_window(){
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
-		//show_abcd=linphone_gtk_get_ui_config_int("show_abcd",1);
+		show_abcd=linphone_gtk_get_ui_config_int("show_abcd",1);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
@@ -1578,13 +1578,7 @@ static void linphone_gtk_configure_main_window(){
 	if (update_check_menu){
 		gtk_widget_show(linphone_gtk_get_widget(w,"versioncheck_item"));
 	}
-	/*if (!show_abcd){
-		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_A"));
-		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_B"));
-		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_C"));
-		gtk_widget_hide(linphone_gtk_get_widget(w,"dtmf_D"));
-		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(w,"dtmf_table")),4,3);
-	}*/
+	g_object_set_data(G_OBJECT(w),"show_abcd",GINT_TO_POINTER(show_abcd));
 }
 
 void linphone_gtk_manage_login(void){
@@ -1598,7 +1592,6 @@ void linphone_gtk_manage_login(void){
 		}
 	}
 }
-
 
 gboolean linphone_gtk_close(GtkWidget *mw){
 	/*shutdown calls if any*/
@@ -1660,6 +1653,13 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
 	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);
+	if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"show_abcd"))){
+		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_A"));
+		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_B"));
+		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_C"));
+		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_D"));
+		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(keypad,"dtmf_table")),4,3);
+	}
 	gtk_widget_show(keypad);
 }
 

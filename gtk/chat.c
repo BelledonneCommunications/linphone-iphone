@@ -110,12 +110,14 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,display,-1,"bold",me ? "left" : "left",NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
+		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter," : ",-1,"bold",me ? "left" : "left",NULL);
+		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_object_set_data(G_OBJECT(w),"from_message",linphone_address_as_string(from));
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_get_iter_at_offset(buffer,&begin,off);
-	gtk_text_buffer_get_end_iter(buffer,&iter);
+	gtk_text_buffer_get_end_iter(buffer,&iter);				
 	gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,message,-1,me ? "left" : "left",NULL);
 	gtk_text_buffer_get_end_iter(buffer,&iter);	
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
@@ -140,14 +142,12 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	} else {
 		struct tm *tm=localtime(&t);
 		char buf[80];
-		strftime(buf,80,"%H:%M",tm);
+		strftime(buf,80,"Received at %H:%M",tm);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,									
-		                                         "italic","right","small","font_grey",NULL);
+	                       "italic","right","small","font_grey",NULL);
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	
-
 	GtkTextMark *mark=gtk_text_buffer_create_mark(buffer,NULL,&iter,FALSE);
 	gtk_text_view_scroll_mark_onscreen(text,mark);
 }
