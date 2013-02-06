@@ -24,8 +24,7 @@ static void fill_renderers(GtkTreeView *v){
 	GtkTreeViewColumn *c;
 	GtkCellRenderer *r=gtk_cell_renderer_pixbuf_new ();
 
-	g_object_set(r,"stock-size",GTK_ICON_SIZE_BUTTON,NULL);
-	c=gtk_tree_view_column_new_with_attributes("icon",r,"stock-id",0,NULL);
+	c=gtk_tree_view_column_new_with_attributes("icon",r,"pixbuf",0,NULL);
 	gtk_tree_view_append_column (v,c);
 
 	r=gtk_cell_renderer_text_new ();
@@ -40,7 +39,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 
 	store=(GtkListStore*)gtk_tree_view_get_model(v);
 	if (store==NULL){
-		store=gtk_list_store_new(3,G_TYPE_STRING,G_TYPE_STRING, G_TYPE_POINTER);
+		store=gtk_list_store_new(3,GDK_TYPE_PIXBUF,G_TYPE_STRING,G_TYPE_POINTER);
 		gtk_tree_view_set_model(v,GTK_TREE_MODEL(store));
 		g_object_unref(G_OBJECT(store));
 		fill_renderers(GTK_TREE_VIEW(linphone_gtk_get_widget(w,"logs_view")));
@@ -110,8 +109,11 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		g_free(seconds);
 		if (start_date) g_free(start_date);
 		gtk_list_store_append (store,&iter);
+
+		GdkPixbuf *incoming = create_pixbuf("call_status_incoming.png");
+		GdkPixbuf *outgoing = create_pixbuf("call_status_outgoing.png");
 		gtk_list_store_set (store,&iter,
-		               0, cl->dir==LinphoneCallOutgoing ? GTK_STOCK_GO_UP : GTK_STOCK_GO_DOWN,
+		               0, cl->dir==LinphoneCallOutgoing ? outgoing : incoming,
 		               1, logtxt,2,la,-1);
 		ms_free(addr);
 		g_free(logtxt);
