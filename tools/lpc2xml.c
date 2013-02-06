@@ -98,6 +98,8 @@ static int processEntry(const char *section, const char *entry, xmlNode *node, l
 		lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Issue when reading the lpc");
 		return -1;
 	}
+	
+	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
 	xmlNodeSetContent(node, (const xmlChar *) content);
 	return 0;
 }
@@ -123,6 +125,7 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 			ctx->ret = -1;
 			return;
 		}
+	
 		ctx->ret = processEntry(ctx->section, entry, node, ctx->ctx);
 	}
 }
