@@ -348,6 +348,8 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->remote_media);
 	if (b->call_id)
 		ms_free(b->call_id);
+	if (b->custom_headers)
+		sal_custom_header_free(b->custom_headers);
 	ms_free(op);
 }
 
@@ -371,4 +373,61 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info) {
 	if (auth_info->password) ms_free(auth_info->password);
 	ms_free((void*)auth_info);
 }
+
+SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
+	SalCustomHeader *h=ms_new0(SalCustomHeader,1);
+	h->header_name=ms_strdup(name);
+	h->header_value=ms_strdup(value);
+	h->node.data=h;
+	return (SalCustomHeader*)ms_list_append_link((MSList*)ch,(MSList*)h);
+}
+
+const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
+	const MSList *it;
+	for (it=(const MSList*)ch;it!=NULL;it=it->next){
+		const SalCustomHeader *itch=(const SalCustomHeader *)it;
+		if (strcasecmp(itch->header_name,name)==0)
+			return itch->header_value;
+	}
+	return NULL;
+}
+
+static void sal_custom_header_uninit(SalCustomHeader *ch){
+	ms_free(ch->header_name);
+	ms_free(ch->header_value);
+}
+
+void sal_custom_header_free(SalCustomHeader *ch){
+	ms_list_for_each((MSList*)ch,(void (*)(void*))sal_custom_header_uninit);
+	ms_list_free((MSList *)ch);
+}
+
+SalCustomHeader *sal_custom_header_clone(SalCustomHeader *ch){
+	const MSList *it;
+	SalCustomHeader *ret=NULL;
+	for (it=(const MSList*)ch;it!=NULL;it=it->next){
+		const SalCustomHeader *itch=(const SalCustomHeader *)it;
+		ret=sal_custom_header_append(ret,itch->header_name,itch->header_value);
+	}
+	return ret;
+}
+
+const SalCustomHeader *sal_op_get_custom_header(SalOp *op){
+	SalOpBase *b=(SalOpBase *)op;
+	return b->custom_headers;
+}
+
+/*
+ * Warning: this function takes owneship of the custom headers
+ */
+void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch){
+	SalOpBase *b=(SalOpBase *)op;
+	if (b->custom_headers){
+		sal_custom_header_free(b->custom_headers);
+		b->custom_headers=NULL;
+	}
+	b->custom_headers=ch;
+}
+
+
 

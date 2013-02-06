@@ -141,24 +141,7 @@ typedef enum _LinphoneCallStatus {
  * @ingroup call_logs
  *
 **/
-typedef struct _LinphoneCallLog{
-	LinphoneCallDir dir; /**< The direction of the call*/
-	LinphoneCallStatus status; /**< The status of the call*/
-	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
-	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
-	char start_date[128]; /**<Human readable string containing the start date*/
-	int duration; /**<Duration of the call in seconds*/
-	char *refkey;
-	void *user_pointer;
-	rtp_stats_t local_stats;
-	rtp_stats_t remote_stats;
-	float quality;
-    int video_enabled;
-	struct _LinphoneCore *lc;
-	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
-	const char* call_id; /**unique id of a call*/
-} LinphoneCallLog;
-
+typedef struct _LinphoneCallLog LinphoneCallLog;
 
 /**
  * Enum describing type of media encryption types.
@@ -175,6 +158,13 @@ enum LinphoneMediaEncryption {
 typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
+LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
+LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
+LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
+LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
+time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
+int linphone_call_log_get_duration(LinphoneCallLog *cl);
+float linphone_call_log_get_quality(LinphoneCallLog *cl);
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
@@ -208,6 +198,8 @@ bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
 void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
 const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
+void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
+const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing

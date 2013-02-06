@@ -472,6 +472,8 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
+	sal_op_set_custom_header(call->op,call->params.custom_headers);
+	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
 		ice_session_set_role(call->ice_session, IR_Controlling);
@@ -733,9 +735,7 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
 	}
-	if (obj->params.record_file)
-		ms_free(obj->params.record_file);
-
+	linphone_call_params_uninit(&obj->params);
 	ms_free(obj);
 }
 
@@ -810,6 +810,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 					cp->low_bandwidth=TRUE;
 				}
 			}
+			cp->custom_headers=(SalCustomHeader*)sal_op_get_custom_header(call->op);
 			return cp;
 		}
 	}
@@ -963,6 +964,18 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #endif
 }
 
+#ifdef VIDEO_ENABLED
+/**
+ * Request remote side to send us a Video Fast Update.
+**/
+void linphone_call_send_vfu_request(LinphoneCall *call)
+{
+	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+		sal_call_send_vfu_request(call->op);
+}
+#endif
+
+
 /**
  * Take a photo of currently received video and write it into a jpeg file.
 **/
@@ -1038,10 +1051,16 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
+/**
+ * Returns kind of media encryption selected for the call.
+**/
 enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp) {
 	return cp->media_encryption;
 }
 
+/**
+ * Set requested media encryption for a call.
+**/
 void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e) {
 	cp->media_encryption = e;
 }
@@ -1054,6 +1073,9 @@ void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, boo
 	cp->real_early_media=enabled;
 }
 
+/**
+ * Indicates whether sending of early media was enabled.
+**/
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp){
 	return cp->real_early_media;
 }
@@ -1073,25 +1095,25 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 	cp->audio_bw=bandwidth;
 }
 
-#ifdef VIDEO_ENABLED
-/**
- * Request remote side to send us a Video Fast Update.
-**/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
+void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value){
+	params->custom_headers=sal_custom_header_append(params->custom_headers,header_name,header_value);
 }
-#endif
 
+const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name){
+	return sal_custom_header_find(params->custom_headers,header_name);
+}
 
 void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParams *cp){
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
+	/*
+	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
+	 */
+	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
 }
 
 /**
- *
+ * Copy existing LinphoneCallParams to a new LinphoneCallParams object.
 **/
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	LinphoneCallParams *ncp=ms_new0(LinphoneCallParams,1);
@@ -1099,13 +1121,19 @@ LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	return ncp;
 }
 
+void linphone_call_params_uninit(LinphoneCallParams *p){
+	if (p->record_file) ms_free(p->record_file);
+	if (p->custom_headers) sal_custom_header_free(p->custom_headers);
+}
+
 /**
- *
+ * Destroy LinphoneCallParams.
 **/
 void linphone_call_params_destroy(LinphoneCallParams *p){
-	if (p->record_file) ms_free(p->record_file);
+	linphone_call_params_uninit(p);
 	ms_free(p);
 }
+
 
 /**
  * @}

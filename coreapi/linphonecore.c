@@ -203,8 +203,8 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
 			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
-			cl->call_id=lp_config_get_string(cfg,logsection,"call_id",NULL);
-			if(cl->call_id) cl->call_id=ms_strdup(cl->call_id);
+			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
+			if (tmp) cl->call_id=ms_strdup(tmp);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
@@ -270,10 +270,16 @@ const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl)
 	return &cl->remote_stats;
 }
 
+/**
+ * Assign a user pointer to the call log.
+**/
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
 
+/**
+ * Returns the user pointer associated with the call log.
+**/
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
 	return cl->user_pointer;
 }
@@ -306,13 +312,62 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 	return cl->refkey;
 }
 
+/**
+ * Returns origin (ie from) address of the call.
+**/
+LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl){
+	return cl->from;
+}
+
+/**
+ * Returns destination address (ie to) of the call.
+**/
+LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl){
+	return cl->to;
+}
+
+/**
+ * Returns the direction of the call.
+**/
+LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl){
+	return cl->dir;
+}
+
+/**
+ * Returns the status of the call.
+**/
+LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl){
+	return cl->status;
+}
+
+/**
+ * Returns the start date of the call, expressed as a POSIX time_t.
+**/
+time_t linphone_call_log_get_start_date(LinphoneCallLog *cl){
+	return cl->start_date_time;
+}
+
+/**
+ * Returns duration of the call.
+**/
+int linphone_call_log_get_duration(LinphoneCallLog *cl){
+	return cl->duration;
+}
+
+/**
+ * Returns overall quality indication of the call.
+**/
+float linphone_call_log_get_quality(LinphoneCallLog *cl){
+	return cl->quality;
+}
+
 /** @} */
 
 void linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->from!=NULL) linphone_address_destroy(cl->from);
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
-	if (cl->call_id) ms_free((void*)cl->call_id);
+	if (cl->call_id) ms_free(cl->call_id);
 	ms_free(cl);
 }
 

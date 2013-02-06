@@ -51,17 +51,19 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 	for (logs=linphone_core_get_call_logs(linphone_gtk_get_core());logs!=NULL;logs=logs->next){
 		LinphoneCallLog *cl=(LinphoneCallLog*)logs->data;
 		GtkTreeIter iter;
-		LinphoneAddress *la=cl->dir==LinphoneCallIncoming ? cl->from : cl->to;
+		LinphoneAddress *la=linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
 		char *addr= linphone_address_as_string_uri_only (la);
 		const char *display;
 		gchar *logtxt, *minutes, *seconds;
 		gchar quality[20];
 		const char *status=NULL;
 		gchar *start_date=NULL;
+		time_t start_date_time=linphone_call_log_get_start_date(cl);
+		int duration=linphone_call_log_get_duration(cl);
 		
 #if GLIB_CHECK_VERSION(2,26,0)
-		if (cl->start_date_time){
-			GDateTime *dt=g_date_time_new_from_unix_local(cl->start_date_time);
+		if (start_date_time){
+			GDateTime *dt=g_date_time_new_from_unix_local(start_date_time);
 			start_date=g_date_time_format(dt,"%c");
 			g_date_time_unref(dt);
 		}
@@ -73,10 +75,10 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			if (display==NULL)
 				display=linphone_address_get_domain (la);
 		}
-		if (cl->quality!=-1){
-			snprintf(quality,sizeof(quality),"%.1f",cl->quality);
-		}
-		switch(cl->status){
+		if (linphone_call_log_get_quality(cl)!=-1){
+			snprintf(quality,sizeof(quality),"%.1f",linphone_call_log_get_quality(cl));
+		}else snprintf(quality,sizeof(quality)-1,"%s",_("n/a"));
+		switch(linphone_call_log_get_status(cl)){
 			case LinphoneCallAborted:
 				status=_("Aborted");
 			break;
@@ -90,21 +92,21 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			break;
 		}
 		minutes=g_markup_printf_escaped(
-			ngettext("%i minute", "%i minutes", cl->duration/60),
-			cl->duration/60);
+			ngettext("%i minute", "%i minutes", duration/60),
+			duration/60);
 		seconds=g_markup_printf_escaped(
-			ngettext("%i second", "%i seconds", cl->duration%60),
-			cl->duration%60);
+			ngettext("%i second", "%i seconds", duration%60),
+			duration%60);
 		if (status==NULL) logtxt=g_markup_printf_escaped(
 				_("<big><b>%s</b></big>\t<small><i>%s</i>\t"
 					"<i>Quality: %s</i></small>\n%s\t%s %s\t"),
-				display, addr, cl->quality!=-1 ? quality : _("n/a"),
-				start_date ? start_date : cl->start_date, minutes, seconds);
+				display, addr, quality ,
+				start_date ? start_date : "", minutes, seconds);
 		else logtxt=g_markup_printf_escaped(
 				_("<big><b>%s</b></big>\t<small><i>%s</i></small>\t"
 					"\n%s\t%s"),
 				display, addr,
-				start_date ? start_date : cl->start_date, status);
+				start_date ? start_date : "", status);
 		g_free(minutes);
 		g_free(seconds);
 		if (start_date) g_free(start_date);
@@ -113,7 +115,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		GdkPixbuf *incoming = create_pixbuf("call_status_incoming.png");
 		GdkPixbuf *outgoing = create_pixbuf("call_status_outgoing.png");
 		gtk_list_store_set (store,&iter,
-		               0, cl->dir==LinphoneCallOutgoing ? outgoing : incoming,
+		               0, linphone_call_log_get_dir(cl)==LinphoneCallOutgoing ? outgoing : incoming,
 		               1, logtxt,2,la,-1);
 		ms_free(addr);
 		g_free(logtxt);

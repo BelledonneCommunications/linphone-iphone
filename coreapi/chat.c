@@ -160,13 +160,6 @@ LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *c
 	return msg;
 }
 
-void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
-	if (msg->message) ms_free(msg->message);
-	if (msg->external_body_url) ms_free(msg->external_body_url);
-	if (msg->from) linphone_address_destroy(msg->from);
-	ms_free(msg);
-}
-
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
@@ -231,6 +224,15 @@ time_t linphone_chat_message_get_time(const LinphoneChatMessage* message) {
 const char * linphone_chat_message_get_text(const LinphoneChatMessage* message) {
 	return message->message;
 }
+
+void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value){
+	message->custom_headers=sal_custom_header_append(message->custom_headers,header_name,header_value);
+}
+
+const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name){
+	return sal_custom_header_find(message->custom_headers,header_name);
+}
+
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {
 	/*struct _LinphoneChatMessage {
 	 char* message;
@@ -250,3 +252,13 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
 	return new_message;
 }
+
+void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
+	if (msg->message) ms_free(msg->message);
+	if (msg->external_body_url) ms_free(msg->external_body_url);
+	if (msg->from) linphone_address_destroy(msg->from);
+	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
+	ms_free(msg);
+}
+
+

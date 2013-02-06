@@ -101,7 +101,7 @@ static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const 
 	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
 	GtkWidget *image;
 
-    if (!is_stock){
+	if (!is_stock){
 		if (image_name==NULL){
 			gtk_widget_hide(container);
 		}
