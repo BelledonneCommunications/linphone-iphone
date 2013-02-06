@@ -18,6 +18,7 @@ startcall-green.png startcall-small.png stopcall-red.png stopcall-small.png addc
 contact_starred.png contact_unstarred.png \
 speaker.png \
 ok.png \
+dialer.png \
 notok.png
 
 EXTRA_DIST=$(pixmap_DATA)
