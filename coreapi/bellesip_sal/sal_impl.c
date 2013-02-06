@@ -472,6 +472,7 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 																			,sal_address_get_port_int(addr)
 																			,sal_transport_to_string(sal_address_get_transport(addr)));
 	if (lp) {
+		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
 	} else {
 		return -1;
@@ -511,7 +512,11 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 }
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value){
-	ms_error("sal_set_keepalive_period not implemented yet");
+	const belle_sip_list_t* iterator;
+	ctx->keep_alive=value;
+	for (iterator=belle_sip_provider_get_listening_points(ctx->prov);iterator!=NULL;iterator=iterator->next) {
+		belle_sip_listening_point_set_keep_alive((belle_sip_listening_point_t*)iterator->data,ctx->keep_alive);
+	}
 	return ;
 }
 /**
@@ -519,8 +524,7 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
  * 0 desactiaved
  * */
 unsigned int sal_get_keepalive_period(Sal *ctx){
-	ms_fatal("sal_get_keepalive_period not implemented yet");
-	return -1;
+	return ctx->keep_alive;
 }
 void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;

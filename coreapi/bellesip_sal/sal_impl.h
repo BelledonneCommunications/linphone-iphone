@@ -33,6 +33,7 @@ struct Sal{
 	void *up; /*user pointer*/
 	int session_expires;
 	bool_t one_matching_codec;
+	unsigned int keep_alive;
 };
 
 typedef enum SalOpSate {
