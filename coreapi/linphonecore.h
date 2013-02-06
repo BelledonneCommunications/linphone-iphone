@@ -206,7 +206,8 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
-
+void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
+const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -389,7 +390,7 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
-const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
@@ -410,6 +411,8 @@ void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
+void linphone_call_start_recording(LinphoneCall *call);
+void linphone_call_stop_recording(LinphoneCall *call);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall

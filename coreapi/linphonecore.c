@@ -486,11 +486,11 @@ static void sound_config_read(LinphoneCore *lc)
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 #ifndef __ios 
-    tmp=TRUE;
+	tmp=TRUE;
 #else
-    tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
+	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
 #endif
-    tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
+	tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
@@ -3034,7 +3034,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	if (params){
 		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-		call->params=*params;
+		_linphone_call_params_copy(&call->params,params);
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
 		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
@@ -4685,7 +4685,8 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
  * Sets a wav file where incoming stream is to be recorded,
  * when files are used instead of soundcards (see linphone_core_use_files()).
  *
- * The file must be a 16 bit linear wav file.
+ * This feature is different from call recording (linphone_call_params_set_record_file())
+ * The file will be a 16 bit linear wav file.
 **/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
@@ -5535,8 +5536,6 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 }
-
-
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
 	if (lc->device_id) ms_free(lc->device_id);

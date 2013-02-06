@@ -80,6 +80,7 @@ struct _LinphoneCallParams{
 	int up_bw;
 	int down_ptime;
 	int up_ptime;
+	char *record_file;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
@@ -176,6 +177,7 @@ struct _LinphoneCall
 	
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
+	bool_t record_active;
 };
 
 
@@ -661,6 +663,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+void _linphone_call_params_copy(LinphoneCallParams *params, const LinphoneCallParams *refparams);
 
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
