@@ -1559,19 +1559,13 @@ static void linphone_gtk_configure_main_window(){
 		}
 		*/
 	}
-	/*{
-		GdkPixbuf *pbuf=create_pixbuf("dialer-orange.png");
+	{
+		GdkPixbuf *pbuf=create_pixbuf("dialer.png");
 		if (pbuf) {
-			GtkImage *img=GTK_IMAGE(linphone_gtk_get_widget(w,"keypad_tab_icon"));
-			int w,h;
-			GdkPixbuf *scaled;
-			gtk_icon_size_lookup(GTK_ICON_SIZE_MENU,&w,&h);
-			scaled=gdk_pixbuf_scale_simple(pbuf,w,h,GDK_INTERP_BILINEAR);
-			gtk_image_set_from_pixbuf(img,scaled);
-			g_object_unref(G_OBJECT(scaled));
-			g_object_unref(G_OBJECT(pbuf));
+			GtkButton *button=GTK_BUTTON(linphone_gtk_get_widget(w,"keypad"));
+			gtk_button_set_image(button,gtk_image_new_from_pixbuf (pbuf));
 		}
-	}*/
+	}
 	if (linphone_gtk_can_manage_accounts()) {
 		gtk_widget_show(linphone_gtk_get_widget(w,"assistant_item"));
 	}
