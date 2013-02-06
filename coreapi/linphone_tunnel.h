@@ -68,7 +68,7 @@ void linphone_tunnel_config_set_host(LinphoneTunnelConfig *tunnel, const char *h
  *
  * @param tunnel configuration object
  */
-const char *linphone_tunnel_config_get_host(LinphoneTunnelConfig *tunnel);
+const char *linphone_tunnel_config_get_host(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Set tls port of server.
@@ -83,7 +83,7 @@ void linphone_tunnel_config_set_port(LinphoneTunnelConfig *tunnel, int port);
  *
  * @param tunnel configuration object
  */
-int linphone_tunnel_config_get_port(LinphoneTunnelConfig *tunnel);
+int linphone_tunnel_config_get_port(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Set the remote port on the tunnel server side used to test udp reachability. 
@@ -98,7 +98,7 @@ void linphone_tunnel_config_set_remote_udp_mirror_port(LinphoneTunnelConfig *tun
  *
  * @param tunnel configuration object
  */
-int linphone_tunnel_config_get_remote_udp_mirror_port(LinphoneTunnelConfig *tunnel);
+int linphone_tunnel_config_get_remote_udp_mirror_port(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Set the udp packet round trip delay in ms for a tunnel configuration.
@@ -113,7 +113,7 @@ void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunnel, int delay);
  * 
  * @param tunnel configuration object
  */
-int linphone_tunnel_config_get_delay(LinphoneTunnelConfig *tunnel);
+int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
 
 /**
  * Destroy a tunnel configuration

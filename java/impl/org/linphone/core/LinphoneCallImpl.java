@@ -179,6 +179,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	public String getRemoteUserAgent() {
 		return getRemoteUserAgent(nativePtr);
 	}
+
+	private native String getRemoteContact(long nativePtr);
+	public String getRemoteContact() {
+		return getRemoteContact(nativePtr);
+	}
 	
 	private native void takeSnapshot(long nativePtr, String path);
 	public void takeSnapshot(String path) {

@@ -57,11 +57,11 @@ void lpc2xml_context_destroy(lpc2xml_context *ctx) {
 	}
 	free(ctx);
 }
-/*
+
 static void lpc2xml_context_clear_logs(lpc2xml_context *ctx) {
 	ctx->errorBuffer[0]='\0';
 	ctx->warningBuffer[0]='\0';
-}*/
+}
 
 static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...) {
 	va_list args;	
@@ -72,12 +72,34 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
  	va_end(args);
 }
 
+static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
+	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
+	int sl = strlen(xmlCtx->errorBuffer);
+	va_list args;	
+	va_start(args, fmt);	
+	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);
+	va_end(args);
+}
+
+/*
+static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
+	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
+	int sl = strlen(xmlCtx->warningBuffer);
+	va_list args;	
+	va_start(args, fmt);	
+	vsnprintf(xmlCtx->warningBuffer + sl, LPC2XML_BZ-sl, fmt, args);
+	va_end(args);
+}
+*/
+
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
 	if(content == NULL) {
 		lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Issue when reading the lpc");
 		return -1;
 	}
+	
+	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
 	xmlNodeSetContent(node, (const xmlChar *) content);
 	return 0;
 }
@@ -103,6 +125,7 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 			ctx->ret = -1;
 			return;
 		}
+	
 		ctx->ret = processEntry(ctx->section, entry, node, ctx->ctx);
 	}
 }
@@ -195,36 +218,69 @@ int lpc2xml_set_lpc(lpc2xml_context* context, const LpConfig *lpc) {
 }
 
 int lpc2xml_convert_file(lpc2xml_context* context, const char *filename) {
-	int ret = 0;
+	int ret = -1;
+	lpc2xml_context_clear_logs(context);
+	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
 	xmlSaveCtxtPtr save_ctx = xmlSaveToFilename(filename, "UTF-8", XML_SAVE_FORMAT);
-	ret = internal_convert_lpc2xml(context);
-	if(ret == 0) {
-		ret = xmlSaveDoc(save_ctx, context->doc);
+	if(save_ctx != NULL) {
+		ret = internal_convert_lpc2xml(context);
+		if(ret == 0) {
+			ret = xmlSaveDoc(save_ctx, context->doc);
+			if(ret != 0) {
+				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
+				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
+			}
+		}
+		xmlSaveClose(save_ctx);
+	} else {
+		lpc2xml_log(context, LPC2XML_ERROR, "Can't open file:%s", filename);
+		lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
 	}
-	xmlSaveClose(save_ctx);
 	return ret;
 }
 
 int lpc2xml_convert_fd(lpc2xml_context* context, int fd) {
-	int ret = 0;
+	int ret = -1;
+	lpc2xml_context_clear_logs(context);
+	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
 	xmlSaveCtxtPtr save_ctx = xmlSaveToFd(fd, "UTF-8", XML_SAVE_FORMAT);
-	ret = internal_convert_lpc2xml(context);
-	if(ret == 0) {
-		ret = xmlSaveDoc(save_ctx, context->doc);
+	if(save_ctx != NULL) {
+		ret = internal_convert_lpc2xml(context);
+		if(ret == 0) {
+			ret = xmlSaveDoc(save_ctx, context->doc);
+			if(ret != 0) {
+				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
+				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
+			}
+		}
+		xmlSaveClose(save_ctx);
+	} else {
+		lpc2xml_log(context, LPC2XML_ERROR, "Can't open fd:%d", fd);
+		lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
 	}
-	xmlSaveClose(save_ctx);
 	return ret;
 }
 
 int lpc2xml_convert_string(lpc2xml_context* context, char **content) {
-	int ret = 0;
+	int ret = -1;
 	xmlBufferPtr buffer = xmlBufferCreate();
+	lpc2xml_context_clear_logs(context);
+	xmlSetGenericErrorFunc(context, lpc2xml_genericxml_error);
 	xmlSaveCtxtPtr save_ctx = xmlSaveToBuffer(buffer, "UTF-8", XML_SAVE_FORMAT);
-	internal_convert_lpc2xml(context);
-	if(ret == 0) {
-		ret = xmlSaveDoc(save_ctx, context->doc);
+	if(save_ctx != NULL) {
+		ret = internal_convert_lpc2xml(context);
+		if(ret == 0) {
+			ret = xmlSaveDoc(save_ctx, context->doc);
+			if(ret != 0) {
+				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
+				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
+			}
+		}
+		xmlSaveClose(save_ctx);
+	} else {
+		lpc2xml_log(context, LPC2XML_ERROR, "Can't initialize internal buffer");
+		lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
 	}
-	xmlSaveClose(save_ctx);
 	if(ret == 0) {
 #if LIBXML_VERSION >= 20800
 		*content = (char *)xmlBufferDetach(buffer);

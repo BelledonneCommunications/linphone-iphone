@@ -1508,7 +1508,17 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteAddress(	JNIEn
 
 extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getRemoteUserAgent(JNIEnv *env, jobject thiz, jlong ptr) {
 	LinphoneCall *call = (LinphoneCall *)ptr;
-	jstring jvalue = env->NewStringUTF(linphone_call_get_remote_user_agent(call));
+	const char *value=linphone_call_get_remote_user_agent(call);
+	jstring jvalue=NULL;
+	if (value) jvalue=env->NewStringUTF(value);
+	return jvalue;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCallImpl_getRemoteContact(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneCall *call = (LinphoneCall *)ptr;
+	const char *value=linphone_call_get_remote_contact(call);
+	jstring jvalue = NULL;
+	if (value) jvalue=env->NewStringUTF(value);
 	return jvalue;
 }
 
@@ -2227,6 +2237,18 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getVersion(JNIEnv*  e
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, jobject thiz, jlong lc) {
 	return (jlong) linphone_core_get_config((LinphoneCore *)lc);
+}
+
+extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env, jobject thiz, jstring file) {
+        const char *cfile = env->GetStringUTFChars(file, NULL);
+        LpConfig *lp = lp_config_new(cfile);
+	env->ReleaseStringUTFChars(file, cfile);
+	return (jlong) lp;
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_delete(JNIEnv *env, jobject thiz, jlong lpc) {
+	LpConfig *lp = (LpConfig *)lpc;
+	lp_config_destroy(lp);
 }
 
 extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject thiz, jlong lpc,

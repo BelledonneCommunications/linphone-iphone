@@ -734,7 +734,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < desc->nstreams; i++) {
+	for (i = 0; i < desc->n_active_streams; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
@@ -838,7 +838,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
-			for (i = 0; i < md->nstreams; i++) {
+			for (i = 0; i < md->n_total_streams; i++) {
 				const SalStreamDescription *stream = &md->streams[i];
 				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
@@ -857,7 +857,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
-		for (i = 0; i < md->nstreams; i++) {
+		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
@@ -873,7 +873,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < md->nstreams; i++) {
+		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl == NULL) {
@@ -930,7 +930,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 			}
 		}
-		for (i = ice_session_nb_check_lists(call->ice_session); i > md->nstreams; i--) {
+		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
 			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
 		}
 		ice_session_check_mismatch(call->ice_session);
@@ -948,8 +948,8 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 {
 	int i;
 
-	for (i = 0; i < md->nstreams; i++) {
-		if ((md->streams[i].type == SalVideo) && (md->streams[i].rtp_port != 0))
+	for (i = 0; i < md->n_active_streams; i++) {
+		if (md->streams[i].type == SalVideo)
 			return TRUE;
 	}
 	return FALSE;
@@ -1021,14 +1021,15 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
 			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
 		{
-			getnameinfo(ifp->ifa_addr,
+			if(getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
 						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
-						address, size, NULL, 0, NI_NUMERICHOST);
-			if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
-				/*ms_message("getifaddrs() found %s",address);*/
-				ret++;
-				break;
+						address, size, NULL, 0, NI_NUMERICHOST) == 0) {
+				if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+					/*ms_message("getifaddrs() found %s",address);*/
+					ret++;
+					break;
+				}
 			}
 		}
 	}
@@ -1099,26 +1100,26 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+        strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 #ifdef HAVE_GETIFADDRS
-	if (dest==NULL) {
-		/*we use getifaddrs for lookup of default interface */
-		int found_ifs;
-	
-		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
-		if (found_ifs==1){
-			return 0;
-		}else if (found_ifs<=0){
-			/*absolutely no network on this machine */
-			return -1;
-		}
-	}
+        if (dest==NULL) {
+                /*we use getifaddrs for lookup of default interface */
+                int found_ifs;
+
+                found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
+                if (found_ifs==1){
+                        return 0;
+                }else if (found_ifs<=0){
+                        /*absolutely no network on this machine */
+                        return -1;
+                }
+        }
 #endif
-	/*else use connect to find the best local ip address */
-	if (type==AF_INET)
-		dest="87.98.157.38"; /*a public IP address*/
-	else dest="2a00:1450:8002::68";
-	return get_local_ip_for_with_connect(type,dest,result);
+        /*else use connect to find the best local ip address */
+        if (type==AF_INET)
+                dest="87.98.157.38"; /*a public IP address*/
+        else dest="2a00:1450:8002::68";
+        return get_local_ip_for_with_connect(type,dest,result);
 }
 
 #ifndef WIN32

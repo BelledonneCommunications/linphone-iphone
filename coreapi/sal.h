@@ -181,7 +181,8 @@ typedef struct SalMediaDescription{
 	int refcount;
 	char addr[64];
 	char username[64];
-	int nstreams;
+	int n_active_streams;
+	int n_total_streams;
 	int bandwidth;
 	unsigned int session_ver;
 	unsigned int session_id;
@@ -197,6 +198,7 @@ typedef struct SalMessage{
 	const char *text;
 	const char *url;
 	const char *message_id;
+	time_t time;
 }SalMessage;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
@@ -229,6 +231,7 @@ typedef struct SalOpBase{
 	SalMediaDescription *remote_media;
 	void *user_pointer;
 	const char* call_id;
+	char *remote_contact;
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
 } SalOpBase;
 
@@ -412,6 +415,7 @@ const SalAddress *sal_op_get_contact_address(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
+const char *sal_op_get_remote_contact(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
 const SalAddress *sal_op_get_network_origin_address(const SalOp *op);
@@ -473,7 +477,7 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 
 
 
-#define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
+#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
 
 /*misc*/
@@ -486,6 +490,7 @@ void sal_disable_logs();
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
 void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin);
+void __sal_op_set_remote_contact(SalOp *op, const char *ct);
 void __sal_op_free(SalOp *b);
 
 /*test api*/

@@ -65,7 +65,7 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 		belle_sdp_session_description_set_bandwidth(session_desc,"AS",desc->bandwidth);
 	}
 
-	for (i=0; i<desc->nstreams;i++) {
+	for (i=0; i<desc->n_total_streams;i++) {
 		media_desc = belle_sdp_media_description_create(sal_stream_type_to_string(desc->streams[i].type)
                 										,desc->streams[i].rtp_port
                 										,1
@@ -168,7 +168,8 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 	char tmp[256], tmp2[256];
 	int nb=0;
 
-	desc->nstreams=0;
+	desc->n_active_streams = 0;
+	desc->n_total_streams = 0;
 
 	if ((cnx=belle_sdp_session_description_get_connection(session_desc)) && belle_sdp_connection_get_address(cnx)) {
 		strncpy(desc->addr,belle_sdp_connection_get_address(cnx),sizeof(desc->addr));
@@ -180,7 +181,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 			;media_desc_it!=NULL
 			;media_desc_it=media_desc_it->next) {
 		media_desc=BELLE_SDP_MEDIA_DESCRIPTION(media_desc_it->data);
-		stream=&desc->streams[desc->nstreams];
+		stream=&desc->streams[desc->n_total_streams];
 		media=belle_sdp_media_description_get_media(media_desc);
 
 		memset(stream,0,sizeof(*stream));
@@ -199,6 +200,8 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 		}
 
 		stream->rtp_port=belle_sdp_media_get_media_port(media);
+		if (stream->rtp_port > 0)
+					desc->n_active_streams++;
 
 		mtype = belle_sdp_media_get_media_type(media);
 		if (strcasecmp("audio", mtype) == 0){
@@ -288,7 +291,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 			}
 			ms_message("Found: %d valid crypto lines", valid_count);
 		}
-		desc->nstreams++;
+		desc->n_total_streams++;
 	}
 
 	return 0;

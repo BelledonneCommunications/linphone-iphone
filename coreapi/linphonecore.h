@@ -285,6 +285,27 @@ enum _LinphoneIceState{
 typedef enum _LinphoneIceState LinphoneIceState;
 
 /**
+ * Enum describing uPnP states.
+ * @ingroup initializing
+**/
+enum _LinphoneUpnpState{
+	LinphoneUpnpStateIdle, /**< uPnP is not activate */
+	LinphoneUpnpStatePending, /**< uPnP process is in progress */
+	LinphoneUpnpStateAdding,   /**< Internal use: Only used by port binding */
+	LinphoneUpnpStateRemoving, /**< Internal use: Only used by port binding */
+	LinphoneUpnpStateNotAvailable,  /**< uPnP is not available */
+	LinphoneUpnpStateOk, /**< uPnP is enabled */
+	LinphoneUpnpStateKo, /**< uPnP processing has failed */
+};
+
+/**
+ * Enum describing uPnP states.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneUpnpState LinphoneUpnpState;
+
+
+/**
  * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
  * To receive these informations periodically and as soon as they are computed, the application is invited to place a #CallStatsUpdated callback in the LinphoneCoreVTable structure
@@ -309,6 +330,7 @@ struct _LinphoneCallStats {
 	mblk_t*		sent_rtcp;/**<Last RTCP packet sent, as a mblk_t structure. See oRTP documentation for details how to extract information from it*/
 	float		round_trip_delay; /**<Round trip propagation time in seconds if known, -1 if unknown.*/
 	LinphoneIceState	ice_state; /**< State of ICE processing. */
+	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
 	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 };
@@ -374,6 +396,7 @@ bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
+const char *linphone_call_get_remote_contact(LinphoneCall *call);
 float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
 float linphone_call_get_current_quality(LinphoneCall *call);
@@ -712,7 +735,14 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,co
  * Get text part of this message
  * @return text or NULL if no text.
  */
-const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);	
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+
+/**
+ * Get the time the message was sent
+ * @return time_t or NULL if no time
+ */
+time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
+
 /**
  * user pointer get function
  */
@@ -885,7 +915,8 @@ typedef enum _LinphoneFirewallPolicy{
 	LinphonePolicyNoFirewall,
 	LinphonePolicyUseNatAddress,
 	LinphonePolicyUseStun,
-	LinphonePolicyUseIce
+	LinphonePolicyUseIce,
+	LinphonePolicyUseUpnp,
 } LinphoneFirewallPolicy;
 
 typedef enum _LinphoneWaitingState{
@@ -1006,16 +1037,8 @@ int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 
 void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
-/**
- * set audio packetization time linphone expect to receive from peer
- * @ingroup media_parameters
- *
- */
+
 void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
-/**
- * get audio packetization time linphone expect to receive from peer, 0 means unspecified
- * @ingroup media_parameters
- */
 int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
 void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
@@ -1046,7 +1069,7 @@ int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t 
  */
 #define LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS -1
 /**
- * Get payload type  from mime type and clock rate
+ * Get payload type from mime type and clock rate
  * @ingroup media_parameters
  * This function searches in audio and video codecs for the given payload type name and clockrate.
  * @param lc #LinphoneCore object

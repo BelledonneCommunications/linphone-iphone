@@ -5,6 +5,7 @@ UI_FILES=	about.ui \
 		parameters.ui \
 		sip_account.ui \
 		call_logs.ui \
+		keypad.ui \
 		log.ui \
 		buddylookup.ui \
 		tunnel_config.ui \

@@ -206,7 +206,7 @@ static LPC_COMMAND commands[] = {
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
 		"'autoanswer'       \t: show current autoanswer mode\n"
 		"'autoanswer enable'\t: enable autoanswer mode\n"
-		"'autoanswer disable'\t: disable autoanswer mode \n"},
+		"'autoanswer disable'\t: disable autoanswer mode��\n"},
 	{ "proxy", lpc_cmd_proxy, "Manage proxies",
 		"'proxy list' : list all proxy setups.\n"
 		"'proxy add' : add a new proxy setup.\n"
@@ -895,6 +895,9 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			break;
 		case LinphonePolicyUseIce:
 			linphonec_out("Using ice with stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
+			break;
+		case LinphonePolicyUseUpnp:
+			linphonec_out("Using uPnP IGD protocol\n");
 			break;
 	}
 	return 1;

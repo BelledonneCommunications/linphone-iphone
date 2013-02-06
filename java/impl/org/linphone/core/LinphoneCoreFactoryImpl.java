@@ -105,6 +105,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneAddress createLinphoneAddress(String identity) {
 		return new LinphoneAddressImpl(identity);
 	}
+	
+	@Override
+	public LpConfig createLpConfig(String file) {
+		return new LpConfigImpl(file);
+	}
 
 	@Override
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener,

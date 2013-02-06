@@ -173,9 +173,10 @@ void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t 
 	propagate_encryption_changed(call);
 }
 
-static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit,int* max_sample_rate){
+static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandwidth_limit,int* max_sample_rate, int nb_codecs_limit){
 	MSList *l=NULL;
 	const MSList *it;
+	int nb = 0;
 	if (max_sample_rate) *max_sample_rate=0;
 	for(it=codecs;it!=NULL;it=it->next){
 		PayloadType *pt=(PayloadType*)it->data;
@@ -186,26 +187,30 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 			}
 			if (linphone_core_check_payload_type_usability(lc,pt)){
 				l=ms_list_append(l,payload_type_clone(pt));
+				nb++;
 				if (max_sample_rate && payload_type_get_rate(pt)>*max_sample_rate) *max_sample_rate=payload_type_get_rate(pt);
 			}
 		}
+		if ((nb_codecs_limit > 0) && (nb >= nb_codecs_limit)) break;
 	}
 	return l;
 }
 
 static void update_media_description_from_stun(SalMediaDescription *md, const StunCandidate *ac, const StunCandidate *vc){
-	if (ac->port!=0){
-		strcpy(md->streams[0].rtp_addr,ac->addr);
-		md->streams[0].rtp_port=ac->port;
-		if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0) || md->nstreams==1){
-			strcpy(md->addr,ac->addr);
+	int i;
+	for (i = 0; i < md->n_active_streams; i++) {
+		if ((md->streams[i].type == SalAudio) && (ac->port != 0)) {
+			strcpy(md->streams[0].rtp_addr,ac->addr);
+			md->streams[0].rtp_port=ac->port;
+			if ((ac->addr[0]!='\0' && vc->addr[0]!='\0' && strcmp(ac->addr,vc->addr)==0) || md->n_active_streams==1){
+				strcpy(md->addr,ac->addr);
+			}
+		}
+		if ((md->streams[i].type == SalVideo) && (vc->port != 0)) {
+			strcpy(md->streams[1].rtp_addr,vc->addr);
+			md->streams[1].rtp_port=vc->port;
 		}
 	}
-	if (vc->port!=0){
-		strcpy(md->streams[1].rtp_addr,vc->addr);
-		md->streams[1].rtp_port=vc->port;
-	}
-	
 }
 
 void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call){
@@ -218,12 +223,13 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	const char *username=linphone_address_get_username (addr);
 	SalMediaDescription *md=sal_media_description_new();
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
-	
+
 	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
-	md->nstreams=1;
+	md->n_total_streams=(old_md ? old_md->n_total_streams : 1);
+	md->n_active_streams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
 	strncpy(md->username,username,sizeof(md->username));
 	
@@ -243,22 +249,35 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		md->streams[0].ptime=call->params.down_ptime;
 	else
 		md->streams[0].ptime=linphone_core_get_download_ptime(lc);
-	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw,&md->streams[0].max_rate);
+	l=make_codec_list(lc,lc->codecs_conf.audio_codecs,call->params.audio_bw,&md->streams[0].max_rate,-1);
 	pt=payload_type_clone(rtp_profile_get_payload_from_mime(lc->default_profile,"telephone-event"));
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
 
 	if (call->params.has_video){
-		md->nstreams++;
+		md->n_active_streams++;
 		md->streams[1].rtp_port=call->video_port;
 		md->streams[1].rtcp_port=call->video_port+1;
 		md->streams[1].proto=md->streams[0].proto;
 		md->streams[1].type=SalVideo;
-		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL);
+		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL,-1);
 		md->streams[1].payloads=l;
 	}
-	
-	for(i=0; i<md->nstreams; i++) {
+	if (md->n_total_streams < md->n_active_streams)
+		md->n_total_streams = md->n_active_streams;
+
+	/* Deactivate inactive streams. */
+	for (i = md->n_active_streams; i < md->n_total_streams; i++) {
+		md->streams[i].rtp_port = 0;
+		md->streams[i].rtcp_port = 0;
+		md->streams[i].proto = SalProtoRtpAvp;
+		md->streams[i].type = old_md->streams[i].type;
+		md->streams[i].dir = SalStreamInactive;
+		l = make_codec_list(lc, lc->codecs_conf.video_codecs, 0, NULL, 1);
+		md->streams[i].payloads = l;
+	}
+
+	for(i=0; i<md->n_active_streams; i++) {
 		if (md->streams[i].proto == SalProtoRtpSavp) {
 			if (keep_srtp_keys && old_md && old_md->streams[i].proto==SalProtoRtpSavp){
 				int j;
@@ -283,6 +302,12 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		linphone_core_update_local_media_description_from_ice(md, call->ice_session);
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
+#ifdef BUILD_UPNP
+	if(call->upnp_session != NULL) {
+		linphone_core_update_local_media_description_from_upnp(md, call->upnp_session);
+		linphone_core_update_upnp_state_in_call_stats(call);
+	}
+#endif  //BUILD_UPNP
 	linphone_address_destroy(addr);
 	call->localdesc=md;
 	if (old_md) sal_media_description_unref(old_md);
@@ -416,6 +441,11 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
 	stats->received_rtcp = NULL;
 	stats->sent_rtcp = NULL;
 	stats->ice_state = LinphoneIceStateNotActivated;
+#ifdef BUILD_UPNP
+	stats->upnp_state = LinphoneUpnpStateIdle;
+#else
+	stats->upnp_state = LinphoneUpnpStateNotAvailable;
+#endif //BUILD_UPNP
 }
 
 
@@ -449,6 +479,11 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
 	}
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseUpnp) {
+		call->upnp_session = linphone_upnp_session_new(call);
+	}
+#endif //BUILD_UPNP
 	call->camera_active=params->has_video;
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
@@ -510,6 +545,19 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		case LinphonePolicyUseStun:
 			call->ping_time=linphone_core_run_stun_tests(call->core,call);
 			/* No break to also destroy ice session in this case. */
+			break;
+		case LinphonePolicyUseUpnp:
+#ifdef BUILD_UPNP
+		call->upnp_session = linphone_upnp_session_new(call);
+		if (call->upnp_session != NULL) {
+			linphone_call_init_media_streams(call);
+			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
+				/* uPnP port mappings failed, proceed with the call anyway. */
+				linphone_call_delete_upnp_session(call);
+			}
+		}
+#endif //BUILD_UPNP
+			break;
 		default:
 			break;
 	}
@@ -658,6 +706,9 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
+#ifdef BUILD_UPNP
+	linphone_call_delete_upnp_session(obj);
+#endif //BUILD_UPNP
 	linphone_call_delete_ice_session(obj);
 	if (obj->op!=NULL) {
 		sal_op_release(obj->op);
@@ -843,6 +894,16 @@ LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call){
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
 	if (call->op){
 		return sal_op_get_remote_ua (call->op);
+	}
+	return NULL;
+}
+
+/**
+ * Returns the far end's sip contact as a string, if available.
+**/
+const char *linphone_call_get_remote_contact(LinphoneCall *call){
+	if (call->op){
+		return sal_op_get_remote_contact(call->op);
 	}
 	return NULL;
 }
@@ -1727,6 +1788,15 @@ void linphone_call_delete_ice_session(LinphoneCall *call){
 	}
 }
 
+#ifdef BUILD_UPNP
+void linphone_call_delete_upnp_session(LinphoneCall *call){
+	if(call->upnp_session!=NULL) {
+		linphone_upnp_session_destroy(call->upnp_session);
+		call->upnp_session=NULL;
+	}
+}
+#endif //BUILD_UPNP
+
 static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
 	audio_stream_get_local_rtp_stats (st,&log->local_stats);
 	log->quality=audio_stream_get_average_quality_rating(st);
@@ -2037,6 +2107,11 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		report_bandwidth(call,as,vs);
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
 	}
+
+#ifdef BUILD_UPNP
+	linphone_upnp_call_process(call);
+#endif //BUILD_UPNP
+
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL) {
 		OrtpEvent *ev;

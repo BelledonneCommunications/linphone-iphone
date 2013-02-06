@@ -52,7 +52,6 @@ void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iple
 	}
 }
 
-
 static SalOp * sal_find_call(Sal *sal, int cid){
 	const MSList *elem;
 	SalOp *op;
@@ -589,18 +588,15 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		
-		for(i=0;i<h->result->nstreams;++i){
-			if (h->result->streams[i].rtp_port>0){
-				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
-				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
-				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
-				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
-				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
-				
-				if (h->result->streams[i].proto == SalProtoRtpSavp) {
-					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0]; 
-				}
+		for(i=0;i<h->result->n_active_streams;++i){
+			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+			strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
+			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
+			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
+			h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+			h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
+			if (h->result->streams[i].proto == SalProtoRtpSavp) {
+				h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
 			}
 		}
 	}
@@ -674,8 +670,11 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite ! Error code %d", err);
 		return -1;
 	}else{
+		char *tmp=NULL;
 		callid=osip_message_get_call_id(invite);
-		osip_call_id_to_str(callid,(char **)(&h->base.call_id));
+		osip_call_id_to_str(callid,&tmp);
+		h->base.call_id=ms_strdup(tmp);
+		osip_free(tmp);
 		sal_add_call(h->base.root,h);
 	}
 	return 0;
@@ -1017,6 +1016,19 @@ static void set_remote_ua(SalOp* op, osip_message_t *req){
 	}
 }
 
+static void set_remote_contact(SalOp* op, osip_message_t *req){
+	if (op->base.remote_contact==NULL){
+		osip_contact_t *h=NULL;
+		osip_message_get_contact(req,0,&h);
+		if (h){
+			char *tmp=NULL;
+			osip_contact_to_str(h,&tmp);
+			__sal_op_set_remote_contact(op,tmp);
+			osip_free(tmp);
+		}
+	}
+}
+
 static void set_replaces(SalOp *op, osip_message_t *req){
 	osip_header_t *h=NULL;
 
@@ -1054,12 +1066,17 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
 	osip_call_info_t *call_info;
-	char *tmp;
+	char *tmp=NULL;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+	
 	osip_call_id_t *callid=osip_message_get_call_id(ev->request);
-	osip_call_id_to_str(callid,(char**)(&op->base.call_id));
-
+	
+	osip_call_id_to_str(callid,&tmp);
+	op->base.call_id=ms_strdup(tmp);
+	osip_free(tmp);
+	
 	set_network_origin(op,ev->request);
+	set_remote_contact(op,ev->request);
 	set_remote_ua(op,ev->request);
 	set_replaces(op,ev->request);
 	
@@ -1237,6 +1254,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 
 	op->did=ev->did;
 	set_remote_ua(op,ev->response);
+	set_remote_contact(op,ev->response);
 
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
@@ -1747,6 +1765,9 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 	return FALSE;
 }
 
+static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg=NULL;
@@ -1756,6 +1777,26 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	int external_body_size=0;
 	SalMessage salmsg;
 	char message_id[256]={0};
+	osip_header_t *date=NULL;
+	struct tm ret={};
+	char tmp1[80]={0};
+	char tmp2[80]={0};
+	int i,j;
+
+	osip_message_get_date(ev->request,0,&date);
+	if(date==NULL){
+		ms_error("Could not get the date of message");
+		return;
+	}
+	sscanf(date->hvalue,"%3c,%d%s%d%d:%d:%d",tmp1,&ret.tm_mday,tmp2,
+	             &ret.tm_year,&ret.tm_hour,&ret.tm_min,&ret.tm_sec);
+	ret.tm_year-=1900;
+	for(i=0;i<7;i++) { 
+		if(strcmp(tmp1,days[i])==0) ret.tm_wday=i; 
+	}
+	for(j=0;j<12;j++) { 
+		if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
+	}
 	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
@@ -1796,6 +1837,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
+	salmsg.time=mktime(&ret);
 	sal->callbacks.text_received(sal,&salmsg);
 	osip_free(from);
 }

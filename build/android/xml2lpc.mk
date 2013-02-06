@@ -2,7 +2,7 @@
 ## Android.mk -Android build script-
 ##
 ##
-## Copyright (C) 2010  Belledonne Communications, Grenoble, France
+## Copyright (C) 2013  Belledonne Communications, Grenoble, France
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -19,30 +19,29 @@
 ##  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ##
 
-LOCAL_PATH:= $(call my-dir)/../../coreapi
+LOCAL_PATH:= $(call my-dir)/../../tools
 
 include $(CLEAR_VARS)
 
-include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
+LOCAL_CPP_EXTENSION := .cc
 
-ifeq ($(LINPHONE_VIDEO),1)
-LOCAL_SHARED_LIBRARIES += \
-	libavcodec \
-	libswscale \
-	libavcore \
-	libavutil
-endif
+LOCAL_SRC_FILES := \
+	xml2lpc.c \
+	xml2lpc_jni.cc  \
 
-LOCAL_MODULE := liblinphone
+LOCAL_CFLAGS += -DIN_LINPHONE
+
+LOCAL_C_INCLUDES = \
+	$(LOCAL_PATH)/../coreapi \
+	$(LOCAL_PATH)/../oRTP/include \
+	$(LOCAL_PATH)/../mediastreamer2/include \
+	$(LOCAL_PATH)/../../externals/libxml2/include \
+	$(LOCAL_PATH)/../../externals/build/libxml2 \
+
+LOCAL_SHARED_LIBRARIES = \
+	libxml2 \
+	liblinphone \
+
+LOCAL_MODULE := libxml2lpc
 
 include $(BUILD_SHARED_LIBRARY)
-
-$(call import-module,android/cpufeatures)
-
-
-ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-
-include $(linphone-root-dir)/submodules/linphone/build/android/xml2lpc.mk
-include $(linphone-root-dir)/submodules/linphone/build/android/lpc2xml.mk
-
-endif

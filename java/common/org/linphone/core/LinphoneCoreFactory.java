@@ -67,6 +67,7 @@ abstract public class LinphoneCoreFactory {
 	 * @return
 	 */
 	abstract public LinphoneAddress createLinphoneAddress(String address);
+	abstract public LpConfig createLpConfig(String file);
 	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
 	/**

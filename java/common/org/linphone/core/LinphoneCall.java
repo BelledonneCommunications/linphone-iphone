@@ -102,22 +102,22 @@ public interface LinphoneCall {
 		/**
 		 * The call's parameters are updated, used for example when video is asked by remote
 		 */
-		public static final State CallUpdatedByRemote = new State(15, "CallUpdatedByRemote");
+		public static final State CallUpdatedByRemote = new State(15, "UpdatedByRemote");
 
 		/**
 		 * We are proposing early media to an incoming call
 		 */
-		public static final State CallIncomingEarlyMedia = new State(16,"CallIncomingEarlyMedia");
+		public static final State CallIncomingEarlyMedia = new State(16,"IncomingEarlyMedia");
 
 		/**
-		 * The remote accepted the call update initiated by us
+		 * We have initiated a call update. When the remote accepts the call update, state will move to StreamsRunning.
 		 */
-		public static final State CallUpdated = new State(17, "CallUpdated");
+		public static final State CallUpdating = new State(17, "Updating");
 		
 		/**
 		 * The call object is now released.
 		 */
-		public static final State CallReleased = new State(18,"CallReleased");
+		public static final State CallReleased = new State(18,"Released");
 
 		
 		private State(int value,String stringValue) {
@@ -160,17 +160,6 @@ public interface LinphoneCall {
 	**/
 	LinphoneCallLog getCallLog();
 
-	/**
-	 * Set the audio statistics associated with this call.
-	 * @return LinphoneCallStats
-	 */
-	void setAudioStats(LinphoneCallStats stats);
-
-	/**
-	 * Set the video statistics associated with this call.
-	 * @return LinphoneCallStats
-	 */
-	void setVideoStats(LinphoneCallStats stats);
 
 	/**
 	 * Get the audio statistics associated with this call.
@@ -184,6 +173,10 @@ public interface LinphoneCall {
 	 */
 	LinphoneCallStats getVideoStats();
 	
+	/**
+	 * Get call's remote parameters, as proposed by far end.
+	 * This is useful for example to know if far end supports video or encryption.
+	**/
 	LinphoneCallParams getRemoteParams();
 
 	LinphoneCallParams getCurrentParamsCopy();
@@ -273,6 +266,11 @@ public interface LinphoneCall {
 	 * Obtain the remote user agent string. 
 	 */
 	String getRemoteUserAgent();
+
+	/**
+	 * Obtain the remote sip contact string.
+	**/
+	String getRemoteContact();
 	
 	/**
 	 * Take a photo of currently received video and write it into a jpeg file.

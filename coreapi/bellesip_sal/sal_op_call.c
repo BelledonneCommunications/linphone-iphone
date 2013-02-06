@@ -39,17 +39,15 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<h->result->nstreams;++i){
-			if (h->result->streams[i].rtp_port>0){
-				/*fixme add rtcp*/
-				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
-				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
-				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+		for(i=0;i<h->result->n_active_streams;++i){
+			/*fixme add rtcp*/
+			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
+			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
+			h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
 
-				if (h->result->streams[i].proto == SalProtoRtpSavp) {
-					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
-				}
+			if (h->result->streams[i].proto == SalProtoRtpSavp) {
+				h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
 			}
 		}
 	}

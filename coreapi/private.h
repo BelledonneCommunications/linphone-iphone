@@ -28,9 +28,11 @@
 extern "C" {
 #endif
 #include "linphonecore.h"
+#include "linphonefriend.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal.h"
+#include "sipsetup.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -38,6 +40,9 @@ extern "C" {
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
+#ifdef BUILD_UPNP
+#include "upnp.h"
+#endif  //BUILD_UPNP
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -98,6 +103,7 @@ struct _LinphoneChatMessage {
 	void* message_userdata;
 	char* external_body_url;
 	LinphoneAddress* from;
+	time_t time;
 };
 
 typedef struct StunCandidate{
@@ -145,6 +151,9 @@ struct _LinphoneCall
 	OrtpEvQueue *videostream_app_evq;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
+#ifdef BUILD_UPNP
+	UpnpSession *upnp_session;
+#endif //BUILD_UPNP
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
 	int ping_time;
@@ -278,7 +287,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url);
+void linphone_core_message_received(LinphoneCore *lc, const SalMessage *msg);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -293,6 +302,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call);
 void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
+void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
 void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
@@ -572,8 +582,8 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	
-        time_t network_last_check;
-        bool_t network_last_status;
+	time_t network_last_check;
+	bool_t network_last_status;
 
 	bool_t ringstream_autorelease;
 	bool_t pad[3];
@@ -582,13 +592,16 @@ struct _LinphoneCore
 	LinphoneTunnel *tunnel;
 	char* device_id;
 	MSList *last_recv_msg_ids;
+#ifdef BUILD_UPNP
+	UpnpContext *upnp;
+#endif //BUILD_UPNP
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
-	
+
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);
@@ -655,6 +668,9 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+
+int linphone_upnp_init(LinphoneCore *lc);
+void linphone_upnp_destroy(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }
