@@ -302,7 +302,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_message_received(LinphoneCore *lc, const SalMessage *msg);
+void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 

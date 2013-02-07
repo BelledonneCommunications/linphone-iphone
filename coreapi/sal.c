@@ -402,7 +402,7 @@ void sal_custom_header_free(SalCustomHeader *ch){
 	ms_list_free((MSList *)ch);
 }
 
-SalCustomHeader *sal_custom_header_clone(SalCustomHeader *ch){
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
 	const MSList *it;
 	SalCustomHeader *ret=NULL;
 	for (it=(const MSList*)ch;it!=NULL;it=it->next){

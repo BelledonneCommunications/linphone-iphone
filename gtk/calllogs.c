@@ -58,8 +58,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		gchar quality[20];
 		const char *status=NULL;
 		gchar *start_date=NULL;
-		time_t start_date_time=linphone_call_log_get_start_date(cl);
 		int duration=linphone_call_log_get_duration(cl);
+		time_t start_date_time=linphone_call_log_get_start_date(cl);
 		
 #if GLIB_CHECK_VERSION(2,26,0)
 		if (start_date_time){
@@ -67,6 +67,8 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			start_date=g_date_time_format(dt,"%c");
 			g_date_time_unref(dt);
 		}
+#else
+		start_date=g_strdup(ctime(start_date_time));
 #endif
 		
 		display=linphone_address_get_display_name (la);

@@ -465,7 +465,7 @@ struct SalCustomHeader{
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
 void sal_custom_header_free(SalCustomHeader *ch);
-SalCustomHeader *sal_custom_header_clone(SalCustomHeader *ch);
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch);
 const SalCustomHeader *sal_op_get_custom_header(SalOp *op);
 void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch);
 
