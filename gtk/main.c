@@ -750,10 +750,31 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	}
 }
 
+gchar *linphone_gtk_get_call_record_path(LinphoneAddress *address){
+	const char *dir=g_get_user_special_dir(G_USER_DIRECTORY_MUSIC);
+	const char *id=linphone_address_get_username(address);
+	char filename[256]={0};
+	if (id==NULL) id=linphone_address_get_domain(address);
+	snprintf(filename,sizeof(filename)-1,"%s-%lu-%s-record.wav",
+		 linphone_gtk_get_ui_config("title","Linphone"),
+		 (unsigned long)time(NULL),id);
+	return g_build_filename(dir,filename,NULL);
+}
+
 static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
-	if (linphone_core_invite(linphone_gtk_get_core(),entered)!=NULL) {
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneAddress *addr=linphone_core_interpret_url(lc,entered);
+	
+	if (addr!=NULL){
+		LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
+		gchar *record_file=linphone_gtk_get_call_record_path(addr);
+		linphone_call_params_set_record_file(params,record_file);
+		linphone_core_invite_address_with_params(lc,addr,params);
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
+		linphone_address_destroy(addr);
+		linphone_call_params_destroy(params);
+		g_free(record_file);
 	}else{
 		linphone_gtk_call_terminated(NULL,NULL);
 	}
@@ -1792,6 +1813,7 @@ int main(int argc, char *argv[]){
 	GtkSettings *settings;
 	GdkPixbuf *pbuf;
 	const char *app_name="Linphone";
+	LpConfig *factory;
 
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 	g_thread_init(NULL);
@@ -1867,6 +1889,11 @@ int main(int argc, char *argv[]){
 		 since we want to have had time to change directory and to parse
 		 the options, in case we needed to access the working directory */
 	factory_config_file = linphone_gtk_get_factory_config_file();
+	if (factory_config_file){
+		factory=lp_config_new(NULL);
+		lp_config_read_file(factory,factory_config_file);
+		app_name=lp_config_get_string(factory,"GtkUi","title","Linphone");
+	}
 
 	if (linphone_gtk_init_instance(app_name, addr_to_call) == FALSE){
 		g_warning("Another running instance of linphone has been detected. It has been woken-up.");

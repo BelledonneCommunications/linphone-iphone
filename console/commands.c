@@ -1965,7 +1965,7 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 	for(;elem!=NULL;elem=elem->next){
 		if (elem->next==NULL){
 			cl=(LinphoneCallLog*)elem->data;
-			linphonec_out("%i seconds\n",cl->duration);
+			linphonec_out("%i seconds\n",linphone_call_log_get_duration(cl));
 		}
 	}
 	return 1;

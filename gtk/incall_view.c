@@ -101,7 +101,7 @@ static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const 
 	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
 	GtkWidget *image;
 
-    if (!is_stock){
+	if (!is_stock){
 		if (image_name==NULL){
 			gtk_widget_hide(container);
 		}
@@ -667,8 +667,6 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
-
-	gtk_widget_set_visible(linphone_gtk_get_widget(callview,"buttons_panel"),!in_conf);
 	
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),in_conf ? _("In conference") : _("<b>In call</b>"));
@@ -693,6 +691,8 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"incall_mute"),FALSE);
 	}
 	gtk_widget_show_all(linphone_gtk_get_widget(callview,"buttons_panel"));
+	if (!in_conf) gtk_widget_show_all(linphone_gtk_get_widget(callview,"record_hbox"));
+	else gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));
 	if (call_stats) show_used_codecs(call_stats,call);
 }
 
@@ -740,11 +740,9 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	           linphone_gtk_get_ui_config("stop_call_icon","stopcall-red.png"),FALSE);
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"buttons_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"incall_audioview"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"terminate_call"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"video_button"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"transfer_button"));
-	gtk_widget_hide(linphone_gtk_get_widget(callview,"conference_button"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
@@ -855,5 +853,22 @@ void linphone_gtk_enable_hold_button(LinphoneCall *call, gboolean sensitive, gbo
 
 void linphone_gtk_call_statistics_closed(GtkWidget *call_stats){
 	gtk_widget_destroy(call_stats);
+}
+
+void linphone_gtk_record_call_toggled(GtkWidget *button){
+	gboolean active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
+	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer (call);
+	const LinphoneCallParams *params=linphone_call_get_current_params(call);
+	const char *filepath=linphone_call_params_get_record_file(params);
+	gchar *message=g_strdup_printf(_("<small><i>Recording into %s %s</i></small>"),filepath,active ? "" : _("(Paused)"));
+	
+	if (active){
+		linphone_call_start_recording(call);
+	}else {
+		linphone_call_stop_recording(call);
+	}
+	gtk_label_set_markup(GTK_LABEL(linphone_gtk_get_widget(callview,"record_status")),message);
+	g_free(message);
 }
 

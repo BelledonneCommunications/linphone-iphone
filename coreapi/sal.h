@@ -46,6 +46,10 @@ struct SalAddress;
 
 typedef struct SalAddress SalAddress;
 
+struct SalCustomHeader;
+
+typedef struct SalCustomHeader SalCustomHeader;
+
 typedef enum {
 	SalTransportUDP, /*UDP*/
 	SalTransportTCP, /*TCP*/
@@ -233,6 +237,7 @@ typedef struct SalOpBase{
 	const char* call_id;
 	char *remote_contact;
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
+	SalCustomHeader *custom_headers;
 } SalOpBase;
 
 
@@ -311,7 +316,7 @@ typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
-typedef void (*SalOnTextReceived)(Sal *sal, const SalMessage *msg);
+typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
@@ -482,6 +487,19 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
+
+struct SalCustomHeader{
+	MSList node;
+	char *header_name;
+	char *header_value;
+};
+
+SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
+const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
+void sal_custom_header_free(SalCustomHeader *ch);
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch);
+const SalCustomHeader *sal_op_get_custom_header(SalOp *op);
+void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch);
 
 void sal_enable_logs();
 void sal_disable_logs();

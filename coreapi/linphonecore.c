@@ -203,8 +203,8 @@ static void call_logs_read_from_config_file(LinphoneCore *lc){
 			if (tmp) cl->refkey=ms_strdup(tmp);
 			cl->quality=lp_config_get_float(cfg,logsection,"quality",-1);
 			cl->video_enabled=lp_config_get_int(cfg,logsection,"video_enabled",0);
-			cl->call_id=lp_config_get_string(cfg,logsection,"call_id",NULL);
-			if(cl->call_id) cl->call_id=ms_strdup(cl->call_id);
+			tmp=lp_config_get_string(cfg,logsection,"call_id",NULL);
+			if (tmp) cl->call_id=ms_strdup(tmp);
 			lc->call_logs=ms_list_append(lc->call_logs,cl);
 		}else break;
 	}
@@ -270,10 +270,16 @@ const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl)
 	return &cl->remote_stats;
 }
 
+/**
+ * Assign a user pointer to the call log.
+**/
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up){
 	cl->user_pointer=up;
 }
 
+/**
+ * Returns the user pointer associated with the call log.
+**/
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl){
 	return cl->user_pointer;
 }
@@ -306,13 +312,62 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 	return cl->refkey;
 }
 
+/**
+ * Returns origin (ie from) address of the call.
+**/
+LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl){
+	return cl->from;
+}
+
+/**
+ * Returns destination address (ie to) of the call.
+**/
+LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl){
+	return cl->to;
+}
+
+/**
+ * Returns the direction of the call.
+**/
+LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl){
+	return cl->dir;
+}
+
+/**
+ * Returns the status of the call.
+**/
+LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl){
+	return cl->status;
+}
+
+/**
+ * Returns the start date of the call, expressed as a POSIX time_t.
+**/
+time_t linphone_call_log_get_start_date(LinphoneCallLog *cl){
+	return cl->start_date_time;
+}
+
+/**
+ * Returns duration of the call.
+**/
+int linphone_call_log_get_duration(LinphoneCallLog *cl){
+	return cl->duration;
+}
+
+/**
+ * Returns overall quality indication of the call.
+**/
+float linphone_call_log_get_quality(LinphoneCallLog *cl){
+	return cl->quality;
+}
+
 /** @} */
 
 void linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->from!=NULL) linphone_address_destroy(cl->from);
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
-	if (cl->call_id) ms_free((void*)cl->call_id);
+	if (cl->call_id) ms_free(cl->call_id);
 	ms_free(cl);
 }
 
@@ -489,11 +544,11 @@ static void sound_config_read(LinphoneCore *lc)
 	check_sound_device(lc);
 	lc->sound_conf.latency=0;
 #ifndef __ios 
-    tmp=TRUE;
+	tmp=TRUE;
 #else
-    tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
+	tmp=FALSE; /* on iOS we have builtin echo cancellation.*/
 #endif
-    tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
+	tmp=lp_config_get_int(lc->config,"sound","echocancellation",tmp);
 	linphone_core_enable_echo_cancellation(lc,tmp);
 	linphone_core_enable_echo_limiter(lc,
 		lp_config_get_int(lc->config,"sound","echolimiter",0));
@@ -3087,7 +3142,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	if (params){
 		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-		call->params=*params;
+		_linphone_call_params_copy(&call->params,params);
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
 		if (md) call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
@@ -4742,7 +4797,8 @@ void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
  * Sets a wav file where incoming stream is to be recorded,
  * when files are used instead of soundcards (see linphone_core_use_files()).
  *
- * The file must be a 16 bit linear wav file.
+ * This feature is different from call recording (linphone_call_params_set_record_file())
+ * The file will be a 16 bit linear wav file.
 **/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
@@ -5598,8 +5654,6 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
 }
-
-
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
 	if (lc->device_id) ms_free(lc->device_id);

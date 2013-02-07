@@ -80,17 +80,37 @@ struct _LinphoneCallParams{
 	int up_bw;
 	int down_ptime;
 	int up_ptime;
+	char *record_file;
+	SalCustomHeader *custom_headers;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
 	bool_t low_bandwidth;
 };
-    
+
+struct _LinphoneCallLog{
+	struct _LinphoneCore *lc;
+	LinphoneCallDir dir; /**< The direction of the call*/
+	LinphoneCallStatus status; /**< The status of the call*/
+	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
+	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
+	char start_date[128]; /**<Human readable string containing the start date*/
+	int duration; /**<Duration of the call in seconds*/
+	char *refkey;
+	void *user_pointer;
+	rtp_stats_t local_stats;
+	rtp_stats_t remote_stats;
+	float quality;
+	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	char* call_id; /**unique id of a call*/
+	bool_t video_enabled;
+};
+
 typedef struct _CallCallbackObj
 {
-    LinphoneCallCbFunc _func;
-    void * _user_data;
+	LinphoneCallCbFunc _func;
+	void * _user_data;
 }CallCallbackObj;
 
 static const int linphone_call_magic=0x3343;
@@ -104,6 +124,7 @@ struct _LinphoneChatMessage {
 	char* external_body_url;
 	LinphoneAddress* from;
 	time_t time;
+	SalCustomHeader *custom_headers;
 };
 
 typedef struct StunCandidate{
@@ -176,6 +197,7 @@ struct _LinphoneCall
 	
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
+	bool_t record_active;
 };
 
 
@@ -287,7 +309,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_message_received(LinphoneCore *lc, const SalMessage *msg);
+void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -668,6 +690,8 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+void _linphone_call_params_copy(LinphoneCallParams *params, const LinphoneCallParams *refparams);
+void linphone_call_params_uninit(LinphoneCallParams *params);
 
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);

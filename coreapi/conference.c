@@ -161,6 +161,7 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
  * 
  * If this is the first call that enters the conference, the virtual conference will be created automatically.
  * If the local user was actively part of the call (ie not in paused state), then the local user is automatically entered into the conference.
+ * If the call was in paused state, then it is automatically resumed when entering into the conference.
  * 
  * @returns 0 if successful, -1 otherwise.
 **/
@@ -256,9 +257,12 @@ static int convert_conference_to_call(LinphoneCore *lc){
  * @param call a call that has been previously merged into the conference.
  * 
  * After removing the remote participant belonging to the supplied call, the call becomes a normal call in paused state.
- * If one single remote participant is left alone in the conference after the removal, then it is
- * automatically removed from the conference and put into a simple call, like before entering the conference.
+ * If one single remote participant is left alone together with the local user in the conference after the removal, then the conference is
+ * automatically transformed into a simple call in StreamsRunning state.
  * The conference's resources are then automatically destroyed.
+ * 
+ * In other words, unless linphone_core_leave_conference() is explicitely called, the last remote participant of a conference is automatically
+ * put in a simple call in running state.
  * 
  * @returns 0 if successful, -1 otherwise.
  **/

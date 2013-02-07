@@ -94,8 +94,7 @@ static inline char *my_ctime_r(const time_t *t, char *buf){
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
-	time_t t;
-	time(&t);
+	time_t t=time(NULL);
 	char buf[26];
 
 	if(op->cid == -1)
@@ -111,6 +110,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
+			sal_exosip_add_custom_headers(sip,op->base.custom_headers);
 			osip_message_set_date(sip,my_ctime_r(&t,buf));
 			osip_message_set_content_type(sip,content_type);
 			if (msg) osip_message_set_body(sip,msg,strlen(msg));
@@ -140,6 +140,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	}
 	return 0;
 }
+
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
 	return sal_message_send(op,from,to,"text/plain",msg);
 }

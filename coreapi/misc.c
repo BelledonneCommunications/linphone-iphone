@@ -988,6 +988,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			else if (strcasecmp(name,"VOL_RCV")==0) ret|=AUDIO_STREAM_FEATURE_VOL_RCV;
 			else if (strcasecmp(name,"DTMF")==0) ret|=AUDIO_STREAM_FEATURE_DTMF;
 			else if (strcasecmp(name,"DTMF_ECHO")==0) ret|=AUDIO_STREAM_FEATURE_DTMF_ECHO;
+			else if (strcasecmp(name,"MIXED_RECORDING")==0) ret|=AUDIO_STREAM_FEATURE_MIXED_RECORDING;
 			else if (strcasecmp(name,"ALL")==0) ret|=AUDIO_STREAM_FEATURE_ALL;
 			else if (strcasecmp(name,"NONE")==0) ret=0;
 			else ms_error("Unsupported audio feature %s requested in config file.",name);
@@ -995,6 +996,12 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			p=n;
 		}
 	}else ret=AUDIO_STREAM_FEATURE_ALL;
+	
+	if (ret==AUDIO_STREAM_FEATURE_ALL){
+		/*since call recording is specified before creation of the stream in linphonecore,
+		* it will be requested on demand. It is not necessary to include it all the time*/
+		ret&=~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+	}
 	return ret;
 }
 

@@ -471,7 +471,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->core=lc;
 	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
 	linphone_call_init_common(call,from,to);
-	call->params=*params;
+	_linphone_call_params_copy(&call->params,params);
+	sal_op_set_custom_header(call->op,call->params.custom_headers);
+	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
 		ice_session_set_role(call->ice_session, IR_Controlling);
@@ -733,7 +735,7 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->auth_token) {
 		ms_free(obj->auth_token);
 	}
-
+	linphone_call_params_uninit(&obj->params);
 	ms_free(obj);
 }
 
@@ -768,7 +770,9 @@ void linphone_call_unref(LinphoneCall *obj){
 /**
  * Returns current parameters associated to the call.
 **/
-const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call){
+const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
+	if (call->params.record_file)
+		call->current_params.record_file=call->params.record_file;
 	return &call->current_params;
 }
 
@@ -806,6 +810,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 					cp->low_bandwidth=TRUE;
 				}
 			}
+			cp->custom_headers=(SalCustomHeader*)sal_op_get_custom_header(call->op);
 			return cp;
 		}
 	}
@@ -959,6 +964,18 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #endif
 }
 
+#ifdef VIDEO_ENABLED
+/**
+ * Request remote side to send us a Video Fast Update.
+**/
+void linphone_call_send_vfu_request(LinphoneCall *call)
+{
+	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
+		sal_call_send_vfu_request(call->op);
+}
+#endif
+
+
 /**
  * Take a photo of currently received video and write it into a jpeg file.
 **/
@@ -987,10 +1004,17 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 }
 
+/**
+ * Returns the audio codec used in the call, described as a PayloadType structure.
+**/
 const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp) {
 	return cp->audio_codec;
 }
 
+
+/**
+ * Returns the video codec used in the call, described as a PayloadType structure.
+**/
 const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
 }
@@ -1027,10 +1051,16 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
 
+/**
+ * Returns kind of media encryption selected for the call.
+**/
 enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp) {
 	return cp->media_encryption;
 }
 
+/**
+ * Set requested media encryption for a call.
+**/
 void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e) {
 	cp->media_encryption = e;
 }
@@ -1043,6 +1073,9 @@ void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, boo
 	cp->real_early_media=enabled;
 }
 
+/**
+ * Indicates whether sending of early media was enabled.
+**/
 bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp){
 	return cp->real_early_media;
 }
@@ -1062,32 +1095,45 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 	cp->audio_bw=bandwidth;
 }
 
-#ifdef VIDEO_ENABLED
-/**
- * Request remote side to send us a Video Fast Update.
-**/
-void linphone_call_send_vfu_request(LinphoneCall *call)
-{
-	if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
-		sal_call_send_vfu_request(call->op);
+void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value){
+	params->custom_headers=sal_custom_header_append(params->custom_headers,header_name,header_value);
 }
-#endif
+
+const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name){
+	return sal_custom_header_find(params->custom_headers,header_name);
+}
+
+void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParams *cp){
+	memcpy(ncp,cp,sizeof(LinphoneCallParams));
+	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
+	/*
+	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
+	 */
+	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
+}
 
 /**
- *
+ * Copy existing LinphoneCallParams to a new LinphoneCallParams object.
 **/
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	LinphoneCallParams *ncp=ms_new0(LinphoneCallParams,1);
-	memcpy(ncp,cp,sizeof(LinphoneCallParams));
+	_linphone_call_params_copy(ncp,cp);
 	return ncp;
 }
 
+void linphone_call_params_uninit(LinphoneCallParams *p){
+	if (p->record_file) ms_free(p->record_file);
+	if (p->custom_headers) sal_custom_header_free(p->custom_headers);
+}
+
 /**
- *
+ * Destroy LinphoneCallParams.
 **/
 void linphone_call_params_destroy(LinphoneCallParams *p){
+	linphone_call_params_uninit(p);
 	ms_free(p);
 }
+
 
 /**
  * @}
@@ -1329,10 +1375,10 @@ static void post_configure_audio_streams(LinphoneCall*call){
 	LinphoneCore *lc=call->core;
 	_post_configure_audio_stream(st,lc,call->audio_muted);
 	if (lc->vtable.dtmf_received!=NULL){
-		/* replace by our default action*/
 		audio_stream_play_received_dtmfs(call->audiostream,FALSE);
-		/*rtp_session_signal_connect(call->audiostream->session,"telephone-event",(RtpCallback)linphone_core_dtmf_received,(unsigned long)lc);*/
 	}
+	if (call->record_active) 
+		linphone_call_start_recording(call);
 }
 
 static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *md, const SalStreamDescription *desc, int *used_pt){
@@ -1484,6 +1530,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
+			if (!call->params.in_conference && call->params.record_file)
+				audio_stream_mixed_record_open(call->audiostream,call->params.record_file);
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
@@ -1512,23 +1560,23 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}
 			audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 			
-            /* valid local tags are > 0 */
+			/* valid local tags are > 0 */
 			if (stream->proto == SalProtoRtpSavp) {
-                const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
-                                                                                            SalProtoRtpSavp,SalAudio);
-                int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
-                
-                if (crypto_idx >= 0) {
-                    audio_stream_enable_srtp(
-                                             call->audiostream, 
-                                             stream->crypto[0].algo,
-                                             local_st_desc->crypto[crypto_idx].master_key,
-                                             stream->crypto[0].master_key);
-                    call->audiostream_encrypted=TRUE;
-                } else {
-                    ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
-                    call->audiostream_encrypted=FALSE;
-                }
+			const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
+													SalProtoRtpSavp,SalAudio);
+			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
+
+			if (crypto_idx >= 0) {
+				audio_stream_enable_srtp(
+							call->audiostream, 
+							stream->crypto[0].algo,
+							local_st_desc->crypto[crypto_idx].master_key,
+							stream->crypto[0].master_key);
+				call->audiostream_encrypted=TRUE;
+			} else {
+				ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
+				call->audiostream_encrypted=FALSE;
+			}
 			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
@@ -1981,6 +2029,53 @@ const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call)
 	return &call->stats[LINPHONE_CALL_STATS_VIDEO];
 }
 
+/**
+ * Enable recording of the call (voice-only).
+ * This function must be used before the call parameters are assigned to the call.
+ * The call recording can be started and paused after the call is established with
+ * linphone_call_start_recording() and linphone_call_pause_recording().
+ * @param cp the call parameters
+ * @param path path and filename of the file where audio is written.
+**/
+void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path){
+	if (cp->record_file){
+		ms_free(cp->record_file);
+		cp->record_file=NULL;
+	}
+	if (path) cp->record_file=ms_strdup(path);
+}
+
+/**
+ * Retrieves the path for the audio recoding of the call.
+**/
+const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp){
+	return cp->record_file;
+}
+
+/**
+ * Start call recording.
+ * The output file where audio is recorded must be previously specified with linphone_call_params_set_record_file().
+**/
+void linphone_call_start_recording(LinphoneCall *call){
+	if (!call->params.record_file){
+		ms_error("linphone_call_start_recording(): no output file specified. Use linphone_call_params_set_record_file().");
+		return;
+	}
+	if (call->audiostream && !call->params.in_conference){
+		audio_stream_mixed_record_start(call->audiostream);
+	}
+	call->record_active=TRUE;
+}
+
+/**
+ * Stop call recording.
+**/
+void linphone_call_stop_recording(LinphoneCall *call){
+	if (call->audiostream && !call->params.in_conference){
+		audio_stream_mixed_record_stop(call->audiostream);
+	}
+	call->record_active=FALSE;
+}
 
 /**
  * @}

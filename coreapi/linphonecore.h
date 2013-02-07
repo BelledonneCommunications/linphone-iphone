@@ -141,24 +141,7 @@ typedef enum _LinphoneCallStatus {
  * @ingroup call_logs
  *
 **/
-typedef struct _LinphoneCallLog{
-	LinphoneCallDir dir; /**< The direction of the call*/
-	LinphoneCallStatus status; /**< The status of the call*/
-	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
-	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
-	char start_date[128]; /**<Human readable string containing the start date*/
-	int duration; /**<Duration of the call in seconds*/
-	char *refkey;
-	void *user_pointer;
-	rtp_stats_t local_stats;
-	rtp_stats_t remote_stats;
-	float quality;
-    int video_enabled;
-	struct _LinphoneCore *lc;
-	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
-	const char* call_id; /**unique id of a call*/
-} LinphoneCallLog;
-
+typedef struct _LinphoneCallLog LinphoneCallLog;
 
 /**
  * Enum describing type of media encryption types.
@@ -175,6 +158,13 @@ enum LinphoneMediaEncryption {
 typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
+LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
+LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
+LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
+LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
+time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
+int linphone_call_log_get_duration(LinphoneCallLog *cl);
+float linphone_call_log_get_quality(LinphoneCallLog *cl);
 void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
 void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
@@ -206,7 +196,10 @@ void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int 
 void linphone_call_params_destroy(LinphoneCallParams *cp);
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
 void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
-
+void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
+const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
+void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
+const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -389,7 +382,7 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 int linphone_call_get_duration(const LinphoneCall *call);
-const LinphoneCallParams * linphone_call_get_current_params(const LinphoneCall *call);
+const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
@@ -410,6 +403,8 @@ void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
+void linphone_call_start_recording(LinphoneCall *call);
+void linphone_call_stop_recording(LinphoneCall *call);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall
@@ -650,37 +645,6 @@ typedef struct _LinphoneChatMessage LinphoneChatMessage;
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 /**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- */
-LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
-/**
- * Destructor
- * @param cr #LinphoneChatRoom object
- */
-void linphone_chat_room_destroy(LinphoneChatRoom *cr);
-
-/**
- * create a message attached to a dedicated chat room;
- */
-LinphoneChatMessage* linphone_chat_room_create_message(const LinphoneChatRoom *cr,const char* message);
-
-
-/**
- * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
- * @param cr #LinphoneChatRoom object
- * @return #LinphoneAddress peer address
- */
-const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
-/**
- * send a message to peer member of this chat room.
- * @param cr #LinphoneChatRoom object
- * @param msg message to be sent
- */
-void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
-/**
  *LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  */
 typedef enum _LinphoneChatMessageStates {
@@ -690,69 +654,6 @@ typedef enum _LinphoneChatMessageStates {
 	LinphoneChatMessageStateNotDelivered /**<message was not delivered*/
 }LinphoneChatMessageState;
 
-	
-/**
- * to string function
- */
-const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
-
-/**
- * Clone a chat message 
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneChatMessage
- */
-LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
-/**
- * Set origin of the message
- *@param message #LinphoneChatMessage obj
- *@param from #LinphoneAddress origin of this message (copied)
- */
-void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
-
-/**
- * Get origin of the message 
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneAddress
- */
-LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
-	
-/**
- * Linphone message can carry external body as defined by rfc2017
- * @param message #LinphoneChatMessage
- * @return external body url or NULL if not present.
- */
-const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
-	
-/**
- * Linphone message can carry external body as defined by rfc2017
- * 
- * @param message a LinphoneChatMessage  
- * @param url ex: access-type=URL; URL="http://www.foo.com/file"
- */
-void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
-
-/**
- * Get text part of this message
- * @return text or NULL if no text.
- */
-const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
-
-/**
- * Get the time the message was sent
- * @return time_t or NULL if no time
- */
-time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
-
-/**
- * user pointer get function
- */
-
-void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
-/**
- * user pointer set function
- */
-void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
-	
 /**
  * Call back used to notify message delivery status
  *@param msg #LinphoneChatMessage object
@@ -760,20 +661,31 @@ void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
  *@param ud application user data
  */
 typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
-/**
- * send a message to peer member of this chat room.
- * @param cr #LinphoneChatRoom object
- * @param msg #LinphoneChatMessage message to be sent
- * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when message is delivered or could not be delivered. May be NULL
- * @param ud user data for the status cb.
- */
+
+LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
+void linphone_chat_room_destroy(LinphoneChatRoom *cr);
+LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
+const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
+void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
-LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
-char* linphone_chat_message_get_message(LinphoneChatMessage *msg);
-const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
+
+const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
+LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
+void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
+LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
+const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
+void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
+void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
+LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
+const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
+void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
+const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
 
 /**
  * @}

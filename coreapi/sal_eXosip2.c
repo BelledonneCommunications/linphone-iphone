@@ -35,6 +35,7 @@ static void masquerade_via(osip_message_t *msg, const char *ip, const char *port
 static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer, bool_t expire_last_contact);
 static void update_contact_from_response(SalOp *op, osip_message_t *response);
 
+
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
 	while(!osip_list_eol(l,0)) {
@@ -652,6 +653,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		osip_message_set_header(invite, "Session-expires", "200");
 		osip_message_set_supported(invite, "timer");
 	}
+	sal_exosip_add_custom_headers(invite,h->base.custom_headers);
 	if (h->base.local_media){
 		h->sdp_offering=TRUE;
 		set_sdp_from_desc(invite,h->base.local_media);
@@ -1079,6 +1081,7 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	set_remote_contact(op,ev->request);
 	set_remote_ua(op,ev->request);
 	set_replaces(op,ev->request);
+	sal_op_set_custom_header(op,sal_exosip_get_custom_headers(ev->request));
 	
 	if (sdp){
 		op->sdp_offering=FALSE;
@@ -1778,25 +1781,25 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	SalMessage salmsg;
 	char message_id[256]={0};
 	osip_header_t *date=NULL;
-	struct tm ret={};
+	struct tm ret={0};
 	char tmp1[80]={0};
 	char tmp2[80]={0};
-	int i,j;
+	SalOp *op=sal_op_new(sal);
 
 	osip_message_get_date(ev->request,0,&date);
-	if(date==NULL){
-		ms_error("Could not get the date of message");
-		return;
-	}
-	sscanf(date->hvalue,"%3c,%d%s%d%d:%d:%d",tmp1,&ret.tm_mday,tmp2,
+	if(date!=NULL){
+		int i,j;
+		sscanf(date->hvalue,"%3c,%d%s%d%d:%d:%d",tmp1,&ret.tm_mday,tmp2,
 	             &ret.tm_year,&ret.tm_hour,&ret.tm_min,&ret.tm_sec);
-	ret.tm_year-=1900;
-	for(i=0;i<7;i++) { 
-		if(strcmp(tmp1,days[i])==0) ret.tm_wday=i; 
-	}
-	for(j=0;j<12;j++) { 
-		if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
-	}
+		ret.tm_year-=1900;
+		for(i=0;i<7;i++) { 
+			if(strcmp(tmp1,days[i])==0) ret.tm_wday=i; 
+		}
+		for(j=0;j<12;j++) { 
+			if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
+		}
+	}else ms_warning("No date header in SIP MESSAGE, we don't know when it was sent.");
+	
 	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
@@ -1831,14 +1834,17 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		osip_free(from);
 		return;
 	}
+	sal_op_set_custom_header(op,sal_exosip_get_custom_headers(ev->request));
+	
 	snprintf(message_id,sizeof(message_id)-1,"%s%s",ev->request->call_id->number,ev->request->cseq->number);
 	
 	salmsg.from=from;
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
-	salmsg.time=mktime(&ret);
-	sal->callbacks.text_received(sal,&salmsg);
+	salmsg.time=date!=NULL ? mktime(&ret) : time(NULL);
+	sal->callbacks.text_received(op,&salmsg);
+	sal_op_release(op);
 	osip_free(from);
 }
 
@@ -2635,6 +2641,28 @@ int sal_call_update(SalOp *h, const char *subject){
 	eXosip_unlock();
 	return err;
 }
+
 void sal_reuse_authorization(Sal *ctx, bool_t value) {
 	ctx->reuse_authorization=value;
 }
+
+void sal_exosip_add_custom_headers(osip_message_t *msg, SalCustomHeader *ch){
+	MSList *elem=(MSList*)ch;
+	for (;elem!=NULL;elem=elem->next){
+		SalCustomHeader *it=(SalCustomHeader*)elem;
+		osip_message_set_header(msg,it->header_name,it->header_value);
+	}
+}
+
+SalCustomHeader * sal_exosip_get_custom_headers(osip_message_t *msg){
+	int i=0;
+	osip_header_t *header;
+	SalCustomHeader *ret=NULL;
+
+	while((header=osip_list_get(&msg->headers,i))!=NULL){
+		ret=sal_custom_header_append(ret,header->hname,header->hvalue);
+		i++;
+	}
+	return ret;
+}
+
