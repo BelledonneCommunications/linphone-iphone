@@ -63,7 +63,7 @@ public interface LinphoneChatMessage {
 	 * 
 	 * @return text sent along with the message
 	 */
-	String getMessage();
+	String getText();
 	
 	/**
 	 * get peer address associated to this LinphoneChatMessage
@@ -92,4 +92,18 @@ public interface LinphoneChatMessage {
 	 * @param url ex: access-type=URL; URL="http://www.foo.com/file"
 	 */
 	void setExternalBodyUrl(String url);
+	
+	/**
+	 * Add a custom header into the message.
+	 * @param name
+	 * @param value
+	 */
+	void addCustomHeader(String name, String value);
+	
+	/**
+	 * Obtain a header value.
+	 * @param name
+	 * @return the value of the header, or null if not found.
+	 */
+	String  getCustomHeader(String name);
 }

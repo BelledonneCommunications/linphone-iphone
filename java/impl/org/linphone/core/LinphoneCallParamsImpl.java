@@ -88,4 +88,23 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public boolean isLowBandwidthEnabled() {
 		return isLowBandwidthEnabled(nativePtr);
 	}
+
+	private native void setRecordFile(long nativePtr, String path);
+	@Override
+	public void setRecordFile(String path) {
+		setRecordFile(nativePtr,path);
+	}
+
+	private native void addCustomHeader(long nativePtr, String name, String value); 
+	@Override
+	public void addCustomHeader(String name, String value) {
+		addCustomHeader(nativePtr,name,value);
+	}
+
+	private native String getCustomHeader(long nativePtr, String name);
+	@Override
+	public String getCustomHeader(String name) {
+		return getCustomHeader(nativePtr,name);
+	}
+	
 }

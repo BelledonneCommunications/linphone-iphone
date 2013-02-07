@@ -194,4 +194,15 @@ class LinphoneCallImpl implements LinphoneCall {
 	public void zoomVideo(float factor, float cx, float cy) {
 		zoomVideo(nativePtr, factor, cx, cy);
 	}
+	
+	private native void startRecording(long nativePtr);
+	@Override
+	public void startRecording() {
+		startRecording(nativePtr);
+	}
+	private native void stopRecording(long nativePtr);
+	@Override
+	public void stopRecording() {
+		stopRecording(nativePtr);
+	}
 }
