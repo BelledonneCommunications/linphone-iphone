@@ -237,6 +237,32 @@ static void call_paused_resumed() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_paused_resumed_from_callee() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCall* call_obj;
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+	call_obj = linphone_core_get_current_call(marie->lc);
+
+	linphone_core_pause_call(marie->lc,call_obj);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
+
+	linphone_core_resume_call(marie->lc,call_obj);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
 static void call_srtp() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
@@ -297,6 +323,9 @@ int call_test_suite () {
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "call_paused_resumed", call_paused_resumed)) {
+			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "call_paused_resumed_from_callee", call_paused_resumed_from_callee)) {
 			return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {

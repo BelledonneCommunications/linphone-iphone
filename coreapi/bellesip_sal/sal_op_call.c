@@ -389,10 +389,6 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 }
 int sal_call(SalOp *op, const char *from, const char *to){
 	belle_sip_request_t* req;
-
-/*	belle_sip_client_transaction_t* client_transaction;
-	belle_sip_provider_t* prov=op->base.root->prov;
-	belle_sip_header_route_t* route_header;*/
 	op->dir=SalOpDirOutgoing;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
@@ -402,7 +398,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	sal_op_fill_invite(op,req);
 
 	sal_op_call_fill_cbs(op);
-	sal_op_send_request(op,req);
+	sal_op_send_request_with_contact(op,req);
 
 	return 0;
 }
@@ -519,14 +515,9 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 }
 int sal_call_update(SalOp *op, const char *subject){
 	belle_sip_request_t *reinvite=belle_sip_dialog_create_request(op->dialog,"INVITE");
-	/*belle_sdp_session_description_t* session_desc;*/
-	belle_sip_header_contact_t* contact=belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(reinvite),belle_sip_header_create( "Subject", subject));
-	/*need to add contact header for re-invite*/
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(reinvite),BELLE_SIP_HEADER(contact));
 	sal_op_fill_invite(op, reinvite);
-
-	return sal_op_send_request(op,reinvite);
+	return sal_op_send_request_with_contact(op,reinvite);
 }
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h){
 	return h->base.remote_media;;

@@ -54,21 +54,9 @@ int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **userna
 	*username=op->auth_info?op->auth_info->username:NULL;
 	return 0;
 }
-
-belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
-	belle_sip_header_from_t* from_header;
-	belle_sip_header_to_t* to_header;
-	belle_sip_provider_t* prov=op->base.root->prov;
-	belle_sip_request_t *req;
-	belle_sip_uri_t* req_uri;
+belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) {
+	belle_sip_uri_t* req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)from_header));
 	belle_sip_header_contact_t* contact_header;
-	char token[10];
-
-	from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
-												,belle_sip_random_token(token,sizeof(token)));
-	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
-	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)to_header));
-
 	if (sal_op_get_contact_address(op)) {
 		contact_header = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	} else {
@@ -76,6 +64,22 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		belle_sip_header_address_set_uri((belle_sip_header_address_t*)contact_header,belle_sip_uri_new());
 		belle_sip_uri_set_user(belle_sip_header_address_get_uri((belle_sip_header_address_t*)contact_header),belle_sip_uri_get_user(req_uri));
 	}
+	belle_sip_object_unref(req_uri);
+	return contact_header;
+}
+belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
+	belle_sip_header_from_t* from_header;
+	belle_sip_header_to_t* to_header;
+	belle_sip_provider_t* prov=op->base.root->prov;
+	belle_sip_request_t *req;
+	belle_sip_uri_t* req_uri;
+	char token[10];
+
+	from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
+												,belle_sip_random_token(token,sizeof(token)));
+	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
+	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)to_header));
+
 	req=belle_sip_request_create(
 							req_uri,
 							method,
@@ -85,7 +89,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		                    to_header,
 		                    belle_sip_header_via_new(),
 		                    70);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(contact_header));
+
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(op->base.root->user_agent));
 	return req;
 }
@@ -113,11 +117,13 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	sal_op_send_request(op,request);
 }
 
-int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
+
+static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request,bool_t add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_header_route_t* route_header;
 	belle_sip_uri_t* outbound_proxy=NULL;
+	belle_sip_header_contact_t* contact;
 	MSList* iterator;
 	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
@@ -140,7 +146,10 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
 		belle_sip_object_ref(op->pending_inv_client_trans);
 	}
-	
+	if (add_contact) {
+		contact = sal_op_create_contact(op,belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_from_t));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
+	}
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
@@ -148,6 +157,13 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request) {
 	}
 	return belle_sip_client_transaction_send_request_to(client_transaction,outbound_proxy/*might be null*/);
 
+}
+
+int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
+	return _sal_op_send_request_with_contact(op, request,FALSE);
+}
+int sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request) {
+	return _sal_op_send_request_with_contact(op, request,TRUE);
 }
 
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {

@@ -2106,7 +2106,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			linphone_core_start_invite(lc,call);
 		}
 		if (call->state==LinphoneCallIncomingReceived){
-			ms_message("incoming call ringing for %i seconds",elapsed);
+			if (one_second_elapsed) ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
 				call->log->status=LinphoneCallMissed;
@@ -5191,7 +5191,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	lc->upnp = NULL;
 #endif  //BUILD_UPNP
 
-	if (lc->friends)
+	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED

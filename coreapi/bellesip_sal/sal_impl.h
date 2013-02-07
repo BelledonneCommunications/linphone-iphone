@@ -34,6 +34,7 @@ struct Sal{
 	int session_expires;
 	bool_t one_matching_codec;
 	unsigned int keep_alive;
+	bool_t use_tcp_tls_keep_alive;
 };
 
 typedef enum SalOpSate {
@@ -80,8 +81,10 @@ void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
+int sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request) ;
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
+belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) ;
 
 bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size);
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) ;

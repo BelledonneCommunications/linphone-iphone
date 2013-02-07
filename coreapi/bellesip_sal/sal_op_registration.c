@@ -119,7 +119,7 @@ static int send_register_request_with_expires(SalOp* op, belle_sip_request_t* re
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
 	}
 	if (expires_header) belle_sip_header_expires_set_expires(expires_header,expires);
-	return sal_op_send_request(op,request);
+	return sal_op_send_request_with_contact(op,request);
 }
 
 

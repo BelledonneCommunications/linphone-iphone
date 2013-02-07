@@ -513,9 +513,13 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 	const belle_sip_list_t* iterator;
+	belle_sip_listening_point_t* lp;
 	ctx->keep_alive=value;
 	for (iterator=belle_sip_provider_get_listening_points(ctx->prov);iterator!=NULL;iterator=iterator->next) {
-		belle_sip_listening_point_set_keep_alive((belle_sip_listening_point_t*)iterator->data,ctx->keep_alive);
+		lp=(belle_sip_listening_point_t*)iterator->data;
+		if (ctx->use_tcp_tls_keep_alive || strcasecmp(belle_sip_listening_point_get_transport(lp),"udp")==0) {
+			belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
+		}
 	}
 	return ;
 }
@@ -563,12 +567,10 @@ void sal_verify_server_cn(Sal *ctx, bool_t verify){
 }
 
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled) {
-	ms_error("sal_use_tcp_tls_keepalive not implemented yet");
-	return ;
+	ctx->use_tcp_tls_keep_alive=enabled;
 }
 
 int sal_iterate(Sal *sal){
-	/*FIXME should be zero*/
 	belle_sip_stack_sleep(sal->stack,0);
 	return 0;
 }
