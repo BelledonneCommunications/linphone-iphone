@@ -1694,7 +1694,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_addCustomHeader(J
 	const char *value=env->GetStringUTFChars(jheader_value,NULL);
 	linphone_chat_message_add_custom_header((LinphoneChatMessage*)ptr,name,value);
 	env->ReleaseStringUTFChars(jheader_name, name);
-	env->ReleaseStringUTFChars(jheader_name, name);
+	env->ReleaseStringUTFChars(jheader_value, value);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getExternalBodyUrl(JNIEnv*  env
@@ -1876,7 +1876,7 @@ extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getCustomHeader
 	return header_value ? env->NewStringUTF(header_value) : NULL;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name, jstring jheader_value){
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_addCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name, jstring jheader_value){
 	const char* header_name=env->GetStringUTFChars(jheader_name, NULL);
 	const char* header_value=env->GetStringUTFChars(jheader_value, NULL);
 	linphone_call_params_add_custom_header((LinphoneCallParams*)lcp,header_name,header_value);

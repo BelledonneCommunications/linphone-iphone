@@ -473,6 +473,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
 	sal_op_set_custom_header(call->op,call->params.custom_headers);
+	call->params.custom_headers=NULL;
 	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
