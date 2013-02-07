@@ -72,4 +72,25 @@ public interface LinphoneCallParams {
 	 * @return true if low bandwidth has been configured/detected
 	 */
 	boolean isLowBandwidthEnabled();
+	
+	/**
+	 * Set a path to file where the call will be recorded.
+	 * Actual start of the recording is controlled by LinphoneCall.startRecording().
+	**/
+	void setRecordFile(String path);
+	
+	/**
+	 * Add a custom header to be used for the call for which these call params are used.
+	 * @param name header name
+	 * @param value header value
+	 */
+	void addCustomHeader(String name, String value);
+	
+	/**
+	 * Returns the value of a custom header given its name.
+	 * If no header with that name exists, then null is returned.
+	 * @param name
+	 * @return value for the header, or null if it doesn't exist.
+	 */
+	String getCustomHeader(String name);
 }

@@ -1367,7 +1367,7 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverLossRa
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	const LinphoneCall *call = (LinphoneCall *)call_ptr;
+	LinphoneCall *call = (LinphoneCall *)call_ptr;
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *srb = NULL;
@@ -1396,7 +1396,7 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getSenderInterarr
 }
 extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getReceiverInterarrivalJitter(JNIEnv *env, jobject thiz, jlong stats_ptr, jlong call_ptr) {
 	LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
-	const LinphoneCall *call = (LinphoneCall *)call_ptr;
+	LinphoneCall *call = (LinphoneCall *)call_ptr;
 	const LinphoneCallParams *params;
 	const PayloadType *pt;
 	const report_block_t *rrb = NULL;
@@ -1671,12 +1671,32 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setUserData(JNIEn
 	jobject ud = env->NewGlobalRef(thiz);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr,(void*) ud);
 }
-extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getMessage(JNIEnv*  env
+extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	jstring jvalue =env->NewStringUTF(linphone_chat_message_get_message((LinphoneChatMessage*)ptr));
+	jstring jvalue =env->NewStringUTF(linphone_chat_message_get_text((LinphoneChatMessage*)ptr));
 	return jvalue;
 }
+
+extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getCustomHeader(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jstring jheader_name) {
+	const char *name=env->GetStringUTFChars(jheader_name,NULL);
+	const char *value=linphone_chat_message_get_custom_header((LinphoneChatMessage*)ptr,name);
+	env->ReleaseStringUTFChars(jheader_name, name);
+	return value ? env->NewStringUTF(value) : NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_addCustomHeader(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr, jstring jheader_name, jstring jheader_value) {
+	const char *name=env->GetStringUTFChars(jheader_name,NULL);
+	const char *value=env->GetStringUTFChars(jheader_value,NULL);
+	linphone_chat_message_add_custom_header((LinphoneChatMessage*)ptr,name,value);
+	env->ReleaseStringUTFChars(jheader_name, name);
+	env->ReleaseStringUTFChars(jheader_name, name);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getExternalBodyUrl(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -1696,11 +1716,13 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getFrom(JNIEnv* 
 																		,jlong ptr) {
 	return (jlong) linphone_chat_message_get_from((LinphoneChatMessage*)ptr);
 }
+
 extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
 	return (jlong) linphone_chat_message_get_peer_address((LinphoneChatMessage*)ptr);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
@@ -1847,6 +1869,29 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_localConferenc
 	return (jboolean)linphone_call_params_local_conference_mode((LinphoneCallParams*)lcp);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCallParamsImpl_getCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name){
+	const char* header_name=env->GetStringUTFChars(jheader_name, NULL);
+	const char *header_value=linphone_call_params_get_custom_header((LinphoneCallParams*)lcp,header_name);
+	env->ReleaseStringUTFChars(jheader_name, header_name);
+	return header_value ? env->NewStringUTF(header_value) : NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setCustomHeader(JNIEnv *env, jobject thiz, jlong lcp, jstring jheader_name, jstring jheader_value){
+	const char* header_name=env->GetStringUTFChars(jheader_name, NULL);
+	const char* header_value=env->GetStringUTFChars(jheader_value, NULL);
+	linphone_call_params_add_custom_header((LinphoneCallParams*)lcp,header_name,header_value);
+	env->ReleaseStringUTFChars(jheader_name, header_name);
+	env->ReleaseStringUTFChars(jheader_value, header_value);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setRecordFile(JNIEnv *env, jobject thiz, jlong lcp, jstring jrecord_file){
+	if (jrecord_file){
+		const char* record_file=env->GetStringUTFChars(jrecord_file, NULL);
+		linphone_call_params_set_record_file((LinphoneCallParams*)lcp,record_file);
+		env->ReleaseStringUTFChars(jrecord_file, record_file);
+	}else linphone_call_params_set_record_file((LinphoneCallParams*)lcp,NULL);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
 	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
@@ -1871,6 +1916,14 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableCamera(JNIEnv *env
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_cameraEnabled(JNIEnv *env, jobject thiz, jlong lc){
 	return (jboolean)linphone_call_camera_enabled((LinphoneCall *)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_startRecording(JNIEnv *env, jobject thiz, jlong lc){
+	linphone_call_start_recording((LinphoneCall *)lc);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallImpl_stopRecording(JNIEnv *env, jobject thiz, jlong lc){
+	linphone_call_stop_recording((LinphoneCall *)lc);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddressWithParams(JNIEnv *env, jobject thiz, jlong lc, jlong addr, jlong params){

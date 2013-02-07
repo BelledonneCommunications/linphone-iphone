@@ -281,4 +281,15 @@ public interface LinphoneCall {
 	 * Scale the video by factor, and center it using cx,cy point
 	 */
 	void zoomVideo(float factor, float cx, float cy);
+	
+	/**
+	 * Start call recording.
+	 * A file path must be provided with LinphoneCallParams.setRecordFile() at call establishement for this method to work.
+	 */
+	void startRecording();
+	
+	/**
+	 * Stop call recording.
+	 */
+	void stopRecording();
 }
