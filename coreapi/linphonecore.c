@@ -270,6 +270,10 @@ const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl)
 	return &cl->remote_stats;
 }
 
+const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
+	return cl->call_id;
+}
+
 /**
  * Assign a user pointer to the call log.
 **/
@@ -324,6 +328,13 @@ LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl){
 **/
 LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl){
 	return cl->to;
+}
+
+/**
+ * Returns remote address (that is from or to depending on call direction).
+**/
+LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl){
+	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
 }
 
 /**

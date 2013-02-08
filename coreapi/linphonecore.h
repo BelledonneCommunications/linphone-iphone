@@ -160,6 +160,7 @@ typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 /*public: */
 LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
 LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
+LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl);
 LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
 LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
 time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
@@ -171,6 +172,7 @@ void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
 const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
+const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl);
 char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 struct _LinphoneCallParams;
