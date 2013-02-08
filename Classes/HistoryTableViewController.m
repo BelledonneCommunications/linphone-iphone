@@ -85,7 +85,7 @@
     while(logs != NULL) {
         LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
         if(missedFilter) {
-            if (log->status == LinphoneCallMissed) {
+            if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
                 [callLogs addObject:[NSValue valueWithPointer: log]];
             }
         } else {
@@ -129,10 +129,10 @@
 	
     LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
 	LinphoneAddress* addr; 
-	if (callLog->dir == LinphoneCallIncoming) {
-		addr = callLog->from;
+	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
+		addr = linphone_call_log_get_from(callLog);
 	} else {
-		addr = callLog->to;
+		addr = linphone_call_log_get_to(callLog);
 	}
     
     NSString* displayName = nil;

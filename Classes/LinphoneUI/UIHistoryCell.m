@@ -102,16 +102,16 @@
     // Set up the cell...
 	LinphoneAddress* addr; 
 	UIImage *image;
-	if (callLog->dir == LinphoneCallIncoming) {
-        if (callLog->status != LinphoneCallMissed) {
+	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
+        if (linphone_call_log_get_status(callLog) != LinphoneCallMissed) {
             image = [UIImage imageNamed:@"call_status_incoming.png"];
         } else {
             image = [UIImage imageNamed:@"call_status_missed.png"];
         }
-		addr = callLog->from;
+		addr = linphone_call_log_get_from(callLog);
 	} else {
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
-		addr = callLog->to;
+		addr = linphone_call_log_get_to(callLog);
 	}
     
     NSString* address = nil;

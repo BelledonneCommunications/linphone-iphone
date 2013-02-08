@@ -232,7 +232,7 @@
         const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
         while(logs != NULL) {
             LinphoneCallLog* log = (LinphoneCallLog *) logs->data;
-            if([callLog isEqualToString:[NSString stringWithUTF8String:log->call_id]]) {
+            if([callLog isEqualToString:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]]) {
                 theLog = log;
                 break;
             }

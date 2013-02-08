@@ -553,7 +553,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
  	LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-	NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
+	NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
 	if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
