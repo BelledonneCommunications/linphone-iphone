@@ -149,11 +149,9 @@
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">0</int>
 								<float key="IBUIMinimumFontSize">10</float>
-								<int key="IBUINumberOfLines">3</int>
 								<int key="IBUITextAlignment">1</int>
 								<reference key="IBUIFontDescription" ref="398741963"/>
 								<reference key="IBUIFont" ref="153354414"/>
-								<double key="preferredMaxLayoutWidth">240</double>
 							</object>
 							<object class="IBUIButton" id="463635404">
 								<reference key="NSNextResponder" ref="290853868"/>
@@ -197,16 +195,14 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">Back</string>
+								<string key="IBUIText">Voltar</string>
 								<reference key="IBUITextColor" ref="475419136"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">0</int>
 								<float key="IBUIMinimumFontSize">10</float>
-								<int key="IBUINumberOfLines">3</int>
 								<int key="IBUITextAlignment">1</int>
 								<reference key="IBUIFontDescription" ref="398741963"/>
 								<reference key="IBUIFont" ref="153354414"/>
-								<double key="preferredMaxLayoutWidth">280</double>
 							</object>
 							<object class="IBUIButton" id="1058981027">
 								<reference key="NSNextResponder" ref="558519328"/>

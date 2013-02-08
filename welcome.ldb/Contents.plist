@@ -876,10 +876,12 @@
 								<string>Terug</string>
 								<key>pl</key>
 								<string>Z powrotem</string>
+								<key>pt</key>
+								<string>Voltar</string>
 								<key>ru</key>
 								<string>Назад</string>
 								<key>sk</key>
-								<string>Zpátky</string>
+								<string>Naspät'</string>
 								<key>sv</key>
 								<string>Tillbaka</string>
 								<key>zh-Hans</key>
