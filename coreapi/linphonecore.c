@@ -2082,7 +2082,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		linphone_call_background_tasks(call,one_second_elapsed);
-		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
+		if (call->state==LinphoneCallOutgoingInit && (elapsed>=4)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
 				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
@@ -2365,6 +2365,8 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	} else {
 		upnp_ready = TRUE;
 	}
+#else
+	upnp_ready=TRUE;
 #endif //BUILD_UPNP
 	if (call->ping_op != NULL) {
 		if (call->ping_replied == TRUE) ping_ready = TRUE;
