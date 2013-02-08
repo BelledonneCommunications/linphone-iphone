@@ -111,6 +111,16 @@
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		D25D142116C2741A00837670 /* App_Apple_Icon_DES_2013_20.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142016C2741A00837670 /* App_Apple_Icon_DES_2013_20.png */; };
+		D25D142B16C2743B00837670 /* App_Apple_Icon_DES_2013_29.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142216C2743B00837670 /* App_Apple_Icon_DES_2013_29.png */; };
+		D25D142C16C2743B00837670 /* App_Apple_Icon_DES_2013_30.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142316C2743B00837670 /* App_Apple_Icon_DES_2013_30.png */; };
+		D25D142D16C2743B00837670 /* App_Apple_Icon_DES_2013_40.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142416C2743B00837670 /* App_Apple_Icon_DES_2013_40.png */; };
+		D25D142E16C2743B00837670 /* App_Apple_Icon_DES_2013_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142516C2743B00837670 /* App_Apple_Icon_DES_2013_57.png */; };
+		D25D142F16C2743B00837670 /* App_Apple_Icon_DES_2013_58.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142616C2743B00837670 /* App_Apple_Icon_DES_2013_58.png */; };
+		D25D143016C2743B00837670 /* App_Apple_Icon_DES_2013_60.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142716C2743B00837670 /* App_Apple_Icon_DES_2013_60.png */; };
+		D25D143116C2743B00837670 /* App_Apple_Icon_DES_2013_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142816C2743B00837670 /* App_Apple_Icon_DES_2013_114.png */; };
+		D25D143216C2743B00837670 /* App_Apple_Icon_DES_2013_512.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142916C2743B00837670 /* App_Apple_Icon_DES_2013_512.png */; };
+		D25D143316C2743B00837670 /* App_Apple_Icon_DES_2013_1024.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D142A16C2743B00837670 /* App_Apple_Icon_DES_2013_1024.png */; };
 		D285B6FA16A7380B00FB0C51 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */; };
 		D285B6FD16A7381700FB0C51 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6FC16A7381700FB0C51 /* Default@2x.png */; };
 		D285B6FF16A7382100FB0C51 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6FE16A7382100FB0C51 /* Default.png */; };
@@ -604,6 +614,16 @@
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* buschjaeger-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "buschjaeger-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		D25D142016C2741A00837670 /* App_Apple_Icon_DES_2013_20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_20.png; path = Resources/App_Apple_Icon_DES_2013_20.png; sourceTree = "<group>"; };
+		D25D142216C2743B00837670 /* App_Apple_Icon_DES_2013_29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_29.png; path = Resources/App_Apple_Icon_DES_2013_29.png; sourceTree = "<group>"; };
+		D25D142316C2743B00837670 /* App_Apple_Icon_DES_2013_30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_30.png; path = Resources/App_Apple_Icon_DES_2013_30.png; sourceTree = "<group>"; };
+		D25D142416C2743B00837670 /* App_Apple_Icon_DES_2013_40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_40.png; path = Resources/App_Apple_Icon_DES_2013_40.png; sourceTree = "<group>"; };
+		D25D142516C2743B00837670 /* App_Apple_Icon_DES_2013_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_57.png; path = Resources/App_Apple_Icon_DES_2013_57.png; sourceTree = "<group>"; };
+		D25D142616C2743B00837670 /* App_Apple_Icon_DES_2013_58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_58.png; path = Resources/App_Apple_Icon_DES_2013_58.png; sourceTree = "<group>"; };
+		D25D142716C2743B00837670 /* App_Apple_Icon_DES_2013_60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_60.png; path = Resources/App_Apple_Icon_DES_2013_60.png; sourceTree = "<group>"; };
+		D25D142816C2743B00837670 /* App_Apple_Icon_DES_2013_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_114.png; path = Resources/App_Apple_Icon_DES_2013_114.png; sourceTree = "<group>"; };
+		D25D142916C2743B00837670 /* App_Apple_Icon_DES_2013_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_512.png; path = Resources/App_Apple_Icon_DES_2013_512.png; sourceTree = "<group>"; };
+		D25D142A16C2743B00837670 /* App_Apple_Icon_DES_2013_1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_1024.png; path = Resources/App_Apple_Icon_DES_2013_1024.png; sourceTree = "<group>"; };
 		D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		D285B6FC16A7381700FB0C51 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		D285B6FE16A7382100FB0C51 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
@@ -1366,6 +1386,16 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D25D142216C2743B00837670 /* App_Apple_Icon_DES_2013_29.png */,
+				D25D142316C2743B00837670 /* App_Apple_Icon_DES_2013_30.png */,
+				D25D142416C2743B00837670 /* App_Apple_Icon_DES_2013_40.png */,
+				D25D142516C2743B00837670 /* App_Apple_Icon_DES_2013_57.png */,
+				D25D142616C2743B00837670 /* App_Apple_Icon_DES_2013_58.png */,
+				D25D142716C2743B00837670 /* App_Apple_Icon_DES_2013_60.png */,
+				D25D142816C2743B00837670 /* App_Apple_Icon_DES_2013_114.png */,
+				D25D142916C2743B00837670 /* App_Apple_Icon_DES_2013_512.png */,
+				D25D142A16C2743B00837670 /* App_Apple_Icon_DES_2013_1024.png */,
+				D25D142016C2741A00837670 /* App_Apple_Icon_DES_2013_20.png */,
 				D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */,
 				D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */,
 				D37CD2C615E21CB30028869A /* bj_barcode.png */,
@@ -1737,6 +1767,16 @@
 				D2BB9B4716B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png in Resources */,
 				D30B88C216B82A86003550ED /* bj_glow.png in Resources */,
 				D30B88C616B82AA1003550ED /* noimage.png in Resources */,
+				D25D142116C2741A00837670 /* App_Apple_Icon_DES_2013_20.png in Resources */,
+				D25D142B16C2743B00837670 /* App_Apple_Icon_DES_2013_29.png in Resources */,
+				D25D142C16C2743B00837670 /* App_Apple_Icon_DES_2013_30.png in Resources */,
+				D25D142D16C2743B00837670 /* App_Apple_Icon_DES_2013_40.png in Resources */,
+				D25D142E16C2743B00837670 /* App_Apple_Icon_DES_2013_57.png in Resources */,
+				D25D142F16C2743B00837670 /* App_Apple_Icon_DES_2013_58.png in Resources */,
+				D25D143016C2743B00837670 /* App_Apple_Icon_DES_2013_60.png in Resources */,
+				D25D143116C2743B00837670 /* App_Apple_Icon_DES_2013_114.png in Resources */,
+				D25D143216C2743B00837670 /* App_Apple_Icon_DES_2013_512.png in Resources */,
+				D25D143316C2743B00837670 /* App_Apple_Icon_DES_2013_1024.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
