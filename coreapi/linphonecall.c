@@ -551,14 +551,14 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			break;
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-		call->upnp_session = linphone_upnp_session_new(call);
-		if (call->upnp_session != NULL) {
-			linphone_call_init_media_streams(call);
-			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
-				/* uPnP port mappings failed, proceed with the call anyway. */
-				linphone_call_delete_upnp_session(call);
+			call->upnp_session = linphone_upnp_session_new(call);
+			if (call->upnp_session != NULL) {
+				linphone_call_init_media_streams(call);
+				if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
+					/* uPnP port mappings failed, proceed with the call anyway. */
+					linphone_call_delete_upnp_session(call);
+				}
 			}
-		}
 #endif //BUILD_UPNP
 			break;
 		default:
