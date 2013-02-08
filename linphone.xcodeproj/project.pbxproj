@@ -128,6 +128,12 @@
 		D25D143F16C5291A00837670 /* Launchimage_DES_iPhone_3.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D143816C5291A00837670 /* Launchimage_DES_iPhone_3.png */; };
 		D25D144016C5291A00837670 /* Launchimage_DES_iPhone_4.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D143916C5291A00837670 /* Launchimage_DES_iPhone_4.png */; };
 		D25D144116C5291A00837670 /* Launchimage_DES_iPhone_5.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D143A16C5291A00837670 /* Launchimage_DES_iPhone_5.png */; };
+		D25D144616C5363100837670 /* App_Apple_Icon_DES_2013_50.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144216C5363100837670 /* App_Apple_Icon_DES_2013_50.png */; };
+		D25D144716C5363100837670 /* App_Apple_Icon_DES_2013_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144316C5363100837670 /* App_Apple_Icon_DES_2013_72.png */; };
+		D25D144816C5363100837670 /* App_Apple_Icon_DES_2013_100.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144416C5363100837670 /* App_Apple_Icon_DES_2013_100.png */; };
+		D25D144916C5363100837670 /* App_Apple_Icon_DES_2013_144.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144516C5363100837670 /* App_Apple_Icon_DES_2013_144.png */; };
+		D25D144B16C5365800837670 /* App_Apple_Icon_DES_2013_72.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144A16C5365800837670 /* App_Apple_Icon_DES_2013_72.png */; };
+		D25D144D16C5365D00837670 /* App_Apple_Icon_DES_2013_144.png in Resources */ = {isa = PBXBuildFile; fileRef = D25D144C16C5365C00837670 /* App_Apple_Icon_DES_2013_144.png */; };
 		D285B6FA16A7380B00FB0C51 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */; };
 		D285B6FD16A7381700FB0C51 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6FC16A7381700FB0C51 /* Default@2x.png */; };
 		D285B6FF16A7382100FB0C51 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B6FE16A7382100FB0C51 /* Default.png */; };
@@ -638,6 +644,12 @@
 		D25D143816C5291A00837670 /* Launchimage_DES_iPhone_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Launchimage_DES_iPhone_3.png; path = Resources/Launchimage_DES_iPhone_3.png; sourceTree = "<group>"; };
 		D25D143916C5291A00837670 /* Launchimage_DES_iPhone_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Launchimage_DES_iPhone_4.png; path = Resources/Launchimage_DES_iPhone_4.png; sourceTree = "<group>"; };
 		D25D143A16C5291A00837670 /* Launchimage_DES_iPhone_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Launchimage_DES_iPhone_5.png; path = Resources/Launchimage_DES_iPhone_5.png; sourceTree = "<group>"; };
+		D25D144216C5363100837670 /* App_Apple_Icon_DES_2013_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_50.png; path = Resources/App_Apple_Icon_DES_2013_50.png; sourceTree = "<group>"; };
+		D25D144316C5363100837670 /* App_Apple_Icon_DES_2013_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_72.png; path = Resources/App_Apple_Icon_DES_2013_72.png; sourceTree = "<group>"; };
+		D25D144416C5363100837670 /* App_Apple_Icon_DES_2013_100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_100.png; path = Resources/App_Apple_Icon_DES_2013_100.png; sourceTree = "<group>"; };
+		D25D144516C5363100837670 /* App_Apple_Icon_DES_2013_144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = App_Apple_Icon_DES_2013_144.png; path = Resources/App_Apple_Icon_DES_2013_144.png; sourceTree = "<group>"; };
+		D25D144A16C5365800837670 /* App_Apple_Icon_DES_2013_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_72.png; sourceTree = "<group>"; };
+		D25D144C16C5365C00837670 /* App_Apple_Icon_DES_2013_144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_144.png; sourceTree = "<group>"; };
 		D285B6F916A7380B00FB0C51 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		D285B6FC16A7381700FB0C51 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		D285B6FE16A7382100FB0C51 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
@@ -1400,6 +1412,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D25D144C16C5365C00837670 /* App_Apple_Icon_DES_2013_144.png */,
+				D25D144A16C5365800837670 /* App_Apple_Icon_DES_2013_72.png */,
+				D25D144216C5363100837670 /* App_Apple_Icon_DES_2013_50.png */,
+				D25D144316C5363100837670 /* App_Apple_Icon_DES_2013_72.png */,
+				D25D144416C5363100837670 /* App_Apple_Icon_DES_2013_100.png */,
+				D25D144516C5363100837670 /* App_Apple_Icon_DES_2013_144.png */,
 				D25D143416C5291A00837670 /* Launchimage_DES_iPad_high_L.png */,
 				D25D143516C5291A00837670 /* Launchimage_DES_iPad_high_P.png */,
 				D25D143616C5291A00837670 /* Launchimage_DES_iPad_L.png */,
@@ -1805,6 +1823,12 @@
 				D25D143F16C5291A00837670 /* Launchimage_DES_iPhone_3.png in Resources */,
 				D25D144016C5291A00837670 /* Launchimage_DES_iPhone_4.png in Resources */,
 				D25D144116C5291A00837670 /* Launchimage_DES_iPhone_5.png in Resources */,
+				D25D144616C5363100837670 /* App_Apple_Icon_DES_2013_50.png in Resources */,
+				D25D144716C5363100837670 /* App_Apple_Icon_DES_2013_72.png in Resources */,
+				D25D144816C5363100837670 /* App_Apple_Icon_DES_2013_100.png in Resources */,
+				D25D144916C5363100837670 /* App_Apple_Icon_DES_2013_144.png in Resources */,
+				D25D144B16C5365800837670 /* App_Apple_Icon_DES_2013_72.png in Resources */,
+				D25D144D16C5365D00837670 /* App_Apple_Icon_DES_2013_144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

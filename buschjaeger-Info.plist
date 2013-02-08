@@ -12,19 +12,21 @@
 	<string>buschjaeger_icon_57.png</string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>App_Apple_Icon_DES_2013_512.png</string>
-		<string>App_Apple_Icon_DES_2013_114.png</string>
+		<string>App_Apple_Icon_DES_2013_100.png</string>
+		<string>App_Apple_Icon_DES_2013_50.png</string>
 		<string>App_Apple_Icon_DES_2013_60.png</string>
+		<string>App_Apple_Icon_DES_2013_114.png</string>
 		<string>App_Apple_Icon_DES_2013_1024.png</string>
+		<string>App_Apple_Icon_DES_2013_512.png</string>
+		<string>App_Apple_Icon_DES_2013_58.png</string>
 		<string>App_Apple_Icon_DES_2013_40.png</string>
 		<string>App_Apple_Icon_DES_2013_30.png</string>
 		<string>App_Apple_Icon_DES_2013_29.png</string>
 		<string>App_Apple_Icon_DES_2013_20.png</string>
-		<string>App_Apple_Icon_DES_2013_58.png</string>
 		<string>App_Apple_Icon_DES_2013_57.png</string>
-		<string>buschjaeger_icon_72.png</string>
+		<string>App_Apple_Icon_DES_2013_72.png</string>
 		<string>buschjaeger_icon_144.png</string>
-		<string>buschjaeger_icon_72@2x.png</string>
+		<string>App_Apple_Icon_DES_2013_144.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -32,6 +34,8 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
+				<string>App_Apple_Icon_DES_2013_50.png</string>
+				<string>App_Apple_Icon_DES_2013_100.png</string>
 				<string>App_Apple_Icon_DES_2013_60.png</string>
 				<string>App_Apple_Icon_DES_2013_114.png</string>
 				<string>App_Apple_Icon_DES_2013_1024.png</string>
@@ -42,9 +46,9 @@
 				<string>App_Apple_Icon_DES_2013_29.png</string>
 				<string>App_Apple_Icon_DES_2013_20.png</string>
 				<string>App_Apple_Icon_DES_2013_57.png</string>
-				<string>buschjaeger_icon_72.png</string>
+				<string>App_Apple_Icon_DES_2013_72.png</string>
 				<string>buschjaeger_icon_144.png</string>
-				<string>buschjaeger_icon_72@2x.png</string>
+				<string>App_Apple_Icon_DES_2013_144.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>
