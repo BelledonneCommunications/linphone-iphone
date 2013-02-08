@@ -61,6 +61,16 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 	}
 }
 
+static void linphone_call_cb(LinphoneCall *call,void * user_data) {
+	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
+	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
+	LinphoneCore* lc=(LinphoneCore*)user_data;
+	ms_message("call from [%s] to [%s] receive iFrame",from,to);
+	ms_free(to);
+	ms_free(from);
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters->number_of_IframeDecoded++;
+}
 static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
@@ -262,6 +272,49 @@ static void call_paused_resumed_from_callee() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_video_added() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCall* call_obj;
+	LinphoneVideoPolicy  pauline_policy;
+	pauline_policy.automatically_accept=TRUE;
+	pauline_policy.automatically_initiate=TRUE;
+	LinphoneCallParams* marie_params;
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	linphone_core_enable_video(marie->lc,TRUE,TRUE);
+	linphone_core_enable_video(pauline->lc,TRUE,FALSE);
+	linphone_core_set_video_policy(pauline->lc,&pauline_policy);
+
+	call_obj = linphone_core_get_current_call(marie->lc);
+	marie_params = linphone_call_params_copy(linphone_call_get_current_params(call_obj));
+	/*add video*/
+	linphone_call_params_enable_video(marie_params,TRUE);
+	linphone_core_update_call(marie->lc,call_obj,marie_params);
+
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	CU_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
+	CU_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
+
+	linphone_call_set_next_video_frame_decoded_callback(call_obj,linphone_call_cb,marie->lc);
+	/*send vfu*/
+	linphone_call_send_vfu_request(call_obj);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 static void call_srtp() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
@@ -331,7 +384,9 @@ int call_test_suite () {
 	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
 			return CU_get_error();
 	}
-
+	if (NULL == CU_add_test(pSuite, "call_with_video_added", call_with_video_added)) {
+			return CU_get_error();
+	}
 
 	return 0;
 }

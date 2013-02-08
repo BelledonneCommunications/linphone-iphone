@@ -161,9 +161,11 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 														,belle_sip_header_cseq_get_seq_number(cseq));
 				salmsg.from=from;
 				salmsg.text=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-				salmsg.url=NULL; /*not implemented yet*/
+				salmsg.url=NULL; /*FIXME not implemented yet*/
 				salmsg.message_id=message_id;
-				((Sal*)sal)->callbacks.text_received((Sal*)sal,&salmsg);
+				op=sal_op_new((Sal*)sal);
+				((Sal*)sal)->callbacks.text_received(op,&salmsg);
+				sal_op_release(op);
 				belle_sip_object_unref(address);
 				belle_sip_free(from);
 				return;

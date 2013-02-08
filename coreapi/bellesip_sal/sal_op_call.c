@@ -117,17 +117,22 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
 	belle_sip_dialog_state_t dialog_state;
-	/*belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);*/
+	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
 	int code = belle_sip_response_get_status_code(response);
 	char* reason;
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
 	belle_sip_header_t* reason_header = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),"Reason");
+	if (!client_transaction) {
+		ms_warning("Discarding state less response [%i] on op [%p]",code,op);
+		return;
+	}
 	reason=(char*)belle_sip_response_get_reason_phrase(response);
 	if (reason_header){
 		reason = ms_strdup_printf("%s %s",reason,belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(reason_header)));
 	}
+	/*FIXME should be limited to early/NULL dialog*/
 	if (code >=400) {
 		sal_compute_sal_errors_from_code(code,&error,&sr);
 		op->base.root->callbacks.call_failure(op,error,sr,reason,code);
@@ -177,7 +182,9 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 			switch (op->state) {
 			case SalOpStateEarly:/*invite case*/
 			case SalOpStateActive: /*re-invite case*/
-				if (code >=200) {
+				if (code >=200
+					&& code<300
+					&& strcmp("INVITE",belle_sip_request_get_method(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction))))==0) {
 					handle_sdp_from_response(op,response);
 					ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
 					if (ack==NULL) {
@@ -193,6 +200,8 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 					/*if (op->state != SalOpStateActive)*/
 					op->base.root->callbacks.call_accepted(op);
 					op->state=SalOpStateActive;
+				} else {
+					/*nop*/
 				}
 			break;
 
@@ -349,7 +358,18 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			process_sdp_for_invite(op,req);
 
 			op->base.root->callbacks.call_updating(op);
-		} else {
+		} else if (strcmp("INFO",belle_sip_request_get_method(req))==0
+				&& belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
+				&&	strstr(belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)),"picture_fast_update")) {
+				/*vfu request*/
+				ms_message("Receiving VFU request on op [%p]",op);
+				if (op->base.root->callbacks.vfu_request){
+					op->base.root->callbacks.vfu_request(op);
+
+				}
+				resp=belle_sip_response_create_from_request(req,200);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
+		}else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 			unsupported_method(server_transaction,req);
 		}
@@ -599,8 +619,30 @@ int sal_call_terminate(SalOp *op){
 bool_t sal_call_autoanswer_asked(SalOp *op){
 	return op->auto_answer_asked;
 }
-void sal_call_send_vfu_request(SalOp *h){
-	ms_fatal("sal_call_send_vfu_request not implemented yet");
+void sal_call_send_vfu_request(SalOp *op){
+	char info_body[] =
+			"<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+			 "<media_control>"
+			 "  <vc_primitive>"
+			 "    <to_encoder>"
+			 "      <picture_fast_update></picture_fast_update>"
+			 "    </to_encoder>"
+			 "  </vc_primitive>"
+			 "</media_control>";
+	size_t content_lenth = sizeof(info_body) - 1;
+	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
+	if (dialog_state == BELLE_SIP_DIALOG_CONFIRMED) {
+		belle_sip_request_t* info =	belle_sip_dialog_create_request(op->dialog,"INFO");
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","media_control+xml")));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_lenth)));
+		belle_sip_message_set_body(BELLE_SIP_MESSAGE(info),info_body,content_lenth);
+		sal_op_send_request(op,info);
+	} else {
+		ms_warning("Cannot send vfu request to [%s] because dialog [%p] in wrong state [%s]",sal_op_get_to(op)
+																							,op->dialog
+																							,belle_sip_dialog_state_to_string(dialog_state));
+	}
+
 	return ;
 }
 int sal_call_is_offerer(const SalOp *h){

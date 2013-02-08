@@ -60,6 +60,8 @@ typedef struct _stats {
 
 	int number_of_NewSubscriptionRequest;
 	int number_of_NotifyReceived;
+
+	int number_of_IframeDecoded;
 }stats;
 typedef struct _LinphoneCoreManager {
 	LinphoneCoreVTable v_table;
