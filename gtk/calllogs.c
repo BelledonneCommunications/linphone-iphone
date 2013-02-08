@@ -68,7 +68,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 			g_date_time_unref(dt);
 		}
 #else
-		start_date=g_strdup(ctime(start_date_time));
+		start_date=g_strdup(ctime(&start_date_time));
 #endif
 		
 		display=linphone_address_get_display_name (la);
