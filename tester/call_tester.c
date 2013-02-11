@@ -75,6 +75,9 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 	int retry=0;
+	stats initial_caller=caller_mgr->stat;
+	stats initial_callee=callee_mgr->stat;
+
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
 
 
@@ -82,19 +85,25 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 
 	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
 
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc
+									,caller_mgr->lc
+									,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived
+									,initial_callee.number_of_LinphoneCallIncomingReceived+1));
 	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
-	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,initial_caller.number_of_LinphoneCallOutgoingProgress+1);
 
-	while ((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging<1
-			|| caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia<1)  && retry++ <20) {
+
+	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging!=(initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
+			&& caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia!=(initial_caller.number_of_LinphoneCallOutgoingEarlyMedia +1)
+			&& retry++ <20) {
 			linphone_core_iterate(caller_mgr->lc);
 			linphone_core_iterate(callee_mgr->lc);
 			ms_usleep(100000);
 	}
 
 
-	CU_ASSERT_TRUE_FATAL(caller_mgr->stat.number_of_LinphoneCallOutgoingRinging|caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia);
+	CU_ASSERT_TRUE_FATAL((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging==initial_caller.number_of_LinphoneCallOutgoingRinging+1)
+							|(caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia==initial_caller.number_of_LinphoneCallOutgoingEarlyMedia+1));
 
 	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
@@ -104,12 +113,12 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 
 	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,1));
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
+	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	/*just to sleep*/
-	return wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,1)
+	return wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1)
 			&&
-			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,1);
+			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
 
 }
 static void simple_call() {
@@ -247,6 +256,17 @@ static void call_paused_resumed() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCoreManager* mgr_2,LinphoneCall* call_2) {
+	stats initial_call_stat_1=mgr_1->stat;
+	stats initial_call_stat_2=mgr_2->stat;
+	linphone_core_pause_call(mgr_1->lc,call_1);
+	CU_ASSERT_TRUE(wait_for(mgr_1->lc,mgr_2->lc,&mgr_1->stat.number_of_LinphoneCallPausing,initial_call_stat_1.number_of_LinphoneCallPausing+1));
+	CU_ASSERT_TRUE(wait_for(mgr_1->lc,mgr_2->lc,&mgr_1->stat.number_of_LinphoneCallPaused,initial_call_stat_1.number_of_LinphoneCallPaused+1));
+	CU_ASSERT_TRUE(wait_for(mgr_1->lc,mgr_2->lc,&mgr_2->stat.number_of_LinphoneCallPausedByRemote,initial_call_stat_2.number_of_LinphoneCallPausedByRemote+1));
+	CU_ASSERT_EQUAL(linphone_call_get_state(call_1),LinphoneCallPaused);
+	CU_ASSERT_EQUAL(linphone_call_get_state(call_2),LinphoneCallPausedByRemote);
+	return linphone_call_get_state(call_1) == LinphoneCallPaused && linphone_call_get_state(call_2)==LinphoneCallPausedByRemote;
+}
 static void call_paused_resumed_from_callee() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
@@ -313,6 +333,63 @@ static void call_with_video_added() {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+static void simple_conference() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	stats initial_marie_stat;
+	stats initial_pauline_stat;
+	stats initial_laure_stat;
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
+
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+
+	LinphoneCall* marie_call_pauline;
+	LinphoneCall* pauline_called_by_marie;
+	LinphoneCall* marie_call_laure;
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	marie_call_pauline=linphone_core_get_current_call(marie->lc);
+	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
+	CU_ASSERT_TRUE(pause_call_1(marie,marie_call_pauline,pauline,pauline_called_by_marie));
+
+	CU_ASSERT_TRUE(call(marie,laure));
+	initial_marie_stat=marie->stat;
+	initial_pauline_stat=pauline->stat;
+	initial_laure_stat=laure->stat;
+
+	marie_call_laure=linphone_core_get_current_call(marie->lc);
+
+	linphone_core_add_to_conference(marie->lc,marie_call_laure);
+	CU_ASSERT_TRUE(wait_for(marie->lc,laure->lc,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1));
+
+
+
+	linphone_core_add_to_conference(marie->lc,marie_call_pauline);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallResuming,initial_marie_stat.number_of_LinphoneCallResuming+1,2000));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,initial_pauline_stat.number_of_LinphoneCallStreamsRunning+1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+2,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,initial_laure_stat.number_of_LinphoneCallStreamsRunning+1,2000));
+
+	CU_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
+	CU_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3)
+
+	linphone_core_terminate_conference(marie->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,2000));
+
+
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
 }
 
 
@@ -386,6 +463,9 @@ int call_test_suite () {
 	}
 	if (NULL == CU_add_test(pSuite, "call_with_video_added", call_with_video_added)) {
 			return CU_get_error();
+	}
+	if (NULL == CU_add_test(pSuite, "simple_conference", simple_conference)) {
+				return CU_get_error();
 	}
 
 	return 0;

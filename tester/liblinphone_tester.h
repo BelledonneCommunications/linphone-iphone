@@ -87,7 +87,7 @@ LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;
 LinphoneAddress * create_linphone_address(const char * domain);
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
-
+bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 int call_test_suite ();
 int register_test_suite ();
 int message_test_suite ();

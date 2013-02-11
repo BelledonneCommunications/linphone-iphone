@@ -113,10 +113,21 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,in
 
 
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
+	MSList* lcs=NULL;
+	lcs=ms_list_append(lcs,lc_1);
+	bool_t result;
+	lcs=ms_list_append(lcs,lc_2);
+	result=wait_for_list(lcs,counter,value,2000);
+	ms_list_free(lcs);
+	return result;
+}
+bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	int retry=0;
-	while (*counter<value && retry++ <20) {
-		if (lc_1) linphone_core_iterate(lc_1);
-		if (lc_2) linphone_core_iterate(lc_2);
+	MSList* iterator;
+	while (*counter<value && retry++ <timeout_ms/100) {
+		 for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
+			 linphone_core_iterate((LinphoneCore*)(iterator->data));
+		 }
 		ms_usleep(100000);
 	}
 	if(*counter<value) return FALSE;
