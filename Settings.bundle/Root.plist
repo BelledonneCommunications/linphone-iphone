@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>Network settings</string>
+			<string>SIP account</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -68,13 +68,13 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>IP gateway address</string>
+			<string>IP-Gateway</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>System settings</string>
+			<string>Sounds</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

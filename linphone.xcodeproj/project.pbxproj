@@ -141,6 +141,7 @@
 		D285B70316A7387D00FB0C51 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B70216A7387C00FB0C51 /* Default-Landscape~ipad.png */; };
 		D285B70516A7389300FB0C51 /* Default-Portrait@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */; };
 		D285B70716A738C700FB0C51 /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */; };
+		D28E32DB16C8CEBD008CDA81 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 2258633C11410BAC00C5A737 /* README */; };
 		D2BB9B3C16A71070003C9FDE /* UIView+RoundUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BB9B3B16A71070003C9FDE /* UIView+RoundUIView.m */; };
 		D2BB9B4516B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png in Resources */ = {isa = PBXBuildFile; fileRef = D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */; };
 		D2BB9B4716B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png in Resources */ = {isa = PBXBuildFile; fileRef = D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */; };
@@ -658,28 +659,28 @@
 		D285B70416A7389300FB0C51 /* Default-Portrait@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x~ipad.png"; sourceTree = "<group>"; };
 		D285B70616A738C700FB0C51 /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
 		D29C666016C23C6A001EBE1A /* cs */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = cs; path = cs.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D29C666116C23C6A001EBE1A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D29C666116C23C6A001EBE1A /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = Resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D29C666216C23C78001EBE1A /* sk */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = sk; path = sk.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D29C666316C23C78001EBE1A /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D29C666316C23C78001EBE1A /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Resources/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D29C666416C23C8D001EBE1A /* pt */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pt; path = pt.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D29C666516C23C8D001EBE1A /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D29C666516C23C8D001EBE1A /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = Resources/pt.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2BB9B3A16A71070003C9FDE /* UIView+RoundUIView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+RoundUIView.h"; sourceTree = "<group>"; };
 		D2BB9B3B16A71070003C9FDE /* UIView+RoundUIView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RoundUIView.m"; sourceTree = "<group>"; };
 		D2BB9B4416B10A0A003C9FDE /* App_Apple_Icon_DES_2013_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_114.png; sourceTree = "<group>"; };
 		D2BB9B4616B10AB7003C9FDE /* App_Apple_Icon_DES_2013_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App_Apple_Icon_DES_2013_57.png; sourceTree = "<group>"; };
 		D2D7FD5F16A52F6A0031322D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D2DB3F8F16BB99BB0017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F8F16BB99BB0017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Resources/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9016BB9EE60017955B /* de */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = de; path = de.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D2DB3F9116BB9F130017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9216BB9F190017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9516BB9F230017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9616BB9F2A0017955B /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9716BB9F300017955B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9816BB9F350017955B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9916BB9F3A0017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D2DB3F9A16BB9F420017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9116BB9F130017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Resources/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9216BB9F190017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Resources/es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9516BB9F230017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = Resources/it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9616BB9F2A0017955B /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Resources/sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9716BB9F300017955B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Resources/nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9816BB9F350017955B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9916BB9F3A0017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = Resources/pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3F9A16BB9F420017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = Resources/fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D2DB3F9B16BB9F4E0017955B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/BuschJaegerSettingsView.xib"; sourceTree = "<group>"; };
-		D2DB3F9C16BB9F4E0017955B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		D2DB3F9C16BB9F4E0017955B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Resources/zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		D2DB3F9D16BB9F670017955B /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = fr.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3F9E16BB9F690017955B /* es */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = es; path = es.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3F9F16BB9F6B0017955B /* it */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = it; path = it.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
@@ -689,7 +690,7 @@
 		D2DB3FA316BB9F750017955B /* pl */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = pl; path = pl.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3FA416BB9F7B0017955B /* fi */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fi; path = fi.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
 		D2DB3FA516BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = nb; path = nb.lproj/BuschJaegerSettingsView.xib; sourceTree = "<group>"; };
-		D2DB3FA616BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D2DB3FA616BC03C80017955B /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = Resources/nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D304B3E916661793002DB909 /* BuschJaegerWelcomeView~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "BuschJaegerWelcomeView~ipad.xib"; sourceTree = "<group>"; };
 		D30B88C116B82A86003550ED /* bj_glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bj_glow.png; path = Resources/bj_glow.png; sourceTree = "<group>"; };
 		D30B88C516B82AA1003550ED /* noimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = noimage.png; path = Resources/noimage.png; sourceTree = "<group>"; };
@@ -1725,6 +1726,7 @@
 				cs,
 				sk,
 				pt,
+				zh_CN,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1829,6 +1831,7 @@
 				D25D144916C5363100837670 /* App_Apple_Icon_DES_2013_144.png in Resources */,
 				D25D144B16C5365800837670 /* App_Apple_Icon_DES_2013_72.png in Resources */,
 				D25D144D16C5365D00837670 /* App_Apple_Icon_DES_2013_144.png in Resources */,
+				D28E32DB16C8CEBD008CDA81 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

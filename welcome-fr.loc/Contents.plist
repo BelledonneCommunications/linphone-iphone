@@ -32,7 +32,7 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-01-31T13:17:37Z</date>
+					<date>2013-02-11T06:20:17Z</date>
 					<key>class</key>
 					<string>BLStringsFileObject</string>
 					<key>errors</key>
@@ -40,7 +40,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>5aab746c7cc97fd896f82e540eb51e27
+					<string>587500f0973e5631f32314f6014ab608
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -209,7 +209,9 @@
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>History provisioning error</string>
+								<string>Connection to IP gateway failed</string>
+								<key>fr</key>
+								<string>Impossible d'établir une connexion à la passerelle IP.</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -440,7 +442,9 @@
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Provisioning error</string>
+								<string>Connection to IP gateway failed</string>
+								<key>fr</key>
+								<string>Impossible d'établir une connexion à la passerelle IP.</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -461,7 +465,9 @@
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>Provisioning Success</string>
+								<string>Configuration sucessfully loaded</string>
+								<key>fr</key>
+								<string>Le chargement de la configuration a réussi.</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -524,7 +530,9 @@
 							<key>localizations</key>
 							<dict>
 								<key>en</key>
-								<string>The providing configuration is successfully applied</string>
+								<string>Configuration sucessfully loaded</string>
+								<key>fr</key>
+								<string>Le chargement de la configuration a réussi.</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -794,6 +802,8 @@
 					<dict/>
 					<key>versions</key>
 					<dict>
+						<key>cs</key>
+						<string>3</string>
 						<key>de</key>
 						<string>3</string>
 						<key>en</key>
@@ -814,7 +824,11 @@
 						<string>3</string>
 						<key>pl</key>
 						<string>3</string>
+						<key>pt</key>
+						<string>3</string>
 						<key>ru</key>
+						<string>3</string>
+						<key>sk</key>
 						<string>3</string>
 						<key>sv</key>
 						<string>3</string>
