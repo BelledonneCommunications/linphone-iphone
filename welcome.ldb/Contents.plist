@@ -1124,6 +1124,173 @@
 						<string>3</string>
 					</dict>
 				</dict>
+				<dict>
+					<key>attachments</key>
+					<dict>
+						<key>backup</key>
+						<dict>
+							<key>1</key>
+							<dict>
+								<key>class</key>
+								<string>BLWrapperHandle</string>
+								<key>name</key>
+								<string>Classes/BuschJaegerHistoryDetailsView/1/BuschJaegerHistoryDetailsView.xib</string>
+							</dict>
+						</dict>
+					</dict>
+					<key>change date</key>
+					<date>2013-02-11T12:01:38Z</date>
+					<key>changed values</key>
+					<array/>
+					<key>class</key>
+					<string>BLNibFileObject</string>
+					<key>errors</key>
+					<array/>
+					<key>flags</key>
+					<integer>0</integer>
+					<key>hash</key>
+					<string>0d9badb08d7e42adeedbaeafce09b00f
+</string>
+					<key>name</key>
+					<string>BuschJaegerHistoryDetailsView.xib</string>
+					<key>objects</key>
+					<array>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "2011 01 01 00:01"; ObjectID = "8";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>8.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>2011 01 01 00:01</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Station 1"; ObjectID = "9";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>9.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Station 1</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUILabel"; text = "Back"; ObjectID = "15";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>15.text</string>
+							<key>localizations</key>
+							<dict>
+								<key>cs</key>
+								<string>Zpátky</string>
+								<key>de</key>
+								<string>Zurück</string>
+								<key>en</key>
+								<string>Back</string>
+								<key>es</key>
+								<string>Volver</string>
+								<key>fi</key>
+								<string>Takaisin</string>
+								<key>fr</key>
+								<string>Retour</string>
+								<key>it</key>
+								<string>Indietro</string>
+								<key>nb</key>
+								<string>Tilbake</string>
+								<key>nl</key>
+								<string>Terug</string>
+								<key>pl</key>
+								<string>Z powrotem</string>
+								<key>pt</key>
+								<string>Voltar</string>
+								<key>ru</key>
+								<string>Назад</string>
+								<key>sk</key>
+								<string>Naspät'</string>
+								<key>sv</key>
+								<string>Tillbaka</string>
+								<key>zh-Hans</key>
+								<string>返回</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+					</array>
+					<key>old objects</key>
+					<array/>
+					<key>snapshots</key>
+					<dict/>
+					<key>versions</key>
+					<dict>
+						<key>cs</key>
+						<string>1</string>
+						<key>de</key>
+						<string>1</string>
+						<key>en</key>
+						<string>1</string>
+						<key>es</key>
+						<string>1</string>
+						<key>fi</key>
+						<string>1</string>
+						<key>fr</key>
+						<string>1</string>
+						<key>it</key>
+						<string>1</string>
+						<key>nb</key>
+						<string>1</string>
+						<key>nl</key>
+						<string>1</string>
+						<key>pl</key>
+						<string>1</string>
+						<key>pt</key>
+						<string>1</string>
+						<key>ru</key>
+						<string>1</string>
+						<key>sk</key>
+						<string>1</string>
+						<key>sv</key>
+						<string>1</string>
+						<key>zh-Hans</key>
+						<string>1</string>
+					</dict>
+				</dict>
 			</array>
 			<key>flags</key>
 			<integer>0</integer>
