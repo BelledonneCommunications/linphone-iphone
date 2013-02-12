@@ -296,6 +296,9 @@ static BuschJaegerMainView* mainViewInstance=nil;
 
 - (void)networkUpdateEvent: (NSNotification*) notif {
     [self networkUpdate:[[LinphoneManager instance].configuration.homeAP isEqualToData:[LinphoneManager getWifiData]]];
+    if([[LinphoneManager instance] connectivity] == network_none) {
+        [self updateIconBadge:nil]; // Update history
+    }
 }
 
 
