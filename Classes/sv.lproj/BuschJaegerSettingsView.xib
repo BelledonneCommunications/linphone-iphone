@@ -68,7 +68,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">Snabb- konfiguration med QR-kod</string>
+								<string key="IBUIText">Snabbkonfiguration med QR-kod</string>
 								<object class="NSColor" key="IBUITextColor" id="475419136">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
@@ -77,14 +77,15 @@
 								<int key="IBUIBaselineAdjustment">0</int>
 								<float key="IBUIMinimumFontSize">18</float>
 								<int key="IBUINumberOfLines">3</int>
+								<int key="IBUITextAlignment">1</int>
 								<int key="IBUILineBreakMode">0</int>
-								<object class="IBUIFontDescription" key="IBUIFontDescription" id="398741963">
+								<object class="IBUIFontDescription" key="IBUIFontDescription">
 									<int key="type">1</int>
-									<double key="pointSize">24</double>
+									<double key="pointSize">20</double>
 								</object>
-								<object class="NSFont" key="IBUIFont" id="153354414">
+								<object class="NSFont" key="IBUIFont">
 									<string key="NSName">Helvetica</string>
-									<double key="NSSize">24</double>
+									<double key="NSSize">20</double>
 									<int key="NSfFlags">16</int>
 								</object>
 								<double key="preferredMaxLayoutWidth">178</double>
@@ -149,11 +150,16 @@
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">0</int>
 								<float key="IBUIMinimumFontSize">10</float>
-								<int key="IBUINumberOfLines">2</int>
 								<int key="IBUITextAlignment">1</int>
-								<reference key="IBUIFontDescription" ref="398741963"/>
-								<reference key="IBUIFont" ref="153354414"/>
-								<double key="preferredMaxLayoutWidth">240</double>
+								<object class="IBUIFontDescription" key="IBUIFontDescription" id="398741963">
+									<int key="type">1</int>
+									<double key="pointSize">24</double>
+								</object>
+								<object class="NSFont" key="IBUIFont" id="651100897">
+									<string key="NSName">Helvetica</string>
+									<double key="NSSize">24</double>
+									<int key="NSfFlags">16</int>
+								</object>
 							</object>
 							<object class="IBUIButton" id="463635404">
 								<reference key="NSNextResponder" ref="290853868"/>
@@ -204,7 +210,7 @@
 								<float key="IBUIMinimumFontSize">10</float>
 								<int key="IBUITextAlignment">1</int>
 								<reference key="IBUIFontDescription" ref="398741963"/>
-								<reference key="IBUIFont" ref="153354414"/>
+								<reference key="IBUIFont" ref="651100897"/>
 							</object>
 							<object class="IBUIButton" id="1058981027">
 								<reference key="NSNextResponder" ref="558519328"/>

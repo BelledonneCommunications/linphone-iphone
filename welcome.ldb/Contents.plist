@@ -948,7 +948,7 @@
 								<key>cs</key>
 								<string>Rychlá konfigurace s QR-kódem</string>
 								<key>de</key>
-								<string>Schnell- konfiguration mit QR-Code</string>
+								<string>Schnellkonfiguration mit QR-Code</string>
 								<key>en</key>
 								<string>Quick configuration with QR-code</string>
 								<key>es</key>
@@ -960,7 +960,7 @@
 								<key>it</key>
 								<string>Configurazione rapida con codice QR</string>
 								<key>nb</key>
-								<string>Hurtig- konfigurasjon med QR-kode</string>
+								<string>Hurtigkonfigurasjon med QR-kode</string>
 								<key>nl</key>
 								<string>Snelle configuratie met QR-code</string>
 								<key>pl</key>
@@ -972,7 +972,7 @@
 								<key>sk</key>
 								<string>Rýchla konfigurácia s QR-kódom</string>
 								<key>sv</key>
-								<string>Snabb- konfiguration med QR-kod</string>
+								<string>Snabbkonfiguration med QR-kod</string>
 								<key>zh-Hans</key>
 								<string>使用 QR 码快速配置</string>
 							</dict>
