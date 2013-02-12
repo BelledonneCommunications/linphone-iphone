@@ -270,6 +270,10 @@ const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl)
 	return &cl->remote_stats;
 }
 
+const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
+	return cl->call_id;
+}
+
 /**
  * Assign a user pointer to the call log.
 **/
@@ -324,6 +328,13 @@ LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl){
 **/
 LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl){
 	return cl->to;
+}
+
+/**
+ * Returns remote address (that is from or to depending on call direction).
+**/
+LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl){
+	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
 }
 
 /**
@@ -2089,7 +2100,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		linphone_call_background_tasks(call,one_second_elapsed);
-		if (call->state==LinphoneCallOutgoingInit && (curtime-call->start_time>=2)){
+		if (call->state==LinphoneCallOutgoingInit && (elapsed>=4)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
 				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
@@ -2372,6 +2383,8 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 	} else {
 		upnp_ready = TRUE;
 	}
+#else
+	upnp_ready=TRUE;
 #endif //BUILD_UPNP
 	if (call->ping_op != NULL) {
 		if (call->ping_replied == TRUE) ping_ready = TRUE;

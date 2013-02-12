@@ -473,6 +473,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
 	sal_op_set_custom_header(call->op,call->params.custom_headers);
+	call->params.custom_headers=NULL;
 	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
@@ -550,14 +551,14 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			break;
 		case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-		call->upnp_session = linphone_upnp_session_new(call);
-		if (call->upnp_session != NULL) {
-			linphone_call_init_media_streams(call);
-			if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
-				/* uPnP port mappings failed, proceed with the call anyway. */
-				linphone_call_delete_upnp_session(call);
+			call->upnp_session = linphone_upnp_session_new(call);
+			if (call->upnp_session != NULL) {
+				linphone_call_init_media_streams(call);
+				if (linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(op))<0) {
+					/* uPnP port mappings failed, proceed with the call anyway. */
+					linphone_call_delete_upnp_session(call);
+				}
 			}
-		}
 #endif //BUILD_UPNP
 			break;
 		default:
