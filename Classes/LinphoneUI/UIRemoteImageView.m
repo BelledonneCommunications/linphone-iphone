@@ -34,6 +34,11 @@
     waitIndicatorView.hidesWhenStopped = TRUE;
     waitIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:waitIndicatorView];
+    
+    // Create Queue
+    queue = [[NSOperationQueue alloc] init];
+    queue.name = @"RemoteImage";
+    queue.maxConcurrentOperationCount = 1;
 }
 
 - (id)init {
@@ -78,6 +83,7 @@
 
 - (void)dealloc {
     [waitIndicatorView release];
+    [queue release];
     
     [super dealloc];
 }
@@ -87,28 +93,32 @@
 
 - (void)loadImage:(NSString*)url {
     [waitIndicatorView startAnimating];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:5];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:30];
     if(request != nil) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+        [queue cancelAllOperations];
+        NSBlockOperation *operation = [[[NSBlockOperation alloc] init] autorelease];
+        [operation addExecutionBlock:^(void) {
             NSURLResponse *response = nil;
             NSError *error = nil;
             NSData *data  = nil;
           
             
             data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error delegate:self];
-            if(data != nil) {
-                UIImage *image = [UIImage imageWithData:data];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [waitIndicatorView stopAnimating];
-                    [self setImage:image];
-                });
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [waitIndicatorView stopAnimating];
-                });
+            if(![operation isCancelled]) {
+                if(data != nil) {
+                    UIImage *image = [UIImage imageWithData:data];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [waitIndicatorView stopAnimating];
+                        [self setImage:image];
+                    });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [waitIndicatorView stopAnimating];
+                    });
+                }
             }
-        });
-        
+        }];
+        [queue addOperation:operation];
     }
 }
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
