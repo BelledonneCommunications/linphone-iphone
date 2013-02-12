@@ -29,7 +29,7 @@ belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescrip
 	MSList* pt_it;
 	PayloadType* pt;
 	char buffer[1024];
-	char* dir;
+	char* dir=NULL;
 
 	if (strchr(desc->addr,':')!=NULL){
 			inet6=1;
