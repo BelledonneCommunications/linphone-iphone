@@ -532,10 +532,6 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 			,userConfig
 			,factoryConfig
 			,ldata);
-	//clear auth info list
-	linphone_core_clear_all_auth_info((LinphoneCore*) nativePtr);
-	//clear existing proxy config
-	linphone_core_clear_proxy_config((LinphoneCore*) nativePtr);
 
 	if (userConfig) env->ReleaseStringUTFChars(juserConfig, userConfig);
 	if (factoryConfig) env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
