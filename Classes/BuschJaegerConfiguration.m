@@ -499,6 +499,12 @@ static NSString *const CONFIGURATION_HOME_AP_KEY = @"CONFIGURATION_HOME_AP_KEY";
                         [delegate buschJaegerConfigurationError:[NSString stringWithFormat:@"Request not succeed (Status code:%d)", urlResponse.statusCode]];
                     });
                 }
+            } else {
+                // Empty reply = no history
+                [history removeAllObjects];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [delegate buschJaegerConfigurationSuccess];
+                });
             }
         }];
         return TRUE;
