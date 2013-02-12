@@ -2299,6 +2299,11 @@ extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env
 	return (jlong) lp;
 }
 
+extern "C" void Java_org_linphone_core_LpConfigImpl_sync(JNIEnv *env, jobject thiz, jlong lpc) {
+	LpConfig *lp = (LpConfig *)lpc;
+	lp_config_sync(lp);
+}
+
 extern "C" void Java_org_linphone_core_LpConfigImpl_delete(JNIEnv *env, jobject thiz, jlong lpc) {
 	LpConfig *lp = (LpConfig *)lpc;
 	lp_config_destroy(lp);

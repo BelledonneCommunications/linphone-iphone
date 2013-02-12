@@ -41,6 +41,11 @@ class LpConfigImpl implements LpConfig {
 		}
 	}
 
+	private native void sync(long ptr);
+	public void sync() {
+		sync(nativePtr);
+	}
+
 	private native void setInt(long ptr, String section, String key, int value);
 	public void setInt(String section, String key, int value) {
 		setInt(nativePtr, section, key, value);
