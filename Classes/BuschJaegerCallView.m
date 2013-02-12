@@ -126,7 +126,7 @@
     }
     {
         UIColor* col1 = BUSCHJAEGER_GREEN_COLOR;
-        UIColor* col2 = BUSCHJAEGER_GREEN_COLOR;
+        UIColor* col2 = BUSCHJAEGER_GREEN_COLOR2;
         [self.takeCallButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
         [BuschJaegerUtils createBuschJaegerButton:takeCallButton];
         [BuschJaegerUtils createGradientForButton:takeCallButton withTopColor:col1 bottomColor:col2];
