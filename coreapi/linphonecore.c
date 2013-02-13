@@ -1306,7 +1306,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 #ifdef BUILD_UPNP
 	lc->upnp = linphone_upnp_context_new(lc);
-#endif  //BUILD_UPNP
+#endif //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -1409,7 +1409,7 @@ void linphone_core_get_local_ip(LinphoneCore *lc, const char *dest, char *result
 		strncpy(result,ip,LINPHONE_IPADDR_SIZE);
 		return;
 	}
-#endif  //BUILD_UPNP
+#endif //BUILD_UPNP
 	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,dest,result)==0)
 		return;
 	/*else fallback to SAL routine that will attempt to find the most realistic interface */
@@ -2990,7 +2990,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 #endif //VIDEO_ENABLED
 	}
 
-#if BUILD_UPNP
+#ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_upnp_from_remote_media_description(call, sal_call_get_remote_media_description(call->op));
 #ifdef VIDEO_ENABLED
@@ -5172,7 +5172,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 #ifdef BUILD_UPNP
 	linphone_upnp_context_destroy(lc->upnp);
 	lc->upnp = NULL;
-#endif  //BUILD_UPNP
+#endif //BUILD_UPNP
 
 	if (lc->friends)
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
