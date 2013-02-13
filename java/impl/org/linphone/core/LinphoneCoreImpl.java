@@ -872,4 +872,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 		long configPtr=getConfig(nativePtr);
 		return new LpConfigImpl(configPtr);
 	}
+	
+	private native boolean upnpAvailable(long ptr);
+	public boolean upnpAvailable() {
+		return upnpAvailable(nativePtr);
+	} 
+
+	private native int getUpnpState(long ptr);
+	public UpnpState getUpnpState() {
+		return UpnpState.fromInt(getUpnpState(nativePtr));	
+	}
+	
+	private native String getUpnpExternalIpaddress(long ptr);
+	public String getUpnpExternalIpaddress() {
+		return getUpnpExternalIpaddress(nativePtr);
+	}
 }

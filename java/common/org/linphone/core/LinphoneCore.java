@@ -278,6 +278,56 @@ public interface LinphoneCore {
 			return mValue;
 		}
 	}
+	
+	static public class UpnpState {
+		static private Vector<UpnpState> values = new Vector<UpnpState>();
+		/**
+		 * Idle 
+		 */
+		static public UpnpState Idle = new UpnpState(0, "Idle");
+		/**
+		 * Pending
+		 */
+		static public UpnpState Pending = new UpnpState(1, "Pending");
+		/**
+		 * Adding
+		 */
+		static public UpnpState Adding = new UpnpState(2, "Adding");
+		/**
+		 * Removing
+		 */
+		static public UpnpState Removing = new UpnpState(3, "Removing");
+		/**
+		 * Not Available
+		 */
+		static public UpnpState NotAvailable = new UpnpState(4, "Not available");
+		/**
+		 * Ok
+		 */
+		static public UpnpState Ok = new UpnpState(5, "Ok");
+		/**
+		 * Ko 
+		 */
+		static public UpnpState Ko = new UpnpState(6, "Ko");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private UpnpState(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static UpnpState fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				UpnpState mstate = (UpnpState) values.elementAt(i);
+				if (mstate.mValue == value) return mstate;
+			}
+			throw new RuntimeException("UpnpState not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
 
 	/**
 	 * Set the context of creation of the LinphoneCore.
@@ -882,4 +932,30 @@ public interface LinphoneCore {
 	 * the config file with your own sections
 	 */
 	LpConfig getConfig();
+
+
+	/**
+	 * Return the availability of uPnP.
+	 *
+	 * @return true if uPnP is available otherwise return false. 
+	 */
+	public boolean upnpAvailable();
+
+	/**
+	 * Return the internal state of uPnP. 
+	 *
+	 * @return an UpnpState. 
+	 */
+	public UpnpState getUpnpState();
+
+	/**
+	 * Return the external ip address of router. 
+	 * In some cases the uPnP can have an external ip address but not a usable uPnP
+	 * (state different of Ok). 
+	 *
+	 * @return a null terminated string containing the external ip address. If the
+	 * the external ip address is not available return null. 
+	 */
+	public String getUpnpExternalIpaddress();
+
 }
