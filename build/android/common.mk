@@ -154,6 +154,11 @@ LOCAL_STATIC_LIBRARIES += \
 endif
 endif
 
+ifeq ($(BUILD_UPNP),1)
+LOCAL_CFLAGS += -DBUILD_UPNP
+LOCAL_SRC_FILES += upnp.c
+endif
+
 LOCAL_STATIC_LIBRARIES += libspeex 
 
 ifeq ($(BUILD_SRTP), 1)
