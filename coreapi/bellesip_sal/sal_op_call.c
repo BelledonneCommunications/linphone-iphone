@@ -266,7 +266,6 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	op->pending_server_trans=server_transaction;
 	belle_sdp_session_description_t* sdp;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
-	belle_sip_header_t* replace_header;
 	belle_sip_dialog_state_t dialog_state;
 	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
@@ -279,8 +278,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	switch(dialog_state) {
 
 	case BELLE_SIP_DIALOG_NULL: {
-		if (!op->replaces && (replace_header=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"replaces"))) {
-			op->replaces=belle_sip_header_address_parse(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(replace_header)));
+		if (!op->replaces && (op->replaces=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_replaces_t))) {
 			belle_sip_object_ref(op->replaces);
 		} else if(op->replaces) {
 			ms_warning("replace header already set");
@@ -550,9 +548,15 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 	}
 	return h->result;
 }
-int sal_call_refer(SalOp *h, const char *refer_to){
-	ms_fatal("sal_call_refer not implemented yet");
-	return -1;
+int sal_call_refer(SalOp *op, const char *refer_to){
+	belle_sip_header_refer_to_t* refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
+	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"REFER"):NULL; /*cannot create request if dialog not set yet*/
+	if (!req) {
+		ms_error("Cannot refer to [%s] for op [%p]",refer_to,op);
+		return -1;
+	}
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(refer_to_header));
+	return sal_op_send_request(op,req);
 }
 int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h){
 	ms_fatal("sal_call_refer_with_replaces not implemented yet");
@@ -660,4 +664,49 @@ void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
 void sal_use_dates(Sal *ctx, bool_t enabled){
 	ms_warning("sal_use_dates not implemented yet");
 }
-
+/*
+static void process_refer(SalOp *op, belle_sip_request_event_t *event){
+	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
+	belle_sip_header_refer_to_t *refer_to= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_refer_to_t);;
+	belle_sip_uri_t* refer_to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to));
+	ms_message("Receiving REFER request on op [%p]",op);
+	if (refer_to){
+		char *tmp;
+		if (refer_to_uri){
+			if (op ){
+				osip_uri_header_t *uh=NULL;
+				osip_header_t *referred_by=NULL;
+				osip_uri_header_get_byname(&from->url->url_headers,(char*)"Replaces",&uh);
+				if (belle_sip_uri_get_header(refer_to_uri,"Replaces"))
+				if (uh!=NULL && uh->gvalue && uh->gvalue[0]!='\0'){
+					ms_message("Found replaces in Refer-To");
+					if (op->replaces){
+						ms_free(op->replaces);
+					}
+					op->replaces=ms_strdup(uh->gvalue);
+				}
+				osip_message_header_get_byname(ev->request,"Referred-By",0,&referred_by);
+				if (referred_by && referred_by->hvalue && referred_by->hvalue[0]!='\0'){
+					if (op->referred_by)
+						ms_free(op->referred_by);
+					op->referred_by=ms_strdup(referred_by->hvalue);
+				}
+			}
+			osip_uri_header_freelist(&from->url->url_headers);
+			osip_from_to_str(from,&tmp);
+			sal->callbacks.refer_received(sal,op,tmp);
+			osip_free(tmp);
+			osip_from_free(from);
+		}
+		eXosip_lock();
+		eXosip_call_build_answer(ev->tid,202,&ans);
+		if (ans)
+			eXosip_call_send_answer(ev->tid,202,ans);
+		eXosip_unlock();
+	}
+	else
+	{
+		ms_warning("cannot do anything with the refer without destination\n");
+	}
+}
+*/

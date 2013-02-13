@@ -60,8 +60,8 @@ struct SalOp{
 	belle_sip_refresher_t*  registration_refresher;
 	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;
-	belle_sip_header_address_t *replaces;
-	belle_sip_header_address_t *referred_by;
+	belle_sip_header_replaces_t *replaces;
+	belle_sip_header_t *referred_by;
 	bool_t auto_answer_asked;
 	SalMediaDescription *result;
 	belle_sdp_session_description_t *sdp_answer;
@@ -90,5 +90,7 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) ;
 /*presence*/
 void sal_op_presence_fill_cbs(SalOp*op);
+/*messaging*/
+void sal_op_message_fill_cbs(SalOp*op);
 
 #endif /* SAL_IMPL_H_ */

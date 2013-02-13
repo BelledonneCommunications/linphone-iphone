@@ -965,11 +965,13 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 			,chatStatusSal2Linphone(status)
 			,chat_msg->cb_ud);
 	}
-	linphone_chat_message_destroy(chat_msg);
-	
-	if (!ms_list_find_custom((MSList*)calls, (MSCompareFunc) op_equals, op)) {
-		/*op was only create for messaging purpose, destroying*/
-		sal_op_release(op);
+	if (status != SalTextDeliveryInProgress) { /*don't release op if progress*/
+		linphone_chat_message_destroy(chat_msg);
+
+		if (!ms_list_find_custom((MSList*)calls, (MSCompareFunc) op_equals, op)) {
+			/*op was only create for messaging purpose, destroying*/
+			sal_op_release(op);
+		}
 	}
 }
 

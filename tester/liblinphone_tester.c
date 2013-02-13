@@ -114,9 +114,11 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,in
 
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	MSList* lcs=NULL;
-	lcs=ms_list_append(lcs,lc_1);
+	if (lc_1)
+		lcs=ms_list_append(lcs,lc_1);
 	bool_t result;
-	lcs=ms_list_append(lcs,lc_2);
+	if (lc_2)
+		lcs=ms_list_append(lcs,lc_2);
 	result=wait_for_list(lcs,counter,value,2000);
 	ms_list_free(lcs);
 	return result;
@@ -153,6 +155,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
+	mgr->v_table.message_received=message_received;
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);

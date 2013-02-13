@@ -432,6 +432,67 @@ static void call_early_media() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void simple_call_transfer() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+/*	stats initial_marie_stat;
+	stats initial_pauline_stat;
+	stats initial_laure_stat;*/
+	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
+	char* laure_identity=linphone_address_as_string(laure->identity);
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+
+	LinphoneCall* marie_call_pauline;
+	LinphoneCall* pauline_called_by_marie;
+/*	LinphoneCall* marie_call_laure;*/
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	marie_call_pauline=linphone_core_get_current_call(marie->lc);
+	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
+
+
+	linphone_core_transfer_call(pauline->lc,pauline_called_by_marie,laure_identity);
+
+/*
+	initial_marie_stat=marie->stat;
+	initial_pauline_stat=pauline->stat;
+	initial_laure_stat=laure->stat;
+
+	marie_call_laure=linphone_core_get_current_call(marie->lc);
+
+
+	linphone_core_transfer_call()
+	CU_ASSERT_TRUE(wait_for(marie->lc,laure->lc,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1));
+
+
+
+	linphone_core_add_to_conference(marie->lc,marie_call_pauline);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallResuming,initial_marie_stat.number_of_LinphoneCallResuming+1,2000));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,initial_pauline_stat.number_of_LinphoneCallStreamsRunning+1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+2,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,initial_laure_stat.number_of_LinphoneCallStreamsRunning+1,2000));
+
+	CU_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
+	CU_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),3)
+
+	linphone_core_terminate_conference(marie->lc);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,2000));
+
+
+*/
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
+}
+
 int call_test_suite () {
 	CU_pSuite pSuite = CU_add_suite("Call", init, uninit);
 	if (NULL == CU_add_test(pSuite, "call_early_declined", call_early_declined)) {
@@ -467,6 +528,10 @@ int call_test_suite () {
 	if (NULL == CU_add_test(pSuite, "simple_conference", simple_conference)) {
 				return CU_get_error();
 	}
+	if (NULL == CU_add_test(pSuite, "simple_call_transfer", simple_call_transfer)) {
+				return CU_get_error();
+	}
+
 
 	return 0;
 }
