@@ -826,12 +826,15 @@ printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 
 if test "$enable_tunnel" = "true" ; then
-	printf "* Tunnel support\t\ttrue\n"
+	printf "* Tunnel support\t\t\ttrue\n"
 fi
 if test $USE_BELLESIP_TRUE !='#' ; then
-	printf "* bellesip stack\t\ttrue\n"
+	printf "* bellesip stack\t\t\ttrue\n"
 else
 	printf "* eXosip stack\t\ttrue\n"
+fi
+if test "$build_upnp" = "true" ; then
+	printf "* upnp support\t\t\ttrue\n"
 fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."
