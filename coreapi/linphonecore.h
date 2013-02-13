@@ -1105,6 +1105,36 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc);
 
+/**
+ * @ingroup network_parameters
+ * Return the availability of uPnP.
+ *
+ * @param lc #LinphoneCore
+ * @return true if uPnP is available otherwise return false. 
+ */
+bool_t linphone_core_upnp_available(const LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Return the internal state of uPnP. 
+ *
+ * @param lc #LinphoneCore
+ * @return an LinphoneUpnpState. 
+ */
+LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
+
+/**
+ * @ingroup network_parameters
+ * Return the external ip address of router. 
+ * In some cases the uPnP can have an external ip address but not a usable uPnP
+ * (state different of Ok). 
+ *
+ * @param lc #LinphoneCore
+ * @return a null terminated string containing the external ip address. If the
+ * the external ip address is not available return null. 
+ */
+const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
+
 void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
 
 const char *linphone_core_get_nat_address(const LinphoneCore *lc);

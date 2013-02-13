@@ -429,6 +429,7 @@ typedef struct sip_config
 	bool_t ipv6_enabled;
 	bool_t sdp_200_ack;
 	bool_t register_only_when_network_is_up;
+	bool_t register_only_when_upnp_is_ok;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
 	bool_t tcp_tls_keepalive;

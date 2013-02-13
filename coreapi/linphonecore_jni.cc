@@ -2288,6 +2288,19 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, 
 	return (jlong) linphone_core_get_config((LinphoneCore *)lc);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_upnpAvailable(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jboolean) linphone_core_upnp_available((LinphoneCore *)lc);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getUpnpState(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jint) linphone_core_get_upnp_state((LinphoneCore *)lc);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getUpnpExternalIpaddress(JNIEnv *env, jobject thiz, jlong lc) {
+	jstring jvalue = env->NewStringUTF(linphone_core_get_upnp_external_ipaddress((LinphoneCore *)lc));
+	return jvalue;
+}
+
 extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env, jobject thiz, jstring file) {
         const char *cfile = env->GetStringUTFChars(file, NULL);
         LpConfig *lp = lp_config_new(cfile);

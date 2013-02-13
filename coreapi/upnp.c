@@ -133,6 +133,8 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	old_state = lupnp->state;
 
 	switch(event) {
+	case UPNP_IGD_DEVICE_ADDED:
+	case UPNP_IGD_DEVICE_REMOVED:
 	case UPNP_IGD_EXTERNAL_IPADDRESS_CHANGED:
 	case UPNP_IGD_NAT_ENABLED_CHANGED:
 	case UPNP_IGD_CONNECTION_STATUS_CHANGED:
@@ -315,15 +317,12 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	/* Send port binding removes */
 	if(lupnp->sip_udp != NULL) {
 		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp);
-		lupnp->sip_udp = NULL;
 	}
 	if(lupnp->sip_tcp != NULL) {
 		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tcp);
-		lupnp->sip_tcp = NULL;
 	}
 	if(lupnp->sip_tls != NULL) {
 		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tls);
-		lupnp->sip_tcp = NULL;
 	}
 
 	/* Wait all pending bindings are done */
@@ -381,6 +380,10 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 	upnp_igd_port_mapping mapping;
 	char description[128];
 	int ret;
+	
+	if(lupnp->state != LinphoneUpnpStateOk) {
+		return -2;
+	}
 
 	// Compute port binding state
 	if(port->state != LinphoneUpnpStateAdding) {
@@ -435,6 +438,10 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 int linphone_upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortBinding *port) {
 	upnp_igd_port_mapping mapping;
 	int ret;
+	
+	if(lupnp->state != LinphoneUpnpStateOk) {
+		return -2;
+	}
 
 	// Compute port binding state
 	if(port->state != LinphoneUpnpStateRemoving) {
@@ -848,16 +855,18 @@ UpnpPortBinding *linphone_upnp_port_binding_copy(const UpnpPortBinding *port) {
 
 void linphone_upnp_port_binding_log(int level, const char *msg, const UpnpPortBinding *port) {
 	if(strlen(port->local_addr)) {
-		ortp_log(level, "uPnP IGD: %s %s|%d->%s:%d", msg,
+		ortp_log(level, "uPnP IGD: %s %s|%d->%s:%d (retry %d)", msg,
 							(port->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
 									port->external_port,
 									port->local_addr,
-									port->local_port);
+									port->local_port,
+									port->retry - 1);
 	} else {
-		ortp_log(level, "uPnP IGD: %s %s|%d->%d", msg,
+		ortp_log(level, "uPnP IGD: %s %s|%d->%d (retry %d)", msg,
 							(port->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
 									port->external_port,
-									port->local_port);
+									port->local_port,
+									port->retry - 1);
 	}
 }
 

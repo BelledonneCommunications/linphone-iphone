@@ -697,6 +697,8 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.sdp_200_ack=lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.register_only_when_network_is_up=
 		lp_config_get_int(lc->config,"sip","register_only_when_network_is_up",1);
+	lc->sip_conf.register_only_when_upnp_is_ok=
+		lp_config_get_int(lc->config,"sip","register_only_when_upnp_is_ok",1);
 	lc->sip_conf.ping_with_options=lp_config_get_int(lc->config,"sip","ping_with_options",1);
 	lc->sip_conf.auto_net_state_mon=lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
 	lc->sip_conf.keepalive_period=lp_config_get_int(lc->config,"sip","keepalive_period",10000);
@@ -4123,6 +4125,31 @@ const char * linphone_core_get_stun_server(const LinphoneCore *lc){
 	return lc->net_conf.stun_server;
 }
 
+bool_t linphone_core_upnp_available(const LinphoneCore *lc){
+#ifdef BUILD_UPNP
+	return TRUE;
+#else
+	return FALSE;
+#endif //BUILD_UPNP
+}
+
+LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc){
+#ifdef BUILD_UPNP
+	return linphone_upnp_context_get_state(lc->upnp);
+#else
+	return LinphoneUpnpStateNotAvailable;
+#endif //BUILD_UPNP
+}
+
+const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc){
+#ifdef BUILD_UPNP
+	return linphone_upnp_context_get_external_ipaddress(lc->upnp);
+#else
+	return NULL;
+#endif //BUILD_UPNP
+}
+
+
 const char * linphone_core_get_relay_addr(const LinphoneCore *lc){
 	return lc->net_conf.relay;
 }
@@ -4977,7 +5004,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
-
+	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 
 	
 
