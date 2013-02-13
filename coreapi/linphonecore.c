@@ -4206,6 +4206,12 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 }
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
+#ifndef BUILD_UPNP
+	if(pol == LinphonePolicyUseUpnp) {
+		ms_warning("UPNP is not available, reset firewall policy to no firewall");
+		pol = LinphonePolicyNoFirewall;
+	}
+#endif //BUILD_UPNP
 	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 	if (linphone_core_ready(lc))
