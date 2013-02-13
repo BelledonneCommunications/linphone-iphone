@@ -1087,7 +1087,9 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
 		if ((!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable) &&
-			(!lc->sip_conf.register_only_when_upnp_is_ok || linphone_core_get_upnp_state(lc) == LinphoneUpnpStateOk))
+			(linphone_core_get_firewall_policy(lc)!=LinphonePolicyUseUpnp
+					|| !lc->sip_conf.register_only_when_upnp_is_ok
+					|| linphone_core_get_upnp_state(lc) == LinphoneUpnpStateOk))
 			linphone_proxy_config_register(cfg);
 		if (cfg->publish && cfg->publish_op==NULL){
 			linphone_proxy_config_send_publish(cfg,lc->presence_mode);
