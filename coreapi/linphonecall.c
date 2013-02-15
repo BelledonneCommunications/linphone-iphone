@@ -1100,7 +1100,7 @@ void linphone_call_params_add_custom_header(LinphoneCallParams *params, const ch
 	params->custom_headers=sal_custom_header_append(params->custom_headers,header_name,header_value);
 }
 
-const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name){
+const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name){
 	return sal_custom_header_find(params->custom_headers,header_name);
 }
 
