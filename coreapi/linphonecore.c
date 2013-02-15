@@ -1304,9 +1304,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
-#ifdef BUILD_UPNP
-	lc->upnp = linphone_upnp_context_new(lc);
-#endif //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -4211,6 +4208,17 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		ms_warning("UPNP is not available, reset firewall policy to no firewall");
 		pol = LinphonePolicyNoFirewall;
 	}
+#else //BUILD_UPNP
+	if(pol == LinphonePolicyUseUpnp) {
+		if(lc->upnp == NULL) {
+			lc->upnp = linphone_upnp_context_new(lc);
+		}
+	} else {
+		if(lc->upnp != NULL) {
+			linphone_upnp_context_destroy(lc->upnp);
+			lc->upnp = NULL;
+		}
+	}	
 #endif //BUILD_UPNP
 	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
@@ -5170,8 +5178,10 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 
 #ifdef BUILD_UPNP
-	linphone_upnp_context_destroy(lc->upnp);
-	lc->upnp = NULL;
+	if(lc->upnp != NULL) {
+		linphone_upnp_context_destroy(lc->upnp);
+		lc->upnp = NULL;
+	}
 #endif //BUILD_UPNP
 
 	if (lc->friends)
@@ -5506,7 +5516,7 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
 		Hook *h=(Hook*)elem->data;
 		if (h->fun==hook && h->data==hook_data){
-			ms_list_remove_link(lc->hooks,elem);
+			lc->hooks = ms_list_remove_link(lc->hooks,elem);
 			ms_free(h);
 			return;
 		}

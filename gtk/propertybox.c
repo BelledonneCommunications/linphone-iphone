@@ -1083,6 +1083,10 @@ void linphone_gtk_show_parameters(void){
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_upnp")),TRUE);
 		break;
 	}
+	if(!linphone_core_upnp_available(lc)) {
+		gtk_widget_hide(linphone_gtk_get_widget(pb,"use_upnp"));
+	}
+
 	mtu=linphone_core_get_mtu(lc);
 	if (mtu<=0){
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(pb,"mtu"),FALSE);
