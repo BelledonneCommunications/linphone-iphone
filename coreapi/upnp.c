@@ -368,8 +368,32 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	ms_free(lupnp);
 }
 
-LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *ctx) {
-	return ctx->state;
+LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *lupnp) {
+	LinphoneUpnpState state;
+	ms_mutex_lock(&lupnp->mutex);
+	state = lupnp->state;
+	ms_mutex_unlock(&lupnp->mutex);
+	return state;
+}
+
+int linphone_upnp_context_get_external_port(UpnpContext *lupnp) {
+	int port = -1;
+	ms_mutex_lock(&lupnp->mutex);
+	
+	/* Send port binding removes */
+	if(lupnp->sip_udp != NULL) {
+		if(lupnp->sip_udp->state == LinphoneUpnpStateOk)
+			port = lupnp->sip_udp->external_port;
+	} else if(lupnp->sip_tcp != NULL) {
+		if(lupnp->sip_tcp->state == LinphoneUpnpStateOk)
+			port = lupnp->sip_tcp->external_port;
+	} else if(lupnp->sip_tls != NULL) {
+		if(lupnp->sip_tls->state == LinphoneUpnpStateOk)
+			port = lupnp->sip_tls->external_port;
+	}
+	
+	ms_mutex_unlock(&lupnp->mutex);
+	return port;
 }
 
 const char* linphone_upnp_context_get_external_ipaddress(UpnpContext *ctx) {
@@ -963,6 +987,7 @@ void linphone_upnp_session_destroy(UpnpSession *session) {
 LinphoneUpnpState linphone_upnp_session_get_state(UpnpSession *session) {
 	return session->state;
 }
+
 
 /*
  * uPnP Config

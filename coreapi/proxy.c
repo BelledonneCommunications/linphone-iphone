@@ -263,15 +263,30 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 	if (proxy==NULL) return NULL;
 	host=linphone_address_get_domain (proxy);
 	if (host!=NULL){
-		char localip[LINPHONE_IPADDR_SIZE];
+		int localport = -1;
+		char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
+		const char *localip = NULL;
 		char *tmp;
 		LCSipTransports tr;
 		LinphoneAddress *contact;
 		
-		linphone_core_get_local_ip(obj->lc,host,localip);
 		contact=linphone_address_new(obj->reg_identity);
-		linphone_address_set_domain (contact,localip);
-		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
+#ifdef BUILD_UPNP
+		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
+			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
+			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
+		}
+#endif //BUILD_UPNP 		
+		if(localip == NULL) {
+			localip = localip_tmp;
+			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
+		}
+		if(localport == -1) {
+			localport = linphone_core_get_sip_port(obj->lc);
+		}
+		linphone_address_set_port_int(contact,localport);
+		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
 		
 		linphone_core_get_sip_transports(obj->lc,&tr);
