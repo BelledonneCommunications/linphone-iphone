@@ -92,5 +92,7 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/
 void sal_op_message_fill_cbs(SalOp*op);
-
+/*call transfert*/
+void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event);
+void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event);
 #endif /* SAL_IMPL_H_ */

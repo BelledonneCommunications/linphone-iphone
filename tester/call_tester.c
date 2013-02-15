@@ -60,7 +60,21 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 		CU_FAIL("unexpected event");break;
 	}
 }
+void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
+	char* to=linphone_address_as_string(linphone_call_get_call_log(transfered)->to);
+	char* from=linphone_address_as_string(linphone_call_get_call_log(transfered)->from);
 
+	ms_message("Transferred call from [%s] to [%s], new state is [%s]",from,to,linphone_call_state_to_string(new_call_state));
+	ms_free(to);
+	ms_free(from);
+
+	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	switch (cstate) {
+	case LinphoneCallOutgoingInit :counters->number_of_LinphoneTransferCallOutgoingInit++;break;
+	default:
+		CU_FAIL("unexpected event");break;
+	}
+}
 static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -466,7 +480,8 @@ static void simple_call_transfer() {
 	/*marie calling laure*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingProgress,1,2000));
 
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingProgress,2,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallOutgoingInit,1,2000));
+
 
 /*
 	initial_marie_stat=marie->stat;

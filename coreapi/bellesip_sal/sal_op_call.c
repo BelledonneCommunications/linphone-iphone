@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 #include "offeranswer.h"
 
-static void process_refer(SalOp *op, const belle_sip_request_event_t *event);
 
 static void sdp_process(SalOp *h){
 	ms_message("Doing SDP offer/answer process of type %s",h->sdp_offering ? "outgoing" : "incoming");
@@ -370,7 +369,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				resp=belle_sip_response_create_from_request(req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 		}else if (strcmp("REFER",belle_sip_request_get_method(req))==0) {
-			process_refer(op,event);
+			sal_op_process_refer(op,event);
+		} else if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
+			sal_op_call_process_notify(op,event);
 		} else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 			unsupported_method(server_transaction,req);
@@ -628,91 +629,6 @@ int sal_call_is_offerer(const SalOp *h){
 	return h->sdp_offering;
 }
 
-
-/*call transfer*/
-static void sal_op_set_replaces(SalOp* op,belle_sip_header_replaces_t* replaces) {
-	if (op->replaces){
-		belle_sip_object_unref(op->replaces);
-	}
-	op->replaces=replaces;
-	belle_sip_object_ref(op->replaces);
-}
-static void sal_op_set_referred_by(SalOp* op,belle_sip_header_referred_by_t* referred_by) {
-	if (op->referred_by){
-		belle_sip_object_unref(op->referred_by);
-	}
-	op->referred_by=referred_by;
-	belle_sip_object_ref(op->referred_by);
-}
-
-int sal_call_refer(SalOp *op, const char *refer_to){
-	belle_sip_header_refer_to_t* refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
-	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"REFER"):NULL; /*cannot create request if dialog not set yet*/
-	if (!req) {
-		ms_error("Cannot refer to [%s] for op [%p]",refer_to,op);
-		return -1;
-	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(refer_to_header));
-	return sal_op_send_request(op,req);
-}
-int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h){
-	ms_fatal("sal_call_refer_with_replaces not implemented yet");
-	return -1;
-}
-int sal_call_accept_refer(SalOp *h){
-	ms_fatal("sal_call_accept_refer not implemented yet");
-	return -1;
-}
-/*informs this call is consecutive to an incoming refer */
-int sal_call_set_referer(SalOp *h, SalOp *refered_call){
-	if (refered_call->replaces)
-		sal_op_set_replaces(h,refered_call->replaces);
-	if (refered_call->referred_by)
-		sal_op_set_referred_by(h,refered_call->referred_by);
-	return 0;
-}
-/* returns the SalOp of a call that should be replaced by h, if any */
-SalOp *sal_call_get_replaces(SalOp *h){
-	if (h!=NULL && h->replaces!=NULL){
-		ms_fatal("sal_call_get_replaces not implemented yet");
-	}
-	return NULL;
-}
-
-static int send_notify_for_refer(SalOp* op, const char *sipfrag){
-	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
-	size_t content_length=strlen(sipfrag);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,-1)));
-
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),belle_sip_header_create("Event","refer"));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_HEADER(belle_sip_header_content_type_create("message","sipfrag")));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),sipfrag,content_length);
-
-	return sal_op_send_request(op,notify);
-}
-
-int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
-	belle_sip_dialog_state_t state=newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
-	switch(state) {
-	case BELLE_SIP_DIALOG_NULL:
-	case BELLE_SIP_DIALOG_EARLY:
-		send_notify_for_refer(op,"SIP/2.0 100 Trying\r\n");
-		break;
-	case BELLE_SIP_DIALOG_CONFIRMED:
-		if(send_notify_for_refer(op,"SIP/2.0 200 Ok\r\n")) {
-			/* we need previous notify transaction to complete, so buffer the request for later*/
-			/*op->sipfrag_pending="SIP/2.0 200 Ok\r\n";*/
-			ms_error("Cannot notify 200 ok frag to [%p] for new  op [%p]",op,newcall);
-		}
-		break;
-	default:
-		break;
-	}
-	return 0;
-}
-
 void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
 	ms_warning("sal_expire_old_registration_contacts not implemented ");
 }
@@ -721,36 +637,4 @@ void sal_use_dates(Sal *ctx, bool_t enabled){
 	ms_warning("sal_use_dates not implemented yet");
 }
 
-
-
-static void process_refer(SalOp *op, const belle_sip_request_event_t *event){
-	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
-	belle_sip_header_refer_to_t *refer_to= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_refer_to_t);;
-	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);;
-	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,req);
-	belle_sip_response_t* resp;
-	belle_sip_uri_t* refer_to_uri;
-	char* refer_to_uri_str;
-	ms_message("Receiving REFER request on op [%p]",op);
-	if (refer_to) {
-		refer_to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to));
-
-		if (refer_to_uri && belle_sip_uri_get_header(refer_to_uri,"Replaces")) {
-			sal_op_set_replaces(op,belle_sip_header_replaces_create2(belle_sip_uri_get_header(refer_to_uri,"Replaces")));
-		}
-		if (referred_by){
-			sal_op_set_referred_by(op,referred_by);
-		}
-		refer_to_uri_str=belle_sip_uri_to_string(refer_to_uri);
-		resp = belle_sip_response_create_from_request(req,202);
-		belle_sip_server_transaction_send_response(server_transaction,resp);
-		op->base.root->callbacks.refer_received(op->base.root,op,refer_to_uri_str);
-		belle_sip_free(refer_to_uri_str);
-	} else {
-		ms_warning("cannot do anything with the refer without destination\n");
-		resp = belle_sip_response_create_from_request(req,501);
-		belle_sip_server_transaction_send_response(server_transaction,resp);
-	}
-
-}
 

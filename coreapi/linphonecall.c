@@ -2335,6 +2335,9 @@ LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state) {
 	if (state != call->transfer_state) {
 		LinphoneCore* lc = call->core;
+		ms_message("Transfer state for call [%p] changed  from [%s] to [%s]",call
+																			,linphone_call_state_to_string(call->transfer_state)
+																			,linphone_call_state_to_string(call->state));
 		call->transfer_state = state;
 		if (lc->vtable.transfer_state_changed)
 			lc->vtable.transfer_state_changed(lc, call, state);

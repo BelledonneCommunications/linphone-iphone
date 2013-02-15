@@ -56,6 +56,8 @@ typedef struct _stats {
 	int number_of_LinphoneCallUpdating;
 	int number_of_LinphoneCallReleased;
 
+	int number_of_LinphoneTransferCallOutgoingInit;
+
 	int number_of_LinphoneMessageReceived;
 	int number_of_LinphoneMessageReceivedLegacy;
 	int number_of_LinphoneMessageExtBodyReceived;
@@ -85,12 +87,11 @@ void reset_counters( stats* counters);
 
 void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg);
+void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
-
-void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-
+Qvoid new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 
 LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;

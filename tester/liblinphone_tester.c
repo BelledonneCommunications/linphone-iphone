@@ -158,6 +158,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	mgr->v_table.message_received=message_received;
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
+	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
 	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
@@ -198,6 +199,7 @@ CU_pSuite pSuite = CU_add_suite("Setup", init, uninit);
 }
 int main (int argc, char *argv[]) {
 	int i;
+
 	char *test_name=NULL;
 	char *suite_name=NULL;
 	for(i=1;i<argc;++i){
