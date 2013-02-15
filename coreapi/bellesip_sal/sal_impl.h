@@ -61,7 +61,7 @@ struct SalOp{
 	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;
 	belle_sip_header_replaces_t *replaces;
-	belle_sip_header_t *referred_by;
+	belle_sip_header_referred_by_t *referred_by;
 	bool_t auto_answer_asked;
 	SalMediaDescription *result;
 	belle_sdp_session_description_t *sdp_answer;

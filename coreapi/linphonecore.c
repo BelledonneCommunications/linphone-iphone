@@ -5232,10 +5232,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 #endif
 	}
 
-#ifdef BUILD_UPNP
-	linphone_upnp_context_destroy(lc->upnp);
-	lc->upnp = NULL;
-#endif //BUILD_UPNP
+
 
 	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
@@ -5257,10 +5254,18 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	codecs_config_uninit(lc);
 	ui_config_uninit(lc);
 	sip_config_uninit(lc);
+
+
+	sip_setup_unregister_all();
+
+#ifdef BUILD_UPNP
+	if (lc->upnp) linphone_upnp_context_destroy(lc->upnp);
+	lc->upnp = NULL;
+#endif  //BUILD_UPNP
+
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
 	lc->config = NULL; /* Mark the config as NULL to block further calls */
-	sip_setup_unregister_all();
 
 	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_destroy);
 	lc->call_logs=ms_list_free(lc->call_logs);

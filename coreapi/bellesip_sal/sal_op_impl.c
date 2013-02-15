@@ -34,6 +34,9 @@ void sal_op_release(SalOp *op){
 		belle_sip_refresher_stop(op->registration_refresher);
 		belle_sip_object_unref(op->registration_refresher);
 	}
+	if(op->replaces) belle_sip_object_unref(op->replaces);
+	if(op->referred_by) belle_sip_object_unref(op->referred_by);
+
 	if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
 	__sal_op_free(op);
 	return ;

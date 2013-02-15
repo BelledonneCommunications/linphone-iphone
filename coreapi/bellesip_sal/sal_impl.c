@@ -145,11 +145,14 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		op->dir=SalOpDirIncoming;
 		sal_op_message_fill_cbs(op);
 
-	} else {
+	} else if (strcmp("OPTION",belle_sip_request_get_method(req))==0) {
+		resp=belle_sip_response_create_from_request(req,200);
+		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		return;
+	}else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
 		resp=belle_sip_response_create_from_request(req,501);
 		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
-
 		return;
 	}
 
