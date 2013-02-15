@@ -1115,6 +1115,23 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 
 #pragma mark - Speaker Functions
 
+- (bool)allowSpeaker {
+    bool notallow = false;
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        notallow = [route isEqualToString: @"Headset"] ||
+            [route isEqualToString: @"Headphone"] ||
+            [route isEqualToString: @"HeadphonesAndMicrophone"] ||
+            [route isEqualToString: @"HeadsetInOut"] ||
+            [route isEqualToString: @"Lineout"];
+        CFRelease(lNewRoute);
+    }
+    return !notallow;
+}
+
 static void audioRouteChangeListenerCallback (
                                               void                   *inUserData,                                 // 1
                                               AudioSessionPropertyID inPropertyID,                                // 2
@@ -1142,7 +1159,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)setSpeakerEnabled:(BOOL)enable {
     speakerEnabled = enable;
-    if(enable) {
+    if(enable && [self allowSpeaker]) {
         UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)

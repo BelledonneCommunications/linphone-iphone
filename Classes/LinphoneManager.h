@@ -132,6 +132,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)refreshRegisters;
 
+- (bool)allowSpeaker;
+
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
