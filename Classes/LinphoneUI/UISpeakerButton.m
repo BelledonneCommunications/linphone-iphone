@@ -92,6 +92,7 @@ static void audioRouteChangeListenerCallback (
 }
 
 - (bool)onUpdate {
+    [self setEnabled:[[LinphoneManager instance] allowSpeaker]];
     return [[LinphoneManager instance] speakerEnabled];
 }
 

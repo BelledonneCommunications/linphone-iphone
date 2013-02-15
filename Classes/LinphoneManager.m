@@ -453,7 +453,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		
 		/*should we reject this call ?*/
 		if ([lCTCallCenter currentCalls]!=nil) {
-			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+			char *tmp=linphone_call_get_remote_address_as_string(call);
+			if (tmp) {
+				[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",tmp];
+				ms_free(tmp);
+			}
 			linphone_core_decline_call(theLinphoneCore, call,LinphoneReasonBusy);
 			[lCTCallCenter release];
 			return;
@@ -464,7 +468,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		   && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 			
 			LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-			NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
+			NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 			
 			if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
                 NSString *ringtone = [NSString stringWithFormat:@"%@_loop.wav", [[NSUserDefaults standardUserDefaults] stringForKey:@"ringtone_preference"], nil];
@@ -494,7 +498,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         LinphoneCallLog *log = linphone_call_get_call_log(call);
-        if(log != NULL && log->status == LinphoneCallMissed) {
+        if(log != NULL && linphone_call_log_get_status(log) == LinphoneCallMissed) {
             // We can't use the comparison method, we can be in background mode and the application
             // will no send/update the http request
             int missed = [[UIApplication sharedApplication] applicationIconBadgeNumber];
@@ -516,12 +520,12 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             [data->notification release];
             data->notification = nil;
             
-            if(log == NULL || log->status == LinphoneCallMissed) {
+            if(log == NULL || linphone_call_log_get_status(log) == LinphoneCallMissed) {
                 UILocalNotification *notification = [[UILocalNotification alloc] init];
                 notification.repeatInterval = 0;
                 notification.alertBody = [NSString stringWithFormat:@"%@", address];
                 notification.alertAction = NSLocalizedString(@"Show", nil);
-               notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:log->call_id] forKey:@"callLog"];
+                notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)] forKey:@"callLog"];
                 [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
                 [notification release];
             }
@@ -1001,7 +1005,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
-	return strcmp(linphone_call_get_call_log(call)->call_id, callid);
+	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
 - (void)acceptCallForCallId:(NSString*)callid {
@@ -1180,6 +1184,23 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 
 #pragma mark - Speaker Functions
 
+- (bool)allowSpeaker {
+    bool notallow = false;
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        notallow = [route isEqualToString: @"Headset"] ||
+            [route isEqualToString: @"Headphone"] ||
+            [route isEqualToString: @"HeadphonesAndMicrophone"] ||
+            [route isEqualToString: @"HeadsetInOut"] ||
+            [route isEqualToString: @"Lineout"];
+        CFRelease(lNewRoute);
+    }
+    return !notallow;
+}
+
 static void audioRouteChangeListenerCallback (
                                               void                   *inUserData,                                 // 1
                                               AudioSessionPropertyID inPropertyID,                                // 2
@@ -1207,7 +1228,7 @@ static void audioRouteChangeListenerCallback (
 
 - (void)setSpeakerEnabled:(BOOL)enable {
     speakerEnabled = enable;
-    if(enable) {
+    if(enable && [self allowSpeaker]) {
         UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)
