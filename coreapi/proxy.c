@@ -263,15 +263,30 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 	if (proxy==NULL) return NULL;
 	host=linphone_address_get_domain (proxy);
 	if (host!=NULL){
-		char localip[LINPHONE_IPADDR_SIZE];
+		int localport = -1;
+		char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
+		const char *localip = NULL;
 		char *tmp;
 		LCSipTransports tr;
 		LinphoneAddress *contact;
 		
-		linphone_core_get_local_ip(obj->lc,host,localip);
 		contact=linphone_address_new(obj->reg_identity);
-		linphone_address_set_domain (contact,localip);
-		linphone_address_set_port_int(contact,linphone_core_get_sip_port(obj->lc));
+#ifdef BUILD_UPNP
+		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
+			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
+			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
+		}
+#endif //BUILD_UPNP 		
+		if(localip == NULL) {
+			localip = localip_tmp;
+			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
+		}
+		if(localport == -1) {
+			localport = linphone_core_get_sip_port(obj->lc);
+		}
+		linphone_address_set_port_int(contact,localport);
+		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
 		
 		linphone_core_get_sip_transports(obj->lc,&tr);
@@ -1086,11 +1101,19 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
-		if ((!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable) &&
-			(linphone_core_get_firewall_policy(lc)!=LinphonePolicyUseUpnp
-					|| !lc->sip_conf.register_only_when_upnp_is_ok
-					|| linphone_core_get_upnp_state(lc) == LinphoneUpnpStateOk))
-			linphone_proxy_config_register(cfg);
+		switch(linphone_core_get_firewall_policy(lc)) {
+			case LinphonePolicyUseUpnp:
+#ifdef BUILD_UPNP
+			if(!lc->sip_conf.register_only_when_upnp_is_ok || 
+			   (lc->upnp != NULL && !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
+				break;
+			}
+#endif //BUILD_UPNP
+			default:
+			if ((!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)) {
+				linphone_proxy_config_register(cfg);
+			}
+		}	
 		if (cfg->publish && cfg->publish_op==NULL){
 			linphone_proxy_config_send_publish(cfg,lc->presence_mode);
 		}
