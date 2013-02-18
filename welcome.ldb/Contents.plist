@@ -90,8 +90,36 @@
 							<string>Answer</string>
 							<key>localizations</key>
 							<dict>
+								<key>cs</key>
+								<string>Welcome</string>
+								<key>de</key>
+								<string>Welcome</string>
 								<key>en</key>
 								<string>Answer</string>
+								<key>es</key>
+								<string>Welcome</string>
+								<key>fi</key>
+								<string>Welcome</string>
+								<key>fr</key>
+								<string>Welcome</string>
+								<key>it</key>
+								<string>Welcome</string>
+								<key>nb</key>
+								<string>Welcome</string>
+								<key>nl</key>
+								<string>Welcome</string>
+								<key>pl</key>
+								<string>Welcome</string>
+								<key>pt</key>
+								<string>Welcome</string>
+								<key>ru</key>
+								<string>Welcome</string>
+								<key>sk</key>
+								<string>Welcome</string>
+								<key>sv</key>
+								<string>Welcome</string>
+								<key>zh-Hans</key>
+								<string>Welcome</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
