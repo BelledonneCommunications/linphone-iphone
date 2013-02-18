@@ -57,6 +57,11 @@ typedef struct _stats {
 	int number_of_LinphoneCallReleased;
 
 	int number_of_LinphoneTransferCallOutgoingInit;
+	int number_of_LinphoneTransfertCallOutgoingProgress;
+	int number_of_LinphoneTransfertCallOutgoingRinging;
+	int number_of_LinphoneTransfertCallOutgoingEarlyMedia;
+	int number_of_LinphoneTransfertCallConnected;
+	int number_of_LinphoneTransfertCallStreamsRunning;
 
 	int number_of_LinphoneMessageReceived;
 	int number_of_LinphoneMessageReceivedLegacy;
@@ -91,7 +96,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
-Qvoid new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 
 LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;

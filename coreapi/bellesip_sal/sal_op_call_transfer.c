@@ -37,19 +37,41 @@ static void sal_op_set_referred_by(SalOp* op,belle_sip_header_referred_by_t* ref
 	belle_sip_object_ref(op->referred_by);
 }
 
-int sal_call_refer(SalOp *op, const char *refer_to){
-	belle_sip_header_refer_to_t* refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
+
+int sal_call_refer_to(SalOp *op, belle_sip_header_refer_to_t* refer_to, belle_sip_header_referred_by_t* referred_by){
+	char* tmp;
 	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"REFER"):NULL; /*cannot create request if dialog not set yet*/
 	if (!req) {
-		ms_error("Cannot refer to [%s] for op [%p]",refer_to,op);
+		tmp=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to)));
+		ms_error("Cannot refer to [%s] for op [%p]",tmp,op);
+		belle_sip_free(tmp);
 		return -1;
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(refer_to_header));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(refer_to));
+	if (referred_by) belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(referred_by));
 	return sal_op_send_request(op,req);
 }
-int sal_call_refer_with_replaces(SalOp *h, SalOp *other_call_h){
-	ms_fatal("sal_call_refer_with_replaces not implemented yet");
-	return -1;
+
+int sal_call_refer(SalOp *op, const char *refer_to){
+	belle_sip_header_refer_to_t* refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
+	return sal_call_refer_to(op,refer_to_header,NULL);
+}
+
+int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
+	belle_sip_dialog_state_t other_call_dialod_state=other_call_op->dialog?belle_sip_dialog_get_state(other_call_op->dialog):BELLE_SIP_DIALOG_NULL;
+	belle_sip_header_refer_to_t* refer_to;
+	belle_sip_header_referred_by_t* referred_by;
+
+	/*first, build refer to*/
+	if (other_call_dialod_state!=BELLE_SIP_DIALOG_CONFIRMED) {
+		ms_error(" wrong dialog state [%s] for op [%p], sould be BELLE_SIP_DIALOG_CONFIRMED",belle_sip_dialog_state_to_string(other_call_dialod_state)
+																							,other_call_op);
+		return -1;
+	} else {
+		refer_to=belle_sip_header_refer_to_create(belle_sip_dialog_get_remote_party(other_call_op->dialog));
+		referred_by=belle_sip_header_referred_by_create(belle_sip_dialog_get_local_party(op->dialog));
+	}
+	return sal_call_refer_to(op,refer_to,referred_by);
 }
 int sal_call_accept_refer(SalOp *h){
 	ms_fatal("sal_call_accept_refer not implemented yet");
