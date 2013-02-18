@@ -180,7 +180,7 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 			if (sipfrag){
 
 					int code=belle_sip_response_get_status_code(sipfrag);
-					SalReferStatus status;
+					SalReferStatus status=SalReferFailed;
 					if (code==100){
 						status=SalReferTrying;
 					}else if (code==200){
