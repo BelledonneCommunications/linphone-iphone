@@ -5176,7 +5176,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		usleep(50000);
 #endif
 	}
-
 #ifdef BUILD_UPNP
 	if(lc->upnp != NULL) {
 		linphone_upnp_context_destroy(lc->upnp);
@@ -5214,6 +5213,17 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	
 	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
 	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
+	
+	// Free struct variable
+	if(lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+	if(lc->play_file!=NULL){
+		ms_free(lc->play_file);
+	}
+	if(lc->rec_file!=NULL){
+		ms_free(lc->rec_file);
+	}
 
 	linphone_core_free_payload_types(lc);
 	ortp_exit();
