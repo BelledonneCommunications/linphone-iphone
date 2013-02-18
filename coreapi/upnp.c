@@ -21,9 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "lpconfig.h"
 
-#define UPNP_ADD_MAX_RETRY 4
+#define UPNP_ADD_MAX_RETRY    4
 #define UPNP_REMOVE_MAX_RETRY 4
-#define UPNP_SECTION_NAME "uPnP"
+#define UPNP_SECTION_NAME     "uPnP"
+#define UPNP_CORE_READY_CHECK 1 
 #define UPNP_CORE_RETRY_DELAY 4
 #define UPNP_CALL_RETRY_DELAY 1
 
@@ -72,7 +73,9 @@ struct _UpnpContext {
 
 	ms_mutex_t mutex;
 	ms_cond_t empty_cond;
-
+	
+	time_t last_ready_check;
+	LinphoneUpnpState last_ready_state;
 };
 
 
@@ -252,6 +255,9 @@ UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	ms_mutex_init(&lupnp->mutex, NULL);
 	ms_cond_init(&lupnp->empty_cond, NULL);
 
+	lupnp->last_ready_check = 0;
+	lupnp->last_ready_state = LinphoneUpnpStateIdle;
+
 	lupnp->lc = lc;
 	lupnp->pending_bindings = NULL;
 	lupnp->adding_configs = NULL;
@@ -347,16 +353,17 @@ LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *lupnp) {
 	return state;
 }
 
-bool_t linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
+bool_t _linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
 	bool_t ready = TRUE;
-	ms_mutex_lock(&lupnp->mutex);
-
+	
 	// 1 Check global uPnP state
 	ready = (lupnp->state == LinphoneUpnpStateOk);
 	
 	// 2 Check external ip address
-	if(ready && upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt) == NULL) {
-		ready = FALSE;
+	if(ready) {
+		if (upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt) == NULL) {
+			ready = FALSE;
+		}
 	}
 	
 	// 3 Check sip ports bindings
@@ -377,7 +384,14 @@ bool_t linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
 			ready = FALSE;
 		}
 	}
+	
+	return ready;
+}
 
+bool_t linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
+	bool_t ready;
+	ms_mutex_lock(&lupnp->mutex);
+	ready = _linphone_upnp_context_is_ready_for_register(lupnp);
 	ms_mutex_unlock(&lupnp->mutex);
 	return ready;
 }
@@ -541,6 +555,7 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 	}
 
 	ms_mutex_lock(&lupnp->mutex);
+
 	// Don't handle when the call
 	if(lupnp->state == LinphoneUpnpStateOk && call->upnp_session != NULL) {
 		ret = 0;
@@ -785,20 +800,16 @@ void linphone_upnp_update_port_binding(UpnpContext *lupnp, UpnpPortBinding **por
 		// Get addresses
 		local_addr = upnp_igd_get_local_ipaddress(lupnp->upnp_igd_ctxt);
 		external_addr = upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt);
-		
+
 		// Force binding update on local address change
 		if(local_addr != NULL) {
 			if(strncmp((*port_mapping)->local_addr, local_addr, sizeof((*port_mapping)->local_addr))) {
 				linphone_upnp_context_send_remove_port_binding(lupnp, *port_mapping, FALSE);
 				strncpy((*port_mapping)->local_addr, local_addr, sizeof((*port_mapping)->local_addr));
 			}
-		} else {
-			ms_warning("uPnP IGD: can't get local address");
 		}
 		if(external_addr != NULL) {
 			strncpy((*port_mapping)->external_addr, external_addr, sizeof((*port_mapping)->external_addr));
-		} else {
-			ms_warning("uPnP IGD: can't get external address");
 		}
 
 		// Add (if not already done) the binding
@@ -817,7 +828,9 @@ void linphone_upnp_update_port_binding(UpnpContext *lupnp, UpnpPortBinding **por
 bool_t linphone_core_upnp_hook(void *data) {
 	char key[64];
 	LCSipTransports transport;
-	MSList *item;
+	const MSList *item;
+	LinphoneUpnpState ready_state;
+	time_t now = time(NULL);
 	UpnpPortBinding *port_mapping;
 	UpnpContext *lupnp = (UpnpContext *)data;
 
@@ -831,6 +844,28 @@ bool_t linphone_core_upnp_hook(void *data) {
 		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_tls, UPNP_IGD_IP_PROTOCOL_TCP, transport.tls_port, UPNP_CORE_RETRY_DELAY);
 	}
 
+	/* Refresh registers if we are ready */
+	if(now - lupnp->last_ready_check >= UPNP_CORE_READY_CHECK) {
+		lupnp->last_ready_check = now;
+		ready_state = (_linphone_upnp_context_is_ready_for_register(lupnp))? LinphoneUpnpStateOk: LinphoneUpnpStateKo;
+		if(ready_state != lupnp->last_ready_state) {
+			for(item=linphone_core_get_proxy_config_list(lupnp->lc);item!=NULL;item=item->next) {
+				LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)item->data;
+				if (linphone_proxy_config_register_enabled(cfg)) {
+					if (ready_state != LinphoneUpnpStateOk) {
+						// Only reset ithe registration if we require that upnp should be ok
+						if(lupnp->lc->sip_conf.register_only_when_upnp_is_ok) {
+							linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone, "Registration impossible (uPnP not ready)");
+						}
+					} else {
+						cfg->commit=TRUE;
+					}
+				}
+			}
+			lupnp->last_ready_state = ready_state;
+		}
+	}
+			
 	/* Add configs */
 	for(item = lupnp->adding_configs;item!=NULL;item=item->next) {
 		port_mapping = (UpnpPortBinding *)item->data;
