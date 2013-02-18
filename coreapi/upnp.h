@@ -40,6 +40,8 @@ UpnpContext *linphone_upnp_context_new(LinphoneCore *lc);
 void linphone_upnp_context_destroy(UpnpContext *ctx);
 LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *ctx);
 const char *linphone_upnp_context_get_external_ipaddress(UpnpContext *ctx);
+int linphone_upnp_context_get_external_port(UpnpContext *ctx);
+bool_t linphone_upnp_context_is_ready_for_register(UpnpContext *ctx);
 void linphone_core_update_upnp_state_in_call_stats(LinphoneCall *call);
 
 #endif //LINPHONE_UPNP_H

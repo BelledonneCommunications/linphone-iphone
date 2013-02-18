@@ -824,6 +824,7 @@ printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
+printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* Tunnel support\t\t\ttrue\n"

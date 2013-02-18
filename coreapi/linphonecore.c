@@ -1307,9 +1307,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
-#ifdef BUILD_UPNP
-	lc->upnp = linphone_upnp_context_new(lc);
-#endif //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -4265,6 +4262,17 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		ms_warning("UPNP is not available, reset firewall policy to no firewall");
 		pol = LinphonePolicyNoFirewall;
 	}
+#else //BUILD_UPNP
+	if(pol == LinphonePolicyUseUpnp) {
+		if(lc->upnp == NULL) {
+			lc->upnp = linphone_upnp_context_new(lc);
+		}
+	} else {
+		if(lc->upnp != NULL) {
+			linphone_upnp_context_destroy(lc->upnp);
+			lc->upnp = NULL;
+		}
+	}	
 #endif //BUILD_UPNP
 	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
@@ -5259,9 +5267,11 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	sip_setup_unregister_all();
 
 #ifdef BUILD_UPNP
-	if (lc->upnp) linphone_upnp_context_destroy(lc->upnp);
-	lc->upnp = NULL;
-#endif  //BUILD_UPNP
+	if(lc->upnp != NULL) {
+		linphone_upnp_context_destroy(lc->upnp);
+		lc->upnp = NULL;
+	}
+#endif //BUILD_UPNP
 
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);
@@ -5272,6 +5282,17 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	
 	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
 	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
+	
+	// Free struct variable
+	if(lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+	if(lc->play_file!=NULL){
+		ms_free(lc->play_file);
+	}
+	if(lc->rec_file!=NULL){
+		ms_free(lc->rec_file);
+	}
 
 	linphone_core_free_payload_types(lc);
 	ortp_exit();
@@ -5574,7 +5595,7 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
 		Hook *h=(Hook*)elem->data;
 		if (h->fun==hook && h->data==hook_data){
-			ms_list_remove_link(lc->hooks,elem);
+			lc->hooks = ms_list_remove_link(lc->hooks,elem);
 			ms_free(h);
 			return;
 		}
