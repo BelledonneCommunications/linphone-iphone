@@ -2605,15 +2605,23 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 
 	if (call->dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
-		/*defer the start of the call after the OPTIONS ping*/
-		call->ping_replied=FALSE;
-		call->ping_op=sal_op_new(lc->sal);
-		sal_ping(call->ping_op,from,real_url);
-		sal_op_set_user_pointer(call->ping_op,call);
-		call->start_time=time(NULL);
-	}else{
-		if (defer==FALSE) linphone_core_start_invite(lc,call);
+#ifdef BUILD_UPNP
+		if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
+#else //BUILD_UPNP
+		{
+#endif //BUILD_UPNP
+			/*defer the start of the call after the OPTIONS ping*/
+			call->ping_replied=FALSE;
+			call->ping_op=sal_op_new(lc->sal);
+			sal_ping(call->ping_op,from,real_url);
+			sal_op_set_user_pointer(call->ping_op,call);
+			call->start_time=time(NULL);
+			defer = TRUE;
+		}
 	}
+	
+	if (defer==FALSE) linphone_core_start_invite(lc,call);
 
 	if (real_url!=NULL) ms_free(real_url);
 	return call;
