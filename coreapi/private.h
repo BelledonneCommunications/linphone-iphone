@@ -427,6 +427,7 @@ typedef struct sip_config
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
 	int in_call_timeout;	/*timeout after a call is hangup */
+	int delayed_timeout; 	/*timeout after a delayed call is resumed */
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 	LCSipTransports transports;
 	bool_t use_info;
