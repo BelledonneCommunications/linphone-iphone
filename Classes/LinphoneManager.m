@@ -1818,6 +1818,13 @@ static void audioRouteChangeListenerCallback (
 	/* pause current call, if any */
 	LinphoneCall* call = linphone_core_get_current_call(theLinphoneCore);
 	if ([ct currentCalls]!=nil) {
+        /* MODIFICATION: terminate call on gsm call*/
+        const MSList *list;
+        while((list = linphone_core_get_calls(theLinphoneCore)) != NULL) {
+            call = (LinphoneCall*)list->data;
+            linphone_core_terminate_call(theLinphoneCore, call);
+        }
+        /*
 		if (call) {
 			[LinphoneLogger log:LinphoneLoggerLog format:@"Pausing SIP call because GSM call"];
 			linphone_core_pause_call(theLinphoneCore, call);
@@ -1826,7 +1833,7 @@ static void audioRouteChangeListenerCallback (
 			[LinphoneLogger log:LinphoneLoggerLog format:@"Leaving conference call because GSM call"];
 			linphone_core_leave_conference(theLinphoneCore);
 			[self startCallPausedLongRunningTask];
-		}
+		}*/
 	} //else nop, keep call in paused state
 }
 @end
