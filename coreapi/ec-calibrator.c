@@ -97,17 +97,37 @@ static void ecc_deinit_filters(EcCalibrator *ecc){
 static void on_tone_sent(void *data, MSFilter *f, unsigned int event_id, void *arg){
 	MSDtmfGenEvent *ev=(MSDtmfGenEvent*)arg;
 	EcCalibrator *ecc=(EcCalibrator*)data;
-	ecc->sent_count++;
 	ecc->acc-=ev->tone_start_time;
 	ms_message("Sent tone at %u",(unsigned int)ev->tone_start_time);
+}
+
+static bool_t is_valid_tone(EcCalibrator *ecc, MSToneDetectorEvent *ev){
+	bool_t *toneflag=NULL;
+	if (strcmp(ev->tone_name,"freq1")==0){
+		toneflag=&ecc->freq1;
+	}else if (strcmp(ev->tone_name,"freq2")==0){
+		toneflag=&ecc->freq2;
+	}else if (strcmp(ev->tone_name,"freq3")==0){
+		toneflag=&ecc->freq3;
+	}else{
+		ms_error("Calibrator bug.");
+		return FALSE;
+	}
+	if (*toneflag){
+		ms_message("Duplicated tone event, ignored.");
+		return FALSE;
+	}
+	*toneflag=TRUE;
+	return TRUE;
 }
 
 static void on_tone_received(void *data, MSFilter *f, unsigned int event_id, void *arg){
 	MSToneDetectorEvent *ev=(MSToneDetectorEvent*)arg;
 	EcCalibrator *ecc=(EcCalibrator*)data;
-	ecc->recv_count++;
-	ecc->acc+=ev->tone_start_time;
-	ms_message("Received tone at %u",(unsigned int)ev->tone_start_time);
+	if (is_valid_tone(ecc,ev)){
+		ecc->acc+=ev->tone_start_time;
+		ms_message("Received tone at %u",(unsigned int)ev->tone_start_time);
+	}
 }
 
 static void ecc_play_tones(EcCalibrator *ecc){
@@ -116,53 +136,76 @@ static void ecc_play_tones(EcCalibrator *ecc){
 
 	ms_filter_set_notify_callback(ecc->det,on_tone_received,ecc);
 
+	/* configure the tones to be scanned */
+	
+	strncpy(expected_tone.tone_name,"freq1",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=2000;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.02;
+	expected_tone.min_amplitude=0.1;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
-	tone.frequency=1300;
-	tone.duration=1000;
-	tone.amplitude=1.0;
+	strncpy(expected_tone.tone_name,"freq2",sizeof(expected_tone.tone_name));
+	expected_tone.frequency=2300;
+	expected_tone.min_duration=40;
+	expected_tone.min_amplitude=0.1;
 
+	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
+	
+	strncpy(expected_tone.tone_name,"freq3",sizeof(expected_tone.tone_name));
+	expected_tone.frequency=2500;
+	expected_tone.min_duration=40;
+	expected_tone.min_amplitude=0.1;
+
+	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
+	
 	/*play an initial tone to startup the audio playback/capture*/
+	
+	tone.frequency=140;
+	tone.duration=1000;
+	tone.amplitude=0.5;
+
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(2);
 
 	ms_filter_set_notify_callback(ecc->gen,on_tone_sent,ecc);
+	
+	/* play the three tones*/
+	
 	tone.frequency=2000;
 	tone.duration=100;
-
+	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+	ms_usleep(300000);
+	
+	tone.frequency=2300;
+	tone.duration=100;
+	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+	ms_usleep(300000);
+	
+	tone.frequency=2500;
+	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_sleep(1);
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_sleep(1);
-
-	if (ecc->sent_count==3) {
-		if (ecc->recv_count==3){
-			int delay=ecc->acc/3;
-			if (delay<0){
-				ms_error("Quite surprising calibration result, delay=%i",delay);
-				ecc->status=LinphoneEcCalibratorFailed;
-			}else{
-				ms_message("Echo calibration estimated delay to be %i ms",delay);
-				ecc->delay=delay;
-				ecc->status=LinphoneEcCalibratorDone;
-			}
-		} else if (ecc->recv_count == 0) {
+	
+	if (ecc->freq1 && ecc->freq2 && ecc->freq3) {
+		int delay=ecc->acc/3;
+		if (delay<0){
+			ms_error("Quite surprising calibration result, delay=%i",delay);
+			ecc->status=LinphoneEcCalibratorFailed;
+		}else{
+			ms_message("Echo calibration estimated delay to be %i ms",delay);
+			ecc->delay=delay;
+			ecc->status=LinphoneEcCalibratorDone;
+		}
+	} else if ((ecc->freq1 || ecc->freq2 || ecc->freq3)==FALSE) {
 			ms_message("Echo calibration succeeded, no echo has been detected");
 			ecc->status = LinphoneEcCalibratorDoneNoEcho;
-		} else {
+	} else {
 			ecc->status = LinphoneEcCalibratorFailed;
-		}
-	}else{
-		ecc->status=LinphoneEcCalibratorFailed;
 	}
+
 	if (ecc->status == LinphoneEcCalibratorFailed) {
-		ms_error("Echo calibration failed, tones received = %i",ecc->recv_count);
+		ms_error("Echo calibration failed.");
 	}
 }
 

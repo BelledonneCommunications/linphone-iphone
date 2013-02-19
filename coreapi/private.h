@@ -643,12 +643,11 @@ struct _EcCalibrator{
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
-	int recv_count;
-	int sent_count;
 	int64_t acc;
 	int delay;
 	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
+	bool_t freq1,freq2,freq3;
 };
 
 typedef struct _EcCalibrator EcCalibrator;

@@ -757,30 +757,30 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setVideoPolicy(nativePtr, autoInitiate, autoAccept);
 	}
 	private native void setStaticPicture(long nativePtr, String path);
-	public void setStaticPicture(String path) {
+	public synchronized void setStaticPicture(String path) {
 		setStaticPicture(nativePtr, path);
 	}
 	private native void setUserAgent(long nativePtr, String name, String version);
 	@Override
-	public void setUserAgent(String name, String version) {
+	public synchronized void setUserAgent(String name, String version) {
 		setUserAgent(nativePtr,name,version);
 	}
 
 	private native void setCpuCountNative(int count);
-	public void setCpuCount(int count)
+	public synchronized void setCpuCount(int count)
 	{
 		setCpuCountNative(count);
 	}
 	
-	public int getMissedCallsCount() {
+	public synchronized int getMissedCallsCount() {
 		return getMissedCallsCount(nativePtr);
 	}
 	
-	public void removeCallLog(LinphoneCallLog log) {
+	public synchronized void removeCallLog(LinphoneCallLog log) {
 		removeCallLog(nativePtr, ((LinphoneCallLogImpl) log).getNativePtr());
 	}
 
-	public void resetMissedCallsCount() {
+	public synchronized void resetMissedCallsCount() {
 		resetMissedCallsCount(nativePtr);
 	}
 	
@@ -793,7 +793,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	
 	private native void refreshRegisters(long nativePtr);
-	public void refreshRegisters() {
+	public synchronized void refreshRegisters() {
 		refreshRegisters(nativePtr);
 	}
 	
@@ -803,19 +803,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	
 	@Override
-	public PayloadType findPayloadType(String mime, int clockRate) {
+	public synchronized PayloadType findPayloadType(String mime, int clockRate) {
 		return findPayloadType(mime, clockRate, 1);
 	}
 	
 	private native void removeFriend(long ptr, long lf);
 	@Override
-	public void removeFriend(LinphoneFriend lf) {
+	public synchronized void removeFriend(LinphoneFriend lf) {
 		removeFriend(nativePtr, lf.getNativePtr());
 	}
 	
 	private native long getFriendByAddress(long ptr, String sipUri);
 	@Override
-	public LinphoneFriend findFriendByAddress(String sipUri) {
+	public synchronized LinphoneFriend findFriendByAddress(String sipUri) {
 		long ptr = getFriendByAddress(nativePtr, sipUri);
 		if (ptr == 0) {
 			return null;
@@ -823,54 +823,64 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return new LinphoneFriendImpl(ptr);
 	}
 	
-	public void setAudioPort(int port) {
+	public synchronized void setAudioPort(int port) {
 		setAudioPort(nativePtr, port);
 	}
 	
-	public void setVideoPort(int port) {
+	public synchronized void setVideoPort(int port) {
 		setVideoPort(nativePtr, port);
 	}
 	
-	public void setAudioPortRange(int minPort, int maxPort) {
+	public synchronized void setAudioPortRange(int minPort, int maxPort) {
 		setAudioPortRange(nativePtr, minPort, maxPort);
 	}
 	
-	public void setVideoPortRange(int minPort, int maxPort) {
+	public synchronized void setVideoPortRange(int minPort, int maxPort) {
 		setVideoPortRange(nativePtr, minPort, maxPort);
 	}
 	
-	public void setIncomingTimeout(int timeout) {
+	public synchronized void setIncomingTimeout(int timeout) {
 		setIncomingTimeout(nativePtr, timeout);
 	}
 	
-	public void setInCallTimeout(int timeout)
+	public synchronized void setInCallTimeout(int timeout)
 	{
 		setInCallTimeout(nativePtr, timeout);
 	}
 	
 	private native void setMicrophoneGain(long ptr, float gain);
-	public void setMicrophoneGain(float gain) {
+	public synchronized void setMicrophoneGain(float gain) {
 		setMicrophoneGain(nativePtr, gain);
 	}
 	
-	public void setPrimaryContact(String displayName, String username) {
+	public synchronized void setPrimaryContact(String displayName, String username) {
 		setPrimaryContact(nativePtr, displayName, username);
 	}
 	
 	private native void setUseSipInfoForDtmfs(long ptr, boolean use);
-	public void setUseSipInfoForDtmfs(boolean use) {
+	public synchronized void setUseSipInfoForDtmfs(boolean use) {
 		setUseSipInfoForDtmfs(nativePtr, use);
 	}
 	
 	private native void setUseRfc2833ForDtmfs(long ptr, boolean use);
-	public void setUseRfc2833ForDtmfs(boolean use) {
+	public synchronized void setUseRfc2833ForDtmfs(boolean use) {
 		setUseRfc2833ForDtmfs(nativePtr, use);
 	}
 
 	private native long getConfig(long ptr);
-	public LpConfig getConfig() {
+	public synchronized LpConfig getConfig() {
 		long configPtr=getConfig(nativePtr);
 		return new LpConfigImpl(configPtr);
+	}
+	private native boolean needsEchoCalibration(long ptr);
+	@Override
+	public synchronized boolean needsEchoCalibration() {
+		return needsEchoCalibration(nativePtr);
+	}
+	private native void declineCall(long coreptr, long callptr, int reason);
+	@Override
+	public synchronized void declineCall(LinphoneCall aCall, Reason reason) {
+		declineCall(nativePtr,((LinphoneCallImpl)aCall).nativePtr,reason.mValue);
 	}
 	
 	private native boolean upnpAvailable(long ptr);

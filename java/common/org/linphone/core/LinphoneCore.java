@@ -397,6 +397,10 @@ public interface LinphoneCore {
 	 */
 	public void terminateCall(LinphoneCall aCall);
 	/**
+	 * Declines an incoming call, providing a reason for declining it.
+	 */
+	public void declineCall(LinphoneCall aCall, Reason reason);
+	/**
 	 * Returns The LinphoneCall the current call if one is in call
 	 *
 	**/
@@ -744,6 +748,12 @@ public interface LinphoneCore {
 	**/
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
+	/**
+	 * Returns true if echo calibration is recommended.
+	 * If the device has a builtin echo canceller or calibration value is already known, it will return false.
+	 */
+	boolean needsEchoCalibration();
+	
 	void enableIpv6(boolean enable);
 	/**
 	 * @deprecated
