@@ -12,7 +12,9 @@
 			<key>change date</key>
 			<date>2001-01-01T00:00:00Z</date>
 			<key>changed values</key>
-			<array/>
+			<array>
+				<string>&lt;reference&gt;</string>
+			</array>
 			<key>class</key>
 			<string>BLBundleObject</string>
 			<key>errors</key>
@@ -34,17 +36,19 @@
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2013-02-11T06:56:37Z</date>
+					<date>2013-02-19T05:57:58Z</date>
 					<key>changed values</key>
-					<array/>
+					<array>
+						<string>&lt;reference&gt;</string>
+					</array>
 					<key>class</key>
 					<string>BLStringsFileObject</string>
 					<key>errors</key>
 					<array/>
 					<key>flags</key>
-					<integer>0</integer>
+					<integer>1</integer>
 					<key>hash</key>
-					<string>64d3af3c3fac0031e8202c410c0d2c1e
+					<string>15bde0559ca97e4412c019392adc75ab
 </string>
 					<key>name</key>
 					<string>Localizable.strings</string>
@@ -54,7 +58,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -67,8 +73,18 @@
 							<string>%@ is busy</string>
 							<key>localizations</key>
 							<dict>
+								<key>de</key>
+								<string>Belegt: %@</string>
 								<key>en</key>
-								<string>%@ is busy</string>
+								<string>Busy: %@</string>
+								<key>es</key>
+								<string>Ocupado: %@</string>
+								<key>fr</key>
+								<string>Occupé: %@</string>
+								<key>it</key>
+								<string>Occupato: %@</string>
+								<key>ru</key>
+								<string>занято: %@</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -77,7 +93,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -93,33 +111,33 @@
 								<key>cs</key>
 								<string>Welcome</string>
 								<key>de</key>
-								<string>Welcome</string>
+								<string>Antworten</string>
 								<key>en</key>
 								<string>Answer</string>
 								<key>es</key>
-								<string>Welcome</string>
+								<string>Responder</string>
 								<key>fi</key>
 								<string>Welcome</string>
 								<key>fr</key>
-								<string>Welcome</string>
+								<string>Réponses</string>
 								<key>it</key>
-								<string>Welcome</string>
+								<string>Rispondere</string>
 								<key>nb</key>
 								<string>Welcome</string>
 								<key>nl</key>
-								<string>Welcome</string>
+								<string>Antwoorden</string>
 								<key>pl</key>
 								<string>Welcome</string>
 								<key>pt</key>
 								<string>Welcome</string>
 								<key>ru</key>
-								<string>Welcome</string>
+								<string>отвечать</string>
 								<key>sk</key>
 								<string>Welcome</string>
 								<key>sv</key>
 								<string>Welcome</string>
 								<key>zh-Hans</key>
-								<string>Welcome</string>
+								<string>答案</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>
@@ -128,7 +146,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -151,7 +171,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -174,7 +196,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -225,7 +249,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -248,7 +274,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -271,7 +299,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -322,7 +352,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -345,7 +377,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -368,7 +402,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -391,7 +427,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -414,7 +452,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -437,7 +477,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -460,7 +502,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -483,7 +527,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -506,7 +552,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -529,7 +577,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -552,7 +602,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -603,7 +655,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -654,7 +708,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -677,7 +733,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -700,7 +758,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -751,7 +811,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -774,7 +836,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -797,7 +861,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -820,7 +886,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -843,7 +911,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
@@ -866,7 +936,9 @@
 							<key>change date</key>
 							<date>2001-01-01T00:00:00Z</date>
 							<key>changed values</key>
-							<array/>
+							<array>
+								<string>&lt;reference&gt;</string>
+							</array>
 							<key>class</key>
 							<string>BLStringKeyObject</string>
 							<key>comment</key>
