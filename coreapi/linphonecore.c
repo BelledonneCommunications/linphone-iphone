@@ -666,6 +666,9 @@ static void sip_config_read(LinphoneCore *lc)
 
 	tmp=lp_config_get_int(lc->config,"sip","in_call_timeout",0);
 	linphone_core_set_in_call_timeout(lc,tmp);
+	
+	tmp=lp_config_get_int(lc->config,"sip","delayed_timeout",4);
+	linphone_core_set_delayed_timeout(lc,tmp);
 
 	/* get proxies config */
 	for(i=0;; i++){
@@ -2092,7 +2095,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		linphone_call_background_tasks(call,one_second_elapsed);
-		if (call->state==LinphoneCallOutgoingInit && (elapsed>=4)){
+		if (call->state==LinphoneCallOutgoingInit && (elapsed>=lc->sip_conf.delayed_timeout)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
 				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
@@ -3491,6 +3494,26 @@ void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds){
 **/
 int linphone_core_get_in_call_timeout(LinphoneCore *lc){
 	return lc->sip_conf.in_call_timeout;
+}
+
+/**
+ * Returns the delayed timeout
+ *
+ * @ingroup call_control
+ * See linphone_core_set_delayed_timeout() for details.
+**/
+int linphone_core_get_delayed_timeout(LinphoneCore *lc){
+	return lc->sip_conf.delayed_timeout;
+}
+
+/**
+ * Set the in delayed timeout in seconds.
+ *
+ * @ingroup call_control
+ * After this timeout period, a delayed call (internal call initialisation or resolution) is resumed.
+**/
+void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds){
+	lc->sip_conf.delayed_timeout=seconds;
 }
 
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
@@ -5014,6 +5037,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
+	lp_config_set_int(lc->config,"sip","delayed_timeout",config->delayed_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
