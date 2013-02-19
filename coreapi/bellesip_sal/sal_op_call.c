@@ -198,8 +198,8 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 						op->sdp_answer=NULL;
 					}
 					belle_sip_dialog_send_ack(op->dialog,ack);
-					/*if (op->state != SalOpStateActive)*/
-					op->base.root->callbacks.call_accepted(op);
+					op->base.root->callbacks.call_accepted(op); /*INVITE*/
+
 					op->state=SalOpStateActive;
 				} else {
 					/*nop*/
