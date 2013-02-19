@@ -4293,7 +4293,9 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 		ms_warning("UPNP is not available, reset firewall policy to no firewall");
 		pol = LinphonePolicyNoFirewall;
 	}
-#else //BUILD_UPNP
+#endif //BUILD_UPNP
+	lc->net_conf.firewall_policy=pol;
+#ifdef BUILD_UPNP
 	if(pol == LinphonePolicyUseUpnp) {
 		if(lc->upnp == NULL) {
 			lc->upnp = linphone_upnp_context_new(lc);
@@ -4303,9 +4305,9 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 			linphone_upnp_context_destroy(lc->upnp);
 			lc->upnp = NULL;
 		}
-	}	
+	}
+	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 #endif //BUILD_UPNP
-	lc->net_conf.firewall_policy=pol;
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config,"net","firewall_policy",pol);
@@ -5559,6 +5561,11 @@ const char *linphone_error_to_string(LinphoneReason err){
  * Enables signaling keep alive
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp) {
+		enable = FALSE;
+	}
+#endif //BUILD_UPNP
 	if (enable > 0) {
 		sal_use_tcp_tls_keepalive(lc->sal,lc->sip_conf.tcp_tls_keepalive);
 		sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);

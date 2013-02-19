@@ -662,6 +662,11 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 		linphone_upnp_update_stream_state(call->upnp_session->video);
 
 		/*
+		 * Update stat
+		 */
+		linphone_core_update_upnp_state_in_call_stats(call);
+		
+		/*
 		 * Update session state
 		 */
 		oldState = call->upnp_session->state;
@@ -678,41 +683,34 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 			call->upnp_session->state = LinphoneUpnpStateIdle;
 		}
 		newState = call->upnp_session->state;
-
-		/* When change is done proceed update */
-		if(oldState != LinphoneUpnpStateOk && oldState != LinphoneUpnpStateKo &&
-				(call->upnp_session->state == LinphoneUpnpStateOk || call->upnp_session->state == LinphoneUpnpStateKo)) {
-			if(call->upnp_session->state == LinphoneUpnpStateOk)
-				ms_message("uPnP IGD: uPnP for Call %p is ok", call);
-			else
-				ms_message("uPnP IGD: uPnP for Call %p is ko", call);
-
-			switch (call->state) {
-				case LinphoneCallUpdating:
-					linphone_core_start_update_call(lc, call);
-					break;
-				case LinphoneCallUpdatedByRemote:
-					linphone_core_start_accept_call_update(lc, call);
-					break;
-				case LinphoneCallOutgoingInit:
-					linphone_core_proceed_with_invite_if_ready(lc, call, NULL);
-					break;
-				case LinphoneCallIdle:
-					linphone_core_notify_incoming_call(lc, call);
-					break;
-				default:
-					break;
-			}
-		}
 	}
 
 	ms_mutex_unlock(&lupnp->mutex);
+	
+	/* When change is done proceed update */
+	if(oldState != LinphoneUpnpStateOk && oldState != LinphoneUpnpStateKo &&
+			(newState == LinphoneUpnpStateOk || newState == LinphoneUpnpStateKo)) {
+		if(call->upnp_session->state == LinphoneUpnpStateOk)
+			ms_message("uPnP IGD: uPnP for Call %p is ok", call);
+		else
+			ms_message("uPnP IGD: uPnP for Call %p is ko", call);
 
-	/*
-	 * Update uPnP call stats
-	 */
-	if(oldState != newState) {
-		linphone_core_update_upnp_state_in_call_stats(call);
+		switch (call->state) {
+			case LinphoneCallUpdating:
+				linphone_core_start_update_call(lc, call);
+				break;
+			case LinphoneCallUpdatedByRemote:
+				linphone_core_start_accept_call_update(lc, call);
+				break;
+			case LinphoneCallOutgoingInit:
+				linphone_core_proceed_with_invite_if_ready(lc, call, NULL);
+				break;
+			case LinphoneCallIdle:
+				linphone_core_notify_incoming_call(lc, call);
+				break;
+			default:
+				break;
+		}
 	}
 
 	return ret;
