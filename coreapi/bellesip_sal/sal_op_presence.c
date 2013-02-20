@@ -591,7 +591,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","Presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(600)));
 
-	return sal_op_send_request_with_contact(op,req);
+	return sal_op_send_request(op,req);
 }
 int sal_unsubscribe(SalOp *op){
 	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE"):NULL; /*cannot create request if dialog not set yet*/
@@ -601,7 +601,7 @@ int sal_unsubscribe(SalOp *op){
 	}
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","Presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(0)));
-	return sal_op_send_request_with_contact(op,req);
+	return sal_op_send_request(op,req);
 }
 int sal_subscribe_accept(SalOp *op){
 	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans));

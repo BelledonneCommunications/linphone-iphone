@@ -430,9 +430,9 @@ int sal_call(SalOp *op, const char *from, const char *to){
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->referred_by));
 	}
 
-	sal_op_send_request_with_contact(op,invite);
+	return sal_op_send_request(op,invite);
 
-	return 0;
+
 }
 void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_io_error=call_process_io_error;
@@ -549,7 +549,7 @@ int sal_call_update(SalOp *op, const char *subject){
 	belle_sip_request_t *reinvite=belle_sip_dialog_create_request(op->dialog,"INVITE");
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(reinvite),belle_sip_header_create( "Subject", subject));
 	sal_op_fill_invite(op, reinvite);
-	return sal_op_send_request_with_contact(op,reinvite);
+	return sal_op_send_request(op,reinvite);
 }
 SalMediaDescription * sal_call_get_remote_media_description(SalOp *h){
 	return h->base.remote_media;;

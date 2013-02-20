@@ -151,6 +151,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	}
 	if (add_contact) {
 		contact = sal_op_create_contact(op,belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_from_t));
+		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CONTACT);
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
 	}
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
@@ -163,11 +164,21 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 }
 
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
-	return _sal_op_send_request_with_contact(op, request,FALSE);
+	bool_t need_ack=FALSE;
+	/*
+  	  Header field          where   proxy ACK BYE CAN INV OPT REG
+      ___________________________________________________________
+      Contact                 R            o   -   -   m   o   o
+	 */
+	if (strcmp(belle_sip_request_get_method(request),"INVITE")==0
+			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
+			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
+			||strcmp(belle_sip_request_get_method(request),"OPTION")==0)
+		need_ack=TRUE;
+
+	return _sal_op_send_request_with_contact(op, request,need_ack);
 }
-int sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request) {
-	return _sal_op_send_request_with_contact(op, request,TRUE);
-}
+
 
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
 		switch(code) {

@@ -81,7 +81,7 @@ void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
-int sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request) ;
+
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 void sal_process_authentication(SalOp *op, belle_sip_response_t *response);
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) ;
