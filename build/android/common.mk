@@ -38,6 +38,7 @@ LOCAL_SRC_FILES := \
 	bellesip_sal/sal_address_impl.c \
 	bellesip_sal/sal_impl.c \
 	bellesip_sal/sal_op_call.c \
+	bellesip_sal/sal_op_call_transfer.c \
 	bellesip_sal/sal_op_impl.c \
 	bellesip_sal/sal_op_message.c \
 	bellesip_sal/sal_op_presence.c \
