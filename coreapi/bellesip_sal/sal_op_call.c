@@ -279,24 +279,26 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	switch(dialog_state) {
 
 	case BELLE_SIP_DIALOG_NULL: {
-		if (!op->replaces && (op->replaces=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_replaces_t))) {
-			belle_sip_object_ref(op->replaces);
-		} else if(op->replaces) {
-			ms_warning("replace header already set");
-		}
-
-		process_sdp_for_invite(op,req);
-
-		if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
-			if( strstr(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(call_info)),"answer-after=") != NULL) {
-				op->auto_answer_asked=TRUE;
-				ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+		if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
+			if (!op->replaces && (op->replaces=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_replaces_t))) {
+				belle_sip_object_ref(op->replaces);
+			} else if(op->replaces) {
+				ms_warning("replace header already set");
 			}
-		}
 
-		op->base.root->callbacks.call_received(op);
+			process_sdp_for_invite(op,req);
 
-		break;
+			if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
+				if( strstr(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(call_info)),"answer-after=") != NULL) {
+					op->auto_answer_asked=TRUE;
+					ms_message("The caller asked to automatically answer the call(Emergency?)\n");
+				}
+			}
+
+			op->base.root->callbacks.call_received(op);
+
+			break;
+		} /* else same behavior as for EARLY state*/
 	}
 	case BELLE_SIP_DIALOG_EARLY: {
 		//hmm probably a cancel
@@ -412,17 +414,23 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 	return;
 }
 int sal_call(SalOp *op, const char *from, const char *to){
-	belle_sip_request_t* req;
+	belle_sip_request_t* invite;
 	op->dir=SalOpDirOutgoing;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
 
-	req=sal_op_build_request(op,"INVITE");
+	invite=sal_op_build_request(op,"INVITE");
 
-	sal_op_fill_invite(op,req);
+	sal_op_fill_invite(op,invite);
 
 	sal_op_call_fill_cbs(op);
-	sal_op_send_request_with_contact(op,req);
+	if (op->replaces){
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->replaces));
+			if (op->referred_by)
+				belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->referred_by));
+	}
+
+	sal_op_send_request_with_contact(op,invite);
 
 	return 0;
 }
