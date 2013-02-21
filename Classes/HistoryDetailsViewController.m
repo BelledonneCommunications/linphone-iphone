@@ -190,6 +190,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         const char *cid = linphone_call_log_get_call_id(log);
         if(cid != NULL && [callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
             callLog = log;
+            break;
         }
         list = list->next;
     }
