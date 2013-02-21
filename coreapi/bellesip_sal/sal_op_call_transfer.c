@@ -60,10 +60,12 @@ int sal_call_refer(SalOp *op, const char *refer_to){
 int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
 	belle_sip_dialog_state_t other_call_dialog_state=other_call_op->dialog?belle_sip_dialog_get_state(other_call_op->dialog):BELLE_SIP_DIALOG_NULL;
 	belle_sip_dialog_state_t op_dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
-
+	belle_sip_header_replaces_t* replaces;
 	belle_sip_header_refer_to_t* refer_to;
 	belle_sip_header_referred_by_t* referred_by;
-
+	const char* from_tag;
+	const char* to_tag;
+	char* escaped_replaces;
 	/*first, build refer to*/
 	if (other_call_dialog_state!=BELLE_SIP_DIALOG_CONFIRMED) {
 		ms_error(" wrong dialog state [%s] for op [%p], should be BELLE_SIP_DIALOG_CONFIRMED",belle_sip_dialog_state_to_string(other_call_dialog_state)
@@ -77,13 +79,29 @@ int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
 	}
 
 	refer_to=belle_sip_header_refer_to_create(belle_sip_dialog_get_remote_party(other_call_op->dialog));
+	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(refer_to));
+	if (belle_sip_dialog_is_server(other_call_op->dialog)) {
+		to_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
+		from_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);;
+
+	} else {
+		from_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
+		to_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);;
+	}
+	replaces=belle_sip_header_replaces_create(belle_sip_header_call_id_get_call_id(belle_sip_dialog_get_call_id(other_call_op->dialog))
+											,from_tag,to_tag);
+	escaped_replaces=belle_sip_header_replaces_value_to_escaped_string(replaces);
+	belle_sip_uri_set_header(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to)),"Replaces",escaped_replaces);
+	belle_sip_free(escaped_replaces);
 	referred_by=belle_sip_header_referred_by_create(belle_sip_dialog_get_local_party(op->dialog));
+	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(referred_by));
 	return sal_call_refer_to(op,refer_to,referred_by);
 }
+/*
 int sal_call_accept_refer(SalOp *h){
 	ms_fatal("sal_call_accept_refer not implemented yet");
 	return -1;
-}
+}*/
 /*informs this call is consecutive to an incoming refer */
 int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 	if (refered_call->replaces)
@@ -93,9 +111,16 @@ int sal_call_set_referer(SalOp *h, SalOp *refered_call){
 	return 0;
 }
 /* returns the SalOp of a call that should be replaced by h, if any */
-SalOp *sal_call_get_replaces(SalOp *h){
-	if (h!=NULL && h->replaces!=NULL){
-		ms_fatal("sal_call_get_replaces not implemented yet");
+SalOp *sal_call_get_replaces(SalOp *op){
+	if (op && op->replaces){
+		belle_sip_dialog_t* dialog=belle_sip_provider_find_dialog(op->base.root->prov
+												,belle_sip_header_replaces_get_call_id(op->replaces)
+												,belle_sip_header_replaces_get_from_tag(op->replaces)
+												,belle_sip_header_replaces_get_to_tag(op->replaces));
+
+		if (dialog) {
+			return (SalOp*)belle_sip_dialog_get_application_data(dialog);
+		}
 	}
 	return NULL;
 }
