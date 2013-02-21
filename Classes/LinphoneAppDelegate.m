@@ -228,23 +228,11 @@
         }
     } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
         NSString *callLog = (NSString*)[notification.userInfo objectForKey:@"callLog"];
-        LinphoneCallLog* theLog = NULL;
-        const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-        while(logs != NULL) {
-            LinphoneCallLog* log = (LinphoneCallLog *) logs->data;
-            if([callLog isEqualToString:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]]) {
-                theLog = log;
-                break;
-            }
-            logs = logs->next;
-        }
-        if(theLog != NULL && linphone_call_log_get_call_id(theLog) != NULL) {
-            // Go to HistoryDetails view
-            [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
-            HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription] push:TRUE], HistoryDetailsViewController);
-            if(controller != nil) {
-                [controller setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(theLog)]];
-            }
+        // Go to HistoryDetails view
+        [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
+        HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription] push:TRUE], HistoryDetailsViewController);
+        if(controller != nil) {
+            [controller setCallLogId:callLog];
         }
     }
 }
