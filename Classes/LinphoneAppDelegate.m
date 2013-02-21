@@ -238,12 +238,12 @@
             }
             logs = logs->next;
         }
-        if(theLog != NULL) {
+        if(theLog != NULL && linphone_call_log_get_call_id(theLog) != NULL) {
             // Go to HistoryDetails view
             [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
             HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription] push:TRUE], HistoryDetailsViewController);
             if(controller != nil) {
-                [controller setCallLog:theLog];
+                [controller setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(theLog)]];
             }
         }
     }

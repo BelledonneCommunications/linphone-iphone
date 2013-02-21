@@ -62,6 +62,36 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(loadData)
+                                                 name:kLinphoneAddressBookUpdate
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(coreUpdateEvent:)
+                                                 name:kLinphoneCoreUpdate
+                                               object:nil];
+    [self loadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneAddressBookUpdate
+                                                  object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneCoreUpdate
+                                                  object:nil];
+    
+}
+
+
+#pragma mark - Event Functions
+
+- (void)coreUpdateEvent:(NSNotification*)notif {
+    // Invalid all pointers
     [self loadData];
 }
 
@@ -81,17 +111,19 @@
 
 - (void)loadData {
     [callLogs removeAllObjects];
-	const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
-    while(logs != NULL) {
-        LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
-        if(missedFilter) {
-            if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
+    if([LinphoneManager isLcReady]) {
+        const MSList * logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+        while(logs != NULL) {
+            LinphoneCallLog*  log = (LinphoneCallLog *) logs->data;
+            if(missedFilter) {
+                if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
+                    [callLogs addObject:[NSValue valueWithPointer: log]];
+                }
+            } else {
                 [callLogs addObject:[NSValue valueWithPointer: log]];
             }
-        } else {
-            [callLogs addObject:[NSValue valueWithPointer: log]];
+            logs = ms_list_next(logs);
         }
-        logs = ms_list_next(logs);
     }
     [[self tableView] reloadData];
 }

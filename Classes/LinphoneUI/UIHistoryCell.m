@@ -68,11 +68,11 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDetails:(id) event {
-    if(callLog != NULL) {
+    if(callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
         // Go to History details view
         HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]  push:TRUE], HistoryDetailsViewController);
         if(controller != nil) {
-            [controller setCallLog:callLog];
+            [controller setCallLogId: [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
         }
     }
 }

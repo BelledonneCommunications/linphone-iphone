@@ -26,6 +26,7 @@
 @interface HistoryDetailsViewController : UIViewController<UICompositeViewDelegate> {
     @private
     ABRecordRef contact;
+    LinphoneCallLog *callLog;
     NSDateFormatter *dateFormatter;
 }
 @property (nonatomic, retain) IBOutlet  UIImageView *avatarImage;
@@ -41,7 +42,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *callButton;
 @property (nonatomic, retain) IBOutlet UIButton *messageButton;
 @property (nonatomic, retain) IBOutlet UIButton *addContactButton;
-@property (nonatomic, assign) LinphoneCallLog *callLog;
+@property (nonatomic, assign) NSString *callLogId;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;

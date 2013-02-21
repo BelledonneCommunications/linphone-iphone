@@ -24,7 +24,7 @@
 
 @implementation HistoryDetailsViewController
 
-@synthesize callLog;
+@synthesize callLogId;
 @synthesize avatarImage;
 @synthesize addressLabel;
 @synthesize dateLabel;
@@ -57,6 +57,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [dateFormatter release];
+    [callLogId release];
     
     [avatarImage release];
     [addressLabel release];
@@ -98,8 +99,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Property Functions
 
-- (void)setCallLog:(LinphoneCallLog *)acallLog {
-    self->callLog = acallLog;
+- (void)setCallLogId:(NSString *)acallLogId {
+    self->callLogId = [acallLogId copy];
     [self update];
 }
 
@@ -123,6 +124,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(update) 
                                                  name:kLinphoneAddressBookUpdate
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(coreUpdateEvent:)
+                                                 name:kLinphoneCoreUpdate
+                                               object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -131,6 +137,17 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneAddressBookUpdate
                                                   object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneCoreUpdate
+                                                  object:nil];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)coreUpdateEvent:(NSNotification*)notif {
+    [self update];
 }
 
 
@@ -161,8 +178,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-    // Don't update if callLog is null
+    if(![LinphoneManager isLcReady]) {
+        return;
+    }
+    
+    // Look for the call log
+    callLog = NULL;
+    const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
+    while(list != NULL) {
+        LinphoneCallLog *log = (LinphoneCallLog *)list->data;
+        const char *cid = linphone_call_log_get_call_id(log);
+        if(cid != NULL && [callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
+            callLog = log;
+        }
+        list = list->next;
+    }
+    
+    // Pop if callLog is null
     if(callLog == NULL) {
+        [[PhoneMainView instance] popCurrentView];
         return;
     }
     
