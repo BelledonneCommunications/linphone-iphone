@@ -120,7 +120,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(update:) 
+                                             selector:@selector(update) 
                                                  name:kLinphoneAddressBookUpdate
                                                object:nil];
 }
