@@ -277,13 +277,16 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
 		}
-#endif //BUILD_UPNP 		
-#ifndef USE_BELLESIP
-	else {
+#endif //BUILD_UPNP
+#ifdef USE_BELLESIP
+#ifdef BUILD_UPNP
+		else
+#endif /*BUILD_UPNP*/
+	{
 		linphone_address_destroy(contact);
 		return NULL;
 	}
-#endif
+#endif /*USE_BELLESIP*/
 		if(localip == NULL) {
 			localip = localip_tmp;
 			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
