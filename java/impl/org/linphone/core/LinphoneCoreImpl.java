@@ -897,4 +897,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public String getUpnpExternalIpaddress() {
 		return getUpnpExternalIpaddress(nativePtr);
 	}
+	private native int startConferenceRecording(long nativePtr, String path);
+	@Override
+	public void startConferenceRecording(String path) {
+		startConferenceRecording(nativePtr,path);
+	}
+	
+	private native int stopConferenceRecording(long nativePtr);
+	@Override
+	public void stopConferenceRecording() {
+		stopConferenceRecording(nativePtr);
+	}
 }

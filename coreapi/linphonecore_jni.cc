@@ -2060,9 +2060,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_leaveConference(JNIEnv *
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAllToConference(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_add_all_to_conference((LinphoneCore *) pCore);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addToConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	linphone_core_add_to_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeFromConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	linphone_core_remove_from_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
@@ -2073,6 +2075,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateConference(JNIE
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv *env,jobject thiz,jlong pCore) {
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
 }
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore, jstring jpath){
+	int err=-1;
+	if (jpath){
+		const char *path=env->GetStringUTFChars(jpath, NULL);
+		err=linphone_core_start_conference_recording((LinphoneCore*)pCore,path);
+		env->ReleaseStringUTFChars(jpath,path);
+	}
+	return err;
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_stopConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore){
+	int err=linphone_core_stop_conference_recording((LinphoneCore*)pCore);
+	return err;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_terminate_all_calls((LinphoneCore *) pCore);
 }
