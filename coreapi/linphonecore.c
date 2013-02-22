@@ -2829,8 +2829,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 #endif //BUILD_UPNP
 		}
-
-		call->params = *params;
+		
+		_linphone_call_params_copy(&call->params,params);
 		linphone_call_make_local_media_description(lc, call);
 
 		// Video adding

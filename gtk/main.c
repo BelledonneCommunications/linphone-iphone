@@ -816,7 +816,6 @@ static gboolean linphone_gtk_auto_answer(LinphoneCall *call){
 	LinphoneCallState state=linphone_call_get_state(call);
 	if (state==LinphoneCallIncomingReceived || state==LinphoneCallIncomingEarlyMedia){
 		accept_incoming_call(call);
-		linphone_call_unref(call);
 	}
 	return FALSE;
 }
