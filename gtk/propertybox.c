@@ -972,7 +972,8 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		}
 		g_signal_connect(G_OBJECT(combo),"changed",(GCallback)linphone_gtk_media_encryption_changed,NULL);
 	}
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory")),linphone_core_is_media_encryption_mandatory(lc));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory")),
+				     linphone_core_is_media_encryption_mandatory(lc));
 	g_object_unref(G_OBJECT(model));
 }
 
@@ -1015,10 +1016,8 @@ void linphone_gtk_show_parameters(void){
 	if (pb==NULL) {
 		pb=linphone_gtk_create_window("parameters");
 		g_object_set_data(G_OBJECT(mw),"parameters",pb);
-		ms_error("linphone_gtk_show_paramters: create");
 	}else {
 		gtk_widget_show(pb);
-		ms_error("linphone_gtk_show_parameters: show");
 		return;
 	}
 	codec_list=linphone_gtk_get_widget(pb,"codec_list");
@@ -1028,21 +1027,21 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_ipv6_enabled(lc));
 	linphone_core_get_sip_transports(lc,&tr);
 
-    if (tr.tcp_port > 0) {
-        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 1);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
+	if (tr.tcp_port > 0) {
+		gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 1);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
 				tr.tcp_port);
-    }
-    else if (tr.tls_port > 0) {
-        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 2);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
+	}
+	else if (tr.tls_port > 0) {
+		gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 2);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
 				tr.tls_port);
-    }
-    else {
-        gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 0);
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
+	}
+	else {
+		gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"proto_combo")), 0);
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"proto_port")),
 				tr.udp_port);
-    }
+	}
 
 	linphone_core_get_audio_port_range(lc, &min_port, &max_port);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "audio_min_rtp_port")), min_port);

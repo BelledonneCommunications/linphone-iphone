@@ -92,12 +92,7 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
-#if !defined(_WIN32_WCE)
 	return strftime(s, max, fmt, tm);
-#else
-	return 0;
-	/*FIXME*/
-#endif /*_WIN32_WCE*/
 }
 
 static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
@@ -120,7 +115,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 	cl->to=to;
-    cl->status=LinphoneCallAborted; /*default status*/
+	cl->status=LinphoneCallAborted; /*default status*/
 	return cl;
 }
 
