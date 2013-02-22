@@ -310,8 +310,9 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			}
 			case 401:
 			case 407:{
-				if (op->state == SalOpStateTerminating) {
-					belle_sip_message("Op is in state terminating, nothing else to do");
+				if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
+					/*only bye are completed*/
+					belle_sip_message("Op is in state terminating, nothing else to do ");
 					return;
 				} else {
 					sal_process_authentication(op,response);
@@ -340,12 +341,17 @@ static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *eve
 static void process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_transaction_terminated_event_get_server_transaction(event);
+	belle_sip_transaction_t* trans;
+	if(client_transaction)
+		trans=BELLE_SIP_TRANSACTION(client_transaction);
+	 else
+		 trans=BELLE_SIP_TRANSACTION(server_transaction);
 
-/*	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(client_transaction);
-	if (op->calbacks.process_transaction_terminated) {
-		op->calbacks.process_transaction_terminated(op,event);
-	} else */{
-		ms_error("Unhandled transaction terminated [%p]",client_transaction!=NULL?(void*)client_transaction:(void*)server_transaction);
+	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(trans);
+	if (op && op->callbacks.process_transaction_terminated) {
+		op->callbacks.process_transaction_terminated(op,event);
+	} else {
+		ms_error("Unhandled transaction terminated [%p]",trans);
 	}
 }
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
