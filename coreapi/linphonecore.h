@@ -37,14 +37,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern "C" {
 #endif
 
-struct _MSSndCard;
 struct _LinphoneCore;
 /**
  * Linphone core main object created by function linphone_core_new() .
  * @ingroup initializing
  */
 typedef struct _LinphoneCore LinphoneCore;
-struct SalOp;
 
 struct _LpConfig;
 
@@ -201,7 +199,7 @@ void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t en
 void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
 const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
-const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name);
+const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -1101,6 +1099,10 @@ void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds);
 
 int linphone_core_get_in_call_timeout(LinphoneCore *lc);
 
+void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds);
+
+int linphone_core_get_delayed_timeout(LinphoneCore *lc);
+
 void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
 const char * linphone_core_get_stun_server(const LinphoneCore *lc);
@@ -1366,6 +1368,8 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
+int linphone_core_stop_conference_recording(LinphoneCore *lc);
 
 int linphone_core_get_max_calls(LinphoneCore *lc);
 void linphone_core_set_max_calls(LinphoneCore *lc, int max);

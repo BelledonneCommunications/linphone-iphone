@@ -650,6 +650,13 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  
 	linphone_core_terminate_call((LinphoneCore*)lc,(LinphoneCall*)call);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_declineCall(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc
+		,jlong call, jint reason) {
+	linphone_core_decline_call((LinphoneCore*)lc,(LinphoneCall*)call,(LinphoneReason)reason);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
@@ -991,6 +998,18 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 													, LinphoneCoreData::ecCalibrationStatus
 													, data?env->NewGlobalRef(data):NULL);
 
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc){
+	MSSndCard *sndcard;
+	MSSndCardManager *m=ms_snd_card_manager_get();
+	const char *card=linphone_core_get_capture_device((LinphoneCore*)lc);
+	sndcard=ms_snd_card_manager_get_card(m,card);
+	if (sndcard == NULL){
+		ms_error("Could not get soundcard.");
+		return TRUE;
+	}
+	return (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) || (ms_snd_card_get_minimal_latency(sndcard)>0);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryption(JNIEnv*  env
@@ -2041,9 +2060,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_leaveConference(JNIEnv *
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAllToConference(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_add_all_to_conference((LinphoneCore *) pCore);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addToConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	linphone_core_add_to_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeFromConference(JNIEnv *env,jobject thiz,jlong pCore, jlong pCall) {
 	linphone_core_remove_from_conference((LinphoneCore *) pCore, (LinphoneCall *) pCall);
 }
@@ -2054,6 +2075,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateConference(JNIE
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv *env,jobject thiz,jlong pCore) {
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
 }
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore, jstring jpath){
+	int err=-1;
+	if (jpath){
+		const char *path=env->GetStringUTFChars(jpath, NULL);
+		err=linphone_core_start_conference_recording((LinphoneCore*)pCore,path);
+		env->ReleaseStringUTFChars(jpath,path);
+	}
+	return err;
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_stopConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore){
+	int err=linphone_core_stop_conference_recording((LinphoneCore*)pCore);
+	return err;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateAllCalls(JNIEnv *env,jobject thiz,jlong pCore) {
 	linphone_core_terminate_all_calls((LinphoneCore *) pCore);
 }

@@ -508,14 +508,21 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->core=lc;
 
 	if (lc->sip_conf.ping_with_options){
-		/*the following sends an option request back to the caller so that
-		 we get a chance to discover our nat'd address before answering.*/
-		call->ping_op=sal_op_new(lc->sal);
-		from_str=linphone_address_as_string_uri_only(from);
-		sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
-		sal_op_set_user_pointer(call->ping_op,call);
-		sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from,NULL),from_str);
-		ms_free(from_str);
+#ifdef BUILD_UPNP
+		if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
+#else //BUILD_UPNP
+		{
+#endif //BUILD_UPNP
+			/*the following sends an option request back to the caller so that
+			 we get a chance to discover our nat'd address before answering.*/
+			call->ping_op=sal_op_new(lc->sal);
+			from_str=linphone_address_as_string_uri_only(from);
+			sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
+			sal_op_set_user_pointer(call->ping_op,call);
+			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from,NULL),from_str);
+			ms_free(from_str);
+		}
 	}
 
 	linphone_address_clean(from);
@@ -1100,7 +1107,7 @@ void linphone_call_params_add_custom_header(LinphoneCallParams *params, const ch
 	params->custom_headers=sal_custom_header_append(params->custom_headers,header_name,header_value);
 }
 
-const char *linphone_call_params_get_custom_header(LinphoneCallParams *params, const char *header_name){
+const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name){
 	return sal_custom_header_find(params->custom_headers,header_name);
 }
 

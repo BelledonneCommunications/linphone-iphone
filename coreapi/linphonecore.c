@@ -92,12 +92,7 @@ int lc_callback_obj_invoke(LCCallbackObj *obj, LinphoneCore *lc){
 
 /*prevent a gcc bug with %c*/
 static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct tm *tm){
-#if !defined(_WIN32_WCE)
 	return strftime(s, max, fmt, tm);
-#else
-	return 0;
-	/*FIXME*/
-#endif /*_WIN32_WCE*/
 }
 
 static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
@@ -120,7 +115,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 	cl->to=to;
-    cl->status=LinphoneCallAborted; /*default status*/
+	cl->status=LinphoneCallAborted; /*default status*/
 	return cl;
 }
 
@@ -666,6 +661,9 @@ static void sip_config_read(LinphoneCore *lc)
 
 	tmp=lp_config_get_int(lc->config,"sip","in_call_timeout",0);
 	linphone_core_set_in_call_timeout(lc,tmp);
+	
+	tmp=lp_config_get_int(lc->config,"sip","delayed_timeout",4);
+	linphone_core_set_delayed_timeout(lc,tmp);
 
 	/* get proxies config */
 	for(i=0;; i++){
@@ -1304,9 +1302,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
-#ifdef BUILD_UPNP
-	lc->upnp = linphone_upnp_context_new(lc);
-#endif //BUILD_UPNP
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -2054,9 +2049,11 @@ void linphone_core_iterate(LinphoneCore *lc){
 				lc->ecc->cb(lc,ecs,lc->ecc->delay,lc->ecc->cb_data);
 			if (ecs==LinphoneEcCalibratorDone){
 				int len=lp_config_get_int(lc->config,"sound","ec_tail_len",0);
-				lp_config_set_int(lc->config, "sound", "ec_delay",MAX(lc->ecc->delay-(len/2),0));
+				int margin=len/2;
+				
+				lp_config_set_int(lc->config, "sound", "ec_delay",MAX(lc->ecc->delay-margin,0));
 			} else if (ecs == LinphoneEcCalibratorFailed) {
-				lp_config_set_int(lc->config, "sound", "ec_delay", LP_CONFIG_DEFAULT_INT(lc->config, "ec_delay", 250));
+				lp_config_set_int(lc->config, "sound", "ec_delay", -1);/*use default value from soundcard*/
 			} else if (ecs == LinphoneEcCalibratorDoneNoEcho) {
 				linphone_core_enable_echo_cancellation(lc, FALSE);
 			}
@@ -2095,7 +2092,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		 linphone_core_start_invite() */
 		calls=calls->next;
 		linphone_call_background_tasks(call,one_second_elapsed);
-		if (call->state==LinphoneCallOutgoingInit && (elapsed>=4)){
+		if (call->state==LinphoneCallOutgoingInit && (elapsed>=lc->sip_conf.delayed_timeout)){
 			/*start the call even if the OPTIONS reply did not arrive*/
 			if (call->ice_session != NULL) {
 				ms_warning("ICE candidates gathering from [%s] has not finished yet, proceed with the call without ICE anyway."
@@ -2605,15 +2602,23 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 
 	if (call->dest_proxy==NULL && lc->sip_conf.ping_with_options==TRUE){
-		/*defer the start of the call after the OPTIONS ping*/
-		call->ping_replied=FALSE;
-		call->ping_op=sal_op_new(lc->sal);
-		sal_ping(call->ping_op,from,real_url);
-		sal_op_set_user_pointer(call->ping_op,call);
-		call->start_time=time(NULL);
-	}else{
-		if (defer==FALSE) linphone_core_start_invite(lc,call);
+#ifdef BUILD_UPNP
+		if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(lc->upnp) == LinphoneUpnpStateOk) {
+#else //BUILD_UPNP
+		{
+#endif //BUILD_UPNP
+			/*defer the start of the call after the OPTIONS ping*/
+			call->ping_replied=FALSE;
+			call->ping_op=sal_op_new(lc->sal);
+			sal_ping(call->ping_op,from,real_url);
+			sal_op_set_user_pointer(call->ping_op,call);
+			call->start_time=time(NULL);
+			defer = TRUE;
+		}
 	}
+	
+	if (defer==FALSE) linphone_core_start_invite(lc,call);
 
 	if (real_url!=NULL) ms_free(real_url);
 	return call;
@@ -3496,6 +3501,26 @@ int linphone_core_get_in_call_timeout(LinphoneCore *lc){
 	return lc->sip_conf.in_call_timeout;
 }
 
+/**
+ * Returns the delayed timeout
+ *
+ * @ingroup call_control
+ * See linphone_core_set_delayed_timeout() for details.
+**/
+int linphone_core_get_delayed_timeout(LinphoneCore *lc){
+	return lc->sip_conf.delayed_timeout;
+}
+
+/**
+ * Set the in delayed timeout in seconds.
+ *
+ * @ingroup call_control
+ * After this timeout period, a delayed call (internal call initialisation or resolution) is resumed.
+**/
+void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds){
+	lc->sip_conf.delayed_timeout=seconds;
+}
+
 void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
 													const char *contact,
 													LinphoneOnlineStatus presence_mode)
@@ -4213,6 +4238,19 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	}
 #endif //BUILD_UPNP
 	lc->net_conf.firewall_policy=pol;
+#ifdef BUILD_UPNP
+	if(pol == LinphonePolicyUseUpnp) {
+		if(lc->upnp == NULL) {
+			lc->upnp = linphone_upnp_context_new(lc);
+		}
+	} else {
+		if(lc->upnp != NULL) {
+			linphone_upnp_context_destroy(lc->upnp);
+			lc->upnp = NULL;
+		}
+	}
+	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
+#endif //BUILD_UPNP
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config,"net","firewall_policy",pol);
@@ -5006,6 +5044,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_string(lc->config,"sip","contact",config->contact);
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
+	lp_config_set_int(lc->config,"sip","delayed_timeout",config->delayed_timeout);
 	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
 	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
@@ -5168,10 +5207,11 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		usleep(50000);
 #endif
 	}
-
 #ifdef BUILD_UPNP
-	linphone_upnp_context_destroy(lc->upnp);
-	lc->upnp = NULL;
+	if(lc->upnp != NULL) {
+		linphone_upnp_context_destroy(lc->upnp);
+		lc->upnp = NULL;
+	}
 #endif //BUILD_UPNP
 
 	if (lc->friends)
@@ -5204,6 +5244,17 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	
 	ms_list_for_each(lc->last_recv_msg_ids,ms_free);
 	lc->last_recv_msg_ids=ms_list_free(lc->last_recv_msg_ids);
+	
+	// Free struct variable
+	if(lc->zrtp_secrets_cache != NULL) {
+		ms_free(lc->zrtp_secrets_cache);
+	}
+	if(lc->play_file!=NULL){
+		ms_free(lc->play_file);
+	}
+	if(lc->rec_file!=NULL){
+		ms_free(lc->rec_file);
+	}
 
 	linphone_core_free_payload_types(lc);
 	ortp_exit();
@@ -5438,6 +5489,11 @@ const char *linphone_error_to_string(LinphoneReason err){
  * Enables signaling keep alive
  */
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp) {
+		enable = FALSE;
+	}
+#endif //BUILD_UPNP
 	if (enable > 0) {
 		sal_use_tcp_tls_keepalive(lc->sal,lc->sip_conf.tcp_tls_keepalive);
 		sal_set_keepalive_period(lc->sal,lc->sip_conf.keepalive_period);
@@ -5506,7 +5562,7 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
 		Hook *h=(Hook*)elem->data;
 		if (h->fun==hook && h->data==hook_data){
-			ms_list_remove_link(lc->hooks,elem);
+			lc->hooks = ms_list_remove_link(lc->hooks,elem);
 			ms_free(h);
 			return;
 		}

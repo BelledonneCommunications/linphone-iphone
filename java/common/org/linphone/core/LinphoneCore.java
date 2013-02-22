@@ -397,6 +397,10 @@ public interface LinphoneCore {
 	 */
 	public void terminateCall(LinphoneCall aCall);
 	/**
+	 * Declines an incoming call, providing a reason for declining it.
+	 */
+	public void declineCall(LinphoneCall aCall, Reason reason);
+	/**
 	 * Returns The LinphoneCall the current call if one is in call
 	 *
 	**/
@@ -744,6 +748,12 @@ public interface LinphoneCore {
 	**/
 	void startEchoCalibration(Object data) throws LinphoneCoreException;
 
+	/**
+	 * Returns true if echo calibration is recommended.
+	 * If the device has a builtin echo canceller or calibration value is already known, it will return false.
+	 */
+	boolean needsEchoCalibration();
+	
 	void enableIpv6(boolean enable);
 	/**
 	 * @deprecated
@@ -751,25 +761,63 @@ public interface LinphoneCore {
 	 */
 	void adjustSoftwareVolume(int i);
 	
+	/**
+	 * Pause a call.
+	**/
 	boolean pauseCall(LinphoneCall call);
+	/**
+	 * Resume a call.
+	**/
 	boolean resumeCall(LinphoneCall call);
 	boolean pauseAllCalls();
 	
 	void setZrtpSecretsCache(String file);
 	void enableEchoLimiter(boolean val);
 
+	/**
+	 * Indicates whether the local user is part of the conference.
+	**/
 	boolean isInConference();
+	/**
+	 * Connect the local user to the conference.
+	**/
 	boolean enterConference();
+	/**
+	 * Disconnect the local user from the conference.
+	**/
 	void leaveConference();
 
+	/**
+	 * Add an established call to the conference. The LinphoneCore is able to manage one client based conference.
+	**/
 	void addToConference(LinphoneCall call);
-	void addAllToConference();
+	/**
+	 * Remove an established call from the conference.
+	**/
 	void removeFromConference(LinphoneCall call);
-
+	void addAllToConference();
+	
+	/**
+	 * Terminate the conference, all users are disconnected.
+	**/
 	void terminateConference();
 	int getConferenceSize();
+
+	/**
+	 * Request recording of the conference into a supplied file path.
+	 * The format is wav.
+	**/
+	void startConferenceRecording(String path);
 	
+	/**
+	 * Stop recording of the conference.
+	**/
+	void stopConferenceRecording();
+
 	void terminateAllCalls();
+	/**
+	 * Returns all calls.
+	**/
 	LinphoneCall[] getCalls();
 	int getCallsNb();
 

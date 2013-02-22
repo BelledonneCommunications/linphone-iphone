@@ -420,6 +420,7 @@ typedef struct sip_config
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
 	int in_call_timeout;	/*timeout after a call is hangup */
+	int delayed_timeout; 	/*timeout after a delayed call is resumed */
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 	LCSipTransports transports;
 	bool_t use_info;
@@ -529,6 +530,7 @@ struct _LinphoneConference{
 	MSAudioConference *conf;
 	AudioStream *local_participant;
 	MSAudioEndpoint *local_endpoint;
+	MSAudioEndpoint *record_endpoint;
 	RtpProfile *local_dummy_profile;
 	bool_t local_muted;
 };
@@ -642,12 +644,11 @@ struct _EcCalibrator{
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
-	int recv_count;
-	int sent_count;
 	int64_t acc;
 	int delay;
 	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
+	bool_t freq1,freq2,freq3;
 };
 
 typedef struct _EcCalibrator EcCalibrator;

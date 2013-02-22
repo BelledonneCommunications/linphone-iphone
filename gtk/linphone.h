@@ -149,3 +149,5 @@ void linphone_gtk_uninit_instance(void);
 void linphone_gtk_monitor_usb(void);
 void linphone_gtk_unmonitor_usb(void);
 
+gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
+
