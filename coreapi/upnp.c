@@ -93,6 +93,7 @@ void linphone_upnp_update_port_binding(UpnpContext *lupnp, UpnpPortBinding **por
 void linphone_upnp_port_binding_log(int level, const char *msg, const UpnpPortBinding *port);
 void linphone_upnp_port_binding_release(UpnpPortBinding *port);
 void linphone_upnp_update_config(UpnpContext *lupnp);
+void linphone_upnp_update_proxy(UpnpContext *lupnp, bool_t force);
 
 // Configuration
 MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc);
@@ -310,12 +311,17 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	}
 
 	if(lupnp->upnp_igd_ctxt != NULL) {
+		// upnp_igd_destroy is synchronous so the callbacks will be called in the same thread.
+		// So release the mutex before upnp_igd_destroy call. 
+		ms_mutex_unlock(&lupnp->mutex);
 		upnp_igd_destroy(lupnp->upnp_igd_ctxt);
+		ms_mutex_lock(&lupnp->mutex);
 		lupnp->upnp_igd_ctxt = NULL;
 	}
 
-	/* Run one more time configuration update */
+	/* Run one more time configuration update and proxy */
 	linphone_upnp_update_config(lupnp);
+	linphone_upnp_update_proxy(lupnp, TRUE);
 
 	/* Release port bindings */
 	if(lupnp->sip_udp != NULL) {
@@ -858,23 +864,11 @@ void linphone_upnp_update_config(UpnpContext* lupnp) {
 	lupnp->removing_configs = ms_list_free(lupnp->removing_configs);
 }
 
-bool_t linphone_core_upnp_hook(void *data) {
-	LCSipTransports transport;
+void linphone_upnp_update_proxy(UpnpContext* lupnp, bool_t force) {
 	LinphoneUpnpState ready_state;
 	const MSList *item;
-	time_t now = time(NULL);
-	UpnpContext *lupnp = (UpnpContext *)data;
-
-	ms_mutex_lock(&lupnp->mutex);
-
-	/* Update ports */
-	if(lupnp->state == LinphoneUpnpStateOk) {
-		linphone_core_get_sip_transports(lupnp->lc, &transport);
-		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_udp, UPNP_IGD_IP_PROTOCOL_UDP, transport.udp_port, UPNP_CORE_RETRY_DELAY);
-		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_tcp, UPNP_IGD_IP_PROTOCOL_TCP, transport.tcp_port, UPNP_CORE_RETRY_DELAY);
-		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_tls, UPNP_IGD_IP_PROTOCOL_TCP, transport.tls_port, UPNP_CORE_RETRY_DELAY);
-	}
-
+	time_t now = (force)? (lupnp->last_ready_check + UPNP_CORE_READY_CHECK) : time(NULL);
+	
 	/* Refresh registers if we are ready */
 	if(now - lupnp->last_ready_check >= UPNP_CORE_READY_CHECK) {
 		lupnp->last_ready_check = now;
@@ -887,6 +881,8 @@ bool_t linphone_core_upnp_hook(void *data) {
 						// Only reset ithe registration if we require that upnp should be ok
 						if(lupnp->lc->sip_conf.register_only_when_upnp_is_ok) {
 							linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone, "Registration impossible (uPnP not ready)");
+						} else {
+							cfg->commit=TRUE;
 						}
 					} else {
 						cfg->commit=TRUE;
@@ -896,7 +892,23 @@ bool_t linphone_core_upnp_hook(void *data) {
 			lupnp->last_ready_state = ready_state;
 		}
 	}
-			
+}
+
+bool_t linphone_core_upnp_hook(void *data) {
+	LCSipTransports transport;
+	UpnpContext *lupnp = (UpnpContext *)data;
+
+	ms_mutex_lock(&lupnp->mutex);
+
+	/* Update ports */
+	if(lupnp->state == LinphoneUpnpStateOk) {
+		linphone_core_get_sip_transports(lupnp->lc, &transport);
+		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_udp, UPNP_IGD_IP_PROTOCOL_UDP, transport.udp_port, UPNP_CORE_RETRY_DELAY);
+		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_tcp, UPNP_IGD_IP_PROTOCOL_TCP, transport.tcp_port, UPNP_CORE_RETRY_DELAY);
+		linphone_upnp_update_port_binding(lupnp, &lupnp->sip_tls, UPNP_IGD_IP_PROTOCOL_TCP, transport.tls_port, UPNP_CORE_RETRY_DELAY);
+	}
+
+	linphone_upnp_update_proxy(lupnp, FALSE);	
 	linphone_upnp_update_config(lupnp);
 
 	ms_mutex_unlock(&lupnp->mutex);

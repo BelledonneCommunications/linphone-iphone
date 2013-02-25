@@ -48,17 +48,17 @@ ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 
-EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
-				README.arm \
-				README.mingw \
-				README.macos \
-				autogen.sh \
-				linphone.spec \
-				linphone.spec.in \
-				$(GTK_FILELIST) \
-				gen-gtkfilelist.sh \
-				$(LINPHONEDEPS_FILELIST) \
-				$(ISS_SCRIPT).in
+EXTRA_DIST =		BUGS  \
+			README.arm \
+			README.mingw \
+			README.macos \
+			autogen.sh \
+			linphone.spec \
+			linphone.spec.in \
+			$(GTK_FILELIST) \
+			gen-gtkfilelist.sh \
+			$(LINPHONEDEPS_FILELIST) \
+			$(ISS_SCRIPT).in
 
 DISTCLEANFILES= $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
