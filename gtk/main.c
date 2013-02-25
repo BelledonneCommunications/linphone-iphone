@@ -750,14 +750,35 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	}
 }
 
-gchar *linphone_gtk_get_call_record_path(LinphoneAddress *address){
+gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference){
 	const char *dir=g_get_user_special_dir(G_USER_DIRECTORY_MUSIC);
-	const char *id=linphone_address_get_username(address);
+	const char *id="unknown";
 	char filename[256]={0};
-	if (id==NULL) id=linphone_address_get_domain(address);
-	snprintf(filename,sizeof(filename)-1,"%s-%lu-%s-record.wav",
-		 linphone_gtk_get_ui_config("title","Linphone"),
-		 (unsigned long)time(NULL),id);
+	char date[64]={0};
+	time_t curtime=time(NULL);
+	struct tm loctime;
+	
+#ifdef WIN32
+	loctime=*localtime(&curtime);
+#else
+	localtime_r(&curtime,&loctime);
+#endif
+	snprintf(date,sizeof(date)-1,"%i%02i%02i-%02i%02i",loctime.tm_year+1900,loctime.tm_mon+1,loctime.tm_mday, loctime.tm_hour, loctime.tm_min);
+	
+	if (address){
+		id=linphone_address_get_username(address);
+		if (id==NULL) id=linphone_address_get_domain(address);
+	}
+	if (is_conference){
+		snprintf(filename,sizeof(filename)-1,"%s-conference-%s.wav",
+			linphone_gtk_get_ui_config("title","Linphone"),
+			date);
+	}else{
+		snprintf(filename,sizeof(filename)-1,"%s-call-%s-%s.wav",
+			linphone_gtk_get_ui_config("title","Linphone"),
+			date,
+			id);
+	}
 	return g_build_filename(dir,filename,NULL);
 }
 
@@ -768,7 +789,7 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	
 	if (addr!=NULL){
 		LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
-		gchar *record_file=linphone_gtk_get_call_record_path(addr);
+		gchar *record_file=linphone_gtk_get_record_path(addr,FALSE);
 		linphone_call_params_set_record_file(params,record_file);
 		linphone_core_invite_address_with_params(lc,addr,params);
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
@@ -781,24 +802,33 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 	return FALSE;
 }
 
+
+static void accept_incoming_call(LinphoneCall *call){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
+	gchar *record_file=linphone_gtk_get_record_path(linphone_call_get_remote_address(call),FALSE);
+	linphone_call_params_set_record_file(params,record_file);
+	linphone_core_accept_call_with_params(lc,call,params);
+	linphone_call_params_destroy(params);
+}
+
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call){
-	if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-		linphone_core_accept_call (linphone_gtk_get_core(),call);
-		linphone_call_unref(call);
+	LinphoneCallState state=linphone_call_get_state(call);
+	if (state==LinphoneCallIncomingReceived || state==LinphoneCallIncomingEarlyMedia){
+		accept_incoming_call(call);
 	}
 	return FALSE;
 }
 
 void linphone_gtk_start_call(GtkWidget *w){
-	LinphoneCore *lc=linphone_gtk_get_core();
-	LinphoneCall *call;
+	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	/*change into in-call mode, then do the work later as it might block a bit */
 	GtkWidget *mw=gtk_widget_get_toplevel(w);
 	GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
+	LinphoneCallState state= call ? linphone_call_get_state(call) : LinphoneCallIdle;
 
-	call=linphone_gtk_get_currently_displayed_call(NULL);
-	if (call!=NULL && linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-		linphone_core_accept_call(lc,call);
+	if (state == LinphoneCallIncomingReceived || state == LinphoneCallIncomingEarlyMedia){
+		accept_incoming_call(call);
 	}else{
 		/*immediately disable the button and delay a bit the execution the linphone_core_invite()
 		so that we don't freeze the button. linphone_core_invite() might block for some hundreds of milliseconds*/
@@ -831,7 +861,7 @@ void linphone_gtk_decline_clicked(GtkWidget *button){
 void linphone_gtk_answer_clicked(GtkWidget *button){
 	LinphoneCall *call=linphone_gtk_get_currently_displayed_call(NULL);
 	if (call){
-		linphone_core_accept_call(linphone_gtk_get_core(),call);
+		accept_incoming_call(call);
 		linphone_gtk_show_main_window(); /* useful when the button is clicked on a notification */
 	}
 }

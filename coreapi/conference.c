@@ -55,22 +55,38 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 	}
 }
 
+static int linphone_conference_get_size(LinphoneConference *conf){
+	if (conf->conf == NULL) {
+		return 0;
+	}
+	return ms_audio_conference_get_size(conf->conf) - (conf->record_endpoint ? 1 : 0);
+}
+
 static int remote_participants_count(LinphoneConference *ctx) {
-	if (!ctx->conf || ms_audio_conference_get_size(ctx->conf)==0) return 0;
-	if (!ctx->local_participant) return ms_audio_conference_get_size(ctx->conf);
-	return ms_audio_conference_get_size(ctx->conf) -1;
+	int count=linphone_conference_get_size(ctx);
+	if (count==0) return 0;
+	if (!ctx->local_participant) return count;
+	return count -1;
 }
 
 void linphone_core_conference_check_uninit(LinphoneCore *lc){
 	LinphoneConference *ctx=&lc->conf_ctx;
 	if (ctx->conf){
-		ms_message("conference_check_uninit(): nmembers=%i",ms_audio_conference_get_size(ctx->conf));
-		if (remote_participants_count(ctx)==1){
+		int remote_count=remote_participants_count(ctx);
+		ms_message("conference_check_uninit(): size=%i",linphone_conference_get_size(ctx));
+		if (remote_count==1){
 			convert_conference_to_call(lc);
 		}
-		if (ms_audio_conference_get_size(ctx->conf)==1 && ctx->local_participant!=NULL){
-			remove_local_endpoint(ctx);
+		if (remote_count==0){
+			if (ctx->local_participant!=NULL)
+				remove_local_endpoint(ctx);
+			if (ctx->record_endpoint){
+				ms_audio_conference_remove_member(ctx->conf,ctx->record_endpoint);
+				ms_audio_endpoint_destroy(ctx->record_endpoint);
+				ctx->record_endpoint=NULL;
+			}
 		}
+		
 		if (ms_audio_conference_get_size(ctx->conf)==0){
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
@@ -381,10 +397,37 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
  * @returns the number of participants to the conference
 **/
 int linphone_core_get_conference_size(LinphoneCore *lc) {
-	if (lc->conf_ctx.conf == NULL) {
-		return 0;
+	LinphoneConference *conf=&lc->conf_ctx;
+	return linphone_conference_get_size(conf);
+}
+
+
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (conf->conf == NULL) {
+		ms_warning("linphone_core_start_conference_recording(): no conference now.");
+		return -1;
 	}
-	return ms_audio_conference_get_size(lc->conf_ctx.conf);
+	if (conf->record_endpoint==NULL){
+		conf->record_endpoint=ms_audio_endpoint_new_recorder();
+		ms_audio_conference_add_member(conf->conf,conf->record_endpoint);
+	}
+	ms_audio_recorder_endpoint_start(conf->record_endpoint,path);
+	return 0;
+}
+
+int linphone_core_stop_conference_recording(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (conf->conf == NULL) {
+		ms_warning("linphone_core_stop_conference_recording(): no conference now.");
+		return -1;
+	}
+	if (conf->record_endpoint==NULL){
+		ms_warning("linphone_core_stop_conference_recording(): no record active.");
+		return -1;
+	}
+	ms_audio_recorder_endpoint_stop(conf->record_endpoint);
+	return 0;
 }
 
 /**

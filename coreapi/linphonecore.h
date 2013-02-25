@@ -1368,6 +1368,8 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 
 int linphone_core_terminate_conference(LinphoneCore *lc);
 int linphone_core_get_conference_size(LinphoneCore *lc);
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
+int linphone_core_stop_conference_recording(LinphoneCore *lc);
 
 int linphone_core_get_max_calls(LinphoneCore *lc);
 void linphone_core_set_max_calls(LinphoneCore *lc, int max);
