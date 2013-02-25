@@ -355,10 +355,12 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 }
 
 LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *lupnp) {
-	LinphoneUpnpState state;
-	ms_mutex_lock(&lupnp->mutex);
-	state = lupnp->state;
-	ms_mutex_unlock(&lupnp->mutex);
+	LinphoneUpnpState state = LinphoneUpnpStateKo;
+	if(lupnp != NULL) {
+		ms_mutex_lock(&lupnp->mutex);
+		state = lupnp->state;
+		ms_mutex_unlock(&lupnp->mutex);
+	}
 	return state;
 }
 
@@ -398,40 +400,46 @@ bool_t _linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
 }
 
 bool_t linphone_upnp_context_is_ready_for_register(UpnpContext *lupnp) {
-	bool_t ready;
-	ms_mutex_lock(&lupnp->mutex);
-	ready = _linphone_upnp_context_is_ready_for_register(lupnp);
-	ms_mutex_unlock(&lupnp->mutex);
+	bool_t ready = FALSE;
+	if(lupnp != NULL) {
+		ms_mutex_lock(&lupnp->mutex);
+		ready = _linphone_upnp_context_is_ready_for_register(lupnp);
+		ms_mutex_unlock(&lupnp->mutex);
+	}
 	return ready;
 }
 
 int linphone_upnp_context_get_external_port(UpnpContext *lupnp) {
 	int port = -1;
-	ms_mutex_lock(&lupnp->mutex);
-	
-	if(lupnp->sip_udp != NULL) {
-		if(lupnp->sip_udp->state == LinphoneUpnpStateOk) {
-			port = lupnp->sip_udp->external_port;
+	if(lupnp != NULL) {
+		ms_mutex_lock(&lupnp->mutex);
+		
+		if(lupnp->sip_udp != NULL) {
+			if(lupnp->sip_udp->state == LinphoneUpnpStateOk) {
+				port = lupnp->sip_udp->external_port;
+			}
+		} else if(lupnp->sip_tcp != NULL) {
+			if(lupnp->sip_tcp->state == LinphoneUpnpStateOk) {
+				port = lupnp->sip_tcp->external_port;
+			}
+		} else if(lupnp->sip_tls != NULL) {
+			if(lupnp->sip_tls->state == LinphoneUpnpStateOk) {
+				port = lupnp->sip_tls->external_port;
+			}
 		}
-	} else if(lupnp->sip_tcp != NULL) {
-		if(lupnp->sip_tcp->state == LinphoneUpnpStateOk) {
-			port = lupnp->sip_tcp->external_port;
-		}
-	} else if(lupnp->sip_tls != NULL) {
-		if(lupnp->sip_tls->state == LinphoneUpnpStateOk) {
-			port = lupnp->sip_tls->external_port;
-		}
+		
+		ms_mutex_unlock(&lupnp->mutex);
 	}
-	
-	ms_mutex_unlock(&lupnp->mutex);
 	return port;
 }
 
 const char* linphone_upnp_context_get_external_ipaddress(UpnpContext *lupnp) {
 	const char* addr = NULL;
-	ms_mutex_lock(&lupnp->mutex);
-	addr = upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt);
-	ms_mutex_unlock(&lupnp->mutex);
+	if(lupnp != NULL) {
+		ms_mutex_lock(&lupnp->mutex);
+		addr = upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt);
+		ms_mutex_unlock(&lupnp->mutex);
+	}
 	return addr;
 }
 
