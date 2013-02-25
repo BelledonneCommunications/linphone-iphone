@@ -516,4 +516,7 @@ void __sal_op_free(SalOp *b);
 void sal_set_send_error(Sal *sal,int value);
 /*1 for no error*/
 void sal_set_recv_error(Sal *sal,int value);
+/*enable contact fixing*/
+void sal_nat_helper_enable(Sal *sal,bool_t enable);
+bool_t sal_nat_helper_enabled(Sal *sal);
 #endif

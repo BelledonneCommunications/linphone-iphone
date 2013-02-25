@@ -465,7 +465,8 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
 	linphone_core_set_download_ptime(lc,tmp);
-
+	/*only set at setup*/
+	sal_nat_helper_enable(lc->sal,lp_config_get_int(lc->config,"net","enable_nat_helper",1));
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -1284,6 +1285,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 		lp_config_read_file(lc->config,factory_config_path);
 
 	lc->sal=sal_init();
+
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 

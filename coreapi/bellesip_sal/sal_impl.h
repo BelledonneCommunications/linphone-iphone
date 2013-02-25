@@ -35,6 +35,7 @@ struct Sal{
 	bool_t one_matching_codec;
 	unsigned int keep_alive;
 	bool_t use_tcp_tls_keep_alive;
+	bool_t nat_helper_enabled;
 };
 
 typedef enum SalOpSate {
