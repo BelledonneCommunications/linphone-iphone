@@ -141,6 +141,10 @@ public interface LinphoneCore {
 		 * Use ICE.
 		 */
 		static public FirewallPolicy UseIce = new FirewallPolicy(3,"UseIce");
+		/**
+		 * Use uPnP.
+		 */
+		static public FirewallPolicy UseIce = new FirewallPolicy(4,"UseUpnp");
 		
 		private final int mValue;
 		private final String mStringValue;
