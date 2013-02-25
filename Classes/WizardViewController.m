@@ -51,6 +51,11 @@ typedef enum _ViewElement {
 
 @synthesize backButton;
 @synthesize startButton;
+@synthesize createAccountButton;
+@synthesize connectAccountButton;
+@synthesize externalAccountButton;
+
+@synthesize choiceViewLogoImageView;
 
 @synthesize viewTapGestureRecognizer;
 
@@ -86,6 +91,11 @@ typedef enum _ViewElement {
     
     [backButton release];
     [startButton release];
+    [createAccountButton release];
+    [connectAccountButton release];
+    [externalAccountButton release];
+
+    [choiceViewLogoImageView release];
     
     [historyViews release];
     
@@ -205,7 +215,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [WizardViewController cleanTextField:connectAccountView];
     [WizardViewController cleanTextField:externalAccountView];
     [WizardViewController cleanTextField:validateAccountView];
-    [self changeView:welcomeView back:FALSE animation:FALSE];
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
+        [self changeView:choiceView back:FALSE animation:FALSE];
+    } else {
+        [self changeView:welcomeView back:FALSE animation:FALSE];
+    }
     [waitView setHidden:TRUE];
 }
 
@@ -252,8 +266,27 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     if (view == validateAccountView) {
         [backButton setEnabled:FALSE];
+    } else if (view == choiceView) {
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
+            [backButton setEnabled:FALSE];
+        } else {
+            [backButton setEnabled:TRUE];
+        }
     } else {
         [backButton setEnabled:TRUE];
+    }
+
+    if (view == choiceView) {
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
+            [choiceViewLogoImageView setHidden:FALSE];
+        }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account_button_preference"] == true) {
+            [externalAccountButton setHidden:TRUE];
+            if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
+                [createAccountButton setCenter: [connectAccountButton center]];
+            }
+            [connectAccountButton setCenter: [externalAccountButton center]];
+        }
     }
     
     // Animation

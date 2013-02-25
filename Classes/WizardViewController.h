@@ -41,6 +41,11 @@
 
 @property (nonatomic, retain) IBOutlet UIButton *backButton;
 @property (nonatomic, retain) IBOutlet UIButton *startButton;
+@property (nonatomic, retain) IBOutlet UIButton *createAccountButton;
+@property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
+@property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
+
+@property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
 
 @property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
