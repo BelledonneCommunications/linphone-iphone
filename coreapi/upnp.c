@@ -881,6 +881,8 @@ void linphone_upnp_update_proxy(UpnpContext* lupnp, bool_t force) {
 						// Only reset ithe registration if we require that upnp should be ok
 						if(lupnp->lc->sip_conf.register_only_when_upnp_is_ok) {
 							linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone, "Registration impossible (uPnP not ready)");
+						} else {
+							cfg->commit=TRUE;
 						}
 					} else {
 						cfg->commit=TRUE;

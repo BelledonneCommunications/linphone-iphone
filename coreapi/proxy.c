@@ -1100,8 +1100,8 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		switch(linphone_core_get_firewall_policy(lc)) {
 			case LinphonePolicyUseUpnp:
 #ifdef BUILD_UPNP
-			if(!lc->sip_conf.register_only_when_upnp_is_ok || 
-			   (lc->upnp != NULL && !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
+			if(lc->sip_conf.register_only_when_upnp_is_ok && 
+			   (lc->upnp == NULL || !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
 				break;
 			}
 #endif //BUILD_UPNP
