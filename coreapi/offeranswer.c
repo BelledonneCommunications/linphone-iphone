@@ -313,10 +313,9 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
 		if (ls){
 			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
-			result->n_active_streams++;
-		}
-		else {
-			/* create an inactive stream for the answer, as there where no matching stream a local capability */
+			if (result->streams[i].rtp_port!=0) result->n_active_streams++;
+		}else {
+			/* create an inactive stream for the answer, as there where no matching stream in local capabilities */
 			result->streams[i].dir=SalStreamInactive;
 			result->streams[i].rtp_port=0;
 			result->streams[i].type=rs->type;
