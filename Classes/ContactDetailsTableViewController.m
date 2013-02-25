@@ -141,7 +141,11 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     } else if(contactSections[section] == ContactSections_Sip) {
         return [dataCache objectAtIndex:1];
     } else if(contactSections[section] == ContactSections_Email) {
-        return [dataCache objectAtIndex:2];
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+            return [dataCache objectAtIndex:2];
+        } else {
+            return nil;
+        }
     }
     return nil;
 }
@@ -213,6 +217,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     }
     
     // Email
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true)
     {
         ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
         NSMutableArray *subArray = [NSMutableArray array];
