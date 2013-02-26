@@ -282,10 +282,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account_button_preference"] == true) {
             [externalAccountButton setHidden:TRUE];
-            if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
-                [createAccountButton setCenter: [connectAccountButton center]];
+            if ([externalAccountButton center].y != [connectAccountButton center].y) {
+                if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
+                    [createAccountButton setCenter: [connectAccountButton center]];
+                }
+                [connectAccountButton setCenter: [externalAccountButton center]];
             }
-            [connectAccountButton setCenter: [externalAccountButton center]];
         }
     }
     
