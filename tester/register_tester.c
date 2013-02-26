@@ -48,7 +48,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info) {
 	int retry=0;
 	LCSipTransports transport = {5070,5070,0,5071};
-
+    char* addr;
 	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	reset_counters(counters);
@@ -59,7 +59,8 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 
 	LinphoneAddress *from = create_linphone_address(domain);
 
-	linphone_proxy_config_set_identity(proxy_cfg,linphone_address_as_string(from));
+	linphone_proxy_config_set_identity(proxy_cfg,addr=linphone_address_as_string(from));
+	ms_free(addr);
 	const char* server_addr = linphone_address_get_domain(from);
 
 	linphone_proxy_config_enable_register(proxy_cfg,TRUE);
@@ -284,7 +285,7 @@ static void io_recv_error(){
 int register_test_suite () {
 
 	CU_pSuite pSuite = CU_add_suite("Register", NULL, NULL);
-	if (NULL == CU_add_test(pSuite, "simple_register_tester", simple_register)) {
+	if (NULL == CU_add_test(pSuite, "simple_register", simple_register)) {
 		return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "tcp register tester", simple_tcp_register)) {
@@ -293,7 +294,7 @@ int register_test_suite () {
 	if (NULL == CU_add_test(pSuite, "tls register tester", simple_tls_register)) {
 		return CU_get_error();
 	}
-	if (NULL == CU_add_test(pSuite, "simple register with digest auth tester", simple_authenticated_register)) {
+	if (NULL == CU_add_test(pSuite, "simple_authenticated_register", simple_authenticated_register)) {
 		return CU_get_error();
 	}
 	if (NULL == CU_add_test(pSuite, "register with digest auth tester without initial credentials", authenticated_register_with_no_initial_credentials)) {

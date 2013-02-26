@@ -285,14 +285,18 @@ static void process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
-	if (server_transaction) belle_sip_object_ref(server_transaction); /*ACK does'nt create srv transaction*/
-	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
-	op->pending_server_trans=server_transaction;
 	belle_sdp_session_description_t* sdp;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
 	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
+
+	if (server_transaction) belle_sip_object_ref(server_transaction); /*ACK does'nt create srv transaction*/
+	if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
+		if (op->pending_server_trans)belle_sip_object_unref(op->pending_server_trans);
+		/*updating pending invite transaction*/
+		op->pending_server_trans=server_transaction;
+	}
 
 	if (!op->dialog) {
 		set_or_update_dialog(op,belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(op->pending_server_trans)));
@@ -330,10 +334,10 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				/*first answer 200 ok to cancel*/
 				belle_sip_server_transaction_send_response(server_transaction
 															,belle_sip_response_create_from_request(req,200));
-				/*terminate invite request*/
+				/*terminate invite transaction*/
 				call_terminated(op
-								,belle_sip_request_event_get_server_transaction(event)
-								,belle_sip_request_event_get_request(event),487);
+								,op->pending_server_trans
+								,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),487);
 
 
 			} else {
