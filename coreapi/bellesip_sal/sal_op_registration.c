@@ -106,7 +106,7 @@ static void register_process_timeout(void *user_ctx, const belle_sip_timeout_eve
 	}
 }
 static void register_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
-	ms_error("process_transaction_terminated not implemented yet");
+	/*ms_error("register_process_transaction_terminated not implemented yet");*/
 }
 
 

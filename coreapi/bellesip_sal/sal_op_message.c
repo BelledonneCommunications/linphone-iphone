@@ -30,14 +30,29 @@ static void process_error( SalOp* op) {
 
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	SalOp* op = (SalOp*)user_ctx;
+//	belle_sip_object_t* source = belle_sip_io_error_event_get_source(event);
+//	if (BELLE_SIP_IS_INSTANCE_OF(source,belle_sip_transaction_t)) {
+//		/*reset op to make sure transaction terminated does not need op*/
+//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(source),NULL);
+//	}
 	process_error(op);
 }
 static void process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	SalOp* op=(SalOp*)user_ctx;
+//	belle_sip_client_transaction_t *client_transaction=belle_sip_timeout_event_get_client_transaction(event);
+//	belle_sip_server_transaction_t *server_transaction=belle_sip_timeout_event_get_server_transaction(event);
+//	/*reset op to make sure transaction terminated does not need op*/
+//	if (client_transaction) {
+//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);
+//	} else {
+//		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),NULL);
+//	}
 	process_error(op);
+
 }
 static void process_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
+	/*belle_sip_client_transaction_t *client_transaction=belle_sip_response_event_get_client_transaction(event);*/
 	int code = belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
 	SalTextDeliveryStatus status;
 	if (code>=100 && code <200)
@@ -46,7 +61,10 @@ static void process_response_event(void *op_base, const belle_sip_response_event
 		status=SalTextDeliveryDone;
 	else
 		status=SalTextDeliveryFailed;
-
+	if (status != SalTextDeliveryInProgress) {
+		/*reset op to make sure transaction terminated does not need op
+		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*/
+	}
 	op->base.root->callbacks.text_delivery_update(op,status);
 
 }

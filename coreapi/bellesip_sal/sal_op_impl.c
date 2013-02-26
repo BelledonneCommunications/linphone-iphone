@@ -23,10 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new0(SalOp,1);
 	__sal_op_init(op,sal);
+	sal_op_ref(op);
 	return op;
 }
-
 void sal_op_release(SalOp *op){
+	op->state=SalOpStateTerminated;
+	sal_op_unref(op);
+}
+void sal_op_release_impl(SalOp *op){
+	ms_message("Destroying op [%p]",op);
 	if (op->request) belle_sip_object_unref(op->request);
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
@@ -38,6 +43,7 @@ void sal_op_release(SalOp *op){
 	if(op->referred_by) belle_sip_object_unref(op->referred_by);
 
 	if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
+	if (op->call_released_timer) belle_sip_main_loop_cancel_source(belle_sip_stack_get_main_loop(op->base.root->stack),op->call_released_timer);
 	__sal_op_free(op);
 	return ;
 }
@@ -143,7 +149,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	}
 
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
-	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),op);
+	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),sal_op_ref(op));
 	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0) {
 		if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
 		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
@@ -255,4 +261,16 @@ void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 		belle_sip_dialog_set_application_data(op->dialog,op);
 		belle_sip_object_ref(op->dialog);
 	}
+}
+/*return reffed op*/
+SalOp* sal_op_ref(SalOp* op) {
+	op->ref++;
+	return op;
+}
+/*return null, destroy op if ref count =0*/
+void* sal_op_unref(SalOp* op) {
+	if (--op->ref <=0) {
+		sal_op_release_impl(op);
+	}
+	return NULL;
 }

@@ -618,10 +618,6 @@ int sal_subscribe_decline(SalOp *op){
 }
 int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
-/*	belle_sip_header_address_t* identity=sal_op_get_contact_address(op);
-	if (identity==NULL) identity=sal_op_get_to_address(op);
-		_osip_list_set_empty(&msg->contacts,(void (*)(void*))osip_contact_free);
-		osip_message_set_contact(msg,identity);*/
 	add_presence_info(BELLE_SIP_MESSAGE(notify),status); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,600)));

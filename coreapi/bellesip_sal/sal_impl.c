@@ -313,6 +313,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 			}
 			case 401:
 			case 407:{
+				/*belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*//*remove op from trans*/
 				if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 					/*only bye are completed*/
 					belle_sip_message("Op is in state terminating, nothing else to do ");
@@ -356,6 +357,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	} else {
 		ms_error("Unhandled transaction terminated [%p]",trans);
 	}
+	if (op) sal_op_unref(op); /*no longuer need to ref op*/
 }
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
 	SalAuthInfo auth_info;

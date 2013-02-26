@@ -36,6 +36,7 @@ struct Sal{
 	unsigned int keep_alive;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
+
 };
 
 typedef enum SalOpSate {
@@ -70,6 +71,8 @@ struct SalOp{
 	SalOpSate_t state;
 	SalOpDir_t dir;
 	belle_sip_refresher_t* refresher;
+	unsigned int call_released_timer;
+	unsigned int ref;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
@@ -79,6 +82,12 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
 
 void sal_op_call_fill_cbs(SalOp*op);
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog);
+
+/*return reffed op*/
+SalOp* sal_op_ref(SalOp* op);
+/*return null, destroy op if ref count =0*/
+void* sal_op_unref(SalOp* op);
+void sal_op_release_impl(SalOp *op);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
