@@ -250,8 +250,8 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(server_transaction));
 	}
 	if (strcmp("BYE",belle_sip_request_get_method(req))==0
-					&& belle_sip_response_get_status_code(resp) !=401
-					&& belle_sip_response_get_status_code(resp) !=407) {
+					&& (!resp || (belle_sip_response_get_status_code(resp) !=401
+									&& belle_sip_response_get_status_code(resp) !=407))) {
 		op->base.root->callbacks.call_released(op);
 		op->state=SalOpStateTerminated;
 	}
