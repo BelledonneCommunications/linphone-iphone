@@ -4307,6 +4307,14 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	}
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 #endif //BUILD_UPNP
+	switch(pol) {
+	case LinphonePolicyUseUpnp:
+		sal_nat_helper_enable(lc->sal, FALSE);
+		break;	
+	default:
+		sal_nat_helper_enable(lc->sal, TRUE);
+		break;
+	}
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config,"net","firewall_policy",pol);
