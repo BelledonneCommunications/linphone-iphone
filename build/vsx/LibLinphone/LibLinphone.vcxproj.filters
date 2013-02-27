@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\coreapi\address.c" />
+    <ClCompile Include="..\..\..\coreapi\authentication.c" />
+    <ClCompile Include="..\..\..\coreapi\callbacks.c" />
+    <ClCompile Include="..\..\..\coreapi\chat.c" />
+    <ClCompile Include="..\..\..\coreapi\conference.c" />
+    <ClCompile Include="..\..\..\coreapi\ec-calibrator.c" />
+    <ClCompile Include="..\..\..\coreapi\enum.c" />
+    <ClCompile Include="..\..\..\coreapi\fonis.c" />
+    <ClCompile Include="..\..\..\coreapi\friend.c" />
+    <ClCompile Include="..\..\..\coreapi\linphone_tunnel.cc" />
+    <ClCompile Include="..\..\..\coreapi\linphone_tunnel_config.c" />
+    <ClCompile Include="..\..\..\coreapi\linphone_tunnel_stubs.c" />
+    <ClCompile Include="..\..\..\coreapi\linphonecall.c" />
+    <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
+    <ClCompile Include="..\..\..\coreapi\linphonecore_jni.cc" />
+    <ClCompile Include="..\..\..\coreapi\lpconfig.c" />
+    <ClCompile Include="..\..\..\coreapi\lsd.c" />
+    <ClCompile Include="..\..\..\coreapi\misc.c" />
+    <ClCompile Include="..\..\..\coreapi\offeranswer.c" />
+    <ClCompile Include="..\..\..\coreapi\presence.c" />
+    <ClCompile Include="..\..\..\coreapi\proxy.c" />
+    <ClCompile Include="..\..\..\coreapi\sal.c" />
+    <ClCompile Include="..\..\..\coreapi\sal_eXosip2.c" />
+    <ClCompile Include="..\..\..\coreapi\sal_eXosip2_presence.c" />
+    <ClCompile Include="..\..\..\coreapi\sal_eXosip2_sdp.c" />
+    <ClCompile Include="..\..\..\coreapi\siplogin.c" />
+    <ClCompile Include="..\..\..\coreapi\sipsetup.c" />
+    <ClCompile Include="..\..\..\coreapi\sipwizard.c" />
+    <ClCompile Include="..\..\..\coreapi\test_ecc.c" />
+    <ClCompile Include="..\..\..\coreapi\test_lsd.c" />
+    <ClCompile Include="..\..\..\coreapi\test_numbers.c" />
+    <ClCompile Include="..\..\..\coreapi\TunnelManager.cc" />
+    <ClCompile Include="..\..\..\coreapi\upnp.c" />
+    <ClCompile Include="..\..\..\coreapi\help\buddy_status.c" />
+    <ClCompile Include="..\..\..\coreapi\help\chatroom.c" />
+    <ClCompile Include="..\..\..\coreapi\help\registration.c" />
+    <ClCompile Include="..\..\..\coreapi\plugins\buddylookup\src\lookup.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\coreapi\enum.h" />
+    <ClInclude Include="..\..\..\coreapi\linphone_tunnel.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonecore.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonecore_utils.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonefriend.h" />
+    <ClInclude Include="..\..\..\coreapi\lpconfig.h" />
+    <ClInclude Include="..\..\..\coreapi\offeranswer.h" />
+    <ClInclude Include="..\..\..\coreapi\private.h" />
+    <ClInclude Include="..\..\..\coreapi\sal.h" />
+    <ClInclude Include="..\..\..\coreapi\sal_eXosip2.h" />
+    <ClInclude Include="..\..\..\coreapi\sipsetup.h" />
+    <ClInclude Include="..\..\..\coreapi\upnp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\coreapi\TunnelManager.hh" />
+  </ItemGroup>
+</Project>
