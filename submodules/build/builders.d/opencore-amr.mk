@@ -35,7 +35,7 @@ $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(opencore
 	$(BUILDER_SRC_DIR)/$(opencore-amr_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} ${opencore-amr-configure-option} 
 
 build-opencore-amr: $(BUILDER_BUILD_DIR)/$(opencore-amr_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(opencore-amr_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(opencore-amr_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-opencore-amr:
 	cd  $(BUILDER_BUILD_DIR)/$(opencore-amr_dir) && make clean

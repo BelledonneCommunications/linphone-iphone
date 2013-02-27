@@ -1,6 +1,6 @@
 ############################################################################
-# msx264.mk 
-# Copyright (C) 2011  Belledonne Communications,Grenoble France
+# belle-sip.mk 
+# Copyright (C) 2013  Belledonne Communications,Grenoble France
 #
 ############################################################################
 #
@@ -19,25 +19,25 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 ############################################################################
-msx264_dir?=msx264
-$(BUILDER_SRC_DIR)/$(msx264_dir)/configure:
-	cd $(BUILDER_SRC_DIR)/$(msx264_dir) && ./autogen.sh
+belle-sip_dir?=belle-sip
+$(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure:
+	cd $(BUILDER_SRC_DIR)/$(belle-sip_dir) && ./autogen.sh
 
-$(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msx264_dir)/configure
-	mkdir -p $(BUILDER_BUILD_DIR)/$(msx264_dir)
-	cd $(BUILDER_BUILD_DIR)/$(msx264_dir)/ \
+$(BUILDER_BUILD_DIR)/$(belle-sip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure
+	mkdir -p $(BUILDER_BUILD_DIR)/$(belle-sip_dir)
+	cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir)/ \
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(msx264_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
+	$(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} --disable-tls 
 
-build-msx264: build-x264 $(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+build-belle-sip: $(BUILDER_BUILD_DIR)/$(belle-sip_dir)/Makefile
+	cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
-clean-msx264: clean-x264
-	cd  $(BUILDER_BUILD_DIR)/$(msx264_dir) && make clean
+clean-belle-sip: 
+	cd  $(BUILDER_BUILD_DIR)/$(belle-sip_dir) && make clean
 
-veryclean-msx264: veryclean-x264
-	-cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && make distclean 
-	-cd $(BUILDER_SRC_DIR)/$(msx264_dir) && rm -f configure
+veryclean-belle-sip: 
+	-cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir) && make distclean 
+	rm -f $(BUILDER_SRC_DIR)/$(belle-sip_dir)/configure
 
-clean-makefile-msx264: clean-makefile-x264
-	cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && rm -f Makefile
+clean-makefile-belle-sip: 
+	cd $(BUILDER_BUILD_DIR)/$(belle-sip_dir) && rm -f Makefile

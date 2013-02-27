@@ -39,7 +39,7 @@ fi
    
 for SYSROOT_PATH in $SDK_PATH_LIST ; do echo $SYSROOT_PATH ; done ;
 echo "Selecting SDK path = ${SYSROOT_PATH}"
-COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION} -DTARGET_OS_IPHONE=1 -D__IOS"
+COMMON_FLAGS=" -arch ${ARCH} ${MCPU} -isysroot ${SYSROOT_PATH} -miphoneos-version-min=${SDK_VERSION} -DTARGET_OS_IPHONE=1 -D__IOS -fms-extensions"
 CC="${SDK_BIN_PATH}/gcc -std=c99 $COMMON_FLAGS"
 OBJC="${SDK_BIN_PATH}/gcc -std=c99 $COMMON_FLAGS"
 CXX="${SDK_BIN_PATH}/g++ $COMMON_FLAGS"

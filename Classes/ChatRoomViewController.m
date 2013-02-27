@@ -308,8 +308,10 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[chat setState:[NSNumber numberWithInt:state]];
 	[chat update];
 	[thiz.tableController updateChatEntry:chat];
-	linphone_chat_message_set_user_data(msg, NULL);
-	[chat release]; // no longuer need to keep reference
+	if (state != LinphoneChatMessageStateInProgress) {
+		linphone_chat_message_set_user_data(msg, NULL);
+		[chat release]; // no longuer need to keep reference
+	}
 	
 }
 

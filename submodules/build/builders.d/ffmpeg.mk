@@ -34,7 +34,7 @@ $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak: $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/
 	&& $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure --prefix=$(prefix) 	$(ffmpeg_configure_options)
 
 build-ffmpeg: $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-ffmpeg:
 	cd  $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make clean

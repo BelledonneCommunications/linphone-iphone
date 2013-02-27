@@ -30,13 +30,15 @@ linphone_configure_controls=  \
                               --enable-gtk_ui=no \
                               --enable-console_ui=no \
                               --enable-ssl-hmac=no \
-                              --enable-ssl=yes \
+                              --enable-ssl=no \
 			      --disable-theora \
 			      --disable-sdl \
 			      --disable-x11 \
+			      --enable-bellesip \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
-                              --with-srtp=$(prefix) 
+                              --with-srtp=$(prefix) \
+                              --with-antlr=$(prefix) 
 
 ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --enable-zrtp
@@ -109,17 +111,17 @@ veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
-.NOTPARALLEL build-linphone: init build-openssl build-srtp build-zrtpcpp build-osip2 build-eXosip2  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-libantlr build-belle-sip build-srtp build-zrtpcpp  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
 
-clean-linphone: clean-osip2 clean-eXosip2 clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-openssl clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
+clean-linphone: clean-libantlr clean-belle-sip clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-osip2 veryclean-eXosip2 veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx
+veryclean-linphone: veryclean-libantlrc3 veryclean-belle-sip veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-osip2 clean-makefile-eXosip2 clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk
+clean-makefile-linphone: clean-makefile-libantlr clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -146,54 +148,6 @@ clean-makefile-liblinphone:
 	 
 clean-liblinphone: 
 	 cd  $(LINPHONE_BUILD_DIR) && make clean
-#osip2
-
-$(BUILDER_SRC_DIR)/$(osip_dir)/configure:
-	 cd $(BUILDER_SRC_DIR)/$(osip_dir) && ./autogen.sh
-
-$(BUILDER_BUILD_DIR)/$(osip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(osip_dir)/configure
-	mkdir -p $(BUILDER_BUILD_DIR)/$(osip_dir)
-	cd $(BUILDER_BUILD_DIR)/$(osip_dir)/ \
-	&& CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(osip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
-
-build-osip2: $(BUILDER_BUILD_DIR)/$(osip_dir)/Makefile
-	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
-
-clean-osip2:
-	 cd  $(BUILDER_BUILD_DIR)/$(osip_dir) && make clean
-
-veryclean-osip2:
-#	 -cd $(BUILDER_BUILD_DIR)/$(osip_dir) && make distclean
-	 -cd $(BUILDER_SRC_DIR)/$(osip_dir) && rm -f configure
-
-clean-makefile-osip2:
-	 cd $(BUILDER_BUILD_DIR)/$(osip_dir) && rm -f Makefile
-#eXosip
-
-$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure:
-	 cd $(BUILDER_SRC_DIR)/$(eXosip_dir) && ./autogen.sh
-	 
-$(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile: $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure 
-	mkdir -p $(BUILDER_BUILD_DIR)/$(eXosip_dir)
-	cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)/\
-	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig  CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	$(BUILDER_SRC_DIR)/$(eXosip_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} CFLAGS="-I$(prefix)/include -L$(prefix)/lib -lcrypto" --enable-openssl  --disable-tools 
-
-build-eXosip2: $(BUILDER_BUILD_DIR)/$(eXosip_dir)/Makefile
-	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir)  \
-	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	make  DEFS="-DHAVE_CONFIG_H -include $(BUILDER_SRC_DIR)/$(eXosip_dir)/include/eXosip2/eXosip_transport_hook.h" && make install
-
-clean-eXosip2:
-	 cd  $(BUILDER_BUILD_DIR)/$(eXosip_dir)  && make clean
-
-veryclean-eXosip2:
-#	-cd $(BUILDER_BUILD_DIR)/$(eXosip_dir) && make distclean
-	-rm -f $(BUILDER_SRC_DIR)/$(eXosip_dir)/configure
-
-clean-makefile-eXosip2:
-	 cd $(BUILDER_BUILD_DIR)/$(eXosip_dir) && rm -f Makefile
 
 #speex
 

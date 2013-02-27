@@ -82,17 +82,17 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (addr){
 			const char *proxy=linphone_proxy_config_get_addr(cfg);
 			LinphoneAddress *proxy_addr=linphone_address_new(proxy);
-			const char *port=linphone_address_get_port(proxy_addr);
+			int port=linphone_address_get_port_int(proxy_addr);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
             [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
 			[self setString: linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
-				|| port!=NULL){
+				|| port>0){
 				char tmp[256]={0};
-				if (port!=NULL) {
-					snprintf(tmp,sizeof(tmp)-1,"%s:%s",linphone_address_get_domain(proxy_addr),port);
+				if (port>0) {
+					snprintf(tmp,sizeof(tmp)-1,"%s:%i",linphone_address_get_domain(proxy_addr),port);
 				}else snprintf(tmp,sizeof(tmp)-1,"%s",linphone_address_get_domain(proxy_addr));
 				[self setString: tmp forKey:@"proxy_preference"];
 			}

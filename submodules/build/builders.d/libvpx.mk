@@ -27,7 +27,7 @@ $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/p
 	&& SYSROOT_PATH=$$SYSROOT_PATH SDK_BIN_PATH=$$SDK_BIN_PATH $(BUILDER_SRC_DIR)/$(libvpx_dir)/configure --prefix=$(prefix) $(libvpx_configure_options)
 
 build-libvpx: $(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk
-	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make  && make install
+	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make  && make install
 
 clean-libvpx:
 	cd  $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make clean
