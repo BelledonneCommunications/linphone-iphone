@@ -123,6 +123,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
 		[ContactSelection setAddAddress:nil];
 		[ContactSelection setSipFilter:TRUE];
+		[ContactSelection setEmailFilter:FALSE];
 		[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE];
 	} else {
 		[self startChatRoom]; 

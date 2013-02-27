@@ -78,8 +78,10 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
         NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
         for (id lPerson in lContacts) {
             BOOL add = true;
-            if([ContactSelection getSipFilter]) {
+            if([ContactSelection getSipFilter] || [ContactSelection getEmailFilter]) {
                 add = false;
+            }
+            if([ContactSelection getSipFilter]) {
                 ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonInstantMessageProperty);
                 for(int i = 0; i < ABMultiValueGetCount(lMap); ++i) {
                     CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
@@ -95,6 +97,12 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         }
                     }
                     CFRelease(lDict);
+                }
+            }
+            if ((add == false) && [ContactSelection getEmailFilter]) {
+                ABMultiValueRef lMap = ABRecordCopyValue((ABRecordRef)lPerson, kABPersonEmailProperty);
+                if (ABMultiValueGetCount(lMap) > 0) {
+                    add = true;
                 }
             }
             if(add) {

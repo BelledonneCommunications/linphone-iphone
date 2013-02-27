@@ -38,6 +38,8 @@ typedef enum _ContactSelectionMode {
 + (NSString*)getAddAddress;
 + (void)setSipFilter:(BOOL)enable;
 + (BOOL)getSipFilter;
++ (void)setEmailFilter:(BOOL)enable;
++ (BOOL)getEmailFilter;
 
 @end
 
