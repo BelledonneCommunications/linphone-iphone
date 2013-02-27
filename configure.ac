@@ -419,8 +419,6 @@ AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${package_prefix}/${DATADIRNAME}/sounds/l
 dnl check if we have the getifaddrs() sytem call
 AC_CHECK_FUNCS(getifaddrs)
 
-dnl check for osip2
-LP_CHECK_OSIP2
 
 dnl conditionnal build for ssl
 AC_ARG_ENABLE(ssl,
@@ -436,8 +434,6 @@ AC_ARG_ENABLE(ssl,
 if test "$build_ssl" = "true"; then
 	PKG_CHECK_MODULES(OPENSSL, libssl >= 0.9.8)
 fi
-dnl setup flags for exosip library
-LP_SETUP_EXOSIP
 
 dnl check exosip support of DSCP in exosip
 AC_MSG_CHECKING([for DSCP support in exosip])
@@ -685,6 +681,10 @@ if test $USE_BELLESIP_TRUE !='#' ; then
 	SIPSTACK_LIBS=$BELLESIP_LIBS
 	AC_DEFINE(USE_BELLESIP,1,[Defined when bellesip is used])
 else
+	dnl check for osip2
+	LP_CHECK_OSIP2
+	dnl setup flags for exosip library
+	LP_SETUP_EXOSIP
 	SIPSTACK_CFLAGS=$EXOSIP_CFLAGS $OSIP_CFLAGS
 	SIPSTACK_LIBS=$EXOSIP_LIBS $OSIP_LIBS
 fi
