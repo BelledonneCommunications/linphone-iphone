@@ -182,6 +182,9 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(req));
 	}
 
+	if (!op->base.call_id) {
+		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_call_id_t))));
+	}
 	if (op->callbacks.process_request_event) {
 		op->callbacks.process_request_event(op,event);
 	} else {
@@ -220,7 +223,9 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		if (!op->base.remote_ua) {
 			sal_op_set_remote_ua(op,BELLE_SIP_MESSAGE(response));
 		}
-
+		if (!op->base.call_id) {
+			op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(response), belle_sip_header_call_id_t))));
+		}
 		if (op->callbacks.process_response_event) {
 
 			if (op->base.root->nat_helper_enabled) {
@@ -377,7 +382,10 @@ Sal * sal_init(){
 	sal->nat_helper_enabled=TRUE;
 	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
 	sal->user_agent=belle_sip_header_user_agent_new();
+#if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
+#endif
+
 	belle_sip_header_user_agent_add_product(sal->user_agent,stack_string);
 	belle_sip_object_ref(sal->user_agent);
 	belle_sip_set_log_handler(_belle_sip_log);
