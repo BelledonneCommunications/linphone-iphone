@@ -2167,7 +2167,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
 	enum_lookup_res_t *enumres=NULL;
 	char *enum_domain=NULL;
-	LinphoneProxyConfig *proxy=lc->default_proxy;;
+	LinphoneProxyConfig *proxy=lc->default_proxy;
 	char *tmpurl;
 	LinphoneAddress *uri;
 
@@ -5265,9 +5265,10 @@ static void linphone_core_uninit(LinphoneCore *lc)
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
-	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+
+	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
@@ -5582,13 +5583,18 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 }
 
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
+	MSList *calls;
+	const LinphoneCall *c;
+	const LinphoneAddress *address;
+	char *current_uri;
+
 	if (uri == NULL) return NULL;
-	MSList *calls=lc->calls;
+	calls=lc->calls;
 	while(calls) {
-		const LinphoneCall *c=(LinphoneCall*)calls->data;
+		c=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		const LinphoneAddress *address = linphone_call_get_remote_address(c);
-		char *current_uri=linphone_address_as_string_uri_only(address);
+		address = linphone_call_get_remote_address(c);
+		current_uri=linphone_address_as_string_uri_only(address);
 		if (strcmp(uri,current_uri)==0) {
 			ms_free(current_uri);
 			return c;

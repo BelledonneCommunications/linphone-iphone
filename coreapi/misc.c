@@ -32,7 +32,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if _MSC_VER
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 #endif /*_WIN32_WCE*/
 
@@ -585,9 +589,10 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc){
 }
 
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
+	int threshold;
 	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
 		ms_message("Stun server ping time is %i ms",ping_time_ms);
-		int threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
+		threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
 		
 		if (ping_time_ms>threshold){
 			/* we might be in a 2G network*/

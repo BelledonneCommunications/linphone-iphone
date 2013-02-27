@@ -241,11 +241,13 @@ void ec_calibrator_destroy(EcCalibrator *ecc){
 }
 
 int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data){
+	unsigned int rate;
+
 	if (lc->ecc!=NULL){
 		ms_error("Echo calibration is still on going !");
 		return -1;
 	}
-	unsigned int rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
+	rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
 	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,cb_data);
 	return 0;
 }

@@ -31,7 +31,7 @@ extern "C" {
 #include "linphonefriend.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
-#include "sal.h"
+#include "sal/sal.h"
 #include "sipsetup.h"
 
 #ifdef HAVE_CONFIG_H

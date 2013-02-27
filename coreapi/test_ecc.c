@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
+#if _MSC_VER
+#include <io.h>
+#endif
 
 static void calibration_finished(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay, void *data){
 	ms_message("echo calibration finished %s.",status==LinphoneEcCalibratorDone ? "successfully" : "with faillure");
@@ -30,6 +33,9 @@ static void calibration_finished(LinphoneCore *lc, LinphoneEcCalibratorStatus st
 
 static char config_file[1024];
 void parse_args(int argc, char *argv[]){
+#ifndef F_OK
+#define F_OK 4
+#endif
 	if (argc != 3 || strncmp("-c",argv[1], 2) || access(argv[2],F_OK)!=0) {
 		printf("Usage: test_ecc [-c config_file] where config_file will be written with the detected value\n");
 		exit(-1);
@@ -38,10 +44,11 @@ void parse_args(int argc, char *argv[]){
 }
 
 int main(int argc, char *argv[]){
-	if (argc>1) parse_args(argc,argv);
 	int count=0;
 	LinphoneCoreVTable vtable={0};
-	LinphoneCore *lc=linphone_core_new(&vtable,config_file,NULL,NULL);
+	LinphoneCore *lc;
+	if (argc>1) parse_args(argc,argv);
+	lc=linphone_core_new(&vtable,config_file,NULL,NULL);
 	
 	linphone_core_enable_logs(NULL);
 
