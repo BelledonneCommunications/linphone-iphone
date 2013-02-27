@@ -215,6 +215,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 
 static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t active){
 	int err=0;
+	char *str;
 
 	if (!call->current_params.in_conference){
 		if (call->params.in_conference){
@@ -227,7 +228,7 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 	}
 	call->params.in_conference=FALSE;
 
-	char *str=linphone_call_get_remote_address_as_string(call);
+	str=linphone_call_get_remote_address_as_string(call);
 	ms_message("%s will be removed from conference", str);
 	ms_free(str);
 	if (active){
@@ -283,10 +284,11 @@ static int convert_conference_to_call(LinphoneCore *lc){
  * @returns 0 if successful, -1 otherwise.
  **/
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
+	int err;
 	char * str=linphone_call_get_remote_address_as_string(call);
 	ms_message("Removing call %s from the conference", str);
 	ms_free(str);
-	int err=remove_from_conference(lc,call, FALSE);
+	err=remove_from_conference(lc,call, FALSE);
 	if (err){
 		ms_error("Error removing participant from conference.");
 		return err;
@@ -335,13 +337,14 @@ int linphone_core_leave_conference(LinphoneCore *lc){
  * @returns 0 if successful, -1 otherwise
 **/
 int linphone_core_enter_conference(LinphoneCore *lc){
+	LinphoneConference *conf;
 	if (linphone_core_sound_resources_locked(lc)) {
 		return -1;
 	}
 	if (lc->current_call != NULL) {
 		linphone_core_pause_call(lc, lc->current_call);
 	}
-	LinphoneConference *conf=&lc->conf_ctx;
+	conf=&lc->conf_ctx;
 	if (conf->local_participant==NULL) add_local_endpoint(conf,lc);
 	return 0;
 }

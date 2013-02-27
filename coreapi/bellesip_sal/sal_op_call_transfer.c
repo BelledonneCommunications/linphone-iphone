@@ -162,8 +162,8 @@ int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
 
 void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
-	belle_sip_header_refer_to_t *refer_to= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_refer_to_t);;
-	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);;
+	belle_sip_header_refer_to_t *refer_to= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_refer_to_t);
+	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,req);
 	belle_sip_response_t* resp;
 	belle_sip_uri_t* refer_to_uri;

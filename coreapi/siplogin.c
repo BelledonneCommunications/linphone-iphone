@@ -113,10 +113,9 @@ SipSetup linphone_sip_login={
 	NULL,
 	NULL,
 	NULL,
+	sip_login_do_logout,
 	NULL,
-	NULL,
-	NULL,
-	sip_login_do_logout
+	NULL
 };
 
 

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef SAL_IMPL_H_
 #define SAL_IMPL_H_
-#include "sal.h"
+#include "sal/sal.h"
 #include "belle-sip/belle-sip.h"
 #include "belle-sip/belle-sdp.h"
 

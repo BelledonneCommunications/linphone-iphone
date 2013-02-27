@@ -491,7 +491,7 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 			mapping.remote_port = port->external_port;
 		mapping.remote_host = "";
 		snprintf(description, 128, "%s %s at %s:%d",
-				PACKAGE_NAME,
+				LINPHONE_PACKAGE_NAME,
 				(port->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP": "UDP",
 				port->local_addr, port->local_port);
 		mapping.description = description;

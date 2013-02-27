@@ -152,11 +152,13 @@ LinphoneFriend * linphone_friend_new(){
 
 LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 	LinphoneAddress* linphone_address = linphone_address_new(addr);
+	LinphoneFriend *fr;
+
 	if (linphone_address == NULL) {
 		ms_error("Cannot create friend for address [%s]",addr?addr:"null");
 		return NULL;
 	}
-	LinphoneFriend *fr=linphone_friend_new();
+	fr=linphone_friend_new();
 	if (linphone_friend_set_addr(fr,linphone_address)<0){
 		linphone_friend_destroy(fr);
 		return NULL;
@@ -440,6 +442,8 @@ LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, cons
 	const MSList *elem;
 	const char *username;
 	const char *domain;
+	const char *it_username;
+	const char *it_host;
 	LinphoneFriend *lf=NULL;
 		
 	if (puri==NULL){
@@ -453,8 +457,8 @@ LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, cons
 	}
 	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
 		lf=(LinphoneFriend*)elem->data;
-		const char *it_username=linphone_address_get_username(lf->uri);
-		const char *it_host=linphone_address_get_domain(lf->uri);;
+		it_username=linphone_address_get_username(lf->uri);
+		it_host=linphone_address_get_domain(lf->uri);;
 		if (strcasecmp(domain,it_host)==0 && username_match(username,it_username)){
 			break;
 		}

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 
-#include "sal.h"
+#include "sal/sal.h"
 
 #include "linphonecore.h"
 #include "private.h"
@@ -179,9 +179,9 @@ static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, c
 #endif
 
 static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
+	MSList *elem;
 	ms_warning(" searching for already_a_call_with_remote_address.");
 
-	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next){
 		const LinphoneCall *call=(LinphoneCall*)elem->data;
 		const LinphoneAddress *cRemote=linphone_call_get_remote_address(call);

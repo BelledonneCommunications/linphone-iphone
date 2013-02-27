@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 
-
 void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 	int ortp_level;
 	switch(lev) {
@@ -209,8 +208,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		int rport;
 		bool_t contact_updated=FALSE;
 		char* new_contact;
-		belle_sip_request_t* old_request=NULL;;
-		belle_sip_response_t* old_response=NULL;;
+		belle_sip_request_t* old_request=NULL;
+		belle_sip_response_t* old_response=NULL;
 
 
 		if (op->state == SalOpStateTerminated) {
@@ -346,12 +345,14 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	belle_sip_client_transaction_t* client_transaction = belle_sip_transaction_terminated_event_get_client_transaction(event);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_transaction_terminated_event_get_server_transaction(event);
 	belle_sip_transaction_t* trans;
+	SalOp* op;
+
 	if(client_transaction)
 		trans=BELLE_SIP_TRANSACTION(client_transaction);
 	 else
 		 trans=BELLE_SIP_TRANSACTION(server_transaction);
 
-	SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(trans);
+	op = (SalOp*)belle_sip_transaction_get_application_data(trans);
 	if (op && op->callbacks.process_transaction_terminated) {
 		op->callbacks.process_transaction_terminated(op,event);
 	} else {
@@ -377,7 +378,7 @@ Sal * sal_init(){
 	sal->nat_helper_enabled=TRUE;
 	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
 	sal->user_agent=belle_sip_header_user_agent_new();
-	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
+	belle_sip_header_user_agent_add_product(sal->user_agent, LINPHONE_PACKAGE_NAME "/" LINPHONE_VERSION);
 	belle_sip_header_user_agent_add_product(sal->user_agent,stack_string);
 	belle_sip_object_ref(sal->user_agent);
 	belle_sip_set_log_handler(_belle_sip_log);

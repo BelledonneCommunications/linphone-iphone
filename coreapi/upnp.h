@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/upnp_igd.h"
 #include "linphonecore.h"
-#include "sal.h"
+#include "sal/sal.h"
 
 typedef struct _UpnpSession UpnpSession;
 typedef struct _UpnpContext UpnpContext;

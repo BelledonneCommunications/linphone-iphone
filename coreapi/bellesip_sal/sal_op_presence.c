@@ -479,7 +479,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
-	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);;
+	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
 	const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 	SalPresenceStatus estatus=SalPresenceOffline;
 	SalSubscribeStatus sub_state;

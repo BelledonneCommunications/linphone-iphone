@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 
-#include "sal.h"
+#include "sal/sal.h"
 const char* sal_transport_to_string(SalTransport transport) {
 	switch (transport) {
 		case SalTransportUDP:return "udp";

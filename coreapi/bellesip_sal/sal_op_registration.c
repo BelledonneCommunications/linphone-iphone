@@ -125,6 +125,7 @@ static int send_register_request_with_expires(SalOp* op, belle_sip_request_t* re
 
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
+	belle_sip_uri_t* req_uri;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
 	sal_op_set_route(op,proxy);
@@ -134,7 +135,7 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	op->callbacks.process_transaction_terminated=register_process_transaction_terminated;
 
 	req = sal_op_build_request(op,"REGISTER");
-	belle_sip_uri_t* req_uri = belle_sip_request_get_uri(req);
+	req_uri = belle_sip_request_get_uri(req);
 	belle_sip_uri_set_user(req_uri,NULL); /*remove userinfo if any*/
 
 	return send_register_request_with_expires(op,req,expires);

@@ -34,6 +34,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if _MSC_VER
+#include <io.h>
+#endif
 #endif /*_WIN32_WCE*/
 
 
@@ -140,18 +143,20 @@ LpItem *lp_section_find_item(const LpSection *sec, const char *name){
 void lp_config_parse(LpConfig *lpconfig, FILE *file){
 	char tmp[MAX_LEN]= {'\0'};
 	LpSection *cur=NULL;
+	char *pos1,*pos2;
+	int nbs;
+	char secname[MAX_LEN];
+	char key[MAX_LEN];
+	LpItem *item;
 
 	if (file==NULL) return;
 
 	while(fgets(tmp,MAX_LEN,file)!=NULL){
 		tmp[sizeof(tmp) -1] = '\0';
-		char *pos1,*pos2;
 		pos1=strchr(tmp,'[');
 		if (pos1!=NULL && is_first_char(tmp,pos1) ){
 			pos2=strchr(pos1,']');
 			if (pos2!=NULL){
-				int nbs;
-				char secname[MAX_LEN];
 				secname[0]='\0';
 				/* found section */
 				*pos2='\0';
@@ -171,7 +176,6 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 		}else {
 			pos1=strchr(tmp,'=');
 			if (pos1!=NULL){
-				char key[MAX_LEN];
 				key[0]='\0';
 
 				*pos1='\0';
@@ -191,7 +195,7 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 					if (pos2-pos1>=0){
 						/* found a pair key,value */
 						if (cur!=NULL){
-							LpItem *item=lp_section_find_item(cur,key);
+							item=lp_section_find_item(cur,key);
 							if (item==NULL){
 								lp_section_add_item(cur,lp_item_new(key,pos1));
 							}else{
@@ -211,17 +215,20 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 
 LpConfig * lp_config_new(const char *filename){
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
+	struct stat fileStat;
 	if (filename!=NULL){
 		lpconfig->filename=ortp_strdup(filename);
 		lpconfig->file=fopen(filename,"rw");
 		if (lpconfig->file!=NULL){
-			struct stat fileStat;
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
 #if !defined(_WIN32_WCE)
+#ifndef S_ISREG
+#define S_ISREG(mode) ((mode & S_IFMT) == S_IFREG)
+#endif
 			if ((stat(filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
 				/* make existing configuration files non-group/world-accessible */
-				if (chmod(filename, S_IRUSR | S_IWUSR) == -1) {
+				if (_chmod(filename, _S_IREAD | _S_IWRITE) == -1) {
 					ms_warning("unable to correct permissions on "
 					"configuration file: %s", strerror(errno));
 				}

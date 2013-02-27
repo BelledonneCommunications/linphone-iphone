@@ -120,9 +120,10 @@ static void linphone_call_videostream_encryption_changed(void *data, bool_t encr
 
 static void linphone_call_audiostream_encryption_changed(void *data, bool_t encrypted) {
 	char status[255]={0};
+	LinphoneCall *call;
 	ms_message("Audio stream is %s ", encrypted ? "encrypted" : "not encrypted");
 
-	LinphoneCall *call = (LinphoneCall *)data;
+	call = (LinphoneCall *)data;
 	call->audiostream_encrypted=encrypted;
 	
 	if (encrypted && call->core->vtable.display_status != NULL) {
@@ -1333,6 +1334,13 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
 	float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
 	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
+	float speed;
+	float force;
+	int sustain;
+	float transmit_thres;
+	MSFilter *f=NULL;
+	float floorgain;
+	int spk_agc;
 
 	if (!muted)
 		linphone_core_set_mic_gain_db (lc, mic_gain);
@@ -1346,12 +1354,11 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	
 	if (st->volsend){
 		ms_filter_call_method(st->volsend,MS_VOLUME_REMOVE_DC,&dc_removal);
-		float speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
+		speed=lp_config_get_float(lc->config,"sound","el_speed",-1);
 		thres=lp_config_get_float(lc->config,"sound","el_thres",-1);
-		float force=lp_config_get_float(lc->config,"sound","el_force",-1);
-		int sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
-		float transmit_thres=lp_config_get_float(lc->config,"sound","el_transmit_thres",-1);
-		MSFilter *f=NULL;
+		force=lp_config_get_float(lc->config,"sound","el_force",-1);
+		sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
+		transmit_thres=lp_config_get_float(lc->config,"sound","el_transmit_thres",-1);
 		f=st->volsend;
 		if (speed==-1) speed=0.03;
 		if (force==-1) force=25;
@@ -1369,8 +1376,8 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	}
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
-		float floorgain = 1/pow(10,(mic_gain)/10);
-		int spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
+		floorgain = 1/pow(10,(mic_gain)/10);
+		spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
 		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_FLOORGAIN,&floorgain);
@@ -1478,9 +1485,19 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
 	char rtcp_tool[128]={0};
+	const SalStreamDescription *stream;
+	MSSndCard *playcard;
+	MSSndCard *captcard;
+	bool_t use_ec;
+	bool_t mute;
+	const char *playfile;
+	const char *recfile;
+	const SalStreamDescription *local_st_desc;
+	int crypto_idx;
+
 	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 	/* look for savp stream first */
-	const SalStreamDescription *stream=sal_media_description_find_stream(call->resultdesc,
+	stream=sal_media_description_find_stream(call->resultdesc,
 	    					SalProtoRtpSavp,SalAudio);
 	/* no savp audio stream, use avp */
 	if (!stream)
@@ -1488,13 +1505,12 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 	    					SalProtoRtpAvp,SalAudio);
 
 	if (stream && stream->dir!=SalStreamInactive && stream->rtp_port!=0){
-		MSSndCard *playcard=lc->sound_conf.lsd_card ?
+		playcard=lc->sound_conf.lsd_card ?
 			lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
-		MSSndCard *captcard=lc->sound_conf.capt_sndcard;
-		const char *playfile=lc->play_file;
-		const char *recfile=lc->rec_file;
+		captcard=lc->sound_conf.capt_sndcard;
+		playfile=lc->play_file;
+		recfile=lc->rec_file;
 		call->audio_profile=make_profile(call,call->resultdesc,stream,&used_pt);
-		bool_t use_ec;
 
 		if (used_pt!=-1){
 			call->current_params.audio_codec = rtp_profile_get_payload(call->audio_profile, used_pt);
@@ -1570,9 +1586,9 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			
 			/* valid local tags are > 0 */
 			if (stream->proto == SalProtoRtpSavp) {
-			const SalStreamDescription *local_st_desc=sal_media_description_find_stream(call->localdesc,
+			local_st_desc=sal_media_description_find_stream(call->localdesc,
 													SalProtoRtpSavp,SalAudio);
-			int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
+			crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
 			if (crypto_idx >= 0) {
 				audio_stream_enable_srtp(
@@ -1588,7 +1604,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			}else call->audiostream_encrypted=FALSE;
 			if (call->params.in_conference){
 				/*transform the graph to connect it to the conference filter */
-				bool_t mute=stream->dir==SalStreamRecvOnly;
+				mute=stream->dir==SalStreamRecvOnly;
 				linphone_call_add_to_conf(call, mute);
 			}
 			call->current_params.in_conference=call->params.in_conference;
@@ -1696,13 +1712,15 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
 	LinphoneCore *lc=call->core;
+	LinphoneAddress *me;
+	char *cname;
+	bool_t use_arc;
 
 	call->current_params.audio_codec = NULL;
 	call->current_params.video_codec = NULL;
 
-	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
-	char *cname;
-	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
+	me=linphone_core_get_primary_contact_parsed(lc);
+	use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
@@ -2373,10 +2391,11 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	VideoStream* vstream = call->videostream;
 	if (vstream && vstream->output) {
 		float zoom[3];
+		float halfsize;
 		
 		if (zoom_factor < 1)
 			zoom_factor = 1;
-		float halfsize = 0.5 * 1.0 / zoom_factor;
+		halfsize = 0.5 * 1.0 / zoom_factor;
 
 		if ((*cx - halfsize) < 0)
 			*cx = 0 + halfsize;

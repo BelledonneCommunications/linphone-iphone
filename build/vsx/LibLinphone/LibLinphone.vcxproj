@@ -94,20 +94,22 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;HAVE_SPEEXDSP;ORTP_INET6;WIN32;_DEBUG;_WINDOWS;_USRDLL;MEDIASTREAMER2_EXPORTS;MEDIASTREAMER2_INTERNAL_EXPORTS;WINDOW_NATIVE;_CRT_SECURE_NO_DEPRECATE;_TRUE_TIME;MS2_INTERNAL;MS2_FILTERS;IN_LINPHONE;USE_BELLESIP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;BUILD_UPNP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessToFile>false</PreprocessToFile>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>mediastreamer2_dll.lib;ortp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>belle-sip_dll.lib;mediastreamer2_dll.lib;ws2_32.lib;ortp_dll.lib;gsm_dll.lib;speex_dll.lib;speexdsp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
     </Link>
@@ -117,10 +119,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;NDEBUG;IN_LINPHONE;WIN32;USE_BELLESIP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(Project)../../../../belle-sip/include;$(Project)../../../../oRTP/include;$(Project)../../../../mediastreamer2/include;$(Project)../../../coreapi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +132,65 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\coreapi\address.c" />
+    <ClCompile Include="..\..\..\coreapi\authentication.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_address_impl.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_impl.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_call.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_call_transfer.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_impl.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_message.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_presence.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_registration.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_sdp.c" />
+    <ClCompile Include="..\..\..\coreapi\callbacks.c" />
+    <ClCompile Include="..\..\..\coreapi\chat.c" />
+    <ClCompile Include="..\..\..\coreapi\conference.c" />
+    <ClCompile Include="..\..\..\coreapi\ec-calibrator.c" />
+    <ClCompile Include="..\..\..\coreapi\enum.c" />
+    <ClCompile Include="..\..\..\coreapi\friend.c" />
+    <ClCompile Include="..\..\..\coreapi\linphonecall.c" />
+    <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
+    <ClCompile Include="..\..\..\coreapi\lpconfig.c" />
+    <ClCompile Include="..\..\..\coreapi\lsd.c" />
+    <ClCompile Include="..\..\..\coreapi\misc.c" />
+    <ClCompile Include="..\..\..\coreapi\offeranswer.c" />
+    <ClCompile Include="..\..\..\coreapi\presence.c" />
+    <ClCompile Include="..\..\..\coreapi\proxy.c" />
+    <ClCompile Include="..\..\..\coreapi\sal.c" />
+    <ClCompile Include="..\..\..\coreapi\siplogin.c" />
+    <ClCompile Include="..\..\..\coreapi\sipsetup.c" />
+    <ClCompile Include="..\..\..\coreapi\upnp.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\coreapi\bellesip_sal\sal_impl.h" />
+    <ClInclude Include="..\..\..\coreapi\enum.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonecore.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonecore_utils.h" />
+    <ClInclude Include="..\..\..\coreapi\linphonefriend.h" />
+    <ClInclude Include="..\..\..\coreapi\lpconfig.h" />
+    <ClInclude Include="..\..\..\coreapi\offeranswer.h" />
+    <ClInclude Include="..\..\..\coreapi\private.h" />
+    <ClInclude Include="..\..\..\coreapi\sipsetup.h" />
+    <ClInclude Include="..\..\..\coreapi\upnp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\belle-sip\build\windows\belle-sip\belle-sip.vcxproj">
+      <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mediastreamer2\build\vsx\mediastreamer2\mediastreamer2\mediastreamer2.vcxproj">
+      <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\oRTP\build\vsx\oRTP\oRTP\oRTP.vcxproj">
+      <Project>{ffc7b532-0502-4d88-ac98-9e89071cbc97}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup Condition="'$(Platform)'=='ARM'">
     <Reference Include="Windows">
       <IsWinMDFile>true</IsWinMDFile>
@@ -137,62 +199,6 @@
       <IsWinMDFile>true</IsWinMDFile>
       <Private>false</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\coreapi\address.c" />
-    <ClCompile Include="..\..\..\coreapi\authentication.c" />
-    <ClCompile Include="..\..\..\coreapi\callbacks.c" />
-    <ClCompile Include="..\..\..\coreapi\chat.c" />
-    <ClCompile Include="..\..\..\coreapi\conference.c" />
-    <ClCompile Include="..\..\..\coreapi\ec-calibrator.c" />
-    <ClCompile Include="..\..\..\coreapi\enum.c" />
-    <ClCompile Include="..\..\..\coreapi\fonis.c" />
-    <ClCompile Include="..\..\..\coreapi\friend.c" />
-    <ClCompile Include="..\..\..\coreapi\help\buddy_status.c" />
-    <ClCompile Include="..\..\..\coreapi\help\chatroom.c" />
-    <ClCompile Include="..\..\..\coreapi\help\registration.c" />
-    <ClCompile Include="..\..\..\coreapi\linphonecall.c" />
-    <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
-    <ClCompile Include="..\..\..\coreapi\linphonecore_jni.cc" />
-    <ClCompile Include="..\..\..\coreapi\linphone_tunnel.cc" />
-    <ClCompile Include="..\..\..\coreapi\linphone_tunnel_config.c" />
-    <ClCompile Include="..\..\..\coreapi\linphone_tunnel_stubs.c" />
-    <ClCompile Include="..\..\..\coreapi\lpconfig.c" />
-    <ClCompile Include="..\..\..\coreapi\lsd.c" />
-    <ClCompile Include="..\..\..\coreapi\misc.c" />
-    <ClCompile Include="..\..\..\coreapi\offeranswer.c" />
-    <ClCompile Include="..\..\..\coreapi\plugins\buddylookup\src\lookup.c" />
-    <ClCompile Include="..\..\..\coreapi\presence.c" />
-    <ClCompile Include="..\..\..\coreapi\proxy.c" />
-    <ClCompile Include="..\..\..\coreapi\sal.c" />
-    <ClCompile Include="..\..\..\coreapi\sal_eXosip2.c" />
-    <ClCompile Include="..\..\..\coreapi\sal_eXosip2_presence.c" />
-    <ClCompile Include="..\..\..\coreapi\sal_eXosip2_sdp.c" />
-    <ClCompile Include="..\..\..\coreapi\siplogin.c" />
-    <ClCompile Include="..\..\..\coreapi\sipsetup.c" />
-    <ClCompile Include="..\..\..\coreapi\sipwizard.c" />
-    <ClCompile Include="..\..\..\coreapi\test_ecc.c" />
-    <ClCompile Include="..\..\..\coreapi\test_lsd.c" />
-    <ClCompile Include="..\..\..\coreapi\test_numbers.c" />
-    <ClCompile Include="..\..\..\coreapi\TunnelManager.cc" />
-    <ClCompile Include="..\..\..\coreapi\upnp.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\coreapi\enum.h" />
-    <ClInclude Include="..\..\..\coreapi\linphonecore.h" />
-    <ClInclude Include="..\..\..\coreapi\linphonecore_utils.h" />
-    <ClInclude Include="..\..\..\coreapi\linphonefriend.h" />
-    <ClInclude Include="..\..\..\coreapi\linphone_tunnel.h" />
-    <ClInclude Include="..\..\..\coreapi\lpconfig.h" />
-    <ClInclude Include="..\..\..\coreapi\offeranswer.h" />
-    <ClInclude Include="..\..\..\coreapi\private.h" />
-    <ClInclude Include="..\..\..\coreapi\sal.h" />
-    <ClInclude Include="..\..\..\coreapi\sal_eXosip2.h" />
-    <ClInclude Include="..\..\..\coreapi\sipsetup.h" />
-    <ClInclude Include="..\..\..\coreapi\upnp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\coreapi\TunnelManager.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" Condition="'$(Platform)'=='ARM'" />
