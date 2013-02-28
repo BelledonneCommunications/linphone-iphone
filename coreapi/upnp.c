@@ -241,7 +241,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	 * If there is no pending binding emit a signal
 	 */
 	if(lupnp->pending_bindings == NULL) {
-		pthread_cond_signal(&lupnp->empty_cond);
+		ms_cond_signal(&lupnp->empty_cond);
 	}
 	ms_mutex_unlock(&lupnp->mutex);
 }
