@@ -309,15 +309,14 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 		ms_message("uPnP IGD: Wait all pending port bindings ...");
 		ms_cond_wait(&lupnp->empty_cond, &lupnp->mutex);
 	}
+	ms_mutex_unlock(&lupnp->mutex);
 
 	if(lupnp->upnp_igd_ctxt != NULL) {
-		// upnp_igd_destroy is synchronous so the callbacks will be called in the same thread.
-		// So release the mutex before upnp_igd_destroy call. 
-		ms_mutex_unlock(&lupnp->mutex);
 		upnp_igd_destroy(lupnp->upnp_igd_ctxt);
-		ms_mutex_lock(&lupnp->mutex);
 		lupnp->upnp_igd_ctxt = NULL;
 	}
+	
+	/* No more multi threading here */
 
 	/* Run one more time configuration update and proxy */
 	linphone_upnp_update_config(lupnp);
@@ -345,8 +344,6 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 	ms_list_for_each(lupnp->pending_bindings,(void (*)(void*))linphone_upnp_port_binding_release);
 	lupnp->pending_bindings = ms_list_free(lupnp->pending_bindings);
 	
-	ms_mutex_unlock(&lupnp->mutex);
-
 	ms_mutex_destroy(&lupnp->mutex);
 	ms_cond_destroy(&lupnp->empty_cond);
 
