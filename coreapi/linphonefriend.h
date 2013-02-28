@@ -117,7 +117,7 @@ LinphoneFriend * linphone_friend_new();
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  */
-LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
 
 /**
  * Destructor
@@ -137,7 +137,7 @@ int linphone_friend_set_addr(LinphoneFriend *fr, const LinphoneAddress* address)
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
-const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+LINPHONE_PUBLIC	const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
 /**
  * get subscription flag value
  * @param lf #LinphoneFriend object
@@ -153,7 +153,7 @@ bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
  * @param val if TRUE this friend will receive subscription message
  */
 
-int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
+LINPHONE_PUBLIC	int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
 
 #define linphone_friend_send_subscribe linphone_friend_enable_subscribes
 /**
@@ -179,12 +179,12 @@ LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneF
  * Once the modifications are done, then the application must call
  * linphone_friend_done() to commit the changes.
 **/
-void linphone_friend_edit(LinphoneFriend *fr);
+LINPHONE_PUBLIC	void linphone_friend_edit(LinphoneFriend *fr);
 /**
  * Commits modification made to the friend configuration.
  * @param fr #LinphoneFriend object
 **/
-void linphone_friend_done(LinphoneFriend *fr);
+LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
 
 
 
@@ -229,7 +229,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
  */
-void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
+LINPHONE_PUBLIC	void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
 /**
  * remove a friend from the buddy list
  * @param lc #LinphoneCore object
@@ -246,7 +246,7 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
  * get Buddy list of LinphoneFriend
  * @param lc #LinphoneCore object
  * */
-const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 /**
  *  notify all friends that have subscribed
  * @param lc #LinphoneCore object

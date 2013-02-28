@@ -27,11 +27,12 @@ void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const Linph
 }
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message) {
 	char* from=linphone_address_as_string(linphone_chat_message_get_from(message));
+	stats* counters;
 	ms_message("Message from [%s]  is [%s] , external URL [%s]",from
 																,linphone_chat_message_get_text(message)
 																,linphone_chat_message_get_external_body_url(message));
 	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_LinphoneMessageReceived++;
 	if (linphone_chat_message_get_external_body_url(message))
 			counters->number_of_LinphoneMessageExtBodyReceived++;

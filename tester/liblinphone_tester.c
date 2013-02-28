@@ -35,8 +35,9 @@ static int uninit(void) {
 }
 static void core_init_test(void) {
 	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
-	LinphoneCore* lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_destroy(lc);
 }
@@ -63,12 +64,14 @@ static  stats global_stat;
 
 
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
+	stats* counters;
+	LinphoneAuthInfo *info;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 					,username
 					,realm);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_auth_info_requested++;
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 
 }
@@ -93,9 +96,10 @@ void reset_counters( stats* counters) {
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count) {
 	LinphoneCore* lc;
 	int retry=0;
-	lc =  linphone_core_new(v_table,NULL,file,NULL);
+	stats* counters;
+	lc = linphone_core_new(v_table,NULL,file,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	linphone_core_set_ring(lc,"./share/rings/oldphone.wav");
 	linphone_core_set_ringback(lc,"./share/ringback.wav");
 
@@ -114,9 +118,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,in
 
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	MSList* lcs=NULL;
+	bool_t result;
 	if (lc_1)
 		lcs=ms_list_append(lcs,lc_1);
-	bool_t result;
 	if (lc_2)
 		lcs=ms_list_append(lcs,lc_2);
 	result=wait_for_list(lcs,counter,value,2000);
@@ -138,10 +142,10 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	MSList* codecs=ms_list_copy(linphone_core_get_audio_codecs(lc));
 	MSList* codecs_it;
+	PayloadType* pt;
 	for (codecs_it=codecs;codecs_it!=NULL;codecs_it=codecs_it->next) {
 			linphone_core_enable_payload_type(lc,(PayloadType*)codecs_it->data,0);
 	}
-	PayloadType* pt;
 	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}

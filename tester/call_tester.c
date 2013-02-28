@@ -32,11 +32,11 @@ static int uninit(void) {
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
-
+	stats* counters;
 	ms_message("call from [%s] to [%s], new state is [%s]",from,to,linphone_call_state_to_string(cstate));
 	ms_free(to);
 	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	switch (cstate) {
 	case LinphoneCallIncomingReceived:counters->number_of_LinphoneCallIncomingReceived++;break;
 	case LinphoneCallOutgoingInit :counters->number_of_LinphoneCallOutgoingInit++;break;
@@ -63,12 +63,12 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(transfered)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(transfered)->from);
-
+	stats* counters;
 	ms_message("Transferred call from [%s] to [%s], new state is [%s]",from,to,linphone_call_state_to_string(new_call_state));
 	ms_free(to);
 	ms_free(from);
 
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	switch (new_call_state) {
 	case LinphoneCallOutgoingInit :counters->number_of_LinphoneTransferCallOutgoingInit++;break;
 	case LinphoneCallOutgoingProgress :counters->number_of_LinphoneTransfertCallOutgoingProgress++;break;
@@ -83,19 +83,21 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
+	stats* counters;
 	LinphoneCore* lc=(LinphoneCore*)user_data;
 	ms_message("call from [%s] to [%s] receive iFrame",from,to);
 	ms_free(to);
 	ms_free(from);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_IframeDecoded++;
 }
 static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	LinphoneProxyConfig* proxy;
-	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 	int retry=0;
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
+	LinphoneAddress* identity;
+	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
 
@@ -126,7 +128,7 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 
 	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
 	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
 	linphone_address_destroy(identity);
 
@@ -148,7 +150,8 @@ static void simple_call() {
 	LinphoneCore* lc_pauline=pauline->lc;
 	stats* stat_marie=&marie->stat;
 	stats* stat_pauline=&pauline->stat;
-
+	LinphoneProxyConfig* proxy;
+	LinphoneAddress* identity;
 
 
 	linphone_core_invite(lc_marie,"pauline");
@@ -158,10 +161,9 @@ static void simple_call() {
 	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
 	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
 
-	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(lc_marie,&proxy);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
-	LinphoneAddress* identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
 	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
 	linphone_address_destroy(identity);
 
@@ -218,11 +220,11 @@ static void call_ringing_canceled() {
 static void call_early_declined() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
-
+	LinphoneCall* in_call;
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
-	LinphoneCall* in_call=linphone_core_get_current_call(marie->lc);
+	in_call=linphone_core_get_current_call(marie->lc);
 	linphone_call_ref(in_call);
 
 	linphone_core_terminate_call(marie->lc,in_call);
@@ -318,9 +320,9 @@ static void call_with_video_added() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCall* call_obj;
 	LinphoneVideoPolicy  pauline_policy;
+	LinphoneCallParams* marie_params;
 	pauline_policy.automatically_accept=TRUE;
 	pauline_policy.automatically_initiate=TRUE;
-	LinphoneCallParams* marie_params;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
@@ -363,13 +365,13 @@ static void simple_conference() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
 
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
-
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
+
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
 
 	CU_ASSERT_TRUE(call(marie,pauline));
 	marie_call_pauline=linphone_core_get_current_call(marie->lc);
@@ -457,13 +459,13 @@ static void simple_call_transfer() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
 
+	LinphoneCall* marie_call_pauline;
+	LinphoneCall* pauline_called_by_marie;
+
 	char* laure_identity=linphone_address_as_string(laure->identity);
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
-
-	LinphoneCall* marie_call_pauline;
-	LinphoneCall* pauline_called_by_marie;
 
 
 	CU_ASSERT_TRUE(call(marie,pauline));
@@ -509,15 +511,16 @@ static void call_transfer_existing_call_outgoing_call() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
 
-	MSList* lcs=ms_list_append(NULL,marie->lc);
-	const MSList* calls;
-	lcs=ms_list_append(lcs,pauline->lc);
-	lcs=ms_list_append(lcs,laure->lc);
-
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
 	LinphoneCall* laure_called_by_marie;
+	LinphoneCall* lcall;
+
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	const MSList* calls;
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
 
 	/*marie call pauline*/
 	CU_ASSERT_TRUE(call(marie,pauline));
@@ -553,10 +556,10 @@ static void call_transfer_existing_call_outgoing_call() {
 
 	/*laure accept call*/
 	for(calls=linphone_core_get_calls(laure->lc);calls!=NULL;calls=calls->next) {
-		LinphoneCall* call = (LinphoneCall*)calls->data;
-		if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			CU_ASSERT_EQUAL(linphone_call_get_replaced_call(call),laure_called_by_marie);
-			linphone_core_accept_call(laure->lc,call);
+		lcall = (LinphoneCall*)calls->data;
+		if (linphone_call_get_state(lcall) == LinphoneCallIncomingReceived) {
+			CU_ASSERT_EQUAL(linphone_call_get_replaced_call(lcall),laure_called_by_marie);
+			linphone_core_accept_call(laure->lc,lcall);
 			break;
 		}
 	}
@@ -606,9 +609,11 @@ int call_test_suite () {
 	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
 			return CU_get_error();
 	}
+#ifdef VIDEO_ENABLED
 	if (NULL == CU_add_test(pSuite, "call_with_video_added", call_with_video_added)) {
 			return CU_get_error();
 	}
+#endif
 	if (NULL == CU_add_test(pSuite, "simple_conference", simple_conference)) {
 				return CU_get_error();
 	}

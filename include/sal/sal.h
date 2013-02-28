@@ -29,6 +29,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mscommon.h"
 #include "ortp/ortp_srtp.h"
 
+#ifdef LIBLINPHONE_EXPORTS
+#define LINPHONE_PUBLIC	__declspec(dllexport)
+#else 
+#define LINPHONE_PUBLIC	__declspec(dllimport)
+#endif
+
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
 #ifndef PAYLOAD_TYPE_FLAG_CAN_RECV
 #define PAYLOAD_TYPE_FLAG_CAN_RECV	PAYLOAD_TYPE_USER_FLAG_1
@@ -513,9 +519,9 @@ void __sal_op_free(SalOp *b);
 
 /*test api*/
 /*0 for no error*/
-void sal_set_send_error(Sal *sal,int value);
+LINPHONE_PUBLIC	void sal_set_send_error(Sal *sal,int value);
 /*1 for no error*/
-void sal_set_recv_error(Sal *sal,int value);
+LINPHONE_PUBLIC	void sal_set_recv_error(Sal *sal,int value);
 /*enable contact fixing*/
 void sal_nat_helper_enable(Sal *sal,bool_t enable);
 bool_t sal_nat_helper_enabled(Sal *sal);
