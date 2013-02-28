@@ -65,7 +65,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -75,11 +79,23 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>belle-sip_dll.lib;mediastreamer2_dll.lib;ws2_32.lib;ortp_dll.lib;gsm_dll.lib;speex_dll.lib;speexdsp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
     </Link>
+    <CustomBuildStep>
+      <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -88,8 +104,14 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>belle-sip_dll.lib;mediastreamer2_dll.lib;ws2_32.lib;ortp_dll.lib;gsm_dll.lib;speex_dll.lib;speexdsp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
     </Link>
+    <CustomBuildStep>
+      <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -119,18 +141,29 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;NDEBUG;IN_LINPHONE;WIN32;USE_BELLESIP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(Project)../../../../belle-sip/include;$(Project)../../../../oRTP/include;$(Project)../../../../mediastreamer2/include;$(Project)../../../coreapi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>belle-sip_dll.lib;mediastreamer2_dll.lib;ws2_32.lib;ortp_dll.lib;gsm_dll.lib;speex_dll.lib;speexdsp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
     </Link>
+    <CustomBuildStep>
+      <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\coreapi\address.c" />
