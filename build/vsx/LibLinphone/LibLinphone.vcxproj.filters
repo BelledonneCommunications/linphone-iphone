@@ -26,7 +26,6 @@
     <ClCompile Include="..\..\..\coreapi\sal.c" />
     <ClCompile Include="..\..\..\coreapi\siplogin.c" />
     <ClCompile Include="..\..\..\coreapi\sipsetup.c" />
-    <ClCompile Include="..\..\..\coreapi\upnp.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_address_impl.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_impl.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_call.c" />
@@ -46,7 +45,6 @@
     <ClInclude Include="..\..\..\coreapi\offeranswer.h" />
     <ClInclude Include="..\..\..\coreapi\private.h" />
     <ClInclude Include="..\..\..\coreapi\sipsetup.h" />
-    <ClInclude Include="..\..\..\coreapi\upnp.h" />
     <ClInclude Include="..\..\..\coreapi\bellesip_sal\sal_impl.h" />
   </ItemGroup>
 </Project>

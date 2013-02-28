@@ -48,6 +48,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ifaddrs.h>
 #endif
 
+#if _MSC_VER
+#define snprintf _snprintf
+#define popen _popen
+#define pclose _pclose
+#endif
 
 #if !defined(WIN32)
 
@@ -107,7 +112,7 @@ int remove_lock_file()
 char *int2str(int number)
 {
 	char *numstr=ms_malloc(10);
-	snprintf(numstr,10,"%i",number);
+	_snprintf(numstr,10,"%i",number);
 	return numstr;
 }
 

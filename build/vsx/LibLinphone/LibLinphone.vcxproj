@@ -95,7 +95,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;BUILD_UPNP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -161,7 +161,6 @@
     <ClCompile Include="..\..\..\coreapi\sal.c" />
     <ClCompile Include="..\..\..\coreapi\siplogin.c" />
     <ClCompile Include="..\..\..\coreapi\sipsetup.c" />
-    <ClCompile Include="..\..\..\coreapi\upnp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\coreapi\bellesip_sal\sal_impl.h" />
@@ -173,7 +172,6 @@
     <ClInclude Include="..\..\..\coreapi\offeranswer.h" />
     <ClInclude Include="..\..\..\coreapi\private.h" />
     <ClInclude Include="..\..\..\coreapi\sipsetup.h" />
-    <ClInclude Include="..\..\..\coreapi\upnp.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\belle-sip\build\windows\belle-sip\belle-sip.vcxproj">
