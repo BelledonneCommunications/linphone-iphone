@@ -244,6 +244,8 @@ static LPC_COMMAND commands[] = {
 		"'firewall none'   : use direct connection.\n"
 		"'firewall nat'    : use nat address given with the 'nat' command.\n"
 		"'firewall stun'   : use stun server given with the 'stun' command.\n"
+		"'firewall ice'    : use ice.\n"
+		"'firewall upnp'   : use uPnP IGD.\n"
 	},
 	{ "call-logs", lpc_cmd_call_logs, "Calls history", NULL },
 	{ "friend", lpc_cmd_friend, "Manage friends",
@@ -849,6 +851,10 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 		if (strcmp(args,"none")==0)
 		{
 			linphone_core_set_firewall_policy(lc,LinphonePolicyNoFirewall);
+		}
+		else if (strcmp(args,"upnp")==0) 
+		{
+			linphone_core_set_firewall_policy(lc,LinphonePolicyUseUpnp);
 		}
 		else if (strcmp(args,"ice")==0)
 		{
