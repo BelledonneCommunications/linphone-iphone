@@ -33,6 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
+#ifdef LIBLINPHONE_EXPORTS
+#define LINPHONE_PUBLIC	__declspec(dllexport)
+#else 
+#define LINPHONE_PUBLIC	__declspec(dllimport)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -848,7 +854,7 @@ const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);
 const char *linphone_core_get_user_agent_version(void);
 
-LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
+LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
 
 /* function to be periodically called in a main loop */
@@ -1416,11 +1422,8 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
-
-
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif
