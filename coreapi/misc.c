@@ -48,6 +48,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ifaddrs.h>
 #endif
 #include <math.h>
+#if _MSC_VER
+#define snprintf _snprintf
+#define popen _popen
+#define pclose _pclose
+#endif
 
 #if !defined(WIN32)
 
