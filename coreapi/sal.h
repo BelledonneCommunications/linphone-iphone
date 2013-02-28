@@ -519,4 +519,7 @@ void sal_set_recv_error(Sal *sal,int value);
 /*enable contact fixing*/
 void sal_nat_helper_enable(Sal *sal,bool_t enable);
 bool_t sal_nat_helper_enabled(Sal *sal);
+
+void sal_set_dns_timeout(Sal* sal,int timeout);
+int sal_get_dns_timeout(const Sal* sal);
 #endif

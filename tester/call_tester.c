@@ -197,6 +197,22 @@ static void call_canceled() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void call_with_dns_time_out() {
+	LinphoneCoreManager* marie = linphone_core_manager_new(NULL);
+	LCSipTransports transport = {9773,0,0,0};
+	linphone_core_set_sip_transports(marie->lc,&transport);
+	linphone_core_iterate(marie->lc);
+	sal_set_dns_timeout(marie->lc->sal,0);
+	linphone_core_invite(marie->lc,"sip:toto@toto.com");
+	linphone_core_iterate(marie->lc);
+	linphone_core_iterate(marie->lc);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+	linphone_core_manager_destroy(marie);
+}
+
 static void call_ringing_canceled() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
@@ -585,6 +601,10 @@ int call_test_suite () {
 	if (NULL == CU_add_test(pSuite, "call_canceled", call_canceled)) {
 			return CU_get_error();
 	}
+	if (NULL == CU_add_test(pSuite, "call_with_dns_time_out", call_with_dns_time_out)) {
+			return CU_get_error();
+	}
+
 	if (NULL == CU_add_test(pSuite, "call_ringing_canceled", call_ringing_canceled)) {
 			return CU_get_error();
 	}

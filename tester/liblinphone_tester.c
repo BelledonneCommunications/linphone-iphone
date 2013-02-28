@@ -159,17 +159,19 @@ LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
-	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,1);
+	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,rc_file?1:0);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
-	mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	linphone_address_clean(mgr->identity);
+	if (proxy) {
+		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+		linphone_address_clean(mgr->identity);
+	}
 	return mgr;
 }
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	linphone_core_destroy(mgr->lc);
-	linphone_address_destroy(mgr->identity);
+	if (mgr->identity) linphone_address_destroy(mgr->identity);
 	free(mgr);
 }
 

@@ -582,8 +582,8 @@ MSList * sal_get_pending_auths(Sal *sal){
 
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen){
-	ms_fatal("sal_get_default_local_ip not implemented yet");
-	return ;
+	strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
+	ms_error("Could not find default routable ip address !");
 }
 
 const char *sal_get_root_ca(Sal* ctx) {
@@ -610,4 +610,10 @@ void sal_nat_helper_enable(Sal *sal,bool_t enable) {
 }
 bool_t sal_nat_helper_enabled(Sal *sal) {
 	return sal->nat_helper_enabled;
+}
+void sal_set_dns_timeout(Sal* sal,int timeout) {
+	belle_sip_stack_set_dns_timeout(sal->stack, timeout);
+}
+int sal_get_dns_timeout(const Sal* sal)  {
+	return belle_sip_stack_get_dns_timeout(sal->stack);
 }

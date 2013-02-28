@@ -81,7 +81,14 @@ static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription
 
 }
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	ms_error("call_process_io_error not implemented yet");
+	SalOp* op=(SalOp*)user_ctx;
+	if (!op->dialog)  {
+		/*call terminated very early*/
+		op->base.root->callbacks.call_failure(op,SalErrorNoResponse,SalReasonUnknown,"Service Unavailable",503);
+		op->state=SalOpStateTerminated;
+	} else {
+		/*dialog will terminated shortly, nothing to do*/
+	}
 }
 static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op=(SalOp*)ctx;
