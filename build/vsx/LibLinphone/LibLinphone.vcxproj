@@ -131,9 +131,12 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>belle-sip_dll.lib;mediastreamer2_dll.lib;ws2_32.lib;ortp_dll.lib;gsm_dll.lib;speex_dll.lib;speexdsp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
+      <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <WindowsMetadataFile>
+      </WindowsMetadataFile>
     </Link>
     <CustomBuildStep>
       <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>

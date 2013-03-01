@@ -13,9 +13,11 @@
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
     <ClCompile Include="..\..\..\tester\setup_tester.c" />
+    <ClCompile Include="linphone-tester-native.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
+    <ClInclude Include="linphone-tester-native.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\tester\laure_rc">
