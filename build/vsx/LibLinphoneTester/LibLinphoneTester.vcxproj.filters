@@ -12,8 +12,20 @@
     <ClCompile Include="..\..\..\tester\message_tester.c" />
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
+    <ClCompile Include="..\..\..\tester\setup_tester.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\tester\laure_rc">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\tester\marie_rc">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\tester\pauline_rc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

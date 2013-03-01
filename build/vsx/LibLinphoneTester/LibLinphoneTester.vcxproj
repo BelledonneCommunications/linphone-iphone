@@ -134,6 +134,7 @@
     <ClCompile Include="..\..\..\tester\message_tester.c" />
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
+    <ClCompile Include="..\..\..\tester\setup_tester.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
@@ -151,6 +152,11 @@
     <ProjectReference Include="..\LibLinphone\LibLinphone.vcxproj">
       <Project>{08dd0d38-d9b5-4626-b60d-b4d76b571142}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\tester\laure_rc" />
+    <None Include="..\..\..\tester\marie_rc" />
+    <None Include="..\..\..\tester\pauline_rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" Condition="'$(Platform)'=='ARM'" />

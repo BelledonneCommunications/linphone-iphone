@@ -475,9 +475,7 @@ static void simple_call_transfer(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
 	LinphoneCall* pauline_called_by_marie;
-
 	LinphoneCall* marie_call_pauline;
-	LinphoneCall* pauline_called_by_marie;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -610,7 +608,9 @@ test_t call_tests[] = {
 	{ "Call paused resumed", call_paused_resumed },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
 	{ "SRTP call", srtp_call },
+#ifdef VIDEO_ENABLED
 	{ "Call with video added", call_with_video_added },
+#endif
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call }

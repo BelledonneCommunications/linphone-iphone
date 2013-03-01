@@ -26,8 +26,9 @@
 
 static void core_init_test(void) {
 	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
-	LinphoneCore* lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_destroy(lc);
 }
