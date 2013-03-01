@@ -15,16 +15,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 
+
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_LinphoneMessageReceivedLegacy++;
 }
+
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message) {
 	char* from=linphone_address_as_string(linphone_chat_message_get_from(message));
 	ms_message("Message from [%s]  is [%s] , external URL [%s]",from
@@ -57,7 +60,7 @@ void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMes
 
 }
 
-static void text_message() {
+static void text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
@@ -69,7 +72,7 @@ static void text_message() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void text_message_with_ack() {
+static void text_message_with_ack(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
@@ -82,7 +85,8 @@ static void text_message_with_ack() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void text_message_with_external_body() {
+
+static void text_message_with_external_body(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
@@ -99,7 +103,7 @@ static void text_message_with_external_body() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void text_message_with_send_error() {
+static void text_message_with_send_error(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	char* to = linphone_address_as_string(pauline->identity);
@@ -118,20 +122,19 @@ static void text_message_with_send_error() {
 	linphone_core_manager_destroy(pauline);
 }
 
-int message_test_suite () {
-	CU_pSuite 	pSuite = CU_add_suite("Message", NULL, NULL);
-	if (NULL == CU_add_test(pSuite, "text_message", text_message)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "text_message_with_ack", text_message_with_ack)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "text_message_with_send_error", text_message_with_send_error)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "text_message_with_external_body", text_message_with_external_body)) {
-			return CU_get_error();
-	}
 
-	return 0;
-}
+test_t message_tests[] = {
+	{ "Text message", text_message },
+	{ "Text message with ack", text_message_with_ack },
+	{ "Text message with send error", text_message_with_send_error },
+	{ "Text message with external body", text_message_with_external_body }
+};
+
+test_suite_t message_test_suite = {
+	"Message",
+	NULL,
+	NULL,
+	sizeof(message_tests) / sizeof(message_tests[0]),
+	message_tests
+};
+

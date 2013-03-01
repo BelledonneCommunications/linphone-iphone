@@ -21,6 +21,51 @@
 
 
 
+#include "CUnit/Basic.h"
+
+
+typedef void (*test_function_t)(void);
+typedef int (*test_suite_function_t)(const char *name);
+
+typedef struct {
+	const char *name;
+	test_function_t func;
+} test_t;
+
+typedef struct {
+	const char *name;
+	CU_InitializeFunc init_func;
+	CU_CleanupFunc cleanup_func;
+	int nb_tests;
+	test_t *tests;
+} test_suite_t;
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern test_suite_t setup_test_suite;
+extern test_suite_t register_test_suite;
+extern test_suite_t call_test_suite;
+extern test_suite_t message_test_suite;
+extern test_suite_t presence_test_suite;
+
+
+extern int liblinphone_tester_nb_test_suites(void);
+extern int liblinphone_tester_nb_tests(const char *suite_name);
+extern const char * liblinphone_tester_test_suite_name(int suite_index);
+extern const char * liblinphone_tester_test_name(const char *suite_name, int test_index);
+extern void liblinphone_tester_init(void);
+extern void liblinphone_tester_uninit(void);
+extern int liblinphone_tester_run_tests(const char *suite_name, const char *test_name);
+
+
+#ifdef __cplusplus
+};
+#endif
+
+
 const char* test_domain;
 const char* auth_domain;
 const char* test_username;
@@ -77,6 +122,7 @@ typedef struct _stats {
 
 	int number_of_IframeDecoded;
 }stats;
+
 typedef struct _LinphoneCoreManager {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -104,9 +150,7 @@ LinphoneAddress * create_linphone_address(const char * domain);
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
-int call_test_suite ();
-int register_test_suite ();
-int message_test_suite ();
-int presence_test_suite ();
+
 
 #endif /* LIBLINPHONE_TESTER_H_ */
+

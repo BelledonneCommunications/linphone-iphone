@@ -22,24 +22,21 @@
 #include "liblinphone_tester.h"
 
 
+static test_suite_t **test_suite = NULL;
+static int nb_test_suites = 0;
+
+
+#if HAVE_CU_CURSES
+static unsigned char curses = 0;
+#endif
+
+
+static  stats global_stat;
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 
-static int init(void) {
-	return 0;
-}
-static int uninit(void) {
-	return 0;
-}
-static void core_init_test(void) {
-	LinphoneCoreVTable v_table;
-	memset (&v_table,0,sizeof(v_table));
-	LinphoneCore* lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
-	linphone_core_destroy(lc);
-}
 
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
@@ -54,13 +51,6 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 	CU_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
 	return addr;
 }
-static void linphone_address_test(void) {
-	linphone_address_destroy(create_linphone_address(NULL));
-}
-
-
-static  stats global_stat;
-
 
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username) {
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
@@ -110,8 +100,6 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,in
 	return lc;
 }
 
-
-
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	MSList* lcs=NULL;
 	if (lc_1)
@@ -123,6 +111,7 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 	ms_list_free(lcs);
 	return result;
 }
+
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	int retry=0;
 	MSList* iterator;
@@ -135,6 +124,7 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	if(*counter<value) return FALSE;
 	else return TRUE;
 }
+
 static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	MSList* codecs=ms_list_copy(linphone_core_get_audio_codecs(lc));
 	MSList* codecs_it;
@@ -146,7 +136,6 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}
 }
-
 
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
@@ -169,6 +158,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	}
 	return mgr;
 }
+
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	linphone_core_destroy(mgr->lc);
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
@@ -176,44 +166,152 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 }
 
 
-
-int init_test_suite () {
-
-CU_pSuite pSuite = CU_add_suite("Setup", init, uninit);
-
-
-	if (NULL == CU_add_test(pSuite, "linphone address tester", linphone_address_test)) {
-		return CU_get_error();
+static void add_test_suite(test_suite_t *suite) {
+	if (test_suite == NULL) {
+		test_suite = (test_suite_t **)malloc(10 * sizeof(test_suite_t *));
 	}
-	if (NULL == CU_add_test(pSuite, "linphone core init/uninit tester", core_init_test)) {
-		return CU_get_error();
+	test_suite[nb_test_suites] = suite;
+	nb_test_suites++;
+	if ((nb_test_suites % 10) == 0) {
+		test_suite = (test_suite_t **)realloc(test_suite, (nb_test_suites + 10) * sizeof(test_suite_t *));
 	}
+}
 
-	register_test_suite();
+static int run_test_suite(test_suite_t *suite) {
+	int i;
 
-	call_test_suite();
+	CU_pSuite pSuite = CU_add_suite(suite->name, suite->init_func, suite->cleanup_func);
 
-	message_test_suite();
-
-	presence_test_suite();
+	for (i = 0; i < suite->nb_tests; i++) {
+		if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
+			return CU_get_error();
+		}
+	}
 
 	return 0;
 }
-int main (int argc, char *argv[]) {
+
+static int test_suite_index(const char *suite_name) {
 	int i;
 
-	char *test_name=NULL;
+	for (i = 0; i < liblinphone_tester_nb_test_suites(); i++) {
+		if ((strcmp(suite_name, test_suite[i]->name) == 0) && (strlen(suite_name) == strlen(test_suite[i]->name))) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int liblinphone_tester_nb_test_suites(void) {
+	return nb_test_suites;
+}
+
+int liblinphone_tester_nb_tests(const char *suite_name) {
+	int i = test_suite_index(suite_name);
+	if (i < 0) return 0;
+	return test_suite[i]->nb_tests;
+}
+
+const char * liblinphone_tester_test_suite_name(int suite_index) {
+	if (suite_index >= liblinphone_tester_nb_test_suites()) return NULL;
+	return test_suite[suite_index]->name;
+}
+
+const char * liblinphone_tester_test_name(const char *suite_name, int test_index) {
+	int suite_index = test_suite_index(suite_name);
+	if ((suite_index < 0) || (suite_index >= liblinphone_tester_nb_test_suites())) return NULL;
+	if (test_index >= test_suite[suite_index]->nb_tests) return NULL;
+	return test_suite[suite_index]->tests[test_index].name;
+}
+
+void liblinphone_tester_init(void) {
+	add_test_suite(&setup_test_suite);
+	add_test_suite(&register_test_suite);
+	add_test_suite(&call_test_suite);
+	add_test_suite(&message_test_suite);
+	add_test_suite(&presence_test_suite);
+}
+
+void liblinphone_tester_uninit(void) {
+	if (test_suite != NULL) {
+		free(test_suite);
+		test_suite = NULL;
+		nb_test_suites = 0;
+	}
+}
+
+int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) {
+	int i;
+
+	/* initialize the CUnit test registry */
+	if (CUE_SUCCESS != CU_initialize_registry())
+		return CU_get_error();
+
+	for (i = 0; i < liblinphone_tester_nb_test_suites(); i++) {
+		run_test_suite(test_suite[i]);
+	}
+
+#if HAVE_CU_GET_SUITE
+	if (suite_name){
+		CU_pSuite suite;
+		CU_basic_set_mode(CU_BRM_VERBOSE);
+		suite=CU_get_suite(suite_name);
+		if (test_name) {
+			CU_pTest test=CU_get_test_by_name(test_name, suite);
+			CU_basic_run_test(suite, test);
+		} else
+			CU_basic_run_suite(suite);
+	} else
+#endif
+	{
+#if HAVE_CU_CURSES
+		if (curses) {
+			/* Run tests using the CUnit curses interface */
+			CU_curses_run_tests();
+		}
+		else
+#endif
+		{
+			/* Run all tests using the CUnit Basic interface */
+			CU_basic_set_mode(CU_BRM_VERBOSE);
+			CU_basic_run_tests();
+		}
+	}
+
+	CU_cleanup_registry();
+	return CU_get_error();
+}
+
+
+#ifndef WINAPI_FAMILY_PHONE_APP
+int main (int argc, char *argv[]) {
+	int i;
+	int ret;
 	char *suite_name=NULL;
+	char *test_name=NULL;
+
 	for(i=1;i<argc;++i){
 		if (strcmp(argv[i],"--help")==0){
-				fprintf(stderr,"%s \t--help\n\t\t\t--verbose",argv[0]);
-				return 0;
+			fprintf(stderr,"%s \t--help\n"
+					"\t\t\t--verbose\n"
+					"\t\t\t--domain <test sip domain>\n"
+					"\t\t\t---auth-domain <test auth domain>\n"
+#if HAVE_CU_GET_SUITE
+					"\t\t\t--suite <suite name>\n"
+					"\t\t\t--test <test name>\n"
+#endif
+#if HAVE_CU_CURSES
+					"\t\t\t--curses\n"
+#endif
+					, argv[0]);
+			return 0;
 		}else if (strcmp(argv[i],"--verbose")==0){
-			 linphone_core_enable_logs(NULL);
+			linphone_core_enable_logs(NULL);
 		}else if (strcmp(argv[i],"--domain")==0){
 			i++;
 			test_domain=argv[i];
-		}	else if (strcmp(argv[i],"--auth-domain")==0){
+		}else if (strcmp(argv[i],"--auth-domain")==0){
 			i++;
 			auth_domain=argv[i];
 		}else if (strcmp(argv[i],"--test")==0){
@@ -225,29 +323,10 @@ int main (int argc, char *argv[]) {
 		}
 	}
 	
-	/* initialize the CUnit test registry */
-	if (CUE_SUCCESS != CU_initialize_registry())
-		return CU_get_error();
-
-	init_test_suite();
-	/* Run all tests using the CUnit Basic interface */
-	CU_basic_set_mode(CU_BRM_VERBOSE);
-if (suite_name){
-#if 1 /*HAVE_CU_GET_SUITE*/
-		CU_pSuite suite;
-		suite=CU_get_suite(suite_name);
-		if (test_name) {
-			CU_pTest test=CU_get_test_by_name(test_name, suite);
-			CU_basic_run_test(suite, test);
-		} else
-			CU_basic_run_suite(suite);
-#else
-	fprintf(stderr,"Your CUnit version does not support suite selection.\n");
-#endif
-	} else
-		CU_basic_run_tests();
-
-	CU_cleanup_registry();
-	return CU_get_error();
-
+	liblinphone_tester_init();
+	ret = liblinphone_tester_run_tests(suite_name, test_name);
+	liblinphone_tester_uninit();
+	return ret;
 }
+#endif
+

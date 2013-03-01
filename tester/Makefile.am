@@ -4,7 +4,7 @@ if BUILD_CUNIT_TESTS
 noinst_PROGRAMS=liblinphone_tester  
 TESTS=$(noinst_PROGRAMS)
 
-liblinphone_tester_SOURCES=	liblinphone_tester.c register_tester.c message_tester.c call_tester.c presence_tester.c
+liblinphone_tester_SOURCES=	liblinphone_tester.c setup_tester.c register_tester.c message_tester.c call_tester.c presence_tester.c
 
 
 #liblinphone_tester_CFLAGS=$(CUNIT_CFLAGS)
