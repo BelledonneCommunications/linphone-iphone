@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
@@ -26,7 +27,6 @@
 static LinphoneCore* create_lc() {
 	return create_lc_with_auth(0);
 }
-
 
 void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
 		stats* counters;
@@ -46,6 +46,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 		}
 
 }
+
 static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info) {
 	int retry=0;
 	LCSipTransports transport = {5070,5070,0,5071};
@@ -98,9 +99,11 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
 
 }
+
 static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
 	register_with_refresh_base_2(lc,refresh,domain,route,FALSE);
 }
+
 static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	register_with_refresh_base(lc,refresh,domain,route);
@@ -130,13 +133,13 @@ static void register_with_refresh_with_send_error(void) {
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
 
 }
+
 static void simple_register(){
 	LinphoneCore* lc = create_lc();
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	register_with_refresh(lc,FALSE,NULL,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
-
 
 /*take care of min expires configuration from server*/
 static void simple_register_with_refresh() {
@@ -160,6 +163,7 @@ static void simple_tcp_register(){
 	lc = create_lc();
 	register_with_refresh(lc,FALSE,NULL,route);
 }
+
 static void simple_tls_register(){
 	char route[256];
 	LinphoneCore* lc;
@@ -193,6 +197,7 @@ static void authenticated_register_with_no_initial_credentials(){
 	register_with_refresh(lc,FALSE,auth_domain,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 }
+
 static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
@@ -294,48 +299,28 @@ static void io_recv_error(){
 	linphone_core_destroy(lc);
 }
 
-int register_test_suite () {
 
-	CU_pSuite pSuite = CU_add_suite("Register", NULL, NULL);
-	if (NULL == CU_add_test(pSuite, "simple_register", simple_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "tcp register tester", simple_tcp_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "tls register tester", simple_tls_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_authenticated_register", simple_authenticated_register)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "register with digest auth tester without initial credentials", authenticated_register_with_no_initial_credentials)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "authenticated_register_with_late_credentials", authenticated_register_with_late_credentials)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_register_with_refresh", simple_register_with_refresh)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_auth_register_with_refresh", simple_auth_register_with_refresh)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "register_with_refresh_with_send_error", register_with_refresh_with_send_error)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "multi account", multiple_proxy)) {
-		return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "transport_change", transport_change)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "network_state_change", network_state_change)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "io_recv_error_0", io_recv_error)) {
-			return CU_get_error();
-	}
+test_t register_tests[] = {
+	{ "Simple register", simple_register },
+	{ "TCP register", simple_tcp_register },
+	{ "TLS register", simple_tls_register },
+	{ "Simple authenticated register", simple_authenticated_register },
+	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
+	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
+	{ "Register with refresh", simple_register_with_refresh },
+	{ "Authenticated register with refresh", simple_auth_register_with_refresh },
+	{ "Register with refresh & send error", register_with_refresh_with_send_error },
+	{ "Multi account", multiple_proxy },
+	{ "Transport change", transport_change },
+	{ "Network state change", network_state_change },
+	{ "io_recv_error_0", io_recv_error }
+};
 
-	return 0;
-}
+test_suite_t register_test_suite = {
+	"Register",
+	NULL,
+	NULL,
+	sizeof(register_tests) / sizeof(register_tests[0]),
+	register_tests
+};
+

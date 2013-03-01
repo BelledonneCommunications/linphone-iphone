@@ -15,19 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 
-
-static int init(void) {
-	return 0;
-}
-static int uninit(void) {
-	return 0;
-}
 
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
@@ -60,6 +54,7 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 		CU_FAIL("unexpected event");break;
 	}
 }
+
 void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(transfered)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(transfered)->from);
@@ -80,6 +75,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 		CU_FAIL("unexpected event");break;
 	}
 }
+
 static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -91,6 +87,7 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	counters = (stats*)linphone_core_get_user_data(lc);
 	counters->number_of_IframeDecoded++;
 }
+
 static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	LinphoneProxyConfig* proxy;
 	int retry=0;
@@ -142,7 +139,8 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
 
 }
-static void simple_call() {
+
+static void simple_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -182,7 +180,8 @@ static void simple_call() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void call_canceled() {
+
+static void cancelled_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -199,7 +198,23 @@ static void call_canceled() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void call_ringing_canceled() {
+
+static void call_with_dns_time_out(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(NULL);
+	LCSipTransports transport = {9773,0,0,0};
+	linphone_core_set_sip_transports(marie->lc,&transport);
+	linphone_core_iterate(marie->lc);
+	sal_set_dns_timeout(marie->lc->sal,0);
+	linphone_core_invite(marie->lc,"sip:toto@toto.com");
+	linphone_core_iterate(marie->lc);
+	linphone_core_iterate(marie->lc);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+	linphone_core_manager_destroy(marie);
+}
+
+static void cancelled_ringing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -217,7 +232,7 @@ static void call_ringing_canceled() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_early_declined() {
+static void early_declined_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCall* in_call;
@@ -238,7 +253,7 @@ static void call_early_declined() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_terminated_by_caller() {
+static void call_terminated_by_caller(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -252,7 +267,7 @@ static void call_terminated_by_caller() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_paused_resumed() {
+static void call_paused_resumed(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCall* call_obj;
@@ -289,7 +304,8 @@ static bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,Linph
 	CU_ASSERT_EQUAL(linphone_call_get_state(call_2),LinphoneCallPausedByRemote);
 	return linphone_call_get_state(call_1) == LinphoneCallPaused && linphone_call_get_state(call_2)==LinphoneCallPausedByRemote;
 }
-static void call_paused_resumed_from_callee() {
+
+static void call_paused_resumed_from_callee(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCall* call_obj;
@@ -315,7 +331,7 @@ static void call_paused_resumed_from_callee() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_video_added() {
+static void call_with_video_added(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCall* call_obj;
@@ -357,7 +373,8 @@ static void call_with_video_added() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void simple_conference() {
+
+static void simple_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
@@ -414,8 +431,7 @@ static void simple_conference() {
 	ms_list_free(lcs);
 }
 
-
-static void call_srtp() {
+static void srtp_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -436,7 +452,7 @@ static void call_srtp() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_early_media() {
+static void early_media_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_early_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 
@@ -454,10 +470,11 @@ static void call_early_media() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void simple_call_transfer() {
+static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
+	LinphoneCall* pauline_called_by_marie;
 
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
@@ -469,7 +486,6 @@ static void simple_call_transfer() {
 
 
 	CU_ASSERT_TRUE(call(marie,pauline));
-	marie_call_pauline=linphone_core_get_current_call(marie->lc);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 
 	reset_counters(&marie->stat);
@@ -506,7 +522,7 @@ static void simple_call_transfer() {
 	ms_list_free(lcs);
 }
 
-static void call_transfer_existing_call_outgoing_call() {
+static void call_transfer_existing_call_outgoing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
@@ -580,49 +596,31 @@ static void call_transfer_existing_call_outgoing_call() {
 	ms_list_free(lcs);
 }
 
-int call_test_suite () {
-	CU_pSuite pSuite = CU_add_suite("Call", init, uninit);
-	if (NULL == CU_add_test(pSuite, "call_early_declined", call_early_declined)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_canceled", call_canceled)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_ringing_canceled", call_ringing_canceled)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_call", simple_call)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_early_media", call_early_media)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_terminated_by_caller", call_terminated_by_caller)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_paused_resumed", call_paused_resumed)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_paused_resumed_from_callee", call_paused_resumed_from_callee)) {
-			return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_srtp", call_srtp)) {
-			return CU_get_error();
-	}
 #ifdef VIDEO_ENABLED
-	if (NULL == CU_add_test(pSuite, "call_with_video_added", call_with_video_added)) {
-			return CU_get_error();
-	}
 #endif
-	if (NULL == CU_add_test(pSuite, "simple_conference", simple_conference)) {
-				return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "simple_call_transfer", simple_call_transfer)) {
-				return CU_get_error();
-	}
-	if (NULL == CU_add_test(pSuite, "call_transfer_existing_call_outgoing_call", call_transfer_existing_call_outgoing_call)) {
-				return CU_get_error();
-	}
 
-	return 0;
-}
+test_t call_tests[] = {
+	{ "Early declined call", early_declined_call },
+	{ "Cancelled call", cancelled_call },
+	{ "Call with DNS timeout", call_with_dns_time_out },
+	{ "Cancelled ringing call", cancelled_ringing_call },
+	{ "Simple call", simple_call },
+	{ "Early-media call", early_media_call },
+	{ "Call terminated by caller", call_terminated_by_caller },
+	{ "Call paused resumed", call_paused_resumed },
+	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
+	{ "SRTP call", srtp_call },
+	{ "Call with video added", call_with_video_added },
+	{ "Simple conference", simple_conference },
+	{ "Simple call transfer", simple_call_transfer },
+	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call }
+};
+
+test_suite_t call_test_suite = {
+	"Call",
+	NULL,
+	NULL,
+	sizeof(call_tests) / sizeof(call_tests[0]),
+	call_tests
+};
+

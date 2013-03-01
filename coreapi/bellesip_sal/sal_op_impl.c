@@ -169,7 +169,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 }
 
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
-	bool_t need_ack=FALSE;
+	bool_t need_contact=FALSE;
 	/*
   	  Header field          where   proxy ACK BYE CAN INV OPT REG
       ___________________________________________________________
@@ -179,9 +179,9 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
 			||strcmp(belle_sip_request_get_method(request),"OPTION")==0)
-		need_ack=TRUE;
+		need_contact=TRUE;
 
-	return _sal_op_send_request_with_contact(op, request,need_ack);
+	return _sal_op_send_request_with_contact(op, request,need_contact);
 }
 
 

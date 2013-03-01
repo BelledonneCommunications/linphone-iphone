@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <net/if.h>
 #include <ifaddrs.h>
 #endif
-
+#include <math.h>
 #if _MSC_VER
 #define snprintf _snprintf
 #define popen _popen
@@ -253,7 +253,7 @@ static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *p
 }
 
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt){
-	call->audio_bw=(int)(get_audio_payload_bandwidth(call->core,pt)/1000.0);
+	call->audio_bw=(int)(ceil(get_audio_payload_bandwidth(call->core,pt)/1000.0)); /*rounding codec bandwidth should be avoid, specially for AMR*/
 	ms_message("Audio bandwidth for this call is %i",call->audio_bw);
 }
 
