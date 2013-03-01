@@ -340,9 +340,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     //clear existing proxy config
     linphone_core_clear_proxy_config(lc);
 	if (username && [username length] >0 && domain && [domain length]>0) {
-		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		
 		NSString* proxyAddress = [self stringForKey:@"proxy_preference"];
 		if ((!proxyAddress || [proxyAddress length] <1 ) && domain) {
 			proxyAddress = [NSString stringWithFormat:@"sip:%@",domain] ;
@@ -355,9 +352,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		
         
 		//possible valid config detected
-		
 		proxyCfg = linphone_core_create_proxy_config(lc);
-        
+		char normalizedUserName[256];
+		LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(lc));
+		linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+		linphone_address_set_username(linphoneAddress, normalizedUserName);
+		linphone_address_set_domain(linphoneAddress, [domain cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
+		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
+
 		// add username password
 		LinphoneAddress *from = linphone_address_new(identity);
 		LinphoneAuthInfo *info;
@@ -407,6 +410,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		//set to default proxy
 		linphone_core_set_default_proxy(lc,proxyCfg);
 		
+		linphone_address_destroy(linphoneAddress);
 	}
     [[[LinphoneManager instance] fastAddressBook] reload];
 }
