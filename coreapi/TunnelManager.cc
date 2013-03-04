@@ -102,6 +102,10 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 
 
 void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay) {
+	if (ip == NULL) {
+		ip = "";
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+	}
 	addServer(ip,port);
 	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip,udpMirrorPort),delay));
 }
