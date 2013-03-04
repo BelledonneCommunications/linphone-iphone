@@ -222,13 +222,10 @@ LpConfig * lp_config_new(const char *filename){
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
-#if !defined(_WIN32_WCE)
-#ifndef S_ISREG
-#define S_ISREG(mode) ((mode & S_IFMT) == S_IFREG)
-#endif
+#if !defined(WIN32)
 			if ((stat(filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
 				/* make existing configuration files non-group/world-accessible */
-				if (chmod(filename, S_IREAD | S_IWRITE) == -1) {
+				if (chmod(filename, S_IRUSR | S_IWUSR ) == -1) {
 					ms_warning("unable to correct permissions on "
 					"configuration file: %s", strerror(errno));
 				}
