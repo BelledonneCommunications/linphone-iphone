@@ -224,7 +224,7 @@ static void authenticated_register_with_late_credentials(){
 }
 
 static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
-	return configure_lc_from(v_table,"./tester/multi_account_lrc",3);
+	return configure_lc_from(v_table, FILE_PREFIX, "multi_account_lrc", 3);
 }
 
 static void multiple_proxy(){
