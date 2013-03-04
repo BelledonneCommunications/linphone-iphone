@@ -21,7 +21,7 @@ package org.linphone.core;
 import java.io.File;
 import java.io.IOException;
 
-import org.linphone.CpuUtils;
+import org.linphone.mediastream.CpuUtils;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
