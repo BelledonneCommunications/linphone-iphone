@@ -29,10 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mscommon.h"
 #include "ortp/ortp_srtp.h"
 
-#ifdef LIBLINPHONE_EXPORTS
-#define LINPHONE_PUBLIC	__declspec(dllexport)
-#else 
-#define LINPHONE_PUBLIC	__declspec(dllimport)
+#ifndef LINPHONE_PUBLIC
+	#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */

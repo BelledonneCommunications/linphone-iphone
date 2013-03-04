@@ -104,7 +104,7 @@ test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
 endif
 
 AM_CPPFLAGS=\
-	-I$(top_srcdir)
+	-I$(top_srcdir) -I$(top_srcdir)/include
 
 AM_CFLAGS=\
 	$(STRICT_OPTIONS)  -DIN_LINPHONE \

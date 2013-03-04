@@ -33,10 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
-#ifdef LIBLINPHONE_EXPORTS
-#define LINPHONE_PUBLIC	__declspec(dllexport)
-#else 
-#define LINPHONE_PUBLIC	__declspec(dllimport)
+#ifndef LINPHONE_PUBLIC
+	#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
 #ifdef __cplusplus

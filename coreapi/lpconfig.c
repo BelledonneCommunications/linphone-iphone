@@ -228,7 +228,7 @@ LpConfig * lp_config_new(const char *filename){
 #endif
 			if ((stat(filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
 				/* make existing configuration files non-group/world-accessible */
-				if (_chmod(filename, _S_IREAD | _S_IWRITE) == -1) {
+				if (chmod(filename, S_IREAD | S_IWRITE) == -1) {
 					ms_warning("unable to correct permissions on "
 					"configuration file: %s", strerror(errno));
 				}

@@ -112,7 +112,7 @@ int remove_lock_file()
 char *int2str(int number)
 {
 	char *numstr=ms_malloc(10);
-	_snprintf(numstr,10,"%i",number);
+	snprintf(numstr,10,"%i",number);
 	return numstr;
 }
 

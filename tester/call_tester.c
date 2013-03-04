@@ -475,7 +475,6 @@ static void simple_call_transfer(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("./tester/laure_rc");
 	LinphoneCall* pauline_called_by_marie;
-	LinphoneCall* marie_call_pauline;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
 	MSList* lcs=ms_list_append(NULL,marie->lc);
