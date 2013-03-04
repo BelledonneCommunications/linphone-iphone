@@ -80,7 +80,7 @@ endif
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
-	$(LOCAL_PATH)/include \
+	$(LOCAL_PATH)/../include \
 	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
