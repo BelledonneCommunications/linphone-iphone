@@ -25,7 +25,6 @@
 		<string>App_Apple_Icon_DES_2013_20.png</string>
 		<string>App_Apple_Icon_DES_2013_57.png</string>
 		<string>App_Apple_Icon_DES_2013_72.png</string>
-		<string>buschjaeger_icon_144.png</string>
 		<string>App_Apple_Icon_DES_2013_144.png</string>
 	</array>
 	<key>CFBundleIcons</key>
@@ -47,7 +46,6 @@
 				<string>App_Apple_Icon_DES_2013_20.png</string>
 				<string>App_Apple_Icon_DES_2013_57.png</string>
 				<string>App_Apple_Icon_DES_2013_72.png</string>
-				<string>buschjaeger_icon_144.png</string>
 				<string>App_Apple_Icon_DES_2013_144.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
