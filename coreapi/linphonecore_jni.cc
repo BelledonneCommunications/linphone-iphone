@@ -1187,33 +1187,150 @@ extern "C" jboolean Java_org_linphone_core_LinphoneProxyConfigImpl_publishEnable
 //Auth Info
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env
-		, jobject thiz
-		, jstring jusername
-		, jstring juserid
-		, jstring jpassword
-		, jstring jha1
-		, jstring jrealm) {
-
-	const char* username = env->GetStringUTFChars(jusername, NULL);
-	const char* userid = env->GetStringUTFChars(juserid, NULL);
-	const char* password = env->GetStringUTFChars(jpassword, NULL);
-	const char* ha1 = env->GetStringUTFChars(jha1, NULL);
-	const char* realm = env->GetStringUTFChars(jrealm, NULL);
-	jlong auth = (jlong)linphone_auth_info_new(username,userid,password,ha1,realm);
-
-	env->ReleaseStringUTFChars(jusername, username);
-	env->ReleaseStringUTFChars(juserid, userid);
-	env->ReleaseStringUTFChars(jpassword, password);
-	env->ReleaseStringUTFChars(jha1, ha1);
-	env->ReleaseStringUTFChars(jrealm, realm);
-	return auth;
-
+		, jobject thiz ) {
+	return (jlong)linphone_auth_info_new(NULL,NULL,NULL,NULL,NULL);
 }
 extern "C" void Java_org_linphone_core_LinphoneAuthInfoImpl_delete(JNIEnv* env
 		, jobject thiz
 		, jlong ptr) {
 	linphone_auth_info_destroy((LinphoneAuthInfo*)ptr);
 }
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getPassword
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getPassword
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* passwd = linphone_auth_info_get_passwd((LinphoneAuthInfo*)auth_info);
+	if (passwd) {
+		return env->NewStringUTF(passwd);
+	} else {
+		return NULL;
+	}
+
+}
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getRealm
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getRealm
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* realm = linphone_auth_info_get_realm((LinphoneAuthInfo*)auth_info);
+	if (realm) {
+		return env->NewStringUTF(realm);
+	} else {
+		return NULL;
+	}
+
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getUsername
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getUsername
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* username = linphone_auth_info_get_username((LinphoneAuthInfo*)auth_info);
+	if (username) {
+		return env->NewStringUTF(username);
+	} else {
+		return NULL;
+	}
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setPassword
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setPassword
+(JNIEnv *env, jobject, jlong auth_info, jstring jpassword) {
+	const char* password = jpassword?env->GetStringUTFChars(jpassword, NULL):NULL;
+	linphone_auth_info_set_passwd((LinphoneAuthInfo*)auth_info,password);
+	if (password) env->ReleaseStringUTFChars(jpassword, password);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setRealm
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setRealm
+(JNIEnv *env, jobject, jlong auth_info, jstring jrealm) {
+	const char* realm = jrealm?env->GetStringUTFChars(jrealm, NULL):NULL;
+	linphone_auth_info_set_realm((LinphoneAuthInfo*)auth_info,realm);
+	if (realm) env->ReleaseStringUTFChars(jrealm, realm);
+}
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setUsername
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setUsername
+(JNIEnv *env, jobject, jlong auth_info, jstring jusername) {
+	const char* username = jusername?env->GetStringUTFChars(jusername, NULL):NULL;
+	linphone_auth_info_set_username((LinphoneAuthInfo*)auth_info,username);
+	if (username) env->ReleaseStringUTFChars(jusername, username);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setAuthUserId
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setUserId
+(JNIEnv *env, jobject, jlong auth_info, jstring juserid) {
+	const char* userid = juserid?env->GetStringUTFChars(juserid, NULL):NULL;
+	linphone_auth_info_set_userid((LinphoneAuthInfo*)auth_info,userid);
+	if (userid) env->ReleaseStringUTFChars(juserid, userid);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getAuthUserId
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getUserId
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* userid = linphone_auth_info_get_userid((LinphoneAuthInfo*)auth_info);
+	if (userid) {
+		return env->NewStringUTF(userid);
+	} else {
+		return NULL;
+	}
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setHa1
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setHa1
+(JNIEnv *env, jobject, jlong auth_info, jstring jha1) {
+	const char* ha1 = jha1?env->GetStringUTFChars(jha1, NULL):NULL;
+	linphone_auth_info_set_ha1((LinphoneAuthInfo*)auth_info,ha1);
+	if (ha1) env->ReleaseStringUTFChars(jha1, ha1);
+}
+
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getHa1
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getHa1
+(JNIEnv *env , jobject, jlong auth_info) {
+	const char* ha1 = linphone_auth_info_get_ha1((LinphoneAuthInfo*)auth_info);
+	if (ha1) {
+		return env->NewStringUTF(ha1);
+	} else {
+		return NULL;
+	}
+}
+
 
 //LinphoneAddress
 

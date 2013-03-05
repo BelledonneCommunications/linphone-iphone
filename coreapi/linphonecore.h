@@ -620,10 +620,14 @@ LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, c
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
+void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
+void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
 const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
 const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
 const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
+const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
+const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
 
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
