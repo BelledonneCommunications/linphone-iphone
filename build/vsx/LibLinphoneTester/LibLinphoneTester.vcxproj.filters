@@ -19,15 +19,4 @@
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
     <ClInclude Include="linphone-tester-native.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\tester\laure_rc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\tester\marie_rc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\tester\pauline_rc">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

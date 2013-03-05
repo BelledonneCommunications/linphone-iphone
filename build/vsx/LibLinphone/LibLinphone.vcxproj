@@ -216,6 +216,9 @@
     <ProjectReference Include="..\..\..\..\mediastreamer2\build\vsx\mediastreamer2\mediastreamer2\mediastreamer2.vcxproj">
       <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mswasapi\mswasapi\mswasapi\mswasapi.vcxproj">
+      <Project>{d22bd217-d0f8-4274-9b3a-f3f35f46482c}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\oRTP\build\vsx\oRTP\oRTP\oRTP.vcxproj">
       <Project>{ffc7b532-0502-4d88-ac98-9e89071cbc97}</Project>
       <Private>false</Private>
