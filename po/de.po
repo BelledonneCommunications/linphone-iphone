@@ -163,8 +163,8 @@ msgstr "Anruf wird gehalten"
 
 #: ../gtk/main.c:1067
 #, c-format
-msgid "<span size=\"large\">by %s</span>"
-msgstr "<span size=\"large\">von %s</span>"
+msgid "<b>by %s</b>"
+msgstr "<b>von %s</b>"
 
 #: ../gtk/main.c:1116
 #, c-format
