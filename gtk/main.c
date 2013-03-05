@@ -1118,13 +1118,13 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 		NotifyNotification *n;
 		switch(linphone_call_get_state(call)){
 			case LinphoneCallError:
-				make_notification(_("Call error"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>\n%s",msg,remote));
+				make_notification(_("Call error"),body=g_markup_printf_escaped("<b>%s</b>\n%s",msg,remote));
 			break;
 			case LinphoneCallEnd:
-				make_notification(_("Call ended"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				make_notification(_("Call ended"),body=g_markup_printf_escaped("<b>%s</b>",remote));
 			break;
 			case LinphoneCallIncomingReceived:
-				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<b>%s</b>",remote));
 				if (notify_actions_supported()) {
 					notify_notification_add_action (n,"answer", _("Answer"),
 						NOTIFY_ACTION_CALLBACK(linphone_gtk_answer_clicked),NULL,NULL);
@@ -1134,7 +1134,7 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 				show_notification(n);
 			break;
 			case LinphoneCallPausedByRemote:
-				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<span size=\"large\">by %s</span>"),remote));
+				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<b>by %s</b>"),remote));
 			break;
 			default:
 			break;
