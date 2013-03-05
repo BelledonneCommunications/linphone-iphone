@@ -166,4 +166,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	{
 		return System.getProperty("os.arch").contains("armv7");
 	}
+
+	@Override
+	public LinphoneAuthInfo createAuthInfo(String username, String userid,
+			String passwd, String ha1, String realm) {
+		return new LinphoneAuthInfoImpl(username,userid,passwd,ha1,realm);
+	}
 }

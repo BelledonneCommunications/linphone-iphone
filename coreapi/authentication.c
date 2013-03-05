@@ -80,6 +80,13 @@ const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i){
 	return i->userid;
 }
 
+const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i){
+	return i->realm;
+}
+const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i){
+	return i->ha1;
+}
+
 /**
  * Sets the password.
 **/
@@ -111,6 +118,27 @@ void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid){
 		info->userid=NULL;
 	}
 	if (userid && strlen(userid)>0) info->userid=ms_strdup(userid);
+}
+
+/**
+ * Sets realm.
+**/
+void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm){
+	if (info->realm){
+		ms_free(info->realm);
+		info->realm=NULL;
+	}
+	if (realm && strlen(realm)>0) info->realm=ms_strdup(realm);
+}
+/**
+ * Sets ha1.
+**/
+void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1){
+	if (info->ha1){
+		ms_free(info->ha1);
+		info->ha1=NULL;
+	}
+	if (ha1 && strlen(ha1)>0) info->ha1=ms_strdup(ha1);
 }
 
 /**
