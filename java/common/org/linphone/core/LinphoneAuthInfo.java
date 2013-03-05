@@ -63,6 +63,26 @@ public interface LinphoneAuthInfo {
 	 * @param realm
 	 */
 	void setRealm(String realm);
+	/**
+	 * get auth userid has used in authentication header. If null, username is taken for authentication
+	 * @return auth userid
+	 */
+	String getUserId();
+	/**
+	 * set auth userid has used in authentication header. If null, username is taken for authentication
+	 * 
+	 */
+	void setUserId(String userid);
+	/**
+	 * get ha1
+	 * @return ha1
+	 */
+	String getHa1();
+	/**
+	 * set ha1
+	 */
+	void setHa1(String ha1);
+	
 }
 
 
