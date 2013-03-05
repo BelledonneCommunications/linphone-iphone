@@ -13,19 +13,10 @@
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
     <ClCompile Include="..\..\..\tester\setup_tester.c" />
+    <ClCompile Include="linphone-tester-native.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\tester\laure_rc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\tester\marie_rc">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\..\..\tester\pauline_rc">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClInclude Include="linphone-tester-native.h" />
   </ItemGroup>
 </Project>

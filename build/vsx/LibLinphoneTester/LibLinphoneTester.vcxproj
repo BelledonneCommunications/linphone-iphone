@@ -20,28 +20,29 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5e94a00b-b14a-4e42-8284-8cb0ef099534}</ProjectGuid>
-    <RootNamespace>LibLinphoneTester</RootNamespace>
+    <RootNamespace>linphone_tester_native</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <WinMDAssembly>true</WinMDAssembly>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v110_wp80</PlatformToolset>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110_wp80</PlatformToolset>
-    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v110_wp80</PlatformToolset>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
@@ -84,24 +85,25 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_WINRT_DLL;_CRT_SECURE_NO_WARNINGS;HAVE_CU_GET_SUITE;IN_LINPHONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tester;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\..\cunit\build\windows\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\..\cunit\build\windows\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+      <AdditionalDependencies>WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -116,13 +118,10 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Reference Include="Windows" Condition="'$(Platform)'=='ARM'">
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
     <Reference Include="platform.winmd">
       <IsWinMDFile>true</IsWinMDFile>
       <Private>false</Private>
@@ -135,9 +134,13 @@
     <ClCompile Include="..\..\..\tester\presence_tester.c" />
     <ClCompile Include="..\..\..\tester\register_tester.c" />
     <ClCompile Include="..\..\..\tester\setup_tester.c" />
+    <ClCompile Include="linphone-tester-native.cpp">
+      <CompileAsWinRT Condition="'$(Platform)'=='ARM'">true</CompileAsWinRT>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\tester\liblinphone_tester.h" />
+    <ClInclude Include="linphone-tester-native.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\cunit\build\windows\cunit\cunit.vcxproj">
@@ -153,13 +156,8 @@
       <Project>{08dd0d38-d9b5-4626-b60d-b4d76b571142}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\tester\laure_rc" />
-    <None Include="..\..\..\tester\marie_rc" />
-    <None Include="..\..\..\tester\pauline_rc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" Condition="'$(Platform)'=='ARM'" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

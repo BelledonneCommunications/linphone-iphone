@@ -36,6 +36,7 @@ const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
+const char* test_route="sip2.linphone.org";
 
 
 LinphoneAddress * create_linphone_address(const char * domain) {
@@ -43,7 +44,7 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
 	linphone_address_set_username(addr,test_username);
 	CU_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
-	if (!domain) domain= test_domain;
+	if (!domain) domain= test_route;
 	linphone_address_set_domain(addr,domain);
 	CU_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
 	linphone_address_set_display_name(addr, NULL);
@@ -82,15 +83,22 @@ void reset_counters( stats* counters) {
 	memset(counters,0,sizeof(stats));
 }
 
-LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count) {
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, int proxy_count) {
 	LinphoneCore* lc;
 	int retry=0;
 	stats* counters;
-	lc =  linphone_core_new(v_table,NULL,file,NULL);
+	char filepath[50];
+	char ringpath[50];
+	char ringbackpath[50];
+	sprintf(filepath, "%s/%s", path, file);
+	lc =  linphone_core_new(v_table,NULL,filepath,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
 	counters = (stats*)linphone_core_get_user_data(lc);
-	linphone_core_set_ring(lc,"./share/rings/oldphone.wav");
-	linphone_core_set_ringback(lc,"./share/ringback.wav");
+	
+	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
+	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
+	linphone_core_set_ring(lc, ringpath);
+	linphone_core_set_ringback(lc, ringbackpath);
 
 	reset_counters(counters);
 	CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);
@@ -140,7 +148,7 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	}
 }
 
-LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
+LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_file) {
 	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
 	LinphoneProxyConfig* proxy;
 	memset (mgr,0,sizeof(LinphoneCoreManager));
@@ -151,7 +159,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* rc_file) {
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
-	mgr->lc=configure_lc_from(&mgr->v_table,rc_file,rc_file?1:0);
+	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, rc_file?1:0);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
 	linphone_core_get_default_proxy(mgr->lc,&proxy);

@@ -43,7 +43,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 }
 
 static void simple_publish(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
 	LinphoneProxyConfig* proxy;
 	linphone_core_get_default_proxy(marie->lc,&proxy);
 	linphone_proxy_config_edit(proxy);
@@ -54,8 +54,8 @@ static void simple_publish(void) {
 }
 
 static void simple_subscribe(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(FILE_PREFIX, "pauline_rc");
 	const MSList* marie_friends = linphone_core_get_friend_list(marie->lc);
 	LinphoneFriend* friend;
 	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_friends);
@@ -74,7 +74,7 @@ static void simple_subscribe(void) {
 }
 
 static void unsubscribe_while_subscribing(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
 	LinphoneFriend* friend = linphone_friend_new_with_addr("sip:toto@git.linphone.org"); /*any unexisting address*/
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);

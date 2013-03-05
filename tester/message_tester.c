@@ -62,8 +62,8 @@ void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMes
 }
 
 static void text_message(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(FILE_PREFIX, "pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
@@ -74,8 +74,8 @@ static void text_message(void) {
 }
 
 static void text_message_with_ack(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(FILE_PREFIX, "pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -88,8 +88,8 @@ static void text_message_with_ack(void) {
 }
 
 static void text_message_with_external_body(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(FILE_PREFIX, "pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -105,8 +105,8 @@ static void text_message_with_external_body(void) {
 }
 
 static void text_message_with_send_error(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("./tester/marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new("./tester/pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new(FILE_PREFIX, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(FILE_PREFIX, "pauline_rc");
 	char* to = linphone_address_as_string(pauline->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");

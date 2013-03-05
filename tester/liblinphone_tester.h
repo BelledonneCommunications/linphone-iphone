@@ -22,7 +22,7 @@
 
 
 #include "CUnit/Basic.h"
-
+#include "linphonecore.h"
 
 typedef void (*test_function_t)(void);
 typedef int (*test_suite_function_t)(const char *name);
@@ -40,6 +40,11 @@ typedef struct {
 	test_t *tests;
 } test_suite_t;
 
+#if WINAPI_FAMILY_PHONE_APP
+#define FILE_PREFIX "Assets"
+#else
+#define FILE_PREFIX "./tester"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,7 +75,7 @@ const char* test_domain;
 const char* auth_domain;
 const char* test_username;
 const char* test_password;
-
+const char* test_route;
 
 
 typedef struct _stats {
@@ -131,7 +136,7 @@ typedef struct _LinphoneCoreManager {
 } LinphoneCoreManager;
 
 
-LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
+LinphoneCoreManager* linphone_core_manager_new(const char * path, const char* rc_file);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
 
 void reset_counters( stats* counters);
@@ -147,7 +152,7 @@ void auth_info_requested(LinphoneCore *lc, const char *realm, const char *userna
 
 LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;
 LinphoneAddress * create_linphone_address(const char * domain);
-LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* file,int proxy_count);
+LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, int proxy_count);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 
