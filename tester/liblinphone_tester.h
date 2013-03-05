@@ -75,7 +75,7 @@ const char* test_domain;
 const char* auth_domain;
 const char* test_username;
 const char* test_password;
-
+const char* test_route;
 
 
 typedef struct _stats {

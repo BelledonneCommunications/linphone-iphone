@@ -36,6 +36,7 @@ const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
+const char* test_route="sip2.linphone.org";
 
 
 LinphoneAddress * create_linphone_address(const char * domain) {
@@ -43,7 +44,7 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
 	linphone_address_set_username(addr,test_username);
 	CU_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
-	if (!domain) domain= test_domain;
+	if (!domain) domain= test_route;
 	linphone_address_set_domain(addr,domain);
 	CU_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
 	linphone_address_set_display_name(addr, NULL);

@@ -168,9 +168,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\LibLinphoneTester\LibLinphoneTester.vcxproj">
       <Project>{5E94A00B-B14A-4E42-8284-8CB0EF099534}</Project>
       <Name>LibLinphoneTester</Name>
