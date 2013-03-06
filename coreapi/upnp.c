@@ -1109,7 +1109,10 @@ void linphone_upnp_session_destroy(UpnpSession *session) {
 			linphone_upnp_context_send_remove_port_binding(lc->upnp, session->video->rtcp, TRUE);
 		}
 	}
-
+	
+	session->call->stats[LINPHONE_CALL_STATS_AUDIO].upnp_state = LinphoneUpnpStateKo;
+	session->call->stats[LINPHONE_CALL_STATS_VIDEO].upnp_state = LinphoneUpnpStateKo;
+	
 	linphone_upnp_stream_destroy(session->audio);
 	linphone_upnp_stream_destroy(session->video);
 	ms_free(session);
