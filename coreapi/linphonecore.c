@@ -366,7 +366,12 @@ int linphone_call_log_get_duration(LinphoneCallLog *cl){
 float linphone_call_log_get_quality(LinphoneCallLog *cl){
 	return cl->quality;
 }
-
+/**
+ * return true if video was enabled at the end of the call
+ */
+LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl) {
+	return cl->video_enabled;
+}
 /** @} */
 
 void linphone_call_log_destroy(LinphoneCallLog *cl){
