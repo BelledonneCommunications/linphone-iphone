@@ -33,7 +33,7 @@ You need:
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
  $ port install gtk2 +quartz +no_x11
- $ port install ige-mac-integration
+ $ port install gtk-osx-application -python27
  $ port install hicolor-icon-theme
 
 - Compile and install the tunnel

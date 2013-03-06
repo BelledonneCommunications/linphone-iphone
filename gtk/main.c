@@ -1419,10 +1419,10 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 void linphone_gtk_status_icon_set_blinking(gboolean val){
 #ifdef HAVE_GTK_OSX
 	static gint attention_id;
-	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	GtkosxApplication *theMacApp=gtkosx_application_get();
 	if (val)
-		attention_id=gtk_osxapplication_attention_request(theMacApp,CRITICAL_REQUEST);
-	else gtk_osxapplication_cancel_attention_request(theMacApp,attention_id);
+		attention_id=gtkosx_application_attention_request(theMacApp,CRITICAL_REQUEST);
+	else gtkosx_application_cancel_attention_request(theMacApp,attention_id);
 #else
 	if (icon!=NULL){
 		guint tout;
@@ -1728,10 +1728,10 @@ static void linphone_gtk_init_main_window(){
 #ifdef HAVE_GTK_OSX
 	{
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
-		GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-		gtk_osxapplication_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
+		GtkosxApplication *theMacApp = gtkosx_application_get();
+		gtkosx_application_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
 		gtk_widget_hide(menubar);
-		gtk_osxapplication_ready(theMacApp);
+		gtkosx_application_ready(theMacApp);
 	}
 	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
@@ -1936,7 +1936,7 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
 #ifdef HAVE_GTK_OSX
-	GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	GtkosxApplication *theMacApp = gtkosx_application_get();
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
 	/*never block termination:*/
