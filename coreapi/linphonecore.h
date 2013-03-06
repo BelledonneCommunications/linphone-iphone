@@ -850,7 +850,7 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
 /* THE main API */
 
 LINPHONE_PUBLIC	void linphone_core_enable_logs(FILE *file);
-void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
+LINPHONE_PUBLIC	void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
 const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);

@@ -59,11 +59,8 @@ void LinphoneTesterNative::run(Platform::String^ suiteName, Platform::String^ ca
 	wcstombs(ccasename, wscasename.c_str(), sizeof(ccasename));
 
 	if (verbose) {
-		ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	} else {
-		ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
+		linphone_core_enable_logs_with_cb(LinphoneNativeOutputTraceHandler);
 	}
-	ortp_set_log_handler(LinphoneNativeOutputTraceHandler);
 	CU_set_trace_handler(nativeOutputTraceHandler);
 
 	liblinphone_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename);
