@@ -161,6 +161,7 @@ LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
 LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl);
 LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
 LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
+LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl);
 time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
 int linphone_call_log_get_duration(LinphoneCallLog *cl);
 float linphone_call_log_get_quality(LinphoneCallLog *cl);
