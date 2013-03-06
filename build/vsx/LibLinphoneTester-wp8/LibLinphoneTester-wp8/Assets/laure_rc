@@ -1,3 +1,6 @@
+[net]
+mtu=1300
+
 [sip]
 sip_port=5092
 sip_tcp_port=5092
