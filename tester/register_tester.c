@@ -113,7 +113,7 @@ static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* d
 
 }
 
-static void register_with_refresh_with_send_error(void) {
+static void register_with_refresh_with_send_error() {
 	int retry=0;
 	LinphoneCore* lc = create_lc_with_auth(1);
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
@@ -319,7 +319,7 @@ test_t register_tests[] = {
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },
 	{ "Authenticated register with refresh", simple_auth_register_with_refresh },
-	{ "Register with refresh & send error", register_with_refresh_with_send_error },
+	{ "Register with refresh and send error", register_with_refresh_with_send_error },
 	{ "Multi account", multiple_proxy },
 	{ "Transport change", transport_change },
 	{ "Network state change", network_state_change },
