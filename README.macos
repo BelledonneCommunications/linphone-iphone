@@ -8,56 +8,67 @@ You need:
    Download and install macports using its user friendly installer.
 
 - Install build time dependencies
- $ port install automake autoconf libtool intltool
+ $ sudo port install automake autoconf libtool intltool
 
 - Install some linphone dependencies with macports
- $ port install speex
- $ port install libosip2 # WARNING: currently outdated in macport
- $ port install libeXosip2 #WARNING: currently outdated in macport
- $ port install ffmpeg-devel
- $ port install libvpx
- $ port install readline
+ $ sudo port install speex
+ $ sudo port install libosip2 # WARNING: currently outdated in macport
+ $ sudo port install libeXosip2 #WARNING: currently outdated in macport
+ $ sudo port install ffmpeg-devel -gpl2
+ $ sudo port install libvpx
+ $ sudo port install readline
  
 - Install srtp (optional) for call encryption
- $ port install srtp
+ $ sudo port install srtp
  If that fails, get from source:
  $ git clone git://git.linphone.org/srtp.git
  $ cd srtp && autoconf && ./configure --prefix=/opt/local && make libsrtp.a
  $ sudo make install
 
 - Install zrtpcpp (optional), for unbreakable call encryption
- $ port install cmake
+ $ sudo port install cmake
  $ git clone git://git.linphone.org/zrtpcpp.git
  $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
  $ sudo make install
 
 - Install gtk. It is recommended to use the quartz backend for better integration.
- $ port install gtk2 +quartz +no_x11
- $ port install gtk-osx-application -python27
- $ port install hicolor-icon-theme
+ $ sudo port install gtk2 +quartz +no_x11
+ $ sudo port install gtk-osx-application -python27
+ $ sudo port install hicolor-icon-theme
+ 
+- Install additional librairies required for wizard (linphone.org account creation assistant)
+ $ sudo port install libsoup
+ 
+ ** WARNING 2013-03-06 glib-networking is currently broken in macports - generates crashes or hangs when used in a bundle **
+ As a temporary workaround, build a newer version by yourself:
+ $ wget http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.34/glib-networking-2.34.2.tar.xz
+ $ tar -xvzf glib-networking-2.34.2.tar.xz
+ $ cd glib-networking-2.34.2
+ $ ./configure --prefix=/opt/local && make 
+ $ sudo make install
 
-- Compile and install the tunnel
+- Compile and install the tunnel library (optional, proprietary extension only)
 
-If you got the source code from git, run ./autogen.sh first
+ If you got the source code from git, run ./autogen.sh first
 
-Then or otherwise, do:
+ Then or otherwise, do:
 
  $ ./configure --prefix=/opt/local && make && sudo make install
 
 
 - Compile linphone
 
-If you got the source code from git, run ./autogen.sh first.
+ If you got the source code from git, run ./autogen.sh first.
 
-Then or otherwise, do:
+ Then or otherwise, do:
 	
  $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp && make
 
-Install to /opt/local
+ Install to /opt/local
 
  $ sudo make install 
 
-Done.
+ Done.
 
 If you want to generate a portable bundle, then install gtk-mac-bundler.
 Use git:
