@@ -237,46 +237,46 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					sal_op_set_contact_address(op,(const SalAddress *)contact_address);
 					belle_sip_object_unref(contact_address);
 				}
+				if (sal_op_get_contact(op)){
+					if (received!=NULL || rport>0) {
 
-				if (received!=NULL || rport>0) {
-					if (sal_op_get_contact(op)){
 						contact_address = BELLE_SIP_HEADER_ADDRESS(sal_address_clone(sal_op_get_contact_address(op)));
-					}
-					contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_address));
-					if (received && strcmp(received,belle_sip_uri_get_host(contact_uri))!=0) {
-						/*need to update host*/
-						belle_sip_uri_set_host(contact_uri,received);
-						contact_updated=TRUE;
-					}
-					contact_port =  belle_sip_uri_get_port(contact_uri);
-					if (rport>0 && rport!=contact_port && (contact_port+rport)!=5060) {
-						/*need to update port*/
-						belle_sip_uri_set_port(contact_uri,rport);
-						contact_updated=TRUE;
-					}
+						contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_address));
+						if (received && strcmp(received,belle_sip_uri_get_host(contact_uri))!=0) {
+							/*need to update host*/
+							belle_sip_uri_set_host(contact_uri,received);
+							contact_updated=TRUE;
+						}
+						contact_port =  belle_sip_uri_get_port(contact_uri);
+						if (rport>0 && rport!=contact_port && (contact_port+rport)!=5060) {
+							/*need to update port*/
+							belle_sip_uri_set_port(contact_uri,rport);
+							contact_updated=TRUE;
+						}
 
-					/*try to fix transport if needed (very unlikely)*/
-					if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
-						if (!belle_sip_uri_get_transport_param(contact_uri)
-								||strcasecmp(belle_sip_uri_get_transport_param(contact_uri),belle_sip_header_via_get_transport(via_header))!=0) {
-							belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
-							contact_updated=TRUE;
+						/*try to fix transport if needed (very unlikely)*/
+						if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
+							if (!belle_sip_uri_get_transport_param(contact_uri)
+									||strcasecmp(belle_sip_uri_get_transport_param(contact_uri),belle_sip_header_via_get_transport(via_header))!=0) {
+								belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
+								contact_updated=TRUE;
+							}
+						} else {
+							if (belle_sip_uri_get_transport_param(contact_uri)) {
+								contact_updated=TRUE;
+								belle_sip_uri_set_transport_param(contact_uri,NULL);
+							}
 						}
-					} else {
-						if (belle_sip_uri_get_transport_param(contact_uri)) {
-							contact_updated=TRUE;
-							belle_sip_uri_set_transport_param(contact_uri,NULL);
+						if (contact_updated) {
+							char* old_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(sal_op_get_contact_address(op)));
+							new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
+							ms_message("Updating contact from [%s] to [%s] for [%p]",old_contact,new_contact,op);
+							sal_op_set_contact_address(op,(const SalAddress *)contact_address);
+							belle_sip_free(new_contact);
+							belle_sip_free(old_contact);
 						}
+						if (contact_address)belle_sip_object_unref(contact_address);
 					}
-					if (contact_updated) {
-						char* old_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(sal_op_get_contact_address(op)));
-						new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
-						ms_message("Updating contact from [%s] to [%s] for [%p]",old_contact,new_contact,op);
-						sal_op_set_contact_address(op,(const SalAddress *)contact_address);
-						belle_sip_free(new_contact);
-						belle_sip_free(old_contact);
-					}
-					if (contact_address)belle_sip_object_unref(contact_address);
 				}
 			}
 			/*update request/response

@@ -20,6 +20,9 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+#if HAVE_CU_CURSES
+#include "CUnit/CUCurses.h"
+#endif
 
 
 static test_suite_t **test_suite = NULL;
