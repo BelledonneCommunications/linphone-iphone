@@ -62,12 +62,26 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	ms_free(cr->peer);
 }
 
+#ifdef WIN32
+
+static inline char *my_ctime_r(const time_t *t, char *buf){
+	strcpy(buf,ctime(t));
+	return buf;
+}
+
+#else
+#define my_ctime_r ctime_r
+#endif
+
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
 	const char *route=NULL;
 	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
+	time_t t=time(NULL);
+	char buf[26];
+	char *to;
 	
 	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
 		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
@@ -82,6 +96,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 			}
 		}
 	}
+	msg->time=t;
 	if (op==NULL){
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
@@ -94,11 +109,15 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	}
 	if (msg->external_body_url) {
 		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
-		sal_message_send(op,identity,cr->peer,content_type, NULL);
+		sal_message_send(op,identity,cr->peer,content_type, NULL,my_ctime_r(&t,buf));
 		ms_free(content_type);
 	} else {
-		sal_text_send(op, identity, cr->peer,msg->message);
+		sal_text_send(op, identity, cr->peer,msg->message,my_ctime_r(&t,buf));
 	}
+	to=linphone_address_as_string_uri_only (cr->peer_url);
+	linphone_core_set_history_message(cr,identity,to,OUTGOING,msg->message,
+	             my_ctime_r(&t,buf),READ,LinphoneChatMessageStateInProgress);
+	ms_free(to);
 }
 
 /**
@@ -130,8 +149,11 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	LinphoneChatRoom *cr=NULL;
 	LinphoneAddress *addr;
 	char *cleanfrom;
+	const char *to;
+	char *from;
 	LinphoneChatMessage* msg;
 	const SalCustomHeader *ch;
+	char buf[26];
 	
 	addr=linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
@@ -142,7 +164,9 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		}
 		cr=NULL;
 	}
+	to=linphone_core_get_identity(lc);
 	cleanfrom=linphone_address_as_string(addr);
+	from=linphone_address_as_string_uri_only(addr);
 	if (cr==NULL){
 		/* create a new chat room */
 		cr=linphone_core_create_chat_room(lc,cleanfrom);
@@ -150,6 +174,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg = linphone_chat_room_create_message(cr, sal_msg->text);
 	linphone_chat_message_set_from(msg, cr->peer_url);
 	msg->time=sal_msg->time;
+	msg->state=LinphoneChatMessageStateDelivered;
 	ch=sal_op_get_custom_header(op);
 	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
 	
@@ -158,7 +183,11 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	}
 	linphone_address_destroy(addr);
 	linphone_chat_room_message_received(cr,lc,msg);
+	linphone_core_set_history_message(cr,to,from,INCOMING,
+	                        msg->message,my_ctime_r(&msg->time,buf),NOT_READ,
+	                        LinphoneChatMessageStateDelivered);
 	ms_free(cleanfrom);
+	ms_free(from);
 }
 
 /**
@@ -215,6 +244,7 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb, void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
+	msg->state=LinphoneChatMessageStateInProgress;
 	_linphone_chat_room_send_message(cr, msg);
 }
 
@@ -309,6 +339,15 @@ time_t linphone_chat_message_get_time(const LinphoneChatMessage* message) {
 }
 
 /**
+ * Get the state of the message
+ *@param message #LinphoneChatMessage obj
+ *@return #LinphoneChatMessageState
+ */
+LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message) {
+	return message->state;
+}
+
+/**
  * Get text part of this message
  * @return text or NULL if no text.
  */
@@ -347,6 +386,9 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	 void* message_userdata;
 	 char* external_body_url;
 	 LinphoneAddress* from;
+	 time_t time;
+	 SalCustomHeader *custom_headers;
+	 LinphoneChatMessageState state;
 	 };*/
 	LinphoneChatMessage* new_message = linphone_chat_room_create_message(msg->chat_room,msg->message);
 	if (msg->external_body_url) new_message->external_body_url=ms_strdup(msg->external_body_url);
@@ -354,6 +396,8 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	new_message->cb_ud=msg->cb_ud;
 	new_message->message_userdata=msg->message_userdata;
 	new_message->cb=msg->cb;
+	new_message->time=msg->time;
+	new_message->state=msg->state;
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
 	return new_message;
 }

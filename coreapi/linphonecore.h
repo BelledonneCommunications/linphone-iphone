@@ -673,6 +673,7 @@ LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 
+LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
@@ -1417,7 +1418,8 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
-
+MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message);
+void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from, int read);
 
 #ifdef __cplusplus
 }

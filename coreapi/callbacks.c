@@ -934,6 +934,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
 	const MSList* calls = linphone_core_get_calls(chat_msg->chat_room->lc);
 	
+	linphone_core_set_message_state(chat_msg->chat_room,chat_msg->message,chatStatusSal2Linphone(status),chat_msg->time);	
 	if (chat_msg && chat_msg->cb) {
 		chat_msg->cb(chat_msg
 			,chatStatusSal2Linphone(status)

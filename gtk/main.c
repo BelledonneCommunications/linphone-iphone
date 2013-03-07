@@ -1556,10 +1556,6 @@ static void linphone_gtk_configure_main_window(){
 	static gboolean buttons_have_borders;
 	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
-	GHashTable *contacts_history;
-
-	contacts_history=g_hash_table_new_full(g_str_hash, g_str_equal,g_free, NULL);
-	g_object_set_data(G_OBJECT(w),"history",(gpointer)contacts_history);
 
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");

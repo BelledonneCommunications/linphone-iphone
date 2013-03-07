@@ -14,6 +14,7 @@ COMMON_CFLAGS=\
 	$(READLINE_CFLAGS) \
 	$(OSIP_CFLAGS) \
 	$(ORTP_CFLAGS) \
+	$(SQLITE3_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS)
 
 if BUILD_CONSOLE
@@ -28,6 +29,7 @@ linphonec_SOURCES=linphonec.c linphonec.h commands.c
 linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS)
 linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 		$(READLINE_LIBS)  \
+		$(SQLITE3_LIBS) \
 		$(X11_LIBS)
 
 if BUILD_WIN32

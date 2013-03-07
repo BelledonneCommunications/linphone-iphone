@@ -1307,6 +1307,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
+#ifdef MSG_STORAGE_ENABLED
+	lc->db=linphone_message_storage_init();
+#endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
