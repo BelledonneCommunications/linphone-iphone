@@ -234,7 +234,7 @@ static void authenticated_register_with_late_credentials(){
 }
 
 static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
-	return configure_lc_from(v_table, FILE_PREFIX, "multi_account_lrc", 3);
+	return configure_lc_from(v_table, liblinphone_tester_file_prefix, "multi_account_lrc", 3);
 }
 
 static void multiple_proxy(){
@@ -313,7 +313,9 @@ static void io_recv_error(){
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
+#ifndef ANDROID	
 	{ "TLS register", simple_tls_register },
+#endif
 	{ "Simple authenticated register", simple_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },

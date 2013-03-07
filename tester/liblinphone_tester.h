@@ -40,16 +40,11 @@ typedef struct {
 	test_t *tests;
 } test_suite_t;
 
-#if WINAPI_FAMILY_PHONE_APP
-#define FILE_PREFIX "Assets"
-#else
-#define FILE_PREFIX "./tester"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+extern const char *liblinphone_tester_file_prefix;
 extern test_suite_t setup_test_suite;
 extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;

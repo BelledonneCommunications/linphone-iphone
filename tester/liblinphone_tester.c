@@ -38,6 +38,11 @@ const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 
+#if WINAPI_FAMILY_PHONE_APP
+const char *liblinphone_tester_file_prefix="Assets";
+#else
+const char *liblinphone_tester_file_prefix="./tester";
+#endif
 
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
@@ -87,9 +92,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	LinphoneCore* lc;
 	int retry=0;
 	stats* counters;
-	char filepath[50];
-	char ringpath[50];
-	char ringbackpath[50];
+	char filepath[256];
+	char ringpath[256];
+	char ringbackpath[256];
 	sprintf(filepath, "%s/%s", path, file);
 	lc =  linphone_core_new(v_table,NULL,filepath,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
@@ -294,18 +299,59 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 	return CU_get_error();
 }
 
+#ifdef ANDROID
+#include <android/log.h>
+
+static const char* LogDomain = "liblinphone_tester";
+
+void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
+	char str[4096];
+	char *current;
+	char *next;
+
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+	if (strlen(str) < 512) {
+		__android_log_write(prio, LogDomain, str);
+	} else {
+		current = str;
+		while ((next = strchr(current, '\n')) != NULL) {
+			*next = '\0';
+			__android_log_write(prio, LogDomain, current);
+			current = next + 1;
+		}
+		__android_log_write(prio, LogDomain, current);
+	}
+}
+
+static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	int prio;
+	switch(lev){
+	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
+	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
+	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
+	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
+	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
+	default:		prio = ANDROID_LOG_DEFAULT;	break;
+	}
+	linphone_android_log_handler(prio, fmt, args);
+}
+#endif
 
 #ifndef WINAPI_FAMILY_PHONE_APP
 int main (int argc, char *argv[]) {
-	int i;
+	int i,j;
 	int ret;
-	char *suite_name=NULL;
-	char *test_name=NULL;
+	const char *suite_name=NULL;
+	const char *test_name=NULL;
 
 	for(i=1;i<argc;++i){
 		if (strcmp(argv[i],"--help")==0){
 			fprintf(stderr,"%s \t--help\n"
 					"\t\t\t--verbose\n"
+					"\t\t\t--list-suites\n"
+					"\t\t\t--list-tests <suite>\n"
+					"\t\t\t--config <config path>\n"
 					"\t\t\t--domain <test sip domain>\n"
 					"\t\t\t---auth-domain <test auth domain>\n"
 #if HAVE_CU_GET_SUITE
@@ -318,7 +364,11 @@ int main (int argc, char *argv[]) {
 					, argv[0]);
 			return 0;
 		}else if (strcmp(argv[i],"--verbose")==0){
+#ifndef ANDROID
 			linphone_core_enable_logs(NULL);
+#else
+			linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
+#endif
 		}else if (strcmp(argv[i],"--domain")==0){
 			i++;
 			test_domain=argv[i];
@@ -328,15 +378,73 @@ int main (int argc, char *argv[]) {
 		}else if (strcmp(argv[i],"--test")==0){
 			i++;
 			test_name=argv[i];
+		}else if (strcmp(argv[i],"--config")==0){
+			i++;
+			liblinphone_tester_file_prefix=argv[i];
 		}else if (strcmp(argv[i],"--suite")==0){
 			i++;
 			suite_name=argv[i];
+		}else if (strcmp(argv[i],"--list-suites")==0){
+			for(j=0;j<liblinphone_tester_nb_test_suites();j++) {
+				suite_name = liblinphone_tester_test_suite_name(j);
+				fprintf(stdout, "%s\n", suite_name);
+			}	
+		}else if (strcmp(argv[i],"--list-tests")==0){
+			suite_name = argv[++i];
+			for(j=0;j<liblinphone_tester_nb_tests(suite_name);j++) {
+				test_name = liblinphone_tester_test_name(suite_name, j);
+				fprintf(stdout, "%s\n", test_name);
+			}	
 		}
 	}
 	
 	liblinphone_tester_init();
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
+	return ret;
+}
+#endif
+
+#ifdef ANDROID
+#include <jni.h>
+#include <CUnit/Util.h>
+#define CALLBACK_BUFFER_SIZE  1024
+static JNIEnv *current_env = NULL;
+static jobject current_obj = 0;
+
+void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
+	char buffer[CALLBACK_BUFFER_SIZE];
+	JNIEnv *env = current_env;
+	if(env == NULL) return;
+	vsnprintf(buffer, CALLBACK_BUFFER_SIZE, fmt, args);
+	jstring javaString = (*env)->NewStringUTF(env, buffer);
+	jint javaLevel = level;
+	jclass cls = (*env)->GetObjectClass(env, current_obj);
+	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
+	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
+	int i, ret;
+	int argc = (*env)->GetArrayLength(env, stringArray);
+	char **argv = (char**) malloc(sizeof(char*) * argc);
+
+	for (i=0; i<argc; i++) {
+		jstring string = (jstring) (*env)->GetObjectArrayElement(env, stringArray, i);
+		const char *rawString = (const char *) (*env)->GetStringUTFChars(env, string, 0);
+		argv[i] = strdup(rawString);
+		(*env)->ReleaseStringUTFChars(env, argv[i], rawString);
+	}
+	current_env = env;
+	current_obj = obj;
+	CU_set_trace_handler(cunit_android_trace_handler);
+	ret = main(argc, argv);
+	current_env = NULL;
+	CU_set_trace_handler(NULL);
+	for (i=0; i<argc; i++) {
+		free(argv[i]);
+	}
+	free(argv);
 	return ret;
 }
 #endif

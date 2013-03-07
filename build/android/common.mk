@@ -89,8 +89,6 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_LDLIBS += -llog -ldl
 
-
-
 LOCAL_STATIC_LIBRARIES := \
 	cpufeatures \
 	libmediastreamer2 \
@@ -197,4 +195,7 @@ else
 		LOCAL_STATIC_LIBRARIES += libsrtp-static
 	endif
 endif
+
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
+LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
 
