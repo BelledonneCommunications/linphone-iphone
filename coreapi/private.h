@@ -44,6 +44,10 @@ extern "C" {
 #include "upnp.h"
 #endif //BUILD_UPNP
 
+#ifdef MSG_STORAGE_ENABLED
+#include "sqlite3.h"
+#endif
+
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
 #endif
@@ -125,6 +129,7 @@ struct _LinphoneChatMessage {
 	LinphoneAddress* from;
 	time_t time;
 	SalCustomHeader *custom_headers;
+	LinphoneChatMessageState state;
 };
 
 typedef struct StunCandidate{
@@ -392,6 +397,7 @@ struct _LinphoneChatRoom{
 	char  *peer;
 	LinphoneAddress *peer_url;
 	void * user_data;
+	MSList *messages_hist;
 };
 
 
@@ -610,6 +616,9 @@ struct _LinphoneCore
 	LinphoneTunnel *tunnel;
 	char* device_id;
 	MSList *last_recv_msg_ids;
+#ifdef MSG_STORAGE_ENABLED
+	sqlite3 *db;
+#endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
@@ -690,6 +699,20 @@ void linphone_call_params_uninit(LinphoneCallParams *params);
 
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
+
+#define OUTGOING  0
+#define INCOMING  1
+
+#define NOT_READ  0
+#define READ 	  1
+
+#ifdef MSG_STORAGE_ENABLED
+sqlite3 * linphone_message_storage_init();
+#endif
+void linphone_core_set_history_message(LinphoneChatRoom *cr,const char *local_contact,const char *remote_contact, 
+                     int direction, const char *message,const char *date, int read, int state);
+void linphone_core_set_message_state(LinphoneChatRoom *cr,const char *message, int state,time_t date);
+
 
 #ifdef __cplusplus
 }

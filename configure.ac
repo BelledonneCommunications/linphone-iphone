@@ -669,6 +669,24 @@ if test x$enable_tunnel = xtrue; then
 	AC_SUBST(TUNNEL_LIBS)
 fi
 
+AC_ARG_ENABLE(msg-storage,
+	[AS_HELP_STRING([--enable-msg-storage=[yes/no]], [Turn on compilation of message storage (default=yes)])],
+	[case "${enableval}" in
+		yes)	enable_msg_storage=true ;;
+		no)	enable_msg_storage=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-msg-storage) ;;
+	esac],
+	[enable_msg_storage=true]
+)
+AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+if test x$enable_msg_storage = xtrue; then
+	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[],[
+		AC_MSG_ERROR([sqlite3 required for message storage not found.])] )
+	SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+	AC_SUBST(SQLITE3_CFLAGS)
+	AC_SUBST(SQLITE3_LIBS)
+fi
+
 
 dnl check for db2html (docbook) to generate html user manual
 AC_CHECK_PROG(have_sgmltools, sgmltools, yes, no)
@@ -781,6 +799,7 @@ printf "* %-30s %s\n" "GTK interface"		$gtk_ui
 printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
+printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 
