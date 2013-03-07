@@ -44,6 +44,7 @@ liblinphone_la_SOURCES=\
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c \
+	message_storage.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -85,7 +86,9 @@ liblinphone_la_LIBADD= \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) $(OPENSSL_LIBS) \
 		$(TUNNEL_LIBS) \
-		$(LIBSOUP_LIBS)
+		$(LIBSOUP_LIBS) \
+		$(SQLITE3_LIBS)
+
 
 if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc test_numbers
@@ -117,7 +120,8 @@ AM_CFLAGS=\
 	$(IPV6_CFLAGS) \
 	-DORTP_INET6 \
 	$(VIDEO_CFLAGS) \
-	$(TUNNEL_CFLAGS)
+	$(TUNNEL_CFLAGS) \
+	$(SQLITE3_CFLAGS)
 
 if BUILD_WIZARD
 AM_CFLAGS+= -DBUILD_WIZARD 

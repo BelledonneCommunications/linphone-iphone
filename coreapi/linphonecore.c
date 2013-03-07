@@ -366,7 +366,12 @@ int linphone_call_log_get_duration(LinphoneCallLog *cl){
 float linphone_call_log_get_quality(LinphoneCallLog *cl){
 	return cl->quality;
 }
-
+/**
+ * return true if video was enabled at the end of the call
+ */
+LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl) {
+	return cl->video_enabled;
+}
 /** @} */
 
 void linphone_call_log_destroy(LinphoneCallLog *cl){
@@ -1306,6 +1311,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
+#endif
+#ifdef MSG_STORAGE_ENABLED
+	lc->db=linphone_message_storage_init();
 #endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));

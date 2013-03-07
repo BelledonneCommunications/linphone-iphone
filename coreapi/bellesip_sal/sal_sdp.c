@@ -200,6 +200,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 		}
 
 		stream->rtp_port=belle_sdp_media_get_media_port(media);
+		stream->rtcp_port = stream->rtp_port + 1;
 		if (stream->rtp_port > 0)
 					desc->n_active_streams++;
 

@@ -55,7 +55,7 @@ linphone_SOURCES+=	\
 endif
 
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
-		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS)
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS)
 
 
 if BUILD_WIN32
@@ -79,7 +79,8 @@ AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) \
 		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
-		$(TUNNEL_CFLAGS)
+		$(TUNNEL_CFLAGS) \
+		$(SQLITE3_CFLAGS)
 
 
 version_date.h: $(top_srcdir)/configure.ac

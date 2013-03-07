@@ -1118,13 +1118,13 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 		NotifyNotification *n;
 		switch(linphone_call_get_state(call)){
 			case LinphoneCallError:
-				make_notification(_("Call error"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>\n%s",msg,remote));
+				make_notification(_("Call error"),body=g_markup_printf_escaped("<b>%s</b>\n%s",msg,remote));
 			break;
 			case LinphoneCallEnd:
-				make_notification(_("Call ended"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				make_notification(_("Call ended"),body=g_markup_printf_escaped("<b>%s</b>",remote));
 			break;
 			case LinphoneCallIncomingReceived:
-				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<span size=\"large\">%s</span>",remote));
+				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<b>%s</b>",remote));
 				if (notify_actions_supported()) {
 					notify_notification_add_action (n,"answer", _("Answer"),
 						NOTIFY_ACTION_CALLBACK(linphone_gtk_answer_clicked),NULL,NULL);
@@ -1134,7 +1134,7 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 				show_notification(n);
 			break;
 			case LinphoneCallPausedByRemote:
-				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<span size=\"large\">by %s</span>"),remote));
+				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<b>by %s</b>"),remote));
 			break;
 			default:
 			break;
@@ -1419,10 +1419,10 @@ static gboolean do_icon_blink(GtkStatusIcon *gi){
 void linphone_gtk_status_icon_set_blinking(gboolean val){
 #ifdef HAVE_GTK_OSX
 	static gint attention_id;
-	GtkOSXApplication *theMacApp=(GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	GtkosxApplication *theMacApp=gtkosx_application_get();
 	if (val)
-		attention_id=gtk_osxapplication_attention_request(theMacApp,CRITICAL_REQUEST);
-	else gtk_osxapplication_cancel_attention_request(theMacApp,attention_id);
+		attention_id=gtkosx_application_attention_request(theMacApp,CRITICAL_REQUEST);
+	else gtkosx_application_cancel_attention_request(theMacApp,attention_id);
 #else
 	if (icon!=NULL){
 		guint tout;
@@ -1556,10 +1556,6 @@ static void linphone_gtk_configure_main_window(){
 	static gboolean buttons_have_borders;
 	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
-	GHashTable *contacts_history;
-
-	contacts_history=g_hash_table_new_full(g_str_hash, g_str_equal,g_free, NULL);
-	g_object_set_data(G_OBJECT(w),"history",(gpointer)contacts_history);
 
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
@@ -1728,10 +1724,10 @@ static void linphone_gtk_init_main_window(){
 #ifdef HAVE_GTK_OSX
 	{
 		GtkWidget *menubar=linphone_gtk_get_widget(main_window,"menubar1");
-		GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-		gtk_osxapplication_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
+		GtkosxApplication *theMacApp = gtkosx_application_get();
+		gtkosx_application_set_menu_bar(theMacApp,GTK_MENU_SHELL(menubar));
 		gtk_widget_hide(menubar);
-		gtk_osxapplication_ready(theMacApp);
+		gtkosx_application_ready(theMacApp);
 	}
 	g_signal_connect(G_OBJECT(main_window), "window-state-event",G_CALLBACK(on_window_state_event), NULL);
 #endif
@@ -1936,7 +1932,7 @@ int main(int argc, char *argv[]){
 	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps/linphone");
 
 #ifdef HAVE_GTK_OSX
-	GtkOSXApplication *theMacApp = (GtkOSXApplication*)g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
+	GtkosxApplication *theMacApp = gtkosx_application_get();
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationDidBecomeActive",(GCallback)linphone_gtk_show_main_window,NULL);
 	g_signal_connect(G_OBJECT(theMacApp),"NSApplicationWillTerminate",(GCallback)gtk_main_quit,NULL);
 	/*never block termination:*/

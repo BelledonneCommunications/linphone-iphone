@@ -1800,7 +1800,6 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		}
 	}else ms_warning("No date header in SIP MESSAGE, we don't know when it was sent.");
 	
-	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
 		ms_error("Could not get message because no content type");
@@ -1847,8 +1846,6 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	sal_op_release(op);
 	osip_free(from);
 }
-
-
 
 static void other_request(Sal *sal, eXosip_event_t *ev){
 	ms_message("in other_request");

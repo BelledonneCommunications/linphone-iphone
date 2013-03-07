@@ -113,7 +113,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW he"
+ALL_LINGUAS="fr it de ja es pl cs nl sv pt_BR hu ru zh_CN nb_NO zh_TW he sr"
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -229,7 +229,7 @@ AC_ARG_ENABLE(gtk_ui,
 if test "$gtk_ui" = "true" ; then
 	PKG_CHECK_MODULES(LIBGTK, gtk+-2.0 >= 2.18.0 gthread-2.0)
 	if test "$enable_x11" = "false" ; then
-		PKG_CHECK_MODULES(LIBGTKMAC,[ige-mac-integration >= 0.9.7 ])
+		PKG_CHECK_MODULES(LIBGTKMAC,[gtk-mac-integration >= 2.0.1])
 		AC_DEFINE([HAVE_GTK_OSX],[1],[Defined when gtk osx is used])
 	fi
 else
@@ -665,6 +665,23 @@ if test x$enable_tunnel = xtrue; then
 	AC_SUBST(TUNNEL_LIBS)
 fi
 
+AC_ARG_ENABLE(msg-storage,
+	[AS_HELP_STRING([--enable-msg-storage=[yes/no]], [Turn on compilation of message storage (default=yes)])],
+	[case "${enableval}" in
+		yes)	enable_msg_storage=true ;;
+		no)	enable_msg_storage=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-msg-storage) ;;
+	esac],
+	[enable_msg_storage=true]
+)
+AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+if test x$enable_msg_storage = xtrue; then
+	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[],[
+		AC_MSG_ERROR([sqlite3 required for message storage not found.])] )
+	SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+	AC_SUBST(SQLITE3_CFLAGS)
+	AC_SUBST(SQLITE3_LIBS)
+fi
 SIPSTACK_CFLAGS=
 SIPSTACK_LIBS=
 
@@ -834,6 +851,7 @@ printf "* %-30s %s\n" "GTK interface"		$gtk_ui
 printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"			$build_tools
+printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 
