@@ -16,10 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+
 #include "sal_impl.h"
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 	int ortp_level;
@@ -232,30 +231,11 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 				via_header= (belle_sip_header_via_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_VIA);
 				received = belle_sip_header_via_get_received(via_header);
 				rport = belle_sip_header_via_get_rport(via_header);
-				if (!sal_op_get_contact(op)) {
-					/*check if contqct set in reauest*/
-
-					if ((original_contact=belle_sip_message_get_header_by_type(request,belle_sip_header_contact_t))) {
-						/*no contact set yet, try to see if sip tack has an updated one*/
-						contact_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(original_contact)));
-						sal_op_set_contact_address(op,(const SalAddress *)contact_address);
-						belle_sip_object_unref(contact_address);
-					} else {
-
-						/*hmm update contact from via, maybe useless, some op may not need any contact at all*/
-						contact_address=belle_sip_header_address_new();
-						contact_uri=belle_sip_uri_create(NULL,belle_sip_header_via_get_host(via_header));
-						belle_sip_header_address_set_uri(contact_address,contact_uri);
-
-						if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
-							belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
-						}
-						if (belle_sip_header_via_get_listening_port(via_header)
-								!= belle_sip_listening_point_get_well_known_port(belle_sip_header_via_get_transport(via_header))) {
-							belle_sip_uri_set_port(contact_uri,belle_sip_header_via_get_listening_port(via_header) );
-						}
-						contact_updated=TRUE;
-					}
+				if ((original_contact=belle_sip_message_get_header_by_type(request,belle_sip_header_contact_t))) {
+					/*update contact with sent values in any cases*/
+					contact_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(original_contact)));
+					sal_op_set_contact_address(op,(const SalAddress *)contact_address);
+					belle_sip_object_unref(contact_address);
 				}
 
 				if (received!=NULL || rport>0) {
@@ -289,10 +269,12 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 						}
 					}
 					if (contact_updated) {
+						char* old_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(sal_op_get_contact_address(op)));
 						new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
-						ms_message("Updating contact from [%s] to [%s] for [%p]",sal_op_get_contact(op),new_contact,op);
-						sal_op_set_contact(op,new_contact);
+						ms_message("Updating contact from [%s] to [%s] for [%p]",old_contact,new_contact,op);
+						sal_op_set_contact_address(op,(const SalAddress *)contact_address);
 						belle_sip_free(new_contact);
+						belle_sip_free(old_contact);
 					}
 					if (contact_address)belle_sip_object_unref(contact_address);
 				}

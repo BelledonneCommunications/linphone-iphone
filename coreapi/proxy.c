@@ -255,49 +255,62 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	obj->lc=lc;
 	linphone_proxy_config_done(obj);
 }
-
+#ifndef USE_BELLESIP
 static char *guess_contact_for_register(LinphoneProxyConfig *obj){
-	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
 	char *ret=NULL;
+	#else
+LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
+	LinphoneAddress *ret=NULL;
+#endif
+	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
+
 	const char *host;
 	if (proxy==NULL) return NULL;
 	host=linphone_address_get_domain (proxy);
 	if (host!=NULL){
 		int localport = -1;
-		char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
+
 		const char *localip = NULL;
 		char *tmp;
 		LCSipTransports tr;
-		LinphoneAddress *contact;
+		LinphoneAddress *contact=linphone_address_new(obj->reg_identity);
+
+		if (obj->contact_params)
+			tmp=ms_strdup_printf("<sip:%s@%s;%s>",linphone_address_get_username(contact)
+											,linphone_address_get_domain(contact)
+											,obj->contact_params);
+		else
+			tmp=ms_strdup_printf("<sip:%s@%s>",linphone_address_get_username(contact)
+											,linphone_address_get_domain(contact));
 		
-		contact=linphone_address_new(obj->reg_identity);
+		linphone_address_destroy(contact);
+		contact=linphone_address_new(tmp);
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
+			linphone_core_get_sip_transports(obj->lc,&tr);
+			if (tr.udp_port <= 0) {
+				if (tr.tcp_port>0) {
+					sal_address_set_param(contact,"transport","tcp");
+				} else if (tr.tls_port>0) {
+					sal_address_set_param(contact,"transport","tls");
+				}
+			}
+
 		}
 #endif //BUILD_UPNP
-#ifdef USE_BELLESIP
-#ifdef BUILD_UPNP
-		else
-#endif /*BUILD_UPNP*/
-	{
-		linphone_address_destroy(contact);
-		return NULL;
-	}
-#endif /*USE_BELLESIP*/
+
+#ifndef USE_BELLESIP
 		if(localip == NULL) {
+			char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
 			localip = localip_tmp;
 			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
 		}
 		if(localport == -1) {
 			localport = linphone_core_get_sip_port(obj->lc);
 		}
-		linphone_address_set_port_int(contact,localport);
-		linphone_address_set_domain(contact,localip);
-		linphone_address_set_display_name(contact,NULL);
-
 		linphone_core_get_sip_transports(obj->lc,&tr);
 		if (tr.udp_port <= 0) {
 			if (tr.tcp_port>0) {
@@ -306,27 +319,41 @@ static char *guess_contact_for_register(LinphoneProxyConfig *obj){
 				sal_address_set_param(contact,"transport","tls");
 			}
 		}
+#endif
 
-		tmp=linphone_address_as_string_uri_only(contact);
-		if (obj->contact_params)
-			ret=ms_strdup_printf("<%s;%s>",tmp,obj->contact_params);
-		else ret=ms_strdup_printf("<%s>",tmp);
+		linphone_address_set_port_int(contact,localport);
+		linphone_address_set_domain(contact,localip);
+		linphone_address_set_display_name(contact,NULL);
+
+#ifndef USE_BELLESIP
+		ret = linphone_address_as_string(contact);
 		linphone_address_destroy(contact);
+#else
+		ret=contact;
+#endif /*USE_BELLESIP*/
+		linphone_address_destroy (proxy);
 		ms_free(tmp);
 	}
-	linphone_address_destroy (proxy);
 	return ret;
 }
 
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
+#ifndef USE_BELLESIP
 		char *contact;
+#else
+		LinphoneAddress *contact;
+#endif
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
 		if ((contact=guess_contact_for_register(obj))) {
 			sal_op_set_contact(obj->op,contact);
+#ifndef USE_BELLESIP
 			ms_free(contact);
+#else
+		linphone_address_destroy(contact);
+#endif
 		}
 		sal_op_set_user_pointer(obj->op,obj);
 		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {

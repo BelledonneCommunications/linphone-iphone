@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef sal_h
 #define sal_h
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "mediastreamer2/mscommon.h"
 #include "ortp/ortp_srtp.h"
 
@@ -226,8 +230,11 @@ typedef struct SalOpBase{
 	Sal *root;
 	char *route; /*or request-uri for REGISTER*/
 	MSList* route_addresses; /*list of SalAddress* */
+#ifndef USE_BELLESIP
 	char *contact;
+#else
 	SalAddress* contact_address;
+#endif
 	char *from;
 	SalAddress* from_address;
 	char *to;
@@ -401,8 +408,12 @@ SalOp * sal_op_new(Sal *sal);
 
 /*generic SalOp API, working for all operations */
 Sal *sal_op_get_sal(const SalOp *op);
+#ifndef USE_BELLESIP
 void sal_op_set_contact(SalOp *op, const char *contact);
+#else
+#define sal_op_set_contact sal_op_set_contact_address /*for liblinphone compatibility*/
 void sal_op_set_contact_address(SalOp *op, const SalAddress* address);
+#endif
 void sal_op_set_route(SalOp *op, const char *route);
 void sal_op_set_route_address(SalOp *op, const SalAddress* address);
 void sal_op_add_route_address(SalOp *op, const SalAddress* address);
@@ -419,8 +430,12 @@ const char *sal_op_get_from(const SalOp *op);
 const SalAddress *sal_op_get_from_address(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const SalAddress *sal_op_get_to_address(const SalOp *op);
+#ifndef USE_BELLESIP
 const char *sal_op_get_contact(const SalOp *op);
+#else
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
+#define sal_op_get_contact sal_op_get_contact_address /*for liblinphone compatibility*/
+#endif
 const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);

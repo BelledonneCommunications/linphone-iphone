@@ -2318,54 +2318,68 @@ const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAdd
 	}
 	return linphone_core_get_primary_contact (lc);
 }
-
+#ifndef USE_BELLESIP
 static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
-	LinphoneAddress *ctt;
+#else
+static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
+#endif
+	LinphoneAddress *ctt=NULL;
+#ifdef USE_BELLESIP
+	LinphoneAddress *ret;
+#else
+	char* ret;
+#endif
 	const char *localip=call->localip;
 
 	/* first use user's supplied ip address if asked*/
 	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseNatAddress){
 		ctt=linphone_core_get_primary_contact_parsed(lc);
-		return ms_strdup_printf("sip:%s@%s",linphone_address_get_username(ctt),
-		    	linphone_core_get_nat_address_resolved(lc));
-	}
-
-	/* if already choosed, don't change it */
-	if (call->op && sal_op_get_contact(call->op)!=NULL){
+		linphone_address_set_domain(ctt,linphone_core_get_nat_address_resolved(lc));
+	#ifdef USE_BELLESIP
+		ret=ctt;
+	#else
+		ret=linphone_adress_as_string(ctt);
+	#endif
+	} else if (call->op && sal_op_get_contact(call->op)!=NULL){
+		/* if already choosed, don't change it */
 		return NULL;
-	}
-	/* if the ping OPTIONS request succeeded use the contact guessed from the
-	 received, rport*/
-	if (call->ping_op){
-		const char *guessed=sal_op_get_contact(call->ping_op);
-		if (guessed){
-			ms_message("Contact has been fixed using OPTIONS to %s",guessed);
-			return ms_strdup(guessed);
-		}
-	}
-
+	} else if (call->ping_op && sal_op_get_contact(call->ping_op)) {
+		/* if the ping OPTIONS request succeeded use the contact guessed from the
+		 received, rport*/
+		ms_message("Contact has been fixed using OPTIONS"/* to %s",guessed*/);
+#ifdef USE_BELLESIP
+		ret=linphone_address_clone(sal_op_get_contact(call->ping_op));;
+#else
+		ret=ms_strdup(sal_op_get_contact(call->ping_op));
+#endif
+	} else 	if (dest_proxy && dest_proxy->op && sal_op_get_contact(dest_proxy->op)){
 	/*if using a proxy, use the contact address as guessed with the REGISTERs*/
-	if (dest_proxy && dest_proxy->op){
-		const char *fixed_contact=sal_op_get_contact(dest_proxy->op);
-		if (fixed_contact) {
-			ms_message("Contact has been fixed using proxy to %s",fixed_contact);
-			return ms_strdup(fixed_contact);
+		ms_message("Contact has been fixed using proxy" /*to %s",fixed_contact*/);
+#ifdef USE_BELLESIP
+		ret=linphone_address_clone(sal_op_get_contact(dest_proxy->op));
+#else
+		ret=ms_strdup(sal_op_get_contact(dest_proxy->op));
+#endif
+	} else {
+		ctt=linphone_core_get_primary_contact_parsed(lc);
+		if (ctt!=NULL){
+			/*otherwise use supllied localip*/
+			linphone_address_set_domain(ctt,localip);
+			linphone_address_set_port_int(ctt,linphone_core_get_sip_port(lc));
+			ms_message("Contact has been fixed using local ip"/* to %s",ret*/);
+#ifdef USE_BELLESIP
+			ret=ctt;
+#else
+			ret=linphone_address_as_string_uri_only(ctt);
+#endif
 		}
 	}
+#ifndef USE_BELLESIP
+	if (ctt) linphone_address_destroy(ctt);
+#endif
+	return ret;
 
-	ctt=linphone_core_get_primary_contact_parsed(lc);
 
-	if (ctt!=NULL){
-		char *ret;
-		/*otherwise use supllied localip*/
-		linphone_address_set_domain(ctt,localip);
-		linphone_address_set_port_int(ctt,linphone_core_get_sip_port(lc));
-		ret=linphone_address_as_string_uri_only(ctt);
-		linphone_address_destroy(ctt);
-		ms_message("Contact has been fixed using local ip to %s",ret);
-		return ret;
-	}
-	return NULL;
 }
 
 int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *call, LinphoneProxyConfig *dest_proxy){
@@ -2401,7 +2415,12 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	int err;
+#ifndef USE_BELLESIP
 	char *contact;
+#else
+	LinphoneAddress *contact;
+#endif
+
 	char *real_url,*barmsg;
 	char *from;
 	LinphoneProxyConfig *dest_proxy=call->dest_proxy;
@@ -2410,7 +2429,12 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	contact=get_fixed_contact(lc,call,dest_proxy);
 	if (contact){
 		sal_op_set_contact(call->op, contact);
+#ifndef USE_BELLESIP
 		ms_free(contact);
+#else
+	linphone_address_destroy(contact);
+#endif
+
 	}
 	linphone_core_stop_dtmf_stream(lc);
 	linphone_call_init_media_streams(call);
@@ -3103,7 +3127,11 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
 int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
 {
 	LinphoneProxyConfig *cfg=NULL;
-	const char *contact=NULL;
+#ifndef USE_BELLESIP
+	char *contact=NULL;
+#else
+	LinphoneAddress *contact=NULL;
+#endif
 	SalOp *replaced;
 	SalMediaDescription *new_md;
 	bool_t was_ringing=FALSE;
@@ -3159,9 +3187,14 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 	/*try to be best-effort in giving real local or routable contact address*/
 	contact=get_fixed_contact(lc,call,call->dest_proxy);
-	if (contact)
+	if (contact) {
 		sal_op_set_contact(call->op,contact);
-
+#ifdef USE_BELLESIP
+		linphone_address_destroy(contact);
+#else
+		ms_free(contact);
+#endif
+	}
 	if (params){
 		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
 		_linphone_call_params_copy(&call->params,params);

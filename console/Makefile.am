@@ -3,6 +3,7 @@
 AM_CPPFLAGS=\
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/coreapi \
+	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/exosip
 
 COMMON_CFLAGS=\

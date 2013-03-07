@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  The purpose of this layer is too allow experiment different call signaling 
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "sal/sal.h"
 const char* sal_transport_to_string(SalTransport transport) {
 	switch (transport) {
@@ -246,16 +248,15 @@ static void assign_string(char **str, const char *arg){
 		*str=ms_strdup(arg);
 }
 
-
+#ifdef USE_BELLESIP
 void sal_op_set_contact_address(SalOp *op, const SalAddress *address){
-	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
-	sal_op_set_contact(op,address_string);
-	ms_free(address_string);
+	if (((SalOpBase*)op)->contact_address) sal_address_destroy(((SalOpBase*)op)->contact_address);
+	((SalOpBase*)op)->contact_address=address?sal_address_clone(address):NULL;
 }
 const SalAddress* sal_op_get_contact_address(const SalOp *op) {
 	return ((SalOpBase*)op)->contact_address;
 }
-
+#endif
 #define SET_PARAM(op,name) \
 		char* name##_string=NULL; \
 		assign_address(&((SalOpBase*)op)->name##_address,name); \
@@ -265,10 +266,14 @@ const SalAddress* sal_op_get_contact_address(const SalOp *op) {
 		assign_string(&((SalOpBase*)op)->name,name##_string); \
 		if(name##_string) ms_free(name##_string);
 
+#ifndef USE_BELLESIP
 void sal_op_set_contact(SalOp *op, const char *contact){
-	SET_PARAM(op,contact);
+	assign_string(&((SalOpBase*)op)->contact,contact);
 }
-
+const char *sal_op_get_contact(const SalOp *op){
+	return ((SalOpBase*)op)->contact;
+}
+#endif
 void sal_op_set_route(SalOp *op, const char *route){
 	char* route_string=(void *)0;
 	SalOpBase* op_base = (SalOpBase*)op;
@@ -339,9 +344,7 @@ const char *sal_op_get_to(const SalOp *op){
 const SalAddress *sal_op_get_to_address(const SalOp *op){
 	return ((SalOpBase*)op)->to_address;
 }
-const char *sal_op_get_contact(const SalOp *op){
-	return ((SalOpBase*)op)->contact;
-}
+
 
 const char *sal_op_get_remote_contact(const SalOp *op){
 	return ((SalOpBase*)op)->remote_contact;
@@ -404,10 +407,16 @@ void __sal_op_free(SalOp *op){
 		ms_free(b->route);
 		b->route=NULL;
 	}
+#ifndef USE_BELLESIP
 	if (b->contact) {
 		ms_free(b->contact);
 		b->contact=NULL;
 	}
+#else
+	if (b->contact_address) {
+		sal_address_destroy(b->contact_address);
+	}
+#endif
 	if (b->origin){
 		ms_free(b->origin);
 		b->origin=NULL;

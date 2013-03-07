@@ -108,7 +108,6 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	char *friend=NULL;
 	const char *route=NULL;
 	const char *from=NULL;
-	const char *fixed_contact=NULL;
 	LinphoneProxyConfig *cfg;
 	
 	friend=linphone_address_as_string(fr->uri);
@@ -116,12 +115,6 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	if (cfg!=NULL){
 		route=linphone_proxy_config_get_route(cfg);
 		from=linphone_proxy_config_get_identity(cfg);
-		if (cfg->op){
-			fixed_contact=sal_op_get_contact(cfg->op);
-			if (fixed_contact) {
-				ms_message("Contact for subscribe has been fixed using proxy to %s",fixed_contact);
-			}
-		}
 	}else from=linphone_core_get_primary_contact(fr->lc);
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
@@ -136,7 +129,10 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	}
 	fr->outsub=sal_op_new(fr->lc->sal);
 	sal_op_set_route(fr->outsub,route);
-	sal_op_set_contact(fr->outsub,fixed_contact);
+	if (cfg && cfg->op && sal_op_get_contact(cfg->op))
+		sal_op_set_contact(fr->outsub,sal_op_get_contact(cfg->op));
+	else
+		sal_op_set_contact(fr->outsub,NULL);
 	sal_subscribe_presence(fr->outsub,from,friend);
 	fr->subscribe_active=TRUE;
 	ms_free(friend);
