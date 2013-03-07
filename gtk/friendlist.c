@@ -165,6 +165,21 @@ void linphone_gtk_remove_contact(GtkWidget *button){
 	}
 }
 
+void linphone_gtk_delete_history(GtkWidget *button){
+	GtkWidget *w=gtk_widget_get_toplevel(button);
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	LinphoneFriend *lf=NULL;
+	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(linphone_gtk_get_widget(w,"contact_list")));
+	if (gtk_tree_selection_get_selected (select, &model, &iter))
+	{
+		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
+		linphone_core_delete_history(linphone_gtk_get_core(),linphone_address_as_string_uri_only(linphone_friend_get_address(lf)));
+		linphone_gtk_show_friends();
+	}
+}
+
 static void linphone_gtk_call_selected(GtkTreeView *treeview){
 	linphone_gtk_set_selection_to_uri_bar(treeview);
 	linphone_gtk_start_call(linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(treeview)),
@@ -786,6 +801,7 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	gchar *text_label=NULL;
 	gchar *edit_label=NULL;
 	gchar *delete_label=NULL;
+	gchar *delete_hist_label=NULL;
 	gchar *name=NULL;
 	GtkTreeSelection *select;
 	GtkTreeIter iter;
@@ -808,6 +824,7 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 		text_label=g_strdup_printf(_("Send text to %s"),name);
 		edit_label=g_strdup_printf(_("Edit contact '%s'"),name);
 		delete_label=g_strdup_printf(_("Delete contact '%s'"),name);
+		delete_hist_label=g_strdup_printf(_("Delete chat history of '%s'"),name);
 		g_free(name);
 	}
 	if (call_label){
@@ -847,6 +864,15 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_remove_contact,contact_list);
 	}
 
+	if (delete_hist_label){
+		menu_item=gtk_image_menu_item_new_with_label(delete_hist_label);
+		image=gtk_image_new_from_stock(GTK_STOCK_CLEAR,GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
+		gtk_widget_show(image);
+		gtk_widget_show(menu_item);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_delete_history,contact_list);
+	}
 
 	if (ssc && (sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP)) {
 		gchar *tmp=g_strdup_printf(_("Add new contact from %s directory"),linphone_proxy_config_get_domain(cfg));

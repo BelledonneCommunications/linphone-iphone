@@ -140,6 +140,11 @@ void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from,
 	linphone_sql_request(lc->db,buf);
 }
 
+void linphone_core_delete_history(LinphoneCore *lc,const char *from){
+	char *buf=sqlite3_mprintf("delete from history where remoteContact = %Q;",from);
+	linphone_sql_request(lc->db,buf);
+}
+
 MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	cr->messages_hist = NULL;
@@ -190,5 +195,8 @@ void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from,
 
 MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message){
 	return NULL;
+}
+
+void linphone_core_delete_history(LinphoneCore *lc,const char *from){
 }
 #endif

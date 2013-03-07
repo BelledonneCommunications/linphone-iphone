@@ -1420,6 +1420,7 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message);
 void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from, int read);
+void linphone_core_delete_history(LinphoneCore *lc,const char *from);
 
 #ifdef __cplusplus
 }
