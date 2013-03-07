@@ -36,6 +36,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	g_object_set_data(G_OBJECT(w),"from_message",NULL);	
 	g_object_set_data(G_OBJECT(w),"cr",NULL);
+	g_object_set_data(G_OBJECT(friendlist),"from",NULL);
 	gtk_widget_destroy(w);
 }
 
@@ -369,7 +370,8 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
     } else {
         w=linphone_gtk_init_chatroom(room,linphone_chat_message_get_from(msg));
         g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)w);
-		g_object_set_data(G_OBJECT(friendlist),"from",(gpointer)linphone_chat_message_get_from(msg));
+		char *from=linphone_address_as_string(linphone_chat_message_get_from(msg));
+		g_object_set_data(G_OBJECT(friendlist),"from",from);
     }
 	get_display_name(linphone_chat_message_get_from(msg));
 	#ifdef HAVE_GTK_OSXs

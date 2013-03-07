@@ -1,53 +1,57 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# SIP Telephony Application.
+# Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: linphone 0.7.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 12:30+0100\n"
-"PO-Revision-Date: 2009-02-17 15:22+0100\n"
-"Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
-"Language-Team: SWEDISH <SE@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2013-02-11 19:03+0200\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: Serbian <gnom@prevod.org>\n"
+"Language: sr\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: ../gtk/calllogs.c:82
 msgid "n/a"
-msgstr ""
+msgstr "н/д"
 
 #: ../gtk/calllogs.c:85
 #, fuzzy
 msgid "Aborted"
-msgstr "avbrytade"
+msgstr "прекинути"
 
 #: ../gtk/calllogs.c:88
 #, fuzzy
 msgid "Missed"
-msgstr "missade"
+msgstr "пропуштени"
 
 #: ../gtk/calllogs.c:91
 #, fuzzy
 msgid "Declined"
-msgstr "Avböj"
+msgstr "Одбиј"
 
 #: ../gtk/calllogs.c:97
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%i минут"
+msgstr[1] "%i минута"
+msgstr[2] "%i минута"
+msgstr[3] "Један минут"
 
 #: ../gtk/calllogs.c:100
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%i секунда"
+msgstr[1] "%i секунде"
+msgstr[2] "%i секунде"
+msgstr[3] "Једна секунда"
 
 #: ../gtk/calllogs.c:103
 #, c-format
@@ -55,35 +59,38 @@ msgid ""
 "<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s %s\t"
 msgstr ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Квалитет: %s</i></small>\n"
+"%s\t%s %s\t"
 
 #: ../gtk/calllogs.c:108
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "<big><b>%s</b></big>\t<small><i>%s</i></small>\t\n"
 "%s\t%s"
 msgstr ""
+"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Квалитет: %s</i></small>\n"
+"%s\t%s %s\t"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:14
 msgid "Conference"
-msgstr ""
+msgstr "Конференција"
 
 #: ../gtk/conference.c:46
-#, fuzzy
 msgid "Me"
-msgstr "Mikrofon av"
+msgstr "Ја"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr "Kunde inte hitta pixmap filen: %s"
+msgstr "Не могу да пронађем датотеку сличице: %s"
 
 #: ../gtk/main.c:88
 msgid "log to stdout some debug information while running."
-msgstr "skriv loggning information under körning"
+msgstr "бележи у стандардни излаз неке податке за уклањање грешака док ради."
 
 #: ../gtk/main.c:95
 msgid "path to a file to write logs into."
-msgstr ""
+msgstr "путања до датотеке за уписивање бележака."
 
 #: ../gtk/main.c:102
 msgid "Start linphone with video disabled."
@@ -91,28 +98,28 @@ msgstr ""
 
 #: ../gtk/main.c:109
 msgid "Start only in the system tray, do not show the main interface."
-msgstr "Starta ikonifierat, visa inte huvudfönstret"
+msgstr "Покреће се само у системској фиоци, не приказује главно сучеље."
 
 #: ../gtk/main.c:116
 msgid "address to call right now"
-msgstr "Samtalsmottagare"
+msgstr "адреса за позивање управо сада"
 
 #: ../gtk/main.c:123
 msgid "if set automatically answer incoming calls"
-msgstr "Om på, besvara automatisk alla inkommande samtal"
+msgstr "ако је подешено сам ће се јављати на долазне позиве"
 
 #: ../gtk/main.c:130
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
 msgstr ""
-"Välj en arbetskatalog som ska vara basen för installationen, såsom C:"
-"\\Program\\Linphone"
+"Наводи радни директоријум (треба да буде основа инсталације, нпр: c:"
+"\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:510
 #, c-format
 msgid "Call with %s"
-msgstr "Samtal med %s"
+msgstr "Позив са корисником %s"
 
 #: ../gtk/main.c:941
 #, c-format
@@ -122,10 +129,10 @@ msgid ""
 "list ?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
-"%s skulle vilja lägga till dig till hans/hennes kontaktlista.\n"
-"Vill du tillåta honom/henne att se din närvarostatus eller lägga till honom/"
-"henne till din kontaktlista?\n"
-"Om du svarar nej, personen kommer att vara bannlyst."
+"%s жели да вас дода на списак пријатеља.\n"
+"Да ли желите да му допустите да види ваше стање присуства или да га додате "
+"на ваш списак пријатеља ?\n"
+"Ако одговорите са не, ова особа ће привремено бити стављена на црни списак."
 
 #: ../gtk/main.c:1018
 #, c-format
@@ -133,39 +140,37 @@ msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at domain <i>%s</i>:"
 msgstr ""
-"Mata in ditt lösenord för användaren <i>%s</i>\n"
-"vid domänen <i>%s</i>:"
+"Унесите вашу лозинку за корисничко име <i>%s</i>\n"
+" на домену <i>%s</i>:"
 
 #: ../gtk/main.c:1121
-#, fuzzy
 msgid "Call error"
-msgstr "Samtalshistorik"
+msgstr "Грешка позива"
 
 #: ../gtk/main.c:1124 ../coreapi/linphonecore.c:3189
 msgid "Call ended"
-msgstr "Samtalet slut"
+msgstr "Позив је завршен"
 
 #: ../gtk/main.c:1127 ../coreapi/linphonecore.c:239
 msgid "Incoming call"
-msgstr "Inkommande samtal"
+msgstr "Долазни позив"
 
 #: ../gtk/main.c:1129 ../gtk/incall_view.c:498 ../gtk/main.ui.h:6
 msgid "Answer"
-msgstr ""
+msgstr "Јави се"
 
 #: ../gtk/main.c:1131 ../gtk/main.ui.h:7
 msgid "Decline"
-msgstr "Avböj"
+msgstr "Одбиј"
 
 #: ../gtk/main.c:1137
-#, fuzzy
 msgid "Call paused"
-msgstr "avbrytade"
+msgstr "Позив је заустављен"
 
 #: ../gtk/main.c:1137
 #, fuzzy, c-format
 msgid "<b>by %s</b>"
-msgstr "<b>Portar</b>"
+msgstr "<b>Кодеци</b>"
 
 #: ../gtk/main.c:1186
 #, c-format
@@ -174,48 +179,49 @@ msgstr ""
 
 #: ../gtk/main.c:1348
 msgid "Website link"
-msgstr "Webbsajt"
+msgstr "Веза веб сајта"
 
 #: ../gtk/main.c:1388
 msgid "Linphone - a video internet phone"
-msgstr "Linphone - en video Internet telefon"
+msgstr "Линфон — интернет телефон са снимком"
 
 #: ../gtk/main.c:1480
 #, c-format
 msgid "%s (Default)"
-msgstr "%s (Default)"
+msgstr "%s (основно)"
 
 #: ../gtk/main.c:1782 ../coreapi/callbacks.c:806
 #, c-format
 msgid "We are transferred to %s"
-msgstr ""
+msgstr "Преселили смо се на %s"
 
 #: ../gtk/main.c:1792
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
+"Ниједна звучна картица није откривен ана овом рачунару.\n"
+"Нећете бити у могућности да шаљете или да примате звучне позиве."
 
 #: ../gtk/main.c:1896
 msgid "A free SIP video-phone"
-msgstr "En gratis SIP video-telefon"
+msgstr "Слободан СИП телефон са снимком"
 
 #: ../gtk/friendlist.c:366
 msgid "Add to addressbook"
-msgstr ""
+msgstr "Додајте у адресар"
 
 #: ../gtk/friendlist.c:540
 msgid "Presence status"
-msgstr "Närvarostatus"
+msgstr "Стање присуства"
 
 #: ../gtk/friendlist.c:557 ../gtk/propertybox.c:367 ../gtk/contact.ui.h:1
 msgid "Name"
-msgstr "Namn"
+msgstr "Име"
 
 #: ../gtk/friendlist.c:569
-#, fuzzy
 msgid "Call"
-msgstr "Ringer %s"
+msgstr "Позови"
 
 #: ../gtk/friendlist.c:574
 msgid "Chat"
@@ -224,128 +230,128 @@ msgstr ""
 #: ../gtk/friendlist.c:604
 #, c-format
 msgid "Search in %s directory"
-msgstr "Sök i %s katalogen"
+msgstr "Тражи у директоријуму „%s“"
 
 #: ../gtk/friendlist.c:762
 msgid "Invalid sip contact !"
-msgstr "ogiltig SIP kontakt!"
+msgstr "Неисправан сип контакт !"
 
 #: ../gtk/friendlist.c:807
 #, c-format
 msgid "Call %s"
-msgstr "Ringer %s"
+msgstr "Позови „%s“"
 
 #: ../gtk/friendlist.c:808
 #, c-format
 msgid "Send text to %s"
-msgstr "Skicka text till %s"
+msgstr "Пошаљи текст за %s"
 
 #: ../gtk/friendlist.c:809
 #, c-format
 msgid "Edit contact '%s'"
-msgstr "Ändra kontakt '%s'"
+msgstr "Уредите контакт „%s“"
 
 #: ../gtk/friendlist.c:810
 #, c-format
 msgid "Delete contact '%s'"
-msgstr "Ta bort kontakt '%s'"
+msgstr "Обришите контакт „%s“"
 
 #: ../gtk/friendlist.c:852
 #, c-format
 msgid "Add new contact from %s directory"
-msgstr "Lägg till kontakt ifrån %s katalogen"
+msgstr "Додајте нови контакт из директоријума „%s“"
 
 #: ../gtk/propertybox.c:373
 msgid "Rate (Hz)"
-msgstr "Frekvens (Hz)"
+msgstr "Проток (Hz)"
 
 #: ../gtk/propertybox.c:379
 msgid "Status"
-msgstr "Status"
+msgstr "Стање"
 
 #: ../gtk/propertybox.c:385
 msgid "Min bitrate (kbit/s)"
-msgstr "Min. datahastighet (kbit/s)"
+msgstr "Најмањи проток бита (kbit/s)"
 
 #: ../gtk/propertybox.c:392
 msgid "Parameters"
-msgstr "Parametrar"
+msgstr "Параметри"
 
 #: ../gtk/propertybox.c:435 ../gtk/propertybox.c:578
 msgid "Enabled"
-msgstr "På"
+msgstr "Укључено"
 
 #: ../gtk/propertybox.c:437 ../gtk/propertybox.c:578
 msgid "Disabled"
-msgstr "Av"
+msgstr "Искључено"
 
 #: ../gtk/propertybox.c:624
 msgid "Account"
-msgstr "Konto"
+msgstr "Налог"
 
 #: ../gtk/propertybox.c:764
 msgid "English"
-msgstr "Engelska"
+msgstr "Енглески"
 
 #: ../gtk/propertybox.c:765
 msgid "French"
-msgstr "Fransk"
+msgstr "Француски"
 
 #: ../gtk/propertybox.c:766
 msgid "Swedish"
-msgstr "Svenska"
+msgstr "Шведски"
 
 #: ../gtk/propertybox.c:767
 msgid "Italian"
-msgstr "Italiensk"
+msgstr "Италијански"
 
 #: ../gtk/propertybox.c:768
 msgid "Spanish"
-msgstr "Spanska"
+msgstr "Шпански"
 
 #: ../gtk/propertybox.c:769
 msgid "Brazilian Portugese"
-msgstr "Portugisiska"
+msgstr "Бразилски португалски"
 
 #: ../gtk/propertybox.c:770
 msgid "Polish"
-msgstr "Polska"
+msgstr "Пољски"
 
 #: ../gtk/propertybox.c:771
 msgid "German"
-msgstr "Tyska"
+msgstr "Немачки"
 
 #: ../gtk/propertybox.c:772
 msgid "Russian"
-msgstr "Ryska"
+msgstr "Руски"
 
 #: ../gtk/propertybox.c:773
 msgid "Japanese"
-msgstr "Japanska"
+msgstr "Јапански"
 
 #: ../gtk/propertybox.c:774
 msgid "Dutch"
-msgstr "Nederländksa"
+msgstr "Холандски"
 
 #: ../gtk/propertybox.c:775
 msgid "Hungarian"
-msgstr "Hungerska"
+msgstr "Мађарски"
 
 #: ../gtk/propertybox.c:776
 msgid "Czech"
-msgstr "Tjekiska"
+msgstr "Чешки"
 
 #: ../gtk/propertybox.c:777
 msgid "Chinese"
-msgstr "Kinesiska"
+msgstr "Кинески"
 
 #: ../gtk/propertybox.c:778
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Традиционални кинески"
 
 #: ../gtk/propertybox.c:779
 msgid "Norwegian"
-msgstr ""
+msgstr "Норвешки"
 
 #: ../gtk/propertybox.c:780
 msgid "Hebrew"
@@ -354,19 +360,20 @@ msgstr ""
 #: ../gtk/propertybox.c:847
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr "Du behöver starta om programmet för att det nya språket ska synas."
+msgstr ""
+"Трба поново да покренете линфон да би нови изабрани језик ступио на снагу."
 
 #: ../gtk/propertybox.c:933
 msgid "None"
-msgstr ""
+msgstr "Ништа"
 
 #: ../gtk/propertybox.c:937
 msgid "SRTP"
-msgstr ""
+msgstr "СРТП"
 
 #: ../gtk/propertybox.c:943
 msgid "ZRTP"
-msgstr ""
+msgstr "ЗРТП"
 
 #: ../gtk/update.c:80
 #, c-format
@@ -374,62 +381,64 @@ msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
 msgstr ""
-"En nyare version är tillgänglig på %s.\n"
-"Vill du öppna en browser för att ladda ner den?"
+"Новије издање је доступно са „%s“.\n"
+"Да ли желите да отворите прегледник да га преузмете ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
-msgstr "Du kör den sensaste versionen."
+msgstr "Радите на најновијем издању."
 
 #: ../gtk/buddylookup.c:85
 msgid "Firstname, Lastname"
-msgstr "Förnamn, Efternamn"
+msgstr "Име и презиме"
 
 #: ../gtk/buddylookup.c:160
 msgid "Error communicating with server."
-msgstr "Error med förbindelsen till servern."
+msgstr "Грешка у коминикацији са сервером."
 
 #: ../gtk/buddylookup.c:164
 msgid "Connecting..."
-msgstr "Kontaktar"
+msgstr "Повезујем се..."
 
 #: ../gtk/buddylookup.c:168
 msgid "Connected"
-msgstr "Kopplad"
+msgstr "Повезан сам"
 
 #: ../gtk/buddylookup.c:172
 msgid "Receiving data..."
-msgstr "Tar emot data..."
+msgstr "Примам податке..."
 
 #: ../gtk/buddylookup.c:180
 #, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] "Hittat kontakt %i"
-msgstr[1] "Hittat kontakt %i"
+msgstr[0] "Нашао сам %i пријатеља"
+msgstr[1] "Нашао сам %i пријатеља"
+msgstr[2] "Нашао сам %i пријатеља"
+msgstr[3] "Нашао сам једног пријатеља"
 
 #: ../gtk/setupwizard.c:34
 msgid ""
 "Welcome !\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
-"Välkommen!\n"
-"Assistenten kommer att hjälpa dig använda ett SIP konto för dina samtal:"
+"Добродошли !\n"
+"Овај помоћник ће вам помоћи да користите СИП налог за ваше позиве."
 
 #: ../gtk/setupwizard.c:43
 #, fuzzy
 msgid "Create an account on linphone.org"
-msgstr "Skapa ett konto genom att välja ett användarnamn"
+msgstr "Направите налог тако што ћете изабрати корисничко име"
 
 #: ../gtk/setupwizard.c:44
 #, fuzzy
 msgid "I have already a linphone.org account and I just want to use it"
-msgstr "Jag har redan ett konto och vill bara använda det."
+msgstr "Већ имам један налог и желим да га користим"
 
 #: ../gtk/setupwizard.c:45
 #, fuzzy
 msgid "I have already a sip account and I just want to use it"
-msgstr "Jag har redan ett konto och vill bara använda det."
+msgstr "Већ имам један налог и желим да га користим"
 
 #: ../gtk/setupwizard.c:85
 msgid "Enter your linphone.org username"
@@ -437,11 +446,11 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:92
 msgid "Username:"
-msgstr "Användarnamn:"
+msgstr "Корисничко име:"
 
 #: ../gtk/setupwizard.c:94 ../gtk/password.ui.h:4
 msgid "Password:"
-msgstr "Lösenord:"
+msgstr "Лозинка:"
 
 #: ../gtk/setupwizard.c:114
 msgid "Enter your account informations"
@@ -450,12 +459,12 @@ msgstr ""
 #: ../gtk/setupwizard.c:121
 #, fuzzy
 msgid "Username*"
-msgstr "Användarnamn"
+msgstr "Корисничко име"
 
 #: ../gtk/setupwizard.c:122
 #, fuzzy
 msgid "Password*"
-msgstr "Lösenord"
+msgstr "Лозинка"
 
 #: ../gtk/setupwizard.c:125
 msgid "Domain*"
@@ -472,12 +481,12 @@ msgstr ""
 #: ../gtk/setupwizard.c:299
 #, fuzzy
 msgid "Username: (*)"
-msgstr "Användarnamn:"
+msgstr "Корисничко име:"
 
 #: ../gtk/setupwizard.c:301
 #, fuzzy
 msgid "Password: (*)"
-msgstr "Lösenord:"
+msgstr "Лозинка:"
 
 #: ../gtk/setupwizard.c:303
 msgid "Email: (*)"
@@ -495,7 +504,7 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:380
 msgid "Thank you. Your account is now configured and ready for use."
-msgstr "Tack. Ditt konto är nu konfigurerad och färdig att användas."
+msgstr "Хвала вам. Ваш налог је сада подешен и спреман за употребу."
 
 #: ../gtk/setupwizard.c:388
 msgid ""
@@ -506,16 +515,16 @@ msgstr ""
 
 #: ../gtk/setupwizard.c:564
 msgid "Welcome to the account setup assistant"
-msgstr "Välkommen till kontoinstallationsassistenten"
+msgstr "Добродошли у помоћника подешавања налога"
 
 #: ../gtk/setupwizard.c:569
 msgid "Account setup assistant"
-msgstr "Kontoinstallationsassistenten"
+msgstr "Помоћник подешавања налога"
 
 #: ../gtk/setupwizard.c:575
 #, fuzzy
 msgid "Configure your account (step 1/1)"
-msgstr "Konfigurera ett SIP konto"
+msgstr "Подесите СИП налог"
 
 #: ../gtk/setupwizard.c:580
 msgid "Enter your sip username (step 1/1)"
@@ -534,23 +543,23 @@ msgid "Error"
 msgstr ""
 
 #: ../gtk/setupwizard.c:602
-#, fuzzy
 msgid "Terminating"
-msgstr "Lägg på"
+msgstr ""
 
 #: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
-#, fuzzy, c-format
+#, c-format
 msgid "Call #%i"
-msgstr "Ringer %s"
+msgstr "Позови #%i"
 
 #: ../gtk/incall_view.c:154
 #, c-format
 msgid "Transfer to call #%i with %s"
-msgstr ""
+msgstr "Пребаци позив #%i са %s"
 
 #: ../gtk/incall_view.c:210 ../gtk/incall_view.c:213
+#, fuzzy
 msgid "Not used"
-msgstr ""
+msgstr "Нисам нашао"
 
 #: ../gtk/incall_view.c:220
 msgid "ICE not activated"
@@ -559,7 +568,7 @@ msgstr ""
 #: ../gtk/incall_view.c:222
 #, fuzzy
 msgid "ICE failed"
-msgstr "Samtalet avböjdes."
+msgstr "Позив није успео."
 
 #: ../gtk/incall_view.c:224
 msgid "ICE in progress"
@@ -572,7 +581,7 @@ msgstr ""
 #: ../gtk/incall_view.c:228
 #, fuzzy
 msgid "Direct"
-msgstr "Omdirigerat till %s..."
+msgstr "Преусмерен"
 
 #: ../gtk/incall_view.c:230
 msgid "Through a relay server"
@@ -585,11 +594,12 @@ msgstr ""
 #: ../gtk/incall_view.c:240
 #, fuzzy
 msgid "uPnP in progress"
-msgstr "STUN uppslagning pågår..."
+msgstr "У току је тражење стуна..."
 
 #: ../gtk/incall_view.c:242
+#, fuzzy
 msgid "uPnp not available"
-msgstr ""
+msgstr "недоступно"
 
 #: ../gtk/incall_view.c:244
 msgid "uPnP is running"
@@ -598,7 +608,7 @@ msgstr ""
 #: ../gtk/incall_view.c:246
 #, fuzzy
 msgid "uPnP failed"
-msgstr "Samtalet avböjdes."
+msgstr "Позив није успео."
 
 #: ../gtk/incall_view.c:256 ../gtk/incall_view.c:257
 msgid "Direct or through server"
@@ -612,9 +622,9 @@ msgid ""
 msgstr ""
 
 #: ../gtk/incall_view.c:286
-#, c-format
+#, fuzzy, c-format
 msgid "%.3f seconds"
-msgstr ""
+msgstr "%i секунда"
 
 #: ../gtk/incall_view.c:384 ../gtk/main.ui.h:13
 msgid "Hang up"
@@ -622,101 +632,99 @@ msgstr ""
 
 #: ../gtk/incall_view.c:477
 msgid "<b>Calling...</b>"
-msgstr "<b>Ringer...</b>"
+msgstr "<b>Позивам...</b>"
 
 #: ../gtk/incall_view.c:480 ../gtk/incall_view.c:690
 msgid "00::00::00"
-msgstr "00:00:00"
+msgstr "00::00::00"
 
 #: ../gtk/incall_view.c:491
-#, fuzzy
 msgid "<b>Incoming call</b>"
-msgstr "Inkommande samtal"
+msgstr "<b>Долазни позив</b>"
 
 #: ../gtk/incall_view.c:528
 msgid "good"
-msgstr ""
+msgstr "добро"
 
 #: ../gtk/incall_view.c:530
 msgid "average"
-msgstr ""
+msgstr "просечно"
 
 #: ../gtk/incall_view.c:532
 msgid "poor"
-msgstr ""
+msgstr "оскудно"
 
 #: ../gtk/incall_view.c:534
 msgid "very poor"
-msgstr ""
+msgstr "јадно"
 
 #: ../gtk/incall_view.c:536
 msgid "too bad"
-msgstr ""
+msgstr "много лоше"
 
 #: ../gtk/incall_view.c:537 ../gtk/incall_view.c:553
 msgid "unavailable"
-msgstr ""
+msgstr "недоступно"
 
 #: ../gtk/incall_view.c:652
 msgid "Secured by SRTP"
-msgstr ""
+msgstr "Осигурано СРТП-ом"
 
 #: ../gtk/incall_view.c:658
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr ""
+msgstr "Осигурано ЗРТП-ом [потврђивање идентитета: %s]"
 
 #: ../gtk/incall_view.c:664
 msgid "Set unverified"
-msgstr ""
+msgstr "Непроверено подешавање"
 
 #: ../gtk/incall_view.c:664 ../gtk/main.ui.h:5
 msgid "Set verified"
-msgstr ""
+msgstr "Проверено подешавање"
 
 #: ../gtk/incall_view.c:685
 msgid "In conference"
-msgstr ""
+msgstr "На конференцији"
 
 #: ../gtk/incall_view.c:685
-#, fuzzy
 msgid "<b>In call</b>"
-msgstr "<b>I samtal med</b>"
+msgstr "<b>У позиву</b>"
 
 #: ../gtk/incall_view.c:719
-#, fuzzy
 msgid "<b>Paused call</b>"
-msgstr "<b>Lägg på</b>"
+msgstr "<b>Заустављен позив</b>"
 
 #: ../gtk/incall_view.c:732
 #, c-format
 msgid "%02i::%02i::%02i"
-msgstr "%02i:%02i:%02i"
+msgstr "%02i::%02i::%02i"
 
 #: ../gtk/incall_view.c:749
 msgid "<b>Call ended.</b>"
-msgstr "<b>Samtalet slut.</b>"
+msgstr "<b>Позив је завршен.</b>"
 
 #: ../gtk/incall_view.c:779
 msgid "Transfer in progress"
 msgstr ""
 
 #: ../gtk/incall_view.c:782
+#, fuzzy
 msgid "Transfer done."
-msgstr ""
+msgstr "Пребаци"
 
 #: ../gtk/incall_view.c:785
 #, fuzzy
 msgid "Transfer failed."
-msgstr "Samtalet avböjdes."
+msgstr "Пребаци"
 
 #: ../gtk/incall_view.c:829
 msgid "Resume"
-msgstr ""
+msgstr "Настави"
 
 #: ../gtk/incall_view.c:836 ../gtk/main.ui.h:10
 msgid "Pause"
-msgstr ""
+msgstr "Застани"
 
 #: ../gtk/incall_view.c:901
 #, c-format
@@ -726,30 +734,31 @@ msgid ""
 msgstr ""
 
 #: ../gtk/incall_view.c:901
+#, fuzzy
 msgid "(Paused)"
-msgstr ""
+msgstr "Застани"
 
 #: ../gtk/loginframe.c:93
 #, c-format
 msgid "Please enter login information for %s"
-msgstr "Mata in ditt lösenord för domänen %s:"
+msgstr "Унесите податке пријављивања за %s"
 
 #: ../gtk/main.ui.h:1
-#, fuzzy
 msgid "<b>Callee name</b>"
-msgstr "<b>Samtalet slut.</b>"
+msgstr "<b>Име позивника</b>"
 
 #: ../gtk/main.ui.h:2
 msgid "Send"
-msgstr "Skicka"
+msgstr "Пошаљи"
 
 #: ../gtk/main.ui.h:3
+#, fuzzy
 msgid "End conference"
-msgstr ""
+msgstr "На конференцији"
 
 #: ../gtk/main.ui.h:4
 msgid "label"
-msgstr "etikett"
+msgstr "натпис"
 
 #: ../gtk/main.ui.h:8
 msgid "Record this call to an audio file"
@@ -765,23 +774,23 @@ msgstr ""
 
 #: ../gtk/main.ui.h:12
 msgid "Transfer"
-msgstr ""
+msgstr "Пребаци"
 
 #: ../gtk/main.ui.h:15
 msgid "In call"
-msgstr "I samtal"
+msgstr "Долазни позив"
 
 #: ../gtk/main.ui.h:16
 msgid "Duration"
-msgstr "Förlopp"
+msgstr "Трајање"
 
 #: ../gtk/main.ui.h:17
 msgid "Call quality rating"
-msgstr ""
+msgstr "Оцена квалитета позива"
 
 #: ../gtk/main.ui.h:18
 msgid "_Options"
-msgstr ""
+msgstr "_Могућности"
 
 #: ../gtk/main.ui.h:19
 msgid "Always start video"
@@ -789,125 +798,112 @@ msgstr ""
 
 #: ../gtk/main.ui.h:20
 msgid "Enable self-view"
-msgstr "Själv bild"
+msgstr "Укључи самовиђење"
 
 #: ../gtk/main.ui.h:21
 msgid "_Help"
-msgstr ""
+msgstr "По_моћ"
 
 #: ../gtk/main.ui.h:22
-#, fuzzy
 msgid "Show debug window"
-msgstr "Linphone debug fönster"
+msgstr "Прикажи прозорче прочишћавања"
 
 #: ../gtk/main.ui.h:23
-#, fuzzy
 msgid "_Homepage"
-msgstr "Hemsidan"
+msgstr "_Матична страница"
 
 #: ../gtk/main.ui.h:24
-#, fuzzy
 msgid "Check _Updates"
-msgstr "Letar efter uppdateringar"
+msgstr "Провери _ажурирања"
 
 #: ../gtk/main.ui.h:25
 #, fuzzy
 msgid "Account assistant"
-msgstr "Kontoinstallationsassistenten"
+msgstr "Помоћник подешавања налога"
 
 #: ../gtk/main.ui.h:26
 msgid "SIP address or phone number:"
-msgstr "Användarnamn"
+msgstr "СИП адреса или број телефона:"
 
 #: ../gtk/main.ui.h:27
 msgid "Initiate a new call"
-msgstr ""
+msgstr "Започните нови позив"
 
 #: ../gtk/main.ui.h:28
-#, fuzzy
 msgid "Contacts"
-msgstr "Kontaktar"
+msgstr "Пријатељи"
 
 #: ../gtk/main.ui.h:29 ../gtk/parameters.ui.h:50
 msgid "Add"
-msgstr "Lägg till"
+msgstr "Додај"
 
 #: ../gtk/main.ui.h:30 ../gtk/parameters.ui.h:51
 msgid "Edit"
-msgstr "Editera"
+msgstr "Уреди"
 
 #: ../gtk/main.ui.h:31
 msgid "Search"
-msgstr "Sök"
+msgstr "Тражи"
 
 #: ../gtk/main.ui.h:32
 msgid "<b>Add contacts from directory</b>"
-msgstr "<b>Lägg till kontakt ifrån katalogen</b>"
+msgstr "<b>Додај пријатеље из директоријума</b>"
 
 #: ../gtk/main.ui.h:33
-#, fuzzy
 msgid "Add contact"
-msgstr "Hittat kontakt %i"
+msgstr "Додај пријатеља"
 
 #: ../gtk/main.ui.h:34
-#, fuzzy
 msgid "Recent calls"
-msgstr "I samtal"
+msgstr "Скорашњи позиви"
 
 #: ../gtk/main.ui.h:35
 msgid "My current identity:"
-msgstr "Min nuvarande identitet"
+msgstr "Мој тренутни идентитет:"
 
 #: ../gtk/main.ui.h:36 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
-msgstr "Användarnamn"
+msgstr "Корисничко име"
 
 #: ../gtk/main.ui.h:37 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
-msgstr "Lösenord"
+msgstr "Лозинка"
 
 #: ../gtk/main.ui.h:38
 msgid "Internet connection:"
-msgstr "Internet förbindelse:"
+msgstr "Интернет веза:"
 
 #: ../gtk/main.ui.h:39
 msgid "Automatically log me in"
-msgstr "Logga mig automatiskt"
+msgstr "Сам ме пријави"
 
 #: ../gtk/main.ui.h:40
 msgid "Login information"
-msgstr "Login information"
+msgstr "Подаци пријављивања"
 
 #: ../gtk/main.ui.h:41
 msgid "<b>Welcome !</b>"
-msgstr "<b>Välkommen!</b>"
+msgstr "<b>Добродошли !</b>"
 
 #: ../gtk/main.ui.h:42
 msgid "All users"
-msgstr ""
+msgstr "Сви корисници"
 
 #: ../gtk/main.ui.h:43
-#, fuzzy
 msgid "Online users"
-msgstr ""
-"Alla användare\n"
-"Online användare"
+msgstr "Корисницима на мрежи"
 
 #: ../gtk/main.ui.h:44
 msgid "ADSL"
-msgstr ""
+msgstr "АДСЛ"
 
 #: ../gtk/main.ui.h:45
-#, fuzzy
 msgid "Fiber Channel"
-msgstr ""
-"ADSL\n"
-"Fiber"
+msgstr "Оптички канал"
 
 #: ../gtk/main.ui.h:46
-#, fuzzy
 msgid "Default"
-msgstr "%s (Default)"
+msgstr "Основно"
 
 #: ../gtk/main.ui.h:47
 msgid "Delete"
@@ -915,15 +911,16 @@ msgstr ""
 
 #: ../gtk/about.ui.h:1
 msgid "About linphone"
-msgstr "Apropå linphone"
+msgstr "О линфону"
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications,2010\n"
-msgstr ""
+msgstr "(C) Беледон комуникације,2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "En Internet video telefon baserat på SIP protokoll."
+msgstr ""
+"Интернет телефон са снимком који користи уобичајени СИП (rfc3261) протокол."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -939,179 +936,181 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
-msgstr "SIP Adress"
+msgstr "СИП адреса"
 
 #: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
-msgstr "Visa kontaktens närvarostatus"
+msgstr "Прикажи стање присуства овог пријатеља"
 
 #: ../gtk/contact.ui.h:4
 msgid "Allow this contact to see my presence status"
-msgstr "Tillåt den här kontakten att se min närvarostatus"
+msgstr "Дозволи овом пријатељу да види стање мог присуства"
 
 #: ../gtk/contact.ui.h:5
 msgid "<b>Contact information</b>"
-msgstr "<b>Kontakt information</b>"
+msgstr "<b>Подаци о пријатељу</b>"
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
-msgstr "Linphone debug fönster"
+msgstr "Линфоново прозорче прочишћавања"
 
 #: ../gtk/log.ui.h:2
 msgid "Scroll to end"
 msgstr ""
 
 #: ../gtk/password.ui.h:1
-#, fuzzy
 msgid "Linphone - Authentication required"
-msgstr "Linphone - Autentisering krävs"
+msgstr "Линфон — Потребно је потврђивање идентитета"
 
 #: ../gtk/password.ui.h:2
 msgid "Please enter the domain password"
-msgstr "Mata in lösenordet för domänen"
+msgstr "Унесите лозинку домена"
 
 #: ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr "AnvändarID"
+msgstr "ИБ корисника"
 
 #: ../gtk/call_logs.ui.h:1
 msgid "Call history"
-msgstr "Samtalshistorik"
+msgstr "Историјат позива"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Clear all"
-msgstr ""
+msgstr "Очистите све"
 
 #: ../gtk/call_logs.ui.h:3
-#, fuzzy
 msgid "Call back"
-msgstr "Ringer %s"
+msgstr "Повратни позив"
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Linphone - Configure a SIP account"
-msgstr "Linphone - Konfigurera ett SIP konto"
+msgstr "Линфон — Подесите СИП налог"
 
 #: ../gtk/sip_account.ui.h:2
 msgid "Your SIP identity:"
-msgstr "Din SIP identitet:"
+msgstr "Ваш СИП идентитет:"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<username>@<domain>"
-msgstr ""
+msgstr "Изгледа као „sip:<корисничко-име>@<домен>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "sip:"
-msgstr "sip:"
+msgstr "сип:"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "SIP Proxy address:"
-msgstr "SIP Proxy adress:"
+msgstr "Адреса СИП посредника:"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Looks like sip:<proxy hostname>"
-msgstr ""
+msgstr "Изгледа као „sip:<назив посредника>"
 
 #: ../gtk/sip_account.ui.h:7
 msgid "Route (optional):"
-msgstr "Route (tillval):"
+msgstr "Рута (изборно):"
 
 #: ../gtk/sip_account.ui.h:8
 msgid "Registration duration (sec):"
-msgstr "Registreringsfrekvens (sek.):"
+msgstr "Трајање уписа (сек):"
 
 #: ../gtk/sip_account.ui.h:9
 msgid "Register"
-msgstr ""
+msgstr "Упиши се"
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Publish presence information"
-msgstr "Publicera närvaro information"
+msgstr "Објави податке о присуству"
 
 #: ../gtk/sip_account.ui.h:11
 msgid "Configure a SIP account"
-msgstr "Konfigurera ett SIP konto"
+msgstr "Подесите СИП налог"
 
 #: ../gtk/parameters.ui.h:1
 msgid "default soundcard"
-msgstr "default ljudkort"
+msgstr "основна звучна картица"
 
 #: ../gtk/parameters.ui.h:2
-#, fuzzy
 msgid "a sound card"
-msgstr "ett ljud kort\n"
+msgstr "звучна картица"
 
 #: ../gtk/parameters.ui.h:3
 msgid "default camera"
-msgstr "default kamera"
+msgstr "основна камера"
 
 #: ../gtk/parameters.ui.h:4
 msgid "CIF"
-msgstr ""
+msgstr "ЦИФ"
 
 #: ../gtk/parameters.ui.h:5
-#, fuzzy
 msgid "Audio codecs"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Звучни кодеци"
 
 #: ../gtk/parameters.ui.h:6
-#, fuzzy
 msgid "Video codecs"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Кодеци снимка"
 
 #: ../gtk/parameters.ui.h:7 ../gtk/keypad.ui.h:5
 msgid "C"
-msgstr ""
+msgstr "В"
 
 #: ../gtk/parameters.ui.h:8
 msgid "SIP (UDP)"
-msgstr ""
+msgstr "СИП (УДП)"
 
 #: ../gtk/parameters.ui.h:9
 msgid "SIP (TCP)"
-msgstr ""
+msgstr "СИП (ТЦП)"
 
 #: ../gtk/parameters.ui.h:10
 msgid "SIP (TLS)"
-msgstr ""
+msgstr "СИП (ТЛС)"
 
 #: ../gtk/parameters.ui.h:11
 msgid "Settings"
-msgstr "Inställningar"
+msgstr "Подешавања"
 
 #: ../gtk/parameters.ui.h:12
 msgid "Set Maximum Transmission Unit:"
-msgstr "Välj MTU (Maximum Transmission Unit):"
+msgstr "Подеси јединицу највећег преноса:"
 
 #: ../gtk/parameters.ui.h:13
 msgid "Send DTMFs as SIP info"
-msgstr "Kicka DTMF koder som SIP info"
+msgstr "Пошаљи ДТМФ као СИП податке"
 
 #: ../gtk/parameters.ui.h:14
 msgid "Use IPv6 instead of IPv4"
-msgstr "Använd IPv6 istället av IPv4"
+msgstr "Користи ИПв6 уместо ИПв4"
 
 #: ../gtk/parameters.ui.h:15
 msgid "<b>Transport</b>"
-msgstr "<b>Transport</b>"
+msgstr "<b>Пренос</b>"
 
 #: ../gtk/parameters.ui.h:16
 msgid "Media encryption type"
-msgstr ""
+msgstr "Врста шифровања медија"
 
 #: ../gtk/parameters.ui.h:17
 msgid "Video RTP/UDP:"
-msgstr ""
+msgstr "РТП/УДП снимка:"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Audio RTP/UDP:"
-msgstr ""
+msgstr "РТП/УДП звука:"
 
 #: ../gtk/parameters.ui.h:19
 msgid "DSCP fields"
@@ -1126,115 +1125,115 @@ msgid "Tunnel"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:22
+#, fuzzy
 msgid "Media encryption is mandatory"
-msgstr ""
+msgstr "Врста шифровања медија"
 
 #: ../gtk/parameters.ui.h:23
 msgid "<b>Network protocol and ports</b>"
-msgstr ""
+msgstr "<b>Мрежни протокол и прикључници</b>"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Direct connection to the Internet"
-msgstr "Direkt förbindelse till Internet"
+msgstr "Непосредна веза на Интернет"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr "Bakom en NAT / brandvägg (specificera gatewap IP adress nedan)"
+msgstr "Иза НАТ-а / мрежне баријере (испод наведите ИП мрежног пролаза)"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Public IP address:"
-msgstr "Publik IP adress:"
+msgstr "Јавна ИП адреса:"
 
 #: ../gtk/parameters.ui.h:27
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+msgstr "Иза НАТ-а / мрежне баријере (користите СТУН за решавање)"
 
 #: ../gtk/parameters.ui.h:28
 #, fuzzy
 msgid "Behind NAT / Firewall (use ICE)"
-msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+msgstr "Иза НАТ-а / мрежне баријере (користите СТУН за решавање)"
 
 #: ../gtk/parameters.ui.h:29
 #, fuzzy
 msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "Bakom en NAT / brandvägg (använd STUN för att avgöra adressen)"
+msgstr "Иза НАТ-а / мрежне баријере (користите СТУН за решавање)"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Stun server:"
-msgstr "STUN server:"
+msgstr "Стун сервер:"
 
 #: ../gtk/parameters.ui.h:31
 msgid "<b>NAT and Firewall</b>"
-msgstr "<b>NAT och Brandvägg</b>"
+msgstr "<b>НАТ и мрежна баријера</b>"
 
 #: ../gtk/parameters.ui.h:32
 msgid "Network settings"
-msgstr "Nätverksinställningar"
+msgstr "Подешавања мреже"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Ring sound:"
-msgstr "Ring signal:"
+msgstr "Звук звона:"
 
 #: ../gtk/parameters.ui.h:34
 msgid "ALSA special device (optional):"
-msgstr "ALSA speciell enhet (tillval):"
+msgstr "АЛСА-ин посебни уређај (изборно):"
 
 #: ../gtk/parameters.ui.h:35
 msgid "Capture device:"
-msgstr "Mikrofon enhet:"
+msgstr "Уређај за снимање:"
 
 #: ../gtk/parameters.ui.h:36
 msgid "Ring device:"
-msgstr "Ringning enhet:"
+msgstr "Уређај за звоно:"
 
 #: ../gtk/parameters.ui.h:37
 msgid "Playback device:"
-msgstr "Uppspelningsenhet:"
+msgstr "Уређај за пуштање:"
 
 #: ../gtk/parameters.ui.h:38
 msgid "Enable echo cancellation"
-msgstr "Tillåta ekokancellering"
+msgstr "Укључи поништавање одјека"
 
 #: ../gtk/parameters.ui.h:39
 msgid "<b>Audio</b>"
-msgstr "<b>Audio</b>"
+msgstr "<b>Звук</b>"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Video input device:"
-msgstr "Video ingångsenhet:"
+msgstr "Улазни уређај снимка:"
 
 #: ../gtk/parameters.ui.h:41
 msgid "Prefered video resolution:"
-msgstr "Video upplösning:"
+msgstr "Жељена резолуција снимка:"
 
 #: ../gtk/parameters.ui.h:42
 msgid "<b>Video</b>"
-msgstr "<b>Video</b>"
+msgstr "<b>Снимак</b>"
 
 #: ../gtk/parameters.ui.h:43
 msgid "Multimedia settings"
-msgstr "Multimedia inställningar"
+msgstr "Подешавања мултимедија"
 
 #: ../gtk/parameters.ui.h:44
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+msgstr "Овај одељак одређује вашу СИП адресу када не користите СИП налог"
 
 #: ../gtk/parameters.ui.h:45
 msgid "Your display name (eg: John Doe):"
-msgstr "Ditt synliga namn, e.g. Kalle Karlsson:"
+msgstr "Ваше приказано име (нпр: Пера Перић):"
 
 #: ../gtk/parameters.ui.h:46
 msgid "Your username:"
-msgstr "Ditt användarnamn:"
+msgstr "Ваше корисничко име:"
 
 #: ../gtk/parameters.ui.h:47
 msgid "Your resulting SIP address:"
-msgstr "Din SIP adress:"
+msgstr "Ваша резултирајућа СИП адреса:"
 
 #: ../gtk/parameters.ui.h:48
 msgid "<b>Default identity</b>"
-msgstr "<b>Default identitet</b>"
+msgstr "<b>Основни идентитет</b>"
 
 #: ../gtk/parameters.ui.h:49
 msgid "Wizard"
@@ -1242,145 +1241,144 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:52
 msgid "Remove"
-msgstr "Ta bort"
+msgstr "Уклони"
 
 #: ../gtk/parameters.ui.h:53
 msgid "<b>Proxy accounts</b>"
-msgstr "<b>Proxy konton</b>"
+msgstr "<b>Посреднички налози</b>"
 
 #: ../gtk/parameters.ui.h:54
 msgid "Erase all passwords"
-msgstr "Glöm alla lösenord"
+msgstr "Обриши све лозинке"
 
 #: ../gtk/parameters.ui.h:55
 msgid "<b>Privacy</b>"
-msgstr "<b>Integritet</b>"
+msgstr "<b>Приватност</b>"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Manage SIP Accounts"
-msgstr "Hantera SIP konton"
+msgstr "Управљај СИП налозима"
 
 #: ../gtk/parameters.ui.h:57 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
-msgstr "Möjliggör"
+msgstr "Укључи"
 
 #: ../gtk/parameters.ui.h:58 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
-msgstr "Inaktivera"
+msgstr "Искључи"
 
 #: ../gtk/parameters.ui.h:59
 msgid "<b>Codecs</b>"
-msgstr "<b>Codecs</b>"
+msgstr "<b>Кодеци</b>"
 
 #: ../gtk/parameters.ui.h:60
 msgid "0 stands for \"unlimited\""
-msgstr "0 står för \"utan begränsning\""
+msgstr "0 значи „неограничено“"
 
 #: ../gtk/parameters.ui.h:61
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Max upstream bandbreddshastighet i kbit/sek:"
+msgstr "Ограничење брзине слања у Kb/s:"
 
 #: ../gtk/parameters.ui.h:62
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Max downstream bandbreddshastighet i kbit/sek:"
+msgstr "Ограничење брзине преузимања у Kb/s:"
 
 #: ../gtk/parameters.ui.h:63
 msgid "Enable adaptive rate control"
-msgstr ""
+msgstr "Укључи прилагодљиво управљање протоком"
 
 #: ../gtk/parameters.ui.h:64
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
 msgstr ""
+"<i>Прилагодљиво управљање протоком је техника за променљиво погађање "
+"доступног пропусног опсега за време позива.</i>"
 
 #: ../gtk/parameters.ui.h:65
 msgid "<b>Bandwidth control</b>"
-msgstr "<b>Bandbreddskontroll</b>"
+msgstr "<b>Управљање пропусним опсегом</b>"
 
 #: ../gtk/parameters.ui.h:66
 msgid "Codecs"
-msgstr "Codecs"
+msgstr "Kодеци"
 
 #: ../gtk/parameters.ui.h:67
 msgid "<b>Language</b>"
-msgstr "<b>Språk</b>"
+msgstr "<b>Језик</b>"
 
 #: ../gtk/parameters.ui.h:68
 msgid "Show advanced settings"
-msgstr "Visa avancerade inställningar"
+msgstr "Прикажи напредна подешавања"
 
 #: ../gtk/parameters.ui.h:69
 msgid "<b>Level</b>"
-msgstr "<b>Nivå</b>"
+msgstr "<b>Ниво</b>"
 
 #: ../gtk/parameters.ui.h:70
 msgid "User interface"
-msgstr "Användarinterface"
+msgstr "Корисничко сучеље"
 
 #: ../gtk/parameters.ui.h:71
 msgid "Done"
-msgstr "Klar"
+msgstr "Готово"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
-msgstr "Sök för kontakter i katalogen"
+msgstr "Потражите пријатеље у директоријуму"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
-msgstr "Lägg till min lista"
+msgstr "Додај на мој списак"
 
 #: ../gtk/buddylookup.ui.h:3
 msgid "<b>Search somebody</b>"
-msgstr "<b>Sök efter kontakter</b>"
+msgstr "<b>Потражите неког</b>"
 
 #: ../gtk/waiting.ui.h:1
 msgid "Linphone"
-msgstr "Linphone"
+msgstr "Линфон"
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
-msgstr "Vänta"
+msgstr "Молим сачекајте"
 
 #: ../gtk/dscp_settings.ui.h:1
 #, fuzzy
 msgid "Dscp settings"
-msgstr "Inställningar"
+msgstr "Подешавања"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
 msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:3
+#, fuzzy
 msgid "Audio RTP stream"
-msgstr ""
+msgstr "РТП/УДП звука:"
 
 #: ../gtk/dscp_settings.ui.h:4
+#, fuzzy
 msgid "Video RTP stream"
-msgstr ""
+msgstr "РТП/УДП снимка:"
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
 msgstr ""
 
 #: ../gtk/call_statistics.ui.h:1
-#, fuzzy
 msgid "Call statistics"
-msgstr "Ringer %s"
+msgstr ""
 
 #: ../gtk/call_statistics.ui.h:2
 #, fuzzy
 msgid "Audio codec"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Звучни кодеци"
 
 #: ../gtk/call_statistics.ui.h:3
 #, fuzzy
 msgid "Video codec"
-msgstr ""
-"Audio codecs\n"
-"Video codecs"
+msgstr "Кодеци снимка"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
@@ -1405,12 +1403,12 @@ msgstr ""
 #: ../gtk/call_statistics.ui.h:9
 #, fuzzy
 msgid "<b>Call statistics and information</b>"
-msgstr "<b>Kontakt information</b>"
+msgstr "<b>Подаци о пријатељу</b>"
 
 #: ../gtk/tunnel_config.ui.h:1
 #, fuzzy
 msgid "Configure VoIP tunnel"
-msgstr "Konfigurera ett SIP konto"
+msgstr "Подесите СИП налог"
 
 #: ../gtk/tunnel_config.ui.h:2
 msgid "Host"
@@ -1430,75 +1428,75 @@ msgstr ""
 
 #: ../gtk/keypad.ui.h:1
 msgid "D"
-msgstr ""
+msgstr "Г"
 
 #: ../gtk/keypad.ui.h:2
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: ../gtk/keypad.ui.h:3
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ../gtk/keypad.ui.h:4
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: ../gtk/keypad.ui.h:6
 msgid "9"
-msgstr ""
+msgstr "9"
 
 #: ../gtk/keypad.ui.h:7
 msgid "8"
-msgstr ""
+msgstr "8"
 
 #: ../gtk/keypad.ui.h:8
 msgid "7"
-msgstr ""
+msgstr "7"
 
 #: ../gtk/keypad.ui.h:9
 msgid "B"
-msgstr ""
+msgstr "Б"
 
 #: ../gtk/keypad.ui.h:10
 msgid "6"
-msgstr ""
+msgstr "6"
 
 #: ../gtk/keypad.ui.h:11
 msgid "5"
-msgstr ""
+msgstr "5"
 
 #: ../gtk/keypad.ui.h:12
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: ../gtk/keypad.ui.h:13
 msgid "A"
-msgstr ""
+msgstr "А"
 
 #: ../gtk/keypad.ui.h:14
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #: ../gtk/keypad.ui.h:15
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: ../gtk/keypad.ui.h:16
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: ../coreapi/linphonecore.c:227
 msgid "aborted"
-msgstr "avbrytade"
+msgstr "прекинути"
 
 #: ../coreapi/linphonecore.c:230
 msgid "completed"
-msgstr "avslutade"
+msgstr "завршени"
 
 #: ../coreapi/linphonecore.c:233
 msgid "missed"
-msgstr "missade"
+msgstr "пропуштени"
 
 #: ../coreapi/linphonecore.c:238
 #, c-format
@@ -1509,84 +1507,79 @@ msgid ""
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
 msgstr ""
-"%s på %s\n"
-"Från: %s\n"
-"Till: %s\n"
-"Status: %s\n"
-"Längd: %i min %i sek\n"
+"%s у %s\n"
+"Позива: %s\n"
+"Прима: %s\n"
+"Стање: %s\n"
+"Трајање: %i мин %i сек\n"
 
 #: ../coreapi/linphonecore.c:239
 msgid "Outgoing call"
-msgstr "Utgående samtal"
+msgstr "Одлазни позив"
 
 #: ../coreapi/linphonecore.c:1314
 msgid "Ready"
-msgstr "Redo"
+msgstr "Спреман"
 
 #: ../coreapi/linphonecore.c:2184
 msgid "Looking for telephone number destination..."
-msgstr "Leta efter telefonnummer för destinationen..."
+msgstr "Тражим одредиште телефонског броја..."
 
 #: ../coreapi/linphonecore.c:2187
 msgid "Could not resolve this number."
-msgstr "Kan inte nå dett nummer."
+msgstr "Не могу да решим овај број."
 
 #: ../coreapi/linphonecore.c:2231
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
 msgstr ""
-"Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
-"användare@domänen"
+"Не могу да обрадим дату сип адресу. Сип адреса обично изгледа као „sip:"
+"корисник@домен“"
 
 #: ../coreapi/linphonecore.c:2432
 msgid "Contacting"
-msgstr "Kontaktar"
+msgstr "Ступам у везу"
 
 #: ../coreapi/linphonecore.c:2439
-#, fuzzy
 msgid "Could not call"
-msgstr "Kunde inte ringa"
+msgstr "Не могу да позовем"
 
 #: ../coreapi/linphonecore.c:2549
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
-msgstr ""
+msgstr "Извините, достигли смо највећи број истовремених позива"
 
 #: ../coreapi/linphonecore.c:2731
-#, fuzzy
 msgid "is contacting you"
-msgstr "kontaktar dig."
+msgstr "вам се обраћа"
 
 #: ../coreapi/linphonecore.c:2732
 msgid " and asked autoanswer."
-msgstr ""
+msgstr " и затражени само-одговор."
 
 #: ../coreapi/linphonecore.c:2732
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../coreapi/linphonecore.c:2799
 msgid "Modifying call parameters..."
-msgstr ""
+msgstr "Мењам параметре позива..."
 
 #: ../coreapi/linphonecore.c:3138
 msgid "Connected."
-msgstr "Kopplad"
+msgstr "Повезан сам."
 
 #: ../coreapi/linphonecore.c:3166
-#, fuzzy
 msgid "Call aborted"
-msgstr "avbrytade"
+msgstr "Позив је прекинут"
 
 #: ../coreapi/linphonecore.c:3351
-#, fuzzy
 msgid "Could not pause the call"
-msgstr "Kunde inte ringa"
+msgstr "Не могу да зауставим позив"
 
 #: ../coreapi/linphonecore.c:3356
-#, fuzzy
 msgid "Pausing the current call..."
-msgstr "Nuvarande samtal"
+msgstr "Заустављам тренутни позив..."
 
 #: ../coreapi/misc.c:148
 msgid ""
@@ -1595,10 +1588,10 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 "'modprobe snd-pcm-oss' as root to load it."
 msgstr ""
-"Din dator verkar använda ALSA drivrutiner för ljud.\n"
-"Detta är det bästa valet. Dock PCM OSS emuleringsmodulen\n"
-"saknas och linphone behöver ha det. Var god exekvera\n"
-"'modprobe snd-pcm-oss' som root för att ladda in den."
+"Изгледа да ваш рачунар користи АЛСА управљачке програме за звук.\n"
+"То је најбољи избор. Међутим недостаје пцм осс модул\n"
+"за емулацију а потребан је линфону. Молим извршите\n"
+"„modprobe snd-pcm-oss“ као администратор да га учитате."
 
 #: ../coreapi/misc.c:151
 msgid ""
@@ -1607,14 +1600,14 @@ msgid ""
 "is missing and linphone needs it. Please execute\n"
 " 'modprobe snd-mixer-oss' as root to load it."
 msgstr ""
-"Din dator verkar använda ALSA drivrutiner för ljud.\n"
-"Detta är det bästa valet. Dock OSS mixer emuleringsmodulen\n"
-"saknas och linphone behöver ha det. Var god exekvera\n"
-"'modprobe snd-mixer-oss' som root för att ladda in den."
+"Изгледа да ваш рачунар користи АЛСА управљачке програме за звук.\n"
+"То је најбољи избор. Међутим недостаје миксер осс модул\n"
+"за емулацију а потребан је линфону. Молим извршите\n"
+"„modprobe snd-mixer-oss“ као администратор да га учитате."
 
 #: ../coreapi/misc.c:496
 msgid "Stun lookup in progress..."
-msgstr "STUN uppslagning pågår..."
+msgstr "У току је тражење стуна..."
 
 #: ../coreapi/misc.c:630
 msgid "ICE local candidates gathering in progress..."
@@ -1622,585 +1615,263 @@ msgstr ""
 
 #: ../coreapi/friend.c:33
 msgid "Online"
-msgstr "Online"
+msgstr "На вези"
 
 #: ../coreapi/friend.c:36
 msgid "Busy"
-msgstr "Upptagen"
+msgstr "Заузет"
 
 #: ../coreapi/friend.c:39
 msgid "Be right back"
-msgstr "Kommer strax tillbaka"
+msgstr "Одмах се враћам"
 
 #: ../coreapi/friend.c:42
 msgid "Away"
-msgstr "Borta"
+msgstr "Одсутан"
 
 #: ../coreapi/friend.c:45
 msgid "On the phone"
-msgstr "På telefon"
+msgstr "На телефону"
 
 #: ../coreapi/friend.c:48
 msgid "Out to lunch"
-msgstr "Lunchar"
+msgstr "На ручку сам"
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
-msgstr "Stör ej"
+msgstr "Не узнемиравај"
 
 #: ../coreapi/friend.c:54
 msgid "Moved"
-msgstr "Flyttat"
+msgstr "Премештен"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
-msgstr "Använder en annan tjänst"
+msgstr "Користим другу услугу дописивања"
 
 #: ../coreapi/friend.c:60
 msgid "Offline"
-msgstr "Offline"
+msgstr "Неповезан"
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
-msgstr "Pågående"
+msgstr "На чекању"
 
 #: ../coreapi/friend.c:66
 msgid "Unknown-bug"
-msgstr "Okänd bug"
+msgstr "Непозната грешка"
 
 #: ../coreapi/proxy.c:204
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
-"SIP proxy adressen som du matade in är inte rätt, adressen måste starta med "
-"\"sip:\", följd av ett hostnamn"
+"Адреса сип посредника коју сте унели је неисправна, мора почети на „sip:“ за "
+"којим следи назив домаћина."
 
 #: ../coreapi/proxy.c:210
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
-"SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
-"namn@domän, såsom sip:peter@exempel.se"
+"Сип идентитет који сте унели није исправан.\n"
+"Треба да изгледа као „sip:корисник@домен-посредника, као што је „sip:"
+"alice@example.net“"
 
 #: ../coreapi/proxy.c:1068
 #, c-format
 msgid "Could not login as %s"
-msgstr "Kunde inte logga in som %s"
+msgstr "Не могу да се пријавим као %s"
 
 #: ../coreapi/callbacks.c:283
 msgid "Remote ringing."
-msgstr "Ringer hos motparten."
+msgstr "Удаљено звоњење."
 
 #: ../coreapi/callbacks.c:303
-#, fuzzy
 msgid "Remote ringing..."
-msgstr "Ringer hos motparten."
+msgstr "Удаљено звоњење..."
 
 #: ../coreapi/callbacks.c:314
 msgid "Early media."
-msgstr "Tidig media"
+msgstr "Ранији медиј."
 
 #: ../coreapi/callbacks.c:365
-#, fuzzy, c-format
+#, c-format
 msgid "Call with %s is paused."
-msgstr "Samtal med %s"
+msgstr "Позив са „%s“ је заустављен."
 
 #: ../coreapi/callbacks.c:378
 #, c-format
 msgid "Call answered by %s - on hold."
-msgstr ""
+msgstr "Позив на који је одговорио „%s“ — на чекању."
 
 #: ../coreapi/callbacks.c:389
-#, fuzzy
 msgid "Call resumed."
-msgstr "Samtalet slut"
+msgstr "Позив је настављен."
 
 #: ../coreapi/callbacks.c:394
 #, c-format
 msgid "Call answered by %s."
-msgstr ""
+msgstr "На позив је одговорио „%s“."
 
 #: ../coreapi/callbacks.c:409
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
 #: ../coreapi/callbacks.c:457
+#, fuzzy
 msgid "We have been resumed."
-msgstr ""
+msgstr "Позив нам је настављен..."
 
 #: ../coreapi/callbacks.c:466
 msgid "We are paused by other party."
 msgstr ""
 
 #: ../coreapi/callbacks.c:472
+#, fuzzy
 msgid "Call is updated by remote."
-msgstr ""
+msgstr "Позив је ажуриран удаљеним..."
 
 #: ../coreapi/callbacks.c:541
 msgid "Call terminated."
-msgstr "Samtalet slut."
+msgstr "Позив је завршен."
 
 #: ../coreapi/callbacks.c:552
 msgid "User is busy."
-msgstr "Användare upptagen."
+msgstr "Корисник је заузет."
 
 #: ../coreapi/callbacks.c:553
 msgid "User is temporarily unavailable."
-msgstr "Användaren temporärt inte tillgänglig."
+msgstr "Корисник је привремено недоступан."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
 #: ../coreapi/callbacks.c:555
 msgid "User does not want to be disturbed."
-msgstr "Användaren vill inte bli störd."
+msgstr "Корисник не жели да буде узнемираван."
 
 #: ../coreapi/callbacks.c:556
 msgid "Call declined."
-msgstr "Samtalet avböjdes."
+msgstr "Позив је одбијен."
 
 #: ../coreapi/callbacks.c:568
-#, fuzzy
 msgid "No response."
-msgstr "Inget svar inom angiven tid"
+msgstr "Нема одговора."
 
 #: ../coreapi/callbacks.c:572
 msgid "Protocol error."
-msgstr ""
+msgstr "Грешка у протоколу."
 
 #: ../coreapi/callbacks.c:588
-#, fuzzy
 msgid "Redirected"
-msgstr "Omdirigerat till %s..."
+msgstr "Преусмерен"
 
 #: ../coreapi/callbacks.c:624
 msgid "Incompatible media parameters."
 msgstr ""
 
 #: ../coreapi/callbacks.c:630
-#, fuzzy
 msgid "Call failed."
-msgstr "Samtalet avböjdes."
+msgstr "Позив није успео."
 
 #: ../coreapi/callbacks.c:733
 #, c-format
 msgid "Registration on %s successful."
-msgstr "Registrering hos %s lyckades."
+msgstr "Уписивање на „%s“ је успело."
 
 #: ../coreapi/callbacks.c:734
 #, c-format
 msgid "Unregistration on %s done."
-msgstr "Avregistrering hos %s lyckades."
+msgstr "Исписивање са „%s“ је обављено."
 
 #: ../coreapi/callbacks.c:754
 msgid "no response timeout"
-msgstr "Inget svar inom angiven tid"
+msgstr "нема ограничења одговора"
 
 #: ../coreapi/callbacks.c:757
 #, c-format
 msgid "Registration on %s failed: %s"
-msgstr "Registrering hos %s mislyckades: %s"
+msgstr "Уписивање на „%s“ није успело: %s"
 
 #: ../coreapi/linphonecall.c:129
-#, fuzzy, c-format
+#, c-format
 msgid "Authentication token is %s"
-msgstr "Linphone - Autentisering krävs"
+msgstr "Симбол потврђивања идентитета је „%s“"
 
 #: ../coreapi/linphonecall.c:2314
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "Du har %i missat samtal"
-msgstr[1] "Du har %i missade samtal"
+msgstr[0] "Пропустили сте %i позив."
+msgstr[1] "Пропустили сте %i позива."
+msgstr[2] "Пропустили сте %i позива."
+msgstr[3] "Пропустили сте један позив."
 
 #~ msgid "Chat with %s"
-#~ msgstr "Chatta med %s"
+#~ msgstr "Ћаскајте са „%s“"
+
+#~ msgid "<span size=\"large\">by %s</span>"
+#~ msgstr "<span size=\"large\">од %s</span>"
 
 #~ msgid "Please choose a username:"
-#~ msgstr "Välj ett användarnamn:"
+#~ msgstr "Изаберите корисничко име:"
 
 #~ msgid "Checking if '%s' is available..."
-#~ msgstr "Verifierar om '%s' är tillgänglig..."
+#~ msgstr "Проверавам да ли је „%s“ доступно..."
 
 #~ msgid "Please wait..."
-#~ msgstr "Var god dröj..."
+#~ msgstr "Молим сачекајте..."
 
 #~ msgid "Sorry this username already exists. Please try a new one."
-#~ msgstr "Användarnamnet finns redan, försök med ett nytt namn."
+#~ msgstr "Извините ово корисничко име већ постоји. Покушајте неко друго."
 
 #~ msgid "Ok !"
-#~ msgstr "Ok !"
+#~ msgstr "У реду !"
 
 #~ msgid "Communication problem, please try again later."
-#~ msgstr "Kommunikationsproblem, prova igen senare."
+#~ msgstr "Проблем у комуникацији, касније покушајте опет."
 
 #~ msgid "Choosing a username"
-#~ msgstr "Välj ditt användarnamn"
+#~ msgstr "Бирам корисничко име"
 
 #~ msgid "Verifying"
-#~ msgstr "Verifierar"
+#~ msgstr "Проверавам"
 
 #~ msgid "Confirmation"
-#~ msgstr "Bekräftelse"
+#~ msgstr "Потврђујем"
 
 #~ msgid "Creating your account"
-#~ msgstr "Skapar ditt konto"
+#~ msgstr "Правим ваш налог"
 
 #~ msgid "Now ready !"
-#~ msgstr "Klar nu!"
+#~ msgstr "Спремни смо сада !"
 
-#, fuzzy
 #~ msgid "Enable video"
-#~ msgstr "På"
+#~ msgstr "Укључи снимак"
 
 #~ msgid "Enter username, phone number, or full sip address"
-#~ msgstr "Mata in användarnamn, telefonnummer eller SIP adress"
+#~ msgstr "Унесите корисничко име, број телефона, или пуну сип адресу"
+
+#~ msgid "Keypad"
+#~ msgstr "Тастатура"
 
 #~ msgid "Lookup:"
-#~ msgstr "Sök:"
+#~ msgstr "Потражи:"
 
 #~ msgid "in"
-#~ msgstr "i"
+#~ msgstr "у"
 
 #~ msgid ""
 #~ "Register to FONICS\n"
 #~ "virtual network !"
 #~ msgstr ""
-#~ "Registrera hos FONICS\n"
-#~ "virtuella nätverk!"
+#~ "Упишите се на виртуелну\n"
+#~ "мрежу ФОНИКС !"
 
-#, fuzzy
+#~ msgid "We are being paused..."
+#~ msgstr "Заустављени смо..."
+
+#~ msgid "No common codecs"
+#~ msgstr "Нема познатих кодека"
+
 #~ msgid "Authentication failure"
-#~ msgstr "Linphone - Autentisering krävs"
-
-#~ msgid "Unmute"
-#~ msgstr "Mikrofon på"
-
-#~ msgid "<b>Contact list</b>"
-#~ msgstr "<b>Kontaktlista</b>"
-
-#, fuzzy
-#~ msgid "Audio & video"
-#~ msgstr "Audio & Video"
-
-#~ msgid "Audio only"
-#~ msgstr "Enbart audio"
-
-#~ msgid "Duration:"
-#~ msgstr "Förlopp:"
-
-#, fuzzy
-#~ msgid "_Call history"
-#~ msgstr "Samtalshistorik"
-
-#~ msgid "_Linphone"
-#~ msgstr "_inphone"
-
-#, fuzzy
-#~ msgid "gtk-cancel"
-#~ msgstr "Kopplad"
-
-#~ msgid "Register at startup"
-#~ msgstr "Registrera vid start"
-
-#, fuzzy
-#~ msgid "gtk-close"
-#~ msgstr "Kopplad"
-
-#~ msgid "Alsa sound source"
-#~ msgstr "Alsa ljud ingång"
-
-#~ msgid "Alsa sound output"
-#~ msgstr "Also ljud utgång"
-
-#~ msgid "DTMF generator"
-#~ msgstr "DTMF generare"
-
-#~ msgid "The GSM full-rate codec"
-#~ msgstr "Hög hastighet GSM codec"
-
-#~ msgid "The GSM codec"
-#~ msgstr "GSM codec"
-
-#, fuzzy
-#~ msgid "Sound capture filter for MacOS X Audio Unit"
-#~ msgstr "Fånga ljud med OSS drivrutiner"
-
-#, fuzzy
-#~ msgid "Sound playback filter for MacOS X Audio Unit"
-#~ msgstr "Ljud utgång med OSS drivrutiner"
-
-#~ msgid "A filter to make conferencing"
-#~ msgstr "Ett filter för konferens"
-
-#~ msgid "Raw files and wav reader"
-#~ msgstr "Raw filer och WAV läsare"
-
-#~ msgid "Wav file recorder"
-#~ msgstr "WAV fil inspelare"
-
-#~ msgid "A filter that send several inputs to one output."
-#~ msgstr "En filter som skickar flera ingångar till en utgång"
-
-#~ msgid "The free and wonderful speex codec"
-#~ msgstr "Den fria speex codec"
-
-#~ msgid "A filter that controls and measure sound volume"
-#~ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
-
-#~ msgid "A video4linux compatible source filter to stream pictures."
-#~ msgstr "En video4linux kompatibel ingångsfilter för att strömma bilder"
-
-#~ msgid "A filter to grab pictures from Video4Linux2-powered cameras"
-#~ msgstr "En filter för att fånga bilder från Video4Linux-2 capabla kameror"
-
-#~ msgid "A filter that outputs a static image."
-#~ msgstr "En filter med statisk bild"
-
-#~ msgid "A pixel format converter"
-#~ msgstr "En pixel format konverterare"
-
-#~ msgid "A video size converter"
-#~ msgstr "En video storlek konverterare"
-
-#~ msgid "a small video size converter"
-#~ msgstr "En liten video storlek konverterare"
-
-#~ msgid "Echo canceller using speex library"
-#~ msgstr "Echo cancellering med hjälp av speex"
-
-#~ msgid "A filter that reads from input and copy to its multiple outputs."
-#~ msgstr ""
-#~ "En filter som läser från sin ingång och kopierar till multipla utgångar"
-
-#~ msgid "The theora video encoder from xiph.org"
-#~ msgstr "Theora video encoder från xiph.org"
-
-#~ msgid "The open-source and royalty-free 'theora' video codec from xiph.org"
-#~ msgstr "Theora video codec från xiph.org, öppen källkod och utan royalties"
-
-#~ msgid "The theora video decoder from xiph.org"
-#~ msgstr "Theora video decoder från xiph.org"
-
-#~ msgid "A H.263 decoder using ffmpeg library"
-#~ msgstr "En h.263 decoder via ffmpeg"
-
-#~ msgid "A MPEG4 decoder using ffmpeg library"
-#~ msgstr "En MPEG4 decoder via ffmpeg"
-
-#~ msgid "A RTP/JPEG decoder using ffmpeg library"
-#~ msgstr "En RTP/JPEG decoder via ffmpeg"
-
-#~ msgid "A MJPEG decoder using ffmpeg library"
-#~ msgstr "En MJPEG decode via ffmpeg"
-
-#~ msgid "A snow decoder using ffmpeg library"
-#~ msgstr "En snow decoder via ffmpeg"
-
-#~ msgid "A video H.263 encoder using ffmpeg library."
-#~ msgstr "En video h.263 encoder via ffmpeg"
-
-#~ msgid ""
-#~ "A video H.263 encoder using ffmpeg library. It is compliant with old "
-#~ "RFC2190 spec."
-#~ msgstr ""
-#~ "En video h.263 encoder via ffmpeg, kompatibel med den gamla RFC2190 "
-#~ "specificationen."
-
-#~ msgid "A video MPEG4 encoder using ffmpeg library."
-#~ msgstr "En video MPEG4 encoder via ffmpeg"
-
-#~ msgid "A video snow encoder using ffmpeg library."
-#~ msgstr "En video snow encoder via ffmpeg"
-
-#~ msgid "A RTP/MJPEG encoder using ffmpeg library."
-#~ msgstr "En RTP/MJPEG encoder via ffmpeg"
-
-#~ msgid ""
-#~ "A video H.263 encoder using ffmpeg library, compliant with old RFC2190 "
-#~ "spec."
-#~ msgstr ""
-#~ "En video h.263 encoder via ffmpeg, kompatible med den gamla RFC2190 "
-#~ "specifikationen."
-
-#~ msgid ""
-#~ "The snow codec is royalty-free and is open-source. \n"
-#~ "It uses innovative techniques that makes it one of most promising video "
-#~ "codec. It is implemented within the ffmpeg project.\n"
-#~ "However it is under development, quite unstable and compatibility with "
-#~ "other versions cannot be guaranteed."
-#~ msgstr ""
-#~ "Snow codec:en är öppen källkod och utan royalties.\n"
-#~ "Den använder sig av innovativa tekniker som gör den en av de bästa. Codec:"
-#~ "en implementeras inom ffmpeg projektet.\n"
-#~ "Dock, den är under utveckling och kompatibiliteten mellan versioner kan "
-#~ "inte garanteras."
-
-#~ msgid "A MJPEG encoder using ffmpeg library."
-#~ msgstr "En MJPEG encoder via ffmpeg"
-
-#, fuzzy
-#~ msgid "A SDL-based video display"
-#~ msgstr "En generisk video utgång"
-
-#~ msgid "A video4windows compatible source filter to stream pictures."
-#~ msgstr "En video4windows kompatibel ingångsfilter för att strömma bilder."
-
-#~ msgid "A video for windows (vfw.h) based source filter to grab pictures."
-#~ msgstr "En video för windows kompatibel ingångsfilter för att fånga bilder."
-
-#, fuzzy
-#~ msgid "A video display based on windows DrawDib api"
-#~ msgstr "En video utgångsfönster med SDL"
-
-#, fuzzy
-#~ msgid "A filter that mixes down 16 bit sample audio streams"
-#~ msgstr "En filter för att mäta nivåer på 16 bitars PCM audio strömmar"
-
-#, fuzzy
-#~ msgid "A filter that converts from mono to stereo and vice versa."
-#~ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
-
-#, fuzzy
-#~ msgid "Inter ticker communication filter."
-#~ msgstr "Error med förbindelsen till servern."
-
-#, fuzzy
-#~ msgid "Sound capture filter for MacOS X Audio Unit Service"
-#~ msgstr "Fånga ljud med OSS drivrutiner"
-
-#, fuzzy
-#~ msgid "Sound playback filter for MacOS X Audio Unit Service"
-#~ msgstr "Ljud utgång med OSS drivrutiner"
-
-#, fuzzy
-#~ msgid "A video display using X11+Xv"
-#~ msgstr "En video utgångsfönster med SDL"
-
-#, fuzzy
-#~ msgid "Sound capture filter for Android"
-#~ msgstr "Fånga ljud med OSS drivrutiner"
-
-#, fuzzy
-#~ msgid "Sound playback filter for Android"
-#~ msgstr "Ljud utgång med OSS drivrutiner"
-
-#, fuzzy
-#~ msgid "A filter that captures Android video."
-#~ msgstr "Ett filter som kontrollerar och mäter ljudvolym"
-
-#~ msgid ""
-#~ "Your machine appears to be connected to an IPv6 network. By default "
-#~ "linphone always uses IPv4. Please update your configuration if you want "
-#~ "to use IPv6"
-#~ msgstr ""
-#~ "Din dator verkar vara kopplad till ett IPv6 nätverk. Default, använder "
-#~ "linphone IPv4. Uppdatera din konfiguration om du vill använda IPv6."
-
-#~ msgid "Incoming call from %s"
-#~ msgstr "Inkommande samtal från %s"
-
-#~ msgid "Assistant"
-#~ msgstr "Assistent"
-
-#~ msgid "Show debug messages"
-#~ msgstr "Visa debugfönstret"
-
-#~ msgid "Start call"
-#~ msgstr "Ring"
-
-#~ msgid "_Modes"
-#~ msgstr "_Media"
-
-#~ msgid "Created by Simon Morlat\n"
-#~ msgstr "Skapad av Simon Morlat\n"
-
-#~ msgid "Accept"
-#~ msgstr "Godkänn"
-
-#~ msgid "Incoming call from"
-#~ msgstr "Inkommande samtal från"
-
-#~ msgid "Linphone - Incoming call"
-#~ msgstr "Linphone - Inkommande samtal"
-
-#~ msgid "default soundcard\n"
-#~ msgstr "default ljudkort\n"
-
-#~ msgid ""
-#~ "Remote end seems to have disconnected, the call is going to be closed."
-#~ msgstr ""
-#~ "Motparten verkar ha avbrutit samtalet, samtalet kommer att avslutas."
-
-#~ msgid "Sorry, having multiple simultaneous calls is not supported yet !"
-#~ msgstr "Förlåt, men linphone stödjer inte flera samtliga samtal än!"
-
-#~ msgid "Could not reach destination."
-#~ msgstr "Kunde inte nå motparten."
-
-#~ msgid "Request Cancelled."
-#~ msgstr "Förfrågan avbruten."
-
-#~ msgid "Bad request"
-#~ msgstr "Fel förfråga."
-
-#~ msgid "User cannot be found at given address."
-#~ msgstr "Användaren kan inte hittas vid den angivna adressen."
-
-#~ msgid "Remote user cannot support any of proposed codecs."
-#~ msgstr "Motparten stödjer ingen av de föreslagna codecs."
-
-#~ msgid "Timeout."
-#~ msgstr "time out."
-
-#~ msgid "Remote host was found but refused connection."
-#~ msgstr "Motparten hittades men ville inte ta emot samtalet."
-
-#~ msgid ""
-#~ "User is not reachable at the moment but he invites you\n"
-#~ "to contact him using the following alternate resource:"
-#~ msgstr ""
-#~ "Användaren kan inte nås för tillfället men han/hon ber digatt kontakta "
-#~ "honom/henna vid följande resurs:"
-
-#~ msgid "Digits"
-#~ msgstr "Tangenter"
-
-#~ msgid "Main view"
-#~ msgstr "Huvud vy"
-
-#~ msgid "No nat/firewall address supplied !"
-#~ msgstr "Ingen NAT / brandväggs adress angiven!"
-
-#~ msgid "Invalid nat address '%s' : %s"
-#~ msgstr "Fel NAT adress '%s': %s"
-
-#~ msgid "Gone"
-#~ msgstr "Har gått"
-
-#~ msgid "Waiting for Approval"
-#~ msgstr "Väntar för godkännandet"
-
-#~ msgid "Be Right Back"
-#~ msgstr "Kommer strax tillbaka"
-
-#~ msgid "On The Phone"
-#~ msgstr "På telefon"
-
-#~ msgid "Out To Lunch"
-#~ msgstr "Lunchar"
-
-#~ msgid "Closed"
-#~ msgstr "Stängt"
-
-#~ msgid "Unknown"
-#~ msgstr "Okänd"
-
-#~ msgid "SIP address"
-#~ msgstr "SIP Adress"
-
-#~ msgid "Bresilian"
-#~ msgstr "Brasiliansk"
-
-#~ msgid "_View"
-#~ msgstr "_Vy"
+#~ msgstr "Потврђивање идентитета није успело"
