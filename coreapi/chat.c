@@ -182,10 +182,10 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
 	linphone_address_destroy(addr);
-	linphone_chat_room_message_received(cr,lc,msg);
 	linphone_core_set_history_message(cr,to,from,INCOMING,
 	                        msg->message,my_ctime_r(&msg->time,buf),NOT_READ,
 	                        LinphoneChatMessageStateDelivered);
+	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
 	ms_free(from);
 }

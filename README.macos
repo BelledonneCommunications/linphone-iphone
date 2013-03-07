@@ -39,6 +39,9 @@ You need:
 - Install additional librairies required for wizard (linphone.org account creation assistant)
  $ sudo port install libsoup
  
+ - Install sqlite3 for message storage
+ $ sudo port install sqlite3
+ 
  ** WARNING 2013-03-06 glib-networking is currently broken in macports - generates crashes or hangs when used in a bundle **
  As a temporary workaround, build a newer version by yourself:
  $ wget http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.34/glib-networking-2.34.2.tar.xz

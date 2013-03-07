@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
+#define NB_MSG_HIST 250
+
 void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkWidget *nb=linphone_gtk_get_widget(main_window,"viewswitch");
@@ -302,7 +304,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	                           	"margin","indent",10,NULL);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 	                           	"bg","paragraph-background-gdk",&colorb,NULL);
-	messages = linphone_chat_room_get_history(with_str,cr,10);
+	messages = linphone_chat_room_get_history(with_str,cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");
 	g_signal_connect_swapped(G_OBJECT(button),"clicked",(GCallback)linphone_gtk_send_text,NULL);
@@ -339,7 +341,7 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 		udpate_tab_chat_header(chat_view,uri,cr);
 		g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 		g_object_set_data(G_OBJECT(linphone_gtk_get_widget(main_window,"contact_list")),"chatview",(gpointer)chat_view);
-		messages = linphone_chat_room_get_history(uri_only,cr,10);
+		messages = linphone_chat_room_get_history(uri_only,cr,NB_MSG_HIST);
 		g_object_set_data(G_OBJECT(chat_view),"from_message",uri_str);
 		display_history_message(chat_view,messages,uri);
 	}
