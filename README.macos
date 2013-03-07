@@ -44,7 +44,7 @@ You need:
  $ wget http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.34/glib-networking-2.34.2.tar.xz
  $ tar -xvzf glib-networking-2.34.2.tar.xz
  $ cd glib-networking-2.34.2
- $ ./configure --prefix=/opt/local && make 
+ $ ./configure --prefix=/opt/local --without-ca-certificates && make 
  $ sudo make install
 
 - Compile and install the tunnel library (optional, proprietary extension only)
