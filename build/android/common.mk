@@ -50,7 +50,8 @@ LOCAL_SRC_FILES := \
 	linphonecall.c \
 	conference.c \
 	ec-calibrator.c \
-	linphone_tunnel_config.c
+	linphone_tunnel_config.c \
+	message_storage.c 
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -64,6 +65,7 @@ LOCAL_CFLAGS += \
 	-DHAVE_CONFIG_H \
 	-DLINPHONE_VERSION=\"$(LINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
+	-DUSE_BELLESIP
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
