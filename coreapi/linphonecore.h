@@ -1290,7 +1290,7 @@ int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
-void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
+LINPHONE_PUBLIC void linphone_core_set_mtu(LinphoneCore *lc, int mtu);
 
 /**
  * @ingroup network_parameters

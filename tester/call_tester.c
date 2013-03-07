@@ -205,6 +205,7 @@ static void call_with_dns_time_out(void) {
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	linphone_core_iterate(marie->lc);
 	sal_set_dns_timeout(marie->lc->sal,0);
+	linphone_core_set_mtu(marie->lc, 1300);
 	linphone_core_invite(marie->lc,"sip:toto@toto.com");
 	linphone_core_iterate(marie->lc);
 	linphone_core_iterate(marie->lc);

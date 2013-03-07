@@ -113,6 +113,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tester;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\..\cunit\build\windows\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
