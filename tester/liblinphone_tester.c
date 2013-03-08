@@ -47,6 +47,12 @@ const char *liblinphone_tester_file_prefix="Assets";
 const char *liblinphone_tester_file_prefix="./tester";
 #endif
 
+#ifdef ANDROID
+extern void AndroidPrintf(FILE *stream, const char *fmt, ...);
+#define fprintf(file, fmt, ...) AndroidPrintf(file, fmt, ##__VA_ARGS__)  
+#endif
+
+
 LinphoneAddress * create_linphone_address(const char * domain) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(addr);
@@ -347,6 +353,8 @@ int main (int argc, char *argv[]) {
 	int ret;
 	const char *suite_name=NULL;
 	const char *test_name=NULL;
+	
+	liblinphone_tester_init();
 
 	for(i=1;i<argc;++i){
 		if (strcmp(argv[i],"--help")==0){
@@ -391,17 +399,18 @@ int main (int argc, char *argv[]) {
 			for(j=0;j<liblinphone_tester_nb_test_suites();j++) {
 				suite_name = liblinphone_tester_test_suite_name(j);
 				fprintf(stdout, "%s\n", suite_name);
-			}	
+			}
+			return 0;	
 		}else if (strcmp(argv[i],"--list-tests")==0){
 			suite_name = argv[++i];
 			for(j=0;j<liblinphone_tester_nb_tests(suite_name);j++) {
 				test_name = liblinphone_tester_test_name(suite_name, j);
 				fprintf(stdout, "%s\n", test_name);
 			}	
+			return 0;
 		}
 	}
 	
-	liblinphone_tester_init();
 	ret = liblinphone_tester_run_tests(suite_name, test_name);
 	liblinphone_tester_uninit();
 	return ret;
@@ -427,6 +436,8 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 }
 
+JNIEXPORT 
+
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
 	int i, ret;
 	int argc = (*env)->GetArrayLength(env, stringArray);
@@ -436,7 +447,7 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 		jstring string = (jstring) (*env)->GetObjectArrayElement(env, stringArray, i);
 		const char *rawString = (const char *) (*env)->GetStringUTFChars(env, string, 0);
 		argv[i] = strdup(rawString);
-		(*env)->ReleaseStringUTFChars(env, argv[i], rawString);
+		(*env)->ReleaseStringUTFChars(env, string, rawString);
 	}
 	current_env = env;
 	current_obj = obj;
