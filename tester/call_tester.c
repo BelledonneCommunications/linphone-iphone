@@ -604,18 +604,18 @@ static void call_transfer_existing_call_outgoing_call(void) {
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Cancelled call", cancelled_call },
-	//{ "Call with DNS timeout", call_with_dns_time_out },
+	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Simple call", simple_call },
-	//{ "Early-media call", early_media_call },
+	{ "Early-media call", early_media_call },
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call paused resumed", call_paused_resumed },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
-	//{ "SRTP call", srtp_call },
+	{ "SRTP call", srtp_call },
 #ifdef VIDEO_ENABLED
 	{ "Call with video added", call_with_video_added },
 #endif
-	//{ "Simple conference", simple_conference },
+	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call }
 };
