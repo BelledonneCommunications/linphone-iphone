@@ -5288,9 +5288,22 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	}
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
+	
 	if(!isReachable) {
 		sal_reset_transports(lc->sal);
 	}
+#ifdef BUILD_UPNP
+	if(lc->upnp == NULL) {
+		if(isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
+			lc->upnp = linphone_upnp_context_new(lc);	
+		}
+	} else {
+		if(!isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
+			linphone_upnp_context_destroy(lc->upnp);
+			lc->upnp = NULL;
+		}
+	}
+#endif	
 }
 
 void linphone_core_refresh_registers(LinphoneCore* lc) {

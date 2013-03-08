@@ -38,6 +38,7 @@ LinphoneUpnpState linphone_upnp_session_get_state(UpnpSession *session);
 
 UpnpContext *linphone_upnp_context_new(LinphoneCore *lc);
 void linphone_upnp_context_destroy(UpnpContext *ctx);
+void linphone_upnp_refresh(UpnpContext *ctx);
 LinphoneUpnpState linphone_upnp_context_get_state(UpnpContext *ctx);
 const char *linphone_upnp_context_get_external_ipaddress(UpnpContext *ctx);
 int linphone_upnp_context_get_external_port(UpnpContext *ctx);
