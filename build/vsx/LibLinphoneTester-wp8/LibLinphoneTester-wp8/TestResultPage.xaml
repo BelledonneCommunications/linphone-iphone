@@ -31,10 +31,8 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                <TextBlock x:Name="TestResults" TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Courier New" FontSize="16"/>
-            </ScrollViewer>
+        <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
+            <phone:WebBrowser x:Name="Browser" IsScriptEnabled="True" LoadCompleted="Browser_LoadCompleted" Background="{StaticResource PhoneBackgroundBrush}"/>
         </Grid>
     </Grid>
 

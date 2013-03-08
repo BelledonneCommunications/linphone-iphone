@@ -7,7 +7,7 @@ namespace linphone_tester_native
 	public interface class OutputTraceListener
 	{
 	public:
-		void outputTrace(Platform::String^ msg);
+		void outputTrace(int level, Platform::String^ msg);
 	};
 
     public ref class LinphoneTesterNative sealed

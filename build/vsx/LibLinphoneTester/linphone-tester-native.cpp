@@ -22,7 +22,7 @@ static void nativeOutputTraceHandler(int lev, const char *fmt, va_list args)
 		vsnprintf((char *)str.c_str(), MAX_TRACE_SIZE, fmt, args);
 		mbstowcs(wstr, str.c_str(), sizeof(wstr));
 		String^ msg = ref new String(wstr);
-		sTraceListener->outputTrace(msg);
+		sTraceListener->outputTrace(lev, msg);
 	}
 }
 

@@ -134,6 +134,7 @@
     <Content Include="Assets\oldphone.wav" />
     <Content Include="Assets\pauline_rc" />
     <Content Include="Assets\multi_account_lrc" />
+    <Content Include="log.html" />
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>

@@ -12,18 +12,18 @@ using linphone_tester_native;
 
 namespace LibLinphoneTester_wp8
 {
-    public delegate void OutputDisplayDelegate(String msg);
+    public delegate void OutputDisplayDelegate(int level, String msg);
 
     public partial class TestResultPage : PhoneApplicationPage
     {
         public TestResultPage()
         {
             InitializeComponent();
+            Browser.Navigate(new Uri("log.html", UriKind.Relative));
         }
-        
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+
+        private void Browser_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
             string suiteName = NavigationContext.QueryString["SuiteName"];
             string caseName;
             if (NavigationContext.QueryString.ContainsKey("CaseName"))
@@ -40,12 +40,50 @@ namespace LibLinphoneTester_wp8
             app.suite.run();
         }
 
-        public void OutputDisplay(String msg)
+        public void OutputDisplay(int level, String msg)
         {
             this.Dispatcher.BeginInvoke(() =>
+            {
+                msg = msg.Replace("\r\n", "\n");
+                string[] lines = msg.Split('\n');
+                bool insertNewLine = false;
+                foreach (string line in lines)
                 {
-                    TestResults.Text += msg;
-                });
+                    if (line.Length == 0)
+                    {
+                        insertNewLine = false;
+                        Browser.InvokeScript("append_nl");
+                    }
+                    else
+                    {
+                        if (insertNewLine == true)
+                        {
+                            Browser.InvokeScript("append_nl");
+                        }
+                        if (level == 0)
+                        {
+                            Browser.InvokeScript("append_trace", line, "debug");
+                        }
+                        else if (level == 1)
+                        {
+                            Browser.InvokeScript("append_trace", line, "message");
+                        }
+                        else if (level == 2)
+                        {
+                            Browser.InvokeScript("append_trace", line, "warning");
+                        }
+                        else if (level == 3)
+                        {
+                            Browser.InvokeScript("append_trace", line, "error");
+                        }
+                        else
+                        {
+                            Browser.InvokeScript("append_text", line);
+                        }
+                        insertNewLine = true;
+                    }
+                }
+            });
         }
     }
 
@@ -75,11 +113,11 @@ namespace LibLinphoneTester_wp8
             Running = false;
         }
 
-        public void outputTrace(String msg)
+        public void outputTrace(int level, String msg)
         {
             if (OutputDisplay != null)
             {
-                OutputDisplay(msg);
+                OutputDisplay(level, msg);
             }
             System.Diagnostics.Debug.WriteLine(msg);
         }

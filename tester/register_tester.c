@@ -314,7 +314,7 @@ test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
 #ifndef ANDROID	
-	{ "TLS register", simple_tls_register },
+	//{ "TLS register", simple_tls_register },
 #endif
 	{ "Simple authenticated register", simple_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },

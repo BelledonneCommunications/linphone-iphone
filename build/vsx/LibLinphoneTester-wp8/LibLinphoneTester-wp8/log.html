@@ -1,0 +1,34 @@
+﻿<html>
+  <head>
+    <style>
+      html { background-color: black; font-family:'Courier New'; font-size: 16pt; color: white; }
+      .debug { color: light-grey; }
+      .message { color: white; }
+      .warning { color: orange; }
+      .error { color: red; }
+    </style>
+    <script>
+      function append_text(msg) {
+        var content = document.getElementById("content");
+        var new_text = document.createTextNode(msg);
+        content.appendChild(new_text);
+      }
+      function append_trace(msg, level) {
+        var content = document.getElementById("content");
+        var span_elem = document.createElement('span');
+        span_elem.className = level;
+        var new_text = document.createTextNode(msg);
+        span_elem.appendChild(new_text);
+        content.appendChild(span_elem);
+      }
+      function append_nl() {
+        var content = document.getElementById("content");
+        var element = document.createElement('br');
+        content.appendChild(element);
+      }
+    </script>
+  </head>
+  <body>
+    <p><pre id="content"></pre></p>
+  </body>
+</html>
