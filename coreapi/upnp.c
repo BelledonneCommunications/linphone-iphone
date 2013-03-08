@@ -20,6 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "upnp.h"
 #include "private.h"
 #include "lpconfig.h"
+#include <ctype.h>
+
+#define UPNP_STRINGIFY(x)     #x
+#define UPNP_TOSTRING(x)      UPNP_STRINGIFY(x)
 
 #define UPNP_ADD_MAX_RETRY    4
 #define UPNP_REMOVE_MAX_RETRY 4
@@ -27,7 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UPNP_CORE_READY_CHECK 1 
 #define UPNP_CORE_RETRY_DELAY 4
 #define UPNP_CALL_RETRY_DELAY 1
-
+#define UPNP_UUID_LEN         32
+#define UPNP_UUID_LEN_STR     UPNP_TOSTRING(UPNP_UUID_LEN)
 /*
  * uPnP Definitions
  */
@@ -36,6 +41,7 @@ typedef struct _UpnpPortBinding {
 	ms_mutex_t mutex;
 	LinphoneUpnpState state;
 	upnp_igd_ip_protocol protocol;
+	char *device_id;
 	char local_addr[LINPHONE_IPADDR_SIZE];
 	int local_port;
 	char external_addr[LINPHONE_IPADDR_SIZE];
@@ -86,6 +92,7 @@ UpnpPortBinding *linphone_upnp_port_binding_new();
 UpnpPortBinding *linphone_upnp_port_binding_new_with_parameters(upnp_igd_ip_protocol protocol, int local_port, int external_port);
 UpnpPortBinding *linphone_upnp_port_binding_new_or_collect(MSList *list, upnp_igd_ip_protocol protocol, int local_port, int external_port); 
 UpnpPortBinding *linphone_upnp_port_binding_copy(const UpnpPortBinding *port);
+void linphone_upnp_port_binding_set_device_id(UpnpPortBinding *port, const char * device_id);
 bool_t linphone_upnp_port_binding_equal(const UpnpPortBinding *port1, const UpnpPortBinding *port2);
 UpnpPortBinding *linphone_upnp_port_binding_equivalent_in_list(MSList *list, const UpnpPortBinding *port);
 UpnpPortBinding *linphone_upnp_port_binding_retain(UpnpPortBinding *port);
@@ -96,7 +103,7 @@ void linphone_upnp_update_config(UpnpContext *lupnp);
 void linphone_upnp_update_proxy(UpnpContext *lupnp, bool_t force);
 
 // Configuration
-MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc);
+MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc, const char *device_id);
 void linphone_upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port);
 void linphone_upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port);
 
@@ -104,6 +111,61 @@ void linphone_upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPort
 int linphone_upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortBinding *port, bool_t retry);
 int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBinding *port, bool_t retry);
 
+
+static int linphone_upnp_strncmpi(const char *str1, const char *str2, int len) {
+	int i = 0;
+	char char1, char2;
+	while(*str1 != '\0' && *str2 != '\0' && i < len) {
+		char1 = toupper(*str1);
+		char2 = toupper(*str2);
+		if(char1 != char2) {
+			return char1 - char2;
+		}
+		str1++;
+		str2++;
+		len++;
+	}
+	return 0;
+}
+static int linphone_upnp_str_min(const char *str1, const char *str2) {
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+	if(len1 > len2) {
+		return len2;
+	}
+	return len1;
+}
+char * linphone_upnp_format_device_id(const char *device_id) {
+	char *ret = NULL;
+	char *tmp;
+	char tchar;
+	bool_t copy;	
+	if(device_id == NULL) {
+		return ret;
+	}
+	ret = ms_new(char, UPNP_UUID_LEN + 1);
+	tmp = ret;
+	if(linphone_upnp_strncmpi(device_id, "uuid:", linphone_upnp_str_min(device_id, "uuid:")) == 0) {
+		device_id += strlen("uuid:");
+	}
+	while(*device_id != '\0' && tmp - ret < UPNP_UUID_LEN) {
+		copy = FALSE;
+		tchar = *device_id;
+		if(tchar >= '0' && tchar <= '9')
+			copy = TRUE;
+		if(!copy && tchar >= 'A' && tchar <= 'Z')
+			copy = TRUE;
+		if(!copy && tchar >= 'a' && tchar <= 'z')
+			copy = TRUE;
+		if(copy) {
+			*tmp = *device_id;
+			tmp++;
+		}
+		device_id++;
+	}
+	*tmp = '\0';
+	return ret;
+}
 
 /**
  * uPnP Callbacks
@@ -293,15 +355,17 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 
 	ms_mutex_lock(&lupnp->mutex);
 	
-	/* Send port binding removes */
-	if(lupnp->sip_udp != NULL) {
-		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp, TRUE);
-	}
-	if(lupnp->sip_tcp != NULL) {
-		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tcp, TRUE);
-	}
-	if(lupnp->sip_tls != NULL) {
-		linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tls, TRUE);
+	if(lupnp->lc->network_reachable) {
+		/* Send port binding removes */
+		if(lupnp->sip_udp != NULL) {
+			linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp, TRUE);
+		}
+		if(lupnp->sip_tcp != NULL) {
+			linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tcp, TRUE);
+		}
+		if(lupnp->sip_tls != NULL) {
+			linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_tls, TRUE);
+		}
 	}
 
 	/* Wait all pending bindings are done */
@@ -430,6 +494,10 @@ int linphone_upnp_context_get_external_port(UpnpContext *lupnp) {
 	return port;
 }
 
+void linphone_upnp_refresh(UpnpContext * lupnp) {
+	upnp_igd_refresh(lupnp->upnp_igd_ctxt);
+}
+
 const char* linphone_upnp_context_get_external_ipaddress(UpnpContext *lupnp) {
 	const char* addr = NULL;
 	if(lupnp != NULL) {
@@ -477,6 +545,7 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 	if(port->retry >= UPNP_ADD_MAX_RETRY) {
 		ret = -1;
 	} else {
+		linphone_upnp_port_binding_set_device_id(port, upnp_igd_get_device_id(lupnp->upnp_igd_ctxt));
 		mapping.cookie = linphone_upnp_port_binding_retain(port);
 		lupnp->pending_bindings = ms_list_append(lupnp->pending_bindings, mapping.cookie);
 
@@ -539,6 +608,7 @@ int linphone_upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortB
 	if(port->retry >= UPNP_REMOVE_MAX_RETRY) {
 		ret = -1;
 	} else {
+		linphone_upnp_port_binding_set_device_id(port, upnp_igd_get_device_id(lupnp->upnp_igd_ctxt));
 		mapping.cookie = linphone_upnp_port_binding_retain(port);
 		lupnp->pending_bindings = ms_list_append(lupnp->pending_bindings, mapping.cookie);
 
@@ -769,7 +839,7 @@ void linphone_core_upnp_refresh(UpnpContext *lupnp) {
 		list = list->next;
 	}
 
-	list = linphone_upnp_config_list_port_bindings(lupnp->lc->config);
+	list = linphone_upnp_config_list_port_bindings(lupnp->lc->config, upnp_igd_get_device_id(lupnp->upnp_igd_ctxt));
 	for(item = list;item != NULL; item = item->next) {
 			port_mapping = (UpnpPortBinding *)item->data;
 			port_mapping2 = linphone_upnp_port_binding_equivalent_in_list(global_list, port_mapping);
@@ -845,10 +915,11 @@ void linphone_upnp_update_config(UpnpContext* lupnp) {
 	/* Add configs */
 	for(item = lupnp->adding_configs;item!=NULL;item=item->next) {
 		port_mapping = (UpnpPortBinding *)item->data;
-		snprintf(key, sizeof(key), "%s-%d-%d",
+		snprintf(key, sizeof(key), "%s-%s-%d-%d",
+					port_mapping->device_id,
 					(port_mapping->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
-							port_mapping->external_port,
-							port_mapping->local_port);
+					port_mapping->external_port,
+					port_mapping->local_port);
 		lp_config_set_string(lupnp->lc->config, UPNP_SECTION_NAME, key, "uPnP");
 		linphone_upnp_port_binding_log(ORTP_DEBUG, "Configuration: Added port binding", port_mapping);
 	}
@@ -858,10 +929,11 @@ void linphone_upnp_update_config(UpnpContext* lupnp) {
 	/* Remove configs */
 	for(item = lupnp->removing_configs;item!=NULL;item=item->next) {
 		port_mapping = (UpnpPortBinding *)item->data;
-		snprintf(key, sizeof(key), "%s-%d-%d",
+		snprintf(key, sizeof(key), "%s-%s-%d-%d",
+					port_mapping->device_id,
 					(port_mapping->protocol == UPNP_IGD_IP_PROTOCOL_TCP)? "TCP":"UDP",
-							port_mapping->external_port,
-							port_mapping->local_port);
+					port_mapping->external_port,
+					port_mapping->local_port);
 		lp_config_set_string(lupnp->lc->config, UPNP_SECTION_NAME, key, NULL);
 		linphone_upnp_port_binding_log(ORTP_DEBUG, "Configuration: Removed port binding", port_mapping);
 	}
@@ -958,6 +1030,7 @@ UpnpPortBinding *linphone_upnp_port_binding_new() {
 	ms_mutex_init(&port->mutex, NULL);
 	port->state = LinphoneUpnpStateIdle;
 	port->protocol = UPNP_IGD_IP_PROTOCOL_UDP;	
+	port->device_id = NULL;
 	port->local_addr[0] = '\0';
 	port->local_port = -1;
 	port->external_addr[0] = '\0';
@@ -993,9 +1066,25 @@ UpnpPortBinding *linphone_upnp_port_binding_copy(const UpnpPortBinding *port) {
 	UpnpPortBinding *new_port = NULL;
 	new_port = ms_new0(UpnpPortBinding,1);
 	memcpy(new_port, port, sizeof(UpnpPortBinding));
+	new_port->device_id = NULL;
+	linphone_upnp_port_binding_set_device_id(new_port, port->device_id);
 	ms_mutex_init(&new_port->mutex, NULL);
 	new_port->ref = 1;
 	return new_port;
+}
+
+void linphone_upnp_port_binding_set_device_id(UpnpPortBinding *port, const char *device_id) {
+	char *formated_device_id = linphone_upnp_format_device_id(device_id);
+	if(formated_device_id != NULL && port->device_id != NULL) {
+		if(strcmp(formated_device_id, port->device_id) == 0) {
+			ms_free(formated_device_id);
+			return;
+		}
+	}
+	if(port->device_id != NULL) {
+		ms_free(port->device_id);
+	}
+	port->device_id = formated_device_id;
 }
 
 void linphone_upnp_port_binding_log(int level, const char *msg, const UpnpPortBinding *port) {
@@ -1044,6 +1133,9 @@ UpnpPortBinding *linphone_upnp_port_binding_retain(UpnpPortBinding *port) {
 void linphone_upnp_port_binding_release(UpnpPortBinding *port) {
 	ms_mutex_lock(&port->mutex);
 	if(--port->ref == 0) {
+		if(port->device_id != NULL) {
+			ms_free(port->device_id);
+		}
 		ms_mutex_unlock(&port->mutex);
 		ms_mutex_destroy(&port->mutex);
 		ms_free(port);
@@ -1130,25 +1222,35 @@ LinphoneUpnpState linphone_upnp_session_get_state(UpnpSession *session) {
 struct linphone_upnp_config_list_port_bindings_struct {
 	struct _LpConfig *lpc;
 	MSList *retList;
+	const char *device_id;
 };
 
 static void linphone_upnp_config_list_port_bindings_cb(const char *entry, struct linphone_upnp_config_list_port_bindings_struct *cookie) {
+	char device_id[UPNP_UUID_LEN + 1];
 	char protocol_str[4]; // TCP or UDP
 	upnp_igd_ip_protocol protocol;
 	int external_port;
 	int local_port;
+	int ret;
 	bool_t valid = TRUE;
 	UpnpPortBinding *port;
-	if(sscanf(entry, "%3s-%i-%i", protocol_str, &external_port, &local_port) == 3) {
-		if(strcasecmp(protocol_str, "TCP") == 0) {
+	
+	ret = sscanf(entry, "%"UPNP_UUID_LEN_STR"s-%3s-%i-%i", device_id, protocol_str, &external_port, &local_port);
+	if(ret == 4) {
+		// Handle only wanted device bindings
+		if(device_id != NULL && strcmp(cookie->device_id, device_id) != 0) {
+			return; 
+		}
+		if(linphone_upnp_strncmpi(protocol_str, "TCP", 3) == 0) {
 			protocol = UPNP_IGD_IP_PROTOCOL_TCP;
-		} else if(strcasecmp(protocol_str, "UDP") == 0) {
+		} else if(linphone_upnp_strncmpi(protocol_str, "UDP", 3) == 0) {
 			protocol = UPNP_IGD_IP_PROTOCOL_UDP;
 		} else {
 			valid = FALSE;
 		}
 		if(valid) {
 			port = linphone_upnp_port_binding_new();
+			linphone_upnp_port_binding_set_device_id(port, device_id);
 			port->state = LinphoneUpnpStateOk;
 			port->protocol = protocol;
 			port->external_port = external_port;
@@ -1163,15 +1265,22 @@ static void linphone_upnp_config_list_port_bindings_cb(const char *entry, struct
 	}
 }
 
-MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc) {
-	struct linphone_upnp_config_list_port_bindings_struct cookie = {lpc, NULL};
+MSList *linphone_upnp_config_list_port_bindings(struct _LpConfig *lpc, const char *device_id) {
+	char *formated_device_id = linphone_upnp_format_device_id(device_id);
+	struct linphone_upnp_config_list_port_bindings_struct cookie = {lpc, NULL, formated_device_id};
 	lp_config_for_each_entry(lpc, UPNP_SECTION_NAME, (void(*)(const char *, void*))linphone_upnp_config_list_port_bindings_cb, &cookie);
+	ms_free(formated_device_id);
 	return cookie.retList;
 }
 
 void linphone_upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port) {
 	MSList *list;
 	UpnpPortBinding *list_port;
+	
+	if(port->device_id == NULL) {
+		ms_error("Can't remove port binding without device_id");
+		return;
+	}
 
 	list = lupnp->removing_configs;
 	while(list != NULL) {
@@ -1200,6 +1309,11 @@ void linphone_upnp_config_add_port_binding(UpnpContext *lupnp, const UpnpPortBin
 void linphone_upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPortBinding *port) {
 	MSList *list;
 	UpnpPortBinding *list_port;
+
+	if(port->device_id == NULL) {
+		ms_error("Can't remove port binding without device_id");
+		return;
+	}
 
 	list = lupnp->adding_configs;
 	while(list != NULL) {
