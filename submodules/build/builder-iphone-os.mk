@@ -38,7 +38,8 @@ linphone_configure_controls=  \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
                               --with-srtp=$(prefix) \
-                              --with-antlr=$(prefix) 
+                              --with-antlr=$(prefix) \
+                              --disable-msg-storage
 
 ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --enable-zrtp
