@@ -285,6 +285,11 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		
 		linphone_address_destroy(contact);
 		contact=linphone_address_new(tmp);
+		if (!contact) {
+			ms_error("No valid contact_params for [%p]",linphone_address_get_domain(proxy));
+			return NULL;
+		}
+
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
