@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
     <ClCompile Include="..\..\..\coreapi\lpconfig.c" />
     <ClCompile Include="..\..\..\coreapi\lsd.c" />
+    <ClCompile Include="..\..\..\coreapi\message_storage.c" />
     <ClCompile Include="..\..\..\coreapi\misc.c" />
     <ClCompile Include="..\..\..\coreapi\offeranswer.c" />
     <ClCompile Include="..\..\..\coreapi\presence.c" />
