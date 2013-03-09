@@ -38,44 +38,22 @@ static inline char *my_ctime_r(const time_t *t, char *buf){
 static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-#define CONFIG_FILE ".linphone-history.db"
 
-char *linphone_message_storage_get_config_file(const char *filename){
-	const int path_max=1024;
-	char *config_file=(char *)malloc(path_max*sizeof(char));
-	if (filename==NULL) filename=CONFIG_FILE;
-	/*try accessing a local file first if exists*/
-	if (access(CONFIG_FILE,F_OK)==0){
-		snprintf(config_file,path_max,"%s",filename);
-	}else{
-#ifdef WIN32
-		const char *appdata=getenv("APPDATA");
-		if (appdata){
-			snprintf(config_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
-			CreateDirectory(config_file,NULL);
-			snprintf(config_file,path_max,"%s\\%s\\%s",appdata,LINPHONE_CONFIG_DIR,filename);
-		}
-#else
-		const char *home=getenv("HOME");
-		if (home==NULL) home=".";
-		snprintf(config_file,path_max,"%s/%s",home,filename);
-#endif
-	}
-	return config_file;
-}
-
-void create_chat_message(char **argv, void *data){
+static void create_chat_message(char **argv, void *data){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	LinphoneChatMessage* new_message = linphone_chat_room_create_message(cr,argv[4]);
+	LinphoneAddress *from;
 	struct tm ret={0};
 	char tmp1[80]={0};
 	char tmp2[80]={0};
 	
-	if(atoi(argv[3])==INCOMING){
-		linphone_chat_message_set_from(new_message,linphone_address_new(argv[2]));
+	if(atoi(argv[3])==LinphoneChatMessageIncoming){
+		from=linphone_address_new(argv[2]);
 	} else {
-		linphone_chat_message_set_from(new_message,linphone_address_new(argv[1]));
+		from=linphone_address_new(argv[1]);
 	}
+	linphone_chat_message_set_from(new_message,from);
+	linphone_address_destroy(from);
 
 	if(argv[5]!=NULL){
 		int i,j;
@@ -91,7 +69,7 @@ void create_chat_message(char **argv, void *data){
 	}
 	new_message->time=argv[5]!=NULL ? mktime(&ret) : time(NULL);
 	new_message->state=atoi(argv[7]);
-	cr->messages_hist=ms_list_prepend(cr->messages_hist,(void *)new_message);
+	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
 
 static int callback(void *data, int argc, char **argv, char **colName){
@@ -99,58 +77,84 @@ static int callback(void *data, int argc, char **argv, char **colName){
     return 0;
 }
 
-void linphone_sql_request_message(sqlite3 *db,const char *stmt,void *data){
+void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom *cr){
 	char* errmsg;
 	int ret;
-	ret=sqlite3_exec(db,stmt,callback,data,&errmsg);
+	ret=sqlite3_exec(db,stmt,callback,cr,&errmsg);
 	if(ret != SQLITE_OK) {
 		printf("Error in creation: %s.\n", errmsg);
 	}
 }
 
 void linphone_sql_request(sqlite3* db,const char *stmt){
-	char* errmsg;
+	char* errmsg=NULL;
 	int ret;
 	ret=sqlite3_exec(db,stmt,0,0,&errmsg);
 	if(ret != SQLITE_OK) {
-		printf("Error in creation: %s.\n", errmsg);
+		ms_error("linphone_sql_request: error sqlite3_exec(): %s.\n", errmsg);
+		sqlite3_free(errmsg);
 	}
 }
 
-void linphone_core_set_history_message(LinphoneChatRoom *cr,const char *local_contact,const char *remote_contact, 
-                     int direction, const char *message,const char *date, int read, int state){
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
-	char *buf=sqlite3_mprintf("insert into history values(NULL,%Q,%Q,%i,%Q,%Q,%i,%i);",
-					local_contact,remote_contact,direction,message,date,read,state);
-	linphone_sql_request(lc->db,buf);
+void linphone_chat_message_store(LinphoneChatMessage *msg){
+	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
+	if (lc->db){
+		const char *peer=msg->chat_room->peer;
+		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
+		char datebuf[26];
+		char *buf=sqlite3_mprintf("insert into history values(NULL,%Q,%Q,%i,%Q,%Q,%i,%i);",
+						local_contact,peer,msg->dir,msg->message,my_ctime_r(&msg->time,datebuf),msg->is_read,msg->state);
+		linphone_sql_request(lc->db,buf);
+		sqlite3_free(buf);
+		ms_free(local_contact);
+	}
 }
 
-void linphone_core_set_message_state(LinphoneChatRoom *cr,const char *message, int state, time_t date){
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
-	char time_str[26];
-	char *buf=sqlite3_mprintf("update history set status=%i where message = %Q and time = %Q;",
-	               state,message,my_ctime_r(&date,time_str));
-	linphone_sql_request(lc->db,buf);
+void linphone_chat_message_store_state(LinphoneChatMessage *msg){
+	LinphoneCore *lc=msg->chat_room->lc;
+	if (lc->db){
+		char time_str[26];
+		char *buf=sqlite3_mprintf("update history set status=%i where message = %Q and time = %Q;",
+			msg->state,msg->message,my_ctime_r(&msg->time,time_str));
+		linphone_sql_request(lc->db,buf);
+		sqlite3_free(buf);
+	}
 }
 
-void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from, int read){
+void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	int read=1;
+	
+	if (lc->db==NULL) return ;
+
 	char *buf=sqlite3_mprintf("update history set read=%i where remoteContact = %Q;",
-	               read,from);
+	               read,cr->peer);
 	linphone_sql_request(lc->db,buf);
+	sqlite3_free(buf);
 }
 
-void linphone_core_delete_history(LinphoneCore *lc,const char *from){
-	char *buf=sqlite3_mprintf("delete from history where remoteContact = %Q;",from);
+void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
+	LinphoneCore *lc=cr->lc;
+	
+	if (lc->db==NULL) return ;
+	char *buf=sqlite3_mprintf("delete from history where remoteContact = %Q;",cr->peer);
 	linphone_sql_request(lc->db,buf);
+	sqlite3_free(buf);
 }
 
-MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message){
+MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	MSList *ret;
+	
+	if (lc->db==NULL) return NULL;
+	
 	cr->messages_hist = NULL;
-	char *buf=sqlite3_mprintf("select * from history where remoteContact = %Q order by id DESC limit %i ;",to,nb_message);
-	linphone_sql_request_message(lc->db,buf,(void *)cr);
-	return cr->messages_hist;
+	char *buf=sqlite3_mprintf("select * from history where remoteContact = %Q order by id DESC limit %i ;",cr->peer,nb_message);
+	linphone_sql_request_message(lc->db,buf,cr);
+	sqlite3_free(buf);
+	ret=cr->messages_hist;
+	cr->messages_hist=NULL;
+	return ret;
 }
 
 void linphone_close_storage(sqlite3* db){
@@ -167,36 +171,49 @@ void linphone_create_table(sqlite3* db){
 	}
 }
 
-sqlite3 * linphone_message_storage_init(){
+void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
-	char *errmsg;
+	char *errmsg=NULL;
 	sqlite3 *db;
-	char *filename;
-	filename=linphone_message_storage_get_config_file(NULL);
-	ret=sqlite3_open(filename,&db);
+	ret=sqlite3_open(lc->chat_db_file,&db);
 	if(ret != SQLITE_OK) {
 		printf("Error in the opening: %s.\n", errmsg);
 		sqlite3_close(db);
+		sqlite3_free(errmsg);
 	}
 	linphone_create_table(db);
-	return db;
+	lc->db=db;
 }
+
+void linphone_core_message_storage_close(LinphoneCore *lc){
+	if (lc->db){
+		sqlite3_close(lc->db);
+		lc->db=NULL;
+	}
+}
+
 #else 
 
-void linphone_core_set_history_message(LinphoneChatRoom *cr,const char *local_contact,const char *remote_contact, 
-                     int direction, const char *message,const char *date, int read, int state){
+void linphone_chat_message_store(LinphoneChatMessage *cr){
 }
 
-void linphone_core_set_message_state(LinphoneChatRoom *cr,const char *message, int state, time_t date){
+void linphone_chat_message_store_state(LinphoneChatMessage *cr){
 }
 
-void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from, int read){
+void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 }
 
-MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message){
+MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
 }
 
-void linphone_core_delete_history(LinphoneCore *lc,const char *from){
+void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 }
+
+void linphone_core_message_storage_init(LinphoneCore *lc){
+}
+
+void linphone_core_message_storage_close(LinphoneCore *lc){
+}
+
 #endif

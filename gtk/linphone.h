@@ -58,6 +58,8 @@ GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
 
+
+const char *linphone_gtk_message_storage_get_db_file(const char *filename);
 void linphone_gtk_show_assistant(void);
 void linphone_gtk_close_assistant(void);
 
