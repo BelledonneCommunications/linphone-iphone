@@ -174,8 +174,10 @@ void linphone_gtk_delete_history(GtkWidget *button){
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(linphone_gtk_get_widget(w,"contact_list")));
 	if (gtk_tree_selection_get_selected (select, &model, &iter))
 	{
+		LinphoneChatRoom *cr;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
-		linphone_core_delete_history(linphone_gtk_get_core(),linphone_address_as_string_uri_only(linphone_friend_get_address(lf)));
+		cr=linphone_core_get_chat_room(linphone_gtk_get_core(),linphone_friend_get_address(lf));
+		linphone_chat_room_delete_history(cr);
 		linphone_gtk_show_friends();
 	}
 }
