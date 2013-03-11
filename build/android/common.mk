@@ -44,7 +44,8 @@ LOCAL_SRC_FILES := \
 	linphonecall.c \
 	conference.c \
 	ec-calibrator.c \
-	linphone_tunnel_config.c
+	linphone_tunnel_config.c \
+	message_storage.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
