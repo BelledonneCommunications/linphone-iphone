@@ -286,7 +286,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		linphone_address_destroy(contact);
 		contact=linphone_address_new(tmp);
 		if (!contact) {
-			ms_error("No valid contact_params for [%p]",linphone_address_get_domain(proxy));
+			ms_error("No valid contact_params for [%s]",linphone_address_get_domain(proxy));
 			return NULL;
 		}
 

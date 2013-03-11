@@ -517,22 +517,23 @@ void sal_use_session_timers(Sal *ctx, int expires){
 	return ;
 }
 void sal_use_double_registrations(Sal *ctx, bool_t enabled){
-	ms_error("sal_use_double_registrations not implemented yet");
+	ms_warning("sal_use_double_registrations is deprecated");
 	return ;
 }
 void sal_reuse_authorization(Sal *ctx, bool_t enabled){
-	ms_error("sal_reuse_authorization not implemented yet");
+	ms_warning("sal_reuse_authorization is deprecated");
 	return ;
 }
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
 	ctx->one_matching_codec=one_matching_codec;
 }
 void sal_use_rport(Sal *ctx, bool_t use_rports){
-	ms_error("sal_use_rport not implemented yet");
+	belle_sip_provider_enable_rport(ctx->prov,use_rports);
+	ms_message("Sal use rport [%s]",use_rports?"enabled":"disabled");
 	return ;
 }
 void sal_use_101(Sal *ctx, bool_t use_101){
-	ms_error("sal_use_101 not implemented yet");
+	ms_warning("sal_use_101 is deprecated");
 	return ;
 }
 void sal_set_root_ca(Sal* ctx, const char* rootCa){

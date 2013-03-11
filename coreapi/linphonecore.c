@@ -470,8 +470,6 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
 	linphone_core_set_download_ptime(lc,tmp);
-	/*only set at setup*/
-	sal_nat_helper_enable(lc->sal,lp_config_get_int(lc->config,"net","enable_nat_helper",1));
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -4351,9 +4349,11 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	switch(pol) {
 	case LinphonePolicyUseUpnp:
 		sal_nat_helper_enable(lc->sal, FALSE);
+		sal_use_rport(lc->sal, FALSE);
 		break;	
 	default:
-		sal_nat_helper_enable(lc->sal, TRUE);
+		sal_nat_helper_enable(lc->sal, lp_config_get_int(lc->config,"net","enable_nat_helper",1));
+		sal_use_rport(lc->sal, lp_config_get_int(lc->config,"sip","use_rport",1));
 		break;
 	}
 	if (lc->sip_conf.contact) update_primary_contact(lc);
