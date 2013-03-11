@@ -611,7 +611,9 @@ test_t call_tests[] = {
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call paused resumed", call_paused_resumed },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
+#ifdef SRTP_ENABLED
 	{ "SRTP call", srtp_call },
+#endif
 #ifdef VIDEO_ENABLED
 	{ "Call with video added", call_with_video_added },
 #endif
