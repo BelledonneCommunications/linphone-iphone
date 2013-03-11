@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
+#include "lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 
@@ -200,12 +201,11 @@ static void cancelled_call(void) {
 }
 
 static void call_with_dns_time_out(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(NULL, NULL);
+	LinphoneCoreManager* marie = linphone_core_manager_new2(liblinphone_tester_file_prefix, "empty_rc", FALSE);
 	LCSipTransports transport = {9773,0,0,0};
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	linphone_core_iterate(marie->lc);
 	sal_set_dns_timeout(marie->lc->sal,0);
-	linphone_core_set_mtu(marie->lc, 1300);
 	linphone_core_invite(marie->lc,"sip:toto@toto.com");
 	linphone_core_iterate(marie->lc);
 	linphone_core_iterate(marie->lc);

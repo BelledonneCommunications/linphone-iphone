@@ -313,7 +313,7 @@ static void io_recv_error(){
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
-#ifndef ANDROID	
+#ifndef ANDROID
 	{ "TLS register", simple_tls_register },
 #endif
 	{ "Simple authenticated register", simple_authenticated_register },

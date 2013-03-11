@@ -3313,7 +3313,13 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		call = the_call;
 	}
 
-	sal_call_terminate(call->op);
+	if (call->state != LinphoneCallOutgoingInit)
+		sal_call_terminate(call->op);
+	else {
+		/* In state OutgoingInit, op has to be destroyed */
+		sal_op_release(call->op);
+		call->op = NULL;
+	}
 	terminate_call(lc,call);
 	return 0;
 }

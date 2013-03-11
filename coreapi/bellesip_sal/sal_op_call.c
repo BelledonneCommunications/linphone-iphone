@@ -453,6 +453,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
 
+	ms_message("[%s] calling [%s] on op [%p]", from, to, op);
 	invite=sal_op_build_request(op,"INVITE");
 
 	sal_op_fill_invite(op,invite);

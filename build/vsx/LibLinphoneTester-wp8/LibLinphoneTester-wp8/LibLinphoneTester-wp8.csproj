@@ -129,6 +129,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\empty_rc" />
     <Content Include="Assets\laure_rc" />
     <Content Include="Assets\marie_rc" />
     <Content Include="Assets\oldphone.wav" />

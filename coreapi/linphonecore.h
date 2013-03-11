@@ -1323,7 +1323,7 @@ LINPHONE_PUBLIC	void linphone_core_set_user_data(LinphoneCore *lc, void *userdat
 
 /* returns LpConfig object to read/write to the config file: usefull if you wish to extend
 the config file with your own sections */
-struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
+LINPHONE_PUBLIC struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
 void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context);

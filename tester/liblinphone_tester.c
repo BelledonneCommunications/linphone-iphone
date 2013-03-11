@@ -162,7 +162,7 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	}
 }
 
-LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_file) {
+LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
 	LinphoneProxyConfig* proxy;
 	memset (mgr,0,sizeof(LinphoneCoreManager));
@@ -173,7 +173,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
-	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, rc_file?1:0);
+	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, check_for_proxies?(rc_file?1:0):0);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
@@ -182,6 +182,10 @@ LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_
 		linphone_address_clean(mgr->identity);
 	}
 	return mgr;
+}
+
+LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_file) {
+	return linphone_core_manager_new2(path, rc_file, TRUE);
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {

@@ -1,0 +1,5 @@
+﻿[net]
+mtu=1300
+
+[sip]
+ping_with_options=0
