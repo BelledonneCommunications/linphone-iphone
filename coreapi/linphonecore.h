@@ -522,9 +522,9 @@ void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char 
 
 LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
-const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
-const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj);
 bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
@@ -1021,7 +1021,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType 
  *@param lc #LinphoneCore object
  *@return #LinphoneProxyConfig with defualt value set 
  */
-LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
 	
 LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
