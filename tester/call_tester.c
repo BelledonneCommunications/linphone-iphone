@@ -437,6 +437,7 @@ static void simple_conference(void) {
 	ms_list_free(lcs);
 }
 
+#ifdef SRTP_ENABLED
 static void srtp_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
@@ -457,6 +458,7 @@ static void srtp_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif //SRTP_ENABLED
 
 static void early_media_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_early_rc");

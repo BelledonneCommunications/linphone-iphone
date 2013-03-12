@@ -232,6 +232,21 @@ static int test_suite_index(const char *suite_name) {
 	return -1;
 }
 
+static int test_index(const char *suite_name, const char *test_name) {
+	int j,i;
+	
+	j = test_suite_index(suite_name);
+	if(j != -1) {
+		for (i = 0; i < test_suite[j]->nb_tests; i++) {
+			if ((strcmp(test_name, test_suite[j]->tests[i].name) == 0) && (strlen(test_name) == strlen(test_suite[j]->tests[i].name))) {
+				return i;
+			}
+		}
+	}
+
+	return -1;
+}
+
 int liblinphone_tester_nb_test_suites(void) {
 	return nb_test_suites;
 }
@@ -352,6 +367,30 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 }
 #endif
 
+void helper(const char *name) {
+	fprintf(stderr,"%s \t--help\n"
+			"\t\t\t--verbose\n"
+			"\t\t\t--list-suites\n"
+			"\t\t\t--list-tests <suite>\n"
+			"\t\t\t--config <config path>\n"
+			"\t\t\t--domain <test sip domain>\n"
+			"\t\t\t---auth-domain <test auth domain>\n"
+#if HAVE_CU_GET_SUITE
+			"\t\t\t--suite <suite name>\n"
+			"\t\t\t--test <test name>\n"
+#endif
+#if HAVE_CU_CURSES
+			"\t\t\t--curses\n"
+#endif
+			, name);
+}
+
+#define CHECK_ARG(argument, index, argc)                                      \
+	if(index >= argc) {                                                   \
+		fprintf(stderr, "Missing argument for \"%s\"\n", argument);   \
+		return -1;                                                    \
+	}                                                                     \
+
 #ifndef WINAPI_FAMILY_PHONE_APP
 int main (int argc, char *argv[]) {
 	int i,j;
@@ -363,56 +402,60 @@ int main (int argc, char *argv[]) {
 
 	for(i=1;i<argc;++i){
 		if (strcmp(argv[i],"--help")==0){
-			fprintf(stderr,"%s \t--help\n"
-					"\t\t\t--verbose\n"
-					"\t\t\t--list-suites\n"
-					"\t\t\t--list-tests <suite>\n"
-					"\t\t\t--config <config path>\n"
-					"\t\t\t--domain <test sip domain>\n"
-					"\t\t\t---auth-domain <test auth domain>\n"
-#if HAVE_CU_GET_SUITE
-					"\t\t\t--suite <suite name>\n"
-					"\t\t\t--test <test name>\n"
-#endif
-#if HAVE_CU_CURSES
-					"\t\t\t--curses\n"
-#endif
-					, argv[0]);
+			helper(argv[0]);
 			return 0;
-		}else if (strcmp(argv[i],"--verbose")==0){
+		} else if (strcmp(argv[i],"--verbose")==0){
 #ifndef ANDROID
 			linphone_core_enable_logs(NULL);
 #else
 			linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
 #endif
-		}else if (strcmp(argv[i],"--domain")==0){
-			i++;
+		} else if (strcmp(argv[i],"--domain")==0){
+			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];
-		}else if (strcmp(argv[i],"--auth-domain")==0){
-			i++;
+		} else if (strcmp(argv[i],"--auth-domain")==0){
+			CHECK_ARG("--auth-domain", ++i, argc);
 			auth_domain=argv[i];
-		}else if (strcmp(argv[i],"--test")==0){
-			i++;
+		} else if (strcmp(argv[i],"--test")==0){
+			CHECK_ARG("--test", ++i, argc);
 			test_name=argv[i];
-		}else if (strcmp(argv[i],"--config")==0){
-			i++;
+		} else if (strcmp(argv[i],"--config")==0){
+			CHECK_ARG("--config", ++i, argc);
 			liblinphone_tester_file_prefix=argv[i];
-		}else if (strcmp(argv[i],"--suite")==0){
-			i++;
+		} else if (strcmp(argv[i],"--suite")==0){
+			CHECK_ARG("--suite", ++i, argc);
 			suite_name=argv[i];
-		}else if (strcmp(argv[i],"--list-suites")==0){
+		} else if (strcmp(argv[i],"--list-suites")==0){
 			for(j=0;j<liblinphone_tester_nb_test_suites();j++) {
 				suite_name = liblinphone_tester_test_suite_name(j);
 				fprintf(stdout, "%s\n", suite_name);
 			}
 			return 0;	
-		}else if (strcmp(argv[i],"--list-tests")==0){
-			suite_name = argv[++i];
+		} else if (strcmp(argv[i],"--list-tests")==0){
+			CHECK_ARG("--list-tests", ++i, argc);
+			suite_name = argv[i];
 			for(j=0;j<liblinphone_tester_nb_tests(suite_name);j++) {
 				test_name = liblinphone_tester_test_name(suite_name, j);
 				fprintf(stdout, "%s\n", test_name);
 			}	
 			return 0;
+		} else {
+			helper(argv[0]);
+			return -1;
+		}
+	}
+
+	// Check arguments
+	if(suite_name != NULL) {
+		if(test_suite_index(suite_name) == -1) {
+			fprintf(stderr, "Suite \"%s\" not found\n", suite_name);
+			return -1;
+		}		
+		if(test_name != NULL) {
+			if(test_index(suite_name, test_name) == -1) {
+				fprintf(stderr, "Test \"%s\" not found\n", test_name);
+				return -1;
+			}		
 		}
 	}
 	
