@@ -158,7 +158,18 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [self resetData];
     contact = ABPersonCreate();
     [tableController setContact:contact];
-    [tableController addSipField:address];
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+        LinphoneAddress *linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+        if ([username rangeOfString:@"@"].length > 0) {
+            [tableController addEmailField:username];
+        } else {
+            [tableController addSipField:address];
+        }
+        linphone_address_destroy(linphoneAddress);
+    } else {
+        [tableController addSipField:address];
+    }
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
@@ -179,7 +190,18 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
     [self resetData];
     contact = ABAddressBookGetPersonWithRecordID(addressBook, ABRecordGetRecordID(acontact));
     [tableController setContact:contact];
-    [tableController addSipField:address];
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+        LinphoneAddress *linphoneAddress = linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+        if ([username rangeOfString:@"@"].length > 0) {
+            [tableController addEmailField:username];
+        } else {
+            [tableController addSipField:address];
+        }
+        linphone_address_destroy(linphoneAddress);
+    } else {
+        [tableController addSipField:address];
+    }
     [self enableEdit:FALSE];
     [[tableController tableView] reloadData];
 }
