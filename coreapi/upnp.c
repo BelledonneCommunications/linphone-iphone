@@ -114,19 +114,17 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 static int linphone_upnp_strncmpi(const char *str1, const char *str2, int len) {
 	int i = 0;
 	char char1, char2;
-	while(true) {
-		if(i >= len) {
-			return 0;
-		}
+	while(i < len) {
 		char1 = toupper(*str1);
 		char2 = toupper(*str2);
-		if(char1 == '\0' || char2 == '\0' || char1 != char2) {
+		if(char1 == '\0' || char1 != char2) {
 			return char1 - char2;
 		}
 		str1++;
 		str2++;
 		i++;
 	}
+	return 0;
 }
 
 static int linphone_upnp_str_min(const char *str1, const char *str2) {
