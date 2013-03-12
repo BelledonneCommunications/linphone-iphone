@@ -7,6 +7,7 @@ common_SRC_FILES := \
 	presence_tester.c \
 	register_tester.c \
 	setup_tester.c \
+	upnp_tester.c \
  
 # neon
 
