@@ -123,7 +123,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	sal_op_release(op);
 }
 
-int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg,const char*t){
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	/*FIXME impement time*/
 	belle_sip_request_t* req;
 	char content_type_raw[256];
@@ -142,8 +142,8 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	return sal_op_send_request(op,req);
 
 }
-int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg, const char*t) {
-	return sal_message_send(op,from,to,"text/plain",msg,t);
+int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
+	return sal_message_send(op,from,to,"text/plain",msg);
 }
 
 void sal_op_message_fill_cbs(SalOp*op) {
