@@ -50,6 +50,7 @@ extern test_suite_t register_test_suite;
 extern test_suite_t call_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
+extern test_suite_t upnp_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
