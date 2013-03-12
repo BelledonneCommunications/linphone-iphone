@@ -119,17 +119,25 @@ typedef struct _CallCallbackObj
 
 static const int linphone_call_magic=0x3343;
 
+typedef enum _LinphoneChatMessageDir{
+	LinphoneChatMessageIncoming,
+	LinphoneChatMessageOutgoing
+} LinphoneChatMessageDir;
+
 struct _LinphoneChatMessage {
-	char* message;
 	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageDir dir;
+	char* message;
 	LinphoneChatMessageStateChangeCb cb;
 	void* cb_ud;
 	void* message_userdata;
 	char* external_body_url;
-	LinphoneAddress* from;
+	LinphoneAddress *from;
+	LinphoneAddress *to;
 	time_t time;
 	SalCustomHeader *custom_headers;
 	LinphoneChatMessageState state;
+	bool_t is_read;
 };
 
 typedef struct StunCandidate{
@@ -623,6 +631,7 @@ struct _LinphoneCore
 	LinphoneTunnel *tunnel;
 	char* device_id;
 	MSList *last_recv_msg_ids;
+	char *chat_db_file;
 #ifdef MSG_STORAGE_ENABLED
 	sqlite3 *db;
 #endif
@@ -707,19 +716,13 @@ void linphone_call_params_uninit(LinphoneCallParams *params);
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
 
-#define OUTGOING  0
-#define INCOMING  1
-
-#define NOT_READ  0
-#define READ 	  1
-
 #ifdef MSG_STORAGE_ENABLED
 sqlite3 * linphone_message_storage_init();
 #endif
-void linphone_core_set_history_message(LinphoneChatRoom *cr,const char *local_contact,const char *remote_contact, 
-                     int direction, const char *message,const char *date, int read, int state);
-void linphone_core_set_message_state(LinphoneChatRoom *cr,const char *message, int state,time_t date);
-
+void linphone_chat_message_store(LinphoneChatMessage *msg);
+void linphone_chat_message_store_state(LinphoneChatMessage *msg);
+void linphone_core_message_storage_init(LinphoneCore *lc);
+void linphone_core_message_storage_close(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

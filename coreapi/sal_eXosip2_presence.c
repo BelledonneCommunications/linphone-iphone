@@ -81,8 +81,23 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
-int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg, const char *t){
+#ifdef WIN32
+
+static inline char *my_ctime_r(const time_t *t, char *buf){
+	strcpy(buf,ctime(t));
+	return buf;
+}
+
+#else
+#define my_ctime_r ctime_r
+#endif
+
+int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
+	char t[26];
+	time_t curtime=time(NULL);
+	
+	my_ctime_r(&curtime,t);
 
 	if(op->cid == -1)
 	{
@@ -120,6 +135,8 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			eXosip_unlock();
 			return -1;
 		}
+		sal_exosip_add_custom_headers(sip,op->base.custom_headers);
+		osip_message_set_date(sip,t);
 		osip_message_set_content_type(sip,content_type);
 		if (msg) osip_message_set_body(sip,msg,strlen(msg));
 		eXosip_call_send_request(op->did,sip);
@@ -128,8 +145,8 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	return 0;
 }
 
-int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg,const char *t) {
-	return sal_message_send(op,from,to,"text/plain",msg,t);
+int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
+	return sal_message_send(op,from,to,"text/plain",msg);
 }
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){

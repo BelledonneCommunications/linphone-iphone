@@ -671,12 +671,17 @@ typedef enum _LinphoneChatMessageStates {
  */
 typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
+void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
 void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr,const char* message);
 const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
 LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
+MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
+void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
+void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
@@ -685,15 +690,17 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const Linphone
 LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
-LINPHONE_PUBLIC	LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
-LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
-LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
-LINPHONE_PUBLIC	const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
+const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message);
+const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
 time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);
 LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
+LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message);
 void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
 const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
 
@@ -1426,9 +1433,7 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
-MSList *linphone_chat_room_get_history(const char *to,LinphoneChatRoom *cr,int nb_message);
-void linphone_core_set_messages_flag_read(LinphoneChatRoom *cr,const char *from, int read);
-void linphone_core_delete_history(LinphoneCore *lc,const char *from);
+
 
 #ifdef __cplusplus
 }

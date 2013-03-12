@@ -666,21 +666,31 @@ if test x$enable_tunnel = xtrue; then
 fi
 
 AC_ARG_ENABLE(msg-storage,
-	[AS_HELP_STRING([--enable-msg-storage=[yes/no]], [Turn on compilation of message storage (default=yes)])],
+	[AS_HELP_STRING([--enable-msg-storage=[yes/no]], [Turn on compilation of message storage (default=auto)])],
 	[case "${enableval}" in
 		yes)	enable_msg_storage=true ;;
 		no)	enable_msg_storage=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-msg-storage) ;;
 	esac],
-	[enable_msg_storage=true]
+	[enable_msg_storage=auto]
 )
+
+echo "enable_msg_storage = $enable_msg_storage"
+
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
-if test x$enable_msg_storage = xtrue; then
-	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[],[
-		AC_MSG_ERROR([sqlite3 required for message storage not found.])] )
-	SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
-	AC_SUBST(SQLITE3_CFLAGS)
-	AC_SUBST(SQLITE3_LIBS)
+if test x$enable_msg_storage != xfalse; then
+	PKG_CHECK_MODULES(SQLITE3,[ sqlite3 >= 3.7.0],[
+		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		AC_SUBST(SQLITE3_CFLAGS)
+		AC_SUBST(SQLITE3_LIBS)
+		enable_msg_storage=true
+		],[
+		if test x$enable_msg_storage = xtrue; then 
+			AC_MSG_ERROR([sqlite3 required for message storage not found.])
+		fi
+		enable_msg_storage=false
+		] )
+	
 fi
 SIPSTACK_CFLAGS=
 SIPSTACK_LIBS=

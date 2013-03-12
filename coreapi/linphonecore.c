@@ -1310,9 +1310,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->tunnel=linphone_core_tunnel_new(lc);
 	if (lc->tunnel) linphone_tunnel_configure(lc->tunnel);
 #endif
-#ifdef MSG_STORAGE_ENABLED
-	lc->db=linphone_message_storage_init();
-#endif
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Ready"));
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
@@ -5383,6 +5380,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 
 	linphone_core_free_payload_types(lc);
+	
+	linphone_core_message_storage_close(lc);
 	ortp_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 #ifdef TUNNEL_ENABLED
@@ -5919,3 +5918,24 @@ void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp){
 int linphone_core_get_video_dscp(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","video_dscp",0x2e);
 }
+
+
+/**
+ * Sets the database filename where chat messages will be stored.
+ * If the file does not exist, it will be created.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @param path filesystem path
+**/
+void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path){
+	if (lc->chat_db_file){
+		ms_free(lc->chat_db_file);
+		lc->chat_db_file=NULL;
+	}
+	if (path) {
+		lc->chat_db_file=ms_strdup(path);
+		linphone_core_message_storage_init(lc);
+	}
+}
+
+
