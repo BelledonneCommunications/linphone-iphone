@@ -111,22 +111,24 @@ void linphone_upnp_config_remove_port_binding(UpnpContext *lupnp, const UpnpPort
 int linphone_upnp_context_send_remove_port_binding(UpnpContext *lupnp, UpnpPortBinding *port, bool_t retry);
 int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBinding *port, bool_t retry);
 
-
 static int linphone_upnp_strncmpi(const char *str1, const char *str2, int len) {
 	int i = 0;
 	char char1, char2;
-	while(*str1 != '\0' && *str2 != '\0' && i < len) {
+	while(true) {
+		if(i >= len) {
+			return 0;
+		}
 		char1 = toupper(*str1);
 		char2 = toupper(*str2);
-		if(char1 != char2) {
+		if(char1 == '\0' || char2 == '\0' || char1 != char2) {
 			return char1 - char2;
 		}
 		str1++;
 		str2++;
-		len++;
+		i++;
 	}
-	return 0;
 }
+
 static int linphone_upnp_str_min(const char *str1, const char *str2) {
 	int len1 = strlen(str1);
 	int len2 = strlen(str2);
@@ -135,6 +137,7 @@ static int linphone_upnp_str_min(const char *str1, const char *str2) {
 	}
 	return len1;
 }
+
 char * linphone_upnp_format_device_id(const char *device_id) {
 	char *ret = NULL;
 	char *tmp;
