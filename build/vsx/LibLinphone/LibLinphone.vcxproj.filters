@@ -35,6 +35,7 @@
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_presence.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_registration.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_sdp.c" />
+    <ClCompile Include="..\..\..\coreapi\message_storage.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\coreapi\enum.h" />
