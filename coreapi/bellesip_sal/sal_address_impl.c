@@ -85,7 +85,7 @@ int sal_address_get_port_int(const SalAddress *addr){
 SalTransport sal_address_get_transport(const SalAddress* addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
-	if (uri) {
+	if (uri && belle_sip_uri_get_transport_param(uri)) {
 		return sal_transport_parse(belle_sip_uri_get_transport_param(uri));
 	} else
 		return SalTransportUDP;

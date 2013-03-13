@@ -263,7 +263,17 @@ static void network_state_change(){
 	wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*register_ok);
 	linphone_core_destroy(lc);
 }
-
+static int get_number_of_udp_proxy(const LinphoneCore* lc) {
+	int number_of_udp_proxy=0;
+	LinphoneProxyConfig* proxy_cfg;
+	MSList* proxys;
+	for (proxys=(MSList*)linphone_core_get_proxy_config_list(lc);proxys!=NULL;proxys=proxys->next) {
+			proxy_cfg=(LinphoneProxyConfig*)proxys->data;
+			if (strcmp("udp",linphone_proxy_config_get_transport(proxy_cfg))==0)
+				number_of_udp_proxy++;
+	}
+	return number_of_udp_proxy;
+}
 static void transport_change(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -271,21 +281,25 @@ static void transport_change(){
 	stats* counters ;
 	LCSipTransports sip_tr;
 	LCSipTransports sip_tr_orig;
-	memset(&sip_tr,0,sizeof(sip_tr));
+	int number_of_udp_proxy=0;
 
+	memset(&sip_tr,0,sizeof(sip_tr));
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
 	counters = (stats*)linphone_core_get_user_data(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
+
+	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 	linphone_core_get_sip_transports(lc,&sip_tr_orig);
+
 	sip_tr.udp_port=sip_tr_orig.udp_port;
 
 	/*keep only udp*/
 	linphone_core_set_sip_transports(lc,&sip_tr);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+1));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+2));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(ms_list_size(proxys)-number_of_udp_proxy)));
 
 	linphone_core_destroy(lc);
 }
@@ -295,15 +309,17 @@ static void io_recv_error(){
 	LinphoneCore* lc;
 	int register_ok;
 	stats* counters ;
+	int number_of_udp_proxy=0;
 
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
 	counters = (stats*)linphone_core_get_user_data(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
+	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 	sal_set_recv_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-1 /*because 1 udp*/));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-number_of_udp_proxy /*because 1 udp*/));
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 
 	linphone_core_destroy(lc);

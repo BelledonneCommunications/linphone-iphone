@@ -539,6 +539,13 @@ bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg
 const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
 
 LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
+/*
+ * return the transport from either : service route, route, or addr
+ * @returns cfg object
+ * @return transport as string (I.E udp, tcp, tls, dtls)*/
+
+LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg);
+
 
 /* destruction is called automatically when removing the proxy config */
 void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);

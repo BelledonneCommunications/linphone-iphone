@@ -52,4 +52,4 @@ coreapi/help/registration
 coreapi/test_ecc
 coreapi/test_lsd
 gtk/version_date.h
-
+specs.c

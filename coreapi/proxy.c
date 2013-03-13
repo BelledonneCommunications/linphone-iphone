@@ -1322,3 +1322,25 @@ void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason err
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
 	return cfg->op?(const LinphoneAddress*) sal_op_get_service_route(cfg->op):NULL;
 }
+const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
+	const char* addr=NULL;
+	const char* ret="udp"; /*default value*/
+	SalAddress* route_addr=NULL;
+	if (linphone_proxy_config_get_service_route(cfg)) {
+		route_addr=(SalAddress*)linphone_proxy_config_get_service_route(cfg);
+	} else if (linphone_proxy_config_get_route(cfg)) {
+		addr=linphone_proxy_config_get_route(cfg);
+	} else if(linphone_proxy_config_get_addr(cfg)) {
+		addr=linphone_proxy_config_get_addr(cfg);
+	} else {
+		ms_error("Cannot guess transport for proxy with identity [%s]",linphone_proxy_config_get_identity(cfg));
+		return NULL;
+	}
+
+	if ((route_addr || (route_addr=sal_address_new(addr))) && sal_address_get_transport(route_addr)) {
+		ret=sal_transport_to_string(sal_address_get_transport(route_addr));
+		if (!linphone_proxy_config_get_service_route(cfg)) sal_address_destroy(route_addr); /*destroy except for service route*/
+	}
+
+	return ret;
+}
