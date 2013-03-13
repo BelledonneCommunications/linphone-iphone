@@ -5339,15 +5339,14 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_event_queue_destroy(lc->msevq);
 	lc->msevq=NULL;
 	/* save all config */
+	ui_config_uninit(lc);
+	sip_config_uninit(lc);
 	net_config_uninit(lc);
 	rtp_config_uninit(lc);
 	if (lc->ringstream) ring_stop(lc->ringstream);
 	sound_config_uninit(lc);
 	video_config_uninit(lc);
 	codecs_config_uninit(lc);
-	ui_config_uninit(lc);
-	sip_config_uninit(lc);
-
 
 	sip_setup_unregister_all();
 
