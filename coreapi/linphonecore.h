@@ -517,8 +517,8 @@ LINPHONE_PUBLIC	int linphone_proxy_config_done(LinphoneProxyConfig *obj);
  *
  */
 LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val);
-void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
-void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
 LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
@@ -529,10 +529,10 @@ LINPHONE_PUBLIC	const char *linphone_proxy_config_get_identity(const LinphonePro
 bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
 int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
-bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
 const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
-void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
@@ -555,7 +555,7 @@ SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg);
 /**
  * normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
  */
-int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
+LINPHONE_PUBLIC	int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 /*
  *  attached a user data to a proxy config
  */
@@ -1032,9 +1032,9 @@ LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(Linphone
 	
 LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
-void linphone_core_clear_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
 
-void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+LINPHONE_PUBLIC	void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 LINPHONE_PUBLIC	const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
@@ -1054,7 +1054,7 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 
 void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
 
-void linphone_core_clear_all_auth_info(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 
 void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
 
