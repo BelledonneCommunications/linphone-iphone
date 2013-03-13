@@ -459,6 +459,7 @@ typedef struct rtp_config
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
+	int disable_upnp;
 	bool_t rtp_no_xmit_on_audio_mute;
                               /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
