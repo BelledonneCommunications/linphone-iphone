@@ -282,7 +282,7 @@ static void transport_change(){
 	LCSipTransports sip_tr;
 	LCSipTransports sip_tr_orig;
 	int number_of_udp_proxy=0;
-
+	int total_number_of_proxies;
 	memset(&sip_tr,0,sizeof(sip_tr));
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
@@ -291,6 +291,7 @@ static void transport_change(){
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
+	total_number_of_proxies=ms_list_size(linphone_core_get_proxy_config_list(lc));
 	linphone_core_get_sip_transports(lc,&sip_tr_orig);
 
 	sip_tr.udp_port=sip_tr_orig.udp_port;
@@ -299,7 +300,7 @@ static void transport_change(){
 	linphone_core_set_sip_transports(lc,&sip_tr);
 	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(ms_list_size(proxys)-number_of_udp_proxy)));
+	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(total_number_of_proxies-number_of_udp_proxy)));
 
 	linphone_core_destroy(lc);
 }
