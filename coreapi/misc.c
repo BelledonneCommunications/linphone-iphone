@@ -1005,6 +1005,9 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 	return ret;
 }
 
+bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
+	return lp_config_get_int(lc->config,"sound","tone_indications",1);
+}
 
 #ifdef HAVE_GETIFADDRS
 
