@@ -7915,17 +7915,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>12</key>
+							<key>13</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>LinphoneUI/UICallBar/12/UICallBar.xib</string>
+								<string>LinphoneUI/UICallBar/13/UICallBar.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-11-13T08:39:33Z</date>
+					<date>2013-03-19T11:14:29Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -7935,7 +7935,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>6ce20b228103dd1de3d5c07ecc8cc68a
+					<string>9f9815d56c4734db373f49582fd9605c
 </string>
 					<key>name</key>
 					<string>UICallBar.xib</string>
@@ -8839,6 +8839,312 @@
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Route"; ObjectID = "164";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>164.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Route</string>
+								<key>fr</key>
+								<string>Route</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Route"; ObjectID = "164";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>164.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Route</string>
+								<key>fr</key>
+								<string>Route</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Speaker"; ObjectID = "168";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>168.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Speaker</string>
+								<key>fr</key>
+								<string>Haut parleur</string>
+								<key>ru</key>
+								<string>Динамик</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Speaker"; ObjectID = "168";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>168.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Speaker</string>
+								<key>fr</key>
+								<string>Haut parleur</string>
+								<key>ru</key>
+								<string>Динамик</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Receiver"; ObjectID = "169";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>169.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Receiver</string>
+								<key>fr</key>
+								<string>Écouteur</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Receiver"; ObjectID = "169";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>169.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Receiver</string>
+								<key>fr</key>
+								<string>Écouteur</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; accessibilityLabel = "Bluetooth"; ObjectID = "174";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>174.accessibilityLabel</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Bluetooth</string>
+								<key>fr</key>
+								<string>Bluetooth</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Bluetooth"; ObjectID = "174";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>174.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Bluetooth</string>
+								<key>fr</key>
+								<string>Bluetooth</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Route"; ObjectID = "183";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>183.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Route</string>
+								<key>fr</key>
+								<string>Route</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Speaker"; ObjectID = "187";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>187.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Speaker</string>
+								<key>fr</key>
+								<string>Haut parleur</string>
+								<key>ru</key>
+								<string>Динамик</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Receiver"; ObjectID = "188";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>188.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Receiver</string>
+								<key>fr</key>
+								<string>Écouteur</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Class = "IBUIButton"; normalTitle = "Bluetooth"; ObjectID = "193";</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>193.normalTitle</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Bluetooth</string>
+								<key>fr</key>
+								<string>Bluetooth</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array>
@@ -9085,11 +9391,11 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>12</string>
+						<string>13</string>
 						<key>fr</key>
-						<string>12</string>
+						<string>13</string>
 						<key>ru</key>
-						<string>12</string>
+						<string>13</string>
 					</dict>
 				</dict>
 				<dict>

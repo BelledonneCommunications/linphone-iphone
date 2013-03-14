@@ -7,6 +7,70 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
+		1599105416F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
+		1599105516F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */; };
+		1599105616F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */; };
+		1599105716F746B2007BF52B /* route_bluetooth_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */; };
+		1599105816F746B2007BF52B /* route_bluetooth_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */; };
+		1599105916F746B2007BF52B /* route_bluetooth_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */; };
+		1599105A16F746B2007BF52B /* route_bluetooth_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */; };
+		1599105B16F746B2007BF52B /* route_phone_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */; };
+		1599105C16F746B2007BF52B /* route_phone_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */; };
+		1599105D16F746B2007BF52B /* route_phone_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */; };
+		1599105E16F746B2007BF52B /* route_phone_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */; };
+		1599105F16F746B2007BF52B /* route_phone_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */; };
+		1599106016F746B2007BF52B /* route_phone_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */; };
+		1599106116F746B2007BF52B /* route_phone_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */; };
+		1599106216F746B2007BF52B /* route_phone_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */; };
+		1599106316F746B2007BF52B /* route_speaker_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */; };
+		1599106416F746B2007BF52B /* route_speaker_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */; };
+		1599106516F746B2007BF52B /* route_speaker_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */; };
+		1599106616F746B2007BF52B /* route_speaker_off_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */; };
+		1599106716F746B2007BF52B /* route_speaker_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */; };
+		1599106816F746B2007BF52B /* route_speaker_off_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */; };
+		1599106916F746B2007BF52B /* route_speaker_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */; };
+		1599106A16F746B2007BF52B /* route_speaker_on_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */; };
+		1599106B16F746B2007BF52B /* routes_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104F16F746B2007BF52B /* routes_default_landscape.png */; };
+		1599106C16F746B2007BF52B /* routes_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104F16F746B2007BF52B /* routes_default_landscape.png */; };
+		1599106D16F746B2007BF52B /* routes_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105016F746B2007BF52B /* routes_disabled_landscape.png */; };
+		1599106E16F746B2007BF52B /* routes_disabled_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105016F746B2007BF52B /* routes_disabled_landscape.png */; };
+		1599106F16F746B2007BF52B /* routes_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105116F746B2007BF52B /* routes_over_landscape.png */; };
+		1599107016F746B2007BF52B /* routes_over_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105116F746B2007BF52B /* routes_over_landscape.png */; };
+		1599107116F746B2007BF52B /* routes_selected_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105216F746B2007BF52B /* routes_selected_landscape.png */; };
+		1599107216F746B2007BF52B /* routes_selected_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599105216F746B2007BF52B /* routes_selected_landscape.png */; };
+		15AF3C5416F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */; };
+		15AF3C5516F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */; };
+		15AF3C5616F37A3E00FC52EC /* route_bluetooth_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */; };
+		15AF3C5716F37A3E00FC52EC /* route_bluetooth_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */; };
+		15AF3C5816F37A3E00FC52EC /* route_bluetooth_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */; };
+		15AF3C5916F37A3E00FC52EC /* route_bluetooth_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */; };
+		15AF3C5C16F37A3E00FC52EC /* route_bluetooth_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */; };
+		15AF3C5D16F37A3E00FC52EC /* route_bluetooth_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */; };
+		15AF3C6C16F37A4A00FC52EC /* route_phone_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */; };
+		15AF3C6D16F37A4A00FC52EC /* route_phone_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */; };
+		15AF3C6E16F37A4A00FC52EC /* route_phone_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */; };
+		15AF3C6F16F37A4A00FC52EC /* route_phone_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */; };
+		15AF3C7016F37A4A00FC52EC /* route_phone_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */; };
+		15AF3C7116F37A4A00FC52EC /* route_phone_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */; };
+		15AF3C7416F37A4A00FC52EC /* route_phone_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */; };
+		15AF3C7516F37A4A00FC52EC /* route_phone_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */; };
+		15AF3C8416F37A5500FC52EC /* route_speaker_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */; };
+		15AF3C8516F37A5500FC52EC /* route_speaker_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */; };
+		15AF3C8616F37A5500FC52EC /* route_speaker_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */; };
+		15AF3C8716F37A5500FC52EC /* route_speaker_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */; };
+		15AF3C8816F37A5500FC52EC /* route_speaker_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */; };
+		15AF3C8916F37A5500FC52EC /* route_speaker_off_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */; };
+		15AF3C8C16F37A5500FC52EC /* route_speaker_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */; };
+		15AF3C8D16F37A5500FC52EC /* route_speaker_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */; };
+		15AF3C9816F37A5D00FC52EC /* routes_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9416F37A5D00FC52EC /* routes_default.png */; };
+		15AF3C9916F37A5D00FC52EC /* routes_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9416F37A5D00FC52EC /* routes_default.png */; };
+		15AF3C9A16F37A5D00FC52EC /* routes_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9516F37A5D00FC52EC /* routes_disabled.png */; };
+		15AF3C9B16F37A5D00FC52EC /* routes_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9516F37A5D00FC52EC /* routes_disabled.png */; };
+		15AF3C9C16F37A5D00FC52EC /* routes_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9616F37A5D00FC52EC /* routes_over.png */; };
+		15AF3C9D16F37A5D00FC52EC /* routes_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9616F37A5D00FC52EC /* routes_over.png */; };
+		15AF3C9E16F37A5D00FC52EC /* routes_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9716F37A5D00FC52EC /* routes_selected.png */; };
+		15AF3C9F16F37A5D00FC52EC /* routes_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9716F37A5D00FC52EC /* routes_selected.png */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -1345,6 +1409,38 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default_landscape.png; path = Resources/route_bluetooth_off_default_landscape.png; sourceTree = "<group>"; };
+		1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_disabled_landscape.png; path = Resources/route_bluetooth_off_disabled_landscape.png; sourceTree = "<group>"; };
+		1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_over_landscape.png; path = Resources/route_bluetooth_off_over_landscape.png; sourceTree = "<group>"; };
+		1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_on_default_landscape.png; path = Resources/route_bluetooth_on_default_landscape.png; sourceTree = "<group>"; };
+		1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_default_landscape.png; path = Resources/route_phone_off_default_landscape.png; sourceTree = "<group>"; };
+		1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_disabled_landscape.png; path = Resources/route_phone_off_disabled_landscape.png; sourceTree = "<group>"; };
+		1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_over_landscape.png; path = Resources/route_phone_off_over_landscape.png; sourceTree = "<group>"; };
+		1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_on_default_landscape.png; path = Resources/route_phone_on_default_landscape.png; sourceTree = "<group>"; };
+		1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_default_landscape.png; path = Resources/route_speaker_off_default_landscape.png; sourceTree = "<group>"; };
+		1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_disabled_landscape.png; path = Resources/route_speaker_off_disabled_landscape.png; sourceTree = "<group>"; };
+		1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_over_landscape.png; path = Resources/route_speaker_off_over_landscape.png; sourceTree = "<group>"; };
+		1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_on_default_landscape.png; path = Resources/route_speaker_on_default_landscape.png; sourceTree = "<group>"; };
+		1599104F16F746B2007BF52B /* routes_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_default_landscape.png; path = Resources/routes_default_landscape.png; sourceTree = "<group>"; };
+		1599105016F746B2007BF52B /* routes_disabled_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_disabled_landscape.png; path = Resources/routes_disabled_landscape.png; sourceTree = "<group>"; };
+		1599105116F746B2007BF52B /* routes_over_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_over_landscape.png; path = Resources/routes_over_landscape.png; sourceTree = "<group>"; };
+		1599105216F746B2007BF52B /* routes_selected_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_selected_landscape.png; path = Resources/routes_selected_landscape.png; sourceTree = "<group>"; };
+		15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default.png; path = Resources/route_bluetooth_off_default.png; sourceTree = "<group>"; };
+		15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_disabled.png; path = Resources/route_bluetooth_off_disabled.png; sourceTree = "<group>"; };
+		15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_over.png; path = Resources/route_bluetooth_off_over.png; sourceTree = "<group>"; };
+		15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_on_default.png; path = Resources/route_bluetooth_on_default.png; sourceTree = "<group>"; };
+		15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_default.png; path = Resources/route_phone_off_default.png; sourceTree = "<group>"; };
+		15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_disabled.png; path = Resources/route_phone_off_disabled.png; sourceTree = "<group>"; };
+		15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_off_over.png; path = Resources/route_phone_off_over.png; sourceTree = "<group>"; };
+		15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_phone_on_default.png; path = Resources/route_phone_on_default.png; sourceTree = "<group>"; };
+		15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_default.png; path = Resources/route_speaker_off_default.png; sourceTree = "<group>"; };
+		15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_disabled.png; path = Resources/route_speaker_off_disabled.png; sourceTree = "<group>"; };
+		15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_off_over.png; path = Resources/route_speaker_off_over.png; sourceTree = "<group>"; };
+		15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_speaker_on_default.png; path = Resources/route_speaker_on_default.png; sourceTree = "<group>"; };
+		15AF3C9416F37A5D00FC52EC /* routes_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_default.png; path = Resources/routes_default.png; sourceTree = "<group>"; };
+		15AF3C9516F37A5D00FC52EC /* routes_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_disabled.png; path = Resources/routes_disabled.png; sourceTree = "<group>"; };
+		15AF3C9616F37A5D00FC52EC /* routes_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_over.png; path = Resources/routes_over.png; sourceTree = "<group>"; };
+		15AF3C9716F37A5D00FC52EC /* routes_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = routes_selected.png; path = Resources/routes_selected.png; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
@@ -3321,6 +3417,38 @@
 				2237D4081084D7A9001383EE /* ring.wav */,
 				22F254801073D99800AC9B3F /* ringback.wav */,
 				70571E1913FABCB000CDD3C2 /* rootca.pem */,
+				15AF3C4C16F37A3E00FC52EC /* route_bluetooth_off_default.png */,
+				1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */,
+				15AF3C4D16F37A3E00FC52EC /* route_bluetooth_off_disabled.png */,
+				1599104416F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png */,
+				15AF3C4E16F37A3E00FC52EC /* route_bluetooth_off_over.png */,
+				1599104516F746B2007BF52B /* route_bluetooth_off_over_landscape.png */,
+				15AF3C5016F37A3E00FC52EC /* route_bluetooth_on_default.png */,
+				1599104616F746B2007BF52B /* route_bluetooth_on_default_landscape.png */,
+				15AF3C6416F37A4A00FC52EC /* route_phone_off_default.png */,
+				1599104716F746B2007BF52B /* route_phone_off_default_landscape.png */,
+				15AF3C6516F37A4A00FC52EC /* route_phone_off_disabled.png */,
+				1599104816F746B2007BF52B /* route_phone_off_disabled_landscape.png */,
+				15AF3C6616F37A4A00FC52EC /* route_phone_off_over.png */,
+				1599104916F746B2007BF52B /* route_phone_off_over_landscape.png */,
+				15AF3C6816F37A4A00FC52EC /* route_phone_on_default.png */,
+				1599104A16F746B2007BF52B /* route_phone_on_default_landscape.png */,
+				15AF3C7C16F37A5500FC52EC /* route_speaker_off_default.png */,
+				1599104B16F746B2007BF52B /* route_speaker_off_default_landscape.png */,
+				15AF3C7D16F37A5500FC52EC /* route_speaker_off_disabled.png */,
+				1599104C16F746B2007BF52B /* route_speaker_off_disabled_landscape.png */,
+				15AF3C7E16F37A5500FC52EC /* route_speaker_off_over.png */,
+				1599104D16F746B2007BF52B /* route_speaker_off_over_landscape.png */,
+				15AF3C8016F37A5500FC52EC /* route_speaker_on_default.png */,
+				1599104E16F746B2007BF52B /* route_speaker_on_default_landscape.png */,
+				15AF3C9416F37A5D00FC52EC /* routes_default.png */,
+				1599104F16F746B2007BF52B /* routes_default_landscape.png */,
+				15AF3C9516F37A5D00FC52EC /* routes_disabled.png */,
+				1599105016F746B2007BF52B /* routes_disabled_landscape.png */,
+				15AF3C9616F37A5D00FC52EC /* routes_over.png */,
+				1599105116F746B2007BF52B /* routes_over_landscape.png */,
+				15AF3C9716F37A5D00FC52EC /* routes_selected.png */,
+				1599105216F746B2007BF52B /* routes_selected_landscape.png */,
 				D3D6A3A5159B0EFE005F692C /* security_ko.png */,
 				D3D6A3A7159B0EFE005F692C /* security_ok.png */,
 				D3D6A3A6159B0EFE005F692C /* security_pending.png */,
@@ -4226,6 +4354,38 @@
 				D310392A162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
 				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
 				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
+				15AF3C5416F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */,
+				15AF3C5616F37A3E00FC52EC /* route_bluetooth_off_disabled.png in Resources */,
+				15AF3C5816F37A3E00FC52EC /* route_bluetooth_off_over.png in Resources */,
+				15AF3C5C16F37A3E00FC52EC /* route_bluetooth_on_default.png in Resources */,
+				15AF3C6C16F37A4A00FC52EC /* route_phone_off_default.png in Resources */,
+				15AF3C6E16F37A4A00FC52EC /* route_phone_off_disabled.png in Resources */,
+				15AF3C7016F37A4A00FC52EC /* route_phone_off_over.png in Resources */,
+				15AF3C7416F37A4A00FC52EC /* route_phone_on_default.png in Resources */,
+				15AF3C8416F37A5500FC52EC /* route_speaker_off_default.png in Resources */,
+				15AF3C8616F37A5500FC52EC /* route_speaker_off_disabled.png in Resources */,
+				15AF3C8816F37A5500FC52EC /* route_speaker_off_over.png in Resources */,
+				15AF3C8C16F37A5500FC52EC /* route_speaker_on_default.png in Resources */,
+				15AF3C9816F37A5D00FC52EC /* routes_default.png in Resources */,
+				15AF3C9A16F37A5D00FC52EC /* routes_disabled.png in Resources */,
+				15AF3C9C16F37A5D00FC52EC /* routes_over.png in Resources */,
+				15AF3C9E16F37A5D00FC52EC /* routes_selected.png in Resources */,
+				1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */,
+				1599105516F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */,
+				1599105716F746B2007BF52B /* route_bluetooth_off_over_landscape.png in Resources */,
+				1599105916F746B2007BF52B /* route_bluetooth_on_default_landscape.png in Resources */,
+				1599105B16F746B2007BF52B /* route_phone_off_default_landscape.png in Resources */,
+				1599105D16F746B2007BF52B /* route_phone_off_disabled_landscape.png in Resources */,
+				1599105F16F746B2007BF52B /* route_phone_off_over_landscape.png in Resources */,
+				1599106116F746B2007BF52B /* route_phone_on_default_landscape.png in Resources */,
+				1599106316F746B2007BF52B /* route_speaker_off_default_landscape.png in Resources */,
+				1599106516F746B2007BF52B /* route_speaker_off_disabled_landscape.png in Resources */,
+				1599106716F746B2007BF52B /* route_speaker_off_over_landscape.png in Resources */,
+				1599106916F746B2007BF52B /* route_speaker_on_default_landscape.png in Resources */,
+				1599106B16F746B2007BF52B /* routes_default_landscape.png in Resources */,
+				1599106D16F746B2007BF52B /* routes_disabled_landscape.png in Resources */,
+				1599106F16F746B2007BF52B /* routes_over_landscape.png in Resources */,
+				1599107116F746B2007BF52B /* routes_selected_landscape.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4730,6 +4890,38 @@
 				D310392B162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
 				D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */,
 				D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */,
+				15AF3C5516F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */,
+				15AF3C5716F37A3E00FC52EC /* route_bluetooth_off_disabled.png in Resources */,
+				15AF3C5916F37A3E00FC52EC /* route_bluetooth_off_over.png in Resources */,
+				15AF3C5D16F37A3E00FC52EC /* route_bluetooth_on_default.png in Resources */,
+				15AF3C6D16F37A4A00FC52EC /* route_phone_off_default.png in Resources */,
+				15AF3C6F16F37A4A00FC52EC /* route_phone_off_disabled.png in Resources */,
+				15AF3C7116F37A4A00FC52EC /* route_phone_off_over.png in Resources */,
+				15AF3C7516F37A4A00FC52EC /* route_phone_on_default.png in Resources */,
+				15AF3C8516F37A5500FC52EC /* route_speaker_off_default.png in Resources */,
+				15AF3C8716F37A5500FC52EC /* route_speaker_off_disabled.png in Resources */,
+				15AF3C8916F37A5500FC52EC /* route_speaker_off_over.png in Resources */,
+				15AF3C8D16F37A5500FC52EC /* route_speaker_on_default.png in Resources */,
+				15AF3C9916F37A5D00FC52EC /* routes_default.png in Resources */,
+				15AF3C9B16F37A5D00FC52EC /* routes_disabled.png in Resources */,
+				15AF3C9D16F37A5D00FC52EC /* routes_over.png in Resources */,
+				15AF3C9F16F37A5D00FC52EC /* routes_selected.png in Resources */,
+				1599105416F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */,
+				1599105616F746B2007BF52B /* route_bluetooth_off_disabled_landscape.png in Resources */,
+				1599105816F746B2007BF52B /* route_bluetooth_off_over_landscape.png in Resources */,
+				1599105A16F746B2007BF52B /* route_bluetooth_on_default_landscape.png in Resources */,
+				1599105C16F746B2007BF52B /* route_phone_off_default_landscape.png in Resources */,
+				1599105E16F746B2007BF52B /* route_phone_off_disabled_landscape.png in Resources */,
+				1599106016F746B2007BF52B /* route_phone_off_over_landscape.png in Resources */,
+				1599106216F746B2007BF52B /* route_phone_on_default_landscape.png in Resources */,
+				1599106416F746B2007BF52B /* route_speaker_off_default_landscape.png in Resources */,
+				1599106616F746B2007BF52B /* route_speaker_off_disabled_landscape.png in Resources */,
+				1599106816F746B2007BF52B /* route_speaker_off_over_landscape.png in Resources */,
+				1599106A16F746B2007BF52B /* route_speaker_on_default_landscape.png in Resources */,
+				1599106C16F746B2007BF52B /* routes_default_landscape.png in Resources */,
+				1599106E16F746B2007BF52B /* routes_disabled_landscape.png in Resources */,
+				1599107016F746B2007BF52B /* routes_over_landscape.png in Resources */,
+				1599107216F746B2007BF52B /* routes_selected_landscape.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
