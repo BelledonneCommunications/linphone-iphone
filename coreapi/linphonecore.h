@@ -404,7 +404,7 @@ bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
 void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified);
 LINPHONE_PUBLIC void linphone_call_send_vfu_request(LinphoneCall *call);
 LINPHONE_PUBLIC void *linphone_call_get_user_pointer(LinphoneCall *call);
-void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
+LINPHONE_PUBLIC	void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 LINPHONE_PUBLIC	void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
@@ -1365,7 +1365,7 @@ void linphone_core_set_rtp_transport_factories(LinphoneCore* lc, LinphoneRtpTran
 
 int linphone_core_get_current_call_stats(LinphoneCore *lc, rtp_stats_t *local, rtp_stats_t *remote);
 
-int linphone_core_get_calls_nb(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	const MSList *linphone_core_get_calls(LinphoneCore *lc);
 
