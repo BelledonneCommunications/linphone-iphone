@@ -2118,9 +2118,10 @@ void linphone_core_iterate(LinphoneCore *lc){
 			ms_message("incoming call ringing for %i seconds",elapsed);
 			if (elapsed>lc->sip_conf.inc_timeout){
 				ms_message("incoming call timeout (%i)",lc->sip_conf.inc_timeout);
+				LinphoneReason decline_reason=lc->current_call ? LinphoneReasonBusy : LinphoneReasonDeclined;
 				call->log->status=LinphoneCallMissed;
 				call->reason=LinphoneReasonNotAnswered;
-				linphone_core_terminate_call(lc,call);
+				linphone_core_decline_call(lc,call,decline_reason);
 			}
 		}
 		if (lc->sip_conf.in_call_timeout > 0 && elapsed>lc->sip_conf.in_call_timeout) {
@@ -2754,7 +2755,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	}else{
 		/* else play a tone within the context of the current call */
 		call->ringing_beep=TRUE;
-		linphone_core_play_tone(lc);
+		linphone_core_play_named_tone(lc,LinphoneToneCallWaiting);
 	}
 
 	linphone_call_set_state(call,LinphoneCallIncomingReceived,"Incoming call");
@@ -3305,8 +3306,7 @@ bool_t linphone_core_in_call(const LinphoneCore *lc){
  *
  * @ingroup call_control
 **/
-LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
-{
+LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc){
 	return lc->current_call;
 }
 
@@ -3316,7 +3316,14 @@ LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc)
  *
  * @ingroup call_control
 **/
-int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
+int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
+	int err=_linphone_core_pause_call(lc,call);
+	if (err==0)  call->paused_by_app=TRUE;
+	return err;
+}
+
+/* Internal version that does not play tone indication*/
+int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 {
 	const char *subject=NULL;
 
@@ -3354,6 +3361,7 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		lc->vtable.display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
+	call->paused_by_app=FALSE;
 	return 0;
 }
 
@@ -3367,7 +3375,7 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 		LinphoneCall *call=(LinphoneCall *)elem->data;
 		LinphoneCallState cs=linphone_call_get_state(call);
 		if (cs==LinphoneCallStreamsRunning || cs==LinphoneCallPausedByRemote){
-			linphone_core_pause_call(lc,call);
+			_linphone_core_pause_call(lc,call);
 		}
 	}
 	return 0;
@@ -3382,7 +3390,11 @@ void linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	current_call=linphone_core_get_current_call(lc);
 	if(current_call != NULL){
 		ms_message("Pausing automatically the current call.");
-		linphone_core_pause_call(lc,current_call);
+		_linphone_core_pause_call(lc,current_call);
+	}
+	if (lc->ringstream){
+		ring_stop(lc->ringstream);
+		lc->ringstream=NULL;
 	}
 }
 
@@ -4905,11 +4917,52 @@ void linphone_core_play_tone(LinphoneCore *lc){
 		ms_error("No dtmf generator at this time !");
 		return;
 	}
+	memset(&def,0,sizeof(def));
 	def.duration=300;
-	def.frequency=500;
+	def.frequencies[0]=500;
 	def.amplitude=1;
 	def.interval=2000;
 	ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
+}
+
+void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
+	if (linphone_core_tone_indications_enabled(lc)){
+		MSFilter *f=get_dtmf_gen(lc);
+		MSDtmfGenCustomTone def;
+		if (f==NULL){
+			ms_error("No dtmf generator at this time !");
+			return;
+		}
+		memset(&def,0,sizeof(def));
+		def.amplitude=1;
+		/*these are french tones, excepted the failed one, which is USA congestion tone (does not exist in France)*/
+		switch(toneid){
+			case LinphoneToneCallOnHold:
+			case LinphoneToneCallWaiting:
+				def.duration=300;
+				def.frequencies[0]=440;
+				def.interval=2000;
+			break;
+			case LinphoneToneBusy:
+				def.duration=500;
+				def.frequencies[0]=440;
+				def.interval=500;
+				def.repeat_count=3;
+			break;
+			case LinphoneToneCallFailed:
+				def.duration=250;
+				def.frequencies[0]=480;
+				def.frequencies[0]=620;
+				def.interval=250;
+				def.repeat_count=3;
+				
+			break;
+			default:
+				ms_warning("Unhandled tone id.");
+		}
+		if (def.duration>0)
+			ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
+	}
 }
 
 /**

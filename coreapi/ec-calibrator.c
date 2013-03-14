@@ -133,6 +133,9 @@ static void on_tone_received(void *data, MSFilter *f, unsigned int event_id, voi
 static void ecc_play_tones(EcCalibrator *ecc){
 	MSDtmfGenCustomTone tone;
 	MSToneDetectorDef expected_tone;
+	
+	memset(&tone,0,sizeof(tone));
+	memset(&expected_tone,0,sizeof(expected_tone));
 
 	ms_filter_set_notify_callback(ecc->det,on_tone_received,ecc);
 
@@ -161,7 +164,7 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	
 	/*play an initial tone to startup the audio playback/capture*/
 	
-	tone.frequency=140;
+	tone.frequencies[0]=140;
 	tone.duration=1000;
 	tone.amplitude=0.5;
 
@@ -172,17 +175,17 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	
 	/* play the three tones*/
 	
-	tone.frequency=2000;
+	tone.frequencies[0]=2000;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequency=2300;
+	tone.frequencies[0]=2300;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequency=2500;
+	tone.frequencies[0]=2500;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
