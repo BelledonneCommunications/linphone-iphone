@@ -372,11 +372,12 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 void helper(const char *name) {
 	fprintf(stderr,"%s \t--help\n"
 			"\t\t\t--verbose\n"
+			"\t\t\t--silent\n"
 			"\t\t\t--list-suites\n"
 			"\t\t\t--list-tests <suite>\n"
 			"\t\t\t--config <config path>\n"
 			"\t\t\t--domain <test sip domain>\n"
-			"\t\t\t---auth-domain <test auth domain>\n"
+			"\t\t\t--auth-domain <test auth domain>\n"
 #if HAVE_CU_GET_SUITE
 			"\t\t\t--suite <suite name>\n"
 			"\t\t\t--test <test name>\n"
@@ -412,6 +413,8 @@ int main (int argc, char *argv[]) {
 #else
 			linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
 #endif
+		} else if (strcmp(argv[i],"--silent")==0){
+			ortp_set_log_level_mask(ORTP_FATAL);
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];

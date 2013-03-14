@@ -27,7 +27,9 @@ static void upnp_start_n_stop(void) {
 	int tmp = 0;
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2(liblinphone_tester_file_prefix, "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
+#ifdef BUILD_UPNP
 	CU_ASSERT_TRUE(lc_upnp->lc->upnp != NULL);
+#endif
 	linphone_core_manager_destroy(lc_upnp);
 }
 
