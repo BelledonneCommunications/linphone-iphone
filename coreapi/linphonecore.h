@@ -559,11 +559,11 @@ LINPHONE_PUBLIC	int linphone_proxy_config_normalize_number(LinphoneProxyConfig *
 /*
  *  attached a user data to a proxy config
  */
-void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud);
 /*
  *  get user data to a proxy config. return null if any
  */
-void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr);
+LINPHONE_PUBLIC	void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr);
 
 /**
  * @}
@@ -697,11 +697,11 @@ LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const Linphone
 LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
-const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
 const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message);
-const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
-void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
-const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC	void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
+LINPHONE_PUBLIC	const char * linphone_chat_message_get_text(const LinphoneChatMessage* message);
 time_t linphone_chat_message_get_time(const LinphoneChatMessage* message);
 void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message);
 void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void*);

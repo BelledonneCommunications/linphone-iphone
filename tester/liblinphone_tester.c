@@ -275,7 +275,9 @@ void liblinphone_tester_init(void) {
 	add_test_suite(&call_test_suite);
 	add_test_suite(&message_test_suite);
 	add_test_suite(&presence_test_suite);
+#ifdef UPNP
 	add_test_suite(&upnp_test_suite);
+#endif
 }
 
 void liblinphone_tester_uninit(void) {
