@@ -2328,7 +2328,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 #endif
 	LinphoneAddress *ctt=NULL;
 #ifdef USE_BELLESIP
-	LinphoneAddress *ret;
+	LinphoneAddress *ret=NULL;
 #else
 	char* ret;
 #endif

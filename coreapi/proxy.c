@@ -272,7 +272,6 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 
 		const char *localip = NULL;
 		char *tmp;
-		LCSipTransports tr;
 		LinphoneAddress *contact=linphone_address_new(obj->reg_identity);
 
 		if (obj->contact_params)
@@ -293,6 +292,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 #ifdef BUILD_UPNP
 		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
 			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
+			LCSipTransports tr;
 			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
 			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
 			linphone_core_get_sip_transports(obj->lc,&tr);
@@ -316,12 +316,15 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		if(localport == -1) {
 			localport = linphone_core_get_sip_port(obj->lc);
 		}
-		linphone_core_get_sip_transports(obj->lc,&tr);
-		if (tr.udp_port <= 0) {
-			if (tr.tcp_port>0) {
-				sal_address_set_param(contact,"transport","tcp");
-			} else if (tr.tls_port>0) {
-				sal_address_set_param(contact,"transport","tls");
+		{
+			LCSipTransports tr;
+			linphone_core_get_sip_transports(obj->lc,&tr);
+			if (tr.udp_port <= 0) {
+				if (tr.tcp_port>0) {
+					sal_address_set_param(contact,"transport","tcp");
+				} else if (tr.tls_port>0) {
+					sal_address_set_param(contact,"transport","tls");
+				}
 			}
 		}
 #endif
