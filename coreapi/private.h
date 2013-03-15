@@ -211,6 +211,7 @@ struct _LinphoneCall
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
 	bool_t record_active;
+	bool_t paused_by_app;
 };
 
 
@@ -466,6 +467,7 @@ typedef struct rtp_config
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
+	int disable_upnp;
 	bool_t rtp_no_xmit_on_audio_mute;
                               /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
@@ -684,6 +686,8 @@ void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
+int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 /* When a conference participant pause the conference he may send a music.
@@ -723,6 +727,15 @@ void linphone_chat_message_store(LinphoneChatMessage *msg);
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
+
+typedef enum _LinphoneToneID{
+	LinphoneToneBusy,
+	LinphoneToneCallWaiting,
+	LinphoneToneCallOnHold,
+	LinphoneToneCallFailed
+}LinphoneToneID;
+void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
+bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 
 #ifdef __cplusplus
 }

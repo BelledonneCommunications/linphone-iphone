@@ -151,7 +151,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		bool_t send_ringbacktone=FALSE;
 		
 		if (call->audiostream==NULL){
-			/*this happens after pausing the call locally. The streams is destroyed and then we wait the 200Ok to recreate it*/
+			/*this happens after pausing the call locally. The streams are destroyed and then we wait the 200Ok to recreate them*/
 			linphone_call_init_media_streams (call);
 		}
 		if (call->state==LinphoneCallIncomingEarlyMedia && linphone_core_get_remote_ringback_tone (lc)!=NULL){
@@ -162,6 +162,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			all_muted=TRUE;
 		}
 		linphone_call_start_media_streams(call,all_muted,send_ringbacktone);
+	}
+	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
+		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
 }
 #if 0
@@ -654,6 +657,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	} else if (sr == SalReasonBusy) {
 		call->reason=LinphoneReasonBusy;
 		linphone_call_set_state(call,LinphoneCallError,"User is busy.");
+		linphone_core_play_named_tone(lc,LinphoneToneBusy);
 	} else {
 		linphone_call_set_state(call,LinphoneCallError,msg);
 	}
@@ -809,7 +813,7 @@ static void refer_received(Sal *sal, SalOp *op, const char *referto){
 		}
 		if (call->state!=LinphoneCallPaused){
 			ms_message("Automatically pausing current call to accept transfer.");
-			linphone_core_pause_call(lc,call);
+			_linphone_core_pause_call(lc,call);
 			call->was_automatically_paused=TRUE;
 			/*then we will start the refered when the pause is accepted, in order to serialize transactions within the dialog.
 			 * Indeed we need to avoid to send a NOTIFY to inform about of state of the refered call while the pause isn't completed.

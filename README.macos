@@ -99,4 +99,20 @@ For a better appearance, you can install the gtk-quartz-engine (a gtk theme) tha
 
 Generate a new bundle to have it included.
 
+libiconv hack 
+*************
+
+The Makefile.am rules used to generate the bundle fetch a libiconv.2.dylib from a linphone download page.
+This library adds some additional symbols so that dependencies requiring the iconv from /usr/lib and the ones requiring from the bundle are both satisfied.
+In case this library needs to generated, here are the commands:
+ $ wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+ $ cd libiconv-1.14
+ $ patch -p1 < ../linphone/build/macos/libiconv-macos.patch
+ $ ./configure --prefix=/opt/local --disable-static 'CFLAGS=-arch i386 -arch x86_64 -mmacosx-version-min=10.5' 'LDFLAGS=-arch i386 -arch x86_64 -mmacosx-version-min=10.5'  CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5" && make
+ $ make install DESTDIR=/tmp
+
+The resulted library can be found in /tmp/opt/local/lib
+
+ 
+
 

@@ -241,7 +241,7 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 		err=linphone_core_update_call(lc,call,&call->params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
-		err=linphone_core_pause_call(lc,call);
+		err=_linphone_core_pause_call(lc,call);
 	}
 
 	return err;
@@ -342,7 +342,7 @@ int linphone_core_enter_conference(LinphoneCore *lc){
 		return -1;
 	}
 	if (lc->current_call != NULL) {
-		linphone_core_pause_call(lc, lc->current_call);
+		_linphone_core_pause_call(lc, lc->current_call);
 	}
 	conf=&lc->conf_ctx;
 	if (conf->local_participant==NULL) add_local_endpoint(conf,lc);
