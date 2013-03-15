@@ -876,7 +876,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (cl == NULL) {
+			if ((cl == NULL) && (i < md->n_active_streams)) {
 				cl = ice_check_list_new();
 				ice_session_add_check_list(call->ice_session, cl);
 				switch (stream->type) {
