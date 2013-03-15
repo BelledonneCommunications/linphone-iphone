@@ -183,7 +183,12 @@ AC_ARG_ENABLE(upnp,
 )
 
 if test "$build_upnp" != "false" ; then
-	PKG_CHECK_MODULES([LIBUPNP], [libupnp], [build_upnp=true],
+	PKG_CHECK_MODULES([LIBUPNP], [libupnp], 
+		[if  pkg-config --atleast-version=1.6 "libupnp < 1.7"; then
+			build_upnp=true
+		else
+			AC_MSG_ERROR([libupnp >= 1.6 < 1.5 required.])
+		fi],
 		[if test "$build_upnp" == "true" ; then
 			AC_MSG_ERROR([libupnp not found.])
 		else
