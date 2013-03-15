@@ -585,11 +585,17 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
         ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
         if(contact) {
             address = [FastAddressBook getContactDisplayName:contact];
+        } else {
+            if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+                LinphoneAddress *linphoneAddress = linphone_address_new([normalizedSipAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+                address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+                linphone_address_destroy(linphoneAddress);
+            }
         }
         if(address == nil) {
             address = @"Unknown";
         }
-        
+
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {

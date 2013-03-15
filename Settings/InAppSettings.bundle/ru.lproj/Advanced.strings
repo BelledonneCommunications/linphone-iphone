@@ -23,7 +23,7 @@
 "Start at boot" = "Запускаться с системой";
 
 /* First login view */
-"First login view" = "Форма первого входа";
+"First login view" = "First login view";
 
 /* Expire */
 "Expire" = "Окончание";

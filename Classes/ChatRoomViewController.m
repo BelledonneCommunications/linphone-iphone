@@ -238,7 +238,19 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(remoteAddress != nil) {
         [remoteAddress release];
     }
-    remoteAddress = [aRemoteAddress copy];
+    if ([aRemoteAddress hasPrefix:@"sip:"]) {
+        remoteAddress = [aRemoteAddress copy];
+    } else {
+        char normalizedUserName[256];
+        LinphoneCore *lc = [LinphoneManager getLc];
+        LinphoneProxyConfig* proxyCfg;
+        linphone_core_get_default_proxy(lc,&proxyCfg);
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(lc));
+        linphone_proxy_config_normalize_number(proxyCfg, [aRemoteAddress cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+        linphone_address_set_username(linphoneAddress, normalizedUserName);
+        remoteAddress = [[NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphoneAddress)] copy];
+        linphone_address_destroy(linphoneAddress);
+    }
     [messageField setText:@""];
     [self update];
 	[tableController setRemoteAddress: remoteAddress];

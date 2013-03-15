@@ -328,6 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             [ContactSelection setSelectionMode:ContactSelectionModeEdit];
             
             [ContactSelection setSipFilter:FALSE];
+            [ContactSelection setEmailFilter:FALSE];
             ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
             if(controller != nil) {
             }
