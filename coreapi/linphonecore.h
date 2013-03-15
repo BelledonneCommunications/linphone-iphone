@@ -948,7 +948,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
 
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
-void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
+LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
 int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
 
@@ -1221,13 +1221,13 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 
-void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
+LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 /**
  * return mic state.
  *
  * @ingroup media_parameters
 **/
-bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
 
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
@@ -1319,7 +1319,7 @@ LINPHONE_PUBLIC	void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t
  * @ingroup network_parameters
  * return network state either as positioned by the application or by linphone itself.
  */
-bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
+LINPHONE_PUBLIC	bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
 
 /**
  *  @ingroup network_parameters
