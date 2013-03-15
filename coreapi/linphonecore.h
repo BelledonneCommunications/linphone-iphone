@@ -394,7 +394,7 @@ bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
-const char *linphone_call_get_remote_contact(LinphoneCall *call);
+LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
 float linphone_call_get_play_volume(LinphoneCall *call);
 float linphone_call_get_record_volume(LinphoneCall *call);
 float linphone_call_get_current_quality(LinphoneCall *call);
@@ -1299,8 +1299,8 @@ void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
-void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
-void linphone_core_stop_dtmf(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
+LINPHONE_PUBLIC void linphone_core_stop_dtmf(LinphoneCore *lc);
 
 int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 

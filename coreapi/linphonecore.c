@@ -4993,7 +4993,7 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 		return;
 	}
 
-	if (duration_ms>0)
+	if (duration_ms > 0)
 		ms_filter_call_method(f, MS_DTMF_GEN_PLAY, &dtmf);
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
 }
