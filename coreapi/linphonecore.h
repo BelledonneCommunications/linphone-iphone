@@ -104,7 +104,7 @@ void linphone_address_set_port_int(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
-char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
+LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
 LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
 
@@ -160,23 +160,23 @@ enum LinphoneMediaEncryption {
 typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
-LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
-LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
-LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl);
-LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
-LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
-LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl);
-time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
-int linphone_call_log_get_duration(LinphoneCallLog *cl);
-float linphone_call_log_get_quality(LinphoneCallLog *cl);
-void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
-void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	int linphone_call_log_get_duration(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	float linphone_call_log_get_quality(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, void *up);
+LINPHONE_PUBLIC	void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
 const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
-const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl);
-char * linphone_call_log_to_str(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl);
+LINPHONE_PUBLIC	char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
 struct _LinphoneCallParams;
 
@@ -377,16 +377,16 @@ LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
-const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
-char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
-LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
+LINPHONE_PUBLIC	const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
+LINPHONE_PUBLIC	char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
+LINPHONE_PUBLIC	LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall * linphone_call_ref(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_unref(LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
 const char *linphone_call_get_refer_to(const LinphoneCall *call);
 bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
-int linphone_call_get_duration(const LinphoneCall *call);
+LINPHONE_PUBLIC	int linphone_call_get_duration(const LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
 const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
