@@ -254,6 +254,14 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	l=ms_list_append(l,pt);
 	md->streams[0].payloads=l;
 
+	// if ZRTP is enabled, put the hello hash into the audiostream's desc
+	if (call->audiostream && call->audiostream->ms.zrtp_context!=NULL){
+		ortp_zrtp_get_hello_hash(call->audiostream->ms.zrtp_context,
+			md->streams[0].zrtp_hello_hash,
+			sizeof(md->streams[0].zrtp_hello_hash));
+		ms_message("Audio stream zrtp hash: %s", md->streams[0].zrtp_hello_hash);
+	}
+
 	if (call->params.has_video){
 		md->n_active_streams++;
 		md->streams[1].rtp_port=call->video_port;
@@ -262,6 +270,13 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		md->streams[1].type=SalVideo;
 		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL,-1);
 		md->streams[1].payloads=l;
+		// if ZRTP is enabled, put the hello hash into the audiostream's desc
+		if (call->videostream->ms.zrtp_context!=NULL){
+			ortp_zrtp_get_hello_hash(call->videostream->ms.zrtp_context,
+				md->streams[1].zrtp_hello_hash,
+				sizeof(md->streams[1].zrtp_hello_hash));
+			ms_message("Video stream zrtp hash: %s", md->streams[1].zrtp_hello_hash);
+		}
 	}
 	if (md->n_total_streams < md->n_active_streams)
 		md->n_total_streams = md->n_active_streams;
@@ -1294,6 +1309,20 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 void linphone_call_init_media_streams(LinphoneCall *call){
 	linphone_call_init_audio_stream(call);
 	linphone_call_init_video_stream(call);
+
+	// moved from linphone_call_start_media_streams, because ZRTP needs to be
+	// at least partially initialized so that the SDP can contain 'zrtp-hash'
+	if (call->params.media_encryption==LinphoneMediaEncryptionZRTP) {
+		OrtpZrtpParams params;
+		/*will be set later when zrtp is activated*/
+		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
+
+		params.zid_file=call->core->zrtp_secrets_cache;
+		audio_stream_enable_zrtp(call->audiostream,&params);
+	} else if (call->params.media_encryption==LinphoneMediaEncryptionSRTP){
+		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
+			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
+	}
 }
 
 
@@ -1736,16 +1765,10 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 	call->playing_ringbacktone=send_ringbacktone;
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 
+	// ZRTP was initialized in linphone_call_init_media_streams with a
+	// partially iniitalized RtpSession, and now needs to get an update
 	if (call->params.media_encryption==LinphoneMediaEncryptionZRTP) {
-		OrtpZrtpParams params;
-		/*will be set later when zrtp is activated*/
-		call->current_params.media_encryption=LinphoneMediaEncryptionNone;
-		
-		params.zid_file=lc->zrtp_secrets_cache;
-		audio_stream_enable_zrtp(call->audiostream,&params);
-	}else if (call->params.media_encryption==LinphoneMediaEncryptionSRTP){
-		call->current_params.media_encryption=linphone_call_are_all_streams_encrypted(call) ?
-			LinphoneMediaEncryptionSRTP : LinphoneMediaEncryptionNone;
+		ortp_zrtp_start_engine(call->audiostream->ms.zrtp_context,call->audiostream->ms.session);
 	}
 
 	/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
