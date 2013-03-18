@@ -3125,8 +3125,14 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	
-	if (call->audiostream==NULL)
+	if (call->audiostream==NULL){
 		linphone_call_init_media_streams(call);
+		// the local media description must be regenerated after the audiostream 
+		// is initialized, otherwise the ZRTP hello hash will not be available
+		linphone_call_make_local_media_description(lc,call);
+		sal_call_set_local_media_description(call->op,call->localdesc);
+	}
+
 	if (!was_ringing && call->audiostream->ms.ticker==NULL){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
