@@ -51,14 +51,14 @@ typedef struct _LinphoneCore LinphoneCore;
 struct _LpConfig;
 
 
-struct _LCSipTransports{
+typedef struct _LCSipTransports{
 	int udp_port;
 	int tcp_port;
 	int dtls_port;
 	int tls_port;
-};
+} LCSipTransports;
 
-typedef struct _LCSipTransports LCSipTransports;
+
 
 /**
  * Object that represents a SIP address.

@@ -344,14 +344,49 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	}
 	return ret;
 }
-
+/*use for compatibility with linphone supporting only 1 transport at a time*/
+const char* guess_transport(const LinphoneProxyConfig *obj) {
+	LCSipTransports transports;
+	const char* transport_name;
+	unsigned char transports_count=0;
+	linphone_core_get_sip_transports(obj->lc,&transports);
+	if (transports.udp_port>0) {
+		transports_count++;
+		transport_name="udp";
+	}
+	if (transports.tcp_port>0) {
+		transports_count++;
+		transport_name="tcp";
+	}
+	if (transports.tls_port>0) {
+		transports_count++;
+		transport_name="tls";
+	}
+	if (transports.dtls_port>0) {
+		transports_count++;
+		transport_name="dtls";
+	}
+	if (transports_count==1) {
+		return transport_name;
+	} else {
+		/*cannot guess transport*/
+		return NULL;
+	}
+}
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
+	LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
+	char* proxy_string;
 #ifndef USE_BELLESIP
 		char *contact;
 #else
 		LinphoneAddress *contact;
+		if (guess_transport(obj) && !sal_address_get_transport((SalAddress*)proxy)) {
+			sal_address_set_transport((SalAddress*)proxy,sal_transport_parse(guess_transport(obj)));
+		}
 #endif
+		proxy_string=linphone_address_as_string_uri_only(proxy);
+		linphone_address_destroy(proxy);
 		if (obj->op)
 			sal_op_release(obj->op);
 		obj->op=sal_op_new(obj->lc->sal);
@@ -364,11 +399,12 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 #endif
 		}
 		sal_op_set_user_pointer(obj->op,obj);
-		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {
+		if (sal_register(obj->op,proxy_string,obj->reg_identity,obj->expires)==0) {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
 			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
 		}
+		ms_free(proxy_string);
 	}
 }
 
