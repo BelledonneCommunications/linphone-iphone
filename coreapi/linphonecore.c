@@ -4711,7 +4711,7 @@ int linphone_core_get_device_rotation(LinphoneCore *lc ) {
  *
 **/
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
-ms_message("%s : rotation=%d\n", __FUNCTION__, rotation);
+	ms_message("%s : rotation=%d\n", __FUNCTION__, rotation);
 	lc->device_rotation = rotation;
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call(lc);
