@@ -56,6 +56,7 @@ NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
+NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvailabilityUpdate";
 NSString *const kContactSipField = @"SIP";
 
 
@@ -105,6 +106,8 @@ extern  void libmsbcg729_init();
 @synthesize sounds;
 @synthesize logs;
 @synthesize speakerEnabled;
+@synthesize bluetoothAvailable;
+@synthesize bluetoothEnabled;
 @synthesize photoLibrary;
 @synthesize tunnelMode;
 
@@ -236,6 +239,7 @@ struct codec_name_pref_table codec_pref_table[]={
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         speakerEnabled = FALSE;
+        bluetoothEnabled = FALSE;
         tunnelMode = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
@@ -387,6 +391,34 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
         linphone_call_set_user_pointer(call, data);
     }
 	
+    const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+    NSString* address = nil;
+    if(addr != NULL) {
+        BOOL useLinphoneAddress = true;
+        // contact name
+        char* lAddress = linphone_address_as_string_uri_only(addr);
+        if(lAddress) {
+            NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+            ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
+            if(contact) {
+                address = [FastAddressBook getContactDisplayName:contact];
+                useLinphoneAddress = false;
+            }
+            ms_free(lAddress);
+        }
+        if(useLinphoneAddress) {
+            const char* lDisplayName = linphone_address_get_display_name(addr);
+            const char* lUserName = linphone_address_get_username(addr);
+            if (lDisplayName)
+                address = [NSString stringWithUTF8String:lDisplayName];
+            else if(lUserName)
+                address = [NSString stringWithUTF8String:lUserName];
+        }
+    }
+    if(address == nil) {
+        address = @"Unknown";
+    }
+    
 	if (state == LinphoneCallIncomingReceived) {
         
 		/*first step is to re-enable ctcall center*/
@@ -394,7 +426,11 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		
 		/*should we reject this call ?*/
 		if ([lCTCallCenter currentCalls]!=nil) {
-			[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",linphone_address_get_username(linphone_call_get_call_log(call)->from)];
+			char *tmp=linphone_call_get_remote_address_as_string(call);
+			if (tmp) {
+				[LinphoneLogger logc:LinphoneLoggerLog format:"Mobile call ongoing... rejecting call from [%s]",tmp];
+				ms_free(tmp);
+			}
 			linphone_core_decline_call(theLinphoneCore, call,LinphoneReasonBusy);
 			[lCTCallCenter release];
 			return;
@@ -405,34 +441,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		   && [UIApplication sharedApplication].applicationState !=  UIApplicationStateActive) {
 			
 			LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-			NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
-			const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-			NSString* address = nil;
-			if(addr != NULL) {
-				BOOL useLinphoneAddress = true;
-				// contact name
-				char* lAddress = linphone_address_as_string_uri_only(addr);
-				if(lAddress) {
-					NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-					ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
-					if(contact) {
-						address = [FastAddressBook getContactDisplayName:contact];
-						useLinphoneAddress = false;
-					}
-					ms_free(lAddress);
-				}
-				if(useLinphoneAddress) {
-					const char* lDisplayName = linphone_address_get_display_name(addr);
-					const char* lUserName = linphone_address_get_username(addr);
-					if (lDisplayName)
-						address = [NSString stringWithUTF8String:lDisplayName];
-					else if(lUserName)
-						address = [NSString stringWithUTF8String:lUserName];
-				}
-			}
-			if(address == nil) {
-				address = @"Unknown";
-			}
+			NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 			
 			if (![[LinphoneManager instance] shouldAutoAcceptCallForCallId:callId]){
 				// case where a remote notification is not already received
@@ -457,26 +466,45 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			}
 		}
 	}
-	
-	
-	if(state == LinphoneCallReleased) {
-        if(data != NULL) {
-            [data release];
-            linphone_call_set_user_pointer(call, NULL);
-        }
-    }
- 
-    
+
     // Disable speaker when no more call
     if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
         if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
             [self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
+            bluetoothAvailable = FALSE;
+            bluetoothEnabled = FALSE;
 		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
 			incallBgTask=0;
-		}
+		}       
+        if(data != nil && data->notification != nil) {
+            LinphoneCallLog *log = linphone_call_get_call_log(call);
+        
+            // cancel local notif if needed
+            [[UIApplication sharedApplication] cancelLocalNotification:data->notification];
+            [data->notification release];
+            data->notification = nil;
+            
+            if(log == NULL || linphone_call_log_get_status(log) == LinphoneCallMissed) {
+                UILocalNotification *notification = [[UILocalNotification alloc] init];
+                notification.repeatInterval = 0;
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"You miss %@ call", nil), address];
+                notification.alertAction = NSLocalizedString(@"Show", nil);
+                notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)] forKey:@"callLog"];
+                [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+                [notification release];
+            }
+            
+        }
+    }
+    
+	if(state == LinphoneCallReleased) {
+        if(data != NULL) {
+            [data release];
+            linphone_call_set_user_pointer(call, NULL);
+        }
     }
     
     // Enable speaker when video
@@ -565,11 +593,17 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
         ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
         if(contact) {
             address = [FastAddressBook getContactDisplayName:contact];
+        } else {
+            if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+                LinphoneAddress *linphoneAddress = linphone_address_new([normalizedSipAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+                address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+                linphone_address_destroy(linphoneAddress);
+            }
         }
         if(address == nil) {
             address = @"Unknown";
         }
-        
+
 		// Create a new notification
 		UILocalNotification* notif = [[[UILocalNotification alloc] init] autorelease];
 		if (notif) {
@@ -815,7 +849,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 , [confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 , [factoryConfig cStringUsingEncoding:[NSString defaultCStringEncoding]]
 										 ,self);
-
 	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
                                  [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
 	fastAddressBook = [[FastAddressBook alloc] init];
@@ -934,7 +967,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
-	return strcmp(linphone_call_get_call_log(call)->call_id, callid);
+	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
 - (void)acceptCallForCallId:(NSString*)callid {
@@ -1075,7 +1108,6 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
-	
 
 }
 
@@ -1107,7 +1139,24 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 }
 
 
-#pragma mark - Speaker Functions
+#pragma mark - Audio route Functions
+
+- (bool)allowSpeaker {
+    bool notallow = false;
+    CFStringRef lNewRoute = CFSTR("Unknown");
+    UInt32 lNewRouteSize = sizeof(lNewRoute);
+    OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
+    if (!lStatus && lNewRouteSize > 0) {
+        NSString *route = (NSString *) lNewRoute;
+        notallow = [route isEqualToString: @"Headset"] ||
+            [route isEqualToString: @"Headphone"] ||
+            [route isEqualToString: @"HeadphonesAndMicrophone"] ||
+            [route isEqualToString: @"HeadsetInOut"] ||
+            [route isEqualToString: @"Lineout"];
+        CFRelease(lNewRoute);
+    }
+    return !notallow;
+}
 
 static void audioRouteChangeListenerCallback (
                                               void                   *inUserData,                                 // 1
@@ -1118,34 +1167,62 @@ static void audioRouteChangeListenerCallback (
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
     LinphoneManager* lm = (LinphoneManager*)inUserData;
     
-    bool enabled = false;
+    bool speakerEnabled = false;
     CFStringRef lNewRoute = CFSTR("Unknown");
     UInt32 lNewRouteSize = sizeof(lNewRoute);
     OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
     if (!lStatus && lNewRouteSize > 0) {
         NSString *route = (NSString *) lNewRoute;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        speakerEnabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        if (![LinphoneManager runningOnIpad] && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
+            lm.bluetoothEnabled = TRUE;
+            lm.bluetoothAvailable = TRUE;
+            NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [NSNumber numberWithBool:lm.bluetoothAvailable], @"available", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneBluetoothAvailabilityUpdate object:lm userInfo:dict];
+        } else {
+            lm.bluetoothEnabled = FALSE;
+        }
         CFRelease(lNewRoute);
     }
     
-    if(enabled != lm.speakerEnabled) { // Reforce value
+    if(speakerEnabled != lm.speakerEnabled) { // Reforce value
         lm.speakerEnabled = lm.speakerEnabled;
     }
 }
 
 - (void)setSpeakerEnabled:(BOOL)enable {
     speakerEnabled = enable;
-    if(enable) {
-        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+
+    if(enable && [self allowSpeaker]) {
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)
                                  , &audioRouteOverride);
+        bluetoothEnabled = FALSE;
     } else {
-        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)
                                  , &audioRouteOverride);
+    }
+
+    if (bluetoothAvailable) {
+        UInt32 bluetoothInputOverride = bluetoothEnabled;
+        AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput, sizeof(bluetoothInputOverride), &bluetoothInputOverride);
+    }
+}
+
+- (void)setBluetoothEnabled:(BOOL)enable {
+    if (bluetoothAvailable) {
+        // The change of route will be done in setSpeakerEnabled
+        bluetoothEnabled = enable;
+        if (bluetoothEnabled) {
+            [self setSpeakerEnabled:FALSE];
+        } else {
+            [self setSpeakerEnabled:speakerEnabled];
+        }
     }
 }
 

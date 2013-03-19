@@ -46,6 +46,7 @@ extern NSString *const kLinphoneMainViewChange;
 extern NSString *const kLinphoneAddressBookUpdate;
 extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
+extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 
 extern NSString *const kContactSipField;
 
@@ -140,6 +141,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)refreshRegisters;
 
+- (bool)allowSpeaker;
+
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
@@ -170,6 +173,8 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL speakerEnabled;
+@property (nonatomic, assign) BOOL bluetoothAvailable;
+@property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
 @property (nonatomic, assign) TunnelMode tunnelMode;
 
