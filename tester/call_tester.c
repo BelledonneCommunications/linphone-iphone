@@ -22,7 +22,7 @@
 #include "lpconfig.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-
+#define DEFAULT_WAIT 2
 
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
@@ -100,14 +100,14 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 	LinphoneAddress* identity;
 	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
+	CU_ASSERT_PTR_NOT_NULL(proxy);
+	if (!proxy) return -1;
 
-
-	CU_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
 
 	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
 
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc
+	CU_ASSERT_TRUE(wait_for(callee_mgr->lc
 									,caller_mgr->lc
 									,&callee_mgr->stat.number_of_LinphoneCallIncomingReceived
 									,initial_callee.number_of_LinphoneCallIncomingReceived+1));
@@ -124,19 +124,23 @@ static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_m
 	}
 
 
-	CU_ASSERT_TRUE_FATAL((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging==initial_caller.number_of_LinphoneCallOutgoingRinging+1)
+	CU_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging==initial_caller.number_of_LinphoneCallOutgoingRinging+1)
 							|(caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia==initial_caller.number_of_LinphoneCallOutgoingEarlyMedia+1));
 
 	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
+	CU_ASSERT_PTR_NOT_NULL(proxy);
+	if (!proxy) return 0;
 	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
+	if (!linphone_core_get_current_call_remote_address(callee_mgr->lc))
+		return 0;
 	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
 	linphone_address_destroy(identity);
 
 	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
-	CU_ASSERT_TRUE_FATAL(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
+	CU_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
+	CU_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	/*just to sleep*/
 	return wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1)
 			&&
@@ -158,29 +162,31 @@ static void simple_call(void) {
 
 	linphone_core_invite(lc_marie,"pauline");
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE (wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,DEFAULT_WAIT));
 	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
-	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
+	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,DEFAULT_WAIT);
+	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,DEFAULT_WAIT));
 
 	linphone_core_get_default_proxy(lc_marie,&proxy);
-	CU_ASSERT_PTR_NOT_NULL_FATAL(proxy);
+	CU_ASSERT_PTR_NOT_NULL (proxy);
 	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
-	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
-	linphone_address_destroy(identity);
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(lc_pauline));
+	if (linphone_core_get_current_call_remote_address(lc_pauline)) {
+		CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
+		linphone_address_destroy(identity);
 
-	linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
+		linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
-	CU_ASSERT_TRUE_FATAL(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
-	/*just to sleep*/
-	wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
-	linphone_core_terminate_all_calls(lc_pauline);
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
-
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,DEFAULT_WAIT));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,DEFAULT_WAIT));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,DEFAULT_WAIT));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,DEFAULT_WAIT));
+		/*just to sleep*/
+		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
+		linphone_core_terminate_all_calls(lc_pauline);
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,DEFAULT_WAIT));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -191,12 +197,12 @@ static void cancelled_call(void) {
 
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,DEFAULT_WAIT));
 
 	linphone_core_terminate_call(pauline->lc,out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonCanceled);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
@@ -212,9 +218,9 @@ static void call_with_dns_time_out(void) {
 	linphone_core_invite(marie->lc,"sip:toto@toto.com");
 	linphone_core_iterate(marie->lc);
 	linphone_core_iterate(marie->lc);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,DEFAULT_WAIT);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,DEFAULT_WAIT);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,DEFAULT_WAIT);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -224,11 +230,11 @@ static void cancelled_ringing_call(void) {
 
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,DEFAULT_WAIT));
 
 	linphone_core_terminate_call(pauline->lc,out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 	//CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
 	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
 	linphone_call_unref(out_call);
@@ -243,16 +249,17 @@ static void early_declined_call(void) {
 	LinphoneCall* in_call;
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
-	CU_ASSERT_TRUE_FATAL(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
-	in_call=linphone_core_get_current_call(marie->lc);
-	linphone_call_ref(in_call);
-
-	linphone_core_terminate_call(marie->lc,in_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
-	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
-	linphone_call_unref(in_call);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,DEFAULT_WAIT));
+	CU_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(marie->lc));
+	if (in_call) {
+		linphone_call_ref(in_call);
+		linphone_core_terminate_call(marie->lc,in_call);
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+		CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
+		CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
+		linphone_call_unref(in_call);
+	}
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -265,8 +272,8 @@ static void call_terminated_by_caller(void) {
 	CU_ASSERT_TRUE(call(pauline,marie));
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -281,9 +288,9 @@ static void call_paused_resumed(void) {
 	call_obj = linphone_core_get_current_call(pauline->lc);
 
 	linphone_core_pause_call(pauline->lc,call_obj);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,DEFAULT_WAIT));
 
 	linphone_core_resume_call(pauline->lc,call_obj);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
@@ -291,8 +298,8 @@ static void call_paused_resumed(void) {
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -319,9 +326,9 @@ static void call_paused_resumed_from_callee(void) {
 	call_obj = linphone_core_get_current_call(marie->lc);
 
 	linphone_core_pause_call(marie->lc,call_obj);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausing,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausing,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPaused,DEFAULT_WAIT));
 
 	linphone_core_resume_call(marie->lc,call_obj);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
@@ -329,8 +336,8 @@ static void call_paused_resumed_from_callee(void) {
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -359,8 +366,8 @@ static void call_with_video_added(void) {
 	linphone_call_params_enable_video(marie_params,TRUE);
 	linphone_core_update_call(marie->lc,call_obj,marie_params);
 
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdatedByRemote,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallUpdating,DEFAULT_WAIT));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
@@ -370,12 +377,12 @@ static void call_with_video_added(void) {
 	linphone_call_set_next_video_frame_decoded_callback(call_obj,linphone_call_cb,marie->lc);
 	/*send vfu*/
 	linphone_call_send_vfu_request(call_obj);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,DEFAULT_WAIT));
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -455,8 +462,8 @@ static void srtp_call(void) {
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -469,12 +476,12 @@ static void early_media_call(void) {
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingEarlyMedia,DEFAULT_WAIT);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,DEFAULT_WAIT);
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,DEFAULT_WAIT));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

@@ -57,7 +57,8 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 	const char* server_addr;
 	LinphoneAuthInfo *info;
 
-	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
+	CU_ASSERT_PTR_NOT_NULL(lc);
+	if (!lc) return;
 	counters = (stats*)linphone_core_get_user_data(lc);
 	reset_counters(counters);
 	linphone_core_set_sip_transports(lc,&transport);
@@ -91,7 +92,7 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 		}
 		ms_usleep(100000);
 	}
-	CU_ASSERT_TRUE_FATAL(linphone_proxy_config_is_registered(proxy_cfg));
+	CU_ASSERT_TRUE(linphone_proxy_config_is_registered(proxy_cfg));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
@@ -258,7 +259,7 @@ static void network_state_change(){
 	counters = (stats*)linphone_core_get_user_data(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	linphone_core_set_network_reachable(lc,FALSE);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationNone,register_ok));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationNone,register_ok));
 	linphone_core_set_network_reachable(lc,TRUE);
 	wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*register_ok);
 	linphone_core_destroy(lc);
@@ -298,9 +299,9 @@ static void transport_change(){
 
 	/*keep only udp*/
 	linphone_core_set_sip_transports(lc,&sip_tr);
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
 
-	CU_ASSERT_TRUE_FATAL(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(total_number_of_proxies-number_of_udp_proxy)));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(total_number_of_proxies-number_of_udp_proxy)));
 
 	linphone_core_destroy(lc);
 }
