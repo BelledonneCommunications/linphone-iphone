@@ -347,6 +347,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	}
 	if (op) sal_op_unref(op); /*no longuer need to ref op*/
 }
+
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
 	SalAuthInfo auth_info;
 	memset(&auth_info,0,sizeof(SalAuthInfo));
@@ -358,9 +359,10 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event
 	belle_sip_auth_event_set_userid(auth_event,(const char*)auth_info.userid);
 	return;
 }
+
 Sal * sal_init(){
 	char stack_string[64];
-	belle_sip_listener_t* listener;
+	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
 	sal->nat_helper_enabled=TRUE;
 	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
@@ -374,15 +376,16 @@ Sal * sal_init(){
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
-	sal->listener_callbacks.process_dialog_terminated=process_dialog_terminated;
-	sal->listener_callbacks.process_io_error=process_io_error;
-	sal->listener_callbacks.process_request_event=process_request_event;
-	sal->listener_callbacks.process_response_event=process_response_event;
-	sal->listener_callbacks.process_timeout=process_timeout;
-	sal->listener_callbacks.process_transaction_terminated=process_transaction_terminated;
-	sal->listener_callbacks.process_auth_requested=process_auth_requested;
-	belle_sip_provider_add_sip_listener(sal->prov,listener=belle_sip_listener_create_from_callbacks(&sal->listener_callbacks,sal));
-	/* belle_sip_callbacks_t is unowned, why ?belle_sip_object_unref(listener);*/
+	memset(&listener_callbacks,0,sizeof(listener_callbacks));
+	listener_callbacks.process_dialog_terminated=process_dialog_terminated;
+	listener_callbacks.process_io_error=process_io_error;
+	listener_callbacks.process_request_event=process_request_event;
+	listener_callbacks.process_response_event=process_response_event;
+	listener_callbacks.process_timeout=process_timeout;
+	listener_callbacks.process_transaction_terminated=process_transaction_terminated;
+	listener_callbacks.process_auth_requested=process_auth_requested;
+	sal->listener=belle_sip_listener_create_from_callbacks(&listener_callbacks,sal);
+	belle_sip_provider_add_sip_listener(sal->prov,sal->listener);
 	return sal;
 }
 void sal_set_user_pointer(Sal *sal, void *user_data){
@@ -443,6 +446,7 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->user_agent);
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
+	belle_sip_object_unref(sal->listener);
 	ms_free(sal);
 	return ;
 };

@@ -29,17 +29,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct Sal{
 	SalCallbacks callbacks;
 	MSList *pending_auths;/*MSList of SalOp */
-	belle_sip_listener_callbacks_t listener_callbacks;
 	belle_sip_stack_t* stack;
 	belle_sip_provider_t *prov;
 	belle_sip_header_user_agent_t* user_agent;
+	belle_sip_listener_t *listener;
 	void *up; /*user pointer*/
 	int session_expires;
-	bool_t one_matching_codec;
 	unsigned int keep_alive;
+	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
-
 };
 
 typedef enum SalOpSate {
@@ -74,7 +73,7 @@ struct SalOp{
 	SalOpSate_t state;
 	SalOpDir_t dir;
 	belle_sip_refresher_t* refresher;
-	unsigned int ref;
+	int ref;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);

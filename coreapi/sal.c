@@ -287,7 +287,7 @@ void sal_op_set_route(SalOp *op, const char *route){
 		route_string=sal_address_as_string((SalAddress*)op_base->route_addresses->data); \
 	}
 	assign_string(&op_base->route,route_string); \
-	if(route_string) ortp_free(route_string);
+	if(route_string) ms_free(route_string);
 }
 const MSList* sal_op_get_route_addresses(const SalOp *op) {
 	return ((SalOpBase*)op)->route_addresses;
@@ -395,6 +395,25 @@ void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin){
 
 void __sal_op_free(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
+	if (b->from_address){
+		sal_address_destroy(b->from_address);
+		b->from_address=NULL;
+	}
+	if (b->to_address){
+		sal_address_destroy(b->to_address);
+		b->to_address=NULL;
+	}
+	
+	if (b->service_route){
+		sal_address_destroy(b->service_route);
+		b->service_route=NULL;
+	}
+	
+	if (b->origin_address){
+		sal_address_destroy(b->origin_address);
+		b->origin_address=NULL;
+	}
+	
 	if (b->from) {
 		ms_free(b->from);
 		b->from=NULL;
@@ -437,6 +456,10 @@ void __sal_op_free(SalOp *op){
 		ms_free((void*)b->call_id);
 	if (b->service_route) {
 		sal_address_destroy(b->service_route);
+	}
+	if (b->route_addresses){
+		ms_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
+		b->route_addresses=ms_list_free(b->route_addresses);
 	}
 	if (b->custom_headers)
 		sal_custom_header_free(b->custom_headers);
