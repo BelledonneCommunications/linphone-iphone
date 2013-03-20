@@ -65,7 +65,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	
 	g_return_if_fail(w!=NULL);
 	gtk_notebook_remove_page(GTK_NOTEBOOK(nb),idx);
-	//linphone_gtk_create_chat_picture(FALSE);
+	linphone_gtk_create_chat_picture(FALSE);
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	g_object_set_data(G_OBJECT(w),"from_message",NULL);	
 	g_object_set_data(G_OBJECT(w),"cr",NULL);
@@ -419,6 +419,7 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 			send=FALSE;
 		}	
     } else {
+		send=FALSE;
         w=linphone_gtk_init_chatroom(room,linphone_chat_message_get_from(msg));
         g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)w);
 		g_object_set_data(G_OBJECT(friendlist),"from",from);
@@ -438,6 +439,7 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 	}
 	#endif
 	if(send){
+		linphone_chat_room_mark_as_read(room);
 		linphone_gtk_push_text(w,linphone_chat_message_get_from(msg),
 	                      FALSE,room,msg,FALSE);
 	} else {
@@ -445,8 +447,6 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 		//linphone_gtk_friend_list_update_message(msg);
 	}
 		//linphone_gtk_update_chat_picture();
-		//TODO: update la zone de notification dans les contacts (problème : lors du refresh de la liste 
-		//connaitre tous les contacts qui ont des messages non lus ...
 	//gtk_window_present(GTK_WINDOW(w));
 	/*gtk_window_set_urgency_hint(GTK_WINDOW(w),TRUE);*/
 }
