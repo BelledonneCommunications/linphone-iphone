@@ -689,6 +689,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
 MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
+int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr);
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void * ud);
 void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
@@ -696,6 +697,7 @@ void * linphone_chat_room_get_user_data(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
+void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_set_from(LinphoneChatMessage* message, const LinphoneAddress* from);
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message);
 const LinphoneAddress* linphone_chat_message_get_to(const LinphoneChatMessage* message);
@@ -1439,7 +1441,6 @@ int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 
 void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_video_dscp(const LinphoneCore *lc);
-
 
 
 #ifdef __cplusplus

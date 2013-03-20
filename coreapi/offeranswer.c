@@ -261,6 +261,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	result->ice_completed = local_cap->ice_completed;
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
+	memcpy(result->zrtp_hello_hash,local_cap->zrtp_hello_hash, sizeof(result->zrtp_hello_hash));
 }
 
 /**
