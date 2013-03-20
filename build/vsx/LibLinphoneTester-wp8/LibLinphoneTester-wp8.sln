@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 2012 for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibLinphoneTester-wp8", "LibLinphoneTester-wp8\LibLinphoneTester-wp8.csproj", "{34D6878F-6CAB-4AE3-9CCC-25E8D6734C90}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5E94A00B-B14A-4E42-8284-8CB0EF099534} = {5E94A00B-B14A-4E42-8284-8CB0EF099534}
@@ -38,6 +38,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmswasapi", "..\..\..\..\
 		{027BAD0E-9179-48C1-9733-7AA7E2C2EC70} = {027BAD0E-9179-48C1-9733-7AA7E2C2EC70}
 		{FFC7B532-0502-4D88-AC98-9E89071CBC97} = {FFC7B532-0502-4D88-AC98-9E89071CBC97}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webrtcaecm", "..\..\..\..\webrtc\build\windows\webrtcaecm\webrtcaecm\webrtcaecm.vcxproj", "{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -281,6 +283,24 @@ Global
 		{D22BD217-D0F8-4274-9B3A-F3F35F46482C}.Release|Win32.Build.0 = Release|Win32
 		{D22BD217-D0F8-4274-9B3A-F3F35F46482C}.Release|x86.ActiveCfg = Release|Win32
 		{D22BD217-D0F8-4274-9B3A-F3F35F46482C}.Release|x86.Build.0 = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|ARM.Build.0 = Debug|ARM
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|Win32.Build.0 = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Debug|x86.Build.0 = Debug|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|ARM.ActiveCfg = Release|ARM
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|ARM.Build.0 = Release|ARM
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|Win32.ActiveCfg = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|Win32.Build.0 = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|x86.ActiveCfg = Release|Win32
+		{1C4E6DA0-B8C7-4A05-A58E-54A6ED07C8DF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
