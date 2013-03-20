@@ -33,10 +33,25 @@ static void fill_renderers(GtkTreeView *v){
 	gtk_tree_view_append_column (v,c);
 }
 
+void call_log_selection_changed(GtkTreeView *v){
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	
+	select = gtk_tree_view_get_selection(v);
+	if (gtk_tree_selection_get_selected (select, &model, &iter)){
+		GtkTreePath *path=gtk_tree_model_get_path(model,&iter);
+		gtk_tree_view_collapse_all(v);
+		gtk_tree_view_expand_row(v,path,TRUE);
+		gtk_tree_path_free(path);
+	}
+}
+
 void linphone_gtk_call_log_update(GtkWidget *w){
 	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(w,"logs_view"));
 	GtkTreeStore *store;
 	const MSList *logs;
+	GtkTreeSelection *select;
 
 	store=(GtkTreeStore*)gtk_tree_view_get_model(v);
 	if (store==NULL){
@@ -44,6 +59,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		gtk_tree_view_set_model(v,GTK_TREE_MODEL(store));
 		g_object_unref(G_OBJECT(store));
 		fill_renderers(GTK_TREE_VIEW(linphone_gtk_get_widget(w,"logs_view")));
+		select=gtk_tree_view_get_selection(v);
+		gtk_tree_selection_set_mode(select, GTK_SELECTION_SINGLE);
+		g_signal_connect_swapped(G_OBJECT(select),"changed",(GCallback)call_log_selection_changed,v);
 //		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"call_back_button")),
 //		                     create_pixmap (linphone_gtk_get_ui_config("callback_button","status-green.png")));
 	}

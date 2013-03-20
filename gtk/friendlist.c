@@ -32,7 +32,7 @@ enum{
 	FRIEND_ICON,
 	FRIEND_CALL,
 	FRIEND_CHAT,
-	FRIEND_CHAT_CONVERSATION,
+	FRIEND_NB_UNREAD_MSG,
 	FRIEND_LIST_NCOL
 };
 
@@ -253,9 +253,11 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 		GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(w,"viewswitch");
 		const LinphoneAddress *uri;
 		gtk_tree_model_get (model, &iter,FRIEND_ID , &lf, -1);
+		gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
 		uri=linphone_friend_get_address(lf);
-		if(cr == NULL){
+		if(cr==NULL){
 			cr=linphone_gtk_create_chatroom(uri);
+			gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
 		}
 		page=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
 		g_object_set_data(G_OBJECT(friendlist),"from",linphone_address_as_string(uri));
@@ -269,6 +271,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 		linphone_gtk_create_chat_picture(FALSE);
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
 		gtk_list_store_set(store,&iter,FRIEND_CHAT,create_active_chat_picture(),-1);
+		gtk_list_store_set(store,&iter,FRIEND_NB_UNREAD_MSG,"",-1);
 	}
 }
 
@@ -541,7 +544,8 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist){
 	linphone_gtk_init_bookmark_icon();
 
 	store = gtk_list_store_new(FRIEND_LIST_NCOL,GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING,  G_TYPE_POINTER,
-								G_TYPE_POINTER, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+								G_TYPE_POINTER, G_TYPE_STRING, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, GDK_TYPE_PIXBUF, 
+								G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(friendlist),GTK_TREE_MODEL(store));
 	g_object_unref(G_OBJECT(store));
@@ -579,9 +583,13 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist){
 	gtk_tree_view_column_set_clickable(column,TRUE);
 	gtk_tree_view_column_set_expand(column,TRUE);
 	gtk_tree_view_column_set_max_width(column,60);
+	
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start(column,renderer,TRUE);
+	gtk_tree_view_column_add_attribute (column,renderer,"text",FRIEND_NB_UNREAD_MSG);
+	
 	gtk_tree_view_append_column (GTK_TREE_VIEW (friendlist), column);
 
-	
 	/* Call column*/
 	renderer = gtk_cell_renderer_pixbuf_new();
 	column = gtk_tree_view_column_new_with_attributes (_("Call"),renderer,"pixbuf",FRIEND_CALL,NULL);
@@ -669,6 +677,7 @@ void linphone_gtk_show_friends(void){
 	//const gchar *search=NULL;
 	//gboolean lookup=FALSE;
 	MSList *sorted;
+	LinphoneChatRoom *cr=NULL;
 
 	linphone_gtk_show_directory_search();
 
@@ -693,6 +702,9 @@ void linphone_gtk_show_friends(void){
 		const char *name=linphone_address_get_display_name(f_uri);
 		const char *display=name;
 		char *escaped=NULL;
+		char buf[26]={0};
+		int nbmsg=0;
+
 		/*if (lookup){
 			if (strstr(uri,search)==NULL){
 				ms_free(uri);
@@ -709,9 +721,25 @@ void linphone_gtk_show_friends(void){
 			    FRIEND_PRESENCE_IMG, send_subscribe ? create_status_picture(linphone_friend_get_status(lf)) : NULL,
 			    -1);
 
+		gtk_tree_model_get(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)),&iter,FRIEND_CHATROOM,&cr,-1);
+		if(cr!=NULL){
+			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
+			if(nbmsg != 0){
+				sprintf(buf,"%i",nbmsg);
+			}
+		} else {
+			cr=linphone_gtk_create_chatroom(f_uri);
+			gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
+			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
+			if(nbmsg != 0){
+				sprintf(buf,"%i",nbmsg);
+			}
+			
+		}
+		
 		gtk_list_store_set(store,&iter,FRIEND_CALL,create_call_picture(),-1);
 		gtk_list_store_set(store,&iter,FRIEND_CHAT,create_chat_picture(),-1);
-
+		gtk_list_store_set(store,&iter,FRIEND_NB_UNREAD_MSG,buf,-1);
 		escaped=g_markup_escape_text(uri,-1);
 		gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
 		g_free(escaped);
@@ -912,52 +940,41 @@ gboolean linphone_gtk_popup_contact_menu(GtkWidget *list, GdkEventButton *event)
 }
 
 gint get_col_number_from_tree_view_column (GtkTreeViewColumn *col){
-    GList *cols;
-    gint   num;
-    g_return_val_if_fail ( col != NULL, -1 );
-    g_return_val_if_fail ( col->tree_view != NULL, -1 );
-    cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(col->tree_view));
-    num = g_list_index(cols, (gpointer) col);
-    g_list_free(cols);
+	GList *cols;
+	gint   num;
+	g_return_val_if_fail ( col != NULL, -1 );
+	g_return_val_if_fail ( col->tree_view != NULL, -1 );
+	cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(col->tree_view));
+	num = g_list_index(cols, (gpointer) col);
+	g_list_free(cols);
 
-    return num;
-}
-
-int longueur_list (GtkTreeView *tree_view){
-    GtkTreeIter iter;
-	int i=0;
-	GtkTreeModel *model=gtk_tree_view_get_model(tree_view);
-	if (gtk_tree_model_get_iter_first(model,&iter)) {
-		do{
-			i++;
-		}while(gtk_tree_model_iter_next(model,&iter));
-	}
-	return i;
+	return num;
 }
 
 static gint tree_view_get_cell_from_pos(GtkTreeView *view, guint x, guint y){
 	GtkTreeViewColumn *col = NULL;
 	GList *node, *columns;
 	gint colx = 0;
-	gint coly = longueur_list(view);
-	gint height=0;
+	GtkTreePath *path;
+	GtkTreeViewDropPosition pos;
 	
 	g_return_val_if_fail ( view != NULL, 0 );
 	columns = gtk_tree_view_get_columns(view);
 
-        for (node = columns;  node != NULL && col == NULL;  node = node->next){
-            GtkTreeViewColumn *checkcol = (GtkTreeViewColumn*) node->data;
-			gtk_tree_view_column_cell_get_size(checkcol,NULL,NULL,NULL,NULL,&height);
-            if (x >= colx  &&  x < (colx + checkcol->width) && y < (height+2)*coly){
-                col = checkcol;
-                gint num = get_col_number_from_tree_view_column(col);
+	gtk_tree_view_get_dest_row_at_pos(view,x,y,&path,&pos);
+	if(path != NULL){
+		for (node = columns;  node != NULL && col == NULL;  node = node->next){
+			GtkTreeViewColumn *checkcol = (GtkTreeViewColumn*) node->data;
+			if (x >= colx  &&  x < (colx + checkcol->width)){
+				col = checkcol;
+				gint num = get_col_number_from_tree_view_column(col);
 				return num;
-            }
-            else {
-                colx += checkcol->width;
+			} else {
+				colx += checkcol->width;
 			}
-        }
-        g_list_free(columns);
+		}
+	}
+	g_list_free(columns);
 	return 0;
 }
 

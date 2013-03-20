@@ -436,6 +436,7 @@ void linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->message) ms_free(msg->message);
 	if (msg->external_body_url) ms_free(msg->external_body_url);
 	if (msg->from) linphone_address_destroy(msg->from);
+	if (msg->to) linphone_address_destroy(msg->to);
 	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
 	ms_free(msg);
 }
