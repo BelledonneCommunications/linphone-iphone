@@ -876,7 +876,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (cl == NULL) {
+			if ((cl == NULL) && (i < md->n_active_streams)) {
 				cl = ice_check_list_new();
 				ice_session_add_check_list(call->ice_session, cl);
 				switch (stream->type) {
@@ -1005,6 +1005,9 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 	return ret;
 }
 
+bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
+	return lp_config_get_int(lc->config,"sound","tone_indications",1);
+}
 
 #ifdef HAVE_GETIFADDRS
 
