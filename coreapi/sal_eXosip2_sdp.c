@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal.h"
 #include <eXosip2/eXosip.h>
 
-#define keywordcmp(key,b) strncmp(key,b,sizeof(key))
+#define keywordcmp(key,b) strcmp(key,b)
 
 #ifdef FOR_LATER
 
@@ -106,6 +106,17 @@ static int _sdp_message_get_a_ptime(sdp_message_t *sdp, int mline){
 		}
 	}
 	return 0;
+}
+
+static char * _sdp_message_get_a_zrtp_hash(sdp_message_t *sdp, int mline){
+	int i;
+	sdp_attribute_t *attr;
+	for (i=0;(attr=sdp_message_attribute_get(sdp,mline,i))!=NULL;i++){
+		if (keywordcmp("zrtp-hash",attr->a_att_field)==0){
+			return attr->a_att_value;
+		}
+	}
+	return NULL;
 }
 
 static int _sdp_message_get_mline_dir(sdp_message_t *sdp, int mline){
@@ -337,6 +348,11 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 				     int_2char(desc->bandwidth));
 	if (desc->ptime>0) sdp_message_a_attribute_add(msg,lineno,osip_strdup("ptime"),
 	    			int_2char(desc->ptime));
+
+	// if the ZRTP hello hash is available, create an a attribute for it
+	if (desc->zrtp_hello_hash[0])
+		sdp_message_a_attribute_add(msg,lineno,osip_strdup("zrtp-hash"), osip_strdup(desc->zrtp_hello_hash));
+
 	strip_well_known_rtpmaps=ms_list_size(desc->payloads)>5;
 	if (desc->payloads){
 		for(elem=desc->payloads;elem!=NULL;elem=elem->next){
@@ -433,7 +449,7 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
-	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
+	const char *mtype,*proto,*rtp_port,*rtp_addr,*number,*zrtp_info;
 	const char *sess;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
@@ -490,7 +506,12 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			stream->rtp_port=atoi(rtp_port);
 		if (stream->rtp_port > 0)
 			desc->n_active_streams++;
-		
+
+		// if the SDP contains a zrtp-hash, add it to the StreamDesc
+		zrtp_info = _sdp_message_get_a_zrtp_hash(msg, i);
+		if (zrtp_info != NULL)
+			strncpy(stream->zrtp_hello_hash, zrtp_info, sizeof(stream->zrtp_hello_hash));
+
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
 			stream->type=SalAudio;
@@ -528,7 +549,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 		for (j = 0; ((attr = sdp_message_attribute_get(msg, i, j)) != NULL); j++) {
 			if ((keywordcmp("rtcp", attr->a_att_field) == 0) && (attr->a_att_value != NULL)) {
 				char tmp[256];
-				int nb = sscanf(attr->a_att_value, "%d IN IP4 %s", &stream->rtcp_port, tmp);
+				// added bounds check
+				int nb = sscanf(attr->a_att_value, "%d IN IP4 %256s", &stream->rtcp_port, tmp);
 				if (nb == 1) {
 					/* SDP rtcp attribute only contains the port */
 				} else if (nb == 2) {
