@@ -86,6 +86,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
 	if (obj->op) sal_op_release(obj->op);
 	if (obj->publish_op) sal_op_release(obj->publish_op);
+	if (obj->contact_params) ms_free(obj->contact_params);
 	ms_free(obj);
 }
 

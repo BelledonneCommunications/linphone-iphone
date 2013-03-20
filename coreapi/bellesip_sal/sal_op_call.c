@@ -233,6 +233,11 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 
 
 }
+
+static void call_set_released(SalOp* op){
+	op->base.root->callbacks.call_released(op);
+}
+
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	SalOp* op=(SalOp*)user_ctx;
 	if (!op->dialog)  {
@@ -259,8 +264,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	if (strcmp("BYE",belle_sip_request_get_method(req))==0
 					&& (!resp || (belle_sip_response_get_status_code(resp) !=401
 									&& belle_sip_response_get_status_code(resp) !=407))) {
-		op->base.root->callbacks.call_released(op);
-		op->state=SalOpStateTerminated;
+		call_set_released(op);
 	}
 
 }

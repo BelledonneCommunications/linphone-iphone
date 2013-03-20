@@ -52,26 +52,33 @@ void sal_disable_logs() {
 	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
 }
 static void sal_add_pending_auth(Sal *sal, SalOp *op){
-	sal->pending_auths=ms_list_append(sal->pending_auths,op);
+	if (ms_list_find(sal->pending_auths,op)==NULL){
+		sal->pending_auths=ms_list_append(sal->pending_auths,sal_op_ref(op));
+	}
 }
 
  void sal_remove_pending_auth(Sal *sal, SalOp *op){
-	sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+	if (ms_list_find(sal->pending_auths,op)){
+		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
+		sal_op_unref(op);
+	}
 }
 
-void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
-	belle_sip_request_t* request;
+void sal_process_authentication(SalOp *op) {
+	belle_sip_request_t* request=belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_auth_transaction);;
 	bool_t is_within_dialog=FALSE;
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
+	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)op->pending_auth_transaction);
+	
+	sal_add_pending_auth(op->base.root,op);
+	
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
-		request = belle_sip_dialog_create_request_from(op->dialog,(const belle_sip_request_t *)op->request);
+		request = belle_sip_dialog_create_request_from(op->dialog,(const belle_sip_request_t *)request);
 		is_within_dialog=TRUE;
 	} else {
-		request=op->request;
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION);
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION);
-
 	}
 	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response,&auth_list)) {
 		if (is_within_dialog) {
@@ -79,6 +86,7 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 		} else {
 			sal_op_resend_request(op,request);
 		}
+		sal_remove_pending_auth(op->base.root,op);
 	}else {
 		ms_message("No auth info found for [%s]",sal_op_get_from(op));
 		if (is_within_dialog) {
@@ -90,7 +98,6 @@ void sal_process_authentication(SalOp *op, belle_sip_response_t *response) {
 		op->auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(auth_event)) ;
 		op->auth_info->username = ms_strdup(belle_sip_auth_event_get_username(auth_event)) ;
 		belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
-		sal_add_pending_auth(op->base.root,op);
 	}
 
 }
@@ -196,7 +203,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
 	int response_code = belle_sip_response_get_status_code(response);
 	if (!client_transaction) {
-		ms_warning("Discarding state less response [%i]",response_code);
+		ms_warning("Discarding stateless response [%i]",response_code);
 		return;
 	} else {
 		SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
@@ -210,9 +217,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		int rport;
 		bool_t contact_updated=FALSE;
 		char* new_contact;
-		belle_sip_request_t* old_request=NULL;
-		belle_sip_response_t* old_response=NULL;
-
 
 		if (op->state == SalOpStateTerminated) {
 			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
@@ -279,33 +283,27 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 					}
 				}
 			}
-			/*update request/response
-			 * maybe only the transaction should be kept*/
-			old_request=op->request;
-			op->request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
-			belle_sip_object_ref(op->request);
-			if (old_request) belle_sip_object_unref(old_request);
-
-			old_response=op->response;
-			op->response=response; /*kept for use at authorization time*/
-			belle_sip_object_ref(op->response);
-			if (old_response) belle_sip_object_unref(old_response);
-
-			/*handle authozation*/
+			
+			/*handle authorization*/
 			switch (response_code) {
 			case 200: {
-				sal_remove_pending_auth(op->base.root,op);/*just in case*/
 				break;
 			}
 			case 401:
 			case 407:{
+				
 				/*belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*//*remove op from trans*/
 				if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 					/*only bye are completed*/
 					belle_sip_message("Op is in state terminating, nothing else to do ");
 					return;
 				} else {
-					sal_process_authentication(op,response);
+					if (op->pending_auth_transaction){
+						belle_sip_object_unref(op->pending_auth_transaction);
+						op->pending_auth_transaction=NULL;
+					}
+					op->pending_auth_transaction=(belle_sip_client_transaction_t*)belle_sip_object_ref(client_transaction);
+					sal_process_authentication(op);
 					return;
 				}
 			}

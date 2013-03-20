@@ -32,7 +32,7 @@ void sal_op_release(SalOp *op){
 }
 void sal_op_release_impl(SalOp *op){
 	ms_message("Destroying op [%p]",op);
-	if (op->request) belle_sip_object_unref(op->request);
+	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
 	if (op->registration_refresher) {
@@ -46,9 +46,10 @@ void sal_op_release_impl(SalOp *op){
 	__sal_op_free(op);
 	return ;
 }
+
 void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
 	/*for sure auth info will be accesible from the provider*/
-	sal_process_authentication(op, NULL);
+	sal_process_authentication(op);
 	return ;
 }
 
@@ -120,7 +121,7 @@ void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
 }
 
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
-	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(op->request),BELLE_SIP_CSEQ);
+	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CSEQ);
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	sal_op_send_request(op,request);
 }
