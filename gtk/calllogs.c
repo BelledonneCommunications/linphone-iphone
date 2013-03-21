@@ -47,6 +47,145 @@ void call_log_selection_changed(GtkTreeView *v){
 	}
 }
 
+void linphone_gtk_call_log_chat_selected(GtkWidget *w){
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	
+	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(w));
+	if (select!=NULL){
+		GtkTreeModel *model=NULL;
+		if (gtk_tree_selection_get_selected (select,&model,&iter)){
+			gpointer pla;
+			LinphoneAddress *la;
+			gtk_tree_model_get(model,&iter,2,&pla,-1);
+			la=(LinphoneAddress*)pla;
+			if (la!=NULL){
+				linphone_gtk_tree_view_set_chat_conversation(la);
+			}
+		}
+	}
+}
+
+void linphone_gtk_call_log_add_contact(GtkWidget *w){
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	
+	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(w));
+	if (select!=NULL){
+		GtkTreeModel *model=NULL;
+		if (gtk_tree_selection_get_selected (select,&model,&iter)){
+			gpointer pla;
+			LinphoneAddress *la;
+			LinphoneFriend *lf;
+			gtk_tree_model_get(model,&iter,2,&pla,-1);
+			la=(LinphoneAddress*)pla;
+			if (la!=NULL){
+				char *uri=linphone_address_as_string(la);
+				lf=linphone_friend_new_with_addr(uri);
+				linphone_gtk_show_contact(lf);
+				ms_free(uri);
+			}
+		}
+	}
+}
+
+static bool_t put_selection_to_uribar(GtkWidget *treeview){
+	GtkTreeSelection *sel;
+
+	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	if (sel!=NULL){
+		GtkTreeModel *model=NULL;
+		GtkTreeIter iter;
+		if (gtk_tree_selection_get_selected (sel,&model,&iter)){
+			gpointer pla;
+			LinphoneAddress *la;
+			char *tmp;
+			gtk_tree_model_get(model,&iter,2,&pla,-1);
+			la=(LinphoneAddress*)pla;
+			tmp=linphone_address_as_string (la);
+			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),tmp);
+			ms_free(tmp);
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+static void linphone_gtk_call_selected(GtkTreeView *treeview){
+	put_selection_to_uribar(GTK_WIDGET(treeview));
+	linphone_gtk_start_call(linphone_gtk_get_widget(gtk_widget_get_toplevel(GTK_WIDGET(treeview)),
+					"start_call"));
+}
+
+static GtkWidget *linphone_gtk_create_call_log_menu(GtkWidget *call_log){
+	GtkWidget *menu=gtk_menu_new();
+	GtkWidget *menu_item;
+	gchar *call_label=NULL;
+	gchar *text_label=NULL;
+	gchar *name=NULL;
+	GtkWidget *image;
+	GtkTreeSelection *select;
+	GtkTreeIter iter;
+	
+	select=gtk_tree_view_get_selection(GTK_TREE_VIEW(call_log));
+	if (select!=NULL){
+		GtkTreeModel *model=NULL;
+		if (gtk_tree_selection_get_selected (select,&model,&iter)){
+			gpointer pla;
+			LinphoneAddress *la;
+			gtk_tree_model_get(model,&iter,2,&pla,-1);
+			la=(LinphoneAddress*)pla;
+			name=linphone_address_as_string(la);
+			call_label=g_strdup_printf(_("Call %s"),name);
+			text_label=g_strdup_printf(_("Send text to %s"),name);
+			g_free(name);
+		}
+	}
+	if (call_label){
+		menu_item=gtk_image_menu_item_new_with_label(call_label);
+		image=gtk_image_new_from_stock(GTK_STOCK_NETWORK,GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
+		gtk_widget_show(image);
+		gtk_widget_show(menu_item);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_call_selected,call_log);
+	}
+	if (text_label){
+		menu_item=gtk_image_menu_item_new_with_label(text_label);
+		image=gtk_image_new_from_stock(GTK_STOCK_NETWORK,GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
+		gtk_widget_show(image);
+		gtk_widget_show(menu_item);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_call_log_chat_selected,call_log);
+	}
+	
+	menu_item=gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD,NULL);
+	gtk_widget_show(menu_item);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+	g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_call_log_add_contact,call_log);
+	gtk_widget_show(menu);
+	gtk_menu_attach_to_widget(GTK_MENU(menu),call_log, NULL);
+
+	if (call_label) g_free(call_label);
+	if (text_label) g_free(text_label);
+	return menu;
+}
+
+gboolean linphone_gtk_call_log_popup_contact(GtkWidget *list, GdkEventButton *event){
+	GtkWidget *m=linphone_gtk_create_call_log_menu(list);
+	gtk_menu_popup (GTK_MENU (m), NULL, NULL, NULL, NULL,
+                  event ? event->button : 0, event ? event->time : gtk_get_current_event_time());
+	return TRUE;
+}
+
+gboolean linphone_gtk_call_log_button_pressed(GtkWidget *widget, GdkEventButton *event){
+	if (event->button == 3 && event->type == GDK_BUTTON_PRESS){
+		return linphone_gtk_call_log_popup_contact(widget, event);
+	}
+	return FALSE;
+}
+
 void linphone_gtk_call_log_update(GtkWidget *w){
 	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(w,"logs_view"));
 	GtkTreeStore *store;
@@ -62,6 +201,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		select=gtk_tree_view_get_selection(v);
 		gtk_tree_selection_set_mode(select, GTK_SELECTION_SINGLE);
 		g_signal_connect_swapped(G_OBJECT(select),"changed",(GCallback)call_log_selection_changed,v);
+		g_signal_connect(G_OBJECT(v),"button-press-event",(GCallback)linphone_gtk_call_log_button_pressed,NULL);
 //		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"call_back_button")),
 //		                     create_pixmap (linphone_gtk_get_ui_config("callback_button","status-green.png")));
 	}
@@ -149,28 +289,6 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 	
 }
 
-static bool_t put_selection_to_uribar(GtkWidget *treeview){
-	GtkTreeSelection *sel;
-
-	sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
-	if (sel!=NULL){
-		GtkTreeModel *model=NULL;
-		GtkTreeIter iter;
-		if (gtk_tree_selection_get_selected (sel,&model,&iter)){
-			gpointer pla;
-			LinphoneAddress *la;
-			char *tmp;
-			gtk_tree_model_get(model,&iter,2,&pla,-1);
-			la=(LinphoneAddress*)pla;
-			tmp=linphone_address_as_string (la);
-			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar")),tmp);
-			ms_free(tmp);
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
 void linphone_gtk_history_row_activated(GtkWidget *treeview){
 	if (put_selection_to_uribar(treeview)){
 		GtkWidget *mw=linphone_gtk_get_main_window();
@@ -207,8 +325,6 @@ void linphone_gtk_call_log_response(GtkWidget *w, guint response_id){
 	gtk_widget_destroy(w);
 }
 
-
-
 GtkWidget * linphone_gtk_show_call_logs(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 
@@ -224,4 +340,3 @@ GtkWidget * linphone_gtk_show_call_logs(void){
 	}else gtk_window_present(GTK_WINDOW(w));
 	return w;
 }
-
