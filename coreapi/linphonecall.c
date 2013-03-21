@@ -271,7 +271,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		l=make_codec_list(lc,lc->codecs_conf.video_codecs,0,NULL,-1);
 		md->streams[1].payloads=l;
 		// if ZRTP is enabled, put the hello hash into the audiostream's desc
-		if (call->videostream->ms.zrtp_context!=NULL){
+		if (call->videostream && call->videostream->ms.zrtp_context!=NULL){
 			ortp_zrtp_get_hello_hash(call->videostream->ms.zrtp_context,
 				md->streams[1].zrtp_hello_hash,
 				sizeof(md->streams[1].zrtp_hello_hash));
