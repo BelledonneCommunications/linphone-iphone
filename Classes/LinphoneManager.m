@@ -1294,7 +1294,7 @@ static void audioRouteChangeListenerCallback (
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
-            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), normalizedUserName);
+            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {
             call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
         }
