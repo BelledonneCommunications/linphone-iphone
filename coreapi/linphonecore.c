@@ -69,11 +69,16 @@ static void linphone_core_free_hooks(LinphoneCore *lc);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
+#ifdef WINAPI_FAMILY_PHONE_APP
+#define SOUNDS_PREFIX "Assets/Sounds/"
+#else
+#define SOUNDS_PREFIX
+#endif
 /* relative path where is stored local ring*/
-#define LOCAL_RING "rings/oldphone.wav"
+#define LOCAL_RING SOUNDS_PREFIX "rings/oldphone.wav"
 /* same for remote ring (ringback)*/
-#define REMOTE_RING "ringback.wav"
-#define HOLD_MUSIC "rings/toy-mono.wav"
+#define REMOTE_RING SOUNDS_PREFIX "ringback.wav"
+#define HOLD_MUSIC SOUNDS_PREFIX "rings/toy-mono.wav"
 
 
 extern SalCallbacks linphone_sal_callbacks;
