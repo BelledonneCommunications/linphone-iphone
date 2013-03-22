@@ -1110,7 +1110,18 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
+	int err;
         strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
+	
+	if (type==AF_INET)
+                dest="87.98.157.38"; /*a public IP address*/
+        else dest="2a00:1450:8002::68";
+        err=get_local_ip_for_with_connect(type,dest,result);
+	if (err==0) return 0;
+	
+	/* if the connect method failed, which happens when no default route is set, 
+	 * try to find 'the' running interface with getifaddrs*/
+	
 #ifdef HAVE_GETIFADDRS
         if (dest==NULL) {
                 /*we use getifaddrs for lookup of default interface */
@@ -1125,11 +1136,7 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
                 }
         }
 #endif
-        /*else use connect to find the best local ip address */
-        if (type==AF_INET)
-                dest="87.98.157.38"; /*a public IP address*/
-        else dest="2a00:1450:8002::68";
-        return get_local_ip_for_with_connect(type,dest,result);
+      return 0;  
 }
 
 #ifndef WIN32
