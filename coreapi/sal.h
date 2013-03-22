@@ -140,7 +140,7 @@ typedef struct SalIceRemoteCandidate {
 } SalIceRemoteCandidate;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES 2
-#define SAL_MEDIA_DESCRIPTION_MAX_ZRTP_HELLO_HASH 128
+
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
@@ -172,7 +172,6 @@ typedef struct SalStreamDescription{
 	SalIceRemoteCandidate ice_remote_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES];
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
-	char zrtp_hello_hash[SAL_MEDIA_DESCRIPTION_MAX_ZRTP_HELLO_HASH];
 	bool_t ice_mismatch;
 	bool_t ice_completed;
 } SalStreamDescription;
