@@ -316,7 +316,12 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 
 UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	UpnpContext *lupnp = (UpnpContext *)ms_new0(UpnpContext,1);
-
+	char address[LINPHONE_IPADDR_SIZE];
+	const char*upnp_binding_address=address;
+	if (linphone_core_get_local_ip_for(lc->sip_conf.ipv6_enabled ? AF_INET6 : AF_INET,NULL,address)) {
+		ms_warning("Linphone core [%p] cannot guess local address for upnp, let's choice the lib",lc);
+		upnp_binding_address=NULL;
+	}
 	ms_mutex_init(&lupnp->mutex, NULL);
 	ms_cond_init(&lupnp->empty_cond, NULL);
 
@@ -328,7 +333,7 @@ UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	lupnp->adding_configs = NULL;
 	lupnp->removing_configs = NULL;
 	lupnp->state = LinphoneUpnpStateIdle;
-	ms_message("uPnP IGD: New %p for core %p", lupnp, lc);
+	ms_message("uPnP IGD: New %p for core %p bound to %s", lupnp, lc,upnp_binding_address);
 
 	// Init ports
 	lupnp->sip_udp = NULL;
@@ -338,7 +343,7 @@ UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	linphone_core_add_iterate_hook(lc, linphone_core_upnp_hook, lupnp);
 
 	lupnp->upnp_igd_ctxt = NULL;
-	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, lupnp);
+	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, address, lupnp);
 	if(lupnp->upnp_igd_ctxt == NULL) {
 		lupnp->state = LinphoneUpnpStateKo;
 		ms_error("Can't create uPnP IGD context");
