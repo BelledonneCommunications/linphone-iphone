@@ -65,7 +65,7 @@ static void sal_add_pending_auth(Sal *sal, SalOp *op){
 }
 
 void sal_process_authentication(SalOp *op) {
-	belle_sip_request_t* request=belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_auth_transaction);;
+	belle_sip_request_t* request=belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_auth_transaction);
 	bool_t is_within_dialog=FALSE;
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
