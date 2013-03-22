@@ -4,6 +4,14 @@
 
 namespace linphone_tester_native
 {
+	enum OutputTraceLevel {
+		Debug,
+		Message,
+		Warning,
+		Error,
+		Raw
+	};
+
 	public interface class OutputTraceListener
 	{
 	public:

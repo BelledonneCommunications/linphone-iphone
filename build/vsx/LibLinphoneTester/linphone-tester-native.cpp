@@ -13,7 +13,7 @@ using namespace Platform;
 
 static OutputTraceListener^ sTraceListener;
 
-static void nativeOutputTraceHandler(int lev, const char *fmt, va_list args)
+static void nativeOutputTraceHandler(OutputTraceLevel lev, const char *fmt, va_list args)
 {
 	if (sTraceListener) {
 		wchar_t wstr[MAX_TRACE_SIZE];
@@ -26,11 +26,35 @@ static void nativeOutputTraceHandler(int lev, const char *fmt, va_list args)
 	}
 }
 
-static void LinphoneNativeOutputTraceHandler(OrtpLogLevel lev, const char *fmt, va_list args)
+static void LinphoneNativeGenericOutputTraceHandler(OrtpLogLevel lev, const char *fmt, va_list args)
 {
+	OutputTraceLevel level = Message;
 	char fmt2[MAX_TRACE_SIZE];
 	snprintf(fmt2, MAX_TRACE_SIZE, "%s\n", fmt);
-	nativeOutputTraceHandler((int)lev, fmt2, args);
+	if (lev == ORTP_DEBUG) level = Debug;
+	else if (lev == ORTP_MESSAGE) level = Message;
+	else if (lev == ORTP_TRACE) level = Message;
+	else if (lev == ORTP_WARNING) level = Warning;
+	else if (lev == ORTP_ERROR) level = Error;
+	else if (lev == ORTP_FATAL) level = Error;
+	nativeOutputTraceHandler(level, fmt2, args);
+}
+
+static void LinphoneNativeOutputTraceHandler(OrtpLogLevel lev, const char *fmt, va_list args)
+{
+	if (lev >= ORTP_WARNING) {
+		LinphoneNativeGenericOutputTraceHandler(lev, fmt, args);
+	}
+}
+
+static void LinphoneNativeVerboseOutputTraceHandler(OrtpLogLevel lev, const char *fmt, va_list args)
+{
+	LinphoneNativeGenericOutputTraceHandler(lev, fmt, args);
+}
+
+static void CUnitNativeOutputTraceHandler(int lev, const char *fmt, va_list args)
+{
+	nativeOutputTraceHandler(Raw, fmt, args);
 }
 
 LinphoneTesterNative::LinphoneTesterNative()
@@ -59,9 +83,11 @@ void LinphoneTesterNative::run(Platform::String^ suiteName, Platform::String^ ca
 	wcstombs(ccasename, wscasename.c_str(), sizeof(ccasename));
 
 	if (verbose) {
+		linphone_core_enable_logs_with_cb(LinphoneNativeVerboseOutputTraceHandler);
+	} else {
 		linphone_core_enable_logs_with_cb(LinphoneNativeOutputTraceHandler);
 	}
-	CU_set_trace_handler(nativeOutputTraceHandler);
+	CU_set_trace_handler(CUnitNativeOutputTraceHandler);
 
 	liblinphone_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename);
 }
