@@ -1113,9 +1113,11 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	int err;
         strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 	
-	if (type==AF_INET)
-                dest="87.98.157.38"; /*a public IP address*/
-        else dest="2a00:1450:8002::68";
+	if (dest==NULL){
+		if (type==AF_INET)
+			dest="87.98.157.38"; /*a public IP address*/
+		else dest="2a00:1450:8002::68";
+	}
         err=get_local_ip_for_with_connect(type,dest,result);
 	if (err==0) return 0;
 	
