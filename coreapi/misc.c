@@ -1125,18 +1125,17 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	 * try to find 'the' running interface with getifaddrs*/
 	
 #ifdef HAVE_GETIFADDRS
-        if (dest==NULL) {
-                /*we use getifaddrs for lookup of default interface */
-                int found_ifs;
 
-                found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
-                if (found_ifs==1){
-                        return 0;
-                }else if (found_ifs<=0){
-                        /*absolutely no network on this machine */
-                        return -1;
-                }
-        }
+	/*we use getifaddrs for lookup of default interface */
+	int found_ifs;
+
+	found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
+	if (found_ifs==1){
+		return 0;
+	}else if (found_ifs<=0){
+		/*absolutely no network on this machine */
+		return -1;
+	}
 #endif
       return 0;  
 }
