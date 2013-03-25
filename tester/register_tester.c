@@ -47,9 +47,8 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 
 }
 
-static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info) {
+static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info,LCSipTransports transport) {
 	int retry=0;
-	LCSipTransports transport = {5070,5070,0,5071};
     char* addr;
 	LinphoneProxyConfig* proxy_cfg;
 	stats* counters;
@@ -102,7 +101,8 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 }
 
 static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
-	register_with_refresh_base_2(lc,refresh,domain,route,FALSE);
+	LCSipTransports transport = {5070,5070,0,5071};
+	register_with_refresh_base_2(lc,refresh,domain,route,FALSE,transport);
 }
 
 static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
@@ -169,6 +169,14 @@ static void simple_tcp_register(){
 	register_with_refresh(lc,FALSE,test_domain,route);
 }
 
+static void simple_tcp_register_compatibility_mode(){
+	LinphoneCore* lc;
+	LCSipTransports transport = {0,5070,0,0};
+	lc = create_lc();
+	register_with_refresh_base_2(lc,FALSE,test_domain,NULL,FALSE,transport);
+}
+
+
 static void simple_tls_register(){
 	char route[256];
 	LinphoneCore* lc;
@@ -221,6 +229,7 @@ static void authenticated_register_with_late_credentials(){
 	LinphoneCore* lc;
 	stats stat;
 	stats* counters;
+	LCSipTransports transport = {5070,5070,0,5071};
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	memset (&v_table,0,sizeof(v_table));
@@ -229,7 +238,7 @@ static void authenticated_register_with_late_credentials(){
 	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
 	linphone_core_set_user_data(lc,&stat);
 	counters = (stats*)linphone_core_get_user_data(lc);
-	register_with_refresh_base_2(lc,FALSE,auth_domain,route,TRUE);
+	register_with_refresh_base_2(lc,FALSE,auth_domain,route,TRUE,transport);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 	linphone_core_destroy(lc);
 }
@@ -331,6 +340,7 @@ static void io_recv_error(){
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
+	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 #ifndef ANDROID
 	{ "TLS register", simple_tls_register },
 #endif

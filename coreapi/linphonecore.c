@@ -2566,13 +2566,26 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		if (sal_address_get_transport((SalAddress*)addr)) {
 			sal_address_set_transport(route,sal_address_get_transport((SalAddress*)addr));
 		} else  {
+			LinphoneProxyConfig* chosen_proxy=NULL;
+
 			if (dest_proxy)
-				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(dest_proxy));
+				chosen_proxy=dest_proxy;
 			else if (proxy)
-				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(proxy));
+				chosen_proxy=proxy;
+			else
+				chosen_proxy=NULL;
+
+			if (chosen_proxy)
+				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(chosen_proxy));
+
 			if (proxy_addr && sal_address_get_transport(proxy_addr))
 				sal_address_set_transport(route,sal_address_get_transport(proxy_addr));
+			else if (proxy_addr && linphone_proxy_config_guess_transport(chosen_proxy) && !sal_address_get_transport((SalAddress*)route)) {
+				/*compatibility mode*/
+				sal_address_set_transport((SalAddress*)route,sal_transport_parse(linphone_proxy_config_guess_transport(chosen_proxy)));
+			}
 		}
+
 
 		sal_op_add_route_address(call->op,route);
 

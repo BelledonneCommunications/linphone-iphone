@@ -347,7 +347,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	return ret;
 }
 /*use for compatibility with linphone supporting only 1 transport at a time*/
-const char* guess_transport(const LinphoneProxyConfig *obj) {
+const char* linphone_proxy_config_guess_transport(const LinphoneProxyConfig *obj) {
 	LCSipTransports transports;
 	const char* transport_name;
 	unsigned char transports_count=0;
@@ -383,8 +383,8 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 		char *contact;
 #else
 		LinphoneAddress *contact;
-		if (guess_transport(obj) && !sal_address_get_transport((SalAddress*)proxy)) {
-			sal_address_set_transport((SalAddress*)proxy,sal_transport_parse(guess_transport(obj)));
+		if (linphone_proxy_config_guess_transport(obj) && !sal_address_get_transport((SalAddress*)proxy)) {
+			sal_address_set_transport((SalAddress*)proxy,sal_transport_parse(linphone_proxy_config_guess_transport(obj)));
 		}
 #endif
 		proxy_string=linphone_address_as_string_uri_only(proxy);

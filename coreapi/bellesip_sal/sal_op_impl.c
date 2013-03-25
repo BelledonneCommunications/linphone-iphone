@@ -146,6 +146,17 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
 			}
 		}
+		if (!sal_op_get_route_addresses(op) && belle_sip_list_size(belle_sip_provider_get_listening_points(op->base.root->prov))==1) {
+			/*compatibility mode*/
+			belle_sip_listening_point_t* lp = (belle_sip_listening_point_t*)belle_sip_provider_get_listening_points(op->base.root->prov)->data;
+			belle_sip_uri_t* to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(belle_sip_message_get_header_by_type(request,belle_sip_header_to_t)));
+			belle_sip_header_address_t* route=belle_sip_header_address_create(NULL,belle_sip_uri_create(NULL,belle_sip_uri_get_host(to_uri)));
+			belle_sip_uri_set_transport_param(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(route)),belle_sip_listening_point_get_transport(lp));
+			route_header = belle_sip_header_route_create(route);
+			belle_sip_object_unref(route);
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
+			ms_message("Only one lp & no route, forcing transport to lp transport [%s]",belle_sip_listening_point_get_transport(lp));
+		}
 	}
 
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);

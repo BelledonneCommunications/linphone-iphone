@@ -1115,7 +1115,8 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 		ms_error("getnameinfo error: %s",strerror(errno));
 	}
 	close_socket(sock);
-	ms_message("Local interface to reach %s is %s.",dest,result);
+
+
 	return 0;
 }
 

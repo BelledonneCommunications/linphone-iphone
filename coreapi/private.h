@@ -240,7 +240,10 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-
+/*
+ *guess the transport if only one trasport is configured at core level (for backward compatibility)
+ * */
+const char* linphone_proxy_config_guess_transport(const LinphoneProxyConfig *obj);
 
 int linphone_online_status_to_eXosip(LinphoneOnlineStatus os);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);

@@ -190,6 +190,70 @@ static void simple_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void simple_call_compatibility_mode(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+
+	LinphoneCore* lc_marie=marie->lc;
+	LinphoneCore* lc_pauline=pauline->lc;
+	stats* stat_marie=&marie->stat;
+	stats* stat_pauline=&pauline->stat;
+	LinphoneProxyConfig* proxy;
+	LinphoneAddress* identity;
+	LinphoneAddress* proxy_address;
+	char*tmp;
+	LCSipTransports transport;
+
+	linphone_core_get_default_proxy(lc_marie,&proxy);
+	CU_ASSERT_PTR_NOT_NULL (proxy);
+	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+
+
+	proxy_address=linphone_address_new(linphone_proxy_config_get_addr(proxy));
+	linphone_address_clean(proxy_address);
+	tmp=linphone_address_as_string_uri_only(proxy_address);
+	linphone_proxy_config_set_server_addr(proxy,tmp);
+	linphone_proxy_config_set_route(proxy,NULL);
+	ms_free(tmp);
+	linphone_address_destroy(proxy_address);
+	linphone_core_get_sip_transports(lc_marie,&transport);
+	transport.udp_port=0;
+	transport.tls_port=0;
+	transport.dtls_port=0;
+	/*only keep tcp*/
+	linphone_core_set_sip_transports(lc_marie,&transport);
+	stat_marie->number_of_LinphoneRegistrationOk=0;
+
+	CU_ASSERT_TRUE (wait_for(lc_marie,lc_marie,&stat_marie->number_of_LinphoneRegistrationOk,1));
+
+	linphone_core_invite(lc_marie,"pauline");
+
+	CU_ASSERT_TRUE (wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallIncomingReceived,1));
+	CU_ASSERT_TRUE(linphone_core_inc_invite_pending(lc_pauline));
+	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallOutgoingProgress,1);
+	CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallOutgoingRinging,1));
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(lc_pauline));
+	if (linphone_core_get_current_call_remote_address(lc_pauline)) {
+		CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
+		linphone_address_destroy(identity);
+
+		linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
+
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallConnected,1));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
+		/*just to sleep*/
+		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
+		linphone_core_terminate_all_calls(lc_pauline);
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
+		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
+	}
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 static void cancelled_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
@@ -619,6 +683,7 @@ test_t call_tests[] = {
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Simple call", simple_call },
+	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call paused resumed", call_paused_resumed },

@@ -72,6 +72,41 @@ static void text_message(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+static void text_message_compatibility_mode(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneProxyConfig* proxy;
+	LinphoneAddress* proxy_address;
+	char*tmp;
+	LCSipTransports transport;
+	char* to = linphone_address_as_string(pauline->identity);
+
+	linphone_core_get_default_proxy(marie->lc,&proxy);
+	CU_ASSERT_PTR_NOT_NULL (proxy);
+	proxy_address=linphone_address_new(linphone_proxy_config_get_addr(proxy));
+	linphone_address_clean(proxy_address);
+	tmp=linphone_address_as_string_uri_only(proxy_address);
+	linphone_proxy_config_set_server_addr(proxy,tmp);
+	linphone_proxy_config_set_route(proxy,NULL);
+	ms_free(tmp);
+	linphone_address_destroy(proxy_address);
+	linphone_core_get_sip_transports(marie->lc,&transport);
+	transport.udp_port=0;
+	transport.tls_port=0;
+	transport.dtls_port=0;
+	/*only keep tcp*/
+	linphone_core_set_sip_transports(marie->lc,&transport);
+	marie->stat.number_of_LinphoneRegistrationOk=0;
+
+	CU_ASSERT_TRUE (wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationOk,1));
+
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceivedLegacy,1);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 static void text_message_with_ack(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
@@ -126,6 +161,7 @@ static void text_message_with_send_error(void) {
 
 test_t message_tests[] = {
 	{ "Text message", text_message },
+	{ "Text message compatibility mode", text_message_compatibility_mode },
 	{ "Text message with ack", text_message_with_ack },
 	{ "Text message with send error", text_message_with_send_error },
 	{ "Text message with external body", text_message_with_external_body }
