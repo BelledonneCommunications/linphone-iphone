@@ -338,7 +338,7 @@ UpnpContext* linphone_upnp_context_new(LinphoneCore *lc) {
 	linphone_core_add_iterate_hook(lc, linphone_core_upnp_hook, lupnp);
 
 	lupnp->upnp_igd_ctxt = NULL;
-	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, lupnp);
+	lupnp->upnp_igd_ctxt = upnp_igd_create(linphone_upnp_igd_callback, linphone_upnp_igd_print, NULL, lupnp);
 	if(lupnp->upnp_igd_ctxt == NULL) {
 		lupnp->state = LinphoneUpnpStateKo;
 		ms_error("Can't create uPnP IGD context");
