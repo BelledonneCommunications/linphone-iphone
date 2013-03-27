@@ -862,7 +862,7 @@ fi
 if test $USE_BELLESIP_TRUE !='#' ; then
 	printf "* bellesip stack\t\t\ttrue\n"
 else
-	printf "* eXosip stack\t\ttrue\n"
+	printf "* eXosip stack\t\t\ttrue\n"
 fi
 if test "$build_upnp" = "true" ; then
 	printf "* upnp support\t\t\ttrue\n"
