@@ -36,9 +36,12 @@ struct Sal{
 	void *up; /*user pointer*/
 	int session_expires;
 	unsigned int keep_alive;
+	char *root_ca;
 	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
+	bool_t tls_verify;
+	bool_t tls_verify_cn;
 };
 
 typedef enum SalOpSate {

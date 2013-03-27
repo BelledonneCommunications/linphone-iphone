@@ -49,7 +49,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 
 static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info,LCSipTransports transport) {
 	int retry=0;
-    char* addr;
+	char* addr;
 	LinphoneProxyConfig* proxy_cfg;
 	stats* counters;
 	LinphoneAddress *from;

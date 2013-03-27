@@ -17,8 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 #include "sal_impl.h"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+static void set_tls_properties(Sal *ctx);
 
 void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 	int ortp_level;
@@ -384,6 +389,8 @@ Sal * sal_init(){
 	listener_callbacks.process_auth_requested=process_auth_requested;
 	sal->listener=belle_sip_listener_create_from_callbacks(&listener_callbacks,sal);
 	belle_sip_provider_add_sip_listener(sal->prov,sal->listener);
+	sal->tls_verify=TRUE;
+	sal->tls_verify_cn=TRUE;
 	return sal;
 }
 void sal_set_user_pointer(Sal *sal, void *user_data){
@@ -445,6 +452,7 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
 	belle_sip_object_unref(sal->listener);
+	if (sal->root_ca) ms_free(sal->root_ca);
 	ms_free(sal);
 	return ;
 };
@@ -458,11 +466,13 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
+		set_tls_properties(ctx);
 	} else {
 		return -1;
 	}
 	return result;
 }
+
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure) {
 	SalAddress* sal_addr = sal_address_new(NULL);
 	int result;
@@ -538,16 +548,41 @@ void sal_use_101(Sal *ctx, bool_t use_101){
 	ms_warning("sal_use_101 is deprecated");
 	return ;
 }
+
+static void set_tls_properties(Sal *ctx){
+	belle_sip_listening_point_t *lp=belle_sip_provider_get_listening_point(ctx->prov,"TLS");
+	if (lp){
+		belle_sip_tls_listening_point_t *tlp=BELLE_SIP_TLS_LISTENING_POINT(lp);
+		int verify_exceptions=0;
+		
+		if (!ctx->tls_verify) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_ANY_REASON;
+		else if (!ctx->tls_verify_cn) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_CN_MISMATCH;
+		
+		belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca);
+		belle_sip_tls_listening_point_set_verify_exceptions(tlp,verify_exceptions);
+	}
+}
+
 void sal_set_root_ca(Sal* ctx, const char* rootCa){
-	ms_error("sal_set_root_ca not implemented yet");
+	if (ctx->root_ca){
+		ms_free(ctx->root_ca);
+		ctx->root_ca=NULL;
+	}
+	if (rootCa)
+		ctx->root_ca=ms_strdup(rootCa);
+	set_tls_properties(ctx);
 	return ;
 }
+
 void sal_verify_server_certificates(Sal *ctx, bool_t verify){
-	ms_error("sal_verify_server_certificates not implemented yet");
+	ctx->tls_verify=verify;
+	set_tls_properties(ctx);
 	return ;
 }
+
 void sal_verify_server_cn(Sal *ctx, bool_t verify){
-	ms_error("sal_verify_server_cn not implemented yet");
+	ctx->tls_verify_cn=verify;
+	set_tls_properties(ctx);
 	return ;
 }
 
@@ -569,21 +604,23 @@ MSList * sal_get_pending_auths(Sal *sal){
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen){
 	strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
-	ms_error("Could not find default routable ip address !");
+	ms_error("sal_get_default_local_ip() is deprecated.");
 }
 
 const char *sal_get_root_ca(Sal* ctx) {
-	ms_fatal("sal_get_root_ca not implemented yet");
-	return  NULL;
+	return ctx->root_ca;
 }
+
 int sal_reset_transports(Sal *ctx){
-	ms_message("reseting transport");
+	ms_message("reseting transports");
 	belle_sip_provider_clean_channels(ctx->prov);
 	return 0;
 }
+
 void sal_set_dscp(Sal *ctx, int dscp){
-	ms_warning("sal_set_dscp not implemented");
+	belle_sip_stack_set_default_dscp(ctx->stack,dscp);
 }
+
 void  sal_set_send_error(Sal *sal,int value) {
 	 belle_sip_stack_set_send_error(sal->stack,value);
 }
