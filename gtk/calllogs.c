@@ -210,13 +210,14 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 	for (logs=linphone_core_get_call_logs(linphone_gtk_get_core());logs!=NULL;logs=logs->next){
 		LinphoneCallLog *cl=(LinphoneCallLog*)logs->data;
 		GtkTreeIter iter, iter2;
-		LinphoneAddress *la=linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
-		char *addr= linphone_address_as_string_uri_only (la);
+		const LinphoneAddress *la=linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
+		char *addr= linphone_address_as_string(la);
 		const char *display;
 		gchar *logtxt, *headtxt, *minutes, *seconds;
 		gchar quality[20];
 		const char *status=NULL;
 		gchar *start_date=NULL;
+		LinphoneFriend *lf=NULL;
 		int duration=linphone_call_log_get_duration(cl);
 		time_t start_date_time=linphone_call_log_get_start_date(cl);
 		
@@ -229,12 +230,19 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 #else
 		start_date=g_strdup(ctime(&start_date_time));
 #endif
+		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
+		if(lf != NULL){
+			la=linphone_friend_get_address(lf);
+			display=linphone_address_get_display_name(la);
+		} else {
+			display=linphone_address_get_display_name(la);
+		}
 		
-		display=linphone_address_get_display_name (la);
 		if (display==NULL){
 			display=linphone_address_get_username (la);
-			if (display==NULL)
+			if (display==NULL){
 				display=linphone_address_get_domain (la);
+			}
 		}
 		if (linphone_call_log_get_quality(cl)!=-1){
 			snprintf(quality,sizeof(quality),"%.1f",linphone_call_log_get_quality(cl));
