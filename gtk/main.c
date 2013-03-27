@@ -69,9 +69,10 @@ void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
 
 
-
+#ifndef HAVE_GTK_OSX
 static gint main_window_x=0;
 static gint main_window_y=0;
+#endif
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
