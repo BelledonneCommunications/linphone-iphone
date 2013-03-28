@@ -187,6 +187,13 @@ static void simple_call(void) {
 		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
 		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
 	}
+	linphone_core_destroy(marie->lc);
+	marie->lc=NULL;
+	CU_ASSERT_EQUAL(stat_marie->number_of_LinphoneCallReleased,1);
+	linphone_core_destroy(pauline->lc);
+	pauline->lc=NULL;
+	CU_ASSERT_EQUAL(stat_pauline->number_of_LinphoneCallReleased,1);
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -268,6 +275,8 @@ static void cancelled_call(void) {
 	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonCanceled);
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -285,6 +294,7 @@ static void call_with_dns_time_out(void) {
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,1);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -297,10 +307,11 @@ static void cancelled_ringing_call(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 
 	linphone_core_terminate_call(pauline->lc,out_call);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	//CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
-	//CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
+
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -318,8 +329,10 @@ static void early_declined_call(void) {
 	if (in_call) {
 		linphone_call_ref(in_call);
 		linphone_core_terminate_call(marie->lc,in_call);
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1));
+		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+		CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1);
+		CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
 		CU_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined);
 		CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
 		linphone_call_unref(in_call);

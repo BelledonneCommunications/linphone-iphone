@@ -165,6 +165,7 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	if((pt = linphone_core_find_payload_type(lc,type,rate,1))) {
 		linphone_core_enable_payload_type(lc,pt, 1);
 	}
+	ms_list_free(codecs);
 }
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies) {
@@ -194,7 +195,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
-	linphone_core_destroy(mgr->lc);
+	if (mgr->lc) linphone_core_destroy(mgr->lc);
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
 	free(mgr);
 }

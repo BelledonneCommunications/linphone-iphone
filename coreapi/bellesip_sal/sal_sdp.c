@@ -159,6 +159,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 	const char *mtype,*proto;
 	SalStreamDescription *stream;
 	belle_sdp_media_t* media;
+	belle_sip_list_t* mime_params=NULL;
 	belle_sip_list_t* mime_param_it=NULL;
 	belle_sdp_mime_parameter_t* mime_param;
 	PayloadType *pt;
@@ -232,7 +233,8 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 		}
 
 		/* for each payload type */
-		for(mime_param_it=belle_sdp_media_description_build_mime_parameters(media_desc)
+		mime_params=belle_sdp_media_description_build_mime_parameters(media_desc);
+		for(mime_param_it=mime_params
 				;mime_param_it!=NULL
 				;mime_param_it=mime_param_it->next) {
 			mime_param=BELLE_SDP_MIME_PARAMETER(mime_param_it->data)
@@ -248,7 +250,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 			ms_message("Found payload %s/%i fmtp=%s",pt->mime_type,pt->clock_rate,
 					pt->send_fmtp ? pt->send_fmtp : "");
 		}
-		if (mime_param_it) belle_sip_list_free_with_data(mime_param_it,belle_sip_object_unref);
+		if (mime_params) belle_sip_list_free_with_data(mime_params,belle_sip_object_unref);
 		/* read crypto lines if any */
 		if (stream->proto == SalProtoRtpSavp) {
 

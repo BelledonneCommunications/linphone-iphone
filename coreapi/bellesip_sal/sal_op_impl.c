@@ -268,12 +268,17 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 }
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 	/*check if dialog has changed*/
-	if (dialog  != op->dialog) {
+	if (dialog && dialog != op->dialog) {
 		ms_message("Dialog set from [%p] to [%p] for op [%p]",op->dialog,dialog,op);
 		/*fixme, shouldn't we cancel previous dialog*/
-		if (op->dialog)belle_sip_object_unref(op->dialog);
+		if (op->dialog) {
+			belle_sip_dialog_set_application_data(op->dialog,NULL);
+			belle_sip_object_unref(op->dialog);
+			sal_op_unref(op);
+		}
 		op->dialog=dialog;
 		belle_sip_dialog_set_application_data(op->dialog,op);
+		sal_op_ref(op);
 		belle_sip_object_ref(op->dialog);
 	}
 }

@@ -301,7 +301,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 				if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 					/*only bye are completed*/
 					belle_sip_message("Op is in state terminating, nothing else to do ");
-					return;
 				} else {
 					if (op->pending_auth_transaction){
 						belle_sip_object_unref(op->pending_auth_transaction);
@@ -349,6 +348,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 		ms_error("Unhandled transaction terminated [%p]",trans);
 	}
 	if (op) sal_op_unref(op); /*no longuer need to ref op*/
+
 }
 
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {

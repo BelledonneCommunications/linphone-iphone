@@ -404,8 +404,12 @@ static void add_presence_info(belle_sip_message_t *notify, SalPresenceStatus onl
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("presence_process_io_error not implemented yet");
 }
-static void presence_process_dialog_terminated(void *op, const belle_sip_dialog_terminated_event_t *event) {
-	if (((SalOp*)op)->dialog) ((SalOp*)op)->dialog=NULL;
+static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
+	SalOp* op= (SalOp*)ctx;
+	if (op->dialog) {
+		sal_op_unref(op);
+		op->dialog=NULL;
+	}
 }
 
 static void presence_response_event(void *op_base, const belle_sip_response_event_t *event){
