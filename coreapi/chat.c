@@ -65,11 +65,11 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
-	const char *route=NULL;
-	const char *identity=linphone_core_find_best_identity(cr->lc,cr->peer_url,&route);
+	MSList *routes=NULL;
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
+	const char *identity=NULL;
 	time_t t=time(NULL);
 	
 	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
@@ -82,14 +82,19 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 				ms_message("send SIP message through the existing call.");
 				op = call->op;
 				call->pending_message=msg;
+				identity=linphone_core_find_best_identity(cr->lc,linphone_call_get_remote_address(call));
 			}
 		}
 	}
 	msg->time=t;
 	if (op==NULL){
+		LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(cr->lc,cr->peer_url,&routes);
+		if (proxy){
+			identity=linphone_proxy_config_get_identity(proxy);
+		}else identity=linphone_core_get_primary_contact(cr->lc);
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
-		sal_op_set_route(op,route);
+		linphone_transfer_routes_to_op(routes,op);
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		if (msg->custom_headers){
 			sal_op_set_custom_header(op,msg->custom_headers);

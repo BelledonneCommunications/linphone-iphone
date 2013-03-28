@@ -84,6 +84,7 @@ const char *sal_address_get_domain(const SalAddress *addr);
 const char * sal_address_get_port(const SalAddress *addr);
 int sal_address_get_port_int(const SalAddress *addr);
 SalTransport sal_address_get_transport(const SalAddress* addr);
+const char* sal_address_get_transport_name(const SalAddress* addr);
 
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
@@ -96,7 +97,7 @@ char *sal_address_as_string_uri_only(const SalAddress *u);
 void sal_address_destroy(SalAddress *u);
 void sal_address_set_param(SalAddress *u,const char* name,const char* value);
 void sal_address_set_transport(SalAddress* addr,SalTransport transport);
-
+void sal_address_set_transport_name(SalAddress* addr,const char* transport);
 
 Sal * sal_init();
 void sal_uninit(Sal* sal);

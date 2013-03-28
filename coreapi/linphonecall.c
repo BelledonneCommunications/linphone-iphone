@@ -219,20 +219,25 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	PayloadType *pt;
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
-	const char *me=linphone_core_get_identity(lc);
-	LinphoneAddress *addr=linphone_address_new(me);
-	const char *username=linphone_address_get_username (addr);
+	const char *me;
 	SalMediaDescription *md=sal_media_description_new();
+	LinphoneAddress *addr;
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
 
 	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 
+	if (call->dest_proxy)
+		me=linphone_proxy_config_get_identity(call->dest_proxy);
+	else 
+		me=linphone_core_get_identity(lc);
+	addr=linphone_address_new(me);
+	
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
 	md->n_total_streams=(old_md ? old_md->n_total_streams : 1);
 	md->n_active_streams=1;
 	strncpy(md->addr,call->localip,sizeof(md->addr));
-	strncpy(md->username,username,sizeof(md->username));
+	strncpy(md->username,linphone_address_get_username(addr),sizeof(md->username));
 	
 	if (call->params.down_bw)
 		md->bandwidth=call->params.down_bw;
@@ -523,7 +528,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 			from_str=linphone_address_as_string_uri_only(from);
 			sal_op_set_route(call->ping_op,sal_op_get_network_origin(op));
 			sal_op_set_user_pointer(call->ping_op,call);
-			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from,NULL),from_str);
+			sal_ping(call->ping_op,linphone_core_find_best_identity(lc,from),from_str);
 			ms_free(from_str);
 		}
 	}

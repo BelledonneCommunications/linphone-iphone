@@ -109,13 +109,14 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *cfg;
+	MSList *routes=NULL;
 	
 	friend=linphone_address_as_string(fr->uri);
-	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
+	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr),&routes);
 	if (cfg!=NULL){
-		route=linphone_proxy_config_get_route(cfg);
 		from=linphone_proxy_config_get_identity(cfg);
 	}else from=linphone_core_get_primary_contact(fr->lc);
+	
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
 		fr->status=LinphoneStatusOffline;
@@ -133,6 +134,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 		sal_op_set_contact(fr->outsub,sal_op_get_contact(cfg->op));
 	else
 		sal_op_set_contact(fr->outsub,NULL);
+	linphone_transfer_routes_to_op(routes,fr->outsub);
 	sal_subscribe_presence(fr->outsub,from,friend);
 	fr->subscribe_active=TRUE;
 	ms_free(friend);

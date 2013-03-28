@@ -240,10 +240,7 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-/*
- *guess the transport if only one trasport is configured at core level (for backward compatibility)
- * */
-const char* linphone_proxy_config_guess_transport(const LinphoneProxyConfig *obj);
+
 
 int linphone_online_status_to_eXosip(LinphoneOnlineStatus os);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
@@ -318,8 +315,9 @@ LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, 
 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 void linphone_proxy_config_get_contact(LinphoneProxyConfig *cfg, const char **ip, int *port);
-LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
-const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to, const char **route);
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri, MSList **routes);
+void linphone_transfer_routes_to_op(MSList *routes, SalOp *op);
+const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to);
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(struct _LpConfig *config, int index);

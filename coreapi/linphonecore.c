@@ -66,6 +66,7 @@ static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
 
+
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
@@ -2003,7 +2004,7 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 	for(elem=linphone_core_get_friend_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
 		if (lf->info==NULL){
-			if (linphone_core_lookup_known_proxy(lc,lf->uri)==cfg){
+			if (linphone_core_lookup_known_proxy(lc,lf->uri,NULL)==cfg){
 				if (linphone_address_get_username(lf->uri)!=NULL){
 					BuddyLookupRequest *req;
 					char *tmp=linphone_address_as_string_uri_only(lf->uri);
@@ -2295,7 +2296,53 @@ void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, L
 	}
 }
 
-LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
+/* returns the ideal route set for making an operation through this proxy.
+ * The list must be freed as well as the SalAddress content*/
+
+	/*
+* rfc3608
+6.1.  Procedures at the UA
+
+ /.../
+   For example, some devices will use locally-configured
+   explicit loose routing to reach a next-hop proxy, and others will use
+   a default outbound-proxy routing rule.  However, for the result to
+   function, the combination MUST provide valid routing in the local
+   environment.  In general, the service route set is appended to any
+   locally configured route needed to egress the access proxy chain.
+   Systems designers must match the service routing policy of their
+   nodes with the basic SIP routing policy in order to get a workable
+   system.
+*/
+	
+static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *addr){
+	MSList *ret=NULL;
+	const char *local_route=linphone_proxy_config_get_route(proxy);
+	const LinphoneAddress *srv_route=linphone_proxy_config_get_service_route(proxy);
+	if (local_route){
+		ret=ms_list_append(ret,sal_address_new(local_route));
+	}
+	if (srv_route){
+		ret=ms_list_append(ret,sal_address_clone((SalAddress*)srv_route));
+	}
+	if (ret==NULL){
+		/*still no route, so try to build a route from proxy transport + identity host, 
+		 *in order to force using the transport required for this proxy, if any.*/
+		SalAddress *proxy_addr=sal_address_new(linphone_proxy_config_get_addr(proxy));
+		const char *transport=sal_address_get_transport_name(proxy_addr);
+		sal_address_destroy(proxy_addr);
+		if (transport){
+			SalAddress *route=sal_address_new(NULL);
+			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)addr));
+			sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)addr));
+			sal_address_set_transport_name(route,transport);
+			ret=ms_list_append(ret,route);
+		}
+	}
+	return ret;
+}
+
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri, MSList **routes){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
@@ -2303,8 +2350,10 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	/*always prefer the default proxy if it is matching the destination uri*/
 	if (default_cfg){
 		const char *domain=linphone_proxy_config_get_domain(default_cfg);
-		if (strcmp(domain,linphone_address_get_domain(uri))==0)
-			return default_cfg;
+		if (strcmp(domain,linphone_address_get_domain(uri))==0){
+			found_cfg=default_cfg;
+			goto end;
+		}
 	}
 
 	/*otherwise iterate through the other proxy config and return the first matching*/
@@ -2313,18 +2362,34 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 		const char *domain=linphone_proxy_config_get_domain(cfg);
 		if (domain!=NULL && strcmp(domain,linphone_address_get_domain(uri))==0){
 			found_cfg=cfg;
-			break;
+			goto end;
 		}
 	}
+end:
+	if (found_cfg!=NULL && found_cfg!=default_cfg){
+		ms_message("Overriding default proxy setting for this call/message/subscribe operation.");
+	};
+	
+	/*if route argument is given, fill adequate route set for this proxy.*/
+	if (routes){
+		if (found_cfg){
+			*routes=make_routes_for_proxy(found_cfg,uri);
+		}else if (default_cfg){
+			/*if the default proxy config has a locally configured route, we should use it*/
+			const char *route=linphone_proxy_config_get_route(default_cfg);
+			if (route)
+				*routes=ms_list_append(*routes,sal_address_new(route));
+		}
+	}
+	
 	return found_cfg;
 }
 
-const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to, const char **route){
-	LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(lc,to);
+const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to){
+	LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(lc,to,NULL);
 	if (cfg==NULL)
 		linphone_core_get_default_proxy (lc,&cfg);
 	if (cfg!=NULL){
-		if (route) *route=linphone_proxy_config_get_route(cfg);
 		return linphone_proxy_config_get_identity (cfg);
 	}
 	return linphone_core_get_primary_contact (lc);
@@ -2474,6 +2539,15 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	return call;
 }
 
+void linphone_transfer_routes_to_op(MSList *routes, SalOp *op){
+	MSList *it;
+	for(it=routes;it!=NULL;it=it->next){
+		SalAddress *addr=(SalAddress*)it->data;
+		sal_op_add_route_address(op,addr);
+		sal_address_destroy(addr);
+	}
+	ms_list_free(routes);
+}
 
 /**
  * Initiates an outgoing call given a destination LinphoneAddress
@@ -2493,12 +2567,11 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
 	const char *from=NULL;
-	LinphoneProxyConfig *proxy=NULL,*dest_proxy=NULL;
+	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
-	SalAddress *route=NULL;
-	SalAddress *proxy_addr=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
+	MSList *routes=NULL;
 	bool_t defer = FALSE;
 
 	linphone_core_preempt_sound_resources(lc);
@@ -2510,18 +2583,10 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	}
 	linphone_core_get_default_proxy(lc,&proxy);
 
-
 	real_url=linphone_address_as_string(addr);
-	dest_proxy=linphone_core_lookup_known_proxy(lc,addr);
+	proxy=linphone_core_lookup_known_proxy(lc,addr,&routes);
 
-	if (proxy!=dest_proxy && dest_proxy!=NULL) {
-		ms_message("Overriding default proxy setting for this call:");
-		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(dest_proxy));
-	}
-
-	if (dest_proxy!=NULL)
-		from=linphone_proxy_config_get_identity(dest_proxy);
-	else if (proxy!=NULL)
+	if (proxy!=NULL)
 		from=linphone_proxy_config_get_identity(proxy);
 
 	/* if no proxy or no identity defined for this proxy, default to primary contact*/
@@ -2530,64 +2595,9 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	parsed_url2=linphone_address_new(from);
 
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
-	call->dest_proxy=dest_proxy;
-
-	if (linphone_core_get_route(lc)) {
-		sal_op_set_route(call->op,linphone_core_get_route(lc));
-	}
-
-/*
-* rfc3608
-6.1.  Procedures at the UA
-
- /.../
-   For example, some devices will use locally-configured
-   explicit loose routing to reach a next-hop proxy, and others will use
-   a default outbound-proxy routing rule.  However, for the result to
-   function, the combination MUST provide valid routing in the local
-   environment.  In general, the service route set is appended to any
-   locally configured route needed to egress the access proxy chain.
-   Systems designers must match the service routing policy of their
-   nodes with the basic SIP routing policy in order to get a workable
-   system.
-*/
-	if (proxy && linphone_proxy_config_get_service_route(proxy)) {
-		/*set service route*/
-		sal_op_add_route_address(call->op,linphone_proxy_config_get_service_route(proxy));
-	} /*else, no route*/
-
-	if (!sal_op_get_route(call->op)) {
-		/*still no route, so try to build a route from proxy transport + identity host*/
-		route=sal_address_new(NULL);
-		/*first, get domain and port from requerst uri*/
-		sal_address_set_domain(route,sal_address_get_domain((SalAddress*)addr));
-		sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)addr));
-		/*next get transport either from request uri or from proxy if any*/
-		if (sal_address_get_transport((SalAddress*)addr)) {
-			sal_address_set_transport(route,sal_address_get_transport((SalAddress*)addr));
-		} else  {
-			LinphoneProxyConfig* chosen_proxy=NULL;
-
-			if (dest_proxy)
-				chosen_proxy=dest_proxy;
-			else if (proxy)
-				chosen_proxy=proxy;
-			else
-				chosen_proxy=NULL;
-
-			if (chosen_proxy)
-				proxy_addr=sal_address_new(linphone_proxy_config_get_addr(chosen_proxy));
-
-			if (proxy_addr && sal_address_get_transport(proxy_addr))
-				sal_address_set_transport(route,sal_address_get_transport(proxy_addr));
-			else if (proxy_addr && linphone_proxy_config_guess_transport(chosen_proxy) && !sal_address_get_transport((SalAddress*)route)) {
-				/*compatibility mode*/
-				sal_address_set_transport((SalAddress*)route,sal_transport_parse(linphone_proxy_config_guess_transport(chosen_proxy)));
-			}
-		}
-		sal_op_add_route_address(call->op,route);
-	}
-
+	call->dest_proxy=proxy;
+	linphone_transfer_routes_to_op(routes,call->op);
+	
 	if(linphone_core_add_call(lc,call)!= 0)
 	{
 		ms_warning("we had a problem in adding the call into the invite ... weird");
@@ -3119,7 +3129,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 
 	linphone_core_get_default_proxy(lc,&cfg);
 	call->dest_proxy=cfg;
-	call->dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to);
+	call->dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to,NULL);
 
 	if (cfg!=call->dest_proxy && call->dest_proxy!=NULL) {
 		ms_message("Overriding default proxy setting for this call:");

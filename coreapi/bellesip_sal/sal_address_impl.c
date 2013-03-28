@@ -83,13 +83,21 @@ int sal_address_get_port_int(const SalAddress *addr){
 		return -1;
 }
 SalTransport sal_address_get_transport(const SalAddress* addr){
-	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
-	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
-	if (uri && belle_sip_uri_get_transport_param(uri)) {
-		return sal_transport_parse(belle_sip_uri_get_transport_param(uri));
-	} else
+	const char *transport=sal_address_get_transport_name(addr);
+	if (transport)
+		return sal_transport_parse(transport);
+	else
 		return SalTransportUDP;
 };
+
+const char* sal_address_get_transport_name(const SalAddress* addr){
+	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
+	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
+	if (uri) {
+		return belle_sip_uri_get_transport_param(uri);
+	}
+	return NULL;
+}
 
 void sal_address_set_display_name(SalAddress *addr, const char *display_name){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
@@ -132,8 +140,11 @@ void sal_address_set_param(SalAddress *addr,const char* name,const char* value){
 	belle_sip_parameters_set_parameter(parameters,name,value);
 	return ;
 }
+
 void sal_address_set_transport(SalAddress* addr,SalTransport transport){
 	SAL_ADDRESS_SET(addr,transport_param,sal_transport_to_string(transport));
 }
 
-
+void sal_address_set_transport_name(SalAddress* addr,const char *transport){
+	SAL_ADDRESS_SET(addr,transport_param,transport);
+}
