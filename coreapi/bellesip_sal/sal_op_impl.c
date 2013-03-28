@@ -130,32 +130,36 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request,bool_t add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
-	belle_sip_header_route_t* route_header;
 	belle_sip_uri_t* outbound_proxy=NULL;
 	belle_sip_header_contact_t* contact;
-	MSList* iterator;
+	
 	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
-		for(iterator=(MSList*)sal_op_get_route_addresses(op);iterator!=NULL;iterator=iterator->next) {
-			if(!outbound_proxy) {
-				/*first toute is outbound proxy*/
-				outbound_proxy=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(iterator->data));
-			} else {
-				/*next are Route headers*/
-				route_header = belle_sip_header_route_create(BELLE_SIP_HEADER_ADDRESS(iterator->data));
-				belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
-			}
+		const MSList *elem=sal_op_get_route_addresses(op);
+		belle_sip_uri_t *next_hop_uri;
+		const char *transport;
+		if (elem) {
+			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
+			next_hop_uri=outbound_proxy;
+		}else{
+			next_hop_uri=belle_sip_request_get_uri(request);
 		}
-		if (!sal_op_get_route_addresses(op) && belle_sip_list_size(belle_sip_provider_get_listening_points(op->base.root->prov))==1) {
-			/*compatibility mode*/
-			belle_sip_listening_point_t* lp = (belle_sip_listening_point_t*)belle_sip_provider_get_listening_points(op->base.root->prov)->data;
-			belle_sip_uri_t* to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(belle_sip_message_get_header_by_type(request,belle_sip_header_to_t)));
-			belle_sip_header_address_t* route=belle_sip_header_address_create(NULL,belle_sip_uri_create(NULL,belle_sip_uri_get_host(to_uri)));
-			belle_sip_uri_set_transport_param(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(route)),belle_sip_listening_point_get_transport(lp));
-			route_header = belle_sip_header_route_create(route);
-			belle_sip_object_unref(route);
-			belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(route_header));
-			ms_message("Only one lp & no route, forcing transport to lp transport [%s]",belle_sip_listening_point_get_transport(lp));
+		transport=belle_sip_uri_get_transport_param(next_hop_uri);
+		if (transport==NULL){
+			/*compatibility mode: by default it should be udp as not explicitely set and if no udp listening point is available, then use
+			 * the first available transport*/
+			if (belle_sip_provider_get_listening_point(prov,"UDP")==0){
+				if (belle_sip_provider_get_listening_point(prov,"TCP")!=NULL){
+					transport="tcp";
+				}else if (belle_sip_provider_get_listening_point(prov,"TLS")!=NULL){
+					transport="tls";
+				}
+			}
+			if (transport){
+				belle_sip_message("Transport is not specified, using %s because UDP is not available.",transport);
+				belle_sip_uri_set_transport_param(next_hop_uri,transport);
+			}
+			belle_sip_uri_fix(next_hop_uri);
 		}
 	}
 

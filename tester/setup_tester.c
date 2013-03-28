@@ -29,6 +29,8 @@ static void core_init_test(void) {
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
+	/* until we have good certificates on our test server... */
+	linphone_core_verify_server_certificates(lc,FALSE);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(lc);
 	linphone_core_destroy(lc);
 }

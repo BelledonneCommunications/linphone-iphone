@@ -377,12 +377,13 @@ const char* linphone_proxy_config_guess_transport(const LinphoneProxyConfig *obj
 }
 static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 	if (obj->reg_sendregister){
-	LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
-	char* proxy_string;
+		LinphoneAddress* proxy=linphone_address_new(obj->reg_proxy);
+		char* proxy_string;
 #ifndef USE_BELLESIP
 		char *contact;
 #else
 		LinphoneAddress *contact;
+		
 		if (linphone_proxy_config_guess_transport(obj) && !sal_address_get_transport((SalAddress*)proxy)) {
 			sal_address_set_transport((SalAddress*)proxy,sal_transport_parse(linphone_proxy_config_guess_transport(obj)));
 		}
@@ -397,7 +398,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
 #ifndef USE_BELLESIP
 			ms_free(contact);
 #else
-		linphone_address_destroy(contact);
+			linphone_address_destroy(contact);
 #endif
 		}
 		sal_op_set_user_pointer(obj->op,obj);

@@ -90,6 +90,8 @@ LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
 	}
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
+	/* until we have good certificates on our test server... */
+	linphone_core_verify_server_certificates(lc,FALSE);
 	return lc;
 }
 
@@ -109,6 +111,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	linphone_core_set_user_data(lc,&global_stat);
 	counters = (stats*)linphone_core_get_user_data(lc);
 	
+	/* until we have good certificates on our test server... */
+	linphone_core_verify_server_certificates(lc,FALSE);
+	
 	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
 	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
 	linphone_core_set_ring(lc, ringpath);
@@ -118,8 +123,8 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);
 
 	while (counters->number_of_LinphoneRegistrationOk<proxy_count && retry++ <20) {
-			linphone_core_iterate(lc);
-			ms_usleep(100000);
+		linphone_core_iterate(lc);
+		ms_usleep(100000);
 	}
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,proxy_count);
 	return lc;

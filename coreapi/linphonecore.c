@@ -2585,10 +2585,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 				sal_address_set_transport((SalAddress*)route,sal_transport_parse(linphone_proxy_config_guess_transport(chosen_proxy)));
 			}
 		}
-
-
 		sal_op_add_route_address(call->op,route);
-
 	}
 
 	if(linphone_core_add_call(lc,call)!= 0)
