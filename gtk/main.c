@@ -63,12 +63,16 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
+void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void _linphone_gtk_enable_video(gboolean val);
 
 
-
+#ifndef HAVE_GTK_OSX
+static gint main_window_x=0;
+static gint main_window_y=0;
+#endif
 static gboolean verbose=0;
 static gboolean auto_answer = 0;
 static gchar * addr_to_call = NULL;
@@ -1371,11 +1375,20 @@ static GtkWidget *create_icon_menu(){
 	return menu;
 }
 
+void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data){
+       gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y); 
+}
+
 static void handle_icon_click() {
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (!gtk_window_is_active((GtkWindow*)mw)) {
+		if(!gtk_widget_is_drawable(mw)){ 
+			//we only move if window was hidden. If it was simply behind the window stack, ie, drawable, we keep it as it was
+			gtk_window_move (GTK_WINDOW(mw), main_window_x, main_window_y);
+		}
 		linphone_gtk_show_main_window();
 	} else {
+		linphone_gtk_save_main_window_position((GtkWindow*)mw, NULL, NULL);
 		gtk_widget_hide(mw);
 	}
 }
