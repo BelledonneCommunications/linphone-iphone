@@ -578,7 +578,7 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 		handle_offer_answer_response(op,ringing_response);
 	}
 	/*fixme it should support PRACK in the right way*/
-	if (belle_sip_message_get_header((belle_sip_message_t*)req,"Require")) {
+	if (belle_sip_message_get_header((belle_sip_message_t*)req,"Require") || belle_sip_message_get_header((belle_sip_message_t*)req,"Supported")) {
 		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
 		belle_sip_header_contact_t* contact_header;
 		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,belle_sip_message_get_header((belle_sip_message_t*)req,"Require"));
