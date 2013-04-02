@@ -643,7 +643,8 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 #pragma mark - UITableViewDelegate Functions
 
 
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated { 
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    bool_t showEmails = [[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"];
     // Resign keyboard
     if(!editing) {
         [LinphoneUtils findAndResignFirstResponder:[self tableView]];
@@ -659,14 +660,14 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
             if(contactSections[section] == ContactSections_Number ||
                contactSections[section] == ContactSections_Sip ||
-               contactSections[section] == ContactSections_Email)
+               (showEmails && contactSections[section] == ContactSections_Email))
             [self addEntry:self.tableView section:section animated:animated];
         }
     } else {
         for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
             if(contactSections[section] == ContactSections_Number ||
                contactSections[section] == ContactSections_Sip ||
-               contactSections[section] == ContactSections_Email)
+               (showEmails && contactSections[section] == ContactSections_Email))
             [self removeEmptyEntry:self.tableView section:section animated:animated];
         }
     }
