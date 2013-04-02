@@ -1287,7 +1287,7 @@ static void audioRouteChangeListenerCallback (
 		[error release];
 	} else {
 		char normalizedUserName[256];
-        LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");  
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));
 		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
         linphone_address_set_username(linphoneAddress, normalizedUserName);
         if(displayName!=nil) {
