@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UPNP_CORE_READY_CHECK 1 
 #define UPNP_CORE_RETRY_DELAY 4
 #define UPNP_CALL_RETRY_DELAY 1
-#define UPNP_UUID_LEN         32
+#define UPNP_UUID_LEN         128
 #define UPNP_UUID_LEN_STR     UPNP_TOSTRING(UPNP_UUID_LEN)
 /*
  * uPnP Definitions
@@ -1236,7 +1236,7 @@ static void linphone_upnp_config_list_port_bindings_cb(const char *entry, struct
 	bool_t valid = TRUE;
 	UpnpPortBinding *port;
 	
-	ret = sscanf(entry, "%"UPNP_UUID_LEN_STR"s-%3s-%i-%i", device_id, protocol_str, &external_port, &local_port);
+	ret = sscanf(entry, "%"UPNP_UUID_LEN_STR"[^-]-%3s-%i-%i", device_id, protocol_str, &external_port, &local_port);
 	if(ret == 4) {
 		// Handle only wanted device bindings
 		if(device_id != NULL && strcmp(cookie->device_id, device_id) != 0) {
