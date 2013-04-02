@@ -23,6 +23,10 @@ static void call_set_released(SalOp* op){
 	op->state=SalOpStateTerminated;
 	op->base.root->callbacks.call_released(op);
 }
+static void call_set_released_and_unref(SalOp* op) {
+	call_set_released(op);
+	sal_op_unref(op);
+}
 static void call_set_error(SalOp* op,belle_sip_response_t* response){
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
@@ -114,6 +118,8 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 	SalOp* op=(SalOp*)ctx;
 
 	if (op->dialog && op->dialog==belle_sip_dialog_terminated_get_dialog(event))  {
+		belle_sip_transaction_t* trans=belle_sip_dialog_get_last_transaction(op->dialog);
+
 		switch(belle_sip_dialog_get_previous_state(op->dialog)) {
 		case BELLE_SIP_DIALOG_CONFIRMED:
 			if (op->state!=SalOpStateTerminated && op->state!=SalOpStateTerminating) {
@@ -122,8 +128,14 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 				op->state=SalOpStateTerminating;
 			}
 			break;
+		case BELLE_SIP_DIALOG_NULL: {
+			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(trans,belle_sip_server_transaction_t)) {
+				/*call declined very early, no need to notify call release*/
+				break;
+			}
+		}
 		default: {
-			belle_sip_transaction_t* trans=belle_sip_dialog_get_last_transaction(op->dialog);
+
 			belle_sip_response_t* response=belle_sip_transaction_get_response(trans);
 			int code = belle_sip_response_get_status_code(response);
 			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(trans,belle_sip_client_transaction_t)) {
@@ -141,8 +153,9 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 					call_set_error(op,response);
 				}
 			} else {
+				sal_op_ref(op); /*to make sure op is still there when call released is scheduled*/
 				belle_sip_main_loop_do_later(belle_sip_stack_get_main_loop(op->base.root->stack)
-											,(belle_sip_callback_t) call_set_released
+											,(belle_sip_callback_t) call_set_released_and_unref
 											, op);
 			}
 
@@ -206,12 +219,17 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 						/*nop ?*/
 					}
 					break;
-				} else if (code >= 180) {
+				} else if (code >= 180 && code<300) {
 					handle_sdp_from_response(op,response);
 					op->base.root->callbacks.call_ringing(op);
 					break;
-				} else {
-					/*nop error*/
+				} else if (code>=300){
+					if (dialog_state==BELLE_SIP_DIALOG_NULL) {
+						call_set_error(op,response);
+						break;
+					} else {
+					/*nop let process_dialog_terminated manage error reporting*/
+					}
 				}
 
 			} else if (strcmp("CANCEL",belle_sip_request_get_method(req))==0

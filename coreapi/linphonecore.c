@@ -2330,7 +2330,6 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 		 *in order to force using the transport required for this proxy, if any.*/
 		SalAddress *proxy_addr=sal_address_new(linphone_proxy_config_get_addr(proxy));
 		const char *transport=sal_address_get_transport_name(proxy_addr);
-		sal_address_destroy(proxy_addr);
 		if (transport){
 			SalAddress *route=sal_address_new(NULL);
 			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)addr));
@@ -2338,6 +2337,7 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 			sal_address_set_transport_name(route,transport);
 			ret=ms_list_append(ret,route);
 		}
+		sal_address_destroy(proxy_addr);
 	}
 	return ret;
 }
@@ -5185,6 +5185,8 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
 
+	sal_reset_transports(lc->sal);
+	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
 

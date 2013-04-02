@@ -496,7 +496,7 @@ int sal_unlisten_ports(Sal *ctx){
 	return 0;
 }
 ortp_socket_t sal_get_socket(Sal *ctx){
-	ms_fatal("sal_get_socket not implemented yet");
+	ms_warning("sal_get_socket is deprecated");
 	return -1;
 }
 void sal_set_user_agent(Sal *ctx, const char *user_agent){
@@ -612,7 +612,7 @@ const char *sal_get_root_ca(Sal* ctx) {
 }
 
 int sal_reset_transports(Sal *ctx){
-	ms_message("reseting transports");
+	ms_message("Reseting transports");
 	belle_sip_provider_clean_channels(ctx->prov);
 	return 0;
 }
