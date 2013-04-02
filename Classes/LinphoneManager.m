@@ -472,6 +472,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			[self removeCTCallCenterCb];
             bluetoothAvailable = FALSE;
             bluetoothEnabled = FALSE;
+            /*IOS specific*/
+            linphone_core_start_dtmf_stream(theLinphoneCore);
 		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
