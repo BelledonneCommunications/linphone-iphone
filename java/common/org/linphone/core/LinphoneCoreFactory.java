@@ -48,6 +48,12 @@ abstract public class LinphoneCoreFactory {
 		}
 		return theLinphoneCoreFactory;
 	}
+	/**
+	 * create  {@link LinphoneAuthInfo}
+	 * @param username
+	 * @param userid user id as set in auth header
+	 * @param passwd
+	 * */
 	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
 	/**
 	 * create  {@link LinphoneAuthInfo}
