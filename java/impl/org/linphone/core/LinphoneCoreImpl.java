@@ -745,12 +745,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 		deferCallUpdate(nativePtr, getCallPtr(aCall));
 	}
 
-	public synchronized void startRinging() {
-		if (!contextInitialized()) return;
-		if (Hacks.needGalaxySAudioHack()) {
-			mAudioManager.setMode(MODE_RINGTONE);
-		}
-	}
 	
 	private native void setVideoPolicy(long nativePtr, boolean autoInitiate, boolean autoAccept);
 	public synchronized void setVideoPolicy(boolean autoInitiate, boolean autoAccept) {
@@ -801,10 +795,17 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public String getVersion() {
 		return getVersion(nativePtr);
 	}
-	
+	/**
+	 * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algorithm
+	 */
+	static int FIND_PAYLOAD_IGNORE_RATE = -1;
+	/**
+	 * Wildcard value used by #linphone_core_find_payload_type to ignore channel in search algorithm
+	 */
+	static int FIND_PAYLOAD_IGNORE_CHANNELS = -1;
 	@Override
 	public synchronized PayloadType findPayloadType(String mime, int clockRate) {
-		return findPayloadType(mime, clockRate, 1);
+		return findPayloadType(mime, clockRate, FIND_PAYLOAD_IGNORE_CHANNELS);
 	}
 	
 	private native void removeFriend(long ptr, long lf);
@@ -907,5 +908,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public void stopConferenceRecording() {
 		stopConferenceRecording(nativePtr);
+	}
+	@Override
+	public PayloadType findPayloadType(String mime) {
+		return findPayloadType(mime, FIND_PAYLOAD_IGNORE_RATE);
 	}
 }
