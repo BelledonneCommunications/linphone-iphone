@@ -152,5 +152,5 @@ void linphone_gtk_monitor_usb(void);
 void linphone_gtk_unmonitor_usb(void);
 
 gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
-void linphone_gtk_friend_list_update_message(LinphoneChatMessage *msg);
-void linphone_gtk_tree_view_set_chat_conversation(LinphoneAddress *la);
+void linphone_gtk_tree_view_set_chat_conversation(const LinphoneAddress *la);
+gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);
