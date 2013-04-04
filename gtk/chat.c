@@ -237,7 +237,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 			case LinphoneChatMessageStateDelivered:
 			{
 				time_t t=time(NULL);
-				struct tm *tm=localtime(&t);
+				struct tm *tm=gmtime(&t);
 				char buf[80];
 				strftime(buf,80,"%H:%M",tm);
 				result=buf;
@@ -410,18 +410,11 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 		GtkTextIter start;
 		GtkTextIter end;
 		GtkTextBuffer *text_buffer;
-		GtkWidget *cb;
 		
 		text_buffer=gtk_text_view_get_buffer(text_view);
 		gtk_text_buffer_get_bounds(text_buffer, &start, &end);
 		gtk_text_buffer_delete (text_buffer, &start, &end);
 		udpate_tab_chat_header(chat_view,uri,cr);
-		cb=linphone_gtk_get_widget(chat_view,"contact_bar");
-		if(!linphone_gtk_friend_list_is_contact(uri)){
-			gtk_widget_show(cb);
-		} else {
-			gtk_widget_hide(cb);
-		}
 		g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 		g_object_set_data(G_OBJECT(linphone_gtk_get_widget(main_window,"contact_list")),"chatview",(gpointer)chat_view);
 		messages=linphone_chat_room_get_history(cr,NB_MSG_HIST);
