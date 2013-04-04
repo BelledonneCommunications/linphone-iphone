@@ -201,6 +201,9 @@ void linphone_gtk_call_log_clear_missed_call(){
 }
 
 gboolean linphone_gtk_call_log_reset_missed_call(GtkWidget *w, GdkEvent *event,gpointer user_data){
+	GtkWidget *mw=linphone_gtk_get_main_window();
+	GtkNotebook *notebook=GTK_NOTEBOOK(linphone_gtk_get_widget(mw,"viewswitch"));
+	gtk_notebook_set_current_page(notebook,0);
 	linphone_core_reset_missed_calls_count(linphone_gtk_get_core());
 	linphone_gtk_call_log_clear_missed_call();
 	return TRUE;
