@@ -553,9 +553,8 @@ int linphone_upnp_context_send_add_port_binding(UpnpContext *lupnp, UpnpPortBind
 		mapping.local_port = port->local_port;
 		mapping.local_host = port->local_addr;
 		if(port->external_port == -1)
-			mapping.remote_port = rand()%(0xffff - 1024) + 1024;
-		else
-			mapping.remote_port = port->external_port;
+			port->external_port = rand()%(0xffff - 1024) + 1024;
+		mapping.remote_port = port->external_port;
 		mapping.remote_host = "";
 		snprintf(description, 128, "%s %s at %s:%d",
 				PACKAGE_NAME,
@@ -877,7 +876,7 @@ void linphone_upnp_update_port_binding(UpnpContext *lupnp, UpnpPortBinding **por
 			}
 		}
 		if(*port_mapping == NULL) {
-			*port_mapping = linphone_upnp_port_binding_new_or_collect(lupnp->pending_bindings, protocol, port, port);
+			*port_mapping = linphone_upnp_port_binding_new_or_collect(lupnp->pending_bindings, protocol, port, -1);
 		}
 		
 		// Get addresses
@@ -1107,8 +1106,8 @@ void linphone_upnp_port_binding_log(int level, const char *msg, const UpnpPortBi
 
 bool_t linphone_upnp_port_binding_equal(const UpnpPortBinding *port1, const UpnpPortBinding *port2) {
 	return port1->protocol == port2->protocol &&
-			port1->local_port == port2->local_port &&
-			port1->external_port == port2->external_port;
+	       port1->local_port == port2->local_port &&
+	       (port1->external_port == -1 || port2->external_port == -1 || port1->external_port == port2->external_port);
 }
 
 UpnpPortBinding *linphone_upnp_port_binding_equivalent_in_list(MSList *list, const UpnpPortBinding *port) {
