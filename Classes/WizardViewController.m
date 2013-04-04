@@ -51,6 +51,11 @@ typedef enum _ViewElement {
 
 @synthesize backButton;
 @synthesize startButton;
+@synthesize createAccountButton;
+@synthesize connectAccountButton;
+@synthesize externalAccountButton;
+
+@synthesize choiceViewLogoImageView;
 
 @synthesize viewTapGestureRecognizer;
 
@@ -86,6 +91,11 @@ typedef enum _ViewElement {
     
     [backButton release];
     [startButton release];
+    [createAccountButton release];
+    [connectAccountButton release];
+    [externalAccountButton release];
+
+    [choiceViewLogoImageView release];
     
     [historyViews release];
     
@@ -205,7 +215,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [WizardViewController cleanTextField:connectAccountView];
     [WizardViewController cleanTextField:externalAccountView];
     [WizardViewController cleanTextField:validateAccountView];
-    [self changeView:welcomeView back:FALSE animation:FALSE];
+    if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
+        [self changeView:choiceView back:FALSE animation:FALSE];
+    } else {
+        [self changeView:welcomeView back:FALSE animation:FALSE];
+    }
     [waitView setHidden:TRUE];
 }
 
@@ -252,8 +266,29 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     if (view == validateAccountView) {
         [backButton setEnabled:FALSE];
+    } else if (view == choiceView) {
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
+            [backButton setEnabled:FALSE];
+        } else {
+            [backButton setEnabled:TRUE];
+        }
     } else {
         [backButton setEnabled:TRUE];
+    }
+
+    if (view == choiceView) {
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
+            [choiceViewLogoImageView setHidden:FALSE];
+        }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account_button_preference"] == true) {
+            [externalAccountButton setHidden:TRUE];
+            if ([externalAccountButton center].y != [connectAccountButton center].y) {
+                if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
+                    [createAccountButton setCenter: [connectAccountButton center]];
+                }
+                [connectAccountButton setCenter: [externalAccountButton center]];
+            }
+        }
     }
     
     // Animation
@@ -353,7 +388,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(server == nil) {
         server = domain;
     }
-	const char* identity = [[NSString stringWithFormat:@"sip:%@@%@", username, domain] UTF8String];
+    char normalizedUserName[256];
+    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
+    linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+    linphone_address_set_username(linphoneAddress, normalizedUserName);
+    linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
+    const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
 	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
 	LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL);
 	linphone_proxy_config_set_identity(proxyCfg, identity);
@@ -371,6 +411,17 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy([LinphoneManager getLc], proxyCfg);
 	linphone_core_add_auth_info([LinphoneManager getLc], info);
+}
+
+- (NSString*)identityFromUsername:(NSString*)username {
+    char normalizedUserName[256];
+    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
+    linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+    linphone_address_set_username(linphoneAddress, normalizedUserName);
+    linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] UTF8String]);
+    NSString* uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphoneAddress)];
+    NSString* scheme = [NSString stringWithUTF8String:linphone_address_get_scheme(linphoneAddress)];
+    return [uri substringFromIndex:[scheme length] + 1];
 }
 
 - (void)checkUserExist:(NSString*)username {
@@ -486,7 +537,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCheckValidationClick:(id)sender {
     NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
-    [self checkAccountValidation:[NSString stringWithFormat:@"%@@%@", username, [[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]]];
+    NSString *identity = [self identityFromUsername:username];
+    [self checkAccountValidation:identity];
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
@@ -582,7 +634,8 @@ static UICompositeViewDescription *compositeDescription = nil;
         [errorView show];
         [errorView release];
     } else {
-        [self checkUserExist:username];
+        NSString *identity = [self identityFromUsername:username];
+        [self checkUserExist:identity];
     }
 }
 
@@ -684,7 +737,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                 NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
                 NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
                 NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
-                [self createAccount:[NSString stringWithFormat:@"%@@%@", username, [[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]] password:password email:email];
+                NSString* identity = [self identityFromUsername:username];
+                [self createAccount:identity password:password email:email];
             }
         } else if([[request method] isEqualToString:@"create_account_with_useragent"]) {
             if([response object] == [NSNumber numberWithInt:0]) {

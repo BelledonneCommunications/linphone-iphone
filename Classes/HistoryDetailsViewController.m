@@ -24,7 +24,7 @@
 
 @implementation HistoryDetailsViewController
 
-@synthesize callLog;
+@synthesize callLogId;
 @synthesize avatarImage;
 @synthesize addressLabel;
 @synthesize dateLabel;
@@ -57,6 +57,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [dateFormatter release];
+    [callLogId release];
     
     [avatarImage release];
     [addressLabel release];
@@ -98,8 +99,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Property Functions
 
-- (void)setCallLog:(LinphoneCallLog *)acallLog {
-    self->callLog = acallLog;
+- (void)setCallLogId:(NSString *)acallLogId {
+    self->callLogId = [acallLogId copy];
     [self update];
 }
 
@@ -120,8 +121,13 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(update:) 
+                                             selector:@selector(update) 
                                                  name:kLinphoneAddressBookUpdate
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(coreUpdateEvent:)
+                                                 name:kLinphoneCoreUpdate
                                                object:nil];
 }
 
@@ -131,6 +137,17 @@ static UICompositeViewDescription *compositeDescription = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                     name:kLinphoneAddressBookUpdate
                                                   object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:kLinphoneCoreUpdate
+                                                  object:nil];
+}
+
+
+#pragma mark - Event Functions
+
+- (void)coreUpdateEvent:(NSNotification*)notif {
+    [self update];
 }
 
 
@@ -161,17 +178,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-    // Don't update if callLog is null
-    if(callLog == NULL) {
+    if(![LinphoneManager isLcReady]) {
         return;
     }
     
-	LinphoneAddress* addr = NULL;
-	if (callLog->dir == LinphoneCallIncoming) {
-		addr = callLog->from;
-	} else {
-		addr = callLog->to;
-	}
+    // Look for the call log
+    callLog = NULL;
+    const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
+    while(list != NULL) {
+        LinphoneCallLog *log = (LinphoneCallLog *)list->data;
+        const char *cid = linphone_call_log_get_call_id(log);
+        if(cid != NULL && [callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
+            callLog = log;
+            break;
+        }
+        list = list->next;
+    }
+    
+    // Pop if callLog is null
+    if(callLog == NULL) {
+        [[PhoneMainView instance] popCurrentView];
+        return;
+    }
+    
+	LinphoneAddress* addr =linphone_call_log_get_remote_address(callLog);
     
     UIImage *image = nil;
     NSString* address  = nil;
@@ -220,12 +250,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     // State
     NSMutableString *state = [NSMutableString string];
-	if (callLog->dir == LinphoneCallIncoming) {
+	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
 		[state setString:NSLocalizedString(@"Incoming call", nil)];
 	} else {
 		[state setString:NSLocalizedString(@"Outgoing call", nil)];
 	}
-    switch (callLog->status) {
+    switch (linphone_call_log_get_status(callLog)) {
         case LinphoneCallSuccess:
             break;
         case LinphoneCallAborted:
@@ -241,11 +271,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [typeLabel setText:state];
 
     // Date
-    NSDate *startData = [NSDate dateWithTimeIntervalSince1970:callLog->start_date_time];
+    NSDate *startData = [NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(callLog)];
     [dateLabel setText:[dateFormatter stringFromDate:startData]];
 
     // Duration
-    int duration = callLog->duration;
+    int duration = linphone_call_log_get_duration(callLog);
     [durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
     
     // contact name
@@ -288,12 +318,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddContactClick:(id)event {
-    LinphoneAddress* addr = NULL;
-	if (callLog->dir == LinphoneCallIncoming) {
-		addr = callLog->from;
-	} else {
-		addr = callLog->to;
-	}
+    LinphoneAddress* addr;
+	
+	addr=linphone_call_log_get_remote_address(callLog);
     if (addr != NULL) {
         char* lAddress = linphone_address_as_string_uri_only(addr);
         if(lAddress != NULL) {
@@ -301,6 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             [ContactSelection setSelectionMode:ContactSelectionModeEdit];
             
             [ContactSelection setSipFilter:FALSE];
+            [ContactSelection setEmailFilter:FALSE];
             ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
             if(controller != nil) {
             }
@@ -311,11 +339,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCallClick:(id)event {
     LinphoneAddress* addr; 
-	if (callLog->dir == LinphoneCallIncoming) {
-		addr = callLog->from;
-	} else {
-		addr = callLog->to;
-	}
+	addr=linphone_call_log_get_remote_address(callLog);
     
     char* lAddress = linphone_address_as_string_uri_only(addr);
     if(lAddress == NULL) 
@@ -347,11 +371,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onMessageClick:(id)event {
     LinphoneAddress* addr;
-	if (callLog->dir == LinphoneCallIncoming) {
-		addr = callLog->from;
-	} else {
-		addr = callLog->to;
-	}
+	addr=linphone_call_log_get_remote_address(callLog);
     
     char* lAddress = linphone_address_as_string_uri_only(addr);
     if(lAddress == NULL)

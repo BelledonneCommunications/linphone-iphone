@@ -1,0 +1,62 @@
+/* Wifi only */
+"Wifi only" = "Только Wifi";
+
+/* Edge optimization */
+"Edge optimization" = "Оптимизация Edge";
+
+/* Stun Server */
+"Stun Server" = "Stun сервер";
+
+/* ICE */
+"ICE" = "ICE";
+
+/* Random Port */
+"Random Port" = "Случайный порт";
+
+/* Port */
+"Port" = "Порт";
+
+/* Audio Port(s) */
+"Audio Port(s)" = "Аудио Порт(ы)";
+
+/* Video Port(s) */
+"Video Port(s)" = "Видео Порт(ы)";
+
+/* Transport */
+"Transport" = "Транспорт";
+
+/* Media Encryption */
+"Media Encryption" = "Шифрование потока";
+
+/* Push Notifications */
+"Push Notification" = "Серверные уведомления";
+
+/* Transport */
+"Transport" = "Транспорт";
+
+/* UDP */
+"UDP" = "UDP";
+
+/* TCP */
+"TCP" = "TCP";
+
+/* TLS */
+"TLS" = "TLS";
+
+/* None */
+"None" = "Aucun";
+
+/* SRTP */
+"SRTP" = "SRTP";
+
+/* ZRTP */
+"ZRTP" = "ZRTP";
+
+/* Limits */
+"Limits" = "Ограничения";
+
+/* Upload bandwidth */
+"Upload bandwidth" = "Полоса отдачи";
+
+/* Download bandwidth */
+"Download bandwidth" = "Полоса скачивания";

@@ -226,6 +226,14 @@
         if(controller != nil) {
             [controller setRemoteAddress:remoteContact];
         }
+    } else if([notification.userInfo objectForKey:@"callLog"] != nil) {
+        NSString *callLog = (NSString*)[notification.userInfo objectForKey:@"callLog"];
+        // Go to HistoryDetails view
+        [[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
+        HistoryDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription] push:TRUE], HistoryDetailsViewController);
+        if(controller != nil) {
+            [controller setCallLogId:callLog];
+        }
     }
 }
 

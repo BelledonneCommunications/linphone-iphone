@@ -31,15 +31,19 @@
 @synthesize conferenceButton;
 @synthesize videoButton;
 @synthesize microButton;
-@synthesize speakerButton;  
+@synthesize speakerButton;
+@synthesize routesButton;
 @synthesize optionsButton;
 @synthesize hangupButton;
-
+@synthesize routesBluetoothButton;
+@synthesize routesReceiverButton;
+@synthesize routesSpeakerButton;
 @synthesize optionsAddButton;
 @synthesize optionsTransferButton;
 @synthesize dialerButton;
 
 @synthesize padView;
+@synthesize routesView;
 @synthesize optionsView;
 
 @synthesize oneButton;
@@ -67,9 +71,12 @@
     [conferenceButton release];
     [videoButton release];
     [microButton release];
-    [speakerButton release]; 
+    [speakerButton release];
+    [routesButton release];
     [optionsButton release];
-    
+    [routesBluetoothButton release];
+    [routesReceiverButton release];
+    [routesSpeakerButton release];
     [optionsAddButton release];
     [optionsTransferButton release];
     [dialerButton release];
@@ -88,6 +95,7 @@
 	[sharpButton release];
     
     [padView release];
+    [routesView release];
     [optionsView release];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -125,7 +133,7 @@
     [starButton setDtmf:true];
 	[sharpButton  setDigit:'#'];
     [sharpButton setDtmf:true];
-    
+
     {
         UIButton *videoButtonLandscape = (UIButton*)[landscapeView viewWithTag:[videoButton tag]];
         // Set selected+disabled background: IB lack !
@@ -160,6 +168,18 @@
         
         [LinphoneUtils buttonFixStates:speakerButton];
         [LinphoneUtils buttonFixStates:speakerButtonLandscape];
+    }
+    
+    if (![LinphoneManager runningOnIpad]) {
+        UIButton *routesButtonLandscape = (UIButton*) [landscapeView viewWithTag:[routesButton tag]];
+        // Set selected+over background: IB lack !
+        [routesButton setBackgroundImage:[UIImage imageNamed:@"routes_over.png"]
+                                 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        [routesButtonLandscape setBackgroundImage:[UIImage imageNamed:@"routes_over_landscape.png"]
+                                          forState:(UIControlStateHighlighted | UIControlStateSelected)];
+        
+        [LinphoneUtils buttonFixStates:routesButton];
+        [LinphoneUtils buttonFixStates:routesButtonLandscape];
     }
     
     {
@@ -226,12 +246,18 @@
                                              selector:@selector(callUpdateEvent:) 
                                                  name:kLinphoneCallUpdate
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bluetoothAvailabilityUpdateEvent:)
+                                                 name:kLinphoneBluetoothAvailabilityUpdate
+                                               object:nil];
     // Update on show
     LinphoneCall* call = linphone_core_get_current_call([LinphoneManager getLc]);
     LinphoneCallState state = (call != NULL)?linphone_call_get_state(call): 0;
     [self callUpdate:call state:state];
+    [self hideRoutes:FALSE];
     [self hideOptions:FALSE];
     [self hidePad:FALSE];
+    [self showSpeaker];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -252,6 +278,11 @@
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     [self callUpdate:call state:state];
+}
+
+- (void)bluetoothAvailabilityUpdateEvent:(NSNotification*)notif {
+    bool available = [[notif.userInfo objectForKey:@"available"] intValue];
+    [self bluetoothAvailabilityUpdate:available];
 }
 
 
@@ -314,13 +345,22 @@
         LinphoneCallOutgoing:
             [self hidePad:TRUE];
             [self hideOptions:TRUE];
+            [self hideRoutes:TRUE];
         default:
             break;
     }
 }
 
+- (void)bluetoothAvailabilityUpdate:(bool)available {
+    if (available) {
+        [self hideSpeaker];
+    } else {
+        [self showSpeaker];
+    }
+}
 
-#pragma mark - 
+
+#pragma mark -
 
 - (void)showAnimation:(NSString*)animationID target:(UIView*)target completion:(void (^)(BOOL finished))completion {
     CGRect frame = [target frame];
@@ -386,6 +426,35 @@
     }
 }
 
+- (void)showRoutes:(BOOL)animated {
+    if (![LinphoneManager runningOnIpad]) {
+        [routesButton setOn];
+        [routesBluetoothButton setSelected:[[LinphoneManager instance] bluetoothEnabled]];
+        [routesSpeakerButton setSelected:[[LinphoneManager instance] speakerEnabled]];
+        [routesReceiverButton setSelected:!([[LinphoneManager instance] bluetoothEnabled] || [[LinphoneManager instance] speakerEnabled])];
+        if([routesView isHidden]) {
+            if(animated) {
+                [self showAnimation:@"show" target:routesView completion:^(BOOL finished){}];
+            } else {
+                [routesView setHidden:FALSE];
+            }
+        }
+    }
+}
+
+- (void)hideRoutes:(BOOL)animated {
+    if (![LinphoneManager runningOnIpad]) {
+        [routesButton setOff];
+        if(![routesView isHidden]) {
+            if(animated) {
+                [self hideAnimation:@"hide" target:routesView completion:^(BOOL finished){}];
+            } else {
+                [routesView setHidden:TRUE];
+            }
+        }
+    }
+}
+
 - (void)showOptions:(BOOL)animated {
     [optionsButton setOn];
     if([optionsView isHidden]) {
@@ -408,6 +477,20 @@
     }
 }
 
+- (void)showSpeaker {
+    if (![LinphoneManager runningOnIpad]) {
+        [speakerButton setHidden:FALSE];
+        [routesButton setHidden:TRUE];
+    }
+}
+
+- (void)hideSpeaker {
+    if (![LinphoneManager runningOnIpad]) {
+        [speakerButton setHidden:TRUE];
+        [routesButton setHidden:FALSE];
+    }
+}
+
 
 #pragma mark - Action Functions
 
@@ -416,6 +499,30 @@
         [self showPad:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
     } else {
         [self hidePad:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+    }
+}
+
+- (IBAction)onRoutesBluetoothClick:(id)sender {
+    [self hideRoutes:TRUE];
+    [[LinphoneManager instance] setBluetoothEnabled:TRUE];
+}
+
+- (IBAction)onRoutesReceiverClick:(id)sender {
+    [self hideRoutes:TRUE];
+    [[LinphoneManager instance] setSpeakerEnabled:FALSE];
+    [[LinphoneManager instance] setBluetoothEnabled:FALSE];
+}
+
+- (IBAction)onRoutesSpeakerClick:(id)sender {
+    [self hideRoutes:TRUE];
+    [[LinphoneManager instance] setSpeakerEnabled:TRUE];
+}
+
+- (IBAction)onRoutesClick:(id)sender {
+    if([routesView isHidden]) {
+        [self showRoutes:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+    } else {
+        [self hideRoutes:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
     }
 }
 

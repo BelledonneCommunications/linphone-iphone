@@ -74,9 +74,9 @@
 	return retIndex;
 }
 
-- (NSInteger)addCancelButtonWithTitle:(NSString *)title
+- (NSInteger)addCancelButtonWithTitle:(NSString *)title block:(DTActionSheetBlock)block
 {
-	NSInteger retIndex = [self addButtonWithTitle:title];
+	NSInteger retIndex = [self addButtonWithTitle:title block:block];
 	[self setCancelButtonIndex:retIndex];
 	
 	return retIndex;

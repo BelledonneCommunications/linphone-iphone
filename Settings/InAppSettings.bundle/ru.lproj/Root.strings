@@ -1,0 +1,57 @@
+/* SIP account */
+"SIP account" = "Учётная запись SIP";
+
+/* Wizard */
+"Wizard" = "Помощник";
+
+/* User name */
+"User name" = "Имя пользователя";
+
+/* Password */
+"Password" = "Пароль";
+
+/* Domain */
+"Domain" = "Сервер";
+
+/* Proxy */
+"Proxy" = "Прокси";
+
+/* Outbound proxy */
+"Outbound proxy" = "Исходящий прокси";
+
+/* Settings */
+"Settings" = "Настройки";
+
+/* Enable video */
+"Enable video" = "Разрешить видео";
+
+/* Audio */
+"Audio" = "Аудио";
+
+/* Video */
+"Video" = "Видео";
+
+/* Call */
+"Call" = "Звонок";
+
+/* Network */
+"Network" = "Сеть";
+
+/* Advanced */
+"Advanced" = "Дополнительный";
+
+/*  */
+"" = "";
+
+/* About */
+"About" = "О программе";
+
+/* Quit */
+"Quit" = "Выход";
+
+/* Release */
+"Release" = "Release";
+
+/* Clear cache */
+"Clear cache" = "Clear cache";
+

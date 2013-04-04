@@ -288,7 +288,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
         }
 		case LinphoneCallEnd: 
         {
-            [self dismissIncomingCall:call];
             if (canHideInCallView) {
                 // Go to dialer view
                 DialerViewController *controller = DYNAMIC_CAST([self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
@@ -528,16 +527,6 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [error release];
 }
 
-- (void)dismissIncomingCall:(LinphoneCall*)call {
-    LinphoneCallAppData* appData = (LinphoneCallAppData*) linphone_call_get_user_pointer(call);
-
-    if(appData != nil && appData->notification != nil) {
-        // cancel local notif if needed
-        [[UIApplication sharedApplication] cancelLocalNotification:appData->notification];
-        [appData->notification release];
-    }
-}
-
 - (void)addInhibitedEvent:(id)event {
     [inhibitedEvents addObject:event];
 }
@@ -564,7 +553,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 - (void)displayIncomingCall:(LinphoneCall*) call{
  	LinphoneCallLog* callLog=linphone_call_get_call_log(call);
-	NSString* callId=[NSString stringWithUTF8String:callLog->call_id];
+	NSString* callId=[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
 	if (![[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]
 		|| [UIApplication sharedApplication].applicationState ==  UIApplicationStateActive) {
@@ -594,7 +583,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
                 if (level <= 0.2f && !callData->batteryWarningShown) {
                     [LinphoneLogger log:LinphoneLoggerLog format:@"Battery warning"];
                     DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Battery is running low. Stop video ?",nil)] autorelease];
-                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil)];
+                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Continue video", nil) block:nil];
                     [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Stop video", nil) block:^() {
                         LinphoneCallParams* paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
                         // stop video

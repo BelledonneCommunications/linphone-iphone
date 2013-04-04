@@ -39,5 +39,6 @@
 
 - (BOOL)isValid;
 - (void)addSipField:(NSString*)address;
+- (void)addEmailField:(NSString*)address;
 
 @end

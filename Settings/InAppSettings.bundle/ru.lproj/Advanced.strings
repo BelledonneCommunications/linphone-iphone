@@ -1,0 +1,54 @@
+/* Debug */
+"Debug" = "Отладка";
+
+/* Debug */
+"Debug" = "Отладка";
+
+/* Console */
+"Console" = "Консоль";
+
+/*  */
+"" = "";
+
+/* Animations */
+"Animations" = "Анимации";
+
+/* Rotation */
+"Rotation" = "Поворот";
+
+/* Background mode */
+"Background mode" = "Фоновый режим";
+
+/* Start at boot */
+"Start at boot" = "Запускаться с системой";
+
+/* First login view */
+"First login view" = "First login view";
+
+/* Expire */
+"Expire" = "Окончание";
+
+/* Primary account */
+"Primary account" = "Основная учётная запись";
+
+/* Display name */
+"Display name" = "Отображаемое имя";
+
+/* Sharing server */
+"Sharing server" = "Общий сервер";
+
+/* Username */
+"Username" = "Имя пользователя";
+
+/* Rotation */
+"Rotation" = "Поворот";
+
+/* Automatic */
+"Automatic" = "Автоматически";
+
+/* Portrait */
+"Portrait" = "Портретный";
+
+/* Landscape */
+"Landscape" = "Альбомный";
+
