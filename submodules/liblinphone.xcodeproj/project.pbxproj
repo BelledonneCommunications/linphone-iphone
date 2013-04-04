@@ -2015,6 +2015,7 @@
 				);
 				PRODUCT_NAME = mediastreamer;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 armv7s i386";
 			};
 			name = Debug;
 		};
@@ -2071,6 +2072,7 @@
 				);
 				PRODUCT_NAME = mediastreamer;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 armv7s i386";
 			};
 			name = Release;
 		};
@@ -2127,6 +2129,7 @@
 				);
 				PRODUCT_NAME = mediastreamer;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 armv7s i386";
 			};
 			name = DistributionAdhoc;
 		};
