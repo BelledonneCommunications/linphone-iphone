@@ -61,10 +61,9 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	GtkWidget *nb=linphone_gtk_get_widget(main_window,"viewswitch");
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
 	GtkWidget *w=g_object_get_data(G_OBJECT(friendlist),"chatview");
-	int idx = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"idx"));
 	
 	g_return_if_fail(w!=NULL);
-	gtk_notebook_remove_page(GTK_NOTEBOOK(nb),idx);
+	gtk_notebook_remove_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),w));
 	linphone_gtk_create_chat_picture(FALSE);
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	g_object_set_data(G_OBJECT(w),"from_message",NULL);	
@@ -74,7 +73,8 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 }
 
 const char* get_display_name(const LinphoneAddress *from){
-	const char *display=linphone_address_get_display_name(from);
+	const char *display;
+	display=linphone_address_get_display_name(from);
 	if (display==NULL || display[0]=='\0') {
 		display=linphone_address_get_username(from);
 	}
@@ -92,7 +92,7 @@ GtkWidget *create_tab_chat_header(LinphoneChatRoom *cr,const LinphoneAddress *ur
 	gtk_button_set_relief(GTK_BUTTON(b),GTK_RELIEF_NONE);
 	gtk_widget_set_size_request(b,25,20);
 	g_signal_connect_swapped(G_OBJECT(b),"clicked",G_CALLBACK(linphone_gtk_quit_chatroom),cr);
-	l=gtk_label_new (get_display_name(uri));
+	l=gtk_label_new(get_display_name(uri));
 	gtk_box_pack_start (GTK_BOX(w),i,FALSE,FALSE,0);
 	gtk_box_pack_start (GTK_BOX(w),l,FALSE,FALSE,0);
 	gtk_box_pack_end(GTK_BOX(w),b,TRUE,TRUE,0);
@@ -131,7 +131,12 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	char *from_message=(char *)g_object_get_data(G_OBJECT(w),"from_message");
 	GList *list=g_object_get_data(G_OBJECT(w),"list");
 	time_t t;
-
+	char buf[80];
+	time_t tnow;
+	struct tm *tm;
+	int tnow_day;
+	int tnow_year;
+	
 	gtk_text_buffer_get_start_iter(buffer,&begin);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	off=gtk_text_iter_get_offset(&iter);
@@ -162,15 +167,22 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		}
 		case LinphoneChatMessageStateDelivered:
 		{
-				struct tm *tm=localtime(&t);
-				char buf[80];
+			tnow=time(NULL);
+			tm=gmtime(&tnow);
+			tnow_day=tm->tm_yday;
+			tnow_year=tm->tm_year;
+			tm=gmtime(&t);
+			if(tnow_day != tm->tm_yday || (tnow_day == tm->tm_yday && tnow_year != tm->tm_year)) {
+				strftime(buf,80,"%a %x, %H:%M",tm);
+			} else {
 				strftime(buf,80,"%H:%M",tm);
-				gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,									
-	                       "right","small","italic","font_grey",me ? "bg":NULL,NULL);
-				break;
+			}
+			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,									
+	                      "right","small","italic","font_grey",me ? "bg":NULL,NULL);
+			break;
 		}
 		case  LinphoneChatMessageStateNotDelivered:
-				gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Error",-1,									
+				gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message not sent",-1,									
 	                       "right","small","italic","font_grey",me ? "bg":NULL,NULL);
 				break;
 		default : gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,									
@@ -202,6 +214,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 		GtkTextIter iter;
 		GtkTextIter end;
 		GtkTextIter start;
+		gchar *result;
 
 		gtk_text_buffer_get_iter_at_line(b,&iter,
 		                           GPOINTER_TO_INT(g_list_nth_data(list,0)));
@@ -217,7 +230,6 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 		                            GPOINTER_TO_INT(g_list_nth_data(list,0)),0);
 		gtk_text_buffer_delete(b,&start,&end);
 		gtk_text_buffer_get_iter_at_line(b,&iter,GPOINTER_TO_INT(g_list_nth_data(list,0)));
-		gchar *result;
 		switch (state) {
 			case LinphoneChatMessageStateInProgress:
 				result="Sending ";
@@ -295,6 +307,29 @@ void display_history_message(GtkWidget *chat_view,MSList *messages,const Linphon
 	} 
 }
 
+void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
+	//LinphoneAddress *addr=(LinphoneAddress *)data;
+	LinphoneFriend *lf=NULL;
+	char *uri=linphone_address_as_string(addr);
+	lf=linphone_friend_new_with_addr(uri);
+	ms_free(uri);
+	char *fixed_uri=NULL;
+	gboolean show_presence=FALSE;
+
+	linphone_friend_set_inc_subscribe_policy(lf,LinphoneSPDeny);
+	linphone_friend_send_subscribe(lf,show_presence);
+
+	linphone_core_interpret_friend_uri(linphone_gtk_get_core(),uri,&fixed_uri);
+	if (fixed_uri==NULL){
+		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
+		return ;
+	}
+	linphone_friend_set_addr(lf,addr);
+	linphone_core_add_friend(linphone_gtk_get_core(),lf);
+	ms_free(fixed_uri);
+	linphone_gtk_show_friends();
+}
+
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
@@ -312,7 +347,6 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	color.red = 32512;
   	color.green = 32512;
   	color.blue = 32512;
-	
 	colorb.red = 56832;
   	colorb.green = 60928;
   	colorb.blue = 61952;
@@ -321,12 +355,12 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	linphone_chat_room_mark_as_read(cr);
 	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_WORD_CHAR);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
+	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text),FALSE);
 	gtk_notebook_append_page(notebook,chat_view,create_tab_chat_header(cr,with));
 	idx = gtk_notebook_page_num(notebook, chat_view);
 	gtk_notebook_set_current_page(notebook, idx);
 	gtk_widget_show(chat_view);
 	g_object_set_data(G_OBJECT(chat_view),"cr",cr);
-	g_object_set_data(G_OBJECT(chat_view),"idx",GINT_TO_POINTER(idx));
 	g_object_set_data(G_OBJECT(chat_view),"from_message",NULL);
 	g_object_set_data(G_OBJECT(chat_view),"list",list);
 	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
@@ -369,18 +403,25 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 	char *uri_str=linphone_address_as_string(uri);
 	char *uri_only=linphone_address_as_string_uri_only(uri);
 	MSList *messages=NULL;
-
+	
 	linphone_chat_room_mark_as_read(cr);
 	if(g_strcmp0(from_str,uri_only)!=0){
 		GtkTextView *text_view=GTK_TEXT_VIEW(linphone_gtk_get_widget(chat_view,"textview"));
 		GtkTextIter start;
 		GtkTextIter end;
 		GtkTextBuffer *text_buffer;
+		GtkWidget *cb;
 		
 		text_buffer=gtk_text_view_get_buffer(text_view);
 		gtk_text_buffer_get_bounds(text_buffer, &start, &end);
 		gtk_text_buffer_delete (text_buffer, &start, &end);
 		udpate_tab_chat_header(chat_view,uri,cr);
+		cb=linphone_gtk_get_widget(chat_view,"contact_bar");
+		if(!linphone_gtk_friend_list_is_contact(uri)){
+			gtk_widget_show(cb);
+		} else {
+			gtk_widget_hide(cb);
+		}
 		g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 		g_object_set_data(G_OBJECT(linphone_gtk_get_widget(main_window,"contact_list")),"chatview",(gpointer)chat_view);
 		messages=linphone_chat_room_get_history(cr,NB_MSG_HIST);
@@ -389,6 +430,7 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 	}
 	ms_free(from_str);
 	ms_free(uri_str);
+	ms_free(uri_only);
 }
 
 void linphone_gtk_chat_destroyed(GtkWidget *w){
@@ -408,18 +450,27 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
     GtkWidget *w;	
 	gboolean send=TRUE;
-
+	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	char *from=linphone_address_as_string(linphone_chat_message_get_from(msg));
+	
     w=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
     if(w!=NULL){
 		char *from_chatview=(char *)g_object_get_data(G_OBJECT(friendlist),"from");
 		if(g_strcmp0(from,from_chatview)==0){
 			send=TRUE;
 		} else {
+			if(!linphone_gtk_friend_list_is_contact(linphone_chat_message_get_from(msg))){
+				//linphone_gtk_load_chatroom(room,linphone_chat_message_get_from(msg),w);
+				linphone_gtk_chat_add_contact(linphone_chat_message_get_from(msg));
+			} 
 			send=FALSE;
 		}	
     } else {
 		send=FALSE;
+		if(!linphone_gtk_friend_list_is_contact(linphone_chat_message_get_from(msg))){
+				//linphone_gtk_load_chatroom(room,linphone_chat_message_get_from(msg),w);
+				linphone_gtk_chat_add_contact(linphone_chat_message_get_from(msg));
+			} 
         w=linphone_gtk_init_chatroom(room,linphone_chat_message_get_from(msg));
         g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)w);
 		g_object_set_data(G_OBJECT(friendlist),"from",from);
@@ -439,14 +490,13 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 	}
 	#endif
 	if(send){
-		linphone_chat_room_mark_as_read(room);
+		if(gtk_notebook_get_current_page(notebook)!=gtk_notebook_page_num(notebook,w)){
+			linphone_gtk_show_friends();
+		}
 		linphone_gtk_push_text(w,linphone_chat_message_get_from(msg),
 	                      FALSE,room,msg,FALSE);
 	} else {
 		linphone_gtk_show_friends();
-		//linphone_gtk_friend_list_update_message(msg);
 	}
-		//linphone_gtk_update_chat_picture();
-	//gtk_window_present(GTK_WINDOW(w));
-	/*gtk_window_set_urgency_hint(GTK_WINDOW(w),TRUE);*/
+	//linphone_gtk_update_chat_picture();
 }
