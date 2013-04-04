@@ -1376,7 +1376,7 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  * force registration refresh to be initiated upon next iterate
  * @ingroup proxies
  */
-void linphone_core_refresh_registers(LinphoneCore* lc);
+LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
 
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
