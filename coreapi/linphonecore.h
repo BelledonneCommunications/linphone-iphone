@@ -71,7 +71,6 @@ typedef struct _LCSipTransports{
 	int tls_port;
 } LCSipTransports;
 
-typedef struct _LCSipTransports LCSipTransports;
 
 /**
  * Object that represents a SIP address.
