@@ -463,7 +463,7 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_set_firewall_policy(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","nat_sdp_only",0);
 	lc->net_conf.nat_sdp_only=tmp;
-	tmp=lp_config_get_int(lc->config,"net","mtu",0);
+	tmp=lp_config_get_int(lc->config,"net","mtu",1300);
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
 	linphone_core_set_download_ptime(lc,tmp);
