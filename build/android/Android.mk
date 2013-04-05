@@ -39,10 +39,3 @@ include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/cpufeatures)
 
-
-ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-
-include $(linphone-root-dir)/submodules/linphone/build/android/xml2lpc.mk
-include $(linphone-root-dir)/submodules/linphone/build/android/lpc2xml.mk
-
-endif
