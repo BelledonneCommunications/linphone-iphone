@@ -20,6 +20,9 @@ package org.linphone.core;
 
 import java.util.Vector;
 
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
+
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
  *
@@ -172,11 +175,22 @@ public interface LinphoneCore {
 	}
 	
 	/**
-	 * Signaling transports ports.
+	 * Linphone core SIP transport ports.
+	 * Use with {@link LinphoneCore#setSignalingTransportPorts(Transports)}
+	 * @ingroup initializing
 	 */
 	static public class Transports {
+		/**
+		 * udp port to listening on, negative value if not set
+		 * */
 		public int udp;
+		/**
+		 * tcp port to listening on, negative value if not set
+		 * */
 		public int tcp;
+		/**
+		 * tls port to listening on, negative value if not set
+		 * */
 		public int tls;
 		
 		public Transports() {};
@@ -389,10 +403,10 @@ public interface LinphoneCore {
 	public LinphoneCall invite(String destination)throws LinphoneCoreException;
 	/**
 	 * Initiates an outgoing call given a destination LinphoneAddress
-	 *<br>The LinphoneAddress can be constructed directly using linphone_address_new(), or created by linphone_core_interpret_url(). The application doesn't own a reference to the returned LinphoneCall object. Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+	 *<br>The LinphoneAddress can be constructed directly using {@link LinphoneCoreFactory#createLinphoneAddress} , or created {@link LinphoneCore#interpretUrl(String)}. .
 	 * @param to the destination of the call (sip address).
-	 * @return LinphoneCall
-	 * @throws LinphoneCoreException
+	 * @return linphone call
+	 * @throws LinphoneCoreException if linphone call cannot be created
 	 */
 	public LinphoneCall invite(LinphoneAddress to)throws LinphoneCoreException;
 	/**
@@ -402,6 +416,8 @@ public interface LinphoneCore {
 	public void terminateCall(LinphoneCall aCall);
 	/**
 	 * Declines an incoming call, providing a reason for declining it.
+	 * @param call the LinphoneCall, must be in the {@link LinphoneCall.State#IncomingReceived} state.
+	 * @param reason the reason for rejecting the call: {@link Reason#Declined}  or {@link Reason#Busy}
 	 */
 	public void declineCall(LinphoneCall aCall, Reason reason);
 	/**
@@ -417,7 +433,7 @@ public interface LinphoneCore {
 	public LinphoneAddress getRemoteAddress();
 	/**
 	 *  
-	 * @return  TRUE if there is a call running or pending.
+	 * @return  true if there is a call running or pending.
 	 */
 	public boolean isIncall();
 	/**
@@ -482,8 +498,6 @@ public interface LinphoneCore {
 	 */
 	public void deferCallUpdate(LinphoneCall aCall) throws LinphoneCoreException;
 
-	public void startRinging();
-
 	/**
 	 * @return a list of LinphoneCallLog 
 	 */
@@ -499,7 +513,7 @@ public interface LinphoneCore {
 	 */
 	public void setNetworkReachable(boolean isReachable);
 	/**
-	 * 
+	 * Get network state has known by {@link LinphoneCore}
 	 * @return if false, there is no network connection.
 	 */
 	public boolean isNetworkReachable();
@@ -541,16 +555,16 @@ public interface LinphoneCore {
 
 	/**
 	 * Initiate a dtmf signal if in call
-	 * @param number
+	 * @param send dtmf ['0'..'9'] | '#', '*'
 	 */
 	void sendDtmf(char number);
 	/**
 	 * Initiate a dtmf signal to the speaker if not in call.
 	 * Sending of the DTMF is done in another function.
-	 * @param number
+	 * @param dtmf ['0'..'9'] | '#', '*'
 	 * @param duration in ms , -1 for unlimited
 	 */
-	void playDtmf(char number,int duration);
+	void playDtmf(char dtmf,int duration);
 	/**
 	 * stop current dtmf
 	 */
@@ -560,23 +574,43 @@ public interface LinphoneCore {
 	 * remove all call logs
 	 */
 	void clearCallLogs();
-	/***
-	 * get payload type  from mime type, clock rate, and number of channels.-
-	 * 
-	 * return null if not found
-	 */
+	
+	
+	
+	
+	/**
+	 * Get payload type from mime type and clock rate
+	 *
+	 * This function searches in audio and video codecs for the given payload type name and clockrate.
+	 * @param mime payload mime type (I.E SPEEX, PCMU, VP8)
+	 * @param clockRate (I.E 8000, 16000, 90000, ...) 
+	 * @param channels  number of channels
+	 * @return Returns null if not found.
+	 */	
 	PayloadType findPayloadType(String mime, int clockRate, int channels); 
 	/***
 	 * get payload type  from mime type and clock rate..
-	 * 
-	 * return null if not found
+	 * Same as @{link {@link #findPayloadType(String, int, int)} but ignoring channels params
+	 * @param mime payload mime type (I.E SPEEX, PCMU, VP8)
+	 * @param clockRate (I.E 8000, 16000, 90000, ...) 
+	 * @return null if not found
 	 */
 	PayloadType findPayloadType(String mime, int clockRate); 
+	
+	/***
+	 * get payload type  from mime type 
+	 * Same as @{link {@link #findPayloadType(String, int, int)} but ignoring channels and clock rate params
+	 * @param mime payload mime type (I.E SPEEX, PCMU, VP8)
+	 * @return null if not found
+	 */
+	PayloadType findPayloadType(String mime); 
+	
 	/**
-	 * not implemented yet
-	 * @param pt
-	 * @param enable
-	 * @throws LinphoneCoreException
+	 * Enable payload type
+	 * @param pt payload type to enable, can be retrieve from {@link #findPayloadType}
+	 * @param true if enabled
+	 * @exception LinphoneCoreException
+	 *
 	 */
 	void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
 	/**
@@ -595,10 +629,11 @@ public interface LinphoneCore {
 	 */
 	boolean isEchoLimiterEnabled();
 	/**
-	 * @param transports used for signaling (TCP, UDP and TLS)
+	 * Set transport ports linphone core will listen on
+	 * @param local transports ports used for signaling (TCP, UDP and TLS)
 	 */
 	void setSignalingTransportPorts(Transports transports);
-	/**
+	/**Get 
 	 * @return transports used for signaling (TCP, UDP, TLS)
 	 */
 	Transports getSignalingTransportPorts();
@@ -632,12 +667,36 @@ public interface LinphoneCore {
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
 	LinphoneChatRoom createChatRoom(String to);
-	
+	/**
+	 * Set the native video window id where the video is to be displayed.
+	 * On Android, it must be of type {@link AndroidVideoWindowImpl}
+	 * @param video window of type {@link AndroidVideoWindowImpl}
+	**/
 	void setVideoWindow(Object w);
+	/**
+	 * Set the native video window id where the video preview is to be displayed.
+	 * On Android, it must of type {@link SurfaceView}
+	 * @param video window of type {@link SurfaceView}
+	**/
 	void setPreviewWindow(Object w);
+	/**
+	 * Tells the core the device current orientation. This can be used by capture filters
+	 * on mobile devices to select between portrait/landscape mode and to produce properly
+	 * oriented images. The exact meaning of the value in rotation if left to each device
+	 * specific implementations.
+	 *@param rotation . Android supported values are 0, 90, 180 and 270.
+	 *
+	**/
 	void setDeviceRotation(int rotation);
-	
+	/**
+	 * Sets the active video device.
+	 *
+	 * @param id  of the video device as returned by {@link AndroidCameraConfiguration#retrieveCameras}
+	**/
 	void setVideoDevice(int id);
+	/**
+	 * Returns the id of the currently active video device as found in {@link AndroidCameraConfiguration#retrieveCameras}.
+	**/
 	int getVideoDevice();
 	
 	/**
@@ -665,6 +724,7 @@ public interface LinphoneCore {
 	 */
 	void setStunServer(String stun_server);
 	/**
+	 * Get STUN server
 	 * @return stun server address if previously set.
 	 */
 	String getStunServer();
@@ -678,11 +738,35 @@ public interface LinphoneCore {
 	 * @return previously set firewall policy.
 	 */
 	FirewallPolicy getFirewallPolicy();
-
+	/**
+	 * Initiates an outgoing call given a destination LinphoneAddress
+	 *
+	 * @param addr the destination of the call {@link #LinphoneAddress }.
+	 * @param params call parameters {@link #LinphoneCallParams }
+	 *
+	 *<br>The LinphoneAddress can be constructed directly using {@link LinphoneCoreFactory#createLinphoneAddress} , or created {@link LinphoneCore#interpretUrl(String)}. .
+	 *
+	 * @return a {@link #LinphoneCall LinphoneCall} object 
+	 * @throws LinphoneCoreException  in case of failure
+	**/
 	LinphoneCall inviteAddressWithParams(LinphoneAddress destination, LinphoneCallParams params) throws LinphoneCoreException ;
-	
+	/**
+	 * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
+	 *
+	 * In this version this is limited to the following use cases:
+	 * - setting up/down the video stream according to the video parameter of the {@link LinphoneCallParams} (see {@link LinphoneCallParams#enableVideo} ).
+	 * - changing the size of the transmitted video after calling {@link LinphoneCore#setPreferredVideoSize(VideoSize)}
+	 *
+	 * In case no changes are requested through the {@link LinphoneCallParams} argument, then this argument can be omitted and set to null.
+	 * @param call the {@link LinphoneCall} to be updated
+	 * @param params the new  {@link  LinphoneCallParams call parameters} to use. (may be NULL)
+	 * @return 0 if successful, -1 otherwise.
+	**/
 	int updateCall(LinphoneCall call, LinphoneCallParams params);
-
+	/**
+	 * Get default call parameters reflecting current linphone core configuration
+	 * @return  LinphoneCallParams
+	 */
 	LinphoneCallParams createDefaultCallParameters();
 
 	/**
@@ -694,7 +778,7 @@ public interface LinphoneCore {
 	/**
 	 * gets the path to a wav file used for ringing.
 	 *
-	 * @param null if not set
+	 * @return null if not set
 	 */
 	String getRing();
 	
@@ -706,7 +790,18 @@ public interface LinphoneCore {
 	void setRootCA(String path);
 	
 	void setUploadBandwidth(int bw);
-
+	/**
+	 * Sets maximum available download bandwidth
+	 *
+	 *
+	 * This is IP bandwidth, in kbit/s.
+	 * This information is used signaled to other parties during
+	 * calls (within SDP messages) so that the remote end can have
+	 * sufficient knowledge to properly configure its audio & video
+	 * codec output bitrate to not overflow available bandwidth.
+	 *
+	 * @param bw the bandwidth in kbits/s, 0 for infinite
+	 */
 	void setDownloadBandwidth(int bw);
 	
 	/**
@@ -720,9 +815,20 @@ public interface LinphoneCore {
 	 * @param ptime packetization interval in milliseconds
 	 */
 	void setUploadPtime(int ptime);
-
+	/**
+	 * Sets the preferred video size.
+	 *
+	 * This applies only to the stream that is captured and sent to the remote party,
+	 * since we accept all standard video size on the receive path.
+	 * @param vSize
+	 * 
+	**/
 	void setPreferredVideoSize(VideoSize vSize);
-	
+	/**
+	 * get current preferred video size for sending.
+	 * @return  video size
+	 *
+	**/
 	VideoSize getPreferredVideoSize();
 	
 	/**
@@ -766,13 +872,18 @@ public interface LinphoneCore {
 	void adjustSoftwareVolume(int i);
 	
 	/**
-	 * Pause a call.
+	 * Pauses a call. If a music file has been setup using {@link LinphoneCore#setPlayFile(String)},
+	 * this file will be played to the remote user.
+	 *
 	**/
 	boolean pauseCall(LinphoneCall call);
 	/**
 	 * Resume a call.
 	**/
 	boolean resumeCall(LinphoneCall call);
+	/**
+	 * Pause all currently running calls.
+	**/
 	boolean pauseAllCalls();
 	
 	void setZrtpSecretsCache(String file);
@@ -783,33 +894,75 @@ public interface LinphoneCore {
 	**/
 	boolean isInConference();
 	/**
-	 * Connect the local user to the conference.
+	 * Moves the local participant inside the conference.
+	 * 
+	 * Makes the local participant to join the conference. 
+	 * Typically, the local participant is by default always part of the conference when joining an active call into a conference.
+	 * However, by calling {@link #leaveConference()} and {@link #enterConference()} the application can decide to temporarily
+	 * move out and in the local participant from the conference.
+	 * 
+	 * @returns true if successful
 	**/
 	boolean enterConference();
 	/**
-	 * Disconnect the local user from the conference.
+	 * Moves the local participant out of the conference.
+	 * When the local participant is out of the conference, the remote participants can continue to talk normally.
 	**/
 	void leaveConference();
 
 	/**
-	 * Add an established call to the conference. The LinphoneCore is able to manage one client based conference.
+	 * Merge a call into a conference.
+	 * 
+	 * If this is the first call that enters the conference, the virtual conference will be created automatically.
+	 * If the local user was actively part of the call (ie not in paused state), then the local user is automatically entered into the conference.
+	 * If the call was in paused state, then it is automatically resumed when entering into the conference.
+	 * @param call an established call, either in {@link LinphoneCall.State#StreamsRunning} or {@link LinphoneCall.State#Paused} state.
+	 * 
 	**/
 	void addToConference(LinphoneCall call);
 	/**
-	 * Remove an established call from the conference.
-	**/
+	 * Remove a call from the conference.
+	 * @param call a call that has been previously merged into the conference.
+	 * 
+	 * After removing the remote participant belonging to the supplied call, the call becomes a normal call in paused state.
+	 * If one single remote participant is left alone together with the local user in the conference after the removal, then the conference is
+	 * automatically transformed into a simple call in StreamsRunning state.
+	 * The conference's resources are then automatically destroyed.
+	 * 
+	 * In other words, unless {@link #leaveConference()} is explicitely called, the last remote participant of a conference is automatically
+	 * put in a simple call in running state.
+	 * 
+	 **/
 	void removeFromConference(LinphoneCall call);
+	/**
+	 * Add all calls into a conference.
+	 * 
+	 * Merge all established calls (either in {@link LinphoneCall.State#StreamsRunning} or {@link LinphoneCall.State#Paused}) into a conference.
+	 * 
+	**/
 	void addAllToConference();
 	
 	/**
-	 * Terminate the conference, all users are disconnected.
+	 * Terminates the conference and the calls associated with it.
+	 * 
+	 * All the calls that were merged to the conference are terminated, and the conference resources are destroyed.
+	 * 
 	**/
 	void terminateConference();
+	/**
+	 * Returns the number of participants to the conference, including the local participant.
+	 * 
+	 * Typically, after merging two calls into the conference, there is total of 3 participants:
+	 * the local participant (or local user), and two remote participants that were the destinations of the two previously establised calls.
+	 * 
+	 * @returns the number of participants to the conference
+	**/
 	int getConferenceSize();
 
 	/**
 	 * Request recording of the conference into a supplied file path.
 	 * The format is wav.
+	 * @param path where to write recording file
 	**/
 	void startConferenceRecording(String path);
 	
@@ -817,22 +970,60 @@ public interface LinphoneCore {
 	 * Stop recording of the conference.
 	**/
 	void stopConferenceRecording();
-
+	/**
+	 * Terminates all the calls.
+	 */
 	void terminateAllCalls();
 	/**
 	 * Returns all calls.
+	 * @return an array with all call currently handle by Linphone core
 	**/
 	LinphoneCall[] getCalls();
+	/**
+	 * Get number of calls currently handled by Linphone core
+	 * @returns number of calls
+	 * */
 	int getCallsNb();
 
-
+	/**
+	 * Performs a simple call transfer to the specified destination.
+	 *
+	 * @param call The current local call remains active and thus can be later paused or terminated.
+	 * @param  referTo The remote call party endpoint is expected to issue a new call to this specified destination.
+	**/
 	void transferCall(LinphoneCall call, String referTo);
+	/**
+	 * Transfer a call to destination of another running call. This is used for "attended transfer" scenarios.
+	 * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
+	 * The destination call is a call previously established to introduce the transfered person.
+	 * This method will send a transfer request to the transfered person. The phone of the transfered is then
+	 * expected to automatically call to the destination of the transfer. The receiver of the transfer will then automatically
+	 * close the call with us (the 'dest' call).
+	 * @param call a running call you want to transfer
+	 * @param dest a running call whose remote person will receive the transfer
+	**/
 	void transferCallToAnother(LinphoneCall callToTransfer, LinphoneCall destination);
-
+	/**
+	 * Search from the list of current calls if a remote address match uri
+	 * @param uri which should match call remote uri
+	 * @return LinphoneCall or NULL is no match is found
+	 */
 	LinphoneCall findCallFromUri(String uri);
-
+	/**
+	 * Get the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
+	 * @return max number of simultaneous calls
+	 */
 	int getMaxCalls();
+	/**
+	 * Set the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
+	 * @param max number of simultaneous calls
+	 */
 	void setMaxCalls(int max);
+	/**
+	 * @deprecated
+	 * @param uri
+	 * @return
+	 */
 	boolean isMyself(String uri);
 
 	/**
@@ -884,15 +1075,31 @@ public interface LinphoneCore {
 	void tunnelAddServerAndMirror(String host, int port, int udpMirrorPort, int roundTripDelay);
 
 	boolean isTunnelAvailable();
-	
+	/**
+	 * Returns an unmodifiable list of entered proxy configurations.
+	 * @return list of proxy config
+	**/
 	LinphoneProxyConfig[] getProxyConfigList();
-	
+	/**
+	 * Sets the default policy for video.
+	 * This policy defines whether:
+	 * @param autoInitiate video shall be initiated by default for outgoing calls
+	 * @param autoAccept video shall be accepter by default for incoming calls
+	**/
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
-
+	/** Set static picture to be used when "Static picture" is the video device 
+	 * @param path to the static picture file
+	 * */
 	void setStaticPicture(String path);
-
+	/**
+	 * Sets the user agent string used in SIP messages.
+	 * @param user agent name
+	 * @param user agent version
+	**/
 	void setUserAgent(String name, String version);
-	
+	/**
+	 * Set the number of cores used for media processing
+	 * */
 	void setCpuCount(int count);
 	
 	/**
@@ -961,7 +1168,10 @@ public interface LinphoneCore {
 	 * Once this time is elapsed (ringing included), the call is automatically hung up.
 	**/
 	void setInCallTimeout(int timeout);
-	
+	/**
+	 * Allow to control microphone level:  
+	 * @param gain in db
+	**/
 	void setMicrophoneGain(float gain);
 	
 	/**

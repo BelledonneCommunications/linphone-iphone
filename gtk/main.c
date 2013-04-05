@@ -1726,6 +1726,7 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_load_identities();
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));
 	linphone_gtk_show_friends();
+	linphone_core_reset_missed_calls_count(linphone_gtk_get_core());
 	main_window=linphone_gtk_get_main_window();
 	linphone_gtk_call_log_update(main_window);
 
@@ -1747,7 +1748,6 @@ static void linphone_gtk_init_main_window(){
 #endif
 	linphone_gtk_check_menu_items();
 }
-
 
 void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 	if (verbose){

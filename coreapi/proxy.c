@@ -846,6 +846,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 			       LinphoneOnlineStatus presence_mode){
 	int err;
 	SalOp *op=sal_op_new(proxy->lc->sal);
+	sal_op_set_route(op,proxy->reg_proxy);
 	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
 	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
 	if (proxy->publish_op!=NULL)

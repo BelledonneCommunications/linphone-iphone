@@ -431,8 +431,6 @@ void linphone_gtk_remove_in_call_view(LinphoneCall *call){
 	int idx;
 	g_return_if_fail(w!=NULL);
 	idx=gtk_notebook_page_num(GTK_NOTEBOOK(nb),w);
-	gtk_notebook_remove_page (GTK_NOTEBOOK(nb),idx);
-	gtk_widget_destroy(w);
 	if (in_conf){
 		linphone_gtk_unset_from_conference(call);
 	}
@@ -444,12 +442,13 @@ void linphone_gtk_remove_in_call_view(LinphoneCall *call){
 			/*show the conference*/
 			gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),
 		                            g_object_get_data(G_OBJECT(main_window),"conf_frame")));
-		}else gtk_notebook_set_current_page(GTK_NOTEBOOK(nb), 0);
+		}else gtk_notebook_prev_page(GTK_NOTEBOOK(nb));
 	}else{
 		/*show the active call*/
-		gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),
-		                                                                     linphone_call_get_user_pointer(call)));
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),                                                                     linphone_call_get_user_pointer(call)));
 	}
+	gtk_notebook_remove_page (GTK_NOTEBOOK(nb),idx);
+	gtk_widget_destroy(w);
 }
 
 static void display_peer_name_in_label(GtkWidget *label, const LinphoneAddress *from){

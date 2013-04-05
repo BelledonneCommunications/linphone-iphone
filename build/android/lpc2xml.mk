@@ -40,6 +40,7 @@ LOCAL_C_INCLUDES = \
 
 LOCAL_SHARED_LIBRARIES = \
 	libxml2 \
+	liblinphonenoneon \
 	liblinphone \
 
 LOCAL_MODULE := liblpc2xml

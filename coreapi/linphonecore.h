@@ -51,13 +51,29 @@ typedef struct _LinphoneCore LinphoneCore;
 struct _LpConfig;
 
 
+/**
+ * Linphone core SIP transport ports.
+ * Use with #linphone_core_set_sip_transports
+ * @ingroup initializing
+ */
 typedef struct _LCSipTransports{
+	/**
+	 * udp port to listening on, negative value if not set
+	 * */
 	int udp_port;
+	/**
+	 * tcp port to listening on, negative value if not set
+	 * */
 	int tcp_port;
+	/**
+	 * dtls port to listening on, negative value if not set
+	 * */
 	int dtls_port;
+	/**
+	 * tls port to listening on, negative value if not set
+	 * */
 	int tls_port;
 } LCSipTransports;
-
 
 
 /**
@@ -945,7 +961,12 @@ LINPHONE_PUBLIC	int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *ca
 int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
-
+/**
+ * @ingroup media_parameters
+ * Get default call parameters reflecting current linphone core configuration
+ * @param LinphoneCore object
+ * @return  LinphoneCallParams
+ */
 LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
 LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
@@ -993,16 +1014,23 @@ const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
 LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
-
+/**
+ * Enable payload type
+ * @param linphone core
+ * @param pt payload type to enable, can be retrieve from #linphone_core_find_payload_type
+ * @param TRUE if enabled
+ * @return 0 if succed
+ *
+ */
 LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
 /**
- * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algirithm
+ * Wildcard value used by #linphone_core_find_payload_type to ignore rate in search algorithm
  * @ingroup media_parameters
  */
 #define LINPHONE_FIND_PAYLOAD_IGNORE_RATE -1
 /**
- * Wildcard value used by #linphone_core_find_payload_type to ignore channel in search algirithm
+ * Wildcard value used by #linphone_core_find_payload_type to ignore channel in search algorithm
  * @ingroup media_parameters
  */
 #define LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS -1
@@ -1381,7 +1409,13 @@ LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
-
+/**
+ * Search from the list of current calls if a remote address match uri
+ * @ingroup call_control
+ * @param lc
+ * @param uri which should match call remote uri
+ * @return LinphoneCall or NULL is no match is found
+ */
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 
 LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
@@ -1396,8 +1430,19 @@ LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
 int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
 int linphone_core_stop_conference_recording(LinphoneCore *lc);
-
+/**
+ * Get the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
+ * @ingroup initializing
+ * @param lc core
+ * @return max number of simultaneous calls
+ */
 int linphone_core_get_max_calls(LinphoneCore *lc);
+/**
+ * Set the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
+ * @ingroup initializing
+ * @param lc core
+ * @param max number of simultaneous calls
+ */
 void linphone_core_set_max_calls(LinphoneCore *lc, int max);
 
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
