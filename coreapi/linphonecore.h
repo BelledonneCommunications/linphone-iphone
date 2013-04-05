@@ -91,7 +91,7 @@ LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u
  * Get port number as an integer value.
  *
  */
-int linphone_address_get_port_int(const LinphoneAddress *u);
+LINPHONE_PUBLIC int linphone_address_get_port_int(const LinphoneAddress *u);
 /**
  * Get port number, null if not present.
  */
@@ -625,17 +625,17 @@ typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
 		const char *passwd, const char *ha1,const char *realm);
-void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
-void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
-void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
-void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
-void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
+LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
+LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
+LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
+LINPHONE_PUBLIC void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
+LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
-const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
-const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
-const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
-const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
-const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
 
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
@@ -992,7 +992,7 @@ const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
-bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
 
 LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
@@ -1050,7 +1050,7 @@ LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const Linphon
 
 void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
-const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
 const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
 
@@ -1376,7 +1376,7 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  * force registration refresh to be initiated upon next iterate
  * @ingroup proxies
  */
-void linphone_core_refresh_registers(LinphoneCore* lc);
+LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
 
 /* Path to the file storing secrets cache */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);

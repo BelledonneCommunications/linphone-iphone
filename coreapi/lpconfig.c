@@ -220,7 +220,7 @@ LpConfig * lp_config_new(const char *filename){
 	if (filename!=NULL){
 		ms_message("Using (r/w) config information from %s", filename);
 		lpconfig->filename=ortp_strdup(filename);
-		lpconfig->file=fopen(filename,"rw");
+		lpconfig->file=fopen(filename,"r+");
 		if (lpconfig->file!=NULL){
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
