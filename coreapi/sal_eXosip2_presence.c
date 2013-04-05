@@ -635,7 +635,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus p
 
 	mk_presence_body (presence_mode, from, buf, sizeof (buf), presence_style);
 
-	i = eXosip_build_publish(&pub,from, to, NULL, "presence", "300", 
+	i = eXosip_build_publish(&pub,from, to, sal_op_get_route(op), "presence", "300", 
 		presence_style ? "application/xpidf+xml" : "application/pidf+xml", buf);
 	if (i<0){
 		ms_warning("Failed to build publish request.");
