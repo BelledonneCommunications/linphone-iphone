@@ -581,7 +581,7 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	if (belle_sip_message_get_header((belle_sip_message_t*)req,"Require") || belle_sip_message_get_header((belle_sip_message_t*)req,"Supported")) {
 		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
 		belle_sip_header_contact_t* contact_header;
-		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,belle_sip_message_get_header((belle_sip_message_t*)req,"Require"));
+		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("Require","100Rel")));
 		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("RSeq","1")));
 		if (contact && (contact_header=belle_sip_header_contact_create(contact))) {
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(ringing_response),BELLE_SIP_HEADER(contact_header));

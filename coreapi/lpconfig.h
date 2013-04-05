@@ -24,7 +24,7 @@
  
 #ifndef LPCONFIG_H
 #define LPCONFIG_H
-
+#include "linphonecore.h" /*to get LINPHONE_PUBLIC, maybe we can include less stuff*/
 #include <ortp/port.h>
 
 /**
