@@ -168,10 +168,10 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		case LinphoneChatMessageStateDelivered:
 		{
 			tnow=time(NULL);
-			tm=gmtime(&tnow);
+			tm=localtime(&tnow);
 			tnow_day=tm->tm_yday;
 			tnow_year=tm->tm_year;
-			tm=gmtime(&t);
+			tm=localtime(&t);
 			if(tnow_day != tm->tm_yday || (tnow_day == tm->tm_yday && tnow_year != tm->tm_year)) {
 				strftime(buf,80,"%a %x, %H:%M",tm);
 			} else {
@@ -237,7 +237,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 			case LinphoneChatMessageStateDelivered:
 			{
 				time_t t=time(NULL);
-				struct tm *tm=gmtime(&t);
+				struct tm *tm=localtime(&t);
 				char buf[80];
 				strftime(buf,80,"%H:%M",tm);
 				result=buf;
@@ -450,10 +450,10 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
     if(w!=NULL){
 		char *from_chatview=(char *)g_object_get_data(G_OBJECT(friendlist),"from");
 		if(g_strcmp0(from,from_chatview)==0){
+			linphone_chat_room_mark_as_read(room);
 			send=TRUE;
 		} else {
 			if(!linphone_gtk_friend_list_is_contact(linphone_chat_message_get_from(msg))){
-				//linphone_gtk_load_chatroom(room,linphone_chat_message_get_from(msg),w);
 				linphone_gtk_chat_add_contact(linphone_chat_message_get_from(msg));
 			} 
 			send=FALSE;
@@ -461,7 +461,6 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
     } else {
 		send=FALSE;
 		if(!linphone_gtk_friend_list_is_contact(linphone_chat_message_get_from(msg))){
-				//linphone_gtk_load_chatroom(room,linphone_chat_message_get_from(msg),w);
 				linphone_gtk_chat_add_contact(linphone_chat_message_get_from(msg));
 			} 
         w=linphone_gtk_init_chatroom(room,linphone_chat_message_get_from(msg));
@@ -469,6 +468,7 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 		g_object_set_data(G_OBJECT(friendlist),"from",from);
     }
 	get_display_name(linphone_chat_message_get_from(msg));
+	
 	#ifdef HAVE_GTK_OSXs
 	/* Notified when a new message is sent */
 	linphone_gtk_status_icon_set_blinking(TRUE);
@@ -491,5 +491,4 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 	} else {
 		linphone_gtk_show_friends();
 	}
-	//linphone_gtk_update_chat_picture();
 }
