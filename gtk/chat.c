@@ -450,7 +450,6 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
     if(w!=NULL){
 		char *from_chatview=(char *)g_object_get_data(G_OBJECT(friendlist),"from");
 		if(g_strcmp0(from,from_chatview)==0){
-			linphone_chat_room_mark_as_read(room);
 			send=TRUE;
 		} else {
 			if(!linphone_gtk_friend_list_is_contact(linphone_chat_message_get_from(msg))){
@@ -485,6 +484,8 @@ void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room,
 	if(send){
 		if(gtk_notebook_get_current_page(notebook)!=gtk_notebook_page_num(notebook,w)){
 			linphone_gtk_show_friends();
+		} else {
+			linphone_chat_room_mark_as_read(room);
 		}
 		linphone_gtk_push_text(w,linphone_chat_message_get_from(msg),
 	                      FALSE,room,msg,FALSE);
