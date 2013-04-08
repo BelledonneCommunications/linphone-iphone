@@ -1798,6 +1798,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		for(j=0;j<12;j++) { 
 			if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
 		}
+		ret.tm_isdst=-1;
 	}else ms_warning("No date header in SIP MESSAGE, we don't know when it was sent.");
 	
 	content_type= osip_message_get_content_type(ev->request);

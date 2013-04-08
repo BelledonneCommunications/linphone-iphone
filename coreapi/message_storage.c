@@ -66,6 +66,7 @@ static void create_chat_message(char **argv, void *data){
 		for(j=0;j<12;j++) { 
 			if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
 		}
+		ret.tm_isdst=-1;
 	}
 	new_message->time=argv[5]!=NULL ? mktime(&ret) : time(NULL);
 	new_message->state=atoi(argv[7]);
