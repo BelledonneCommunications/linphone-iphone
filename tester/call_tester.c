@@ -320,9 +320,11 @@ static void cancelled_ringing_call(void) {
 static void early_declined_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	linphone_core_set_max_calls(marie->lc,0);
 	LinphoneCallLog* in_call;
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	LinphoneCall* out_call;
+
+	linphone_core_set_max_calls(marie->lc,0);
+	out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));

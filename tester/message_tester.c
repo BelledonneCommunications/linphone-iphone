@@ -80,6 +80,7 @@ static void text_message_compatibility_mode(void) {
 	char*tmp;
 	LCSipTransports transport;
 	char* to = linphone_address_as_string(pauline->identity);
+	LinphoneChatRoom* chat_room;
 
 	linphone_core_get_default_proxy(marie->lc,&proxy);
 	CU_ASSERT_PTR_NOT_NULL (proxy);
@@ -100,7 +101,7 @@ static void text_message_compatibility_mode(void) {
 
 	CU_ASSERT_TRUE (wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationOk,1));
 
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
+	chat_room = linphone_core_create_chat_room(marie->lc,to);
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceivedLegacy,1);
