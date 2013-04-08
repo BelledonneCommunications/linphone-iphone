@@ -1231,7 +1231,7 @@ char linphone_core_get_sound_source(LinphoneCore *lc);
 void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 LINPHONE_PUBLIC	void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
-void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
+LINPHONE_PUBLIC void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno);
 void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_root_ca(LinphoneCore *lc);
@@ -1443,7 +1443,7 @@ int linphone_core_get_max_calls(LinphoneCore *lc);
  * @param lc core
  * @param max number of simultaneous calls
  */
-void linphone_core_set_max_calls(LinphoneCore *lc, int max);
+LINPHONE_PUBLIC void linphone_core_set_max_calls(LinphoneCore *lc, int max);
 
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
 
