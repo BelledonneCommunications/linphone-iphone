@@ -116,6 +116,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	cl->from=from;
 	cl->to=to;
 	cl->status=LinphoneCallAborted; /*default status*/
+	cl->quality=-1;
 	return cl;
 }
 

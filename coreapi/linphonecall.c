@@ -1857,9 +1857,13 @@ void linphone_call_delete_upnp_session(LinphoneCall *call){
 }
 #endif //BUILD_UPNP
 
-static void linphone_call_log_fill_stats(LinphoneCallLog *log, AudioStream *st){
-	audio_stream_get_local_rtp_stats (st,&log->local_stats);
-	log->quality=audio_stream_get_average_quality_rating(st);
+static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
+	float quality=media_stream_get_average_quality_rating(st);
+	if (quality>=0){
+		if (log->quality!=-1){
+			log->quality*=quality/5.0;
+		}else log->quality=quality;
+	}
 }
 
 void linphone_call_stop_audio_stream(LinphoneCall *call) {
@@ -1877,7 +1881,8 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 				lp_config_set_string(call->core->config,"sound","ec_state",state_str);
 			}
 		}
-		linphone_call_log_fill_stats (call->log,call->audiostream);
+		audio_stream_get_local_rtp_stats(call->audiostream,&call->log->local_stats);
+		linphone_call_log_fill_stats (call->log,(MediaStream*)call->audiostream);
 		if (call->endpoint){
 			linphone_call_remove_from_conf(call);
 		}
@@ -1893,6 +1898,7 @@ void linphone_call_stop_video_stream(LinphoneCall *call) {
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
 		call->videostream_app_evq=NULL;
+		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
 	}
@@ -2009,10 +2015,20 @@ float linphone_call_get_record_volume(LinphoneCall *call){
  * active audio stream exist. Otherwise it returns the quality rating.
 **/
 float linphone_call_get_current_quality(LinphoneCall *call){
+	float audio_rating=-1;
+	float video_rating=-1;
+	float result;
 	if (call->audiostream){
-		return audio_stream_get_quality_rating(call->audiostream);
+		audio_rating=media_stream_get_quality_rating((MediaStream*)call->audiostream)/5.0;
 	}
-	return -1;
+	if (call->videostream){
+		video_rating=media_stream_get_quality_rating((MediaStream*)call->videostream)/5.0;
+	}
+	if (audio_rating<0 && video_rating<0) result=-1;
+	else if (audio_rating<0) result=video_rating*5.0;
+	else if (video_rating<0) result=audio_rating*5.0;
+	else result=audio_rating*video_rating*5.0;
+	return result;
 }
 
 /**
@@ -2027,18 +2043,34 @@ float linphone_call_get_average_quality(LinphoneCall *call){
 	return -1;
 }
 
+static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream){
+	const MSQualityIndicator *qi=media_stream_get_quality_indicator(stream);
+	if (qi) {
+		stats->local_late_rate=ms_quality_indicator_get_local_late_rate(qi);
+		stats->local_loss_rate=ms_quality_indicator_get_local_loss_rate(qi);
+	}
+}
+
 /**
  * Access last known statistics for audio stream, for a given call.
 **/
-const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call) {
-	return &call->stats[LINPHONE_CALL_STATS_AUDIO];
+const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
+	LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_AUDIO];
+	if (call->audiostream){
+		update_local_stats(stats,(MediaStream*)call->audiostream);
+	}
+	return stats;
 }
 
 /**
  * Access last known statistics for video stream, for a given call.
 **/
-const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call) {
-	return &call->stats[LINPHONE_CALL_STATS_VIDEO];
+const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
+	LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_VIDEO];
+	if (call->videostream){
+		update_local_stats(stats,(MediaStream*)call->videostream);
+	}
+	return stats;
 }
 
 /**
@@ -2242,6 +2274,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
 				call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
 				evd->packet = NULL;
+				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
@@ -2250,6 +2283,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
 				call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
 				evd->packet = NULL;
+				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
@@ -2283,6 +2317,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
 				call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
 				evd->packet = NULL;
+				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
@@ -2291,6 +2326,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
 				call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
 				evd->packet = NULL;
+				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
 				if (lc->vtable.call_stats_updated)
 					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
