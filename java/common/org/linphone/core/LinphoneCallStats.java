@@ -121,25 +121,25 @@ public interface LinphoneCallStats {
 	public float getUploadBandwidth();
 
 	/**
-	 * Get the sender loss rate since last report
+	 * Get the local loss rate since last report
 	 * @return The sender loss rate
 	 */
 	public float getSenderLossRate();
 
 	/**
-	 * Get the receiver loss rate since last report
+	 * Get the remote reported loss rate since last report
 	 * @return The receiver loss rate
 	 */
 	public float getReceiverLossRate();
 
 	/**
-	 * Get the sender interarrival jitter
+	 * Get the local interarrival jitter
 	 * @return The interarrival jitter at last emitted sender report
 	 */
 	public float getSenderInterarrivalJitter();
 
 	/**
-	 * Get the receiver interarrival jitter
+	 * Get the remote reported interarrival jitter
 	 * @return The interarrival jitter at last received receiver report
 	 */
 	public float getReceiverInterarrivalJitter();
@@ -161,4 +161,16 @@ public interface LinphoneCallStats {
 	 * @return The jitter buffer size in milliseconds
 	 */
 	public float getJitterBufferSize();
+
+	/**
+	 * Get the local loss rate. Unlike getSenderLossRate() that returns this loss rate "since last emitted RTCP report", the value returned here is updated every second.
+	 * @return The local loss rate percentage.
+	**/
+	public float getLocalLossRate();
+
+	/**
+	 * Get the local late packets rate. The value returned here is updated every second.
+	 * @return The local late rate percentage.
+	**/
+	public float getLocalLateRate();
 }
