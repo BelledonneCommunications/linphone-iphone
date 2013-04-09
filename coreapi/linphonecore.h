@@ -892,7 +892,7 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
  *
  * @param logfunc The function pointer of the log handler.
  */
-void linphone_core_set_log_handler(OrtpLogFunc logfunc);
+LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 /**
  * Define a log file.
  *
@@ -902,7 +902,7 @@ void linphone_core_set_log_handler(OrtpLogFunc logfunc);
  *
  * @param file A pointer to the FILE structure of the file to write to.
  */
-void linphone_core_set_log_file(FILE *file);
+LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
 /**
  * Define the log level.
  *
@@ -913,10 +913,10 @@ void linphone_core_set_log_file(FILE *file);
  *
  * @param loglevel A bitmask of the log levels to set.
  */
-void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
-void linphone_core_disable_logs(void);
+LINPHONE_PUBLIC void linphone_core_disable_logs(void);
 const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);
 const char *linphone_core_get_user_agent_version(void);
