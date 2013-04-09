@@ -68,9 +68,11 @@ class LinphoneCallImpl implements LinphoneCall {
 		videoStats = stats;
 	}
 	public LinphoneCallStats getAudioStats() {
+		if (audioStats!=null) ((LinphoneCallStatsImpl)audioStats).updateRealTimeStats(this);
 		return audioStats;
 	}
 	public LinphoneCallStats getVideoStats() {
+		if (videoStats!=null) ((LinphoneCallStatsImpl)videoStats).updateRealTimeStats(this);
 		return videoStats;
 	}
 	public CallDirection getDirection() {

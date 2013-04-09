@@ -1578,6 +1578,23 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getJitterBufferSi
 	return (jfloat)((LinphoneCallStats *)stats_ptr)->jitter_stats.jitter_buffer_size_ms;
 }
 
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLossRate(JNIEnv *env, jobject thiz,jlong stats_ptr) {
+	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return stats->local_loss_rate;
+}
+
+extern "C" jfloat Java_org_linphone_core_LinphoneCallStatsImpl_getLocalLateRate(JNIEnv *env, jobject thiz, jlong stats_ptr) {
+	const LinphoneCallStats *stats = (LinphoneCallStats *)stats_ptr;
+	return stats->local_late_rate;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallStatsImpl_updateStats(JNIEnv *env, jobject thiz, jlong call_ptr, jint mediatype) {
+	if (mediatype==LINPHONE_CALL_STATS_AUDIO)
+		linphone_call_get_audio_stats((LinphoneCall*)call_ptr);
+	else 
+		linphone_call_get_video_stats((LinphoneCall*)call_ptr);
+}
+
 /*payloadType*/
 extern "C" jstring Java_org_linphone_core_PayloadTypeImpl_toString(JNIEnv*  env,jobject  thiz,jlong ptr) {
 	PayloadType* pt = (PayloadType*)ptr;
@@ -1701,7 +1718,6 @@ extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getAverageQuality(	JNI
 																		,jlong ptr) {
 	return (jfloat)linphone_call_get_average_quality((LinphoneCall*)ptr);
 }
-
 
 //LinphoneFriend
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNIEnv*  env

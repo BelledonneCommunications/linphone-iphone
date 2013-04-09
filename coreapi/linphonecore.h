@@ -347,14 +347,16 @@ struct _LinphoneCallStats {
 	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
 	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float local_late_rate; /**<percentage of packet received too late over last second*/
+	float local_loss_rate; /**<percentage of lost packet over last second*/
 };
 
 /**
  * @}
 **/
 
-const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call);
-const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call);
+const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
+const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 
 
 /** Callback prototype */
@@ -883,8 +885,37 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
 
 /* THE main API */
 
-LINPHONE_PUBLIC	void linphone_core_enable_logs(FILE *file);
-LINPHONE_PUBLIC	void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
+/**
+ * Define a log handler.
+ *
+ * @ingroup misc
+ *
+ * @param logfunc The function pointer of the log handler.
+ */
+void linphone_core_set_log_handler(OrtpLogFunc logfunc);
+/**
+ * Define a log file.
+ *
+ * @ingroup misc
+ *
+ * If the file pointer passed as an argument is NULL, stdout is used instead.
+ *
+ * @param file A pointer to the FILE structure of the file to write to.
+ */
+void linphone_core_set_log_file(FILE *file);
+/**
+ * Define the log level.
+ *
+ * @ingroup misc
+ *
+ * The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
+ * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
+ *
+ * @param loglevel A bitmask of the log levels to set.
+ */
+void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
+LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
 const char *linphone_core_get_version(void);
 const char *linphone_core_get_user_agent_name(void);

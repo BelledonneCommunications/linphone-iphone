@@ -122,6 +122,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCall *call, LinphoneAddress *fro
 	cl->from=from;
 	cl->to=to;
 	cl->status=LinphoneCallAborted; /*default status*/
+	cl->quality=-1;
 	return cl;
 }
 
@@ -412,10 +413,29 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 	return linphone_call_get_remote_address(call);
 }
 
+void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
+	ortp_set_log_handler(logfunc);
+}
+
+void linphone_core_set_log_file(FILE *file) {
+	if (file == NULL) file = stdout;
+	ortp_set_log_file(file);
+}
+
+void linphone_core_set_log_level(OrtpLogLevel loglevel) {
+	ortp_set_log_level_mask(loglevel);
+	if (loglevel == 0) {
+		sal_disable_logs();
+	} else {
+		sal_enable_logs();
+	}
+}
+
 /**
  * Enable logs in supplied FILE*.
  *
  * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.
  *
  * @param file a C FILE* where to fprintf logs. If null stdout is used.
  *
@@ -431,6 +451,7 @@ void linphone_core_enable_logs(FILE *file){
  * Enable logs through the user's supplied log callback.
  *
  * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_handler and #linphone_core_set_log_level instead.
  *
  * @param logfunc The address of a OrtpLogFunc callback whose protoype is
  *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
@@ -446,6 +467,7 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
  * Entirely disable logging.
  *
  * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_level instead.
 **/
 void linphone_core_disable_logs(){
 	ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
@@ -472,7 +494,7 @@ static void net_config_read (LinphoneCore *lc)
 	linphone_core_set_firewall_policy(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","nat_sdp_only",0);
 	lc->net_conf.nat_sdp_only=tmp;
-	tmp=lp_config_get_int(lc->config,"net","mtu",0);
+	tmp=lp_config_get_int(lc->config,"net","mtu",1300);
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
 	linphone_core_set_download_ptime(lc,tmp);
@@ -1204,6 +1226,7 @@ static void misc_config_read (LinphoneCore *lc) {
 	LpConfig *config=lc->config;
     lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
     lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
+	linphone_core_set_log_level((OrtpLogLevel)lp_config_get_int(config,"misc","log_level",0));
 }
 
 
@@ -2164,9 +2187,13 @@ void linphone_core_iterate(LinphoneCore *lc){
 		lc->initial_subscribes_sent=TRUE;
 	}
 
-	if (one_second_elapsed && lp_config_needs_commit(lc->config)){
-		lp_config_sync(lc->config);
-	}
+	if (one_second_elapsed) {
+		if (ortp_get_log_level_mask() != lp_config_get_int(lc->config, "misc", "log_level", 0)) {
+			lp_config_set_int(lc->config, "misc", "log_level", ortp_get_log_level_mask());
+		}
+		if (lp_config_needs_commit(lc->config)) {
+			lp_config_sync(lc->config);
+		}
 }
 
 /**
