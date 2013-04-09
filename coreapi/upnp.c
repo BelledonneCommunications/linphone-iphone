@@ -29,8 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UPNP_REMOVE_MAX_RETRY 4
 #define UPNP_SECTION_NAME     "uPnP"
 #define UPNP_CORE_READY_CHECK 1 
-#define UPNP_CORE_RETRY_DELAY 4
-#define UPNP_CALL_RETRY_DELAY 1
+#define UPNP_CORE_RETRY_DELAY 10
+#define UPNP_CALL_RETRY_DELAY 3
 #define UPNP_UUID_LEN         128
 #define UPNP_UUID_LEN_STR     UPNP_TOSTRING(UPNP_UUID_LEN)
 /*
@@ -876,7 +876,7 @@ void linphone_upnp_update_port_binding(UpnpContext *lupnp, UpnpPortBinding **por
 			}
 		}
 		if(*port_mapping == NULL) {
-			*port_mapping = linphone_upnp_port_binding_new_or_collect(lupnp->pending_bindings, protocol, port, -1);
+			*port_mapping = linphone_upnp_port_binding_new_or_collect(lupnp->pending_bindings, protocol, port, port);
 		}
 		
 		// Get addresses
@@ -1053,11 +1053,17 @@ UpnpPortBinding *linphone_upnp_port_binding_new_with_parameters(upnp_igd_ip_prot
 UpnpPortBinding *linphone_upnp_port_binding_new_or_collect(MSList *list, upnp_igd_ip_protocol protocol, int local_port, int external_port) {
 	UpnpPortBinding *tmp_binding;
 	UpnpPortBinding *end_binding;
-	end_binding = linphone_upnp_port_binding_new_with_parameters(protocol, local_port, external_port);
+	
+	// Seek an binding with same protocol and local port
+	end_binding = linphone_upnp_port_binding_new_with_parameters(protocol, local_port, -1);
 	tmp_binding = linphone_upnp_port_binding_equivalent_in_list(list, end_binding);
-	if(tmp_binding != NULL) {
+	
+	// Must be not attached to any struct 
+	if(tmp_binding != NULL && tmp_binding->ref == 1) {
 		linphone_upnp_port_binding_release(end_binding);
-		end_binding = tmp_binding;
+		end_binding = linphone_upnp_port_binding_retain(tmp_binding);
+	} else {
+		end_binding->external_port = external_port;
 	}
 	return end_binding;	
 } 
@@ -1104,6 +1110,7 @@ void linphone_upnp_port_binding_log(int level, const char *msg, const UpnpPortBi
 	}
 }
 
+// Return true if the binding are equivalent. (Note external_port == -1 means "don't care")
 bool_t linphone_upnp_port_binding_equal(const UpnpPortBinding *port1, const UpnpPortBinding *port2) {
 	return port1->protocol == port2->protocol &&
 	       port1->local_port == port2->local_port &&
