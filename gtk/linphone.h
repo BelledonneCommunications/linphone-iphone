@@ -58,7 +58,6 @@ GtkWidget *linphone_gtk_create_window(const char *window_name);
 GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
 
-
 const char *linphone_gtk_message_storage_get_db_file(const char *filename);
 void linphone_gtk_show_assistant(void);
 void linphone_gtk_close_assistant(void);
@@ -68,15 +67,11 @@ GtkWidget *linphone_gtk_get_main_window();
 void linphone_gtk_display_something(GtkMessageType type,const gchar *message);
 void linphone_gtk_start_call(GtkWidget *button);
 void linphone_gtk_call_terminated();
-void linphone_gtk_show_friends(void);
-void linphone_gtk_show_contact(LinphoneFriend *lf);
 void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 void linphone_gtk_show_parameters(void);
 void linphone_gtk_fill_soundcards(GtkWidget *pb);
 void linphone_gtk_fill_webcams(GtkWidget *pb);
 void linphone_gtk_load_identities(void);
-LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
-void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 void linphone_gtk_call_log_update(GtkWidget *w);
 void linphone_gtk_create_log_window(void);
 void linphone_gtk_log_show(void);
@@ -85,7 +80,6 @@ void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args);
 void linphone_gtk_destroy_log_window(void);
 void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
 gboolean linphone_gtk_check_logs();
-void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
 int linphone_gtk_get_ui_config_int(const char *key, int def);
 void linphone_gtk_set_ui_config_int(const char *key , int val);
@@ -99,21 +93,25 @@ SipSetupContext* linphone_gtk_get_default_sip_setup_context(void);
 GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx);
 void linphone_gtk_buddy_lookup_set_keyword(GtkWidget *w, const char *kw);
 void * linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, const char *purpose, float progress);
-
 void linphone_gtk_terminate_call(GtkWidget *button);
-void update_tab_header(LinphoneCall *call,gboolean pause);
-
+void linphone_gtk_call_update_tab_header(LinphoneCall *call,gboolean pause);
 void linphone_gtk_show_directory_search(void);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
 void linphone_gtk_notify(LinphoneCall *call, const char *msg);
-LinphoneChatRoom *linphone_gtk_start_chat(GtkTreeView* t);
+
 void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view);
 void linphone_gtk_send_text();
 GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
-void linphone_gtk_create_chat_picture(gboolean active);
-void linphone_gtk_update_chat_picture();
-void linphone_gtk_chat_set_conversation(const LinphoneAddress *uri,gchar *conversation);
-gchar * linphone_gtk_chat_get_conversation(const LinphoneAddress *uri);
+LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
+void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
+
+void linphone_gtk_friend_list_update_chat_picture();
+void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la);
+gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);
+void linphone_gtk_notebook_tab_select(GtkNotebook *notebook,GtkWidget *page,guint page_num, gpointer data);
+void linphone_gtk_show_friends(void);
+void linphone_gtk_show_contact(LinphoneFriend *lf);
+void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 
 /*functions controlling the different views*/
 gboolean linphone_gtk_use_in_call_view();
@@ -152,5 +150,3 @@ void linphone_gtk_monitor_usb(void);
 void linphone_gtk_unmonitor_usb(void);
 
 gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_conference);
-void linphone_gtk_tree_view_set_chat_conversation(const LinphoneAddress *la);
-gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);

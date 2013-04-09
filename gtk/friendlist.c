@@ -87,11 +87,6 @@ static GdkPixbuf *create_chat_picture(){
 	return pixbuf;
 }
 
-/*static GdkPixbuf *create_active_chat_picture(){
-	GdkPixbuf *pixbuf;
-	pixbuf = create_pixbuf("active_chat.png");
-	return pixbuf;
-}*/
 /*
 void linphone_gtk_set_friend_status(GtkWidget *friendlist , LinphoneFriend * fid, const gchar *url, const gchar *status, const gchar *img){
 	GtkTreeIter iter;
@@ -226,18 +221,22 @@ static void linphone_gtk_call_selected(GtkTreeView *treeview){
 					"start_call"));
 }
 
-void linphone_gtk_create_chat_picture(gboolean active){
+void linphone_gtk_friend_list_update_chat_picture(){
 	GtkTreeIter iter;
 	GtkWidget *w = linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
 	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+	LinphoneChatRoom *cr=NULL;
+	int nbmsg=0;
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
-			//if(!active){
+			gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
+			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
+			if(nbmsg != 0){
+				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_unread_msg(),-1);
+			} else {
 				gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_chat_picture(),-1);
-			//} else {
-			//	gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_active_chat_picture(),-1);
-			//}
+			}
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
 }
@@ -247,7 +246,7 @@ static gboolean grab_focus(GtkWidget *w){
 	return FALSE;
 }
 
-void linphone_gtk_tree_view_set_chat_conversation(const LinphoneAddress *la){
+void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la){
 	GtkTreeIter iter;
 	GtkListStore *store=NULL;
 	GtkWidget *w = linphone_gtk_get_main_window();
@@ -270,7 +269,7 @@ void linphone_gtk_tree_view_set_chat_conversation(const LinphoneAddress *la){
 			linphone_gtk_load_chatroom(cr,la,chat_view);
 		}
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,chat_view));
-		linphone_gtk_create_chat_picture(FALSE);
+		linphone_gtk_friend_list_update_chat_picture();
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(chat_view,"text_entry"));
 	} else {
 		store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)));
@@ -295,7 +294,7 @@ void linphone_gtk_tree_view_set_chat_conversation(const LinphoneAddress *la){
 						linphone_gtk_load_chatroom(cr,uri,chat_view);
 					}
 					gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,chat_view));
-					linphone_gtk_create_chat_picture(FALSE);
+					linphone_gtk_friend_list_update_chat_picture();
 					g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(chat_view,"text_entry"));
 					break;
 				}
@@ -309,17 +308,16 @@ void linphone_gtk_notebook_tab_select(GtkNotebook *notebook,GtkWidget *page,guin
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
 	GtkWidget *chat_view;
 	LinphoneChatRoom *cr=NULL;
-	const LinphoneAddress *addr=(const LinphoneAddress *)data;
-	chat_view=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
-	if(page != NULL){
-		notebook=(GtkNotebook *)linphone_gtk_get_widget(w,"viewswitch");
-		if(gtk_notebook_page_num(notebook,page)==gtk_notebook_page_num(notebook,chat_view)){
-			cr=linphone_core_get_chat_room(linphone_gtk_get_core(),addr);
-			if(cr!=NULL){
+ 	chat_view=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");
+ 	if(page != NULL){
+ 		notebook=(GtkNotebook *)linphone_gtk_get_widget(w,"viewswitch");
+ 		if(gtk_notebook_page_num(notebook,page)==gtk_notebook_page_num(notebook,chat_view)){
+ 			cr=g_object_get_data(G_OBJECT(chat_view),"cr");
+ 			if(cr!=NULL){
 				linphone_chat_room_mark_as_read(cr);
-				linphone_gtk_show_friends();
+ 				linphone_gtk_show_friends();
 			}
-		}
+ 		}
 	}
 }
 
@@ -355,9 +353,8 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 			linphone_gtk_load_chatroom(cr,uri,page);
 		}
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,page));
-		linphone_gtk_create_chat_picture(FALSE);
+		linphone_gtk_friend_list_update_chat_picture();
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
-		g_signal_connect(G_OBJECT(notebook),"switch_page",(GCallback)linphone_gtk_notebook_tab_select,(gpointer)uri);
 	}
 }
 
@@ -809,7 +806,6 @@ void linphone_gtk_show_friends(void){
 		escaped=g_markup_escape_text(uri,-1);
 		gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);
 		g_free(escaped);
-		//linphone_gtk_update_chat_picture();
 		//bi=linphone_friend_get_info(lf);
 		/*if (bi!=NULL && bi->image_data!=NULL){
 			GdkPixbuf *pbuf=
