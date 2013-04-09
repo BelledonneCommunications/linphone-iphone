@@ -874,6 +874,35 @@ typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *contex
 
 /* THE main API */
 
+/**
+ * Define a log handler.
+ *
+ * @ingroup misc
+ *
+ * @param logfunc The function pointer of the log handler.
+ */
+void linphone_core_set_log_handler(OrtpLogFunc logfunc);
+/**
+ * Define a log file.
+ *
+ * @ingroup misc
+ *
+ * If the file pointer passed as an argument is NULL, stdout is used instead.
+ *
+ * @param file A pointer to the FILE structure of the file to write to.
+ */
+void linphone_core_set_log_file(FILE *file);
+/**
+ * Define the log level.
+ *
+ * @ingroup misc
+ *
+ * The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
+ * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
+ *
+ * @param loglevel A bitmask of the log levels to set.
+ */
+void linphone_core_set_log_level(OrtpLogLevel loglevel);
 void linphone_core_enable_logs(FILE *file);
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 void linphone_core_disable_logs(void);
