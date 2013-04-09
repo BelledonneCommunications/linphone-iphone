@@ -343,14 +343,16 @@ struct _LinphoneCallStats {
 	LinphoneUpnpState	upnp_state; /**< State of uPnP processing. */
 	float download_bandwidth; /**<Download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float upload_bandwidth; /**<Download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	float local_late_rate; /**<percentage of packet received too late over last second*/
+	float local_loss_rate; /**<percentage of lost packet over last second*/
 };
 
 /**
  * @}
 **/
 
-const LinphoneCallStats *linphone_call_get_audio_stats(const LinphoneCall *call);
-const LinphoneCallStats *linphone_call_get_video_stats(const LinphoneCall *call);
+const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
+const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 
 
 /** Callback prototype */
