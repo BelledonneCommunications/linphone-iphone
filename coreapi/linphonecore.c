@@ -2181,6 +2181,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (lp_config_needs_commit(lc->config)) {
 			lp_config_sync(lc->config);
 		}
+	}
 }
 
 /**
