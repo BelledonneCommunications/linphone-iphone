@@ -218,6 +218,12 @@
     <ProjectReference Include="..\..\..\..\mediastreamer2\build\vsx\mediastreamer2\mediastreamer2\mediastreamer2.vcxproj">
       <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\msilbc\build\windows\msilbc\msilbc\msilbc.vcxproj">
+      <Project>{072fad20-7007-4da2-b2e7-16ce2b219f67}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mssilk\build\windows\mssilk\mssilk\mssilk.vcxproj">
+      <Project>{36b528f9-fb79-4078-a16b-0a7442581bb7}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\mswasapi\mswasapi\mswasapi\mswasapi.vcxproj">
       <Project>{d22bd217-d0f8-4274-9b3a-f3f35f46482c}</Project>
     </ProjectReference>
