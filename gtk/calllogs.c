@@ -61,7 +61,7 @@ void linphone_gtk_call_log_chat_selected(GtkWidget *w){
 			gtk_tree_model_get(model,&iter,2,&pla,-1);
 			la=(LinphoneAddress*)pla;
 			if (la!=NULL){
-				linphone_gtk_tree_view_set_chat_conversation(la);
+				linphone_gtk_friend_list_set_chat_conversation(la);
 			}
 		}
 	}
@@ -192,8 +192,9 @@ void linphone_gtk_call_log_clear_missed_call(){
 	GtkWidget *box=gtk_hbox_new(FALSE,0);
 	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_REFRESH,GTK_ICON_SIZE_MENU);
 	GtkWidget *l;
+	const gchar*text=gtk_label_get_text(GTK_LABEL(linphone_gtk_get_widget(mw,"label3")));
 	
-	l=gtk_label_new("Recent calls");
+	l=gtk_label_new(text);
 	gtk_box_pack_start(GTK_BOX(box),image,FALSE,FALSE,0);
 	gtk_box_pack_start(GTK_BOX(box),l,FALSE,FALSE,0);
 	gtk_notebook_set_tab_label(notebook,page,box);
@@ -359,6 +360,7 @@ void linphone_gtk_history_row_selected(GtkWidget *treeview){
 
 void linphone_gtk_clear_call_logs(GtkWidget *button){
 	linphone_core_clear_call_logs (linphone_gtk_get_core());
+	linphone_gtk_call_log_clear_missed_call();
 	linphone_gtk_call_log_update(gtk_widget_get_toplevel(button));
 }
 

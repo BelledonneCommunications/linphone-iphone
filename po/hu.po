@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linphone\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-07 12:30+0100\n"
+"POT-Creation-Date: 2013-04-08 16:59+0200\n"
 "PO-Revision-Date: 2013-03-26 19:00+0100\n"
 "Last-Translator: Viktor <viktorbarczi@lavabit.com>\n"
 "Language-Team:  <LL@li.org>\n"
@@ -17,53 +17,75 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=1; plural=1 == 1 ? 0 : 1;\n"
 
-#: ../gtk/calllogs.c:82
+#: ../gtk/calllogs.c:139 ../gtk/friendlist.c:922
+#, c-format
+msgid "Call %s"
+msgstr "%s hívása"
+
+#: ../gtk/calllogs.c:140 ../gtk/friendlist.c:923
+#, c-format
+msgid "Send text to %s"
+msgstr "Szöveg küldése a következőnek: %s"
+
+#: ../gtk/calllogs.c:223
+#, fuzzy, c-format
+msgid "<b>Recent calls (%i)</b>"
+msgstr "<b>vonalban</b>"
+
+#: ../gtk/calllogs.c:300
 msgid "n/a"
 msgstr "-"
 
-#: ../gtk/calllogs.c:85
+#: ../gtk/calllogs.c:303
 msgid "Aborted"
 msgstr "Megszakítva"
 
-#: ../gtk/calllogs.c:88
+#: ../gtk/calllogs.c:306
 msgid "Missed"
 msgstr "Nem fogadott"
 
-#: ../gtk/calllogs.c:91
+#: ../gtk/calllogs.c:309
 msgid "Declined"
 msgstr "Elutasítva"
 
-#: ../gtk/calllogs.c:97
+#: ../gtk/calllogs.c:315
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] "%i perc"
 
-#: ../gtk/calllogs.c:100
+#: ../gtk/calllogs.c:318
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "%i másodperc"
 
-#: ../gtk/calllogs.c:103
-#, c-format
-msgid ""
-"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
-"%s\t%s %s\t"
-msgstr ""
-"<nagy><b>%s</b></nagy>\t<kis><i>%s</i>\t<i>Minőség: %s</i></kis>\n"
-"%s\t%s %s\t"
-
-#: ../gtk/calllogs.c:108
-#, c-format
-msgid ""
-"<big><b>%s</b></big>\t<small><i>%s</i></small>\t\n"
-"%s\t%s"
+#: ../gtk/calllogs.c:321 ../gtk/calllogs.c:327
+#, fuzzy, c-format
+msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
 "<nagy><b>%s</b></nagy>\t<kis><i>%s</i></kis>\t\n"
 "%s\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/main.ui.h:14
+#: ../gtk/calllogs.c:323
+#, fuzzy, c-format
+msgid ""
+"<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
+"%s\t%s\t"
+msgstr ""
+"<nagy><b>%s</b></nagy>\t<kis><i>%s</i>\t<i>Minőség: %s</i></kis>\n"
+"%s\t%s %s\t"
+
+#: ../gtk/calllogs.c:329
+#, fuzzy, c-format
+msgid ""
+"<small><i>%s</i></small>\t\n"
+"%s"
+msgstr ""
+"<nagy><b>%s</b></nagy>\t<kis><i>%s</i></kis>\t\n"
+"%s\t%s"
+
+#: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
 msgstr "Konferencia"
 
@@ -76,31 +98,35 @@ msgstr "én"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nemtalálható a pixmap fájl: %s"
 
-#: ../gtk/main.c:88
+#: ../gtk/chat.c:324 ../gtk/friendlist.c:872
+msgid "Invalid sip contact !"
+msgstr "Érvénytelen sip partner !"
+
+#: ../gtk/main.c:92
 msgid "log to stdout some debug information while running."
 msgstr "Futás közben némi hibakeresési információ az stdout-ra naplózása."
 
-#: ../gtk/main.c:95
+#: ../gtk/main.c:99
 msgid "path to a file to write logs into."
 msgstr "fájl elérési útja, melybe a naplók kerülnek."
 
-#: ../gtk/main.c:102
+#: ../gtk/main.c:106
 msgid "Start linphone with video disabled."
 msgstr "Linphone indítása, videó kikpacsolva. "
 
-#: ../gtk/main.c:109
+#: ../gtk/main.c:113
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Csak a tálcaikon indítása, ne mutassa a fő ablakot."
 
-#: ../gtk/main.c:116
+#: ../gtk/main.c:120
 msgid "address to call right now"
 msgstr "Cím azonnali híváshoz"
 
-#: ../gtk/main.c:123
+#: ../gtk/main.c:127
 msgid "if set automatically answer incoming calls"
 msgstr "Bekapcsolva automatikusan válaszol a bejövő hívásokra"
 
-#: ../gtk/main.c:130
+#: ../gtk/main.c:134
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: c:"
 "\\Program Files\\Linphone)"
@@ -108,12 +134,12 @@ msgstr ""
 "Adjon meg egy munkakönyvtárat (ennek az installációs könyvtárnak kéne "
 "lennie, pl. C:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:510
+#: ../gtk/main.c:515
 #, c-format
 msgid "Call with %s"
 msgstr "Hívás %s -el"
 
-#: ../gtk/main.c:941
+#: ../gtk/main.c:946
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -126,7 +152,7 @@ msgstr ""
 "szeretné adni a partnerlistához?\n"
 "Ha nemmel válaszol, ez a személy átmenetileg tiltólistára kerül."
 
-#: ../gtk/main.c:1018
+#: ../gtk/main.c:1023
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
@@ -135,59 +161,59 @@ msgstr ""
 "Kérem, adja meg jelszavát a következő felhasználónévhez: <i>%s</i>\n"
 "tartomány <i>%s</i>:"
 
-#: ../gtk/main.c:1121
+#: ../gtk/main.c:1126
 msgid "Call error"
 msgstr "Hiba a hívás közben"
 
-#: ../gtk/main.c:1124 ../coreapi/linphonecore.c:3189
+#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3189
 msgid "Call ended"
 msgstr "Hívás vége"
 
-#: ../gtk/main.c:1127 ../coreapi/linphonecore.c:239
+#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:239
 msgid "Incoming call"
 msgstr "Beérkező hívás"
 
-#: ../gtk/main.c:1129 ../gtk/incall_view.c:498 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1134 ../gtk/incall_view.c:497 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Hívás fogadása"
 
-#: ../gtk/main.c:1131 ../gtk/main.ui.h:7
+#: ../gtk/main.c:1136 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Elutasítás"
 
-#: ../gtk/main.c:1137
+#: ../gtk/main.c:1142
 msgid "Call paused"
 msgstr "Hívás várakoztatva"
 
-#: ../gtk/main.c:1137
+#: ../gtk/main.c:1142
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>a következő által: %s</b>"
 
-#: ../gtk/main.c:1186
+#: ../gtk/main.c:1191
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s szerené elidítani a videót. Elfogadja?"
 
-#: ../gtk/main.c:1348
+#: ../gtk/main.c:1353
 msgid "Website link"
 msgstr "Internetes oldal"
 
-#: ../gtk/main.c:1388
+#: ../gtk/main.c:1402
 msgid "Linphone - a video internet phone"
 msgstr "Linphone - internetes videó telefon"
 
-#: ../gtk/main.c:1480
+#: ../gtk/main.c:1494
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Alapértelmezett)"
 
-#: ../gtk/main.c:1782 ../coreapi/callbacks.c:806
+#: ../gtk/main.c:1796 ../coreapi/callbacks.c:810
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Át vagyunk irányítva ide: %s"
 
-#: ../gtk/main.c:1792
+#: ../gtk/main.c:1806
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
@@ -195,60 +221,51 @@ msgstr ""
 "Hangkártya nincs érzékelve ezen a számítógépen.\n"
 "Nem fog tudni hang hívásokat küldeni vagy fogadni."
 
-#: ../gtk/main.c:1896
+#: ../gtk/main.c:1911
 msgid "A free SIP video-phone"
 msgstr "Egy ingyenes SIP video-telefon"
 
-#: ../gtk/friendlist.c:366
+#: ../gtk/friendlist.c:469
 msgid "Add to addressbook"
 msgstr "Hozzáadás címjegyzékhez"
 
-#: ../gtk/friendlist.c:540
+#: ../gtk/friendlist.c:643
 msgid "Presence status"
 msgstr "Jelenlét státusz"
 
-#: ../gtk/friendlist.c:557 ../gtk/propertybox.c:367 ../gtk/contact.ui.h:1
+#: ../gtk/friendlist.c:661 ../gtk/propertybox.c:367 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "Név"
 
-#: ../gtk/friendlist.c:569
+#: ../gtk/friendlist.c:673
 msgid "Call"
 msgstr "Hivás"
 
-#: ../gtk/friendlist.c:574
+#: ../gtk/friendlist.c:678
 msgid "Chat"
 msgstr "Csevegés"
 
-#: ../gtk/friendlist.c:604
+#: ../gtk/friendlist.c:708
 #, c-format
 msgid "Search in %s directory"
 msgstr "Keresés ebben a könyvtárban: %s"
 
-#: ../gtk/friendlist.c:762
-msgid "Invalid sip contact !"
-msgstr "Érvénytelen sip partner !"
-
-#: ../gtk/friendlist.c:807
-#, c-format
-msgid "Call %s"
-msgstr "%s hívása"
-
-#: ../gtk/friendlist.c:808
-#, c-format
-msgid "Send text to %s"
-msgstr "Szöveg küldése a következőnek: %s"
-
-#: ../gtk/friendlist.c:809
+#: ../gtk/friendlist.c:924
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "Kapcsolatinformációk szerkesztése: '%s'"
 
-#: ../gtk/friendlist.c:810
+#: ../gtk/friendlist.c:925
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "'%s' partner törlése"
 
-#: ../gtk/friendlist.c:852
+#: ../gtk/friendlist.c:926
+#, fuzzy, c-format
+msgid "Delete chat history of '%s'"
+msgstr "'%s' partner törlése"
+
+#: ../gtk/friendlist.c:977
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "Új partner hozzáadása ebből a könyvtárból: %s"
@@ -349,22 +366,26 @@ msgstr "norvég"
 msgid "Hebrew"
 msgstr "héber"
 
-#: ../gtk/propertybox.c:847
+#: ../gtk/propertybox.c:781
+msgid "Serbian"
+msgstr ""
+
+#: ../gtk/propertybox.c:848
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr ""
 "Újra kell indítania a linphone-t, hogy az új nyelv kiválasztása érvényre "
 "jusson. "
 
-#: ../gtk/propertybox.c:933
+#: ../gtk/propertybox.c:934
 msgid "None"
 msgstr "Nincs"
 
-#: ../gtk/propertybox.c:937
+#: ../gtk/propertybox.c:938
 msgid "SRTP"
 msgstr "SRTP"
 
-#: ../gtk/propertybox.c:943
+#: ../gtk/propertybox.c:944
 msgid "ZRTP"
 msgstr "ZRTP"
 
@@ -610,105 +631,105 @@ msgstr ""
 msgid "%.3f seconds"
 msgstr "%.3f másodperc"
 
-#: ../gtk/incall_view.c:384 ../gtk/main.ui.h:13
+#: ../gtk/incall_view.c:384 ../gtk/main.ui.h:12
 msgid "Hang up"
 msgstr "Befejezés"
 
-#: ../gtk/incall_view.c:477
+#: ../gtk/incall_view.c:476
 msgid "<b>Calling...</b>"
 msgstr "<b>Hívás folyamatban...</b>"
 
-#: ../gtk/incall_view.c:480 ../gtk/incall_view.c:690
+#: ../gtk/incall_view.c:479 ../gtk/incall_view.c:689
 msgid "00::00::00"
 msgstr "00::00::00"
 
-#: ../gtk/incall_view.c:491
+#: ../gtk/incall_view.c:490
 msgid "<b>Incoming call</b>"
 msgstr "<b>Beérkező hívás</b>"
 
-#: ../gtk/incall_view.c:528
+#: ../gtk/incall_view.c:527
 msgid "good"
 msgstr "jó"
 
-#: ../gtk/incall_view.c:530
+#: ../gtk/incall_view.c:529
 msgid "average"
 msgstr "közepes"
 
-#: ../gtk/incall_view.c:532
+#: ../gtk/incall_view.c:531
 msgid "poor"
 msgstr "gyenge"
 
-#: ../gtk/incall_view.c:534
+#: ../gtk/incall_view.c:533
 msgid "very poor"
 msgstr "nagyon gyenge"
 
-#: ../gtk/incall_view.c:536
+#: ../gtk/incall_view.c:535
 msgid "too bad"
 msgstr "rossz"
 
-#: ../gtk/incall_view.c:537 ../gtk/incall_view.c:553
+#: ../gtk/incall_view.c:536 ../gtk/incall_view.c:552
 msgid "unavailable"
 msgstr "nem elérhető"
 
-#: ../gtk/incall_view.c:652
+#: ../gtk/incall_view.c:651
 msgid "Secured by SRTP"
 msgstr "SRTP-vel titkosítva"
 
-#: ../gtk/incall_view.c:658
+#: ../gtk/incall_view.c:657
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "ZRTP-vel titkosítva - [hitelesítési jel: %s]"
 
-#: ../gtk/incall_view.c:664
+#: ../gtk/incall_view.c:663
 msgid "Set unverified"
 msgstr "Beállítás ellenőrizetlenként"
 
-#: ../gtk/incall_view.c:664 ../gtk/main.ui.h:5
+#: ../gtk/incall_view.c:663 ../gtk/main.ui.h:4
 msgid "Set verified"
 msgstr "Beállítás ellenőrzöttként"
 
-#: ../gtk/incall_view.c:685
+#: ../gtk/incall_view.c:684
 msgid "In conference"
 msgstr "Konferencián"
 
-#: ../gtk/incall_view.c:685
+#: ../gtk/incall_view.c:684
 msgid "<b>In call</b>"
 msgstr "<b>vonalban</b>"
 
-#: ../gtk/incall_view.c:719
+#: ../gtk/incall_view.c:718
 msgid "<b>Paused call</b>"
 msgstr "<b>Várakoztatott hívás</b>"
 
-#: ../gtk/incall_view.c:732
+#: ../gtk/incall_view.c:731
 #, c-format
 msgid "%02i::%02i::%02i"
 msgstr "%02i::%02i::%02i"
 
-#: ../gtk/incall_view.c:749
+#: ../gtk/incall_view.c:748
 msgid "<b>Call ended.</b>"
 msgstr "<b>Hívás vége.</b>"
 
-#: ../gtk/incall_view.c:779
+#: ../gtk/incall_view.c:778
 msgid "Transfer in progress"
 msgstr "Átvitel folyamatban"
 
-#: ../gtk/incall_view.c:782
+#: ../gtk/incall_view.c:781
 msgid "Transfer done."
 msgstr "Átvitel befejezve."
 
-#: ../gtk/incall_view.c:785
+#: ../gtk/incall_view.c:784
 msgid "Transfer failed."
 msgstr "Az átvitel sikertelen."
 
-#: ../gtk/incall_view.c:829
+#: ../gtk/incall_view.c:828
 msgid "Resume"
 msgstr "Visszatérés"
 
-#: ../gtk/incall_view.c:836 ../gtk/main.ui.h:10
+#: ../gtk/incall_view.c:835 ../gtk/main.ui.h:9
 msgid "Pause"
 msgstr "Várakoztatás"
 
-#: ../gtk/incall_view.c:901
+#: ../gtk/incall_view.c:900
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
@@ -717,7 +738,7 @@ msgstr ""
 "<small><i>Felvétel a következőbe\n"
 "%s %s</i></small>"
 
-#: ../gtk/incall_view.c:901
+#: ../gtk/incall_view.c:900
 msgid "(Paused)"
 msgstr "(Várakoztatva)"
 
@@ -738,155 +759,151 @@ msgstr "Küld"
 msgid "End conference"
 msgstr "Konferencia vége"
 
-#: ../gtk/main.ui.h:4
-msgid "label"
-msgstr "címke"
-
-#: ../gtk/main.ui.h:8
+#: ../gtk/main.ui.h:7
 msgid "Record this call to an audio file"
 msgstr "Beszélgetés felvétele hangfájlba"
 
-#: ../gtk/main.ui.h:9
+#: ../gtk/main.ui.h:8
 msgid "Video"
 msgstr "Videó"
 
-#: ../gtk/main.ui.h:11
+#: ../gtk/main.ui.h:10
 msgid "Mute"
 msgstr "Elnémítás"
 
-#: ../gtk/main.ui.h:12
+#: ../gtk/main.ui.h:11
 msgid "Transfer"
 msgstr "Átvitel"
 
-#: ../gtk/main.ui.h:15
+#: ../gtk/main.ui.h:14
 msgid "In call"
 msgstr "vonalban"
 
-#: ../gtk/main.ui.h:16
+#: ../gtk/main.ui.h:15
 msgid "Duration"
 msgstr "Időtartam"
 
-#: ../gtk/main.ui.h:17
+#: ../gtk/main.ui.h:16
 msgid "Call quality rating"
 msgstr "Hívásminőség"
 
-#: ../gtk/main.ui.h:18
+#: ../gtk/main.ui.h:17
 msgid "_Options"
 msgstr "_Beállítások"
 
-#: ../gtk/main.ui.h:19
+#: ../gtk/main.ui.h:18
 msgid "Always start video"
 msgstr "Videó indítása mindig"
 
-#: ../gtk/main.ui.h:20
+#: ../gtk/main.ui.h:19
 msgid "Enable self-view"
 msgstr "Saját nézet"
 
-#: ../gtk/main.ui.h:21
+#: ../gtk/main.ui.h:20
 msgid "_Help"
 msgstr "_Segítség"
 
-#: ../gtk/main.ui.h:22
+#: ../gtk/main.ui.h:21
 msgid "Show debug window"
 msgstr "Hibakeresési ablak mutatása"
 
-#: ../gtk/main.ui.h:23
+#: ../gtk/main.ui.h:22
 msgid "_Homepage"
 msgstr "_Honlap"
 
-#: ../gtk/main.ui.h:24
+#: ../gtk/main.ui.h:23
 msgid "Check _Updates"
 msgstr "Frissítések keresése"
 
-#: ../gtk/main.ui.h:25
+#: ../gtk/main.ui.h:24
 msgid "Account assistant"
 msgstr "Fiók varázsló"
 
-#: ../gtk/main.ui.h:26
+#: ../gtk/main.ui.h:25
 msgid "SIP address or phone number:"
 msgstr "Adja meg a SIP címet vagy a telefonszámot:"
 
-#: ../gtk/main.ui.h:27
+#: ../gtk/main.ui.h:26
 msgid "Initiate a new call"
 msgstr "Új hívás kezdeményezése"
 
-#: ../gtk/main.ui.h:28
+#: ../gtk/main.ui.h:27
 msgid "Contacts"
 msgstr "Partnerek"
 
-#: ../gtk/main.ui.h:29 ../gtk/parameters.ui.h:50
+#: ../gtk/main.ui.h:28 ../gtk/parameters.ui.h:50
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: ../gtk/main.ui.h:30 ../gtk/parameters.ui.h:51
+#: ../gtk/main.ui.h:29 ../gtk/parameters.ui.h:51
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: ../gtk/main.ui.h:31
+#: ../gtk/main.ui.h:30
 msgid "Search"
 msgstr "Keresés"
 
-#: ../gtk/main.ui.h:32
+#: ../gtk/main.ui.h:31
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>Partnerek hozzáadása könyvtárból</b>"
 
-#: ../gtk/main.ui.h:33
+#: ../gtk/main.ui.h:32
 msgid "Add contact"
 msgstr "Partner hozzáadása"
 
-#: ../gtk/main.ui.h:34
+#: ../gtk/main.ui.h:33
 msgid "Recent calls"
 msgstr "Legutóbbi hívások"
 
-#: ../gtk/main.ui.h:35
+#: ../gtk/main.ui.h:34
 msgid "My current identity:"
 msgstr "Jelenlegi identitásom:"
 
-#: ../gtk/main.ui.h:36 ../gtk/tunnel_config.ui.h:7
+#: ../gtk/main.ui.h:35 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
 msgstr "Felhasználónév"
 
-#: ../gtk/main.ui.h:37 ../gtk/tunnel_config.ui.h:8
+#: ../gtk/main.ui.h:36 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
 msgstr "Jelszó"
 
-#: ../gtk/main.ui.h:38
+#: ../gtk/main.ui.h:37
 msgid "Internet connection:"
 msgstr "Internet kapcsolat:"
 
-#: ../gtk/main.ui.h:39
+#: ../gtk/main.ui.h:38
 msgid "Automatically log me in"
 msgstr "Jelentkeztessen be automatikusan"
 
-#: ../gtk/main.ui.h:40
+#: ../gtk/main.ui.h:39
 msgid "Login information"
 msgstr "Bejelentkezési információ"
 
-#: ../gtk/main.ui.h:41
+#: ../gtk/main.ui.h:40
 msgid "<b>Welcome !</b>"
 msgstr "<b>Üdvözöljük !</b>"
 
-#: ../gtk/main.ui.h:42
+#: ../gtk/main.ui.h:41
 msgid "All users"
 msgstr "Minden felhasználó"
 
-#: ../gtk/main.ui.h:43
+#: ../gtk/main.ui.h:42
 msgid "Online users"
 msgstr "Elérhető"
 
-#: ../gtk/main.ui.h:44
+#: ../gtk/main.ui.h:43
 msgid "ADSL"
 msgstr "ADSL"
 
-#: ../gtk/main.ui.h:45
+#: ../gtk/main.ui.h:44
 msgid "Fiber Channel"
 msgstr "Fiber csatorna"
 
-#: ../gtk/main.ui.h:46
+#: ../gtk/main.ui.h:45
 msgid "Default"
 msgstr "Alapértelmezett"
 
-#: ../gtk/main.ui.h:47
+#: ../gtk/main.ui.h:46
 msgid "Delete"
 msgstr "Törlés"
 
@@ -1489,7 +1506,7 @@ msgstr ""
 msgid "Outgoing call"
 msgstr "Kimenő hívás"
 
-#: ../coreapi/linphonecore.c:1314
+#: ../coreapi/linphonecore.c:1312
 msgid "Ready"
 msgstr "Kész"
 
@@ -1544,11 +1561,11 @@ msgstr "Kapcsolódva."
 msgid "Call aborted"
 msgstr "Hívás megszakítva"
 
-#: ../coreapi/linphonecore.c:3351
+#: ../coreapi/linphonecore.c:3357
 msgid "Could not pause the call"
 msgstr "Nem sikerült várakoztatni a hívást"
 
-#: ../coreapi/linphonecore.c:3356
+#: ../coreapi/linphonecore.c:3362
 msgid "Pausing the current call..."
 msgstr "Jelenlegi hívás várakoztatásának aktiválása..."
 
@@ -1649,115 +1666,115 @@ msgstr ""
 "Így kéne kinéznie: sip:felhasznalonev@proxytartomany, például sip:"
 "aladar@pelda.hu"
 
-#: ../coreapi/proxy.c:1068
+#: ../coreapi/proxy.c:1069
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nem sikerült belépni ezzel: %s"
 
-#: ../coreapi/callbacks.c:283
+#: ../coreapi/callbacks.c:286
 msgid "Remote ringing."
 msgstr "Távoli csengés."
 
-#: ../coreapi/callbacks.c:303
+#: ../coreapi/callbacks.c:306
 msgid "Remote ringing..."
 msgstr "Távoli csengés..."
 
-#: ../coreapi/callbacks.c:314
+#: ../coreapi/callbacks.c:317
 msgid "Early media."
 msgstr "Korai médiák."
 
-#: ../coreapi/callbacks.c:365
+#: ../coreapi/callbacks.c:368
 #, c-format
 msgid "Call with %s is paused."
 msgstr "A hívás a következővel: %s várakoztatva"
 
-#: ../coreapi/callbacks.c:378
+#: ../coreapi/callbacks.c:381
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "%s fogadta a hívást - várakoztatva."
 
-#: ../coreapi/callbacks.c:389
+#: ../coreapi/callbacks.c:392
 msgid "Call resumed."
 msgstr "Hívás visszatért"
 
-#: ../coreapi/callbacks.c:394
+#: ../coreapi/callbacks.c:397
 #, c-format
 msgid "Call answered by %s."
 msgstr "%s válaszolt a hívásra."
 
-#: ../coreapi/callbacks.c:409
+#: ../coreapi/callbacks.c:412
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 "Nem kompatibilis, ellenőrizze a kódek- vagy a biztonsági beállításokat..."
 
-#: ../coreapi/callbacks.c:457
+#: ../coreapi/callbacks.c:460
 msgid "We have been resumed."
 msgstr "Visszatértünk."
 
-#: ../coreapi/callbacks.c:466
+#: ../coreapi/callbacks.c:469
 msgid "We are paused by other party."
 msgstr "Megállítva a másik fél által."
 
-#: ../coreapi/callbacks.c:472
+#: ../coreapi/callbacks.c:475
 msgid "Call is updated by remote."
 msgstr "A hívás távolról frissítve."
 
-#: ../coreapi/callbacks.c:541
+#: ../coreapi/callbacks.c:544
 msgid "Call terminated."
 msgstr "A hívás befejezve."
 
-#: ../coreapi/callbacks.c:552
+#: ../coreapi/callbacks.c:555
 msgid "User is busy."
 msgstr "A felhasználó foglalt."
 
-#: ../coreapi/callbacks.c:553
+#: ../coreapi/callbacks.c:556
 msgid "User is temporarily unavailable."
 msgstr "A felhasználó ideiglenesen nem elérhető"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:555
+#: ../coreapi/callbacks.c:558
 msgid "User does not want to be disturbed."
 msgstr "A felhasználó nem akarja, hogy zavarják."
 
-#: ../coreapi/callbacks.c:556
+#: ../coreapi/callbacks.c:559
 msgid "Call declined."
 msgstr "Hívás elutasítva"
 
-#: ../coreapi/callbacks.c:568
+#: ../coreapi/callbacks.c:571
 msgid "No response."
 msgstr "Nincs válasz."
 
-#: ../coreapi/callbacks.c:572
+#: ../coreapi/callbacks.c:575
 msgid "Protocol error."
 msgstr "Protokol hiba."
 
-#: ../coreapi/callbacks.c:588
+#: ../coreapi/callbacks.c:591
 msgid "Redirected"
 msgstr "Átirányítva"
 
-#: ../coreapi/callbacks.c:624
+#: ../coreapi/callbacks.c:627
 msgid "Incompatible media parameters."
 msgstr "Nem kompatibilis médiajellemzők."
 
-#: ../coreapi/callbacks.c:630
+#: ../coreapi/callbacks.c:633
 msgid "Call failed."
 msgstr "Nem sikerült a hívás."
 
-#: ../coreapi/callbacks.c:733
+#: ../coreapi/callbacks.c:737
 #, c-format
 msgid "Registration on %s successful."
 msgstr "A regisztáció a %s -n sikerült."
 
-#: ../coreapi/callbacks.c:734
+#: ../coreapi/callbacks.c:738
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "A kiregisztrálás kész a következőn: %s ."
 
-#: ../coreapi/callbacks.c:754
+#: ../coreapi/callbacks.c:758
 msgid "no response timeout"
 msgstr "időtúllépés után nincs válasz"
 
-#: ../coreapi/callbacks.c:757
+#: ../coreapi/callbacks.c:761
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "A regisztáció a %s -n nem sikerült: %s"
@@ -1767,11 +1784,14 @@ msgstr "A regisztáció a %s -n nem sikerült: %s"
 msgid "Authentication token is %s"
 msgstr "Hitelesítési jel: %s"
 
-#: ../coreapi/linphonecall.c:2314
+#: ../coreapi/linphonecall.c:2319
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Van %i nem fogadott hivás."
+
+#~ msgid "label"
+#~ msgstr "címke"
 
 #~ msgid "Chat with %s"
 #~ msgstr "Chat-elés %s -el"
