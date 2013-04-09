@@ -1233,8 +1233,8 @@ LINPHONE_PUBLIC	void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 const char *linphone_core_get_ring(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno);
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno);
-void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
-const char *linphone_core_get_root_ca(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_root_ca(LinphoneCore *lc, const char *path);
+LINPHONE_PUBLIC const char *linphone_core_get_root_ca(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_ringback(LinphoneCore *lc, const char *path);
 const char * linphone_core_get_ringback(const LinphoneCore *lc);
 
