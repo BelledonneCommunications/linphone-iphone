@@ -61,8 +61,9 @@ public class Xml2Lpc {
 	
 	// Load library
 	static {
-		try {
-			System.loadLibrary("xml2");
+		try { 
+			new Xml2Lpc();
+			//System.loadLibrary("xml2");
 			//System.loadLibrary("xml2lpc");
 			mAvailable = true;
 		} catch (Throwable e) {
