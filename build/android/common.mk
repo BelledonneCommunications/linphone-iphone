@@ -97,6 +97,11 @@ LOCAL_STATIC_LIBRARIES := \
 	libortp \
 	libbellesip \
 	libgsm 
+ifeq ($(BUILD_REMOTE_PROVISIONING),1)
+LOCAL_STATIC_LIBRARIES += \
+	libxml2lpc \
+	liblpc2xml
+endif
 
 ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
