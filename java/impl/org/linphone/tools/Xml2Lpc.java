@@ -63,7 +63,7 @@ public class Xml2Lpc {
 	static {
 		try {
 			System.loadLibrary("xml2");
-			System.loadLibrary("xml2lpc");
+			//System.loadLibrary("xml2lpc");
 			mAvailable = true;
 		} catch (Throwable e) {
 			mAvailable = false;
