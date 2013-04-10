@@ -202,6 +202,16 @@ else
 		LOCAL_STATIC_LIBRARIES += libsrtp-static
 	endif
 endif
+ifeq ($(BUILD_REMOTE_PROVISIONING),1)
+LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
+			../tools/xml2lpc_jni.cc \
+			../tools/lpc2xml.c \
+        		../tools/lpc2xml_jni.cc 
+LOCAL_C_INCLUDES += \
+	$(LOCAL_PATH)/../../externals/libxml2/include \
+	$(LOCAL_PATH)/../../externals/build/libxml2 
+LOCAL_STATIC_LIBRARIES += libxml2
+endif
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
