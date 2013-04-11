@@ -72,7 +72,7 @@ extern "C" {
  * @param filename the filename of the config file to read to fill the instantiated LpConfig
  * @see lp_config_new_with_factory
  */
-LpConfig * lp_config_new(const char *filename);
+LINPHONE_PUBLIC LpConfig * lp_config_new(const char *filename);
 
 /**
  * Instantiates a LpConfig object from a user config file and a factory config file.
@@ -86,7 +86,7 @@ LpConfig * lp_config_new(const char *filename);
  * Therefore the configuration parameters defined in the user config file will be overwritten by the parameters
  * defined in the factory config file.
  */
-LpConfig * lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename);
+LINPHONE_PUBLIC LpConfig * lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename);
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 /**

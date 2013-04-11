@@ -936,7 +936,7 @@ LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable
  *        callbacks) using linphone_core_get_user_data().
  * @see linphone_core_new
 **/
-LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata);
+LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata);
 
 /* function to be periodically called in a main loop */
 /* For ICE to work properly it should be called every 20ms */
