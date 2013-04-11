@@ -1338,14 +1338,14 @@ extern "C" jlong Java_org_linphone_core_LinphoneAddressImpl_newLinphoneAddressIm
 																					,jobject  thiz
 																					,jstring juri
 																					,jstring jdisplayName) {
-	const char* uri = env->GetStringUTFChars(juri, NULL);
+	const char* uri = juri?env->GetStringUTFChars(juri, NULL):NULL;
 	LinphoneAddress* address = linphone_address_new(uri);
 	if (jdisplayName && address) {
 		const char* displayName = env->GetStringUTFChars(jdisplayName, NULL);
 		linphone_address_set_display_name(address,displayName);
 		env->ReleaseStringUTFChars(jdisplayName, displayName);
 	}
-	env->ReleaseStringUTFChars(juri, uri);
+	if (uri) env->ReleaseStringUTFChars(juri, uri);
 
 	return  (jlong) address;
 }
@@ -1409,6 +1409,22 @@ extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDisplayName(JNIEnv
 	const char* displayName = jdisplayName!= NULL?env->GetStringUTFChars(jdisplayName, NULL):NULL;
 	linphone_address_set_display_name((LinphoneAddress*)address,displayName);
 	if (displayName != NULL) env->ReleaseStringUTFChars(jdisplayName, displayName);
+}
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setUserName(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong address
+																		,jstring juserName) {
+	const char* userName = juserName!= NULL?env->GetStringUTFChars(juserName, NULL):NULL;
+	linphone_address_set_username((LinphoneAddress*)address,userName);
+	if (userName != NULL) env->ReleaseStringUTFChars(juserName, userName);
+}
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDomain(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong address
+																		,jstring jdomain) {
+	const char* domain = jdomain!= NULL?env->GetStringUTFChars(jdomain, NULL):NULL;
+	linphone_address_set_domain((LinphoneAddress*)address,domain);
+	if (domain != NULL) env->ReleaseStringUTFChars(jdomain, domain);
 }
 
 
