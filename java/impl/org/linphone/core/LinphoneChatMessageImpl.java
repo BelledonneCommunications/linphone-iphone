@@ -67,6 +67,6 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	}
 	
 	public long getTime() {
-		return getTime(nativePtr);
+		return getTime(nativePtr) * 1000; // Need milliseconds, not seconds
 	}
 }
