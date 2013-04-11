@@ -211,19 +211,23 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 }
 
 LpConfig * lp_config_new(const char *filename){
+	return lp_config_new_with_factory(filename, NULL);
+}
+
+LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	if (filename!=NULL){
-		ms_message("Using (r/w) config information from %s", filename);
-		lpconfig->filename=ortp_strdup(filename);
-		lpconfig->file=fopen(filename,"r+");
+	if (config_filename!=NULL){
+		ms_message("Using (r/w) config information from %s", config_filename);
+		lpconfig->filename=ortp_strdup(config_filename);
+		lpconfig->file=fopen(config_filename,"r+");
 		if (lpconfig->file!=NULL){
 			struct stat fileStat;
 			lp_config_parse(lpconfig,lpconfig->file);
 			fclose(lpconfig->file);
 #if !defined(_WIN32_WCE)
-			if ((stat(filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
+			if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
 				/* make existing configuration files non-group/world-accessible */
-				if (chmod(filename, S_IRUSR | S_IWUSR) == -1) {
+				if (chmod(config_filename, S_IRUSR | S_IWUSR) == -1) {
 					ms_warning("unable to correct permissions on "
 					"configuration file: %s", strerror(errno));
 				}
@@ -232,6 +236,9 @@ LpConfig * lp_config_new(const char *filename){
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
 		}
+	}
+	if (factory_config_filename != NULL) {
+		lp_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
 }
