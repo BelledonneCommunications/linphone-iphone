@@ -218,6 +218,9 @@
     <ProjectReference Include="..\..\..\..\mediastreamer2\build\vsx\mediastreamer2\mediastreamer2\mediastreamer2.vcxproj">
       <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\msamr\build\windows\msamr\msamr\msamr.vcxproj">
+      <Project>{9924ac72-f96c-4e56-94d9-2b025da43c6b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\msilbc\build\windows\msilbc\msilbc\msilbc.vcxproj">
       <Project>{072fad20-7007-4da2-b2e7-16ce2b219f67}</Project>
     </ProjectReference>
