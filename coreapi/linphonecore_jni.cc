@@ -1871,6 +1871,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getPeerAddress(J
 	return (jlong) linphone_chat_message_get_peer_address((LinphoneChatMessage*)ptr);
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getTime(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong) linphone_chat_message_get_time((LinphoneChatMessage*)ptr);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
