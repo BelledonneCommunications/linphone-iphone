@@ -106,4 +106,10 @@ public interface LinphoneChatMessage {
 	 * @return the value of the header, or null if not found.
 	 */
 	String  getCustomHeader(String name);
+	
+	/**
+	 * Gets the time at which the message was sent
+	 * @return the time in milliseconds
+	 */
+	long getTime();
 }
