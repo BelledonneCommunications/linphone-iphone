@@ -3269,14 +3269,26 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	{
 		call = the_call;
 	}
+	switch (call->state) {
+	case LinphoneCallReleased:
+	case LinphoneCallEnd:
+		ms_warning("No need to terminate a call [%p] in sate [%s]",call,linphone_call_state_to_string(call->state));
+		return -1;
+	case LinphoneCallIncomingReceived:
+	case LinphoneCallIncomingEarlyMedia:
+		return linphone_core_decline_call(lc,call,LinphoneReasonDeclined);
+	case LinphoneCallOutgoingInit: {
+			/* In state OutgoingInit, op has to be destroyed */
+			sal_op_release(call->op);
+			call->op = NULL;
+			break;
+		}
 
-	if (call->state != LinphoneCallOutgoingInit)
+	default:
 		sal_call_terminate(call->op);
-	else {
-		/* In state OutgoingInit, op has to be destroyed */
-		sal_op_release(call->op);
-		call->op = NULL;
+		break;
 	}
+
 	terminate_call(lc,call);
 	return 0;
 }
