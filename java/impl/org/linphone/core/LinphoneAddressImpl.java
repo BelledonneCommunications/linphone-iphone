@@ -30,6 +30,8 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native String getDomain(long ptr);
 	private native String toUri(long ptr);
 	private native void setDisplayName(long ptr,String name);
+	private native void setDomain(long ptr,String domain);
+	private native void setUserName(long ptr,String username);
 	private native String toString(long ptr);
 	
 	protected LinphoneAddressImpl(String identity)  {
@@ -37,7 +39,9 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	}
 	
 	protected LinphoneAddressImpl(String username,String domain,String displayName)  {
-		nativePtr = newLinphoneAddressImpl("sip:"+username+"@"+domain, displayName);
+		nativePtr = newLinphoneAddressImpl(null, displayName);
+		this.setUserName(username);
+		this.setDomain(domain);
 	}
 	protected LinphoneAddressImpl(long aNativePtr,boolean javaOwnPtr)  {
 		nativePtr = aNativePtr;
@@ -85,7 +89,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 		return getPortInt();
 	}
 	public void setDomain(String domain) {
-		throw new RuntimeException("Not implemented");
+		setDomain(nativePtr,domain);
 	}
 	public void setPort(String port) {
 		throw new RuntimeException("Not implemented");
@@ -94,7 +98,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 		throw new RuntimeException("Not implemented");
 	}
 	public void setUserName(String username) {
-		throw new RuntimeException("Not implemented");
+		setUserName(nativePtr,username);
 	}
  
 }
