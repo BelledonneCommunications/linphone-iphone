@@ -1226,11 +1226,11 @@ static void misc_config_read (LinphoneCore *lc) {
 
 
 
-static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, const char *config_path,
-    const char *factory_config_path, void * userdata)
+static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata)
 {
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 	memset (lc, 0, sizeof (LinphoneCore));
+	lc->config=config;
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
 
@@ -1307,10 +1307,6 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	lc->msevq=ms_event_queue_new();
 	ms_set_global_event_queue(lc->msevq);
 
-	lc->config=lp_config_new(config_path);
-	if (factory_config_path)
-		lp_config_read_file(lc->config,factory_config_path);
-
 	lc->sal=sal_init();
 
 	sal_set_user_pointer(lc->sal,lc);
@@ -1357,13 +1353,19 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
  *        It is OPTIONAL, use NULL if unneeded.
  * @param userdata an opaque user pointer that can be retrieved at any time (for example in
  *        callbacks) using linphone_core_get_user_data().
- *
+ * @see linphone_core_new_with_config
 **/
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config_path, void * userdata)
 {
-	LinphoneCore *core=ms_new(LinphoneCore,1);
-	linphone_core_init(core,vtable,config_path, factory_config_path, userdata);
+	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
+	return linphone_core_new_with_config(vtable, config, userdata);
+}
+
+LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata)
+{
+	LinphoneCore *core = ms_new(LinphoneCore, 1);
+	linphone_core_init(core, vtable, config, userdata);
 	return core;
 }
 
