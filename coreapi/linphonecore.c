@@ -1219,9 +1219,8 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 }
 static void misc_config_read (LinphoneCore *lc) {
 	LpConfig *config=lc->config;
-    lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
-    lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
-	linphone_core_set_log_level((OrtpLogLevel)lp_config_get_int(config,"misc","log_level",0));
+	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",15);
+	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
 }
 
 
@@ -2183,9 +2182,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	if (one_second_elapsed) {
-		if (ortp_get_log_level_mask() != lp_config_get_int(lc->config, "misc", "log_level", 0)) {
-			lp_config_set_int(lc->config, "misc", "log_level", ortp_get_log_level_mask());
-		}
 		if (lp_config_needs_commit(lc->config)) {
 			lp_config_sync(lc->config);
 		}

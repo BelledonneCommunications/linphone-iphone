@@ -475,7 +475,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->op=sal_op_new(lc->sal);
 	sal_op_set_user_pointer(call->op,call);
 	call->core=lc;
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(to),call->localip);
+	linphone_core_get_local_ip(lc,NULL,call->localip);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
 	sal_op_set_custom_header(call->op,call->params.custom_headers);
@@ -534,7 +534,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	linphone_address_clean(from);
-	linphone_core_get_local_ip(lc,linphone_address_get_domain(from),call->localip);
+	linphone_core_get_local_ip(lc,NULL,call->localip);
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);

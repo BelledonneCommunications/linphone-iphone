@@ -8,6 +8,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native String getExternalBodyUrl(long ptr);
 	private native void setExternalBodyUrl(long ptr, String url);
 	private native long getFrom(long ptr);
+	private native long getTime(long ptr);
 	
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -63,5 +64,9 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	@Override
 	public String getCustomHeader(String name) {
 		return getCustomHeader(nativePtr,name);
+	}
+	
+	public long getTime() {
+		return getTime(nativePtr);
 	}
 }
