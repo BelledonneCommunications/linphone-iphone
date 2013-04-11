@@ -578,7 +578,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
     }
 	[chat setDirection:[NSNumber numberWithInt:1]];
-    [chat setTime:[NSDate date]];
+    [chat setTime:[NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(msg)]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
