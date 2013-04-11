@@ -81,23 +81,28 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
-#ifdef WIN32
+static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-static inline char *my_ctime_r(const time_t *t, char *buf){
-	strcpy(buf,ctime(t));
-	return buf;
+static void msg_add_current_date(osip_message_t *msg){
+        char tmp[64]={0};
+        time_t curtime=time(NULL);
+        struct tm *ret;
+#ifndef WIN32
+        struct tm gmt;
+        ret=gmtime_r(&curtime,&gmt);
+#else
+        ret=gmtime(&curtime);
+#endif
+        /*cannot use strftime because it is locale dependant*/
+        snprintf(tmp,sizeof(tmp)-1,"%s, %i %s %i %02i:%02i:%02i GMT",
+                 days[ret->tm_wday],ret->tm_mday,months[ret->tm_mon],1900+ret->tm_year,ret->tm_hour,ret->tm_min,ret->tm_sec);
+        osip_message_replace_header(msg,"Date",tmp);
 }
 
-#else
-#define my_ctime_r ctime_r
-#endif
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
-	char t[26];
-	time_t curtime=time(NULL);
-	
-	my_ctime_r(&curtime,t);
 
 	if(op->cid == -1)
 	{
@@ -113,7 +118,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
 			sal_exosip_add_custom_headers(sip,op->base.custom_headers);
-			osip_message_set_date(sip,t);
+			msg_add_current_date(sip);
 			osip_message_set_content_type(sip,content_type);
 			if (msg) osip_message_set_body(sip,msg,strlen(msg));
 			sal_add_other(op->base.root,op,sip);
@@ -136,7 +141,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			return -1;
 		}
 		sal_exosip_add_custom_headers(sip,op->base.custom_headers);
-		osip_message_set_date(sip,t);
+		msg_add_current_date(sip);
 		osip_message_set_content_type(sip,content_type);
 		if (msg) osip_message_set_body(sip,msg,strlen(msg));
 		eXosip_call_send_request(op->did,sip);
