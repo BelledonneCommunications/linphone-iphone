@@ -726,7 +726,7 @@ static void register_success(SalOp *op, bool_t registered){
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
 	char *msg;
 	
-	if (cfg->deletion_date!=0){
+	if (!cfg || cfg->deletion_date!=0){
 		ms_message("Registration success for removed proxy config, ignored");
 		return;
 	}

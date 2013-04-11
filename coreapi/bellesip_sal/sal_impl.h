@@ -55,13 +55,21 @@ typedef enum SalOpDir {
 	SalOpDirIncoming=0
 	,SalOpDirOutgoing
 }SalOpDir_t;
+typedef enum SalOpType {
+	SalOpUnknown,
+	SalOpRegister,
+	SalOpCall,
+	SalOpMessage,
+	SalOpPresence
+}SalOpType_t;
+const char* sal_op_type_to_string(const SalOpType_t type);
 
 struct SalOp{
 	SalOpBase base;
 	belle_sip_listener_callbacks_t callbacks;
 	belle_sip_client_transaction_t *pending_auth_transaction;
 	belle_sip_server_transaction_t* pending_server_trans;
-	belle_sip_client_transaction_t* pending_inv_client_trans;
+	belle_sip_client_transaction_t* pending_client_trans;
 	SalAuthInfo* auth_info;
 	belle_sip_refresher_t*  registration_refresher;
 	bool_t sdp_offering;
@@ -76,6 +84,7 @@ struct SalOp{
 	SalOpDir_t dir;
 	belle_sip_refresher_t* refresher;
 	int ref;
+	SalOpType_t type;
 };
 
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
@@ -108,4 +117,7 @@ void sal_op_message_fill_cbs(SalOp*op);
 /*call transfert*/
 void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event);
 void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event);
+/*create SalAuthInfo by copying username and realm from suth event*/
+SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
+void sal_add_pending_auth(Sal *sal, SalOp *op);
 #endif /* SAL_IMPL_H_ */

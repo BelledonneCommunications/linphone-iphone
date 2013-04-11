@@ -573,6 +573,7 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 	op->callbacks.process_transaction_terminated=presence_process_transaction_terminated;
 	op->callbacks.process_request_event=presence_process_request_event;
 	op->callbacks.process_dialog_terminated=presence_process_dialog_terminated;
+	op->type=SalOpPresence;
 }
 
 /*presence publish */

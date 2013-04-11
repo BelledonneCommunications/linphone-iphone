@@ -95,7 +95,7 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,late_auth_info?1:0);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
 
 }

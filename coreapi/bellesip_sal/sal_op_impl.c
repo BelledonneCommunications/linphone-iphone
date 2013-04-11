@@ -23,33 +23,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new0(SalOp,1);
 	__sal_op_init(op,sal);
+	op->type=SalOpUnknown;
 	sal_op_ref(op);
 	return op;
 }
 void sal_op_release(SalOp *op){
 	op->state=SalOpStateTerminated;
+	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn not mean freeing op. Make sure back pointer will not be used later*/
+	if (op->registration_refresher) belle_sip_refresher_stop(op->registration_refresher);
+	if (op->refresher) belle_sip_refresher_stop(op->refresher);
 	sal_op_unref(op);
 }
 void sal_op_release_impl(SalOp *op){
-	ms_message("Destroying op [%p]",op);
+	ms_message("Destroying op [%p] of type [%s]",op,sal_op_type_to_string(op->type));
 	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
 	if (op->registration_refresher) {
 		belle_sip_refresher_stop(op->registration_refresher);
 		belle_sip_object_unref(op->registration_refresher);
+		op->registration_refresher=NULL;
 	}
 	if(op->replaces) belle_sip_object_unref(op->replaces);
 	if(op->referred_by) belle_sip_object_unref(op->referred_by);
 
-	if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
+	if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
 	__sal_op_free(op);
 	return ;
 }
 
 void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
-	/*for sure auth info will be accesible from the provider*/
-	sal_process_authentication(op);
+	if (op->type == SalOpRegister) {
+		/*Registration authenticate is just about registering again*/
+		sal_register_refresh(op,-1);
+	}else {
+		/*for sure auth info will be accesible from the provider*/
+		sal_process_authentication(op);
+	}
 	return ;
 }
 
@@ -165,10 +175,10 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),sal_op_ref(op));
-	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0) {
-		if (op->pending_inv_client_trans) belle_sip_object_unref(op->pending_inv_client_trans);
-		op->pending_inv_client_trans=client_transaction; /*update pending inv for being able to cancel*/
-		belle_sip_object_ref(op->pending_inv_client_trans);
+	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0 ||  strcmp("REGISTER",belle_sip_request_get_method(request))==0) {
+		if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
+		op->pending_client_trans=client_transaction; /*update pending inv for being able to cancel*/
+		belle_sip_object_ref(op->pending_client_trans);
 	}
 	if (add_contact) {
 		contact = sal_op_create_contact(op,belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_from_t));

@@ -151,4 +151,5 @@ void sal_op_message_fill_cbs(SalOp*op) {
 	op->callbacks.process_response_event=process_response_event;
 	op->callbacks.process_timeout=process_timeout;
 	op->callbacks.process_request_event=process_request_event;
+	op->type=SalOpMessage;
 }

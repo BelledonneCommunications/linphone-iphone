@@ -183,7 +183,7 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 static void cancelling_invite(SalOp* op ){
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE requets from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
-	cancel = belle_sip_client_transaction_create_cancel(op->pending_inv_client_trans);
+	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
@@ -527,6 +527,7 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 int sal_call(SalOp *op, const char *from, const char *to){
 	belle_sip_request_t* invite;
 	op->dir=SalOpDirOutgoing;
+
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
 
@@ -553,6 +554,7 @@ void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_transaction_terminated=call_process_transaction_terminated;
 	op->callbacks.process_request_event=process_request_event;
 	op->callbacks.process_dialog_terminated=process_dialog_terminated;
+	op->type=SalOpCall;
 }
 static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* response) {
 	if (op->base.local_media){
@@ -702,8 +704,8 @@ int sal_call_terminate(SalOp *op){
 			if (op->dir == SalOpDirIncoming) {
 				sal_call_decline(op, SalReasonDeclined,NULL);
 				op->state=SalOpStateTerminated;
-			} else if (op->pending_inv_client_trans
-					&& belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_inv_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
+			} else if (op->pending_client_trans
+					&& belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
 				cancelling_invite(op);
 				break;
 			} else {

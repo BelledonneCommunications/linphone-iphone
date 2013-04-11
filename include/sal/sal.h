@@ -478,6 +478,7 @@ int sal_call_notify_refer_state(SalOp *h, SalOp *newcall);
 
 /*Registration*/
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
+/*refresh a register, -1 mean use the last known value*/
 int sal_register_refresh(SalOp *op, int expires);
 int sal_unregister(SalOp *h);
 

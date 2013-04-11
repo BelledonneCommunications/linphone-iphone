@@ -56,7 +56,7 @@ void sal_enable_logs(){
 void sal_disable_logs() {
 	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
 }
-static void sal_add_pending_auth(Sal *sal, SalOp *op){
+void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
 		sal->pending_auths=ms_list_append(sal->pending_auths,sal_op_ref(op));
 	}
@@ -99,9 +99,7 @@ void sal_process_authentication(SalOp *op) {
 		}
 		if (op->auth_info) sal_auth_info_delete(op->auth_info);
 		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
-		op->auth_info=sal_auth_info_new();
-		op->auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(auth_event)) ;
-		op->auth_info->username = ms_strdup(belle_sip_auth_event_get_username(auth_event)) ;
+		op->auth_info=sal_auth_info_create(auth_event);
 		belle_sip_list_free_with_data(auth_list,(void (*)(void*))belle_sip_auth_event_destroy);
 	}
 
@@ -639,4 +637,21 @@ void sal_set_dns_timeout(Sal* sal,int timeout) {
 }
 int sal_get_dns_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_dns_timeout(sal->stack);
+}
+
+SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
+	SalAuthInfo* auth_info = sal_auth_info_new();
+	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event)) ;
+	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event)) ;
+	return auth_info;
+}
+const char* sal_op_type_to_string(const SalOpType_t type) {
+	switch(type) {
+	case SalOpRegister: return "SalOpRegister";
+	case SalOpCall: return "SalOpCall";
+	case SalOpMessage: return "SalOpMessage";
+	case SalOpPresence: return "SalOpPresence";
+	default:
+		return "SalOpUnknown";
+	}
 }
