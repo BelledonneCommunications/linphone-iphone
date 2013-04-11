@@ -65,7 +65,29 @@ extern "C" {
 	(config) ? (lp_config_get_float(config, "default_values", name, default)) : (default)
 
 
+/**
+ * Instantiates a LpConfig object from a user config file.
+ *
+ * @ingroup misc
+ * @param filename the filename of the config file to read to fill the instantiated LpConfig
+ * @see lp_config_new_with_factory
+ */
 LpConfig * lp_config_new(const char *filename);
+
+/**
+ * Instantiates a LpConfig object from a user config file and a factory config file.
+ *
+ * @ingroup misc
+ * @param config_filename the filename of the user config file to read to fill the instantiated LpConfig
+ * @param factory_config_filename the filename of the factory config file to read to fill the instantiated LpConfig
+ * @see lp_config_new
+ *
+ * The user config file is read first to fill the LpConfig and then the factory config file is read.
+ * Therefore the configuration parameters defined in the user config file will be overwritten by the parameters
+ * defined in the factory config file.
+ */
+LpConfig * lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename);
+
 int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 /**
  * Retrieves a configuration item as a string, given its section, key, and default value.
