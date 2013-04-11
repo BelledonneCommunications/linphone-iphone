@@ -168,7 +168,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 	int valid_count = 0;
 	char tmp[256], tmp2[256];
 	int nb=0;
-
+	SalStreamDir stream_dir=SalStreamSendRecv;
 	desc->n_active_streams = 0;
 	desc->n_total_streams = 0;
 
@@ -178,6 +178,18 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 	if (belle_sdp_session_description_get_bandwidth(session_desc,"AS") >0) {
 		desc->bandwidth=belle_sdp_session_description_get_bandwidth(session_desc,"AS");
 	}
+	/*in some very rare case, session attribute may set stream dir*/
+	if (belle_sdp_session_description_get_attribute(session_desc,"sendrecv")) {
+		stream_dir=SalStreamSendRecv;
+	} else if (belle_sdp_session_description_get_attribute(session_desc,"sendonly")) {
+		stream_dir=SalStreamSendOnly;
+	} else if (belle_sdp_session_description_get_attribute(session_desc,"recvonly")) {
+		stream_dir=SalStreamRecvOnly;
+	} else if (belle_sdp_session_description_get_attribute(session_desc,"inactive")) {
+		stream_dir=SalStreamInactive;
+	}
+
+
 	for(media_desc_it=belle_sdp_session_description_get_media_descriptions(session_desc)
 			;media_desc_it!=NULL
 			;media_desc_it=media_desc_it->next) {
@@ -229,7 +241,7 @@ int sdp_to_media_description(belle_sdp_session_description_t  *session_desc, Sal
 		} else if (belle_sdp_media_description_get_attribute(media_desc,"inactive")) {
 			stream->dir=SalStreamInactive;
 		} else {
-			stream->dir=SalStreamSendRecv;
+			stream->dir=stream_dir; /*takes default value if not present*/
 		}
 
 		/* for each payload type */
