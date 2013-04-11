@@ -46,8 +46,16 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libilbc-rfc3951", "..\..\..\..\libilbc-rfc3951\build\windows\libilbc-rfc3951\libilbc-rfc3951\libilbc-rfc3951.vcxproj", "{8E216BF3-2DD8-4794-8E97-B1AED301ED4D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmsilbc", "..\..\..\..\msilbc\build\windows\msilbc\msilbc\msilbc.vcxproj", "{072FAD20-7007-4DA2-B2E7-16CE2B219F67}"
+	ProjectSection(ProjectDependencies) = postProject
+		{027BAD0E-9179-48C1-9733-7AA7E2C2EC70} = {027BAD0E-9179-48C1-9733-7AA7E2C2EC70}
+		{FFC7B532-0502-4D88-AC98-9E89071CBC97} = {FFC7B532-0502-4D88-AC98-9E89071CBC97}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmssilk", "..\..\..\..\mssilk\build\windows\mssilk\mssilk\mssilk.vcxproj", "{36B528F9-FB79-4078-A16B-0A7442581BB7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{027BAD0E-9179-48C1-9733-7AA7E2C2EC70} = {027BAD0E-9179-48C1-9733-7AA7E2C2EC70}
+		{FFC7B532-0502-4D88-AC98-9E89071CBC97} = {FFC7B532-0502-4D88-AC98-9E89071CBC97}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
