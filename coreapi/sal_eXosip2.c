@@ -1771,6 +1771,26 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
+static int utc_offset() {
+	time_t ref = 24 * 60 * 60L;
+	struct tm * timeptr;
+	int gmtime_hours;
+
+	/* get the local reference time for Jan 2, 1900 00:00 UTC */
+	timeptr = localtime(&ref);
+	gmtime_hours = timeptr->tm_hour;
+
+	/* if the local time is the "day before" the UTC, subtract 24 hours
+	from the hours to get the UTC offset */
+	if (timeptr->tm_mday < 2) gmtime_hours -= 24;
+
+	return gmtime_hours;
+}
+
+time_t mktime_utc(struct tm *timeptr) {
+	return mktime(timeptr) + utc_offset() * 3600;
+}
+
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg=NULL;
@@ -1842,7 +1862,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
-	salmsg.time=date!=NULL ? mktime(&ret) : time(NULL);
+	salmsg.time=date!=NULL ? mktime_utc(&ret) : time(NULL);
 	sal->callbacks.text_received(op,&salmsg);
 	sal_op_release(op);
 	osip_free(from);
