@@ -198,6 +198,7 @@ static void simple_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 static void simple_call_compatibility_mode(void) {
+	char route[256];
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
 
@@ -220,7 +221,8 @@ static void simple_call_compatibility_mode(void) {
 	linphone_address_clean(proxy_address);
 	tmp=linphone_address_as_string_uri_only(proxy_address);
 	linphone_proxy_config_set_server_addr(proxy,tmp);
-	linphone_proxy_config_set_route(proxy,NULL);
+	sprintf(route,"sip:%s",test_route);
+	linphone_proxy_config_set_route(proxy,route);
 	ms_free(tmp);
 	linphone_address_destroy(proxy_address);
 	linphone_core_get_sip_transports(lc_marie,&transport);
