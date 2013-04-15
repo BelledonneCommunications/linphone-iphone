@@ -170,10 +170,12 @@ static void simple_tcp_register(){
 }
 
 static void simple_tcp_register_compatibility_mode(){
+	char route[256];
 	LinphoneCore* lc;
 	LCSipTransports transport = {0,5070,0,0};
+	sprintf(route,"sip:%s",test_route);
 	lc = create_lc();
-	register_with_refresh_base_2(lc,FALSE,test_domain,NULL,FALSE,transport);
+	register_with_refresh_base_2(lc,FALSE,test_domain,route,FALSE,transport);
 }
 
 
