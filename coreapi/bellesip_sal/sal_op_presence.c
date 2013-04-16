@@ -475,7 +475,7 @@ static void presence_process_timeout(void *user_ctx, const belle_sip_timeout_eve
 	ms_error("presence_process_timeout not implemented yet");
 }
 static void presence_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
-	ms_error("presence_process_timeout not implemented yet");
+	ms_message("presence_process_transaction_terminated not implemented yet");
 }
 static void presence_process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
@@ -537,7 +537,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 			}else{
 				estatus=SalPresenceOffline;
 			}
-			ms_message("We are notified that [%s] has online status %i",sal_op_get_from(op),estatus);
+			ms_message("We are notified that [%s] has online status [%s]",sal_op_get_from(op),sal_presence_status_to_string(estatus));
 			if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
 				sub_state=SalSubscribeTerminated;
 				ms_message("And outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
@@ -578,8 +578,16 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 
 /*presence publish */
 int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status){
-	ms_error("sal_publish not implemented yet");
-	return -1;
+	belle_sip_request_t *req=NULL;
+	if (from)
+		sal_op_set_from(op,from);
+	if (to)
+		sal_op_set_to(op,to);
+
+	sal_op_presence_fill_cbs(op);
+	req=sal_op_build_request(op,"PUBLISH");
+	add_presence_info(BELLE_SIP_MESSAGE(req),status);
+	return sal_op_send_request(op,req);
 }
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){

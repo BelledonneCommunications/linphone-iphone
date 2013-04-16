@@ -117,11 +117,24 @@ typedef struct _stats {
 	int number_of_LinphoneMessageNotDelivered;
 
 
+	int number_of_IframeDecoded;
 
 	int number_of_NewSubscriptionRequest;
 	int number_of_NotifyReceived;
+	int number_of_LinphoneStatusOffline;
+	int number_of_LinphoneStatusOnline;
+	int number_of_LinphoneStatusBusy;
+	int number_of_LinphoneStatusBeRightBack;
+	int number_of_LinphoneStatusAway;
+	int number_of_LinphoneStatusOnThePhone;
+	int number_of_LinphoneStatusOutToLunch;
+	int number_of_LinphoneStatusDoNotDisturb;
+	int number_of_LinphoneStatusMoved;
+	int number_of_LinphoneStatusAltService;
+	int number_of_LinphoneStatusPending;
+	int number_of_LinphoneStatusEnd;
 
-	int number_of_IframeDecoded;
+
 }stats;
 
 typedef struct _LinphoneCoreManager {
@@ -152,6 +165,6 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 
-
+bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
 #endif /* LIBLINPHONE_TESTER_H_ */
 

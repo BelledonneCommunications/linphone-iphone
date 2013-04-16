@@ -92,7 +92,7 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	counters->number_of_IframeDecoded++;
 }
 
-static bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
+bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	LinphoneProxyConfig* proxy;
 	int retry=0;
 	stats initial_caller=caller_mgr->stat;

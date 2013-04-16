@@ -595,3 +595,20 @@ void sal_op_set_service_route(SalOp *op,const SalAddress* service_route) {
 
 	((SalOpBase*)op)->service_route=service_route?sal_address_clone(service_route):NULL;
 }
+
+const char* sal_presence_status_to_string(const SalPresenceStatus status) {
+	switch (status) {
+	case SalPresenceOffline: return "SalPresenceOffline";
+	case SalPresenceOnline: return "SalPresenceOnline";
+	case SalPresenceBusy: return "SalPresenceBusy";
+	case SalPresenceBerightback: return "SalPresenceBerightback";
+	case SalPresenceAway: return "SalPresenceAway";
+	case SalPresenceOnthephone: return "SalPresenceOnthephone";
+	case SalPresenceOuttolunch: return "SalPresenceOuttolunch";
+	case SalPresenceDonotdisturb: return "SalPresenceDonotdisturb";
+	case SalPresenceMoved: return "SalPresenceMoved";
+	case SalPresenceAltService: return "SalPresenceAltService";
+	default : return "unknown";
+	}
+
+}

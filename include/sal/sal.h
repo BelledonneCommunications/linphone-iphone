@@ -287,6 +287,8 @@ typedef enum SalPresenceStatus{
 	SalPresenceAltService,
 }SalPresenceStatus;
 
+const char* sal_presence_status_to_string(const SalPresenceStatus status);
+
 typedef enum SalReferStatus{
 	SalReferTrying,
 	SalReferSuccess,
