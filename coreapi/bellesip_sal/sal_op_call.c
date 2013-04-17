@@ -687,10 +687,25 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 	}
 	return h->result;
 }
+
 int sal_call_send_dtmf(SalOp *h, char dtmf){
-	ms_fatal("sal_call_send_dtmf not implemented yet");
-	return -1;
+	if (h->dialog){
+		belle_sip_request_t *req=belle_sip_dialog_create_request(h->dialog,"INFO");
+		if (req){
+			int bodylen;
+			char dtmf_body[128]={0};
+			
+			snprintf(dtmf_body, sizeof(dtmf_body)-1, "Signal=%c\r\nDuration=250\r\n", dtmf);
+			bodylen=strlen(dtmf_body);
+			belle_sip_message_set_body((belle_sip_message_t*)req,dtmf_body,bodylen);
+			belle_sip_message_add_header((belle_sip_message_t*)req,(belle_sip_header_t*)belle_sip_header_content_length_create(bodylen));
+			belle_sip_message_add_header((belle_sip_message_t*)req,(belle_sip_header_t*)belle_sip_header_content_type_create("application", "dtmf-relay"));
+			sal_op_send_request(h,req);
+		}else ms_error("sal_call_send_dtmf(): could not build request");
+	}else ms_error("sal_call_send_dtmf(): no dialog");
+	return 0;
 }
+
 int sal_call_terminate(SalOp *op){
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
 	op->state=SalOpStateTerminating;

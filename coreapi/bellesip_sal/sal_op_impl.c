@@ -86,6 +86,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_fro
 	belle_sip_object_unref(req_uri);
 	return contact_header;
 }
+
 belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to_header;
@@ -109,7 +110,6 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		                    belle_sip_header_via_new(),
 		                    70);
 
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(op->base.root->user_agent));
 	return req;
 }
 
@@ -180,6 +180,9 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		op->pending_client_trans=client_transaction; /*update pending inv for being able to cancel*/
 		belle_sip_object_ref(op->pending_client_trans);
 	}
+	if (belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_user_agent_t)==NULL)
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(op->base.root->user_agent));
+	
 	if (add_contact) {
 		contact = sal_op_create_contact(op,belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_from_t));
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CONTACT);
