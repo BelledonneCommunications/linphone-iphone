@@ -99,4 +99,6 @@ SalCustomHeader * sal_exosip_get_custom_headers(osip_message_t *msg);
 
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*));
 
+void sal_message_add_route(osip_message_t *msg, const char *proxy);
+
 #endif

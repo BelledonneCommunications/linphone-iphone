@@ -2317,7 +2317,7 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 	osip_uri_uparam_add(ct->url,osip_strdup("line"),line);
 }
 
-static void sal_register_add_route(osip_message_t *msg, const char *proxy){
+void sal_message_add_route(osip_message_t *msg, const char *proxy){
 	osip_route_t *route;
 
 	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
@@ -2364,7 +2364,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		h->rid=eXosip_register_build_initial_register(from,domain,NULL,expires,&msg);
 		if (msg){
 			if (contact) register_set_contact(msg,contact);
-			sal_register_add_route(msg,proxy);
+			sal_message_add_route(msg,proxy);
 			sal_add_register(h->base.root,h);
 		}else{
 			ms_error("Could not build initial register.");
@@ -2374,7 +2374,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	}else{
 		eXosip_lock();
 		eXosip_register_build_register(h->rid,expires,&msg);
-		sal_register_add_route(msg,proxy);
+		sal_message_add_route(msg,proxy);
 	}
 	if (msg){
 		eXosip_register_send_register(h->rid,msg);
@@ -2412,7 +2412,7 @@ int sal_register_refresh(SalOp *op, int expires){
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);
-		sal_register_add_route(msg,sal_op_get_route(op));
+		sal_message_add_route(msg,sal_op_get_route(op));
 		eXosip_register_send_register(op->rid,msg);
 	}else ms_error("Could not build REGISTER refresh message.");
 	eXosip_unlock();
