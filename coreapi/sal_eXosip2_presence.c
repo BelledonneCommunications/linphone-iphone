@@ -637,23 +637,26 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus p
 	osip_message_t *pub;
 	int i;
 	char buf[1024];
+	const char *route=sal_op_get_route(op);
 
 	mk_presence_body (presence_mode, from, buf, sizeof (buf), presence_style);
 
-	i = eXosip_build_publish(&pub,from, to, sal_op_get_route(op), "presence", "300", 
+	i = eXosip_build_publish(&pub,to, from, NULL, "presence", "600", 
 		presence_style ? "application/xpidf+xml" : "application/pidf+xml", buf);
 	if (i<0){
 		ms_warning("Failed to build publish request.");
 		return -1;
 	}
-
+	if (route)
+		sal_message_add_route(pub,route);
+	
 	eXosip_lock();
 	i = eXosip_publish(pub, to); /* should update the sip-if-match parameter
 				    from sip-etag  from last 200ok of PUBLISH */
 	eXosip_unlock();
 	if (i<0){
-	  ms_message("Failed to send publish request.");
-	  return -1;
+		ms_message("Failed to send publish request.");
+		return -1;
 	}
 	sal_add_other(sal_op_get_sal(op),op,pub);
 	return 0;
