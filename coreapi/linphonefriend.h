@@ -222,7 +222,7 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
  * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
  * @param os #LinphoneOnlineStatus
  */
-void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
+LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
 /**
  * get my presence status
  * @param lc #LinphoneCore object

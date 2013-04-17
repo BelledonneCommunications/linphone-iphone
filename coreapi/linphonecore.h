@@ -111,12 +111,12 @@ LINPHONE_PUBLIC int linphone_address_get_port_int(const LinphoneAddress *u);
 /**
  * Get port number, null if not present.
  */
-const char* linphone_address_get_port(const LinphoneAddress *u);
+LINPHONE_PUBLIC	const char* linphone_address_get_port(const LinphoneAddress *u);
 LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
 LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
-void linphone_address_set_port(LinphoneAddress *uri, const char *port);
-void linphone_address_set_port_int(LinphoneAddress *uri, int port);
+LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, const char *port);
+LINPHONE_PUBLIC	void linphone_address_set_port_int(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
@@ -189,8 +189,8 @@ LINPHONE_PUBLIC	void linphone_call_log_set_user_pointer(LinphoneCallLog *cl, voi
 LINPHONE_PUBLIC	void *linphone_call_log_get_user_pointer(const LinphoneCallLog *cl);
 void linphone_call_log_set_ref_key(LinphoneCallLog *cl, const char *refkey);
 const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
-const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
-const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
+LINPHONE_PUBLIC	const rtp_stats_t *linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
+LINPHONE_PUBLIC	const rtp_stats_t *linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 LINPHONE_PUBLIC	const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl);
 LINPHONE_PUBLIC	char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
@@ -203,24 +203,24 @@ struct _LinphoneCallParams;
 **/
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
-const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
-const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp);
-LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp);
-void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption e);
-void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
-bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
-bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
-void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
-void linphone_call_params_destroy(LinphoneCallParams *cp);
-bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
-void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
-void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
-const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
-void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
-const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
+LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption e);
+LINPHONE_PUBLIC	void linphone_call_params_enable_early_media_sending(LinphoneCallParams *cp, bool_t enabled);
+LINPHONE_PUBLIC	bool_t linphone_call_params_early_media_sending_enabled(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	bool_t linphone_call_params_local_conference_mode(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	void linphone_call_params_set_audio_bandwidth_limit(LinphoneCallParams *cp, int bw);
+LINPHONE_PUBLIC	void linphone_call_params_destroy(LinphoneCallParams *cp);
+LINPHONE_PUBLIC	bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
+LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
+LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
+LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
+LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -406,28 +406,28 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_call_get_duration(const LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
-const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
+LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
 int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
-const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
+LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
-float linphone_call_get_play_volume(LinphoneCall *call);
-float linphone_call_get_record_volume(LinphoneCall *call);
-float linphone_call_get_current_quality(LinphoneCall *call);
-float linphone_call_get_average_quality(LinphoneCall *call);
-const char* linphone_call_get_authentication_token(LinphoneCall *call);
-bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
-void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified);
+LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
+LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
+LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
+LINPHONE_PUBLIC	float linphone_call_get_average_quality(LinphoneCall *call);
+LINPHONE_PUBLIC	const char* linphone_call_get_authentication_token(LinphoneCall *call);
+LINPHONE_PUBLIC	bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call);
+LINPHONE_PUBLIC	void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified);
 LINPHONE_PUBLIC void linphone_call_send_vfu_request(LinphoneCall *call);
 LINPHONE_PUBLIC void *linphone_call_get_user_pointer(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 LINPHONE_PUBLIC	void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
-void linphone_call_start_recording(LinphoneCall *call);
-void linphone_call_stop_recording(LinphoneCall *call);
+LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
+LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
 /**
  * Return TRUE if this call is currently part of a conference
  *@param call #LinphoneCall
@@ -435,7 +435,7 @@ void linphone_call_stop_recording(LinphoneCall *call);
  *
  @ingroup call_control
  */
-bool_t linphone_call_is_in_conference(const LinphoneCall *call);
+LINPHONE_PUBLIC	bool_t linphone_call_is_in_conference(const LinphoneCall *call);
 /**
  * Enables or disable echo cancellation for this call
  * @param call
@@ -443,13 +443,13 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call);
  *
  * @ingroup media_parameters
 **/
-void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t val) ;
+LINPHONE_PUBLIC	void linphone_call_enable_echo_cancellation(LinphoneCall *call, bool_t val) ;
 /**
  * Returns TRUE if echo cancellation is enabled.
  *
  * @ingroup media_parameters
 **/
-bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
+LINPHONE_PUBLIC	bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
 /**
  * Enables or disable echo limiter for this call
  * @param call
@@ -457,13 +457,13 @@ bool_t linphone_call_echo_cancellation_enabled(LinphoneCall *lc);
  *
  * @ingroup media_parameters
 **/
-void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
+LINPHONE_PUBLIC	void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_t val);
 /**
  * Returns TRUE if echo limiter is enabled.
  *
  * @ingroup media_parameters
 **/
-bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
+LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
 /*keep this in sync with mediastreamer2/msvolume.h*/
 
@@ -544,17 +544,17 @@ LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxy
 
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj);
-bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj);
-int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj);
-void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
-const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
+LINPHONE_PUBLIC	const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
 struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
-bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
-const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
 
 LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
 /*
@@ -917,9 +917,9 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
-const char *linphone_core_get_version(void);
-const char *linphone_core_get_user_agent_name(void);
-const char *linphone_core_get_user_agent_version(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_version(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_name(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_version(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
@@ -961,17 +961,17 @@ const char*  linphone_core_get_device_identifier(const LinphoneCore *lc);
 #endif
 
 /*sets the user-agent string in sip messages, ideally called just after linphone_core_new() or linphone_core_init() */
-void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
+LINPHONE_PUBLIC	void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
 
-LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
+LINPHONE_PUBLIC	LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
-LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *params);
+LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *params);
 
-LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
+LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
 
 LINPHONE_PUBLIC	int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
 
@@ -979,75 +979,75 @@ LINPHONE_PUBLIC	int linphone_core_transfer_call_to_another(LinphoneCore *lc, Lin
 
 LINPHONE_PUBLIC	bool_t linphone_core_inc_invite_pending(LinphoneCore*lc);
 
-bool_t linphone_core_in_call(const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_in_call(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_current_call(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC	int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
 LINPHONE_PUBLIC	int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
-int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
+LINPHONE_PUBLIC	int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
 
 LINPHONE_PUBLIC	int linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_pause_all_calls(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_pause_all_calls(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call);
 
 LINPHONE_PUBLIC	int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 
-int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC	int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
+LINPHONE_PUBLIC	int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params);
 /**
  * @ingroup media_parameters
  * Get default call parameters reflecting current linphone core configuration
  * @param LinphoneCore object
  * @return  LinphoneCallParams
  */
-LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
+LINPHONE_PUBLIC	LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
-LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
+LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const char *remote_address);
 
 LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
-int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
+LINPHONE_PUBLIC	int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
 
-const char *linphone_core_get_primary_contact(LinphoneCore *lc);
+LINPHONE_PUBLIC	const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 
-const char * linphone_core_get_identity(LinphoneCore *lc);
+LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
 
 void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
-bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
-void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 
-LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
-const char * linphone_core_get_identity(LinphoneCore *lc);
+LINPHONE_PUBLIC	LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
+LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
 /*0= no bandwidth limit*/
-void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
-void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
+LINPHONE_PUBLIC	void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
+LINPHONE_PUBLIC	void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
 
-int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
-int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 
 void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
 bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
 
-void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
-int  linphone_core_get_download_ptime(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
+LINPHONE_PUBLIC	int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
-void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
+LINPHONE_PUBLIC	void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
 
-int linphone_core_get_upload_ptime(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
 /* returns a MSList of PayloadType */
 LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
@@ -1091,11 +1091,11 @@ LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadT
  */	
 LINPHONE_PUBLIC	PayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const char* type, int rate, int channels) ;
 
-int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, const PayloadType *pt);
 
-const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
-bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
 
 /**
  * @ingroup proxy 
@@ -1147,37 +1147,37 @@ int linphone_core_get_video_jittcomp(LinphoneCore *lc);
 
 void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
 
-int linphone_core_get_audio_port(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_audio_port(const LinphoneCore *lc);
 
-void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+LINPHONE_PUBLIC	void linphone_core_get_audio_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
-int linphone_core_get_video_port(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_video_port(const LinphoneCore *lc);
 
-void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+LINPHONE_PUBLIC	void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
-int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
-void linphone_core_set_audio_port(LinphoneCore *lc, int port);
+LINPHONE_PUBLIC	void linphone_core_set_audio_port(LinphoneCore *lc, int port);
 
-void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port);
+LINPHONE_PUBLIC	void linphone_core_set_audio_port_range(LinphoneCore *lc, int min_port, int max_port);
 
-void linphone_core_set_video_port(LinphoneCore *lc, int port);
+LINPHONE_PUBLIC	void linphone_core_set_video_port(LinphoneCore *lc, int port);
 
-void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
+LINPHONE_PUBLIC	void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
 
-void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
+LINPHONE_PUBLIC	void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 
-void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc, bool_t use_info);
+LINPHONE_PUBLIC	void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc, bool_t use_info);
 
-bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc);
 
-void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833);
+LINPHONE_PUBLIC	void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833);
 
-bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc);
 
-void linphone_core_set_sip_port(LinphoneCore *lc, int port);
+LINPHONE_PUBLIC	void linphone_core_set_sip_port(LinphoneCore *lc, int port);
 
-int linphone_core_get_sip_port(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_sip_port(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
 
@@ -1190,21 +1190,21 @@ LINPHONE_PUBLIC	int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTran
  */
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc);
 
-void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
+LINPHONE_PUBLIC	void linphone_core_set_inc_timeout(LinphoneCore *lc, int seconds);
 
-int linphone_core_get_inc_timeout(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_inc_timeout(LinphoneCore *lc);
 
-void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds);
+LINPHONE_PUBLIC	void linphone_core_set_in_call_timeout(LinphoneCore *lc, int seconds);
 
-int linphone_core_get_in_call_timeout(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_in_call_timeout(LinphoneCore *lc);
 
-void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds);
+LINPHONE_PUBLIC	void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds);
 
-int linphone_core_get_delayed_timeout(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_delayed_timeout(LinphoneCore *lc);
 
-void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
+LINPHONE_PUBLIC	void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
-const char * linphone_core_get_stun_server(const LinphoneCore *lc);
+LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *lc);
 
 /**
  * @ingroup network_parameters
@@ -1240,9 +1240,9 @@ void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
 
 const char *linphone_core_get_nat_address(const LinphoneCore *lc);
 
-void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol);
+LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol);
 
-LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
+LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
 
 const char * linphone_core_get_relay_addr(const LinphoneCore *lc);
 
@@ -1254,16 +1254,16 @@ const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
 void linphone_core_reload_sound_devices(LinphoneCore *lc);
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
-int linphone_core_get_ring_level(LinphoneCore *lc);
-int linphone_core_get_play_level(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_ring_level(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_play_level(LinphoneCore *lc);
 int linphone_core_get_rec_level(LinphoneCore *lc);
-void linphone_core_set_ring_level(LinphoneCore *lc, int level);
-void linphone_core_set_play_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC	void linphone_core_set_ring_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC	void linphone_core_set_play_level(LinphoneCore *lc, int level);
 
-void linphone_core_set_mic_gain_db(LinphoneCore *lc, float level);
-float linphone_core_get_mic_gain_db(LinphoneCore *lc);
-void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
-float linphone_core_get_playback_gain_db(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_set_mic_gain_db(LinphoneCore *lc, float level);
+LINPHONE_PUBLIC	float linphone_core_get_mic_gain_db(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
+LINPHONE_PUBLIC	float linphone_core_get_playback_gain_db(LinphoneCore *lc);
 
 void linphone_core_set_rec_level(LinphoneCore *lc, int level);
 const char * linphone_core_get_ringer_device(LinphoneCore *lc);
@@ -1287,11 +1287,11 @@ void linphone_core_set_remote_ringback_tone(LinphoneCore *lc,const char *);
 const char *linphone_core_get_remote_ringback_tone(const LinphoneCore *lc);
 
 int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
-void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
-bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
 
-void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val);
-bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC	void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val);
+LINPHONE_PUBLIC	bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
 
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
@@ -1371,13 +1371,13 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 
 /*play/record support: use files instead of soundcard*/
 void linphone_core_use_files(LinphoneCore *lc, bool_t yesno);
-void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
+LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
 LINPHONE_PUBLIC void linphone_core_stop_dtmf(LinphoneCore *lc);
 
-int linphone_core_get_current_call_duration(const LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_get_current_call_duration(const LinphoneCore *lc);
 
 
 int linphone_core_get_mtu(const LinphoneCore *lc);
@@ -1400,12 +1400,12 @@ LINPHONE_PUBLIC	bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
  *  @ingroup network_parameters
  *  enable signaling keep alive. small udp packet sent periodically to keep udp NAT association
  */
-void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
+LINPHONE_PUBLIC	void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable);
 /**
  *  @ingroup network_parameters
  * Is signaling keep alive
  */
-bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
+LINPHONE_PUBLIC	bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc);
 
 LINPHONE_PUBLIC	void *linphone_core_get_user_data(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_user_data(LinphoneCore *lc, void *userdata);
@@ -1464,12 +1464,12 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
 const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
 
 LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
-int linphone_core_add_all_to_conference(LinphoneCore *lc);
-int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC	bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
-int linphone_core_enter_conference(LinphoneCore *lc);
-int linphone_core_leave_conference(LinphoneCore *lc);
-float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_enter_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC	int linphone_core_leave_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC	float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
@@ -1481,7 +1481,7 @@ int linphone_core_stop_conference_recording(LinphoneCore *lc);
  * @param lc core
  * @return max number of simultaneous calls
  */
-int linphone_core_get_max_calls(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_max_calls(LinphoneCore *lc);
 /**
  * Set the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
  * @ingroup initializing
@@ -1490,9 +1490,9 @@ int linphone_core_get_max_calls(LinphoneCore *lc);
  */
 LINPHONE_PUBLIC void linphone_core_set_max_calls(LinphoneCore *lc, int max);
 
-bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
 
-bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);
+LINPHONE_PUBLIC	bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);
 
 /**
  * Choose media encryption policy to be used for RTP packets
@@ -1500,28 +1500,28 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
 LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
 
-bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
 /**
  * Defines Linphone behaviour when encryption parameters negociation fails on outoing call.
  * If set to TRUE call will fail; if set to FALSE will resend an INVITE with encryption disabled
  */
-void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
+LINPHONE_PUBLIC	void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
 
 /**
  * Init call params using LinphoneCore's current configuration
  */
-void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params);
+LINPHONE_PUBLIC	void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params);
 
 /**
  * True if tunnel support was compiled.
  */
-bool_t linphone_core_tunnel_available(void);
+LINPHONE_PUBLIC	bool_t linphone_core_tunnel_available(void);
 
 typedef struct _LinphoneTunnel LinphoneTunnel;
 /**
 * get tunnel instance if available
 */
-LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
+LINPHONE_PUBLIC	LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
 int linphone_core_get_sip_dscp(const LinphoneCore *lc);
