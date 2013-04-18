@@ -50,6 +50,7 @@ typedef enum SalOpSate {
 	,SalOpStateTerminating /*this state is used to wait until a proceeding state, so we can send the cancel*/
 	,SalOpStateTerminated
 }SalOpSate_t;
+const char* sal_op_state_to_string(const SalOpSate_t value);
 
 typedef enum SalOpDir {
 	SalOpDirIncoming=0
@@ -60,7 +61,8 @@ typedef enum SalOpType {
 	SalOpRegister,
 	SalOpCall,
 	SalOpMessage,
-	SalOpPresence
+	SalOpPresence,
+	SalOpPublish
 }SalOpType_t;
 const char* sal_op_type_to_string(const SalOpType_t type);
 
@@ -71,7 +73,6 @@ struct SalOp{
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_client_transaction_t* pending_client_trans;
 	SalAuthInfo* auth_info;
-	belle_sip_refresher_t*  registration_refresher;
 	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;
 	belle_sip_header_replaces_t *replaces;
@@ -103,8 +104,10 @@ void sal_op_release_impl(SalOp *op);
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message);
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
-
+int sal_op_send_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires);
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
+int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener );
+
 void sal_process_authentication(SalOp *op);
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) ;
 
@@ -120,4 +123,6 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 /*create SalAuthInfo by copying username and realm from suth event*/
 SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
 void sal_add_pending_auth(Sal *sal, SalOp *op);
+
+void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status);
 #endif /* SAL_IMPL_H_ */

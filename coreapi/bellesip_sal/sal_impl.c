@@ -345,7 +345,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	} else {
 		ms_error("Unhandled transaction terminated [%p]",trans);
 	}
-	if (op) sal_op_unref(op); /*no longuer need to ref op*/
+	if (op && client_transaction) sal_op_unref(op); /*because every client transaction ref op*/
 
 }
 

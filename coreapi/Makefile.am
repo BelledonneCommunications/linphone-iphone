@@ -60,6 +60,7 @@ liblinphone_la_SOURCES+= 	bellesip_sal/sal_address_impl.c \
 							bellesip_sal/sal_sdp.c  \
 							bellesip_sal/sal_op_message.c \
 							bellesip_sal/sal_op_presence.c \
+							bellesip_sal/sal_op_publish.c \
 							bellesip_sal/sal_op_call_transfer.c						
 else
 liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\

@@ -30,7 +30,6 @@ SalOp * sal_op_new(Sal *sal){
 void sal_op_release(SalOp *op){
 	op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn not mean freeing op. Make sure back pointer will not be used later*/
-	if (op->registration_refresher) belle_sip_refresher_stop(op->registration_refresher);
 	if (op->refresher) belle_sip_refresher_stop(op->refresher);
 	sal_op_unref(op);
 }
@@ -39,10 +38,9 @@ void sal_op_release_impl(SalOp *op){
 	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);
 	if (op->auth_info) sal_auth_info_delete(op->auth_info);
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
-	if (op->registration_refresher) {
-		belle_sip_refresher_stop(op->registration_refresher);
-		belle_sip_object_unref(op->registration_refresher);
-		op->registration_refresher=NULL;
+	if (op->refresher) {
+		belle_sip_object_unref(op->refresher);
+		op->refresher=NULL;
 	}
 	if(op->replaces) belle_sip_object_unref(op->replaces);
 	if(op->referred_by) belle_sip_object_unref(op->referred_by);
@@ -131,6 +129,17 @@ void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
 	}
 }
 
+
+int sal_op_send_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires) {
+	belle_sip_header_expires_t* expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_EXPIRES);
+
+	if (!expires_header && expires>=0) {
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
+	}
+	if (expires_header) belle_sip_header_expires_set_expires(expires_header,expires);
+	return sal_op_send_request(op,request);
+}
+
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CSEQ);
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
@@ -176,14 +185,13 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),sal_op_ref(op));
-	if ( strcmp("INVITE",belle_sip_request_get_method(request))==0 ||  strcmp("REGISTER",belle_sip_request_get_method(request))==0) {
-		if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
-		op->pending_client_trans=client_transaction; /*update pending inv for being able to cancel*/
-		belle_sip_object_ref(op->pending_client_trans);
-	}
+	if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
+	op->pending_client_trans=client_transaction; /*update pending inv for being able to cancel*/
+	belle_sip_object_ref(op->pending_client_trans);
+
 	if (belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_user_agent_t)==NULL)
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(op->base.root->user_agent));
-	
+
 	if (add_contact) {
 		contact = sal_op_create_contact(op,belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_from_t));
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CONTACT);
@@ -307,4 +315,32 @@ void* sal_op_unref(SalOp* op) {
 		sal_op_release_impl(op);
 	}
 	return NULL;
+}
+int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener ) {
+	if (sal_op_send_request_with_expires(op,req,expires)) {
+		return -1;
+	} else {
+		if (op->refresher) {
+			belle_sip_refresher_stop(op->refresher);
+			belle_sip_object_unref(op->refresher);
+		}
+		if ((op->refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
+			belle_sip_refresher_enable_nat_helper(op->refresher,op->base.root->nat_helper_enabled);
+			belle_sip_refresher_set_listener(op->refresher,listener,op);
+			return 0;
+		} else {
+			return -1;
+		}
+	}
+}
+
+const char* sal_op_state_to_string(const SalOpSate_t value) {
+	switch(value) {
+	case SalOpStateEarly: return"SalOpStateEarly";
+	case SalOpStateActive: return "SalOpStateActive";
+	case SalOpStateTerminating: return "SalOpStateTerminating";
+	case SalOpStateTerminated: return "SalOpStateTerminated";
+	default:
+		return "Unknon";
+	}
 }

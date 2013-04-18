@@ -93,15 +93,11 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 }
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
-	LinphoneProxyConfig* proxy;
 	int retry=0;
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
-	LinphoneAddress* identity;
-	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
 
-	CU_ASSERT_PTR_NOT_NULL(proxy);
-	if (!proxy) return -1;
+
 
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
 
@@ -127,15 +123,12 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	CU_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging==initial_caller.number_of_LinphoneCallOutgoingRinging+1)
 							|(caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia==initial_caller.number_of_LinphoneCallOutgoingEarlyMedia+1));
 
-	linphone_core_get_default_proxy(caller_mgr->lc,&proxy);
-	CU_ASSERT_PTR_NOT_NULL(proxy);
-	if (!proxy) return 0;
-	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
 	if (!linphone_core_get_current_call_remote_address(callee_mgr->lc))
 		return 0;
-	CU_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
-	linphone_address_destroy(identity);
+	CU_ASSERT_TRUE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+
 
 	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
 

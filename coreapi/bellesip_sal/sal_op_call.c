@@ -146,7 +146,7 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 				case 401:
 				case 407:
 					if (op->state!=SalOpStateTerminating) {
-						/*normal termination for chalanged dialog */
+						/*normal termination for challenged dialog */
 						break;
 					}
 				default:
@@ -182,7 +182,7 @@ static void handle_sdp_from_response(SalOp* op,belle_sip_response_t* response) {
 }
 static void cancelling_invite(SalOp* op ){
 	belle_sip_request_t* cancel;
-	ms_message("Cancelling INVITE requets from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
+	ms_message("Cancelling INVITE request from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
 	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
@@ -211,12 +211,16 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		case BELLE_SIP_DIALOG_EARLY: {
 			if (strcmp("INVITE",belle_sip_request_get_method(req))==0 ) {
 				if ( op->state == SalOpStateTerminating) {
-					if (code <200) {
-						cancelling_invite(op);
-					} else if (code<400) {
-						sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
+					if (strcmp("CANCEL",belle_sip_request_get_method(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_client_trans))))!=0) {
+						if (code <200) {
+							cancelling_invite(op);
+						} else if (code<400) {
+							sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
+						} else {
+							/*nop ?*/
+						}
 					} else {
-						/*nop ?*/
+						/*nop, already cancelled*/
 					}
 					break;
 				} else if (code >= 180 && code<300) {
@@ -708,7 +712,10 @@ int sal_call_send_dtmf(SalOp *h, char dtmf){
 
 int sal_call_terminate(SalOp *op){
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
-	op->state=SalOpStateTerminating;
+	if (op->state==SalOpStateTerminating || op->state==SalOpStateTerminated) {
+		ms_error("Cannot terminate op [%p] in state [%s]",op,sal_op_state_to_string(op->state));
+		return -1;
+	}
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));

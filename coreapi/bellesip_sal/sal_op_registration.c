@@ -43,7 +43,7 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		}
 		sal_op_set_service_route(op,(const SalAddress*)service_route_address);
 		if (service_route_address) belle_sip_object_unref(service_route_address);
-		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->registration_refresher)>0);
+		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {
 		/* from rfc3608, 6.1.
 				If the UA refreshes the registration, the stored value of the Service-
@@ -70,20 +70,6 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 	}
 }
 
-
-
-/*if expire = -1, does not change expires*/
-static int send_register_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires) {
-	belle_sip_header_expires_t* expires_header=(belle_sip_header_expires_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_EXPIRES);
-
-	if (!expires_header && expires>=0) {
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(expires_header=belle_sip_header_expires_new()));
-	}
-	if (expires_header) belle_sip_header_expires_set_expires(expires_header,expires);
-	return sal_op_send_request(op,request);
-}
-
-
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
@@ -95,27 +81,12 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	req_uri = belle_sip_request_get_uri(req);
 	belle_sip_uri_set_user(req_uri,NULL); /*remove userinfo if any*/
 
-	if (send_register_request_with_expires(op,req,expires)) {
-		return -1;
-	} else {
-		if (op->registration_refresher) {
-			belle_sip_refresher_stop(op->registration_refresher);
-			belle_sip_object_unref(op->registration_refresher);
-		}
-		if ((op->registration_refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
-			belle_sip_refresher_enable_nat_helper(op->registration_refresher,op->base.root->nat_helper_enabled);
-			belle_sip_refresher_set_listener(op->registration_refresher,register_refresher_listener,op);
-			return 0;
-		} else {
-			return -1;
-		}
-
-	}
+	return sal_op_send_and_create_refresher(op,req,expires,register_refresher_listener);
 }
 
 int sal_register_refresh(SalOp *op, int expires){
-	if (op->registration_refresher)
-		return belle_sip_refresher_refresh(op->registration_refresher,expires);
+	if (op->refresher)
+		return belle_sip_refresher_refresh(op->refresher,expires);
 	else
 		return -1;
 }

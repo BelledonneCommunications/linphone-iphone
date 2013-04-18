@@ -381,7 +381,7 @@ entity=\"%s\">\n\
 
 }
 
-static void add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status) {
+void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status) {
 	char buf[1000];
 	char *contact_info;
 	size_t content_length;
@@ -576,19 +576,7 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 	op->type=SalOpPresence;
 }
 
-/*presence publish */
-int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status){
-	belle_sip_request_t *req=NULL;
-	if (from)
-		sal_op_set_from(op,from);
-	if (to)
-		sal_op_set_to(op,to);
 
-	sal_op_presence_fill_cbs(op);
-	req=sal_op_build_request(op,"PUBLISH");
-	add_presence_info(BELLE_SIP_MESSAGE(req),status);
-	return sal_op_send_request(op,req);
-}
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 	belle_sip_request_t *req=NULL;
@@ -631,15 +619,18 @@ int sal_subscribe_decline(SalOp *op){
 }
 int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
-	add_presence_info(BELLE_SIP_MESSAGE(notify),status); /*FIXME, what about expires ??*/
+	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),status); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,600)));
 	return sal_op_send_request(op,notify);
 }
 int sal_notify_close(SalOp *op){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
-	add_presence_info(BELLE_SIP_MESSAGE(notify),SalPresenceOffline); /*FIXME, what about expires ??*/
+	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),SalPresenceOffline); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));
 	return sal_op_send_request(op,notify);
 }
+
+
+

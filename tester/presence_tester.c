@@ -22,7 +22,15 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
-
+static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
+	LinphoneCoreManager* mgr= linphone_core_manager_new2(liblinphone_tester_file_prefix, "empty_rc", FALSE);
+	char* identity_char;
+	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
+	linphone_address_set_username(mgr->identity,username);
+	identity_char=linphone_address_as_string(mgr->identity);
+	linphone_core_set_primary_contact(mgr->lc,identity_char);
+	return mgr;
+}
 void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	stats* counters;
@@ -76,14 +84,11 @@ static void simple_publish(void) {
 static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
-	LinphoneProxyConfig* proxy;
 	bool_t result=FALSE;
+	char* identity=linphone_address_as_string_uri_only(callee_mgr->identity);
 
-	LinphoneFriend * friend;
-	linphone_core_get_default_proxy(callee_mgr->lc,&proxy);
-	if (!proxy) return 0;
 
-	friend=linphone_friend_new_with_addr(linphone_proxy_config_get_identity(proxy));
+	LinphoneFriend* friend=linphone_friend_new_with_addr(identity);
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);
@@ -96,23 +101,15 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NewSubscriptionRequest,initial_callee.number_of_NewSubscriptionRequest+1);
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NotifyReceived,initial_callee.number_of_NotifyReceived+1);
 	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_NotifyReceived,initial_caller.number_of_NotifyReceived+1);
-
+	ms_free(identity);
 	return result;
 
 }
 static void simple_subscribe(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	const MSList* marie_friends = linphone_core_get_friend_list(marie->lc);
-	LinphoneFriend* friend;
-	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_friends);
-	friend = (LinphoneFriend*) marie_friends->data;
-	linphone_friend_edit(friend);
-	linphone_friend_enable_subscribes(friend,TRUE);
-	linphone_friend_done(friend);
+	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
+	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_NotifyReceived,1));
+	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 
 	linphone_core_manager_destroy(marie);
 	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
@@ -132,8 +129,8 @@ static void unsubscribe_while_subscribing(void) {
 }
 
 static void call_with_presence(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
+	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 
 	CU_ASSERT_TRUE(call(marie,pauline));
