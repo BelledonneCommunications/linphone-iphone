@@ -355,8 +355,8 @@ struct _LinphoneCallStats {
  * @}
 **/
 
-const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
-const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
+LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call);
+LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call);
 
 
 /** Callback prototype */
