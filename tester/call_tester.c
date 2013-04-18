@@ -371,8 +371,50 @@ static void call_declined(void) {
 static void call_terminated_by_caller(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-
+	
 	CU_ASSERT_TRUE(call(pauline,marie));
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_ice(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	int i;
+	LinphoneCall *c1,*c2;
+	bool_t success=FALSE;
+	
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
+	
+	CU_ASSERT_TRUE(call(pauline,marie));
+	
+	c1=linphone_core_get_current_call(marie->lc);
+	c2=linphone_core_get_current_call(pauline->lc);
+	
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+	
+	for (i=0;i<100;i++){
+		if (linphone_call_get_audio_stats(c1)->ice_state==LinphoneIceStateHostConnection &&
+			linphone_call_get_audio_stats(c2)->ice_state==LinphoneIceStateHostConnection ){
+			success=TRUE;
+			break;
+		}
+		linphone_core_iterate(marie->lc);
+		linphone_core_iterate(pauline->lc);
+		ms_usleep(100000);
+	}
+	
+	CU_ASSERT_TRUE(success);
+	
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -736,7 +778,8 @@ test_t call_tests[] = {
 #endif
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
-	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call }
+	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
+	{ "Call with ICE", call_with_ice },
 };
 
 test_suite_t call_test_suite = {
