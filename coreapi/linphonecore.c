@@ -5367,6 +5367,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		lc->previewstream=NULL;
 	}
 #endif
+#ifdef TUNNEL_ENABLED
+	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
+#endif
 	ms_event_queue_destroy(lc->msevq);
 	lc->msevq=NULL;
 	/* save all config */
@@ -5414,9 +5417,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	ortp_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
-#ifdef TUNNEL_ENABLED
-	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
-#endif
 }
 
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
