@@ -516,19 +516,26 @@ void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 	return ;
 }
 int sal_enable_tunnel(Sal *ctx, void *tunnelclient) {
+#ifdef TUNNEL_ENABLED
+	belle_sip_listening_point_t *lp;
 	int result;
 
 	sal_unlisten_ports(ctx);
-	belle_sip_listening_point_t* lp = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
+	lp = belle_sip_tunnel_listening_point_new(ctx->stack, tunnelclient);
 	if (lp == NULL) return -1;
 
 	belle_sip_listening_point_set_keep_alive(lp, ctx->keep_alive);
 	result = belle_sip_provider_add_listening_point(ctx->prov, lp);
 	set_tls_properties(ctx);
 	return result;
+#else
+	return 0;
+#endif
 }
 void sal_disable_tunnel(Sal *ctx) {
+#ifdef TUNNEL_ENABLED
 	sal_unlisten_ports(ctx);
+#endif
 }
 /**
  * returns keepalive period in ms

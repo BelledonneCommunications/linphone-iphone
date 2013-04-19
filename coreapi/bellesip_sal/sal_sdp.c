@@ -431,8 +431,9 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 		
 		/* Get ICE candidate attributes if any */
 		for (attribute_it = belle_sdp_media_description_get_attributes(media_desc); attribute_it != NULL; attribute_it=attribute_it->next) {
+			const char *att_name;
 			attribute=(belle_sdp_attribute_t*)attribute_it->data;
-			const char *att_name=belle_sdp_attribute_get_name(attribute);
+			att_name=belle_sdp_attribute_get_name(attribute);
 			value=belle_sdp_attribute_get_value(attribute);
 			if ((keywordcmp("candidate", att_name) == 0) && (value != NULL)) {
 				SalIceCandidate *candidate = &stream->ice_candidates[nb_ice_candidates];
