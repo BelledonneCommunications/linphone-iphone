@@ -637,6 +637,20 @@ public interface LinphoneCore {
 	 * @return transports used for signaling (TCP, UDP, TLS)
 	 */
 	Transports getSignalingTransportPorts();
+	
+	/**
+	 * Assign a dscp value for the SIP socket.
+	 * DSCP is an IP packet field used to indicate the type of routing service to routers.
+	 * @param dscp
+	 */
+	void setSipDscp(int dscp);
+	
+	/**
+	 * Get DSCP used for SIP socket.
+	 * @return the DSCP value used for the SIP socket.
+	 */
+	int getSipDscp();
+	
 	/**
 	 * Activates or deactivates the speaker.
 	 * @param value
@@ -1147,6 +1161,19 @@ public interface LinphoneCore {
 	void setAudioPortRange(int minPort, int maxPort);
 	
 	/**
+	 * Assign a DSCP value to the audio RTP sockets.
+	 * @param dscp the DSCP value.
+	 * DSCP is an IP header field used to indicate a type of service to routers.
+	 */
+	void setAudioDscp(int dscp);
+	
+	/**
+	 * Return DSCP value used for the audio RTP sockets.
+	 * @return the DSCP value used for the audio RTP sockets.
+	 */
+	int getAudioDscp();
+	
+	/**
 	 * Sets the UDP port used for video streaming.
 	**/
 	void setVideoPort(int port);
@@ -1155,6 +1182,19 @@ public interface LinphoneCore {
 	 * Sets the UDP port range from which to randomly select the port used for video streaming.
 	 */
 	void setVideoPortRange(int minPort, int maxPort);
+	
+	/**
+	 * Assign a DSCP value to the video RTP sockets.
+	 * @param dscp the DSCP value.
+	 * DSCP is an IP header field used to indicate a type of service to routers.
+	 */
+	void setVideoDscp(int dscp);
+	
+	/**
+	 * Return DSCP value used for the video RTP sockets.
+	 * @return the DSCP value used for the video RTP sockets.
+	 */
+	int getVideoDscp();
 	
 	/**
 	 * Set the incoming call timeout in seconds.
