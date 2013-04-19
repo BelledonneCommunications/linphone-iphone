@@ -16,7 +16,9 @@
 #include "ortp/rtpsession.h"
 #include "linphonecore.h"
 #include "linphonecore_utils.h"
+#ifndef USE_BELLESIP
 #include "eXosip2/eXosip_transport_hook.h"
+#endif
 #include "tunnel/udp_mirror.hh"
 #include "private.h"
 
