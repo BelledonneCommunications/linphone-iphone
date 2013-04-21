@@ -131,6 +131,8 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "mp4v-es", 90000, @"mp4v-es_preference"},
 	{ "h264", 90000, @"h264_preference"},
 	{ "vp8", 90000, @"vp8_preference"},
+	{ "mpeg4-generic", 44100, @"aaceld_44k_preference"},
+	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
 	{ NULL,0,Nil }
 };
 
