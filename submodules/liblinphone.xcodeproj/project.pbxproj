@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0406A7661721FF79009FD24F /* aac-eld.c in Sources */ = {isa = PBXBuildFile; fileRef = 0406A7651721FF79009FD24F /* aac-eld.c */; };
 		220ED19A13A8F87700AC21E0 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19713A8F87700AC21E0 /* libspeexdsp.a */; };
 		220ED19B13A8F87700AC21E0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19813A8F87700AC21E0 /* libspeex.a */; };
 		220ED19C13A8F87700AC21E0 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19913A8F87700AC21E0 /* libortp.a */; };
@@ -421,6 +422,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0406A7651721FF79009FD24F /* aac-eld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aac-eld.c"; sourceTree = "<group>"; };
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
 		220ED19713A8F87700AC21E0 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		220ED19813A8F87700AC21E0 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
@@ -1048,6 +1050,7 @@
 		223CA7EF16D9268D00EF1BEC /* audiofilters */ = {
 			isa = PBXGroup;
 			children = (
+				0406A7651721FF79009FD24F /* aac-eld.c */,
 				22D07CE416F3BFCB009F2C9E /* speexec.c */,
 				223CA7F016D9268D00EF1BEC /* alaw.c */,
 				223CA7F216D9268D00EF1BEC /* aqsnd.c */,
@@ -1747,6 +1750,7 @@
 				221DCB57152A07050025E54D /* ec-calibrator.c in Sources */,
 				221DCB6C153584410025E54D /* yuv2rgb.fs in Sources */,
 				221DCB6E153584410025E54D /* yuv2rgb.vs in Sources */,
+				0406A7661721FF79009FD24F /* aac-eld.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
