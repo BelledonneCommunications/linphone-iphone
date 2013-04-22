@@ -45,3 +45,5 @@ sharing_server=https://www.linphone.org:444/upload.php
 ice=1
 stun=stun.linphone.org
 
+[video]
+display_filter_auto_rotate=0
