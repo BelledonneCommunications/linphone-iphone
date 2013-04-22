@@ -14,7 +14,6 @@ capture=1
 show_local=1
 enabled=1
 size=vga
-display_filter_auto_rotate=1
 automatically_initiate=0
 automatically_accept=0
 
@@ -28,3 +27,4 @@ edge_opt_preference=0
 
 [default_values]
 reg_expires=600
+
