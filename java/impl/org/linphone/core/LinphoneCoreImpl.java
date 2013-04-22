@@ -913,4 +913,39 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public PayloadType findPayloadType(String mime) {
 		return findPayloadType(mime, FIND_PAYLOAD_IGNORE_RATE);
 	}
+	
+	private native void setSipDscp(long nativePtr, int dscp);
+	@Override
+	public void setSipDscp(int dscp) {
+		setSipDscp(nativePtr,dscp);
+	}
+	
+	private native int getSipDscp(long nativePtr);
+	@Override
+	public int getSipDscp() {
+		return getSipDscp(nativePtr);
+	}
+	private native void setAudioDscp(long nativePtr, int dscp);
+	@Override
+	public void setAudioDscp(int dscp) {
+		setAudioDscp(nativePtr, dscp);
+	}
+	
+	private native int getAudioDscp(long nativePtr);
+	@Override
+	public int getAudioDscp() {
+		return getAudioDscp(nativePtr);
+	}
+	
+	private native void setVideoDscp(long nativePtr, int dscp);
+	@Override
+	public void setVideoDscp(int dscp) {
+		setVideoDscp(nativePtr,dscp);
+	}
+	
+	private native int getVideoDscp(long nativePtr);
+	@Override
+	public int getVideoDscp() {
+		return getVideoDscp(nativePtr);
+	}
 }

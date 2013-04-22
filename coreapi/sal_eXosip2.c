@@ -1771,6 +1771,26 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
+static int utc_offset() {
+	time_t ref = 24 * 60 * 60L;
+	struct tm * timeptr;
+	int gmtime_hours;
+
+	/* get the local reference time for Jan 2, 1900 00:00 UTC */
+	timeptr = localtime(&ref);
+	gmtime_hours = timeptr->tm_hour;
+
+	/* if the local time is the "day before" the UTC, subtract 24 hours
+	from the hours to get the UTC offset */
+	if (timeptr->tm_mday < 2) gmtime_hours -= 24;
+
+	return gmtime_hours;
+}
+
+time_t mktime_utc(struct tm *timeptr) {
+	return mktime(timeptr) + utc_offset() * 3600;
+}
+
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg=NULL;
@@ -1842,7 +1862,7 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
-	salmsg.time=date!=NULL ? mktime(&ret) : time(NULL);
+	salmsg.time=date!=NULL ? mktime_utc(&ret) : time(NULL);
 	sal->callbacks.text_received(op,&salmsg);
 	sal_op_release(op);
 	osip_free(from);
@@ -2297,7 +2317,7 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 	osip_uri_uparam_add(ct->url,osip_strdup("line"),line);
 }
 
-static void sal_register_add_route(osip_message_t *msg, const char *proxy){
+void sal_message_add_route(osip_message_t *msg, const char *proxy){
 	osip_route_t *route;
 
 	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
@@ -2344,7 +2364,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		h->rid=eXosip_register_build_initial_register(from,domain,NULL,expires,&msg);
 		if (msg){
 			if (contact) register_set_contact(msg,contact);
-			sal_register_add_route(msg,proxy);
+			sal_message_add_route(msg,proxy);
 			sal_add_register(h->base.root,h);
 		}else{
 			ms_error("Could not build initial register.");
@@ -2354,7 +2374,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	}else{
 		eXosip_lock();
 		eXosip_register_build_register(h->rid,expires,&msg);
-		sal_register_add_route(msg,proxy);
+		sal_message_add_route(msg,proxy);
 	}
 	if (msg){
 		eXosip_register_send_register(h->rid,msg);
@@ -2392,7 +2412,7 @@ int sal_register_refresh(SalOp *op, int expires){
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);
-		sal_register_add_route(msg,sal_op_get_route(op));
+		sal_message_add_route(msg,sal_op_get_route(op));
 		eXosip_register_send_register(op->rid,msg);
 	}else ms_error("Could not build REGISTER refresh message.");
 	eXosip_unlock();

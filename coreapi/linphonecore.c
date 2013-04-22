@@ -611,9 +611,6 @@ static void sip_config_read(LinphoneCore *lc)
 	int ipv6;
 	int random_port;
 
-	tmp=lp_config_get_int(lc->config,"sip","use_info",0);
-	linphone_core_set_use_info_for_dtmf(lc,tmp);
-
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
 	}
@@ -622,9 +619,6 @@ static void sip_config_read(LinphoneCore *lc)
 	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
 	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
 	sal_expire_old_registration_contacts(lc->sal,lp_config_get_int(lc->config,"sip","expire_old_registration_contacts",0));
-
-	tmp=lp_config_get_int(lc->config,"sip","use_rfc2833",1);
-	linphone_core_set_use_rfc2833_for_dtmf(lc,tmp);
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
@@ -1304,6 +1298,8 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=24; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=24; sizeLength=13; streamType=5");
 	linphone_core_handle_static_payloads(lc);
 	
 	ms_init();
@@ -1737,7 +1733,7 @@ void linphone_core_set_nortp_timeout(LinphoneCore *lc, int nortp_timeout){
 **/
 bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc)
 {
-	return lc->sip_conf.use_info;
+	return lp_config_get_int(lc->config, "sip", "use_info", 0);
 }
 
 /**
@@ -1747,7 +1743,9 @@ bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc)
 **/
 void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info)
 {
-	lc->sip_conf.use_info=use_info;
+	if (linphone_core_ready()) {
+		lp_config_set_int(lc->config, "sip", "use_info", use_info);
+	}
 }
 
 /**
@@ -1757,7 +1755,7 @@ void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info)
 **/
 bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc)
 {
-	return lc->sip_conf.use_rfc2833;
+	return lp_config_get_int(lc->config, "sip", "use_rfc2833", 1);
 }
 
 /**
@@ -1767,7 +1765,9 @@ bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc)
 **/
 void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 {
-	lc->sip_conf.use_rfc2833=use_rfc2833;
+	if (linphone_core_ready()) {
+		lp_config_set_int(lc->config, "sip", "use_rfc2833", use_rfc2833);
+	}
 }
 
 /**
@@ -5186,8 +5186,6 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","inc_timeout",config->inc_timeout);
 	lp_config_set_int(lc->config,"sip","in_call_timeout",config->in_call_timeout);
 	lp_config_set_int(lc->config,"sip","delayed_timeout",config->delayed_timeout);
-	lp_config_set_int(lc->config,"sip","use_info",config->use_info);
-	lp_config_set_int(lc->config,"sip","use_rfc2833",config->use_rfc2833);
 	lp_config_set_int(lc->config,"sip","use_ipv6",config->ipv6_enabled);
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);

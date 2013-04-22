@@ -2159,6 +2159,14 @@ extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env
 	return (jint)linphone_call_get_duration((LinphoneCall *) ptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSipDscp(JNIEnv* env,jobject thiz,jlong ptr, jint dscp){
+	linphone_core_set_sip_dscp((LinphoneCore*)ptr,dscp);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSipDscp(JNIEnv* env,jobject thiz,jlong ptr){
+	return linphone_core_get_sip_dscp((LinphoneCore*)ptr);
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSignalingTransportPort(JNIEnv* env,jobject thiz,jlong ptr, jint code) {
 	LCSipTransports tr;
 	linphone_core_get_sip_transports((LinphoneCore *) ptr, &tr);
@@ -2461,6 +2469,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioPortRange(JNIEnv
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPortRange(JNIEnv *env, jobject thiz, jlong lc, jint min_port, jint max_port) {
 	linphone_core_set_video_port_range((LinphoneCore *)lc, min_port, max_port);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioDscp(JNIEnv* env,jobject thiz,jlong ptr, jint dscp){
+	linphone_core_set_audio_dscp((LinphoneCore*)ptr,dscp);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAudioDscp(JNIEnv* env,jobject thiz,jlong ptr){
+	return linphone_core_get_audio_dscp((LinphoneCore*)ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoDscp(JNIEnv* env,jobject thiz,jlong ptr, jint dscp){
+	linphone_core_set_video_dscp((LinphoneCore*)ptr,dscp);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getVideoDscp(JNIEnv* env,jobject thiz,jlong ptr){
+	return linphone_core_get_video_dscp((LinphoneCore*)ptr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setIncomingTimeout(JNIEnv *env, jobject thiz, jlong lc, jint timeout) {
