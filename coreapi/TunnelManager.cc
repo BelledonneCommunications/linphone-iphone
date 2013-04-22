@@ -342,6 +342,13 @@ void TunnelManager::enable(bool isEnable) {
 
 #ifdef USE_BELLESIP
 		sal_disable_tunnel(mCore->sal);
+		// Set empty transports to force the setting of regular transport, otherwise it is not applied
+		LCSipTransports lTransport;
+		lTransport.udp_port = 0;
+		lTransport.tcp_port = 0;
+		lTransport.tls_port = 0;
+		lTransport.dtls_port = 0;
+		linphone_core_set_sip_transports(mCore, &lTransport);
 #else
 		eXosip_transport_hook_register(NULL);
 #endif
