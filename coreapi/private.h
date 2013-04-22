@@ -438,8 +438,6 @@ typedef struct sip_config
 	int delayed_timeout; 	/*timeout after a delayed call is resumed */
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 	LCSipTransports transports;
-	bool_t use_info;
-	bool_t use_rfc2833;	/*force RFC2833 to be sent*/
 	bool_t guess_hostname;
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
