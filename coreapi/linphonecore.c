@@ -4927,26 +4927,6 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
 }
 
-/**
- * @ingroup media_parameters
- * Plays a repeated tone to the local user until next further call to #linphone_core_stop_dtmf()
- * @param lc #LinphoneCore
-**/
-void linphone_core_play_tone(LinphoneCore *lc){
-	MSFilter *f=get_dtmf_gen(lc);
-	MSDtmfGenCustomTone def;
-	if (f==NULL){
-		ms_error("No dtmf generator at this time !");
-		return;
-	}
-	memset(&def,0,sizeof(def));
-	def.duration=300;
-	def.frequencies[0]=500;
-	def.amplitude=1;
-	def.interval=2000;
-	ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
-}
-
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 	if (linphone_core_tone_indications_enabled(lc)){
 		MSFilter *f=get_dtmf_gen(lc);
