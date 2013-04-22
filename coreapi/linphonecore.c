@@ -1743,7 +1743,7 @@ bool_t linphone_core_get_use_info_for_dtmf(LinphoneCore *lc)
 **/
 void linphone_core_set_use_info_for_dtmf(LinphoneCore *lc,bool_t use_info)
 {
-	if (linphone_core_ready()) {
+	if (linphone_core_ready(lc)) {
 		lp_config_set_int(lc->config, "sip", "use_info", use_info);
 	}
 }
@@ -1765,7 +1765,7 @@ bool_t linphone_core_get_use_rfc2833_for_dtmf(LinphoneCore *lc)
 **/
 void linphone_core_set_use_rfc2833_for_dtmf(LinphoneCore *lc,bool_t use_rfc2833)
 {
-	if (linphone_core_ready()) {
+	if (linphone_core_ready(lc)) {
 		lp_config_set_int(lc->config, "sip", "use_rfc2833", use_rfc2833);
 	}
 }
