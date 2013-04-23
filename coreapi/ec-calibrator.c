@@ -77,10 +77,17 @@ static void ecc_init_filters(EcCalibrator *ecc){
 
 	ms_ticker_attach(ecc->ticker,ecc->sndread);
 	ms_ticker_attach(ecc->ticker,ecc->play);
-	
+
+	if (ecc->audio_init_cb != NULL) {
+		(*ecc->audio_init_cb)(ecc->cb_data);
+	}
 }
 
 static void ecc_deinit_filters(EcCalibrator *ecc){
+	if (ecc->audio_uninit_cb != NULL) {
+		(*ecc->audio_uninit_cb)(ecc->cb_data);
+	}
+
 	ms_ticker_detach(ecc->ticker,ecc->sndread);
 	ms_ticker_detach(ecc->ticker,ecc->play);
 
@@ -232,12 +239,15 @@ static void  * ecc_thread(void *p){
 	return NULL;
 }
 
-EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb, void *cb_data ){
+EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb,
+				 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data){
 	EcCalibrator *ecc=ms_new0(EcCalibrator,1);
 
 	ecc->rate=rate;
 	ecc->cb=cb;
 	ecc->cb_data=cb_data;
+	ecc->audio_init_cb=audio_init_cb;
+	ecc->audio_uninit_cb=audio_uninit_cb;
 	ecc->capt_card=capt_card;
 	ecc->play_card=play_card;
 	ms_thread_create(&ecc->thread,NULL,ecc_thread,ecc);
@@ -253,13 +263,14 @@ void ec_calibrator_destroy(EcCalibrator *ecc){
 	ms_free(ecc);
 }
 
-int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data){
+int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data){
 	if (lc->ecc!=NULL){
 		ms_error("Echo calibration is still on going !");
 		return -1;
 	}
 	unsigned int rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
-	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,cb_data);
+	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
 	return 0;
 }
 
