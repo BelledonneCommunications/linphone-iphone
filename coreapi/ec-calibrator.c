@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void ecc_init_filters(EcCalibrator *ecc){
 	unsigned int rate;
+	int channels = 1;
+	int ecc_channels = 1;
 	MSTickerParams params={0};
 	params.name="Echo calibrator";
 	params.prio=MS_TICKER_PRIO_HIGH;
@@ -37,9 +39,13 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ecc->sndread=ms_snd_card_create_reader(ecc->play_card);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_NCHANNELS,&channels);
 	ecc->read_resampler=ms_filter_new(MS_RESAMPLE_ID);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&ecc->rate);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
 	
 	
 	ecc->det=ms_filter_new(MS_TONE_DETECTOR_ID);
@@ -50,7 +56,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ms_filter_link(ecc->read_resampler,0,ecc->det,0);
 	ms_filter_link(ecc->det,0,ecc->rec,0);
 
-	ecc->play=ms_filter_new(MS_FILE_PLAYER_ID);
+	ecc->play=ms_filter_new(MS_VOID_SOURCE_ID);
 	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->write_resampler=ms_filter_new(MS_RESAMPLE_ID);
@@ -58,8 +64,12 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_NCHANNELS,&channels);
 	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
 
 	ms_filter_link(ecc->play,0,ecc->gen,0);
 	ms_filter_link(ecc->gen,0,ecc->write_resampler,0);
