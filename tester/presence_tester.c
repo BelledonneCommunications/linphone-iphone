@@ -78,6 +78,11 @@ static void simple_publish(void) {
 		linphone_core_iterate(marie->lc);
 		ms_usleep(100000);
 	}
+	linphone_core_set_presence_info(marie->lc,0,NULL,LinphoneStatusOffline);
+	for (i=0;i<10;i++) {
+		linphone_core_iterate(marie->lc);
+		ms_usleep(100000);
+	}
 	linphone_core_manager_destroy(marie);
 }
 

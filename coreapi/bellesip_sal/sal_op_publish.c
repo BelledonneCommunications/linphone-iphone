@@ -32,15 +32,24 @@ static void publish_refresher_listener ( const belle_sip_refresher_t* refresher
 /*presence publish */
 int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status){
 	belle_sip_request_t *req=NULL;
-	if (from)
-		sal_op_set_from(op,from);
-	if (to)
-		sal_op_set_to(op,to);
+	if(!op->refresher || !belle_sip_refresher_get_transaction(op->refresher)) {
+		if (from)
+			sal_op_set_from(op,from);
+		if (to)
+			sal_op_set_to(op,to);
 
-	op->type=SalOpPublish;
-	req=sal_op_build_request(op,"PUBLISH");
-	sal_add_presence_info(BELLE_SIP_MESSAGE(req),status);
-	return sal_op_send_and_create_refresher(op,req,600,publish_refresher_listener);
-
+		op->type=SalOpPublish;
+		req=sal_op_build_request(op,"PUBLISH");
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
+		sal_add_presence_info(BELLE_SIP_MESSAGE(req),status);
+		return sal_op_send_and_create_refresher(op,req,600,publish_refresher_listener);
+	} else {
+		/*update status*/
+		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
+		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
+		/*update status*/
+		sal_add_presence_info(BELLE_SIP_MESSAGE(last_publish),status);
+		return belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
+	}
 }
 

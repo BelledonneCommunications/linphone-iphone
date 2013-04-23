@@ -392,9 +392,10 @@ void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online
 	mk_presence_body (online_status, contact_info, buf, sizeof (buf), presence_style);
 
 
-
+	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_TYPE);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application",presence_style?"xpidf+xml":"pidf+xml")));
+	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_LENGTH);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 								,BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length=strlen(buf))));
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),buf,content_length);
