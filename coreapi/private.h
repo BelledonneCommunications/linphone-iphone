@@ -671,6 +671,8 @@ struct _EcCalibrator{
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
+	LinphoneEcCalibrationAudioInit audio_init_cb;
+	LinphoneEcCalibrationAudioUninit audio_uninit_cb;
 	int64_t acc;
 	int delay;
 	unsigned int rate;

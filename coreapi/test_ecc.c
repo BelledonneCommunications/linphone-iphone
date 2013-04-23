@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 	
 	linphone_core_enable_logs(NULL);
 
-	linphone_core_start_echo_calibration(lc,calibration_finished,NULL);
+	linphone_core_start_echo_calibration(lc,calibration_finished,NULL,NULL,NULL);
 	
 	while(count++<1000){
 		linphone_core_iterate(lc);

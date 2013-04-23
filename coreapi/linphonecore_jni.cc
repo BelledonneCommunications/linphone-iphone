@@ -996,6 +996,8 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 																				,jobject data) {
 	return (jint)linphone_core_start_echo_calibration((LinphoneCore*)lc
 													, LinphoneCoreData::ecCalibrationStatus
+													, NULL
+													, NULL
 													, data?env->NewGlobalRef(data):NULL);
 
 }

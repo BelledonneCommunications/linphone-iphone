@@ -64,12 +64,15 @@ typedef enum {
 
 
 typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
+typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 
 /**
  *
  * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
 **/
-LINPHONE_PUBLIC	int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
+LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
 /**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
