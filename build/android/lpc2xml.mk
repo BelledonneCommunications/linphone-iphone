@@ -39,7 +39,6 @@ LOCAL_C_INCLUDES = \
 	$(LOCAL_PATH)/../../externals/build/libxml2 \
 
 LOCAL_SHARED_LIBRARIES = \
-	libxml2
 #	liblinphonenoneon \
 #	liblinphone \
 
