@@ -2400,6 +2400,7 @@ int sal_register_refresh(SalOp *op, int expires){
 		* the exosip lock in a non blocking way, and give up if it takes too long*/
 		while (eXosip_trylock()!=0){
 			ms_usleep(100000);
+			tries++;
 			if (tries>30) {/*after 3 seconds, give up*/
 				ms_warning("Could not obtain exosip lock in a reasonable time, giving up.");
 				return -1;
