@@ -1118,7 +1118,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHPaned" id="hpaned1">
+                  <object class="GtkHPaned" id="central_paned">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <child>
@@ -1231,7 +1231,7 @@
                       </object>
                       <packing>
                         <property name="resize">False</property>
-                        <property name="shrink">True</property>
+                        <property name="shrink">False</property>
                       </packing>
                     </child>
                     <child>
