@@ -49,7 +49,7 @@ with their corresponding -dev or -devel package if you don't use source packages
 
  $ ./autogen.sh
  $ ./configure 
- $ sudo make install 
+ $ make && sudo make install 
  $ sudo ldconfig
 
 - Command line for Ubuntu && Debian 

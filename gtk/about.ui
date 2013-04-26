@@ -30,6 +30,7 @@ pt_BR: Rafael Caesar Lenzi &lt;rc_lenzi@yahoo.com.br&gt;
 pl: Robert Nasiadek &lt;darkone@darkone.pl&gt;
 cs: Petr Pisar &lt;petr.pisar@atlas.cz&gt;
 hu: anonymous
+he: Eli Zaretskii &lt;eliz@gnu.org&gt;
 </property>
     <property name="artists">Icons by kerosine.fr</property>
     <signal name="response" handler="linphone_gtk_about_response"/>
