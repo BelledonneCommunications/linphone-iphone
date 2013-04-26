@@ -2,16 +2,16 @@
 # Copyright (C) Belledonne Communications,2010
 # This file is distributed under the same license as the linphone package.
 # Eli Zaretskii <eliz@gnu.org>, 2012.
-# Isratine Citizen <genghiskhan@gmx.ca>, 2012.
+# Isratine Citizen <genghiskhan@gmx.ca>, 2012, 2013.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Linphone 3.5.2\n"
+"Project-Id-Version: Linphone 3.5.99.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-08 16:59+0200\n"
-"PO-Revision-Date: 2012-12-27 10:14+0200\n"
+"PO-Revision-Date: 2013-04-24 21:31+0200\n"
 "Last-Translator: Isratine Citizen <genghiskhan@gmx.ca>\n"
-"Language-Team: Rahut <genghiskhan@gmx.ca>\n"
+"Language-Team: Rahut Project <http://sourceforge.net/projects/rahut/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,29 +31,25 @@ msgid "Send text to %s"
 msgstr "שלח טקסט אל %s"
 
 #: ../gtk/calllogs.c:223
-#, fuzzy, c-format
+#, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "<b>בשיחה כעת</b>"
+msgstr "<b>שיחות אחרונות (%i)</b>"
 
 #: ../gtk/calllogs.c:300
 msgid "n/a"
 msgstr "לא זמין (n/a)"
 
 #: ../gtk/calllogs.c:303
-#, fuzzy
 msgid "Aborted"
 msgstr "ננטשה"
 
 #: ../gtk/calllogs.c:306
-#, fuzzy
 msgid "Missed"
 msgstr "הוחמצה"
 
-# דחיה
 #: ../gtk/calllogs.c:309
-#, fuzzy
 msgid "Declined"
-msgstr "לדחות"
+msgstr "נדחתה"
 
 #: ../gtk/calllogs.c:315
 #, c-format
@@ -70,29 +66,25 @@ msgstr[0] "שניה %i"
 msgstr[1] "%i שניות"
 
 #: ../gtk/calllogs.c:321 ../gtk/calllogs.c:327
-#, fuzzy, c-format
+#, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
-"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
-"%s\t%s %s\t"
 
 #: ../gtk/calllogs.c:323
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr ""
-"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
-"%s\t%s %s\t"
+"<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
+"%s\t%s\t"
 
 #: ../gtk/calllogs.c:329
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<small><i>%s</i></small>\t\n"
 "%s"
 msgstr ""
-"<big><b>%s</b></big>\t<small><i>%s</i>\t<i>איכות: %s</i></small>\n"
-"%s\t%s %s\t"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
@@ -124,9 +116,11 @@ msgstr "רשום אל stdout מידע ניפוי שגיאות מסוים בזמ�
 msgid "path to a file to write logs into."
 msgstr "נתיב אל קובץ שברצונך לרשום אליו את הרשומות."
 
+# cli
 #: ../gtk/main.c:106
+#, fuzzy
 msgid "Start linphone with video disabled."
-msgstr ""
+msgstr "התחל את לינפון עם וידאו מנוטרל."
 
 # cli
 #: ../gtk/main.c:113
@@ -214,14 +208,14 @@ msgid "Call paused"
 msgstr "שיחה הושהתה"
 
 #: ../gtk/main.c:1142
-#, fuzzy, c-format
+#, c-format
 msgid "<b>by %s</b>"
-msgstr "<b>Ports utilisés</b>"
+msgstr "<b>על ידי %s</b>"
 
 #: ../gtk/main.c:1191
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
-msgstr ""
+msgstr "‏%s רוצה להתחיל וידאו. האם אתה מסכים ?"
 
 #: ../gtk/main.c:1353
 msgid "Website link"
@@ -232,10 +226,11 @@ msgstr "קישור אתר רשת"
 msgid "Linphone - a video internet phone"
 msgstr "‫Linphone - וידאופון אינטרנטי"
 
+# משתמטת
 #: ../gtk/main.c:1494
 #, c-format
 msgid "%s (Default)"
-msgstr "‫%s (משתמטת)"
+msgstr "‫%s (ברירת מחדל)"
 
 #: ../gtk/main.c:1796 ../coreapi/callbacks.c:810
 #, c-format
@@ -249,7 +244,7 @@ msgid ""
 "You won't be able to send or receive audio calls."
 msgstr ""
 "לא אותרו כרטיסי קול במחשב זה.\n"
-"לא תהיה ביכולתך לשלוח או לקבל שיחות שמע."
+"לא תהיה ביכולתך לשלוח או לקבל שיחות אודיו."
 
 #: ../gtk/main.c:1911
 msgid "A free SIP video-phone"
@@ -273,7 +268,7 @@ msgstr "קריאה"
 
 #: ../gtk/friendlist.c:678
 msgid "Chat"
-msgstr ""
+msgstr "שיחה"
 
 # a name or a number
 #: ../gtk/friendlist.c:708
@@ -292,9 +287,9 @@ msgid "Delete contact '%s'"
 msgstr "מחק איש קשר '%s'"
 
 #: ../gtk/friendlist.c:926
-#, fuzzy, c-format
+#, c-format
 msgid "Delete chat history of '%s'"
-msgstr "מחק איש קשר '%s'"
+msgstr "מחק היסטוריית שיחה של '%s'"
 
 #: ../gtk/friendlist.c:977
 #, c-format
@@ -319,10 +314,12 @@ msgstr "קצב נתונים מינימלי (קי״ב/שנ׳)"
 msgid "Parameters"
 msgstr "פרמטרים"
 
+# מאופשר
 #: ../gtk/propertybox.c:435 ../gtk/propertybox.c:578
 msgid "Enabled"
 msgstr "מופעל"
 
+# מנוטרל
 #: ../gtk/propertybox.c:437 ../gtk/propertybox.c:578
 msgid "Disabled"
 msgstr "לא מופעל"
@@ -399,11 +396,11 @@ msgstr "norsk"
 
 #: ../gtk/propertybox.c:780
 msgid "Hebrew"
-msgstr ""
+msgstr "עברית"
 
 #: ../gtk/propertybox.c:781
 msgid "Serbian"
-msgstr ""
+msgstr "српски srpski"
 
 # selected הנבחרת
 #: ../gtk/propertybox.c:848
@@ -548,7 +545,6 @@ msgstr ""
 "שגיאה, חשבון לא אומת, שם משתמש כבר בשימוש או שרת לא ניתן להשגה.\n"
 "נא לחזור ולנסות שוב."
 
-# תודה רבה
 #: ../gtk/setupwizard.c:380
 msgid "Thank you. Your account is now configured and ready for use."
 msgstr "תודה לך. חשבונך מוגדר ומוכן לשימוש כעת."
@@ -610,63 +606,56 @@ msgid "Transfer to call #%i with %s"
 msgstr "העברה אל שיחה מס׳ %i עם %s"
 
 #: ../gtk/incall_view.c:210 ../gtk/incall_view.c:213
-#, fuzzy
 msgid "Not used"
-msgstr "לא נמצא"
+msgstr "לא בשימוש"
 
 #: ../gtk/incall_view.c:220
 msgid "ICE not activated"
-msgstr ""
+msgstr "‏ICE לא מופעלת"
 
 #: ../gtk/incall_view.c:222
-#, fuzzy
 msgid "ICE failed"
-msgstr "קריאה נכשלה."
+msgstr "‏ICE נכשלה"
 
 #: ../gtk/incall_view.c:224
 msgid "ICE in progress"
-msgstr ""
+msgstr "‏ICE מצויה כעת בעיצומה"
 
 #: ../gtk/incall_view.c:226
 msgid "Going through one or more NATs"
-msgstr ""
+msgstr "עובר דרך NAT אחד או יותר"
 
 #: ../gtk/incall_view.c:228
-#, fuzzy
 msgid "Direct"
-msgstr "מכוון מחדש"
+msgstr "ישיר"
 
 #: ../gtk/incall_view.c:230
 msgid "Through a relay server"
-msgstr ""
+msgstr "דרך שרת ממסר"
 
 #: ../gtk/incall_view.c:238
 msgid "uPnP not activated"
-msgstr ""
+msgstr "‏uPnP לא מופעלת"
 
-# במהלך (או) באמצע חיפוש...
 #: ../gtk/incall_view.c:240
-#, fuzzy
 msgid "uPnP in progress"
-msgstr "בדיקת STUN מצויה כעת בעיצומה..."
+msgstr "‏uPnP מצויה כעת בעיצומה"
 
 #: ../gtk/incall_view.c:242
-#, fuzzy
 msgid "uPnp not available"
-msgstr "לא זמינה"
+msgstr "‏uPnp לא זמינה"
 
 #: ../gtk/incall_view.c:244
 msgid "uPnP is running"
-msgstr ""
+msgstr "‏uPnP מורצת כעת"
 
 #: ../gtk/incall_view.c:246
-#, fuzzy
 msgid "uPnP failed"
-msgstr "קריאה נכשלה."
+msgstr "‏uPnP נכשלה"
 
 #: ../gtk/incall_view.c:256 ../gtk/incall_view.c:257
 msgid "Direct or through server"
-msgstr ""
+msgstr "ישיר או דרך שרת"
 
 #: ../gtk/incall_view.c:259 ../gtk/incall_view.c:265
 #, c-format
@@ -674,15 +663,17 @@ msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
+"הורדה: %f\n"
+"העלאה: %f (קי״ב/שנ׳)"
 
 #: ../gtk/incall_view.c:286
-#, fuzzy, c-format
+#, c-format
 msgid "%.3f seconds"
-msgstr "שניה %i"
+msgstr "%.3f שניות"
 
 #: ../gtk/incall_view.c:384 ../gtk/main.ui.h:12
 msgid "Hang up"
-msgstr ""
+msgstr "נתק"
 
 #: ../gtk/incall_view.c:476
 msgid "<b>Calling...</b>"
@@ -767,25 +758,23 @@ msgstr "<b>שיחה הסתיימה.</b>"
 
 #: ../gtk/incall_view.c:778
 msgid "Transfer in progress"
-msgstr ""
+msgstr "העברה מצויה כעת בעיצומה"
 
 #: ../gtk/incall_view.c:781
-#, fuzzy
 msgid "Transfer done."
-msgstr "העברה"
+msgstr "העברה הסתיימה."
 
 #: ../gtk/incall_view.c:784
-#, fuzzy
 msgid "Transfer failed."
-msgstr "העברה"
+msgstr "העברה נכשלה."
 
 #: ../gtk/incall_view.c:828
 msgid "Resume"
-msgstr "חזרה"
+msgstr "חזור"
 
 #: ../gtk/incall_view.c:835 ../gtk/main.ui.h:9
 msgid "Pause"
-msgstr "השהיה"
+msgstr "השהה"
 
 #: ../gtk/incall_view.c:900
 #, c-format
@@ -793,11 +782,12 @@ msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
+"<small><i>מקליט אל תוך\n"
+"%s %s</i></small>"
 
 #: ../gtk/incall_view.c:900
-#, fuzzy
 msgid "(Paused)"
-msgstr "השהיה"
+msgstr "(מושהה)"
 
 #: ../gtk/loginframe.c:93
 #, c-format
@@ -808,32 +798,32 @@ msgstr "נא להזין מידע התחברות עבור %s"
 # זה ש: נתקשר או מתוקשר או הותקשר?
 #: ../gtk/main.ui.h:1
 msgid "<b>Callee name</b>"
-msgstr "<b>שם המקבל</b>"
+msgstr "<b>שם מקבל</b>"
 
+# שגר
 #: ../gtk/main.ui.h:2
 msgid "Send"
-msgstr "שיגור"
+msgstr "שלח"
 
 #: ../gtk/main.ui.h:3
-#, fuzzy
 msgid "End conference"
-msgstr "בשיחת ועידה"
+msgstr "סיים ועידה"
 
 #: ../gtk/main.ui.h:7
 msgid "Record this call to an audio file"
-msgstr ""
+msgstr "הקלט את שיחה זו אל קובץ אודיו"
 
 #: ../gtk/main.ui.h:8
 msgid "Video"
-msgstr ""
+msgstr "וידאו"
 
 #: ../gtk/main.ui.h:10
 msgid "Mute"
-msgstr ""
+msgstr "השתק"
 
 #: ../gtk/main.ui.h:11
 msgid "Transfer"
-msgstr "העברה"
+msgstr "העבר"
 
 #: ../gtk/main.ui.h:14
 msgid "In call"
@@ -853,7 +843,7 @@ msgstr "_אפשרויות"
 
 #: ../gtk/main.ui.h:18
 msgid "Always start video"
-msgstr ""
+msgstr "התחל תמיד וידאו"
 
 #: ../gtk/main.ui.h:19
 msgid "Enable self-view"
@@ -885,7 +875,7 @@ msgstr "כתובת SIP או מספר טלפון"
 
 #: ../gtk/main.ui.h:26
 msgid "Initiate a new call"
-msgstr "התחלת שיחה חדשה"
+msgstr "התחל שיחה חדשה"
 
 #: ../gtk/main.ui.h:27
 msgid "Contacts"
@@ -909,7 +899,7 @@ msgstr "<b>הוסף אנשי קשר מן מדור</b>"
 
 #: ../gtk/main.ui.h:32
 msgid "Add contact"
-msgstr "הוספת איש קשר"
+msgstr "הוסף איש קשר"
 
 # קריאות אחרונות
 #: ../gtk/main.ui.h:33
@@ -969,7 +959,7 @@ msgstr "ברירת מחדל"
 
 #: ../gtk/main.ui.h:46
 msgid "Delete"
-msgstr ""
+msgstr "מחק"
 
 #: ../gtk/about.ui.h:1
 msgid "About linphone"
@@ -1035,7 +1025,7 @@ msgstr "נא להזין את סיסמת המתחם"
 
 #: ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr "זהות משתמש (‫UID)"
+msgstr "מזהה משתמש"
 
 # קריאות
 #: ../gtk/call_logs.ui.h:1
@@ -1113,7 +1103,7 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:5
 msgid "Audio codecs"
-msgstr "קודקים של שמע"
+msgstr "קודקים של אודיו"
 
 #: ../gtk/parameters.ui.h:6
 msgid "Video codecs"
@@ -1125,15 +1115,15 @@ msgstr ""
 
 #: ../gtk/parameters.ui.h:8
 msgid "SIP (UDP)"
-msgstr ""
+msgstr "‏SIP ‏(UDP)"
 
 #: ../gtk/parameters.ui.h:9
 msgid "SIP (TCP)"
-msgstr ""
+msgstr "‏SIP ‏(TCP)"
 
 #: ../gtk/parameters.ui.h:10
 msgid "SIP (TLS)"
-msgstr ""
+msgstr "‏SIP ‏(TLS)"
 
 #: ../gtk/parameters.ui.h:11
 msgid "Settings"
@@ -1167,29 +1157,27 @@ msgstr "וידאו RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:18
 msgid "Audio RTP/UDP:"
-msgstr "שמע RTP/UDP:"
+msgstr "אודיו RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:19
 msgid "DSCP fields"
-msgstr ""
+msgstr "שדות DSCP"
 
 #: ../gtk/parameters.ui.h:20
 msgid "Fixed"
-msgstr ""
+msgstr "מקובע"
 
-# מנהרה
 #: ../gtk/parameters.ui.h:21
 msgid "Tunnel"
-msgstr ""
+msgstr "מינהור"
 
 #: ../gtk/parameters.ui.h:22
-#, fuzzy
 msgid "Media encryption is mandatory"
-msgstr "סוג הצפנת מדיה"
+msgstr "הצפנת מדיה הינה מנדטורית"
 
 #: ../gtk/parameters.ui.h:23
 msgid "<b>Network protocol and ports</b>"
-msgstr "<b>פרוטוקולי רשת עבודה ופורטים</b>"
+msgstr "<b>פרוטוקולי רשת תקשורת ופורטים</b>"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Direct connection to the Internet"
@@ -1197,31 +1185,30 @@ msgstr "חיבור ישיר אל האינטרנט"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Behind NAT / Firewall (specify gateway IP below)"
-msgstr "מאחורי NAT \\ חומת־אש (ציון כתובת שער (Gateway IP) למטה)"
+msgstr "מאחורי NAT / חומת אש (ציון כתובת שער (Gateway IP) למטה)"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Public IP address:"
 msgstr "כתובת IP פומבית:"
 
+# ניצול STUN
 # שימוש ב־STUN
 # utilize
 #: ../gtk/parameters.ui.h:27
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
+msgstr "מאחורי NAT  /  חומת אש (בעזרת STUN לפתירה)"
 
 # שימוש ב־STUN
 # utilize
 #: ../gtk/parameters.ui.h:28
-#, fuzzy
 msgid "Behind NAT / Firewall (use ICE)"
-msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
+msgstr "מאחורי NAT  /  חומת אש (בעזרת ICE)"
 
 # שימוש ב־STUN
 # utilize
 #: ../gtk/parameters.ui.h:29
-#, fuzzy
 msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "מאחורי NAT \\ חומת־אש (ניצול STUN)"
+msgstr "מאחורי NAT  /  חומת אש (בעזרת uPnP)"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Stun server:"
@@ -1233,7 +1220,7 @@ msgstr "<b>‫NAT וחומת אש</b>"
 
 #: ../gtk/parameters.ui.h:32
 msgid "Network settings"
-msgstr "הגדרות רשת עבודה"
+msgstr "הגדרות רשת תקשורת"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Ring sound:"
@@ -1261,7 +1248,7 @@ msgstr "אפשר ביטול הד"
 
 #: ../gtk/parameters.ui.h:39
 msgid "<b>Audio</b>"
-msgstr "<b>שמע</b>"
+msgstr "<b>אודיו</b>"
 
 #: ../gtk/parameters.ui.h:40
 msgid "Video input device:"
@@ -1342,12 +1329,12 @@ msgstr "<b>קודקים</b>"
 msgid "0 stands for \"unlimited\""
 msgstr "0 מסמל \"בלי הגבלה\""
 
-# האם KiB means kibibyte?
+# does KiB mean kibibyte?
 #: ../gtk/parameters.ui.h:61
 msgid "Upload speed limit in Kbit/sec:"
 msgstr "מגבלת מהירות העלאה בקי״ב/שנ׳:"
 
-# האם KiB means kibibyte?
+# האם KiB זה kibibyte?
 # קי״ב (1024) אל מול ק״ב (1000)
 #: ../gtk/parameters.ui.h:62
 msgid "Download speed limit in Kbit/sec:"
@@ -1418,89 +1405,80 @@ msgid "Please wait"
 msgstr "נא להמתין"
 
 #: ../gtk/dscp_settings.ui.h:1
-#, fuzzy
 msgid "Dscp settings"
-msgstr "הגדרות"
+msgstr "הגדרות Dscp"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
 msgstr ""
 
 #: ../gtk/dscp_settings.ui.h:3
-#, fuzzy
 msgid "Audio RTP stream"
-msgstr "שמע RTP/UDP:"
+msgstr "זרם RTP אודיו"
 
 #: ../gtk/dscp_settings.ui.h:4
-#, fuzzy
 msgid "Video RTP stream"
-msgstr "וידאו RTP/UDP:"
+msgstr "זרם RTP וידאו"
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
-msgstr ""
+msgstr "<b>קבע ערכי DSCP (בהקסדצימלי)</b>"
 
 #: ../gtk/call_statistics.ui.h:1
 msgid "Call statistics"
-msgstr ""
+msgstr "סטטיסטיקות שיחה"
 
 #: ../gtk/call_statistics.ui.h:2
-#, fuzzy
 msgid "Audio codec"
-msgstr "קודקים של שמע"
+msgstr "קודק של אודיו"
 
 #: ../gtk/call_statistics.ui.h:3
-#, fuzzy
 msgid "Video codec"
-msgstr "קודקים של וידאו"
+msgstr "קודק של וידאו"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
-msgstr ""
+msgstr "ניצול רוחב פס IP אודיו"
 
 #: ../gtk/call_statistics.ui.h:5
-#, fuzzy
 msgid "Audio Media connectivity"
-msgstr "סוג הצפנת מדיה"
+msgstr "קישוריות מדיום אודיו"
 
 #: ../gtk/call_statistics.ui.h:6
 msgid "Video IP bandwidth usage"
-msgstr ""
+msgstr "ניצול רוחב פס IP וידאו"
 
 #: ../gtk/call_statistics.ui.h:7
-#, fuzzy
 msgid "Video Media connectivity"
-msgstr "סוג הצפנת מדיה"
+msgstr "קישוריות מדיום וידאו"
 
 #: ../gtk/call_statistics.ui.h:8
 msgid "Round trip time"
-msgstr ""
+msgstr "זמן הלוך ושוב"
 
 #: ../gtk/call_statistics.ui.h:9
-#, fuzzy
 msgid "<b>Call statistics and information</b>"
-msgstr "<b>מידע איש קשר</b>"
+msgstr "<b>סטטיסטיקות ומידע שיחה</b>"
 
 #: ../gtk/tunnel_config.ui.h:1
-#, fuzzy
 msgid "Configure VoIP tunnel"
-msgstr "הגדרת חשבון ‫SIP"
+msgstr "הגדר תיעול VoIP"
 
 #: ../gtk/tunnel_config.ui.h:2
 msgid "Host"
-msgstr ""
+msgstr "מארח"
 
 #: ../gtk/tunnel_config.ui.h:3
 msgid "Port"
-msgstr ""
+msgstr "פורט"
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
-msgstr ""
+msgstr "<b>הגדר מינהור</b>"
 
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
-msgstr ""
+msgstr "<b>הגדר http proxy (רשות)</b>"
 
 #: ../gtk/keypad.ui.h:1
 msgid "D"
@@ -1520,15 +1498,15 @@ msgstr ""
 
 #: ../gtk/keypad.ui.h:6
 msgid "9"
-msgstr "9 (סעפ)"
+msgstr "9 [סעפ]"
 
 #: ../gtk/keypad.ui.h:7
 msgid "8"
-msgstr "8 (צק)"
+msgstr "8 [צק]"
 
 #: ../gtk/keypad.ui.h:8
 msgid "7"
-msgstr "7 (רשת)"
+msgstr "7 [רשת]"
 
 #: ../gtk/keypad.ui.h:9
 msgid "B"
@@ -1536,15 +1514,15 @@ msgstr ""
 
 #: ../gtk/keypad.ui.h:10
 msgid "6"
-msgstr "6 (זחט)"
+msgstr "6 [זחט]"
 
 #: ../gtk/keypad.ui.h:11
 msgid "5"
-msgstr "5 (יכל)"
+msgstr "5 [יכל]"
 
 #: ../gtk/keypad.ui.h:12
 msgid "4"
-msgstr "4 (מנ)"
+msgstr "4 [מנ]"
 
 #: ../gtk/keypad.ui.h:13
 msgid "A"
@@ -1552,11 +1530,11 @@ msgstr ""
 
 #: ../gtk/keypad.ui.h:14
 msgid "3"
-msgstr "3 (אבג)"
+msgstr "3 [אבג]"
 
 #: ../gtk/keypad.ui.h:15
 msgid "2"
-msgstr "2 (דהו)"
+msgstr "2 [דהו]"
 
 #: ../gtk/keypad.ui.h:16
 msgid "1"
@@ -1692,7 +1670,7 @@ msgstr "בדיקת STUN מצויה כעת בעיצומה..."
 
 #: ../coreapi/misc.c:630
 msgid "ICE local candidates gathering in progress..."
-msgstr ""
+msgstr "צבירת מועמדים מקומיים של ICE מצויה כעת בעיצומה..."
 
 #: ../coreapi/friend.c:33
 msgid "Online"
@@ -1745,14 +1723,14 @@ msgstr "בהמתנה"
 
 #: ../coreapi/friend.c:66
 msgid "Unknown-bug"
-msgstr "תקלה לא ידועה"
+msgstr "תקלה לא מוכרת"
 
 #: ../coreapi/proxy.c:204
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
-"כתובת sip proxy שהוזנה הינה שגויה, זו צריכה להתחיל עם‭\"sip:\" ‬ לאחר שם מארח."
+"כתובת sip proxy שהזנת הינה שגויה, זו צריכה להתחיל עם‭\"sip:\" ‬ לאחר שם מארח."
 
 # כמו למשל
 #: ../coreapi/proxy.c:210
@@ -1806,24 +1784,21 @@ msgstr "קריאה נענתה על ידי %s."
 # אי תאימות
 # אי התאמה
 #: ../coreapi/callbacks.c:412
-#, fuzzy
 msgid "Incompatible, check codecs or security settings..."
-msgstr "חוסר תאימות, נא לבדוק קודקים..."
+msgstr "חוסר תאימות, בדוק קודקים או הגדרות אבטחה..."
 
 #: ../coreapi/callbacks.c:460
-#, fuzzy
 msgid "We have been resumed."
-msgstr "חזרנו..."
+msgstr "חזרנו."
 
 #: ../coreapi/callbacks.c:469
 msgid "We are paused by other party."
-msgstr ""
+msgstr "אנו מושהים על ידי צד אחר."
 
 # באופן מרוחק
 #: ../coreapi/callbacks.c:475
-#, fuzzy
 msgid "Call is updated by remote."
-msgstr "שיחה עודכנה מרחוק..."
+msgstr "שיחה עודכנה מרחוק."
 
 #: ../coreapi/callbacks.c:544
 msgid "Call terminated."
@@ -1862,9 +1837,8 @@ msgstr "מכוון מחדש"
 # אי תאימות
 # אי התאמה
 #: ../coreapi/callbacks.c:627
-#, fuzzy
 msgid "Incompatible media parameters."
-msgstr "חוסר תאימות, נא לבדוק קודקים..."
+msgstr "פרמטריי מדיה חסרי תואמים."
 
 #: ../coreapi/callbacks.c:633
 msgid "Call failed."

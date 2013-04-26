@@ -758,10 +758,11 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"buttons_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"incall_audioview"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"quality_indicator"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
-
+	
 	if (taskid!=0) g_source_remove(taskid);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,call);
 	if (in_conf)
