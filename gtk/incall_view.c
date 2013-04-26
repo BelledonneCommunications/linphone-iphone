@@ -701,9 +701,11 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	if (in_conf){
 		linphone_gtk_set_in_conference(call);
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"incall_mute"),FALSE);
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"hold_call"),FALSE);
 	}else{
 		linphone_gtk_unset_from_conference(call); /*in case it was previously*/
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"incall_mute"),TRUE);
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"hold_call"),TRUE);
 	}
 	gtk_widget_show_all(linphone_gtk_get_widget(callview,"buttons_panel"));
 	if (!in_conf) gtk_widget_show_all(linphone_gtk_get_widget(callview,"record_hbox"));
