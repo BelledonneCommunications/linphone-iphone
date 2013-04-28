@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-08 16:59+0200\n"
+"POT-Creation-Date: 2013-04-24 14:04+0200\n"
 "PO-Revision-Date: 2009-02-17 15:22+0100\n"
 "Last-Translator: Emmanuel Frécon <emmanuel.frecon@myjoice.com>\n"
 "Language-Team: SWEDISH <SE@li.org>\n"
@@ -97,7 +97,7 @@ msgstr "Mikrofon av"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Kunde inte hitta pixmap filen: %s"
 
-#: ../gtk/chat.c:324 ../gtk/friendlist.c:872
+#: ../gtk/chat.c:336 ../gtk/friendlist.c:872
 msgid "Invalid sip contact !"
 msgstr "ogiltig SIP kontakt!"
 
@@ -165,11 +165,11 @@ msgstr ""
 msgid "Call error"
 msgstr "Samtalshistorik"
 
-#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3189
+#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3210
 msgid "Call ended"
 msgstr "Samtalet slut"
 
-#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:239
+#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:240
 msgid "Incoming call"
 msgstr "Inkommande samtal"
 
@@ -1503,19 +1503,19 @@ msgstr ""
 msgid "1"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:227
+#: ../coreapi/linphonecore.c:228
 msgid "aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:230
+#: ../coreapi/linphonecore.c:231
 msgid "completed"
 msgstr "avslutade"
 
-#: ../coreapi/linphonecore.c:233
+#: ../coreapi/linphonecore.c:234
 msgid "missed"
 msgstr "missade"
 
-#: ../coreapi/linphonecore.c:238
+#: ../coreapi/linphonecore.c:239
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1530,23 +1530,23 @@ msgstr ""
 "Status: %s\n"
 "Längd: %i min %i sek\n"
 
-#: ../coreapi/linphonecore.c:239
+#: ../coreapi/linphonecore.c:240
 msgid "Outgoing call"
 msgstr "Utgående samtal"
 
-#: ../coreapi/linphonecore.c:1312
+#: ../coreapi/linphonecore.c:1321
 msgid "Ready"
 msgstr "Redo"
 
-#: ../coreapi/linphonecore.c:2184
+#: ../coreapi/linphonecore.c:2205
 msgid "Looking for telephone number destination..."
 msgstr "Leta efter telefonnummer för destinationen..."
 
-#: ../coreapi/linphonecore.c:2187
+#: ../coreapi/linphonecore.c:2208
 msgid "Could not resolve this number."
 msgstr "Kan inte nå dett nummer."
 
-#: ../coreapi/linphonecore.c:2231
+#: ../coreapi/linphonecore.c:2252
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1554,51 +1554,51 @@ msgstr ""
 "Kan inte förstå angiven SIP adress. En SIP adress vanligen ser ut som sip:"
 "användare@domänen"
 
-#: ../coreapi/linphonecore.c:2432
+#: ../coreapi/linphonecore.c:2453
 msgid "Contacting"
 msgstr "Kontaktar"
 
-#: ../coreapi/linphonecore.c:2439
+#: ../coreapi/linphonecore.c:2460
 #, fuzzy
 msgid "Could not call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:2549
+#: ../coreapi/linphonecore.c:2570
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2731
+#: ../coreapi/linphonecore.c:2752
 #, fuzzy
 msgid "is contacting you"
 msgstr "kontaktar dig."
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid " and asked autoanswer."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid "."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2799
+#: ../coreapi/linphonecore.c:2820
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3138
+#: ../coreapi/linphonecore.c:3159
 msgid "Connected."
 msgstr "Kopplad"
 
-#: ../coreapi/linphonecore.c:3166
+#: ../coreapi/linphonecore.c:3187
 #, fuzzy
 msgid "Call aborted"
 msgstr "avbrytade"
 
-#: ../coreapi/linphonecore.c:3357
+#: ../coreapi/linphonecore.c:3378
 #, fuzzy
 msgid "Could not pause the call"
 msgstr "Kunde inte ringa"
 
-#: ../coreapi/linphonecore.c:3362
+#: ../coreapi/linphonecore.c:3383
 #, fuzzy
 msgid "Pausing the current call..."
 msgstr "Nuvarande samtal"
@@ -1821,7 +1821,7 @@ msgstr "Registrering hos %s mislyckades: %s"
 msgid "Authentication token is %s"
 msgstr "Linphone - Autentisering krävs"
 
-#: ../coreapi/linphonecall.c:2319
+#: ../coreapi/linphonecall.c:2355
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

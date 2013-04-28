@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-08 16:59+0200\n"
+"POT-Creation-Date: 2013-04-24 14:04+0200\n"
 "PO-Revision-Date: 2011-04-05 01:56+0200\n"
 "Last-Translator: Øyvind Sæther <oyvinds@everdot.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -98,7 +98,7 @@ msgstr "Skru mikrofonen av"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Fant ikke pixmap fli: %s"
 
-#: ../gtk/chat.c:324 ../gtk/friendlist.c:872
+#: ../gtk/chat.c:336 ../gtk/friendlist.c:872
 msgid "Invalid sip contact !"
 msgstr "Ugyldig SIP kontakt !"
 
@@ -166,11 +166,11 @@ msgstr ""
 msgid "Call error"
 msgstr "Samtalehistorikk"
 
-#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3189
+#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3210
 msgid "Call ended"
 msgstr "Samtale avsluttet"
 
-#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:239
+#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:240
 msgid "Incoming call"
 msgstr "Innkommende samtale"
 
@@ -1498,19 +1498,19 @@ msgstr "2"
 msgid "1"
 msgstr "1"
 
-#: ../coreapi/linphonecore.c:227
+#: ../coreapi/linphonecore.c:228
 msgid "aborted"
 msgstr "avbrutt"
 
-#: ../coreapi/linphonecore.c:230
+#: ../coreapi/linphonecore.c:231
 msgid "completed"
 msgstr "Fullført"
 
-#: ../coreapi/linphonecore.c:233
+#: ../coreapi/linphonecore.c:234
 msgid "missed"
 msgstr "ubesvart"
 
-#: ../coreapi/linphonecore.c:238
+#: ../coreapi/linphonecore.c:239
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1525,23 +1525,23 @@ msgstr ""
 "Status: %s\n"
 "Lengde: %i min %i sek\n"
 
-#: ../coreapi/linphonecore.c:239
+#: ../coreapi/linphonecore.c:240
 msgid "Outgoing call"
 msgstr "Utgående samtale"
 
-#: ../coreapi/linphonecore.c:1312
+#: ../coreapi/linphonecore.c:1321
 msgid "Ready"
 msgstr "Klar"
 
-#: ../coreapi/linphonecore.c:2184
+#: ../coreapi/linphonecore.c:2205
 msgid "Looking for telephone number destination..."
 msgstr "Ser etter telefonnummer for destinasjonen..."
 
-#: ../coreapi/linphonecore.c:2187
+#: ../coreapi/linphonecore.c:2208
 msgid "Could not resolve this number."
 msgstr "Kan ikke tilkoble dette nummeret."
 
-#: ../coreapi/linphonecore.c:2231
+#: ../coreapi/linphonecore.c:2252
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1549,47 +1549,47 @@ msgstr ""
 "Klarer ikke å tolke angitt SIP-adresse. En SIP-adresse er vanligvis ut som "
 "sip: brukernavn@domenenavn"
 
-#: ../coreapi/linphonecore.c:2432
+#: ../coreapi/linphonecore.c:2453
 msgid "Contacting"
 msgstr "Tilknytter"
 
-#: ../coreapi/linphonecore.c:2439
+#: ../coreapi/linphonecore.c:2460
 msgid "Could not call"
 msgstr "Kunne ikke ringe"
 
-#: ../coreapi/linphonecore.c:2549
+#: ../coreapi/linphonecore.c:2570
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Beklager, du har nådd maksimalt antall samtidige samtaler"
 
-#: ../coreapi/linphonecore.c:2731
+#: ../coreapi/linphonecore.c:2752
 msgid "is contacting you"
 msgstr "Kontakter deg."
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid " and asked autoanswer."
 msgstr " og ba om autosvar."
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid "."
 msgstr "."
 
-#: ../coreapi/linphonecore.c:2799
+#: ../coreapi/linphonecore.c:2820
 msgid "Modifying call parameters..."
 msgstr "Endrer ringeparametre..."
 
-#: ../coreapi/linphonecore.c:3138
+#: ../coreapi/linphonecore.c:3159
 msgid "Connected."
 msgstr "Tilkoblet"
 
-#: ../coreapi/linphonecore.c:3166
+#: ../coreapi/linphonecore.c:3187
 msgid "Call aborted"
 msgstr "Samtale avbrutt"
 
-#: ../coreapi/linphonecore.c:3357
+#: ../coreapi/linphonecore.c:3378
 msgid "Could not pause the call"
 msgstr "Kunne ikke pause samtalen"
 
-#: ../coreapi/linphonecore.c:3362
+#: ../coreapi/linphonecore.c:3383
 msgid "Pausing the current call..."
 msgstr "Pauser nåværende samtale"
 
@@ -1810,7 +1810,7 @@ msgstr "Registrering hos %s mislykkes: %s"
 msgid "Authentication token is %s"
 msgstr "Autorisering kreves"
 
-#: ../coreapi/linphonecall.c:2319
+#: ../coreapi/linphonecall.c:2355
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

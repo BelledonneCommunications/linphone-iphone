@@ -2,23 +2,63 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
 
 ******************Building linphone ***********************************
+
+- Install build time dependencies
+	- libtool
+	- intltool
+
 - you need at least:
-		- libosip2>=3.0.3
-		- libeXosip2>=3.0.3
-		- speex>=1.2.0 (including libspeexdsp part)
-		- libreadline (optional: for convenient command line in linphonec)
-	+ gsm codec (gsm source package or libgsm-dev or gsm-devel) (optional)
-	+ if you want to gtk/glade interface:
-		- gtk>=2.16.0
+ 	- libosip2>=3.0.3
+	- libeXosip2>=3.0.3
+	- speex>=1.2.0 (including libspeexdsp part)
+	
+	+ if you want the gtk/glade interface:
+		- libgtk >=2.16.0
 	+ if you want video support:
 		- SDL>=1.2.10
 		- libavcodec (ffmpeg) 
 		- libswscale (part of ffmpeg too) for better scaling performance
+		- libxv (x11 video extension)
+	       - ligl1-mesa (OpenGL API -- GLX development files)
+	       - libglew (OpenGL Extension Wrangler library)
+	       - libv4l (Video for linux)
+	       - libx11 (x11)
 		- theora (optional)
-	+ if you want uPnP support:
+
+	+ gsm codec (gsm source package or libgsm-dev or gsm-devel) (optional)
+	+ libreadline (optional: for convenient command line in linphonec)
+	+ libsoup (optional: for wizard - account creation assistant)
+	+ libsqlite3 (optional : for a local history of messages)
+	+ if you want uPnP support (optional):
 		- libupnp (version 1.6 branch (not patched with 18-url-upnpstrings.patch))
+	
+	+ Install srtp (optional) for call encryption :
+		$ git clone git://git.linphone.org/srtp.git
+ 		$ cd srtp && autoconf && ./configure && make
+ 		$ sudo make install
+
+	+ Install zrtpcpp (optional), for unbreakable call encryption
+ 		$ sudo apt-get install cmake libssl-dev
+ 		$ git clone git://git.linphone.org/zrtpcpp.git
+		$ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
+ 		$ sudo make install
 
 with their corresponding -dev or -devel package if you don't use source packages.
+
+- Compile linphone
+
+ $ ./autogen.sh
+ $ ./configure 
+ $ make && sudo make install 
+ $ sudo ldconfig
+
+- Command line for Ubuntu && Debian 
+
+	$ sudo apt-get install libtool intltool libgtk2.0-dev libosip2-dev libexosip2-dev libspeexdsp-dev libavcodec-dev libswscale-dev libx11-dev libvx-dev ligl1-mesa-dev libglew-dev libv4l-dev
+
+	+ for optional library
+	$ sudo apt-get install libreadline-dev liggsm1-dev libtheora-dev libsoup2.4-dev libsqlit3-dev libupnp6-dev 
+ 
 
 For windows compilation see README.mingw.
 For macOS X, see README.macos

@@ -131,6 +131,13 @@ void linphone_gtk_update_my_port(GtkWidget *w){
 	linphone_core_set_sip_transports(lc,&tr);
 }
 
+void linphone_gtk_set_propety_entry(GtkWidget *w, gboolean stunServer, gboolean ip){
+	GtkWidget *stun_entry=linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"stun_server");
+	GtkWidget *ip_entry=linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"nat_address");
+	gtk_widget_set_sensitive(stun_entry,stunServer);
+	gtk_widget_set_sensitive(ip_entry,ip);
+}
+
 void linphone_gtk_stun_server_changed(GtkWidget *w){
 	const gchar *addr=gtk_entry_get_text(GTK_ENTRY(w));
 	linphone_core_set_stun_server(linphone_gtk_get_core(),addr);
@@ -217,28 +224,38 @@ void linphone_gtk_max_video_port_changed(GtkWidget *w){
 }
 
 void linphone_gtk_no_firewall_toggled(GtkWidget *w){
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))){
+		linphone_gtk_set_propety_entry(w,FALSE,FALSE);
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyNoFirewall);
+	}
 }
 
 void linphone_gtk_use_nat_address_toggled(GtkWidget *w){
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))){
+		linphone_gtk_set_propety_entry(w,FALSE,TRUE);
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseNatAddress);
+	}
 }
 
 void linphone_gtk_use_stun_toggled(GtkWidget *w){
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))){
+		linphone_gtk_set_propety_entry(w,TRUE,FALSE);
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseStun);
+	}
 }
 
 void linphone_gtk_use_ice_toggled(GtkWidget *w){
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))){
+		linphone_gtk_set_propety_entry(w,TRUE,FALSE);
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseIce);
+	}
 }
 
 void linphone_gtk_use_upnp_toggled(GtkWidget *w){
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w))){
+		linphone_gtk_set_propety_entry(w,FALSE,FALSE);
 		linphone_core_set_firewall_policy(linphone_gtk_get_core(),LinphonePolicyUseUpnp);
+	}
 }
 
 void linphone_gtk_mtu_changed(GtkWidget *w){
