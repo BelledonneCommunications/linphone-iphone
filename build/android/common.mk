@@ -43,6 +43,7 @@ LOCAL_SRC_FILES := \
 	bellesip_sal/sal_op_message.c \
 	bellesip_sal/sal_op_presence.c \
 	bellesip_sal/sal_op_registration.c \
+	bellesip_sal/sal_op_publish.c \
 	bellesip_sal/sal_sdp.c \
 	sal.c \
 	offeranswer.c \
@@ -98,12 +99,6 @@ LOCAL_STATIC_LIBRARIES := \
 	libbellesip \
 	libgsm 
 
-ifeq ($(BUILD_REMOTE_PROVISIONING),1)
-LOCAL_STATIC_LIBRARIES += \
-	libxml2lpc \
-	liblpc2xml \
-	liblpxml2
-endif
 
 ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
@@ -204,6 +199,7 @@ else
 		LOCAL_STATIC_LIBRARIES += libsrtp-static
 	endif
 endif
+
 ifeq ($(BUILD_REMOTE_PROVISIONING),1)
 LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
 			../tools/xml2lpc_jni.cc \
@@ -211,8 +207,10 @@ LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
         		../tools/lpc2xml_jni.cc 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
-	$(LOCAL_PATH)/../../externals/build/libxml2 
-LOCAL_STATIC_LIBRARIES += libxml2
+	$(LOCAL_PATH)/../../externals/build/libxml2
+ 
+LOCAL_STATIC_LIBRARIES += liblpxml2
+
 endif
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
