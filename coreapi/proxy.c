@@ -251,6 +251,11 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 			sal_unregister(obj->op);
 		}
 	}
+	if (obj->publish_op){
+		/*we should certainly cancel our publish by some manner*/
+		sal_op_release(obj->publish_op);
+		obj->publish_op=NULL;
+	}
 }
 
 void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
@@ -846,13 +851,14 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 			       LinphoneOnlineStatus presence_mode){
 	int err;
-	SalOp *op=sal_op_new(proxy->lc->sal);
-	sal_op_set_route(op,proxy->reg_proxy);
-	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
-	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
-	if (proxy->publish_op!=NULL)
-		sal_op_release(proxy->publish_op);
-	proxy->publish_op=op;
+	
+	if (proxy->publish_op==NULL){
+		proxy->publish_op=sal_op_new(proxy->lc->sal);
+		sal_op_set_route(proxy->publish_op,proxy->reg_proxy);
+		sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
+		sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
+	}
+	err=sal_publish(proxy->publish_op,NULL,NULL,linphone_online_status_to_sal(presence_mode));
 	return err;
 }
 
