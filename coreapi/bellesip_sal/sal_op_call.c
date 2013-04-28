@@ -787,12 +787,6 @@ int sal_call_is_offerer(const SalOp *h){
 	return h->sdp_offering;
 }
 
-void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
-	ms_warning("sal_expire_old_registration_contacts not implemented ");
-}
 
-void sal_use_dates(Sal *ctx, bool_t enabled){
-	ms_warning("sal_use_dates not implemented yet");
-}
 
 

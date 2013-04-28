@@ -677,3 +677,11 @@ const char* sal_op_type_to_string(const SalOpType_t type) {
 		return "SalOpUnknown";
 	}
 }
+
+void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
+	ms_warning("sal_expire_old_registration_contacts not implemented ");
+}
+
+void sal_use_dates(Sal *ctx, bool_t enabled){
+	ctx->use_dates=enabled;
+}

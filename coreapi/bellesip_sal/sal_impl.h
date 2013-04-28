@@ -42,6 +42,7 @@ struct Sal{
 	bool_t nat_helper_enabled;
 	bool_t tls_verify;
 	bool_t tls_verify_cn;
+	bool_t use_dates;
 };
 
 typedef enum SalOpSate {

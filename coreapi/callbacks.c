@@ -967,6 +967,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	chat_msg->state=chatStatusSal2Linphone(status);
 	linphone_chat_message_store_state(chat_msg);
 	if (chat_msg && chat_msg->cb) {
+		ms_message("Notifying text delivery with status %i",chat_msg->state);
 		chat_msg->cb(chat_msg
 			,chat_msg->state
 			,chat_msg->cb_ud);

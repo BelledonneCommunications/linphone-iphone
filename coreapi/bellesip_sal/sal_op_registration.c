@@ -73,6 +73,7 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
+	
 	op->type=SalOpRegister;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
@@ -80,7 +81,10 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	req = sal_op_build_request(op,"REGISTER");
 	req_uri = belle_sip_request_get_uri(req);
 	belle_sip_uri_set_user(req_uri,NULL); /*remove userinfo if any*/
-
+	if (op->base.root->use_dates){
+		time_t curtime=time(NULL);
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
+	}
 	return sal_op_send_and_create_refresher(op,req,expires,register_refresher_listener);
 }
 

@@ -87,6 +87,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_response_t* resp;
 	belle_sip_header_call_id_t* call_id = belle_sip_message_get_header_by_type(req,belle_sip_header_call_id_t);
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
+	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
 	SalMessage salmsg;
 	char message_id[256]={0};
 	int response_code=501;
@@ -109,6 +110,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		salmsg.text=plain_text?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
 		salmsg.url=external_body?belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"):NULL;
 		salmsg.message_id=message_id;
+		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
 		op->base.root->callbacks.text_received(op,&salmsg);
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
@@ -124,10 +126,11 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 }
 
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
-	/*FIXME impement time*/
 	belle_sip_request_t* req;
 	char content_type_raw[256];
 	size_t content_length = msg?strlen(msg):0;
+	time_t curtime=time(NULL);
+	
 	sal_op_message_fill_cbs(op);
 	if (from)
 		sal_op_set_from(op,from);
@@ -138,6 +141,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	snprintf(content_type_raw,sizeof(content_type_raw),BELLE_SIP_CONTENT_TYPE ": %s",content_type);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_parse(content_type_raw)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),msg,content_length);
 	return sal_op_send_request(op,req);
 
