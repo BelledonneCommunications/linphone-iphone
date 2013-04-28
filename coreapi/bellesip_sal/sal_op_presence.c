@@ -493,9 +493,11 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
 	op->pending_server_trans=server_transaction;
 
+
 	if (!op->dialog) {
 		op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
 		belle_sip_dialog_set_application_data(op->dialog,op);
+		sal_op_ref(op);
 		ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
