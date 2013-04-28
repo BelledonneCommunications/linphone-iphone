@@ -896,6 +896,7 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	if (ai) {
 		sai->userid=ai->userid?ai->userid:ai->username;
 		sai->password=ai->passwd;
+		sai->ha1=ai->ha1;
 		ai->usecount++;
 		ai->last_use_time=ms_time(NULL);
 		return TRUE;

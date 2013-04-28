@@ -161,18 +161,22 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	
 	if (obj==NULL || lp_config_get_int(config, "sip", "store_auth_info", 1) == 0){
 		return;
-	}		
+	}
+	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username||obj->userid)) {
+		/*compute ha1 to avoid storing clear text password*/
+		obj->ha1=ms_malloc(33);
+		sal_auth_compute_ha1(obj->userid?obj->userid:obj->username,obj->realm,obj->passwd,obj->ha1);
+	}
 	if (obj->username!=NULL){
 		lp_config_set_string(config,key,"username",obj->username);
 	}
 	if (obj->userid!=NULL){
 		lp_config_set_string(config,key,"userid",obj->userid);
 	}
-	if (obj->passwd!=NULL){
-		lp_config_set_string(config,key,"passwd",obj->passwd);
-	}
 	if (obj->ha1!=NULL){
 		lp_config_set_string(config,key,"ha1",obj->ha1);
+	} else if (obj->passwd!=NULL){ /*only write passwd if no ha1*/
+		lp_config_set_string(config,key,"passwd",obj->passwd);
 	}
 	if (obj->realm!=NULL){
 		lp_config_set_string(config,key,"realm",obj->realm);
@@ -308,6 +312,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			sai.userid=ai->userid;
 			sai.realm=ai->realm;
 			sai.password=ai->passwd;
+			sai.ha1=ai->ha1;
 			sal_op_authenticate(op,&sai);
 			ai->usecount++;
 		}

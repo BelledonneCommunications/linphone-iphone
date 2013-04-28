@@ -199,6 +199,21 @@ static void simple_authenticated_register(){
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
 
+static void ha1_authenticated_register(){
+	stats* counters;
+	LinphoneCore* lc = create_lc();
+	char ha1[33];
+	LinphoneAuthInfo *info;
+	char route[256];
+	sal_auth_compute_ha1(test_username,auth_domain,test_password,ha1);
+	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain); /*create authentication structure from identity*/
+	sprintf(route,"sip:%s",test_route);
+	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_with_refresh(lc,FALSE,auth_domain,route);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
+}
+
 static void authenticated_register_with_no_initial_credentials(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -345,6 +360,7 @@ test_t register_tests[] = {
 	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 	{ "TLS register", simple_tls_register },
 	{ "Simple authenticated register", simple_authenticated_register },
+	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },

@@ -374,6 +374,7 @@ typedef struct SalCallbacks{
 SalAuthInfo* sal_auth_info_new();
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(const SalAuthInfo* auth_info);
+LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);

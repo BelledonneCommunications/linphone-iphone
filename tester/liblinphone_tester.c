@@ -92,6 +92,8 @@ LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
 	linphone_core_set_user_data(lc,&global_stat);
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
+	/*to allow testing with 127.0.0.1*/
+	linphone_core_set_network_reachable(lc,TRUE);
 	return lc;
 }
 
