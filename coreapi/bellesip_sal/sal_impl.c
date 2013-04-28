@@ -578,7 +578,7 @@ static void set_tls_properties(Sal *ctx){
 		if (!ctx->tls_verify) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_ANY_REASON;
 		else if (!ctx->tls_verify_cn) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_CN_MISMATCH;
 		
-		belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca);
+		if (ctx->root_ca) belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca);
 		belle_sip_tls_listening_point_set_verify_exceptions(tlp,verify_exceptions);
 	}
 }
