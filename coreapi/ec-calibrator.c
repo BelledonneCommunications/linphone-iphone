@@ -36,7 +36,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	params.prio=MS_TICKER_PRIO_HIGH;
 	ecc->ticker=ms_ticker_new_with_params(&params);
 
-	ecc->sndread=ms_snd_card_create_reader(ecc->play_card);
+	ecc->sndread=ms_snd_card_create_reader(ecc->capt_card);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_NCHANNELS,&ecc_channels);
@@ -50,7 +50,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	
 	ecc->det=ms_filter_new(MS_TONE_DETECTOR_ID);
 	ms_filter_call_method(ecc->det,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
-	ecc->rec=ms_filter_new(MS_FILE_REC_ID);
+	ecc->rec=ms_filter_new(MS_VOID_SINK_ID);
 
 	ms_filter_link(ecc->sndread,0,ecc->read_resampler,0);
 	ms_filter_link(ecc->read_resampler,0,ecc->det,0);
@@ -60,7 +60,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->write_resampler=ms_filter_new(MS_RESAMPLE_ID);
-	ecc->sndwrite=ms_snd_card_create_writer(ecc->capt_card);
+	ecc->sndwrite=ms_snd_card_create_writer(ecc->play_card);
 	
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
