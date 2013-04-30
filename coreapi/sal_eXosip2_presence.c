@@ -85,19 +85,19 @@ static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
 static void msg_add_current_date(osip_message_t *msg){
-        char tmp[64]={0};
-        time_t curtime=time(NULL);
-        struct tm *ret;
+	char tmp[64]={0};
+	time_t curtime=time(NULL);
+	struct tm *ret;
 #ifndef WIN32
-        struct tm gmt;
-        ret=gmtime_r(&curtime,&gmt);
+	struct tm gmt;
+	ret=gmtime_r(&curtime,&gmt);
 #else
-        ret=gmtime(&curtime);
+	ret=gmtime(&curtime);
 #endif
-        /*cannot use strftime because it is locale dependant*/
-        snprintf(tmp,sizeof(tmp)-1,"%s, %i %s %i %02i:%02i:%02i GMT",
-                 days[ret->tm_wday],ret->tm_mday,months[ret->tm_mon],1900+ret->tm_year,ret->tm_hour,ret->tm_min,ret->tm_sec);
-        osip_message_replace_header(msg,"Date",tmp);
+	/*cannot use strftime because it is locale dependant*/
+	snprintf(tmp,sizeof(tmp)-1,"%s, %i %s %i %02i:%02i:%02i GMT",
+			days[ret->tm_wday],ret->tm_mday,months[ret->tm_mon],1900+ret->tm_year,ret->tm_hour,ret->tm_min,ret->tm_sec);
+	osip_message_replace_header(msg,"Date",tmp);
 }
 
 
