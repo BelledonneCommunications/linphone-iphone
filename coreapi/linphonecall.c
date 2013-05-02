@@ -2481,7 +2481,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 	#ifdef USE_BELLESIP
 		ret=ctt;
 	#else
-		ret=linphone_adress_as_string(ctt);
+		ret=linphone_address_as_string(ctt);
 	#endif
 	} else if (call->op && sal_op_get_contact(call->op)!=NULL){
 		/* if already choosed, don't change it */

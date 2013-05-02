@@ -168,7 +168,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		case LinphoneChatMessageStateInProgress:
 		{
 			g_hash_table_insert(table,(gpointer)msg,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
-			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending .. ",-1,									
+			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,									
 		                                "right","small","italic","font_grey","bg",NULL);
 			g_object_set_data(G_OBJECT(w),"table",table);
 			break;
@@ -237,10 +237,10 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 		gtk_text_buffer_get_iter_at_line_offset(b,&end,line,0);
 		gtk_text_buffer_delete(b,&start,&end);
 		gtk_text_buffer_get_iter_at_line(b,&iter,line);
-
+		
 		switch (state) {
 			case LinphoneChatMessageStateInProgress:
-				result="Sending ";
+				result="Sending ..";
 				break;
 			case LinphoneChatMessageStateDelivered:
 			{
@@ -249,16 +249,19 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 				char buf[80];
 				strftime(buf,80,"%H:%M",tm);
 				result=buf;
+				g_hash_table_remove(table,msg);
 				break;
 			}
 			case  LinphoneChatMessageStateNotDelivered:
+			{
 				result="Message not sent";
+				g_hash_table_remove(table,msg);
 				break;
+			}
 			default : result="Sending ..";
 		}
 		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result,-1,
 												"right","small","italic","font_grey","bg",NULL);
-		g_hash_table_remove(table,msg);
 		g_object_set_data(G_OBJECT(page),"table",table);
 	} 
 }
