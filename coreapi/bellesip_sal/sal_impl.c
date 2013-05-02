@@ -362,17 +362,14 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event
 }
 
 Sal * sal_init(){
-	char stack_string[64];
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
 	sal->nat_helper_enabled=TRUE;
-	snprintf(stack_string,sizeof(stack_string)-1,"(belle-sip/%s)",belle_sip_version_to_string());
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
 #endif
-
-	belle_sip_header_user_agent_add_product(sal->user_agent,stack_string);
+	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
@@ -502,6 +499,13 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	belle_sip_header_user_agent_add_product(ctx->user_agent,user_agent);
 	return ;
 }
+
+void sal_append_stack_string_to_user_agent(Sal *ctx) {
+	char stack_string[64];
+	snprintf(stack_string, sizeof(stack_string) - 1, "(belle-sip/%s)", belle_sip_version_to_string());
+	belle_sip_header_user_agent_add_product(ctx->user_agent, stack_string);
+}
+
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value){
 	const belle_sip_list_t* iterator;

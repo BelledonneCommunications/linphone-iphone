@@ -447,6 +447,10 @@ void sal_set_user_agent(Sal *ctx, const char *user_agent){
 	eXosip_set_user_agent(user_agent);
 }
 
+void sal_append_stack_string_to_user_agent(Sal *ctx) {
+	/* Not implemented for eXosip */
+}
+
 void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;
 }

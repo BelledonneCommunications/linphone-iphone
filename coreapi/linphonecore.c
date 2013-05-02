@@ -1782,8 +1782,10 @@ int linphone_core_get_sip_port(LinphoneCore *lc)
 	return tr->udp_port>0 ? tr->udp_port : (tr->tcp_port > 0 ? tr->tcp_port : tr->tls_port);
 }
 
+#if !USE_BELLE_SIP
 static char _ua_name[64]="Linphone";
 static char _ua_version[64]=LINPHONE_VERSION;
+#endif
 
 #if HAVE_EXOSIP_GET_VERSION && !USE_BELLESIP
 extern const char *eXosip_get_version();
@@ -1809,9 +1811,18 @@ static void apply_user_agent(LinphoneCore *lc){
  * @ingroup misc
 **/
 void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char *ver){
+#if USE_BELLESIP
+	char ua_string[256];
+	snprintf(ua_string, sizeof(ua_string) - 1, "%s/%s", name, ver);
+	if (lc->sal) {
+		sal_set_user_agent(lc->sal, ua_string);
+		sal_append_stack_string_to_user_agent(lc->sal);
+	}
+#else
 	strncpy(_ua_name,name,sizeof(_ua_name)-1);
 	strncpy(_ua_version,ver,sizeof(_ua_version));
 	apply_user_agent(lc);
+#endif
 }
 
 const char *linphone_core_get_user_agent_name(void){

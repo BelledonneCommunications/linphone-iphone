@@ -383,6 +383,7 @@ void sal_set_dscp(Sal *ctx, int dscp);
 int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
+void sal_append_stack_string_to_user_agent(Sal *ctx);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
 void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
