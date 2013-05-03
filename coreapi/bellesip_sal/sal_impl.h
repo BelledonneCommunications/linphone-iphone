@@ -89,6 +89,7 @@ struct SalOp{
 	SalOpType_t type;
 };
 
+
 belle_sdp_session_description_t * media_description_to_sdp(const SalMediaDescription *sal);
 int sdp_to_media_description(belle_sdp_session_description_t  *sdp, SalMediaDescription *desc);
 belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method);
@@ -126,4 +127,6 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
 void sal_add_pending_auth(Sal *sal, SalOp *op);
 
 void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status);
+
+
 #endif /* SAL_IMPL_H_ */

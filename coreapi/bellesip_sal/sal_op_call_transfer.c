@@ -192,7 +192,6 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
 }
 
 void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event){
-
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
@@ -202,34 +201,32 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 
 	ms_message("Receiving NOTIFY request on op [%p]",op);
 	if (header_event
-		&& strcasecmp(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(header_event)),"refer")==0
-		&& content_type
-		&& strcmp(belle_sip_header_content_type_get_type(content_type),"message")==0
-		&& strcmp(belle_sip_header_content_type_get_subtype(content_type),"sipfrag")==0
-		&& body){
-			belle_sip_response_t* sipfrag=BELLE_SIP_RESPONSE(belle_sip_message_parse(body));
+	&& strncasecmp(belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(header_event)),"refer",strlen("refer"))==0
+	&& content_type
+	&& strcmp(belle_sip_header_content_type_get_type(content_type),"message")==0
+	&& strcmp(belle_sip_header_content_type_get_subtype(content_type),"sipfrag")==0
+	&& body){
+		belle_sip_response_t* sipfrag=BELLE_SIP_RESPONSE(belle_sip_message_parse(body));
 
-			if (sipfrag){
-
-					int code=belle_sip_response_get_status_code(sipfrag);
-					SalReferStatus status=SalReferFailed;
-					if (code==100){
-						status=SalReferTrying;
-					}else if (code==200){
-						status=SalReferSuccess;
-					}else if (code>=400){
-						status=SalReferFailed;
-					}
-					belle_sip_object_unref(sipfrag);
-					resp = belle_sip_response_create_from_request(req,200);
-					belle_sip_server_transaction_send_response(server_transaction,resp);
-					op->base.root->callbacks.notify_refer(op,status);
-				}
-		}else{
-			ms_error("Notify without sipfrag, trashing");
-			resp = belle_sip_response_create_from_request(req,501);
+		if (sipfrag){
+			int code=belle_sip_response_get_status_code(sipfrag);
+			SalReferStatus status=SalReferFailed;
+			if (code==100){
+				status=SalReferTrying;
+			}else if (code==200){
+				status=SalReferSuccess;
+			}else if (code>=400){
+				status=SalReferFailed;
+			}
+			belle_sip_object_unref(sipfrag);
+			resp = belle_sip_response_create_from_request(req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
+			op->base.root->callbacks.notify_refer(op,status);
 		}
-
+	}else{
+		ms_error("Notify without sipfrag, trashing");
+		resp = belle_sip_response_create_from_request(req,501);
+		belle_sip_server_transaction_send_response(server_transaction,resp);
+	}
 }
 

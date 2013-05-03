@@ -515,11 +515,6 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
-struct SalCustomHeader{
-	MSList node;
-	char *header_name;
-	char *header_value;
-};
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);

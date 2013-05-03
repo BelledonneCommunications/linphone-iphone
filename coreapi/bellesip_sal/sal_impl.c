@@ -693,3 +693,69 @@ void sal_use_dates(Sal *ctx, bool_t enabled){
 int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]) {
 	return belle_sip_auth_helper_compute_ha1(userid, realm, password, ha1);
 }
+
+
+SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
+	belle_sip_message_t *msg=(belle_sip_message_t*)ch;
+	belle_sip_header_t *h;
+	char *tmp=ms_strdup_printf("%s: %s\r\n",name,value);
+	
+	if (msg==NULL){
+		msg=(belle_sip_message_t*)belle_sip_request_new();
+	}
+	h=BELLE_SIP_HEADER(belle_sip_header_extension_parse(tmp));
+	ms_free(tmp);
+	if (h==NULL){
+		belle_sip_error("Fail to parse extension header.");
+		return (SalCustomHeader*)msg;
+	}
+	belle_sip_message_add_header(msg,h);
+	return (SalCustomHeader*)msg;
+}
+
+const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
+	belle_sip_header_t *h=belle_sip_message_get_header((belle_sip_message_t*)ch,name);
+	
+	if (h){
+		if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_extension_t)){
+			return belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(h));
+		}else{
+			char *tmp=belle_sip_object_to_string((belle_sip_object_t*)h);
+			char *p=tmp+strlen(belle_sip_header_get_name(h))+1+1; /*header name + : + ' '*/
+			char *ret=belle_sip_strdup(p);
+			belle_sip_free(tmp);
+			/*TODO: fix memory leak here*/
+			
+			return ret;
+		}
+	}
+	return NULL;
+}
+
+void sal_custom_header_free(SalCustomHeader *ch){
+	belle_sip_object_unref((belle_sip_message_t*)ch);
+}
+
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
+	return (SalCustomHeader*)belle_sip_object_ref((belle_sip_message_t*)ch);
+}
+
+const SalCustomHeader *sal_op_get_custom_header(SalOp *op){
+	SalOpBase *b=(SalOpBase *)op;
+	return b->custom_headers;
+}
+
+/*
+ * Warning: this function takes owneship of the custom headers
+ */
+void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch){
+	SalOpBase *b=(SalOpBase *)op;
+	if (b->custom_headers){
+		sal_custom_header_free(b->custom_headers);
+		b->custom_headers=NULL;
+	}
+	if (ch) belle_sip_object_ref((belle_sip_message_t*)ch);
+	b->custom_headers=ch;
+}
+
+

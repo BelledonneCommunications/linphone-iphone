@@ -82,13 +82,14 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
 	int length;
-	char buff[1024];
+	char buff[2048];
 
 	if (session_desc) {
 		content_type = belle_sip_header_content_type_create("application","sdp");
 		length = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,0,sizeof(buff));
-		if (length==sizeof(buff)) {
+		if (length>=sizeof(buff)) {
 			ms_error("Buffer too small or sdp too big");
+			return -1;
 		}
 
 		content_length= belle_sip_header_content_length_create(length);
@@ -205,7 +206,7 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 	set_or_update_dialog(op,belle_sip_response_event_get_dialog(event));
 	dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL;
 
-		switch(dialog_state) {
+	switch(dialog_state) {
 
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {

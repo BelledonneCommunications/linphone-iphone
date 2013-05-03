@@ -204,7 +204,8 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 
 	belle_sdp_session_description_set_session_name ( session_desc,belle_sdp_session_name_create ( "Talk" ) );
 
-	if ( !sal_media_description_has_dir ( desc,SalStreamSendOnly ) && !sal_media_description_has_dir ( desc,SalStreamInactive ) ) {
+	if ( (!sal_media_description_has_dir ( desc,SalStreamSendOnly ) && !sal_media_description_has_dir ( desc,SalStreamInactive )) 
+		|| desc->ice_ufrag[0] != '\0' ) {
 		belle_sdp_session_description_set_connection ( session_desc
 				,belle_sdp_connection_create ( "IN",inet6 ? "IP6" :"IP4",desc->addr ) );
 
