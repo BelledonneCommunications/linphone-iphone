@@ -68,7 +68,7 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	if (buffer[0] != '\0') belle_sdp_media_description_add_attribute(md,belle_sdp_attribute_create("remote-candidates",buffer));
 }
 
-static belle_sdp_media_description_t *stream_description_to_sdp ( const SalStreamDescription *stream ) {
+static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMediaDescription *md, const SalStreamDescription *stream ) {
 	belle_sdp_mime_parameter_t* mime_param;
 	belle_sdp_media_description_t* media_desc;
 	int j;
@@ -105,6 +105,15 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalStrea
 		belle_sdp_media_description_append_values_from_mime_parameter ( media_desc,mime_param );
 		belle_sip_object_unref ( mime_param );
 	}
+	/*only add a c= line within the stream description if address are differents*/
+	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,md->addr)!=0){
+		bool_t inet6;
+		if (strchr(rtp_addr,':')!=NULL){
+			inet6=TRUE;
+		}else inet6=FALSE;
+		belle_sdp_media_description_set_connection(media_desc,belle_sdp_connection_create("IN", inet6 ? "IP6" : "IP4", rtp_addr));
+	}
+	
 	if ( stream->bandwidth>0 )
 		belle_sdp_media_description_set_bandwidth ( media_desc,"AS",stream->bandwidth );
 
@@ -228,7 +237,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 	if (desc->ice_ufrag[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-ufrag",desc->ice_ufrag));
 	
 	for ( i=0; i<desc->n_total_streams; i++ ) {
-		belle_sdp_session_description_add_media_description ( session_desc,stream_description_to_sdp(&desc->streams[i]));
+		belle_sdp_session_description_add_media_description ( session_desc,stream_description_to_sdp(desc,&desc->streams[i]));
 	}
 	return session_desc;
 }
