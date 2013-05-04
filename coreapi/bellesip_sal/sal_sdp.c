@@ -273,7 +273,6 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	int nb=0;
 	SalStreamDir stream_dir=SalStreamSendRecv;
 	const char* value;
-	int nb_ice_candidates=0;
 	
 	desc->n_active_streams = 0;
 	desc->n_total_streams = 0;
@@ -308,6 +307,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 	for ( media_desc_it=belle_sdp_session_description_get_media_descriptions ( session_desc )
 						; media_desc_it!=NULL
 			; media_desc_it=media_desc_it->next ) {
+		int nb_ice_candidates=0;
 		media_desc=BELLE_SDP_MEDIA_DESCRIPTION ( media_desc_it->data );
 		stream=&desc->streams[desc->n_total_streams];
 		media=belle_sdp_media_description_get_media ( media_desc );
@@ -328,7 +328,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 		}
 
 		stream->rtp_port=belle_sdp_media_get_media_port ( media );
-		stream->rtcp_port = stream->rtp_port + 1;
+
 		if ( stream->rtp_port > 0 )
 			desc->n_active_streams++;
 
