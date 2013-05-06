@@ -182,7 +182,6 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
  * @returns 0 if successful, -1 otherwise.
 **/
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
-	LinphoneCallParams params;
 	LinphoneConference *conf=&lc->conf_ctx;
 	
 	if (call->current_params.in_conference){
@@ -190,21 +189,25 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		return -1;
 	}
 	conference_check_init(&lc->conf_ctx, lp_config_get_int(lc->config, "sound","conference_rate",16000));
-	call->params.in_conference=TRUE;
-	call->params.has_video=FALSE;
-	call->params.media_encryption=LinphoneMediaEncryptionNone;
-	params=call->params;
-	if (call->state==LinphoneCallPaused)
+	
+	if (call->state==LinphoneCallPaused){
+		call->params.in_conference=TRUE;
+		call->params.has_video=FALSE;
 		linphone_core_resume_call(lc,call);
-	else if (call->state==LinphoneCallStreamsRunning){
-		/*this will trigger a reINVITE that will later redraw the streams */
+	}else if (call->state==LinphoneCallStreamsRunning){
+		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		params->in_conference=TRUE;
+		params->has_video=FALSE;
+		
 		if (call->audiostream || call->videostream){
 			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
 		}
 		if (call==lc->current_call){
 			lc->current_call=NULL;
 		}
-		linphone_core_update_call(lc,call,&params);
+		/*this will trigger a reINVITE that will later redraw the streams */
+		linphone_core_update_call(lc,call,params);
+		linphone_call_params_destroy(params);
 		add_local_endpoint(conf,lc);
 	}else{
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
@@ -231,13 +234,16 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 	ms_message("%s will be removed from conference", str);
 	ms_free(str);
 	if (active){
+		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		params->in_conference=FALSE;
 		// reconnect local audio with this call
 		if (linphone_core_is_in_conference(lc)){
 			ms_message("Leaving conference for reconnecting with unique call.");
 			linphone_core_leave_conference(lc);
 		}
 		ms_message("Updating call to actually remove from conference");
-		err=linphone_core_update_call(lc,call,&call->params);
+		err=linphone_core_update_call(lc,call,params);
+		linphone_call_params_destroy(params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
 		err=_linphone_core_pause_call(lc,call);
