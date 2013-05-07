@@ -1464,6 +1464,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 		case 480:
 			error=SalErrorFailure;
 			sr=SalReasonTemporarilyUnavailable;
+		break;
 		case 486:
 			error=SalErrorFailure;
 			sr=SalReasonBusy;
