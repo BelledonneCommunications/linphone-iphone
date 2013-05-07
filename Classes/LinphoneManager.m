@@ -56,6 +56,7 @@ NSString *const kLinphoneAddressBookUpdate = @"LinphoneAddressBookUpdate";
 NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
+NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvailabilityUpdate";
 NSString *const kContactSipField = @"SIP";
 
 
@@ -105,6 +106,8 @@ extern  void libmsbcg729_init();
 @synthesize sounds;
 @synthesize logs;
 @synthesize speakerEnabled;
+@synthesize bluetoothAvailable;
+@synthesize bluetoothEnabled;
 @synthesize photoLibrary;
 
 struct codec_name_pref_table{
@@ -128,6 +131,8 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "mp4v-es", 90000, @"mp4v-es_preference"},
 	{ "h264", 90000, @"h264_preference"},
 	{ "vp8", 90000, @"vp8_preference"},
+	{ "mpeg4-generic", 44100, @"aaceld_44k_preference"},
+	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
 	{ NULL,0,Nil }
 };
 
@@ -235,6 +240,7 @@ struct codec_name_pref_table codec_pref_table[]={
         logs = [[NSMutableArray alloc] init];
         database = NULL;
         speakerEnabled = FALSE;
+        bluetoothEnabled = FALSE;
         [self openDatabase];
         [self copyDefaultSettings];
         pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
@@ -466,6 +472,10 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
         if(linphone_core_get_calls_nb(theLinphoneCore) == 0) {
             [self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
+            bluetoothAvailable = FALSE;
+            bluetoothEnabled = FALSE;
+            /*IOS specific*/
+            linphone_core_start_dtmf_stream(theLinphoneCore);
 		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
@@ -570,7 +580,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
     }
 	[chat setDirection:[NSNumber numberWithInt:1]];
-    [chat setTime:[NSDate date]];
+    [chat setTime:[NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(msg)]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
@@ -1087,7 +1097,6 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 	
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
-	
 
 }
 
@@ -1119,7 +1128,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 }
 
 
-#pragma mark - Speaker Functions
+#pragma mark - Audio route Functions
 
 - (bool)allowSpeaker {
     bool notallow = false;
@@ -1147,34 +1156,62 @@ static void audioRouteChangeListenerCallback (
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
     LinphoneManager* lm = (LinphoneManager*)inUserData;
     
-    bool enabled = false;
+    bool speakerEnabled = false;
     CFStringRef lNewRoute = CFSTR("Unknown");
     UInt32 lNewRouteSize = sizeof(lNewRoute);
     OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
     if (!lStatus && lNewRouteSize > 0) {
         NSString *route = (NSString *) lNewRoute;
         [LinphoneLogger logc:LinphoneLoggerLog format:"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]];
-        enabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        speakerEnabled = [route isEqualToString: @"Speaker"] || [route isEqualToString: @"SpeakerAndMicrophone"];
+        if (![LinphoneManager runningOnIpad] && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
+            lm.bluetoothEnabled = TRUE;
+            lm.bluetoothAvailable = TRUE;
+            NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  [NSNumber numberWithBool:lm.bluetoothAvailable], @"available", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneBluetoothAvailabilityUpdate object:lm userInfo:dict];
+        } else {
+            lm.bluetoothEnabled = FALSE;
+        }
         CFRelease(lNewRoute);
     }
     
-    if(enabled != lm.speakerEnabled) { // Reforce value
+    if(speakerEnabled != lm.speakerEnabled) { // Reforce value
         lm.speakerEnabled = lm.speakerEnabled;
     }
 }
 
 - (void)setSpeakerEnabled:(BOOL)enable {
     speakerEnabled = enable;
+
     if(enable && [self allowSpeaker]) {
-        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;  
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)
                                  , &audioRouteOverride);
+        bluetoothEnabled = FALSE;
     } else {
-        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;  
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;
         AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute
                                  , sizeof (audioRouteOverride)
                                  , &audioRouteOverride);
+    }
+
+    if (bluetoothAvailable) {
+        UInt32 bluetoothInputOverride = bluetoothEnabled;
+        AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput, sizeof(bluetoothInputOverride), &bluetoothInputOverride);
+    }
+}
+
+- (void)setBluetoothEnabled:(BOOL)enable {
+    if (bluetoothAvailable) {
+        // The change of route will be done in setSpeakerEnabled
+        bluetoothEnabled = enable;
+        if (bluetoothEnabled) {
+            [self setSpeakerEnabled:FALSE];
+        } else {
+            [self setSpeakerEnabled:speakerEnabled];
+        }
     }
 }
 
@@ -1254,14 +1291,14 @@ static void audioRouteChangeListenerCallback (
 		[error release];
 	} else {
 		char normalizedUserName[256];
-        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));  
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));
 		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
         linphone_address_set_username(linphoneAddress, normalizedUserName);
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
-            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), normalizedUserName);
+            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {
             call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
         }

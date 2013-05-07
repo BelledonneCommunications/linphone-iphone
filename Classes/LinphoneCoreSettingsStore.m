@@ -354,7 +354,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		//possible valid config detected
 		proxyCfg = linphone_core_create_proxy_config(lc);
 		char normalizedUserName[256];
-		LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(lc));
+		LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
 		linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
 		linphone_address_set_username(linphoneAddress, normalizedUserName);
 		linphone_address_set_domain(linphoneAddress, [domain cStringUsingEncoding:[NSString defaultCStringEncoding]]);

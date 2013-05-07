@@ -112,17 +112,18 @@ veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
 
-.NOTPARALLEL build-linphone: init build-libantlr build-belle-sip build-srtp build-zrtpcpp  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init build-polarssl build-libantlr build-belle-sip build-srtp build-zrtpcpp  build-speex build-libgsm build-ffmpeg build-libvpx detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
+	mkdir -p $(prefix)/share/linphone/tutorials && cp -f $(LINPHONE_SRC_DIR)/coreapi/help/*.c $(prefix)/share/linphone/tutorials/
 
-clean-linphone: clean-libantlr clean-belle-sip clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
+clean-linphone: clean-libantlr clean-polarssl clean-belle-sip clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-libantlrc3 veryclean-belle-sip veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx
+veryclean-linphone: veryclean-libantlr veryclean-polarssl veryclean-belle-sip veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-libantlr clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk
+clean-makefile-linphone: clean-makefile-libantlr clean-makefile-polarssl clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 

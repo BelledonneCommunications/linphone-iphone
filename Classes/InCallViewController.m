@@ -202,24 +202,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    CGRect frame = [videoPreview frame];
-    switch (toInterfaceOrientation) {
-        case UIInterfaceOrientationPortrait:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(0)];
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI)];
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(M_PI / 2)];
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            [videoPreview setTransform: CGAffineTransformMakeRotation(-M_PI / 2)];
-            break;
-        default:
-            break;
-    }
-    [videoPreview setFrame:frame];
+// in mode display_filter_auto_rotate=0, no need to rotate the preview
 }
 
 

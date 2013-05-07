@@ -35,11 +35,15 @@
 @property (nonatomic, retain) IBOutlet UIVideoButton*   videoButton;
 @property (nonatomic, retain) IBOutlet UIMicroButton*   microButton;
 @property (nonatomic, retain) IBOutlet UISpeakerButton* speakerButton;
+@property (nonatomic, retain) IBOutlet UIToggleButton*  routesButton;
 @property (nonatomic, retain) IBOutlet UIToggleButton*  optionsButton;
 @property (nonatomic, retain) IBOutlet UIHangUpButton*  hangupButton;
 @property (nonatomic, retain) IBOutlet UIView*          padView;
+@property (nonatomic, retain) IBOutlet UIView*          routesView;
 @property (nonatomic, retain) IBOutlet UIView*          optionsView;
-
+@property (nonatomic, retain) IBOutlet UIButton*        routesReceiverButton;
+@property (nonatomic, retain) IBOutlet UIButton*        routesSpeakerButton;
+@property (nonatomic, retain) IBOutlet UIButton*        routesBluetoothButton;
 @property (nonatomic, retain) IBOutlet UIButton*        optionsAddButton;
 @property (nonatomic, retain) IBOutlet UIButton*        optionsTransferButton;
 @property (nonatomic, retain) IBOutlet UIToggleButton*  dialerButton;
@@ -57,6 +61,10 @@
 @property (nonatomic, retain) IBOutlet UIDigitButton* zeroButton;
 @property (nonatomic, retain) IBOutlet UIDigitButton* sharpButton;
 
+- (IBAction)onRoutesClick:(id)sender;
+- (IBAction)onRoutesBluetoothClick:(id)sender;
+- (IBAction)onRoutesReceiverClick:(id)sender;
+- (IBAction)onRoutesSpeakerClick:(id)sender;
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onOptionsTransferClick:(id)sender;
 - (IBAction)onOptionsAddClick:(id)sender;

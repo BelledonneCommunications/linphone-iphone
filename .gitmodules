@@ -55,3 +55,6 @@
 [submodule "submodules/externals/antlr3"]
 	path = submodules/externals/antlr3
 	url = gitosis@git.linphone.org:antlr3
+[submodule "submodules/externals/polarssl"]
+	path = submodules/externals/polarssl
+	url = git://git.linphone.org/polarssl.git

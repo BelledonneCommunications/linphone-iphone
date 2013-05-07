@@ -384,18 +384,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)addProxyConfig:(NSString*)username password:(NSString*)password domain:(NSString*)domain server:(NSString*)server {
-    LinphoneCore *lc = [LinphoneManager getLc];
     [self clearProxyConfig];
     if(server == nil) {
         server = domain;
     }
+	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
     char normalizedUserName[256];
-    LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(lc));
-    linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
+    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
+    linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
     linphone_address_set_username(linphoneAddress, normalizedUserName);
     linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
     const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
-	LinphoneProxyConfig* proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
 	LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL);
 	linphone_proxy_config_set_identity(proxyCfg, identity);
 	linphone_proxy_config_set_server_addr(proxyCfg, [server UTF8String]);
@@ -416,7 +415,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (NSString*)identityFromUsername:(NSString*)username {
     char normalizedUserName[256];
-    LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity([LinphoneManager getLc]));
+    LinphoneAddress* linphoneAddress = linphone_address_new("sip:user@domain.com");
     linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]], normalizedUserName, sizeof(normalizedUserName));
     linphone_address_set_username(linphoneAddress, normalizedUserName);
     linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] UTF8String]);
