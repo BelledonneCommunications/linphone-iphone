@@ -547,7 +547,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			for (k=0;valid_count < SAL_CRYPTO_ALGO_MAX && (attr=sdp_message_attribute_get(msg,i,k))!=NULL;k++){
 				char tmp[256], tmp2[256];
 				if (keywordcmp("crypto",attr->a_att_field)==0 && attr->a_att_value!=NULL){
-					int nb = sscanf(attr->a_att_value, "%d %256s inline:%256s",
+					int nb = sscanf(attr->a_att_value, "%d %255s inline:%255s",
 						&stream->crypto[valid_count].tag,
 						tmp,
 						tmp2);
