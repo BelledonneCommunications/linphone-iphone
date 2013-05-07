@@ -513,7 +513,11 @@ static gboolean friend_search_func(GtkTreeModel *model, gint column,
 	gboolean ret=TRUE;
 	gtk_tree_model_get(model,iter,FRIEND_NAME,&name,-1);
 	if (name!=NULL){
-		ret=strstr(name,key)==NULL;
+		gchar *uname=g_utf8_casefold(name,-1); /* need that to perform case-insensitive search in utf8 */
+		gchar *ukey=g_utf8_casefold(key,-1);
+		ret=strstr(uname,ukey)==NULL;
+		g_free(uname);
+		g_free(ukey);
 		g_free(name);
 	}
 	return ret;
