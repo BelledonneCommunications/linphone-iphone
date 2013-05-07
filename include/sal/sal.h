@@ -249,7 +249,8 @@ typedef struct SalOpBase{
 	const char* call_id;
 	char *remote_contact;
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
-	SalCustomHeader *custom_headers;
+	SalCustomHeader *sent_custom_headers;
+	SalCustomHeader *recv_custom_headers;
 } SalOpBase;
 
 
@@ -520,8 +521,10 @@ SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name,
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
 void sal_custom_header_free(SalCustomHeader *ch);
 SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch);
-const SalCustomHeader *sal_op_get_custom_header(SalOp *op);
-void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch);
+
+const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op);
+
+void sal_op_set_sent_custom_header(SalOp *op, SalCustomHeader* ch);
 
 void sal_enable_logs();
 void sal_disable_logs();

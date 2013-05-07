@@ -30,7 +30,9 @@ SalOp * sal_op_new(Sal *sal){
 void sal_op_release(SalOp *op){
 	op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn not mean freeing op. Make sure back pointer will not be used later*/
-	if (op->refresher) belle_sip_refresher_stop(op->refresher);
+	if (op->refresher) {
+		belle_sip_refresher_stop(op->refresher);
+	}
 	sal_op_unref(op);
 }
 void sal_op_release_impl(SalOp *op){
@@ -42,6 +44,8 @@ void sal_op_release_impl(SalOp *op){
 		belle_sip_object_unref(op->refresher);
 		op->refresher=NULL;
 	}
+	if (op->result)
+		sal_media_description_unref(op->result);
 	if(op->replaces) belle_sip_object_unref(op->replaces);
 	if(op->referred_by) belle_sip_object_unref(op->referred_by);
 
@@ -146,12 +150,27 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request) {
 	sal_op_send_request(op,request);
 }
 
+static void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg){
+	if (belle_sip_message_get_header(msg,belle_sip_header_get_name(h))==NULL)
+		belle_sip_message_add_header(msg,h);
+}
+
+static void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
+	if (op->base.sent_custom_headers){
+		belle_sip_message_t *ch=(belle_sip_message_t*)op->base.sent_custom_headers;
+		belle_sip_list_t *l=belle_sip_message_get_all_headers(ch);
+		belle_sip_list_for_each2(l,(void (*)(void *, void *))add_headers,msg);
+		belle_sip_list_free(l);
+	}
+}
 
 static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request,bool_t add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_uri_t* outbound_proxy=NULL;
 	belle_sip_header_contact_t* contact;
+	
+	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 	
 	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
@@ -316,10 +335,9 @@ void* sal_op_unref(SalOp* op) {
 	}
 	return NULL;
 }
+
 int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener ) {
-	if (sal_op_send_request_with_expires(op,req,expires)) {
-		return -1;
-	} else {
+	if (sal_op_send_request_with_expires(op,req,expires)==0) {
 		if (op->refresher) {
 			belle_sip_refresher_stop(op->refresher);
 			belle_sip_object_unref(op->refresher);
@@ -332,6 +350,7 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 			return -1;
 		}
 	}
+	return -1;
 }
 
 const char* sal_op_state_to_string(const SalOpSate_t value) {
@@ -342,5 +361,29 @@ const char* sal_op_state_to_string(const SalOpSate_t value) {
 	case SalOpStateTerminated: return "SalOpStateTerminated";
 	default:
 		return "Unknon";
+	}
+}
+
+/*
+ * Warning: this function takes owneship of the custom headers
+ */
+void sal_op_set_sent_custom_header(SalOp *op, SalCustomHeader* ch){
+	SalOpBase *b=(SalOpBase *)op;
+	if (b->sent_custom_headers){
+		sal_custom_header_free(b->sent_custom_headers);
+		b->sent_custom_headers=NULL;
+	}
+	if (ch) belle_sip_object_ref((belle_sip_message_t*)ch);
+	b->sent_custom_headers=ch;
+}
+
+void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
+	if (incoming) belle_sip_object_ref(incoming);
+	if (op->base.recv_custom_headers){
+		belle_sip_object_unref(op->base.recv_custom_headers);
+		op->base.recv_custom_headers=NULL;
+	}
+	if (incoming){
+		op->base.recv_custom_headers=(SalCustomHeader*)incoming;
 	}
 }

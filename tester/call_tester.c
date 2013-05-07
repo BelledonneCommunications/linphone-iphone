@@ -92,14 +92,18 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	counters->number_of_IframeDecoded++;
 }
 
-bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
+
+
+bool_t call_with_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr, const LinphoneCallParams *params) {
 	int retry=0;
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
 
-
-
-	CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
+	if (!params){
+		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
+	}else{
+		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,params));
+	}
 
 	/*linphone_core_invite(caller_mgr->lc,"pauline");*/
 
@@ -139,6 +143,10 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 			&&
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
 
+}
+
+bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
+	return call_with_params(caller_mgr,callee_mgr,NULL);
 }
 
 static void simple_call(void) {
@@ -190,6 +198,7 @@ static void simple_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
 static void simple_call_compatibility_mode(void) {
 	char route[256];
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
@@ -407,6 +416,41 @@ static void call_with_ice(void) {
 	}
 	
 	CU_ASSERT_TRUE(success);
+	
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_custom_headers(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCall *c1,*c2;
+	LinphoneCallParams *params;
+	const LinphoneCallParams *remote_params;
+	const char *hvalue;
+	
+	params=linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_add_custom_header(params,"Weather","bad");
+	linphone_call_params_add_custom_header(params,"Working","yes");
+	
+	CU_ASSERT_TRUE(call_with_params(pauline,marie,params));
+	linphone_call_params_destroy(params);
+	
+	c1=linphone_core_get_current_call(marie->lc);
+	c2=linphone_core_get_current_call(pauline->lc);
+	
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+
+	remote_params=linphone_call_get_remote_params(c1);
+	hvalue=linphone_call_params_get_custom_header(remote_params,"Weather");
+	CU_ASSERT_PTR_NOT_NULL(hvalue);
+	CU_ASSERT_TRUE(strcmp(hvalue,"bad")==0);
 	
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
@@ -773,6 +817,7 @@ test_t call_tests[] = {
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
+	{ "Call with custom headers",call_with_custom_headers}
 };
 
 test_suite_t call_test_suite = {

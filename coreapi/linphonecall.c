@@ -478,8 +478,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_core_get_local_ip(lc,NULL,call->localip);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
-	sal_op_set_custom_header(call->op,call->params.custom_headers);
-	call->params.custom_headers=NULL;
+	sal_op_set_sent_custom_header(call->op,call->params.custom_headers);
 	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
@@ -828,7 +827,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 					cp->low_bandwidth=TRUE;
 				}
 			}
-			cp->custom_headers=(SalCustomHeader*)sal_op_get_custom_header(call->op);
+			cp->custom_headers=(SalCustomHeader*)sal_op_get_recv_custom_header(call->op);
 			return cp;
 		}
 	}

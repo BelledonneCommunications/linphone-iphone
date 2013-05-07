@@ -97,7 +97,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		linphone_transfer_routes_to_op(routes,op);
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		if (msg->custom_headers){
-			sal_op_set_custom_header(op,msg->custom_headers);
+			sal_op_set_sent_custom_header(op,msg->custom_headers);
 			msg->custom_headers=NULL; /*transfered to the SalOp*/
 		}
 	}
@@ -186,7 +186,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg->time=sal_msg->time;
 	msg->state=LinphoneChatMessageStateDelivered;
 	msg->is_read=FALSE;
-	ch=sal_op_get_custom_header(op);
+	ch=sal_op_get_recv_custom_header(op);
 	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
 	
 	if (sal_msg->url) {

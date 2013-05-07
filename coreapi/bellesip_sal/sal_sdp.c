@@ -457,6 +457,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 				unsigned int componentID;
 				int offset;
 				const char *ptr = value;
+				const char *endptr=value+strlen(ptr);
 				while (3 == sscanf(ptr, "%u %s %u%n", &componentID, candidate.addr, &candidate.port, &offset)) {
 					if ((componentID > 0) && (componentID <= SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES)) {
 						SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[componentID - 1];
@@ -464,7 +465,9 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 						remote_candidate->port = candidate.port;
 					}
 					ptr += offset;
-					if (ptr[offset] == ' ') ptr += 1;
+					if (ptr<endptr){
+						if (ptr[offset] == ' ') ptr += 1;
+					}else break;
 				}
 			} else if ((keywordcmp("ice-ufrag", att_name) == 0) && (value != NULL)) {
 				strncpy(stream->ice_ufrag, value, sizeof(stream->ice_ufrag));

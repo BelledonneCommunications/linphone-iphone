@@ -193,6 +193,8 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 	if (!op->base.call_id) {
 		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_call_id_t))));
 	}
+	
+	sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
 	if (op->callbacks.process_request_event) {
 		op->callbacks.process_request_event(op,event);
 	} else {
@@ -702,6 +704,7 @@ SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name,
 	
 	if (msg==NULL){
 		msg=(belle_sip_message_t*)belle_sip_request_new();
+		belle_sip_object_ref(msg);
 	}
 	h=BELLE_SIP_HEADER(belle_sip_header_extension_parse(tmp));
 	ms_free(tmp);
@@ -714,19 +717,15 @@ SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name,
 }
 
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
-	belle_sip_header_t *h=belle_sip_message_get_header((belle_sip_message_t*)ch,name);
-	
-	if (h){
-		if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_extension_t)){
-			return belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(h));
-		}else{
-			char *tmp=belle_sip_object_to_string((belle_sip_object_t*)h);
-			char *p=tmp+strlen(belle_sip_header_get_name(h))+1+1; /*header name + : + ' '*/
-			char *ret=belle_sip_strdup(p);
-			belle_sip_free(tmp);
-			/*TODO: fix memory leak here*/
-			
-			return ret;
+	if (ch){
+		belle_sip_header_t *h=belle_sip_message_get_header((belle_sip_message_t*)ch,name);
+		
+		if (h){
+			if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_extension_t)){
+				return belle_sip_header_extension_get_value(BELLE_SIP_HEADER_EXTENSION(h));
+			}else{
+				return belle_sip_header_get_unparsed_value(h);
+			}
 		}
 	}
 	return NULL;
@@ -740,22 +739,11 @@ SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
 	return (SalCustomHeader*)belle_sip_object_ref((belle_sip_message_t*)ch);
 }
 
-const SalCustomHeader *sal_op_get_custom_header(SalOp *op){
+const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
-	return b->custom_headers;
+	return b->recv_custom_headers;
 }
 
-/*
- * Warning: this function takes owneship of the custom headers
- */
-void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch){
-	SalOpBase *b=(SalOpBase *)op;
-	if (b->custom_headers){
-		sal_custom_header_free(b->custom_headers);
-		b->custom_headers=NULL;
-	}
-	if (ch) belle_sip_object_ref((belle_sip_message_t*)ch);
-	b->custom_headers=ch;
-}
+
 
 

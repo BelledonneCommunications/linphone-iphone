@@ -461,8 +461,10 @@ void __sal_op_free(SalOp *op){
 		ms_list_for_each(b->route_addresses,(void (*)(void*)) sal_address_destroy);
 		b->route_addresses=ms_list_free(b->route_addresses);
 	}
-	if (b->custom_headers)
-		sal_custom_header_free(b->custom_headers);
+	if (b->recv_custom_headers)
+		sal_custom_header_free(b->recv_custom_headers);
+	if (b->sent_custom_headers)
+		sal_custom_header_free(b->sent_custom_headers);
 	ms_free(op);
 }
 

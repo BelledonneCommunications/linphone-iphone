@@ -1,3 +1,8 @@
+linphone-3.7...??
+	* multiple SIP transports simualtaneously now allowed
+	* IP dual stack: can use IPv6 and IPv4 simultaneously
+	* fully asynchronous behavior: no more lengthly DNS or connections 
+
 linphone-3.xxx --
 	* fix bug in zRTP support (upgrade required)
 	*

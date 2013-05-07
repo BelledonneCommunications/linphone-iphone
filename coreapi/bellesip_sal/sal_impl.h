@@ -128,5 +128,6 @@ void sal_add_pending_auth(Sal *sal, SalOp *op);
 
 void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status);
 
+void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 
 #endif /* SAL_IMPL_H_ */

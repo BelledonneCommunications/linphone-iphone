@@ -102,7 +102,11 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
 	}
 }
 static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription *desc){
-	return set_sdp(msg,media_description_to_sdp(desc));
+	int err;
+	belle_sdp_session_description_t *sdp=media_description_to_sdp(desc);
+	err=set_sdp(msg,sdp);
+	belle_sip_object_unref(sdp);
+	return err;
 
 }
 static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
@@ -261,6 +265,7 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 					}
 					if (op->sdp_answer){
 						set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
+						belle_sip_object_unref(op->sdp_answer);
 						op->sdp_answer=NULL;
 					}
 					belle_sip_dialog_send_ack(op->dialog,ack);
@@ -571,6 +576,7 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 			if (op->sdp_answer==NULL) sdp_process(op);
 			if (op->sdp_answer){
 				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
+				belle_sip_object_unref(op->sdp_answer);
 				op->sdp_answer=NULL;
 			}
 		}
