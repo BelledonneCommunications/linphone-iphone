@@ -1400,6 +1400,7 @@ copy_file(const char *from, const char *to)
 		snprintf(message, 255, "Can't open %s for writing: %s\n",
 			to, strerror(errno));
 		fprintf(stderr, "%s", message);
+		fclose(in);
 		return 0;
 	}
 
@@ -1408,6 +1409,8 @@ copy_file(const char *from, const char *to)
 	{
 		if ( ! fwrite(buf, 1, n, out) )
 		{
+			fclose(in);
+			fclose(out);
 			return 0;
 		}
 	}

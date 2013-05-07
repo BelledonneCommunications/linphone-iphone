@@ -1468,6 +1468,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 		case 480:
 			error=SalErrorFailure;
 			sr=SalReasonTemporarilyUnavailable;
+		break;
 		case 486:
 			error=SalErrorFailure;
 			sr=SalReasonBusy;
@@ -1657,7 +1658,7 @@ static void process_notify(Sal *sal, eXosip_event_t *ev){
 		//osip_content_type_t *ct=NULL;
 		osip_message_get_body(ev->request,0,&body);
 		//ct=osip_message_get_content_type(ev->request);
-		if (h->hvalue && strcasecmp(h->hvalue,"refer")==0){
+		if (h->hvalue && strncasecmp(h->hvalue,"refer",strlen("refer"))==0){
 			/*special handling of refer events*/
 			if (body && body->body){
 				osip_message_t *msg;
