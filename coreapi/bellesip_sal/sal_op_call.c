@@ -358,15 +358,16 @@ static void process_sdp_for_invite(SalOp* op,belle_sip_request_t* invite) {
 }
 static void process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
-	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
+	belle_sip_server_transaction_t* server_transaction=NULL;
 	belle_sdp_session_description_t* sdp;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
 	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
 
-	if (server_transaction){
-		belle_sip_object_ref(server_transaction); /*ACK does'nt create srv transaction*/
+	if (strcmp("ACK",belle_sip_request_get_method(req))!=0){  /*ACK does'nt create srv transaction*/
+		server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
+		belle_sip_object_ref(server_transaction);
 		belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(server_transaction),op);
 		sal_op_ref(op);
 	}

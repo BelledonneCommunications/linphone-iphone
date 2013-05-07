@@ -354,11 +354,68 @@ static void io_recv_error(){
 }
 
 
+static void tls_certificate_failure(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	stats stat;
+	stats* counters;
+	char rootcapath[256];
+	memset (&v_table,0,sizeof(v_table));
+	reset_counters(&stat);
+	v_table.registration_state_changed=registration_state_changed;
+	lc = configure_lc_from(&v_table,liblinphone_tester_file_prefix, "pauline_rc", 0);
+	linphone_core_set_user_data(lc,&stat);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	sprintf(rootcapath, "%s/certificates/agent.pem", liblinphone_tester_file_prefix); /*bad root ca*/
+	linphone_core_set_root_ca(lc,rootcapath);
+	linphone_core_set_network_reachable(lc,TRUE);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&stat.number_of_LinphoneRegistrationFailed,1));
+	linphone_core_set_root_ca(lc,NULL); /*no root ca*/
+	linphone_core_refresh_registers(lc);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&stat.number_of_LinphoneRegistrationFailed,2));
+	sprintf(rootcapath, "%s/certificates/cacert.pem", liblinphone_tester_file_prefix); /*goot root ca*/
+	linphone_core_set_root_ca(lc,rootcapath);
+	linphone_core_refresh_registers(lc);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&stat.number_of_LinphoneRegistrationOk,1));
+	CU_ASSERT_EQUAL(stat.number_of_LinphoneRegistrationFailed,2);
+	linphone_core_destroy(lc);
+}
+/*
+static void tls_with_non_tls_server(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	stats stat;
+	stats* counters;
+
+	LinphoneProxyConfig* proxy_cfg;
+	LinphoneAddress* addr;
+	char tmp[256];
+	memset (&v_table,0,sizeof(v_table));
+	reset_counters(&stat);
+	v_table.registration_state_changed=registration_state_changed;
+	lc = configure_lc_from(&v_table,liblinphone_tester_file_prefix, "marie_rc", 0);
+	linphone_core_set_user_data(lc,&stat);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	linphone_core_get_default_proxy(lc,&proxy_cfg);
+	linphone_proxy_config_edit(proxy_cfg);
+	addr=linphone_address_new(linphone_proxy_config_get_addr(proxy_cfg));
+	snprintf(tmp,sizeof(tmp),"sip:%s:%i;transport=tls"	,linphone_address_get_domain(addr)
+														,linphone_address_get_port_int(addr));
+	linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
+	linphone_proxy_config_done(proxy_cfg);
+	linphone_address_destroy(addr);
+
+	CU_ASSERT_TRUE(wait_for(lc,lc,&stat.number_of_LinphoneRegistrationFailed,1));
+	linphone_core_destroy(lc);
+}*/
+
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
 	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 	{ "TLS register", simple_tls_register },
+	{ "TLS certificate not verified",tls_certificate_failure},
+/*	{ "TLS with non tls server",tls_with_non_tls_server},*/
 	{ "Simple authenticated register", simple_authenticated_register },
 	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
