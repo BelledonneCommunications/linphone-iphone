@@ -179,13 +179,13 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
 			sal_op_set_referred_by(op,referred_by);
 		}
 		refer_to_uri_str=belle_sip_uri_to_string(refer_to_uri);
-		resp = belle_sip_response_create_from_request(req,202);
+		resp = sal_op_create_response_from_request(op,req,202);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 		op->base.root->callbacks.refer_received(op->base.root,op,refer_to_uri_str);
 		belle_sip_free(refer_to_uri_str);
 	} else {
 		ms_warning("cannot do anything with the refer without destination\n");
-		resp = belle_sip_response_create_from_request(req,501);
+		resp = sal_op_create_response_from_request(op,req,501);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 
@@ -219,13 +219,13 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 				status=SalReferFailed;
 			}
 			belle_sip_object_unref(sipfrag);
-			resp = belle_sip_response_create_from_request(req,200);
+			resp = sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 			op->base.root->callbacks.notify_refer(op,status);
 		}
 	}else{
 		ms_error("Notify without sipfrag, trashing");
-		resp = belle_sip_response_create_from_request(req,501);
+		resp = sal_op_create_response_from_request(op,req,501);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 }

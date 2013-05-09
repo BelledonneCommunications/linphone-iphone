@@ -37,6 +37,7 @@ struct Sal{
 	int session_expires;
 	unsigned int keep_alive;
 	char *root_ca;
+	char *uuid;
 	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
@@ -109,6 +110,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request);
 int sal_op_send_request_with_expires(SalOp* op, belle_sip_request_t* request,int expires);
 void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener );
+belle_sip_response_t *sal_op_create_response_from_request(SalOp *op, belle_sip_request_t *req, int code);
 
 void sal_process_authentication(SalOp *op);
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) ;
@@ -127,6 +129,8 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
 void sal_add_pending_auth(Sal *sal, SalOp *op);
 
 void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status);
+
+belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_request_t *req, int code);
 
 void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 

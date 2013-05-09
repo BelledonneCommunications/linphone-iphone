@@ -407,6 +407,8 @@ void sal_set_root_ca(Sal* ctx, const char* rootCa);
 const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 void sal_verify_server_cn(Sal *ctx, bool_t verify);
+void sal_set_uuid(Sal*ctx, const char *uuid);
+int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
 
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);

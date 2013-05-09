@@ -744,6 +744,54 @@ const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op){
 	return b->recv_custom_headers;
 }
 
+void sal_set_uuid(Sal *sal, const char *uuid){
+	if (sal->uuid){
+		belle_sip_free(sal->uuid);
+		sal->uuid=NULL;
+	}
+	if (uuid)
+		sal->uuid=belle_sip_strdup(uuid);
+}
+
+typedef struct {
+    unsigned int time_low;
+    unsigned short time_mid;
+    unsigned short time_hi_and_version;
+    unsigned char clock_seq_hi_and_reserved;
+    unsigned char clock_seq_low;
+    unsigned char node[6];
+} sal_uuid_t;
 
 
+int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
+	sal_uuid_t uuid_struct;
+	int i;
+	int written;
+	
+	if (len==0) return -1;
+	/*create an UUID as described in RFC4122, 4.4 */
+	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
+	uuid_struct.clock_seq_hi_and_reserved&=~(1<<6);
+	uuid_struct.clock_seq_hi_and_reserved|=1<<7;
+	uuid_struct.time_hi_and_version&=~(0xf<<12);
+	uuid_struct.time_hi_and_version|=4<<12;
+	
+	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,
+			uuid_struct.time_hi_and_version, uuid_struct.clock_seq_hi_and_reserved,
+			uuid_struct.clock_seq_low);
+	if (written>len+13){
+		ms_error("sal_create_uuid(): buffer is too short !");
+		return -1;
+	}
+	for (i = 0; i < 6; i++)
+		written+=snprintf(uuid+written,len-written,"%2.2x", uuid_struct.node[i]);
+	uuid[len-1]='\0';
+	sal_set_uuid(ctx,uuid);
+	return 0;
+}
 
+belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_request_t* req, int code ) {
+	belle_sip_response_t *resp=belle_sip_response_create_from_request(req,code);
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
+	return resp;
+}

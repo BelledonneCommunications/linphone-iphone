@@ -738,6 +738,7 @@ typedef enum _LinphoneToneID{
 }LinphoneToneID;
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
+const char *linphone_core_create_uuid(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

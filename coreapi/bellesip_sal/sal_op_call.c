@@ -339,7 +339,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_transaction, belle_sip_request_t* request,int status_code) {
 	belle_sip_response_t* resp;
 	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
-	resp=belle_sip_response_create_from_request(request,status_code);
+	resp=sal_op_create_response_from_request(op,request,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
 
 	return;
@@ -419,7 +419,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			if(belle_sip_request_event_get_server_transaction(event)) {
 				/*first answer 200 ok to cancel*/
 				belle_sip_server_transaction_send_response(server_transaction
-															,belle_sip_response_create_from_request(req,200));
+						,sal_op_create_response_from_request(op,req,200));
 				/*terminate invite transaction*/
 				call_terminated(op
 								,op->pending_server_trans
@@ -429,10 +429,10 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			} else {
 				/*call leg does not exist*/
 				belle_sip_server_transaction_send_response(server_transaction
-															,belle_sip_response_create_from_request(req,481));
+							,sal_op_create_response_from_request(op,req,481));
 			}
 		} else if (strcmp("PRACK",belle_sip_request_get_method(req))==0) {
-			resp=belle_sip_response_create_from_request(req,200);
+			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else {
 			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY");
@@ -459,7 +459,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		}*/
 			op->base.root->callbacks.call_ack(op);
 		} else if(strcmp("BYE",belle_sip_request_get_method(req))==0) {
-			resp=belle_sip_response_create_from_request(req,200);
+			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 			op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 			op->state=SalOpStateTerminating;
@@ -486,14 +486,14 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 					op->base.root->callbacks.vfu_request(op);
 
 				}
-				resp=belle_sip_response_create_from_request(req,200);
+				resp=sal_op_create_response_from_request(op,req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 		}else if (strcmp("REFER",belle_sip_request_get_method(req))==0) {
 			sal_op_process_refer(op,event);
 		} else if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
 			sal_op_call_process_notify(op,event);
 		} else if (strcmp("OPTIONS",belle_sip_request_get_method(req))==0) {
-			resp=belle_sip_response_create_from_request(req,200);
+			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
@@ -587,7 +587,7 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	int status_code =early_media?183:180;
 	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans));
-	belle_sip_response_t* ringing_response = belle_sip_response_create_from_request(req,status_code);
+	belle_sip_response_t* ringing_response = sal_op_create_response_from_request(op,req,status_code);
 	if (early_media){
 		handle_offer_answer_response(op,ringing_response);
 	}
@@ -618,7 +618,7 @@ int sal_call_accept(SalOp*h){
 	}
 
 	/* sends a 200 OK */
-	response = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(h->pending_server_trans)),200);
+	response = sal_op_create_response_from_request(h,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(h->pending_server_trans)),200);
 
 	if (response==NULL){
 		ms_error("Fail to build answer for call");
@@ -676,7 +676,7 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 		ms_error("Unexpected decline reason [%i]",reason);
 		/* no break */
 	}
-	response = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),status);
+	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),status);
 	if (contact) belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact));
 	belle_sip_server_transaction_send_response(op->pending_server_trans,response);
 	return 0;
