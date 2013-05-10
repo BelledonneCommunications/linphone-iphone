@@ -129,6 +129,7 @@ class UdpMirrorClient;
 		 */
 		LinphoneCore *getLinphoneCore();
 		virtual void setHttpProxy(const char *host,int port, const char *username, const char *passwd);
+		virtual bool isReady() const;
 	private:
 		enum EventType{
 			UdpMirrorClientEvent,
@@ -143,7 +144,6 @@ class UdpMirrorClient;
 		};
 		typedef std::list<UdpMirrorClient> UdpMirrorClientList;
 		virtual bool isStarted();
-		virtual bool isReady() const;
 		void onIterate();
 		static int customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen);
 		static int customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen);
@@ -173,6 +173,7 @@ class UdpMirrorClient;
 		Mutex mMutex;
 		static Mutex sMutex;
 		bool mAutoDetectStarted;
+		bool mReady;
 		LinphoneRtpTransportFactories mTransportFactories;
 		std::string mHttpUserName;
 		std::string mHttpPasswd;

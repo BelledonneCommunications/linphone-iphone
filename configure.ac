@@ -656,9 +656,7 @@ AC_ARG_ENABLE(tunnel,
 AM_CONDITIONAL(BUILD_TUNNEL, test x$enable_tunnel = xtrue)
 if test x$enable_tunnel = xtrue; then
 	PKG_CHECK_MODULES(TUNNEL, tunnel >= 0.3.3)
-	TUNNEL_CFLAGS+="-DTUNNEL_ENABLED"
-	AC_SUBST(TUNNEL_CFLAGS)
-	AC_SUBST(TUNNEL_LIBS)
+	AC_DEFINE(TUNNEL_ENABLED,1,[Tells tunnel extension is built-in])
 fi
 
 AC_ARG_ENABLE(msg-storage,
