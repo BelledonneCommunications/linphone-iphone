@@ -1,3 +1,5 @@
+EXTRA_DIST=pauline_rc laure_rc marie_rc marie_no_sdp_rc
+
 
 if BUILD_CUNIT_TESTS
 

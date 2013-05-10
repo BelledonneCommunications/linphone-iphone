@@ -260,11 +260,10 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 					ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
 					if (ack==NULL) {
 						ms_error("This call has been already terminated.");
-
 						return ;
 					}
 					if (op->sdp_answer){
-						set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
+						set_sdp(BELLE_SIP_MESSAGE(ack),op->sdp_answer);
 						belle_sip_object_unref(op->sdp_answer);
 						op->sdp_answer=NULL;
 					}
@@ -558,6 +557,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 
 
 }
+
 void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_io_error=call_process_io_error;
 	op->callbacks.process_response_event=call_response_event;
@@ -567,6 +567,7 @@ void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_dialog_terminated=process_dialog_terminated;
 	op->type=SalOpCall;
 }
+
 static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* response) {
 	if (op->base.local_media){
 		/*this is the case where we received an invite without SDP*/
@@ -584,6 +585,7 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 		ms_error("You are accepting a call but not defined any media capabilities !");
 	}
 }
+
 int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	int status_code =early_media?183:180;
 	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans));
