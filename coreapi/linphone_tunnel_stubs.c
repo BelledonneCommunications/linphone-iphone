@@ -59,6 +59,10 @@ bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
         return FALSE;
 }
 
+bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel){
+	return FALSE;
+}
+
 
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler){
 }
