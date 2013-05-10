@@ -54,7 +54,7 @@
 	url = gitosis@git.linphone.org:belle-sip
 [submodule "submodules/externals/antlr3"]
 	path = submodules/externals/antlr3
-	url = gitosis@git.linphone.org:antlr3
+	url = git://git.linphone.org/antlr3.git
 [submodule "submodules/externals/polarssl"]
 	path = submodules/externals/polarssl
 	url = git://git.linphone.org/polarssl.git
