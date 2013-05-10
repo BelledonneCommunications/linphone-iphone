@@ -197,7 +197,7 @@ bool TunnelManager::isStarted() {
 }
 
 bool TunnelManager::isReady() const {
-	return mTunnelClient && mTunnelClient->isReady();
+	return mTunnelClient && mTunnelClient->isReady() && mReady;
 }
 
 int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
@@ -224,6 +224,7 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mEnabled(false)
 ,mTunnelClient(NULL)
 ,mAutoDetectStarted(false)
+,mReady(false)
 ,mHttpProxyPort(0){
 
 #ifndef USE_BELLESIP
@@ -291,6 +292,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);
 		}
+		mReady=true;
 	}else if (mEnabled && !mTunnelClient->isReady()){
 		/* we got disconnected from the tunnel */
 		if (lProxy && linphone_proxy_config_is_registered(lProxy)) {
@@ -298,6 +300,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 			linphone_proxy_config_edit(lProxy);
 			linphone_core_iterate(mCore);
 		}
+		mReady=false;
 	}
 }
 
@@ -337,7 +340,7 @@ void TunnelManager::enable(bool isEnable) {
 		
 		mEnabled=false;
 		stopClient();
-		
+		mReady=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
 #ifdef USE_BELLESIP

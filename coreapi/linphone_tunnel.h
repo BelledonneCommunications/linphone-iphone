@@ -167,6 +167,12 @@ LINPHONE_PUBLIC bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel);
 
 /**
  * @param  tunnel object
+ * Returns a boolean indicating whether tunnel is connected successfully.
+**/
+bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel);
+
+/**
+ * @param  tunnel object
  * Forces reconnection to the tunnel server.
  * This method is useful when the device switches from wifi to Edge/3G or vice versa. In most cases the tunnel client socket
  * won't be notified promptly that its connection is now zombie, so it is recommended to call this method that will cause
