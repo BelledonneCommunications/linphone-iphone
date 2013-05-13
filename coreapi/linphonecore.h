@@ -1199,10 +1199,9 @@ const char * linphone_core_get_stun_server(const LinphoneCore *lc);
  * @ingroup network_parameters
  * Return the availability of uPnP.
  *
- * @param lc #LinphoneCore
  * @return true if uPnP is available otherwise return false. 
  */
-bool_t linphone_core_upnp_available(const LinphoneCore *lc);
+bool_t linphone_core_upnp_available();
 
 /**
  * @ingroup network_parameters
