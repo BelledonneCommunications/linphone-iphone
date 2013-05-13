@@ -3129,7 +3129,6 @@ int linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params)
 {
-	LinphoneProxyConfig *cfg=NULL;
 	SalOp *replaced;
 	SalMediaDescription *new_md;
 	bool_t was_ringing=FALSE;
@@ -3175,14 +3174,6 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 		call->ringing_beep=FALSE;
 	}
 
-	linphone_core_get_default_proxy(lc,&cfg);
-	call->dest_proxy=cfg;
-	call->dest_proxy=linphone_core_lookup_known_proxy(lc,call->log->to,NULL);
-
-	if (cfg!=call->dest_proxy && call->dest_proxy!=NULL) {
-		ms_message("Overriding default proxy setting for this call:");
-		ms_message("The used identity will be %s",linphone_proxy_config_get_identity(call->dest_proxy));
-	}
 	/*try to be best-effort in giving real local or routable contact address */
 	linphone_call_set_contact_op(call);
 	if (params){

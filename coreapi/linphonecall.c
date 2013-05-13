@@ -2530,6 +2530,19 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 #else
 	LinphoneAddress *contact;
 #endif
+	LinphoneProxyConfig *cfg = NULL;
+
+	if (call->dest_proxy == NULL) {
+		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
+		linphone_core_get_default_proxy(call->core, &cfg);
+		call->dest_proxy = cfg;
+		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to, NULL);
+		if (cfg != call->dest_proxy && call->dest_proxy != NULL) {
+			ms_message("Overriding default proxy setting for this call:");
+			ms_message("The used identity will be %s", linphone_proxy_config_get_identity(call->dest_proxy));
+		}
+	}
+
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);
 	if (contact){
 		sal_op_set_contact(call->op, contact);
