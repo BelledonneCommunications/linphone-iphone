@@ -34,7 +34,7 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		sal_op_set_contact_address(op,(SalAddress*)contact_address);
 		belle_sip_object_unref(contact_address);
 	}
-	if(status_code ==200) {
+	if(status_code == 200) {
 		/*check service route rfc3608*/
 		belle_sip_header_service_route_t* service_route;
 		belle_sip_header_address_t* service_route_address=NULL;
@@ -65,8 +65,6 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 			op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
 		}
 		op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
-	} else {
-		ms_warning("Register refresher know what to do with this status code");
 	}
 }
 
@@ -95,6 +93,7 @@ int sal_register_refresh(SalOp *op, int expires){
 	else
 		return -1;
 }
+
 int sal_unregister(SalOp *op){
 	return sal_register_refresh(op,0);
 }
