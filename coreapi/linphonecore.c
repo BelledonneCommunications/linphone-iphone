@@ -4249,7 +4249,7 @@ const char * linphone_core_get_stun_server(const LinphoneCore *lc){
 	return lc->net_conf.stun_server;
 }
 
-bool_t linphone_core_upnp_available(const LinphoneCore *lc){
+bool_t linphone_core_upnp_available(){
 #ifdef BUILD_UPNP
 	return TRUE;
 #else
