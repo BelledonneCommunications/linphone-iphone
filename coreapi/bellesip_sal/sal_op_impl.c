@@ -407,3 +407,9 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
 		op->base.recv_custom_headers=(SalCustomHeader*)incoming;
 	}
 }
+
+const char *sal_op_get_remote_contact(const SalOp *op){
+	return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
+}
+
+

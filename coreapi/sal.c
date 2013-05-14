@@ -345,11 +345,6 @@ const SalAddress *sal_op_get_to_address(const SalOp *op){
 	return ((SalOpBase*)op)->to_address;
 }
 
-
-const char *sal_op_get_remote_contact(const SalOp *op){
-	return ((SalOpBase*)op)->remote_contact;
-}
-
 const char *sal_op_get_route(const SalOp *op){
 #ifdef BELLE_SIP
 ms_fatal("sal_op_get_route not supported, use sal_op_get_route_addresses instead");
