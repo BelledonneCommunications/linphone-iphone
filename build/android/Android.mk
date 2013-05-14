@@ -34,6 +34,9 @@ LOCAL_SHARED_LIBRARIES += \
 endif
 
 LOCAL_MODULE := liblinphone
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+LOCAL_MODULE_FILENAME := liblinphonearmv7
+endif
 
 include $(BUILD_SHARED_LIBRARY)
 
