@@ -894,7 +894,13 @@ static void ping_reply(SalOp *op){
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
-	if (ai) {
+	if (ai && ai->works==FALSE && ai->usecount>=1){
+		/*Better is to stop (implemeted below in else statement), and retry later*/
+		if (ms_time(NULL)-ai->last_use_time>30){
+			ai->usecount=0; /*so that we can allow to retry */
+		}
+	}
+	if (ai && (ai->works || ai->usecount<1)){
 		sai->userid=ai->userid?ai->userid:ai->username;
 		sai->password=ai->passwd;
 		sai->ha1=ai->ha1;

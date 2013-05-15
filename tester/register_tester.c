@@ -260,6 +260,27 @@ static void authenticated_register_with_late_credentials(){
 	linphone_core_destroy(lc);
 }
 
+static void authenticated_register_with_wrong_credentials(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	stats stat;
+	stats* counters;
+	LCSipTransports transport = {5070,5070,0,5071};
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,"wrong passwd",NULL,auth_domain); /*create authentication structure from identity*/
+	char route[256];
+	sprintf(route,"sip:%s",test_route);
+	memset (&v_table,0,sizeof(v_table));
+	v_table.registration_state_changed=registration_state_changed;
+	v_table.auth_info_requested=auth_info_requested2;
+	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
+	linphone_core_set_user_data(lc,&stat);
+	linphone_core_add_auth_info(lc,info); /*add wrong authentication info to LinphoneCore*/
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_with_refresh_base_2(lc,TRUE,auth_domain,route,TRUE,transport);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
+	linphone_core_destroy(lc);
+}
+
 static LinphoneCore* configure_lc(LinphoneCoreVTable* v_table) {
 	return configure_lc_from(v_table, liblinphone_tester_file_prefix, "multi_account_lrc", 3);
 }
@@ -419,6 +440,7 @@ test_t register_tests[] = {
 	{ "Simple authenticated register", simple_authenticated_register },
 	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
+	{ "Digest auth with wrong credentials", authenticated_register_with_wrong_credentials },
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },
 	{ "Authenticated register with refresh", simple_auth_register_with_refresh },

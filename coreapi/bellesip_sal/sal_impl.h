@@ -127,7 +127,7 @@ void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *even
 /*create SalAuthInfo by copying username and realm from suth event*/
 SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
 void sal_add_pending_auth(Sal *sal, SalOp *op);
-
+void sal_remove_pending_auth(Sal *sal, SalOp *op);
 void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status);
 
 belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_request_t *req, int code);

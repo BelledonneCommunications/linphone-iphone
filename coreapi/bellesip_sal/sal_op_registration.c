@@ -34,6 +34,11 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		sal_op_set_contact_address(op,(SalAddress*)contact_address);
 		belle_sip_object_unref(contact_address);
 	}
+	if (belle_sip_refresher_get_auth_events(refresher)) {
+		if (op->auth_info) sal_auth_info_delete(op->auth_info);
+		/*only take first one for now*/
+		op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
+	}
 	if(status_code == 200) {
 		/*check service route rfc3608*/
 		belle_sip_header_service_route_t* service_route;
@@ -43,6 +48,9 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		}
 		sal_op_set_service_route(op,(const SalAddress*)service_route_address);
 		if (service_route_address) belle_sip_object_unref(service_route_address);
+
+		sal_remove_pending_auth(op->base.root,op); /*just in case*/
+		if (op->auth_info) op->base.root->callbacks.auth_success(op,op->auth_info->realm,op->auth_info->username);
 		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {
 		/* from rfc3608, 6.1.
@@ -57,14 +65,17 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		sal_op_set_service_route(op,NULL);
 
 		sal_compute_sal_errors_from_code(status_code,&sal_err,&sal_reason);
-		if (belle_sip_refresher_get_auth_events(refresher) && (status_code == 401 || status_code==407)) {
+		if (op->auth_info) {
 			/*add pending auth*/
 			sal_add_pending_auth(op->base.root,op);
-			if (op->auth_info) sal_auth_info_delete(op->auth_info);
-			 /*only take first one for now*/
-			op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
+			op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
+			if (status_code == 403) { /*in sase of 401 or 407, auth requested already invoked previouly*/
+				/*auth previouly pending, probably wrong pasword, give a chance to authenticate again*/
+				op->base.root->callbacks.auth_requested(op->base.root,op->auth_info);
+			}
 		}
-		op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
+	} else {
+		ms_warning("Register refresher know what to do with this status code");
 	}
 }
 
