@@ -2491,7 +2491,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getConfig(JNIEnv *env, 
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_upnpAvailable(JNIEnv *env, jobject thiz, jlong lc) {
-	return (jboolean) linphone_core_upnp_available((LinphoneCore *)lc);
+	return (jboolean) linphone_core_upnp_available();
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getUpnpState(JNIEnv *env, jobject thiz, jlong lc) {
