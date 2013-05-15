@@ -81,7 +81,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			}
 		} else if (Version.isX86()) {
 			Log.d("linphone", "No-neon x86 liblinphone loaded");
-			System.loadLibrary("linphonex86noneon"); 
+			System.loadLibrary("linphonex86"); 
 		} else {
 			Log.d("linphone", "No-neon armv5 liblinphone loaded");
 			System.loadLibrary("linphonearmv5noneon"); 
