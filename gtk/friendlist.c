@@ -352,6 +352,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 		} else {
 			linphone_gtk_load_chatroom(cr,uri,page);
 		}
+		linphone_chat_room_mark_as_read(cr);
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,page));
 		linphone_gtk_friend_list_update_chat_picture();
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
@@ -556,6 +557,13 @@ static void on_name_column_clicked(GtkTreeModel *model){
 
 static int get_friend_weight(const LinphoneFriend *lf){
 	int w=0;
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneChatRoom *cr=linphone_core_get_chat_room(lc,linphone_friend_get_address(lf));
+	
+	if (cr && linphone_chat_room_get_unread_messages_count(cr)>0){
+		w+=2000;
+	}
+	
 	switch(linphone_friend_get_status(lf)){
 		case LinphoneStatusOnline:
 			w+=1000;
