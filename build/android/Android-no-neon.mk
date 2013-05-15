@@ -41,7 +41,7 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_MODULE_FILENAME := liblinphonearmv7noneon
 endif
 ifeq ($(TARGET_ARCH_ABI),x86)
-LOCAL_MODULE_FILENAME := liblinphonex86noneon
+LOCAL_MODULE_FILENAME := liblinphonex86
 endif
 
 include $(BUILD_SHARED_LIBRARY)
