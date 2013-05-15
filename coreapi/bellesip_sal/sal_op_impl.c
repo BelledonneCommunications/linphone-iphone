@@ -27,6 +27,7 @@ SalOp * sal_op_new(Sal *sal){
 	sal_op_ref(op);
 	return op;
 }
+
 void sal_op_release(SalOp *op){
 	op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn not mean freeing op. Make sure back pointer will not be used later*/
@@ -35,6 +36,7 @@ void sal_op_release(SalOp *op){
 	}
 	sal_op_unref(op);
 }
+
 void sal_op_release_impl(SalOp *op){
 	ms_message("Destroying op [%p] of type [%s]",op,sal_op_type_to_string(op->type));
 	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);

@@ -466,6 +466,8 @@ static void call_with_custom_headers(void) {
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
 	CU_ASSERT_TRUE(strcmp(hvalue,"bad")==0);
 	
+	CU_ASSERT_PTR_NOT_NULL(linphone_call_get_remote_contact(c1));
+	
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));

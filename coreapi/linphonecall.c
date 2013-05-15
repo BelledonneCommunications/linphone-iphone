@@ -827,9 +827,9 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 					cp->low_bandwidth=TRUE;
 				}
 			}
-			cp->custom_headers=(SalCustomHeader*)sal_op_get_recv_custom_header(call->op);
-			return cp;
 		}
+		cp->custom_headers=(SalCustomHeader*)sal_op_get_recv_custom_header(call->op);
+		return cp;
 	}
 	return NULL;
 }

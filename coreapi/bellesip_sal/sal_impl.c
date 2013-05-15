@@ -233,6 +233,8 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		if (!op->base.call_id) {
 			op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(response), belle_sip_header_call_id_t))));
 		}
+		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
+		
 		if (op->callbacks.process_response_event) {
 
 			if (op->base.root->nat_helper_enabled) {
