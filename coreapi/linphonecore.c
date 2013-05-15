@@ -5215,6 +5215,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lc->auth_info=NULL;
 
 	sal_reset_transports(lc->sal);
+	sal_unlisten_ports(lc->sal); /*to make sure no new messages are received*/
 	sal_iterate(lc->sal); /*make sure event are purged*/
 	sal_uninit(lc->sal);
 	lc->sal=NULL;
