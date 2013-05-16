@@ -540,7 +540,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 			}else{
 				estatus=SalPresenceOffline;
 			}
-			ms_message("We are notified that [%s] has online status [%s]",sal_op_get_from(op),sal_presence_status_to_string(estatus));
+			ms_message("We are notified that [%s] has online status [%s]",sal_op_get_to(op),sal_presence_status_to_string(estatus));
 			if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
 				sub_state=SalSubscribeTerminated;
 				ms_message("And outgoing subscription terminated by remote [%s]",sal_op_get_to(op));

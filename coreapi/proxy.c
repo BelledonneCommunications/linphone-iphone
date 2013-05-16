@@ -1182,11 +1182,11 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		}
 		if (can_register(cfg)){
 			linphone_proxy_config_register(cfg);
-			if (cfg->publish && cfg->publish_op==NULL){
-				linphone_proxy_config_send_publish(cfg,lc->presence_mode);
-			}
 			cfg->commit=FALSE;
 		}
+	}
+	if (cfg->publish && cfg->publish_op==NULL && cfg->state==LinphoneRegistrationOk){
+		linphone_proxy_config_send_publish(cfg,lc->presence_mode);
 	}
 }
 

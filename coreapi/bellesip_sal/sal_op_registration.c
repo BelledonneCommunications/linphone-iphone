@@ -73,8 +73,6 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 				op->base.root->callbacks.auth_failure(op,op->auth_info);
 			}
 		}
-	} else {
-		ms_warning("Register refresher know what to do with this status code");
 	}
 }
 
