@@ -221,6 +221,37 @@ LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
+
+
+struct _LinphoneInfoMessage;
+/**
+ * The LinphoneInfoMessage is an object representing an informational message sent or received by the core.
+**/
+typedef struct _LinphoneInfoMessage LinphoneInfoMessage;
+
+/**
+ * The LinphoneContent struct holds data that can be embedded in a signaling message.
+**/
+struct _LinphoneContent{
+	char *type; /**<mime type for the data, for example "application"*/
+	char *subtype; /**<mime subtype for the data, for example "html"*/
+	void *data; /**<the actual data buffer, usually a string */
+	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.*/
+};
+
+/**
+ * Alias to the LinphoneContent struct.
+**/
+typedef struct _LinphoneContent LinphoneContent;
+
+LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_send_info_message(LinphoneCore *lc, const LinphoneInfoMessage *info, const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value);
+LINPHONE_PUBLIC const char *linphone_info_message_get_header(LinphoneInfoMessage *im, const char *name);
+LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
+LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(LinphoneInfoMessage *im);
+LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
+
 /**
  * Enum describing failure reasons.
  * @ingroup initializing
@@ -827,6 +858,8 @@ typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneC
 /** Callback prototype for receiving quality statistics for calls*/
 typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
+/** Callback prototype for receiving info messages*/
+typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, const LinphoneInfoMessage *msg);
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
@@ -839,7 +872,6 @@ typedef struct _LinphoneVTable{
 	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending subscription request */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
-	TextMessageReceived text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
 	MessageReceived message_received; /** a message is received, can be text or external body*/
 	DtmfReceived dtmf_received; /**< A dtmf has been received received */
 	ReferReceived refer_received; /**< An out of call refer was received */
@@ -848,11 +880,13 @@ typedef struct _LinphoneVTable{
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
 	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	CallStatsUpdated call_stats_updated; /**<Notifies on refreshing of call's statistics. */
-	DisplayStatusCb display_status; /**< DEPRECATED Callback that notifies various events with human readable text.*/
-	DisplayMessageCb display_message;/**< DEPRECATED Callback to display a message to the user */
-	DisplayMessageCb display_warning;/**< DEPRECATED Callback to display a warning to the user */
-	DisplayUrlCb display_url; /**< DEPRECATED */
-	ShowInterfaceCb show; /**< DEPRECATED Notifies the application that it should show up*/
+	LinphoneInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
+	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
+	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
+	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
+	DisplayUrlCb display_url; /**< @deprecated */
+	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
+	TextMessageReceived text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
 } LinphoneCoreVTable;
 
 /**
@@ -1522,14 +1556,15 @@ typedef struct _LinphoneTunnel LinphoneTunnel;
 */
 LINPHONE_PUBLIC	LinphoneTunnel *linphone_core_get_tunnel(LinphoneCore *lc);
 
-void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
-int linphone_core_get_sip_dscp(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp);
+LINPHONE_PUBLIC int linphone_core_get_sip_dscp(const LinphoneCore *lc);
 
-void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp);
-int linphone_core_get_audio_dscp(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_audio_dscp(LinphoneCore *lc, int dscp);
+LINPHONE_PUBLIC int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 
-void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
-int linphone_core_get_video_dscp(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
+LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
+
 
 
 #ifdef __cplusplus

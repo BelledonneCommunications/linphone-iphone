@@ -621,7 +621,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 							call->localdesc->streams[i].proto = SalProtoRtpAvp;
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 						}
-						linphone_core_start_invite(lc, call);
+						linphone_core_restart_invite(lc, call);
 					}
 					return;
 				}
@@ -973,6 +973,7 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalTextDeliveryStatus sta
 static int op_equals(LinphoneCall *a, SalOp *b) {
 	return a->op !=b; /*return 0 if equals*/
 }
+
 static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )sal_op_get_user_pointer(op);
 	const MSList* calls = linphone_core_get_calls(chat_msg->chat_room->lc);
@@ -993,6 +994,11 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 			sal_op_release(op);
 		}
 	}
+}
+
+static void info_received(SalOp *op, const SalBody *body){
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	linphone_core_notify_info_message(lc,op,body);
 }
 
 SalCallbacks linphone_sal_callbacks={
@@ -1023,7 +1029,8 @@ SalCallbacks linphone_sal_callbacks={
 	subscribe_received,
 	subscribe_closed,
 	ping_reply,
-	auth_requested
+	auth_requested,
+	info_received
 };
 
 

@@ -315,6 +315,13 @@ typedef struct SalAuthInfo{
 	char *ha1;
 }SalAuthInfo;
 
+typedef struct SalBody{
+	const char *type;
+	const char *subtype;
+	const void *data;
+	size_t size;
+}SalBody;
+
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
@@ -343,6 +350,7 @@ typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenc
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
+typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
 
 
@@ -376,6 +384,7 @@ typedef struct SalCallbacks{
 	SalOnSubscribeClosed subscribe_closed;
 	SalOnPingReply ping_reply;
 	SalOnAuthRequested auth_requested;
+	SalOnInfoReceived info_received;
 }SalCallbacks;
 
 
@@ -517,6 +526,9 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus s
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to);
+
+/*info messages*/
+int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body);
 
 
 

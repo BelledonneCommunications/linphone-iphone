@@ -2050,7 +2050,7 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 	for(elem=linphone_core_get_friend_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
 		if (lf->info==NULL){
-			if (linphone_core_lookup_known_proxy(lc,lf->uri,NULL)==cfg){
+			if (linphone_core_lookup_known_proxy(lc,lf->uri)==cfg){
 				if (linphone_address_get_username(lf->uri)!=NULL){
 					BuddyLookupRequest *req;
 					char *tmp=linphone_address_as_string_uri_only(lf->uri);
@@ -2363,7 +2363,7 @@ void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, L
    system.
 */
 	
-static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *addr){
+static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *dest){
 	MSList *ret=NULL;
 	const char *local_route=linphone_proxy_config_get_route(proxy);
 	const LinphoneAddress *srv_route=linphone_proxy_config_get_service_route(proxy);
@@ -2380,8 +2380,8 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 		const char *transport=sal_address_get_transport_name(proxy_addr);
 		if (transport){
 			SalAddress *route=sal_address_new(NULL);
-			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)addr));
-			sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)addr));
+			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)dest));
+			sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)dest));
 			sal_address_set_transport_name(route,transport);
 			ret=ms_list_append(ret,route);
 		}
@@ -2390,7 +2390,7 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 	return ret;
 }
 
-LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri, MSList **routes){
+LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri){
 	const MSList *elem;
 	LinphoneProxyConfig *found_cfg=NULL;
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
@@ -2416,31 +2416,17 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 end:
 	if (found_cfg!=NULL && found_cfg!=default_cfg){
 		ms_message("Overriding default proxy setting for this call/message/subscribe operation.");
-	};
-	
-	/*if route argument is given, fill adequate route set for this proxy.*/
-	if (routes){
-		if (found_cfg){
-			*routes=make_routes_for_proxy(found_cfg,uri);
-		}else if (default_cfg){
-			/*if the default proxy config has a locally configured route, we should use it*/
-			const char *route=linphone_proxy_config_get_route(default_cfg);
-			if (route)
-				*routes=ms_list_append(*routes,sal_address_new(route));
-		}
-	}
+	}else found_cfg=default_cfg;
 	
 	return found_cfg;
 }
 
 const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to){
-	LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(lc,to,NULL);
-	if (cfg==NULL)
-		linphone_core_get_default_proxy (lc,&cfg);
+	LinphoneProxyConfig *cfg=linphone_core_lookup_known_proxy(lc,to);
 	if (cfg!=NULL){
 		return linphone_proxy_config_get_identity (cfg);
 	}
-	return linphone_core_get_primary_contact (lc);
+	return linphone_core_get_primary_contact(lc);
 }
 
 
@@ -2473,6 +2459,11 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 		return linphone_core_start_invite(lc, call);
 	}
 	return 0;
+}
+
+int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
+	linphone_call_create_op(call);
+	return linphone_core_start_invite(lc,call);
 }
 
 int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
@@ -2587,7 +2578,7 @@ LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddr
 	return call;
 }
 
-void linphone_transfer_routes_to_op(MSList *routes, SalOp *op){
+static void linphone_transfer_routes_to_op(MSList *routes, SalOp *op){
 	MSList *it;
 	for(it=routes;it!=NULL;it=it->next){
 		SalAddress *addr=(SalAddress*)it->data;
@@ -2595,6 +2586,26 @@ void linphone_transfer_routes_to_op(MSList *routes, SalOp *op){
 		sal_address_destroy(addr);
 	}
 	ms_list_free(routes);
+}
+
+void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact){
+	MSList *routes=NULL;
+	LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(lc,dest);
+	const char *identity;
+	if (proxy){
+		identity=linphone_proxy_config_get_identity(proxy);
+	}else identity=linphone_core_get_primary_contact(lc);
+	/*sending out of calls*/
+	if (proxy){
+		routes=make_routes_for_proxy(proxy,dest);
+		linphone_transfer_routes_to_op(routes,op);
+	}
+	sal_op_set_to_address(op,dest);
+	sal_op_set_from(op,identity);
+	sal_op_set_sent_custom_header(op,headers);
+	if (with_contact && proxy && proxy->op && sal_op_get_contact(proxy->op)){
+		sal_op_set_contact(op,sal_op_get_contact(proxy->op));
+	}
 }
 
 /**
@@ -2619,7 +2630,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	LinphoneAddress *parsed_url2=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
-	MSList *routes=NULL;
 	bool_t defer = FALSE;
 
 	linphone_core_preempt_sound_resources(lc);
@@ -2632,7 +2642,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	linphone_core_get_default_proxy(lc,&proxy);
 
 	real_url=linphone_address_as_string(addr);
-	proxy=linphone_core_lookup_known_proxy(lc,addr,&routes);
+	proxy=linphone_core_lookup_known_proxy(lc,addr);
 
 	if (proxy!=NULL)
 		from=linphone_proxy_config_get_identity(proxy);
@@ -2642,9 +2652,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	parsed_url2=linphone_address_new(from);
 
-	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params);
-	call->dest_proxy=proxy;
-	linphone_transfer_routes_to_op(routes,call->op);
+	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),params,proxy);
 	
 	if(linphone_core_add_call(lc,call)!= 0)
 	{

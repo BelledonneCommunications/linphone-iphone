@@ -45,6 +45,7 @@ liblinphone_la_SOURCES=\
 	ec-calibrator.c \
 	conference.c \
 	message_storage.c \
+	info.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -52,16 +53,17 @@ liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
 	
 if USE_BELLESIP
-liblinphone_la_SOURCES+= 	bellesip_sal/sal_address_impl.c \
-							bellesip_sal/sal_impl.c \
-							bellesip_sal/sal_op_impl.c \
-							bellesip_sal/sal_op_call.c \
-							bellesip_sal/sal_op_registration.c \
-							bellesip_sal/sal_sdp.c  \
-							bellesip_sal/sal_op_message.c \
-							bellesip_sal/sal_op_presence.c \
-							bellesip_sal/sal_op_publish.c \
-							bellesip_sal/sal_op_call_transfer.c						
+liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
+				bellesip_sal/sal_impl.c \
+				bellesip_sal/sal_op_impl.c \
+				bellesip_sal/sal_op_call.c \
+				bellesip_sal/sal_op_registration.c \
+				bellesip_sal/sal_sdp.c  \
+				bellesip_sal/sal_op_message.c \
+				bellesip_sal/sal_op_presence.c \
+				bellesip_sal/sal_op_publish.c \
+				bellesip_sal/sal_op_call_transfer.c \
+				bellesip_sal/sal_op_info.c
 else
 liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
 							sal_eXosip2_sdp.c \

@@ -65,7 +65,6 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
-	MSList *routes=NULL;
 	SalOp *op=NULL;
 	LinphoneCall *call;
 	char* content_type;
@@ -88,18 +87,14 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	}
 	msg->time=t;
 	if (op==NULL){
-		LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(cr->lc,cr->peer_url,&routes);
+		LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(cr->lc,cr->peer_url);
 		if (proxy){
 			identity=linphone_proxy_config_get_identity(proxy);
 		}else identity=linphone_core_get_primary_contact(cr->lc);
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
-		linphone_transfer_routes_to_op(routes,op);
+		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,FALSE);
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
-		if (msg->custom_headers){
-			sal_op_set_sent_custom_header(op,msg->custom_headers);
-			msg->custom_headers=NULL; /*transfered to the SalOp*/
-		}
 	}
 	if (msg->external_body_url) {
 		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);

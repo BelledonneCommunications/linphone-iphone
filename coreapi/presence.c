@@ -64,7 +64,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	tmp=linphone_address_as_string(uri);
 	ms_message("Receiving new subscription from %s.",from);
 
-	cfg=linphone_core_lookup_known_proxy(lc,uri,NULL);
+	cfg=linphone_core_lookup_known_proxy(lc,uri);
 	if (cfg!=NULL){
 		if (cfg->op){
 			if (sal_op_get_contact(cfg->op)) {

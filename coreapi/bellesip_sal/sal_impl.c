@@ -53,16 +53,18 @@ void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 void sal_enable_logs(){
 	belle_sip_set_log_level(BELLE_SIP_LOG_MESSAGE);
 }
+
 void sal_disable_logs() {
 	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
 }
+
 void sal_add_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)==NULL){
 		sal->pending_auths=ms_list_append(sal->pending_auths,sal_op_ref(op));
 	}
 }
 
- void sal_remove_pending_auth(Sal *sal, SalOp *op){
+void sal_remove_pending_auth(Sal *sal, SalOp *op){
 	if (ms_list_find(sal->pending_auths,op)){
 		sal->pending_auths=ms_list_remove(sal->pending_auths,op);
 		sal_op_unref(op);
@@ -104,6 +106,7 @@ void sal_process_authentication(SalOp *op) {
 	}
 
 }
+
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
 	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_get_dialog(event);
 	SalOp* op = belle_sip_dialog_get_application_data(dialog);
@@ -113,6 +116,7 @@ static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminat
 		ms_error("sal process_dialog_terminated no op found for this dialog [%p], ignoring",dialog);
 	}
 }
+
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	belle_sip_client_transaction_t*client_transaction;
 	SalOp* op;
@@ -126,6 +130,7 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 		ms_error("sal process_io_error not implemented yet for non transaction");
 	}
 }
+
 static void process_request_event(void *sal, const belle_sip_request_event_t *event) {
 	SalOp* op=NULL;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
@@ -152,11 +157,14 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_message_fill_cbs(op);
-
 	} else if (strcmp("OPTIONS",belle_sip_request_get_method(req))==0) {
 		resp=belle_sip_response_create_from_request(req,200);
 		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
 		return;
+	}else if (strcmp("INFO",belle_sip_request_get_method(req))==0) {
+		op=sal_op_new((Sal*)sal);
+		op->dir=SalOpDirIncoming;
+		sal_op_info_fill_cbs(op);
 	}else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
 		resp=belle_sip_response_create_from_request(req,501);
@@ -447,6 +455,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.ping_reply=(SalOnPingReply)unimplemented_stub;
 	if (ctx->callbacks.auth_requested==NULL)
 		ctx->callbacks.auth_requested=(SalOnAuthRequested)unimplemented_stub;
+	if (ctx->callbacks.info_received==NULL)
+		ctx->callbacks.info_received=(SalOnInfoReceived)unimplemented_stub;
 }
 
 
@@ -739,10 +749,12 @@ const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
 }
 
 void sal_custom_header_free(SalCustomHeader *ch){
+	if (ch==NULL) return;
 	belle_sip_object_unref((belle_sip_message_t*)ch);
 }
 
 SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
+	if (ch==NULL) return NULL;
 	return (SalCustomHeader*)belle_sip_object_ref((belle_sip_message_t*)ch);
 }
 

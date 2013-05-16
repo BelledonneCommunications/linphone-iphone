@@ -468,17 +468,23 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 	}
 }
 
-LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params)
-{
-	LinphoneCall *call=ms_new0(LinphoneCall,1);
-	call->dir=LinphoneCallOutgoing;
-	call->op=sal_op_new(lc->sal);
+void linphone_call_create_op(LinphoneCall *call){
+	if (call->op) sal_op_release(call->op);
+	call->op=sal_op_new(call->core->sal);
 	sal_op_set_user_pointer(call->op,call);
+	if (call->params.referer)
+		sal_call_set_referer(call->op,call->params.referer->op);
+	linphone_configure_op(call->core,call->op,call->log->to,call->params.custom_headers,FALSE);
+}
+
+LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
+	LinphoneCall *call=ms_new0(LinphoneCall,1);
+	
+	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	linphone_core_get_local_ip(lc,NULL,call->localip);
 	linphone_call_init_common(call,from,to);
 	_linphone_call_params_copy(&call->params,params);
-	sal_op_set_sent_custom_header(call->op,call->params.custom_headers);
 	
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
@@ -498,9 +504,10 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	
 	discover_mtu(lc,linphone_address_get_domain (to));
 	if (params->referer){
-		sal_call_set_referer(call->op,params->referer->op);
 		call->referer=linphone_call_ref(params->referer);
 	}
+	call->dest_proxy=cfg;
+	linphone_call_create_op(call);
 	return call;
 }
 
@@ -2530,17 +2537,10 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 #else
 	LinphoneAddress *contact;
 #endif
-	LinphoneProxyConfig *cfg = NULL;
 
 	if (call->dest_proxy == NULL) {
 		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
-		linphone_core_get_default_proxy(call->core, &cfg);
-		call->dest_proxy = cfg;
-		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to, NULL);
-		if (cfg != call->dest_proxy && call->dest_proxy != NULL) {
-			ms_message("Overriding default proxy setting for this call:");
-			ms_message("The used identity will be %s", linphone_proxy_config_get_identity(call->dest_proxy));
-		}
+		call->dest_proxy = linphone_core_lookup_known_proxy(call->core, call->log->to);
 	}
 
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);

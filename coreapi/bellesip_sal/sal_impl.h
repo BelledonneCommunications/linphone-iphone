@@ -52,6 +52,7 @@ typedef enum SalOpSate {
 	,SalOpStateTerminating /*this state is used to wait until a proceeding state, so we can send the cancel*/
 	,SalOpStateTerminated
 }SalOpSate_t;
+
 const char* sal_op_state_to_string(const SalOpSate_t value);
 
 typedef enum SalOpDir {
@@ -64,7 +65,8 @@ typedef enum SalOpType {
 	SalOpCall,
 	SalOpMessage,
 	SalOpPresence,
-	SalOpPublish
+	SalOpPublish,
+	SalOpInfo
 }SalOpType_t;
 const char* sal_op_type_to_string(const SalOpType_t type);
 
@@ -121,7 +123,11 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/
 void sal_op_message_fill_cbs(SalOp*op);
-/*call transfert*/
+
+/*info*/
+void sal_op_info_fill_cbs(SalOp*op);
+
+/*call transfer*/
 void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event);
 void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event);
 /*create SalAuthInfo by copying username and realm from suth event*/

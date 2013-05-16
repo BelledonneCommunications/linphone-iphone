@@ -106,13 +106,11 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 
 void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	char *friend=NULL;
-	const char *route=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *cfg;
-	MSList *routes=NULL;
 	
 	friend=linphone_address_as_string(fr->uri);
-	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr),&routes);
+	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
 	if (cfg!=NULL){
 		from=linphone_proxy_config_get_identity(cfg);
 	}else from=linphone_core_get_primary_contact(fr->lc);
@@ -129,12 +127,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 		fr->outsub=NULL;
 	}
 	fr->outsub=sal_op_new(fr->lc->sal);
-	sal_op_set_route(fr->outsub,route);
-	if (cfg && cfg->op && sal_op_get_contact(cfg->op))
-		sal_op_set_contact(fr->outsub,sal_op_get_contact(cfg->op));
-	else
-		sal_op_set_contact(fr->outsub,NULL);
-	linphone_transfer_routes_to_op(routes,fr->outsub);
+	linphone_configure_op(fr->lc,fr->outsub,fr->uri,NULL,TRUE);
 	sal_subscribe_presence(fr->outsub,from,friend);
 	fr->subscribe_active=TRUE;
 	ms_free(friend);
