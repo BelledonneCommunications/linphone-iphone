@@ -712,7 +712,18 @@ static void auth_requested_legacy(SalOp *h, const char *realm, const char *usern
 			lc->vtable.auth_info_requested(lc,realm,username);
 	}
 }
-
+#ifdef USE_BELLESIP
+static void auth_failure(SalOp *op, SalAuthInfo* info) {
+	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
+	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
+	if (ai){
+		ms_message("%s/%s authentication fails.",info->realm,info->username);
+	}
+	if (lc->vtable.auth_info_requested) {
+				lc->vtable.auth_info_requested(lc,info->realm,info->username);
+	}
+}
+#else
 static void auth_success(SalOp *h, const char *realm, const char *username){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
@@ -721,7 +732,7 @@ static void auth_success(SalOp *h, const char *realm, const char *username){
 		ai->works=TRUE;
 	}
 }
-
+#endif
 static void register_success(SalOp *op, bool_t registered){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
@@ -894,13 +905,7 @@ static void ping_reply(SalOp *op){
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
-	if (ai && ai->works==FALSE && ai->usecount>=1){
-		/*Better is to stop (implemeted below in else statement), and retry later*/
-		if (ms_time(NULL)-ai->last_use_time>30){
-			ai->usecount=0; /*so that we can allow to retry */
-		}
-	}
-	if (ai && (ai->works || ai->usecount<1)){
+	if (ai) {
 		sai->userid=ai->userid?ai->userid:ai->username;
 		sai->password=ai->passwd;
 		sai->ha1=ai->ha1;
@@ -1000,7 +1005,11 @@ SalCallbacks linphone_sal_callbacks={
 	call_failure,
 	call_released,
 	auth_requested_legacy,
+#ifdef USE_BELLESIP
+	auth_failure,
+#else
 	auth_success,
+#endif
 	register_success,
 	register_failure,
 	vfu_request,

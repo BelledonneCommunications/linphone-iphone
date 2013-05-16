@@ -325,7 +325,11 @@ typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, co
 typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
 typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
+#ifndef USE_BELLESIP
 typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
+#else
+typedef void (*SalOnAuthFailure)(SalOp *op, SalAuthInfo* info);
+#endif
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
 typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
 typedef void (*SalOnVfuRequest)(SalOp *op);
@@ -353,7 +357,11 @@ typedef struct SalCallbacks{
 	SalOnCallFailure call_failure;
 	SalOnCallReleased call_released;
 	SalOnAuthRequestedLegacy auth_requested_legacy;
+#ifdef USE_BELLESIP
+	SalOnAuthFailure auth_failure;
+#else
 	SalOnAuthSuccess auth_success;
+#endif
 	SalOnRegisterSuccess register_success;
 	SalOnRegisterFailure register_failure;
 	SalOnVfuRequest vfu_request;

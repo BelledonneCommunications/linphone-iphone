@@ -422,8 +422,13 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
 	if (ctx->callbacks.auth_requested_legacy==NULL)
 		ctx->callbacks.auth_requested_legacy=(SalOnAuthRequestedLegacy)unimplemented_stub;
+#ifdef USE_BELLESIP
+	if (ctx->callbacks.auth_failure==NULL)
+		ctx->callbacks.auth_failure=(SalOnAuthFailure)unimplemented_stub;
+#else
 	if (ctx->callbacks.auth_success==NULL)
 		ctx->callbacks.auth_success=(SalOnAuthSuccess)unimplemented_stub;
+#endif
 	if (ctx->callbacks.register_success==NULL)
 		ctx->callbacks.register_success=(SalOnRegisterSuccess)unimplemented_stub;
 	if (ctx->callbacks.register_failure==NULL)

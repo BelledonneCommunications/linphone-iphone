@@ -50,7 +50,6 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		if (service_route_address) belle_sip_object_unref(service_route_address);
 
 		sal_remove_pending_auth(op->base.root,op); /*just in case*/
-		if (op->auth_info) op->base.root->callbacks.auth_success(op,op->auth_info->realm,op->auth_info->username);
 		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {
 		/* from rfc3608, 6.1.
@@ -65,13 +64,13 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 		sal_op_set_service_route(op,NULL);
 
 		sal_compute_sal_errors_from_code(status_code,&sal_err,&sal_reason);
+		op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
 		if (op->auth_info) {
 			/*add pending auth*/
 			sal_add_pending_auth(op->base.root,op);
-			op->base.root->callbacks.register_failure(op,sal_err,sal_reason,reason_phrase);
 			if (status_code == 403) { /*in sase of 401 or 407, auth requested already invoked previouly*/
 				/*auth previouly pending, probably wrong pasword, give a chance to authenticate again*/
-				op->base.root->callbacks.auth_requested(op->base.root,op->auth_info);
+				op->base.root->callbacks.auth_failure(op,op->auth_info);
 			}
 		}
 	} else {
