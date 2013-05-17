@@ -398,6 +398,7 @@ int sdp_to_media_description ( belle_sdp_session_description_t  *session_desc, S
 		
 		/* read crypto lines if any */
 		if ( stream->proto == SalProtoRtpSavp ) {
+			valid_count=0;
 			memset ( &stream->crypto, 0, sizeof ( stream->crypto ) );
 			for ( attribute_it=belle_sdp_media_description_get_attributes ( media_desc )
 							   ; valid_count < SAL_CRYPTO_ALGO_MAX && attribute_it!=NULL;

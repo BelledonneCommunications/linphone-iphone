@@ -862,8 +862,5 @@ if test $USE_BELLESIP_TRUE !='#' ; then
 else
 	printf "* eXosip stack\t\t\ttrue\n"
 fi
-if test "$build_upnp" = "true" ; then
-	printf "* upnp support\t\t\ttrue\n"
-fi
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."
