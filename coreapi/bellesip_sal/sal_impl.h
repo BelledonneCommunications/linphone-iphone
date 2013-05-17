@@ -46,14 +46,14 @@ struct Sal{
 	bool_t use_dates;
 };
 
-typedef enum SalOpSate {
+typedef enum SalOpState {
 	SalOpStateEarly=0
 	,SalOpStateActive
 	,SalOpStateTerminating /*this state is used to wait until a proceeding state, so we can send the cancel*/
 	,SalOpStateTerminated
-}SalOpSate_t;
+}SalOpState;
 
-const char* sal_op_state_to_string(const SalOpSate_t value);
+const char* sal_op_state_to_string(SalOpState value);
 
 typedef enum SalOpDir {
 	SalOpDirIncoming=0
@@ -85,7 +85,7 @@ struct SalOp{
 	SalMediaDescription *result;
 	belle_sdp_session_description_t *sdp_answer;
 	bool_t supports_session_timers;
-	SalOpSate_t state;
+	SalOpState state;
 	SalOpDir_t dir;
 	belle_sip_refresher_t* refresher;
 	int ref;

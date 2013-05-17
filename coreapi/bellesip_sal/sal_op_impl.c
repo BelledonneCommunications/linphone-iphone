@@ -375,14 +375,14 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 	return -1;
 }
 
-const char* sal_op_state_to_string(const SalOpSate_t value) {
+const char* sal_op_state_to_string(const SalOpState value) {
 	switch(value) {
 	case SalOpStateEarly: return"SalOpStateEarly";
 	case SalOpStateActive: return "SalOpStateActive";
 	case SalOpStateTerminating: return "SalOpStateTerminating";
 	case SalOpStateTerminated: return "SalOpStateTerminated";
 	default:
-		return "Unknon";
+		return "Unknown";
 	}
 }
 

@@ -448,6 +448,7 @@ void sal_op_set_from(SalOp *op, const char *from);
 void sal_op_set_from_address(SalOp *op, const SalAddress *from);
 void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_set_to_address(SalOp *op, const SalAddress *to);
+SalOp *sal_op_ref(SalOp* h);
 void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
