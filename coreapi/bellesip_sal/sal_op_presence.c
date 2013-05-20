@@ -592,7 +592,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 
 	/*???sal_exosip_fix_route(op); make sure to ha ;lr*/
 	req=sal_op_build_request(op,"SUBSCRIBE");
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","Presence"));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(600)));
 
 	return sal_op_send_request(op,req);
@@ -603,7 +603,7 @@ int sal_unsubscribe(SalOp *op){
 		ms_error("Cannot unsubscribe to [%s]",sal_op_get_to(op));
 		return -1;
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","Presence"));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(0)));
 	return sal_op_send_request(op,req);
 }
@@ -620,18 +620,26 @@ int sal_subscribe_decline(SalOp *op){
 	belle_sip_server_transaction_send_response(op->pending_server_trans,resp);
 	return 0;
 }
-int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
+
+static belle_sip_request_t *create_presence_notify(SalOp *op){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	belle_sip_message_add_header((belle_sip_message_t*)notify,belle_sip_header_create("Event","presence"));
+	return notify;
+}
+
+int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
+	belle_sip_request_t* notify=create_presence_notify(op);
 	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),status); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 			,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,600)));
 	return sal_op_send_request(op,notify);
 }
+
 int sal_notify_close(SalOp *op){
-	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	belle_sip_request_t* notify=create_presence_notify(op);
 	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),SalPresenceOffline); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));
+		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));
 	return sal_op_send_request(op,notify);
 }
 
