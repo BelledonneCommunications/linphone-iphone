@@ -136,6 +136,8 @@ static void unsubscribe_while_subscribing(void) {
 static void call_with_presence(void) {
 	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
+	LinphoneVideoPolicy pol={0};
+	linphone_core_set_video_policy(marie->lc,&pol);
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 
 	CU_ASSERT_TRUE(call(marie,pauline));
