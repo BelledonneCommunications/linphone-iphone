@@ -53,8 +53,16 @@ int sal_call_refer_to(SalOp *op, belle_sip_header_refer_to_t* refer_to, belle_si
 }
 
 int sal_call_refer(SalOp *op, const char *refer_to){
-	belle_sip_header_refer_to_t* refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
-	return sal_call_refer_to(op,refer_to_header,NULL);
+	belle_sip_header_address_t *referred_by;
+	belle_sip_header_refer_to_t* refer_to_header;
+	if (op->dialog) {
+		referred_by=(belle_sip_header_address_t*)belle_sip_object_clone(BELLE_SIP_OBJECT(belle_sip_dialog_get_local_party(op->dialog)));
+	}else{
+		referred_by=BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op));
+	}
+	refer_to_header=belle_sip_header_refer_to_create(belle_sip_header_address_parse(refer_to));
+
+	return sal_call_refer_to(op,refer_to_header,belle_sip_header_referred_by_create(referred_by));
 }
 
 int sal_call_refer_with_replaces(SalOp *op, SalOp *other_call_op){
@@ -174,6 +182,7 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
 
 		if (refer_to_uri && belle_sip_uri_get_header(refer_to_uri,"Replaces")) {
 			sal_op_set_replaces(op,belle_sip_header_replaces_create2(belle_sip_uri_get_header(refer_to_uri,"Replaces")));
+			belle_sip_uri_remove_header(refer_to_uri,"Replaces");
 		}
 		if (referred_by){
 			sal_op_set_referred_by(op,referred_by);

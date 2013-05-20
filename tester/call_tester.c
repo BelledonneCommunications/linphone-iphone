@@ -70,11 +70,11 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	counters = (stats*)linphone_core_get_user_data(lc);
 	switch (new_call_state) {
 	case LinphoneCallOutgoingInit :counters->number_of_LinphoneTransferCallOutgoingInit++;break;
-	case LinphoneCallOutgoingProgress :counters->number_of_LinphoneTransfertCallOutgoingProgress++;break;
-	case LinphoneCallOutgoingRinging :counters->number_of_LinphoneTransfertCallOutgoingRinging++;break;
-	case LinphoneCallOutgoingEarlyMedia :counters->number_of_LinphoneTransfertCallOutgoingEarlyMedia++;break;
-	case LinphoneCallConnected :counters->number_of_LinphoneTransfertCallConnected++;break;
-	case LinphoneCallStreamsRunning :counters->number_of_LinphoneTransfertCallStreamsRunning++;break;
+	case LinphoneCallOutgoingProgress :counters->number_of_LinphoneTransferCallOutgoingProgress++;break;
+	case LinphoneCallOutgoingRinging :counters->number_of_LinphoneTransferCallOutgoingRinging++;break;
+	case LinphoneCallOutgoingEarlyMedia :counters->number_of_LinphoneTransferCallOutgoingEarlyMedia++;break;
+	case LinphoneCallConnected :counters->number_of_LinphoneTransferCallConnected++;break;
+	case LinphoneCallStreamsRunning :counters->number_of_LinphoneTransferCallStreamsRunning++;break;
 	default:
 		CU_FAIL("unexpected event");break;
 	}
@@ -798,13 +798,13 @@ static void simple_call_transfer(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallOutgoingInit,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallIncomingReceived,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingRinging,1,2000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransfertCallOutgoingProgress,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallOutgoingProgress,1,2000));
 	linphone_core_accept_call(laure->lc,linphone_core_get_current_call(laure->lc));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallConnected,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,2000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransfertCallConnected,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallConnected,1,2000));
 
 	/*terminate marie to pauline call*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
@@ -862,7 +862,7 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallOutgoingInit,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallIncomingReceived,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,2000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransfertCallOutgoingProgress,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallOutgoingProgress,1,2000));
 
 	/*laure accept call*/
 	for(calls=linphone_core_get_calls(laure->lc);calls!=NULL;calls=calls->next) {
@@ -877,7 +877,7 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,2000));
-	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransfertCallConnected,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallConnected,1,2000));
 
 	/*terminate marie to pauline/laure call*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));

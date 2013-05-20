@@ -103,11 +103,11 @@ typedef struct _stats {
 	int number_of_LinphoneCallReleased;
 
 	int number_of_LinphoneTransferCallOutgoingInit;
-	int number_of_LinphoneTransfertCallOutgoingProgress;
-	int number_of_LinphoneTransfertCallOutgoingRinging;
-	int number_of_LinphoneTransfertCallOutgoingEarlyMedia;
-	int number_of_LinphoneTransfertCallConnected;
-	int number_of_LinphoneTransfertCallStreamsRunning;
+	int number_of_LinphoneTransferCallOutgoingProgress;
+	int number_of_LinphoneTransferCallOutgoingRinging;
+	int number_of_LinphoneTransferCallOutgoingEarlyMedia;
+	int number_of_LinphoneTransferCallConnected;
+	int number_of_LinphoneTransferCallStreamsRunning;
 
 	int number_of_LinphoneMessageReceived;
 	int number_of_LinphoneMessageReceivedLegacy;
