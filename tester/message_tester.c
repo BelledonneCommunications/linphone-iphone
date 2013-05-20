@@ -163,17 +163,21 @@ static void text_message_with_send_error(void) {
 
 static const char *info_content="<somexml>blabla</somexml>";
 
-void info_message_received(LinphoneCore *lc, LinphoneInfoMessage *msg){
+void info_message_received(LinphoneCore *lc, const LinphoneInfoMessage *msg){
 	stats* counters = (stats*)linphone_core_get_user_data(lc);
 	const char *hvalue=linphone_info_message_get_header(msg, "Weather");
 	const LinphoneContent *content=linphone_info_message_get_content(msg);
-	CU_ASSERT_PTR_NOT_NULL(hvalue);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(hvalue);
 	CU_ASSERT_TRUE(strcmp(hvalue,"still bad")==0);
 	
 	if (!content){
 		counters->number_of_inforeceived++;
 	}else{
-		CU_ASSERT_PTR_NOT_NULL(content->data);
+		CU_ASSERT_PTR_NOT_NULL_FATAL(content->data);
+		CU_ASSERT_PTR_NOT_NULL_FATAL(content->type);
+		CU_ASSERT_PTR_NOT_NULL_FATAL(content->subtype);
+		CU_ASSERT_TRUE(strcmp(content->type,"application")==0);
+		CU_ASSERT_TRUE(strcmp(content->subtype,"somexml")==0);
 		CU_ASSERT_TRUE(strcmp((const char*)content->data,info_content)==0);
 		CU_ASSERT_EQUAL(content->size,strlen(info_content));
 		counters->number_of_inforeceived_with_body++;
@@ -186,7 +190,7 @@ static void info_message_with_args(bool_t with_content) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
 	LinphoneInfoMessage *info=linphone_core_create_info_message(marie->lc);
-	linphone_info_message_add_header(info,"Wheather","still bad");
+	linphone_info_message_add_header(info,"Weather","still bad");
 	if (with_content) {
 		LinphoneContent ct;
 		ct.type="application";

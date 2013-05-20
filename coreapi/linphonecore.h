@@ -247,9 +247,9 @@ typedef struct _LinphoneContent LinphoneContent;
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc);
 LINPHONE_PUBLIC int linphone_core_send_info_message(LinphoneCore *lc, const LinphoneInfoMessage *info, const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value);
-LINPHONE_PUBLIC const char *linphone_info_message_get_header(LinphoneInfoMessage *im, const char *name);
+LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name);
 LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
-LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(LinphoneInfoMessage *im);
+LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im);
 LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
 
 /**

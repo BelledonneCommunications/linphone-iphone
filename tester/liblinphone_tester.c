@@ -184,6 +184,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	mgr->v_table.new_subscription_request=new_subscribtion_request;
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
+	mgr->v_table.info_received=info_message_received;
 	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, check_for_proxies?(rc_file?1:0):0);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);

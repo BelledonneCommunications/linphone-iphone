@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
-#include "private.h"
+
 #include "liblinphone_tester.h"
 
 
