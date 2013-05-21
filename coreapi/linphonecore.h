@@ -1088,7 +1088,7 @@ LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore 
 
 int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
 /* returns a MSList of PayloadType */
-const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
@@ -1351,21 +1351,21 @@ LINPHONE_PUBLIC	void linphone_core_reset_missed_calls_count(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
 
 /* video support */
-bool_t linphone_core_video_supported(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
-bool_t linphone_core_video_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_video_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
-const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
+LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
 
 typedef struct MSVideoSizeDef{
 	MSVideoSize vsize;
 	const char *name;
 }MSVideoSizeDef;
 /* returns a zero terminated table of MSVideoSizeDef*/
-const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
-void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
-MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
-void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
+LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
 
 void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
@@ -1376,9 +1376,9 @@ bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
 
 /* returns a null terminated static array of string describing the webcams */
 void linphone_core_reload_video_devices(LinphoneCore *lc);
-const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
-int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
-const char *linphone_core_get_video_device(const LinphoneCore *lc);
+LINPHONE_PUBLIC const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
+LINPHONE_PUBLIC const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
 /* Set and get static picture to be used when "Static picture" is the video device */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
