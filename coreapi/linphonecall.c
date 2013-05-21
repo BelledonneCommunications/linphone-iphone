@@ -223,8 +223,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
 	bool_t keep_srtp_keys=lp_config_get_int(lc->config,"sip","keep_srtp_keys",0);
-	char local_ip[256];
-	linphone_core_get_local_ip_for( AF_INET,"linphone.org",local_ip);
+	char* local_ip=call->localip;
 
 	linphone_core_adapt_to_network(lc,call->ping_time,&call->params);
 

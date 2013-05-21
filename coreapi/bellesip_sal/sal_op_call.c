@@ -247,7 +247,11 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 			} else {
 				/*nop error*/
 			}
-			ms_error("call op [%p] receive an unexpected answer [%i]",op,code);
+			if (code >= 100 && code < 180) {
+				ms_message("call op [%p] receive [%i]",op,code);
+			} else {
+				ms_error("call op [%p] receive an unexpected answer [%i]",op,code);
+			}
 		}
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			switch (op->state) {

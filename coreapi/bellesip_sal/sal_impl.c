@@ -127,7 +127,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 				op->callbacks.process_io_error(op,event);
 		}
 	} else {
-		ms_error("sal process_io_error not implemented yet for non transaction");
+		/*ms_error("sal process_io_error not implemented yet for non transaction");*/
+		/*nop, because already handle at transaction layer*/
 	}
 }
 
