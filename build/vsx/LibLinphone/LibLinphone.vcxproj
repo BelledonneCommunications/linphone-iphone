@@ -177,6 +177,7 @@
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_call.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_call_transfer.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_impl.c" />
+    <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_info.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_message.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_presence.c" />
     <ClCompile Include="..\..\..\coreapi\bellesip_sal\sal_op_publish.c" />
@@ -188,6 +189,7 @@
     <ClCompile Include="..\..\..\coreapi\ec-calibrator.c" />
     <ClCompile Include="..\..\..\coreapi\enum.c" />
     <ClCompile Include="..\..\..\coreapi\friend.c" />
+    <ClCompile Include="..\..\..\coreapi\info.c" />
     <ClCompile Include="..\..\..\coreapi\linphonecall.c" />
     <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
     <ClCompile Include="..\..\..\coreapi\linphone_tunnel.cc" />
