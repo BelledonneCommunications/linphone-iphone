@@ -84,9 +84,11 @@ static bool_t linphone_call_are_all_streams_encrypted(LinphoneCall *call) {
 
 #ifdef VIDEO_ENABLED
 	// If video enabled, check ZRTP encryption in videostream
-	const LinphoneCallParams *params=linphone_call_get_current_params(call);
-	if (params->has_video && !call->videostream_encrypted) {
-		return FALSE;
+	{
+		const LinphoneCallParams *params=linphone_call_get_current_params(call);
+		if (params->has_video && !call->videostream_encrypted) {
+			return FALSE;
+		}
 	}
 #endif
 
@@ -110,9 +112,9 @@ void propagate_encryption_changed(LinphoneCall *call){
 
 #ifdef VIDEO_ENABLED
 static void linphone_call_videostream_encryption_changed(void *data, bool_t encrypted){
-	ms_message("Video stream is %s", encrypted ? "encrypted" : "not encrypted");
-
 	LinphoneCall *call = (LinphoneCall *)data;
+
+	ms_message("Video stream is %s", encrypted ? "encrypted" : "not encrypted");
 	call->videostream_encrypted=encrypted;
 	propagate_encryption_changed(call);
 }
@@ -136,12 +138,14 @@ static void linphone_call_audiostream_encryption_changed(void *data, bool_t encr
 
 #ifdef VIDEO_ENABLED
 	// Enable video encryption
-	const LinphoneCallParams *params=linphone_call_get_current_params(call);
-	if (params->has_video) {
-		ms_message("Trying to enable encryption on video stream");
-		OrtpZrtpParams params;
-		params.zid_file=NULL; //unused
-		video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
+	{
+		const LinphoneCallParams *params=linphone_call_get_current_params(call);
+		if (params->has_video) {
+			OrtpZrtpParams params;
+			ms_message("Trying to enable encryption on video stream");
+			params.zid_file=NULL; //unused
+			video_stream_enable_zrtp(call->videostream,call->audiostream,&params);
+		}
 	}
 #endif
 }
@@ -1656,11 +1660,11 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 		const char *rtcp_addr=vstream->rtcp_addr[0]!='\0' ? vstream->rtcp_addr : call->resultdesc->addr;
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 		if (used_pt!=-1){
-			call->current_params.video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			VideoStreamDir dir=VideoStreamSendRecv;
 			MSWebCam *cam=lc->video_conf.device;
 			bool_t is_inactive=FALSE;
 
+			call->current_params.video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params.has_video=TRUE;
 
 			video_stream_enable_adaptive_bitrate_control(call->videostream,
@@ -1729,19 +1733,16 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 
 void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
 	LinphoneCore *lc=call->core;
-	LinphoneAddress *me;
+	LinphoneAddress *me=linphone_core_get_primary_contact_parsed(lc);
 	char *cname;
-	bool_t use_arc;
-
-	call->current_params.audio_codec = NULL;
-	call->current_params.video_codec = NULL;
-
-	me=linphone_core_get_primary_contact_parsed(lc);
-	use_arc=linphone_core_adaptive_rate_control_enabled(lc);
+	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_stream(call->resultdesc,
 		    					SalProtoRtpAvp,SalVideo);
 #endif
+
+	call->current_params.audio_codec = NULL;
+	call->current_params.video_codec = NULL;
 
 	if ((call->audiostream == NULL) && (call->videostream == NULL)) {
 		ms_fatal("start_media_stream() called without prior init !");

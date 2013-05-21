@@ -129,6 +129,15 @@ void udpate_tab_chat_header(GtkWidget *chat_view,const LinphoneAddress *uri,Linp
 	gtk_widget_show_all(w);
 }
 
+static gboolean scroll_to_end(GtkTextView *w){
+	GtkTextBuffer *buffer=gtk_text_view_get_buffer(w);
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(buffer,&iter);
+	GtkTextMark *mark=gtk_text_buffer_create_mark(buffer,NULL,&iter,FALSE);
+	gtk_text_view_scroll_mark_onscreen(w,mark); 
+	return FALSE;
+}
+
 void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from, 
                  gboolean me,LinphoneChatRoom *cr,LinphoneChatMessage *msg, gboolean hist){
 	GtkTextView *text=GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textview"));
@@ -199,8 +208,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	GtkTextMark *mark=gtk_text_buffer_create_mark(buffer,NULL,&iter,FALSE);
-	gtk_text_view_scroll_mark_onscreen(text,mark); 
+	g_idle_add((GSourceFunc)scroll_to_end,text);
 	ms_free(from_str);
 }
 
