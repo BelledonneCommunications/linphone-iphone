@@ -2900,10 +2900,13 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
+#ifdef VIDEO_ENABLED
+	bool_t has_video = FALSE;
+#endif
 	if (params!=NULL){
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #ifdef VIDEO_ENABLED
-		bool_t has_video = call->params.has_video;
+		has_video = call->params.has_video;
 
 		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
@@ -4758,9 +4761,9 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * If not set the core will create its own window.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-	lc->preview_window_id=id;
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call(lc);
+	lc->preview_window_id=id;
 	if (call!=NULL && call->videostream){
 		video_stream_set_native_preview_window_id(call->videostream,id);
 	}else if (lc->previewstream){
@@ -4774,8 +4777,8 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 **/
 void linphone_core_show_video(LinphoneCore *lc, bool_t show){
 #ifdef VIDEO_ENABLED
-	ms_error("linphone_core_show_video %d", show);
 	LinphoneCall *call=linphone_core_get_current_call(lc);
+	ms_error("linphone_core_show_video %d", show);
 	if (call!=NULL && call->videostream){
 		video_stream_show_video(call->videostream,show);
 	}
@@ -4811,9 +4814,11 @@ void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
 	ms_message("%s : rotation=%d\n", __FUNCTION__, rotation);
 	lc->device_rotation = rotation;
 #ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call!=NULL && call->videostream){
-		video_stream_set_device_rotation(call->videostream,rotation);
+	{
+		LinphoneCall *call=linphone_core_get_current_call(lc);
+		if (call!=NULL && call->videostream){
+			video_stream_set_device_rotation(call->videostream,rotation);
+		}
 	}
 #endif
 }
