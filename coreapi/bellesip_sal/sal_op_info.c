@@ -35,7 +35,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_header_content_length_t *clen=NULL;
 	belle_sip_response_t* resp;
 	SalBody salbody;
-	const char *body;
+	const char *body = NULL;
 	
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
 	if (content_type){
