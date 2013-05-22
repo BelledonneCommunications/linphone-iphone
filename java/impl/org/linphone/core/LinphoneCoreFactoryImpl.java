@@ -102,7 +102,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public LinphoneAddress createLinphoneAddress(String identity) {
+	public LinphoneAddress createLinphoneAddress(String identity) throws LinphoneCoreException {
 		return new LinphoneAddressImpl(identity);
 	}
 	

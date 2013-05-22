@@ -81,8 +81,9 @@ abstract public class LinphoneCoreFactory {
 	 * Constructs a LinphoneAddress object by parsing the user supplied address, given as a string.
 	 * @param address should be like sip:joe@sip.linphone.org
 	 * @return
+	 * @throws LinphoneCoreException if address cannot be parsed
 	 */
-	abstract public LinphoneAddress createLinphoneAddress(String address);
+	abstract public LinphoneAddress createLinphoneAddress(String address) throws LinphoneCoreException;
 	abstract public LpConfig createLpConfig(String file);
 	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
