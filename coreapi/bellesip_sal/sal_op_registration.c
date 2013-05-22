@@ -70,7 +70,7 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 			sal_add_pending_auth(op->base.root,op);
 			if (status_code == 403) { /*in sase of 401 or 407, auth requested already invoked previouly*/
 				/*auth previouly pending, probably wrong pasword, give a chance to authenticate again*/
-				op->base.root->callbacks.auth_failure(op,op->auth_info);
+				op->base.root->callbacks.auth_failure(op,op->auth_info); /*fixme*/
 			}
 		}
 	}

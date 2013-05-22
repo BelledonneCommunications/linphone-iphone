@@ -363,14 +363,12 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 }
 
 static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
-	SalAuthInfo auth_info;
-	memset(&auth_info,0,sizeof(SalAuthInfo));
-	auth_info.username=(char*)belle_sip_auth_event_get_username(auth_event);
-	auth_info.realm=(char*)belle_sip_auth_event_get_realm(auth_event);
-	((Sal*)sal)->callbacks.auth_requested(sal,&auth_info);
-	belle_sip_auth_event_set_passwd(auth_event,(const char*)auth_info.password);
-	belle_sip_auth_event_set_ha1(auth_event,(const char*)auth_info.ha1);
-	belle_sip_auth_event_set_userid(auth_event,(const char*)auth_info.userid);
+	SalAuthInfo* auth_info = sal_auth_info_create(auth_event);
+	((Sal*)sal)->callbacks.auth_requested(sal,auth_info);
+	belle_sip_auth_event_set_passwd(auth_event,(const char*)auth_info->password);
+	belle_sip_auth_event_set_ha1(auth_event,(const char*)auth_info->ha1);
+	belle_sip_auth_event_set_userid(auth_event,(const char*)auth_info->userid);
+	sal_auth_info_delete(auth_info);
 	return;
 }
 

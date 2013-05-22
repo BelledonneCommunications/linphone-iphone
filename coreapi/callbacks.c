@@ -906,9 +906,9 @@ static void ping_reply(SalOp *op){
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
 	if (ai) {
-		sai->userid=ai->userid?ai->userid:ai->username;
-		sai->password=ai->passwd;
-		sai->ha1=ai->ha1;
+		sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
+		sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
+		sai->ha1=ai->ha1?ms_strdup(ai->ha1):NULL;
 		ai->usecount++;
 		ai->last_use_time=ms_time(NULL);
 		return TRUE;
