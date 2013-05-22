@@ -163,5 +163,12 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		write("Sent message [" + msg.getText() + "] new state is " + state.toString());
 	}
 
+	@Override
+	public void transferState(LinphoneCore lc, LinphoneCall call,
+			State new_call_state) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

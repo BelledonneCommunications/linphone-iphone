@@ -948,4 +948,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int getVideoDscp() {
 		return getVideoDscp(nativePtr);
 	}
+	
+	private native long createInfoMessage(long nativeptr);
+	@Override
+	public LinphoneInfoMessage createInfoMessage() {
+		return new LinphoneInfoMessageImpl(createInfoMessage(nativePtr));
+	}
+	private native int sendInfoMessage(long corePtr, long infoptr, long destptr);
+	@Override
+	public void sendInfoMessage(LinphoneInfoMessage info, LinphoneAddress dest) {
+		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)info).nativePtr, ((LinphoneAddressImpl)dest).nativePtr);
+	}
 }

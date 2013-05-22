@@ -1259,5 +1259,19 @@ public interface LinphoneCore {
 	 * the external ip address is not available return null. 
 	 */
 	public String getUpnpExternalIpaddress();
+	
+	/**
+	 * Create an empty INFO message.
+	 * It can later be sent using {@link LinphoneCore.sendInfoMessage() }.
+	 * @return the new info message.
+	 */
+	public LinphoneInfoMessage createInfoMessage();
+	
+	/**
+	 * Send an INFO message to specified destination.
+	 * @param info the info message
+	 * @param dest the destination sip address.
+	 */
+	public void sendInfoMessage(LinphoneInfoMessage info, LinphoneAddress dest);
 
 }

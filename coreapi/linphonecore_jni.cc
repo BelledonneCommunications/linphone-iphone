@@ -139,6 +139,7 @@ public:
 		vTable.new_subscription_request = new_subscription_request;
 		vTable.notify_presence_recv = notify_presence_recv;
 		vTable.call_stats_updated = callStatsUpdated;
+		vTable.transfer_state_changed = transferStateChanged;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -160,6 +161,8 @@ public:
 		callStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneCall$State"));
 		callStateFromIntId = env->GetStaticMethodID(callStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneCall$State;");
 
+		transferStateId = env->GetMethodID(listenerClass,"transferState","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCall$State;)V");
+		
 		/*callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats);*/
 		callStatsUpdatedId = env->GetMethodID(listenerClass, "callStatsUpdated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneCallStats;)V");
 
@@ -240,6 +243,7 @@ public:
 	jmethodID messageReceivedId;
 	jmethodID dtmfReceivedId;
 	jmethodID callStatsUpdatedId;
+	jmethodID transferStateId;
 
 	jclass globalStateClass;
 	jmethodID globalStateId;
@@ -499,7 +503,22 @@ public:
 			env->CallVoidMethod(callobj, lcData->callSetVideoStatsId, statsobj);
 		env->CallVoidMethod(lcData->listener, lcData->callStatsUpdatedId, lcData->core, callobj, statsobj);
 	}
-
+	static void transferStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState remote_call_state){
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		jobject jcall;
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->transferStateId
+							,lcData->core
+							,(jcall=lcData->getCall(env,call))
+							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)remote_call_state)
+							);
+	}
 
 };
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*  env
@@ -543,6 +562,19 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv*  env
 	LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)lc);
 	linphone_core_destroy((LinphoneCore*)lc);
 	delete lcData;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    createInfoMessage
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneCoreImpl_createInfoMessage(JNIEnv *, jobject jobj, jlong lcptr){
+	return (jlong) linphone_core_create_info_message((LinphoneCore*)lcptr);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_sendInfoMessage(JNIEnv *env, jobject jobj, jlong lcptr, jlong infoptr, jlong addrptr){
+	return linphone_core_send_info_message((LinphoneCore*)lcptr,(LinphoneInfoMessage*)infoptr,(LinphoneAddress*)addrptr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
@@ -1694,6 +1726,17 @@ extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getState(	JNIEnv*  env
 																		,jlong ptr) {
 	return (jint)linphone_call_get_state((LinphoneCall*)ptr);
 }
+
+/*
+ * Class:     org_linphone_core_LinphoneCallImpl
+ * Method:    getTransferState
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransferState(JNIEnv *, jobject jobj, jlong callptr){
+	LinphoneCall *call=(LinphoneCall*)callptr;
+	return linphone_call_get_transfer_state(call);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoCancellation(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr

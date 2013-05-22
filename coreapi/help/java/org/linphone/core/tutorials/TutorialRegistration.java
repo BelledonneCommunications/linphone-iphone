@@ -198,6 +198,13 @@ public class TutorialRegistration implements LinphoneCoreListener {
 		
 	}
 
+	@Override
+	public void transferState(LinphoneCore lc, LinphoneCall call,
+			State new_call_state) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

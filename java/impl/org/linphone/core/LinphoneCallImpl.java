@@ -207,4 +207,9 @@ class LinphoneCallImpl implements LinphoneCall {
 	public void stopRecording() {
 		stopRecording(nativePtr);
 	}
+	private native int getTransferState(long nativePtr);
+	@Override
+	public State getTransferState() {
+		return State.fromInt(getTransferState(nativePtr));
+	}
 }

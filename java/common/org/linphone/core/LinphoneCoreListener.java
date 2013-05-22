@@ -117,6 +117,13 @@ public interface LinphoneCoreListener {
 	 */
 	void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event);
 
+	/** 
+	 * Notifies progress of a call transfer. 
+	 * @param lc the LinphoneCore
+	 * @param call the call through which the transfer was sent.
+	 * @param new_call_state the state of the call resulting of the transfer, at the other party. 
+	 **/
+	void transferState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State new_call_state);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */

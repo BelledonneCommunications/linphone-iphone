@@ -292,4 +292,10 @@ public interface LinphoneCall {
 	 * Stop call recording.
 	 */
 	void stopRecording();
+	
+	/**
+	 * If a call transfer has been initiated for this call, returns the call state of the new call performed at the remote end as a result of the transfer request.
+	 * @return the call state of the new call performed by the referee to the refer target.
+	 */
+	State getTransferState();
 }
