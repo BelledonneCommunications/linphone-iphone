@@ -27,11 +27,11 @@ else
 	exit
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
-XCODE_ROOT=/Applications/Xcode.app
+XCODE_DEV_PATH=`xcode-select -print-path`
 #new path with Xcode 4.3:
-if test -d ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
-	SDK_PATH_LIST=`ls -drt ${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
-	SDK_BIN_PATH=${XCODE_ROOT}/Contents/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
+if test -d ${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs ; then
+	SDK_PATH_LIST=`ls -drt ${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
+	SDK_BIN_PATH=${XCODE_DEV_PATH}/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
 else
 	SDK_PATH_LIST=`ls -drt /Developer/Platforms/iPhone${PLATFORM}.platform/Developer/SDKs/iPhone${PLATFORM}*`
 	SDK_BIN_PATH=/Developer/Platforms/iPhone${PLATFORM}.platform/Developer/usr/bin  
