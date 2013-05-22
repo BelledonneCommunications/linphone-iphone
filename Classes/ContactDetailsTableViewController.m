@@ -537,7 +537,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
     NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
     Entry *entry  = [sectionDict objectAtIndex:[indexPath row]];
     if (![self isEditing]) {
-        NSString *dest;
+        NSString *dest=NULL;;
         if(contactSections[[indexPath section]] == ContactSections_Number) {
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
