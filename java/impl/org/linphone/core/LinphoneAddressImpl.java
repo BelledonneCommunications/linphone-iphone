@@ -34,8 +34,11 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native void setUserName(long ptr,String username);
 	private native String toString(long ptr);
 	
-	protected LinphoneAddressImpl(String identity)  {
+	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
 		nativePtr = newLinphoneAddressImpl(identity, null);
+		if(nativePtr==0) {
+			throw new LinphoneCoreException("Cannot create LinphoneAdress from ["+identity+"]");
+		}
 	}
 	
 	protected LinphoneAddressImpl(String username,String domain,String displayName)  {
