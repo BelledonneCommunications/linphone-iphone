@@ -4,7 +4,7 @@ public class LinphoneInfoMessageImpl implements LinphoneInfoMessage {
 	protected long nativePtr;
 	private LinphoneContent mContent;
 	
-	private native Object getContent(long nativeptr);
+	private native Object getContent(long infoptr);
 	public LinphoneInfoMessageImpl(long ptr){
 		nativePtr=ptr;
 		mContent=(LinphoneContent)getContent(nativePtr);

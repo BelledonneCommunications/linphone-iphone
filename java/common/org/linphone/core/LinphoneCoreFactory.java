@@ -107,5 +107,8 @@ abstract public class LinphoneCoreFactory {
 	 */
 	abstract public LinphoneFriend createLinphoneFriend();
 	
-	
+	/**
+	 * Create a LinphoneContent object
+	 */
+	abstract public LinphoneContent createLinphoneContent(String type, String subType, String data);
 }

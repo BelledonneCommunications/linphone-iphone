@@ -125,6 +125,13 @@ public interface LinphoneCoreListener {
 	 **/
 	void transferState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State new_call_state);
 	
+	/**
+	 * Notifies an incoming INFO message.
+	 * @param lc the LinphoneCore.
+	 * @param info the info message
+	 */
+	void infoReceived(LinphoneCore lc, LinphoneInfoMessage info);
+	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */
 	void show(LinphoneCore lc);

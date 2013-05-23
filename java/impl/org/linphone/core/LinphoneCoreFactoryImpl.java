@@ -140,10 +140,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public native void setDebugMode(boolean enable, String tag);
 
+	
+	private native void _setLogHandler(Object handler);
 	@Override
 	public void setLogHandler(LinphoneLogHandler handler) {
-		//not implemented on Android
-		
+		_setLogHandler(handler);
 	}
 
 	@Override
@@ -171,5 +172,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneAuthInfo createAuthInfo(String username, String userid,
 			String passwd, String ha1, String realm) {
 		return new LinphoneAuthInfoImpl(username,userid,passwd,ha1,realm);
+	}
+
+	@Override
+	public LinphoneContent createLinphoneContent(String type, String subType,
+			String data) {
+		return new LinphoneContentImpl(type,subType,data);
 	}
 }

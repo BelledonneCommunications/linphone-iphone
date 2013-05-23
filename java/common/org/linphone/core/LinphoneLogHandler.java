@@ -24,10 +24,10 @@ package org.linphone.core;
  */
 public interface LinphoneLogHandler {
 	public static final int Fatal=1<<4;
-	public static final int Error=1<<3|Fatal;
-	public static final int Warn=1<<2|Error;
-	public static final int Info=1<<1|Warn;
-	public static final int Debug=1|Info;
+	public static final int Error=1<<3;
+	public static final int Warn=1<<2;
+	public static final int Info=1<<1;
+	public static final int Debug=1;
 	
 	/**
 	 * Method invoked for each traces

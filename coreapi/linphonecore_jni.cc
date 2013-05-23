@@ -52,15 +52,15 @@ extern "C" void libmsbcg729_init();
 
 static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
+static jclass handler_class;
+static jmethodID loghandler_id;
+static jobject handler_obj=NULL;
 
 #ifdef ANDROID
-void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
-	char str[4096];
+void linphone_android_log_handler(int prio, char *str) {
 	char *current;
 	char *next;
 
-	vsnprintf(str, sizeof(str) - 1, fmt, args);
-	str[sizeof(str) - 1] = '\0';
 	if (strlen(str) < 512) {
 		__android_log_write(prio, LogDomain, str);
 	} else {
@@ -75,16 +75,25 @@ void linphone_android_log_handler(int prio, const char *fmt, va_list args) {
 }
 
 static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	char str[4096];
+	const char *levname="undef";
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+	
 	int prio;
 	switch(lev){
-	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
-	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	break;
-	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	break;
-	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	break;
-	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	break;
-	default:		prio = ANDROID_LOG_DEFAULT;	break;
+	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
+	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
+	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
+	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
+	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
+	default:			prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	linphone_android_log_handler(prio, fmt, args);
+	if (handler_obj){
+		JNIEnv *env=ms_get_jni_env();
+		env->CallVoidMethod(handler_obj,loghandler_id,env->NewStringUTF(LogDomain),(jint)lev,env->NewStringUTF(levname),env->NewStringUTF(str),NULL);
+	}else
+		linphone_android_log_handler(prio, str);
 }
 
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
@@ -140,6 +149,7 @@ public:
 		vTable.notify_presence_recv = notify_presence_recv;
 		vTable.call_stats_updated = callStatsUpdated;
 		vTable.transfer_state_changed = transferStateChanged;
+		vTable.info_received = infoReceived;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -187,6 +197,7 @@ public:
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
+		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneInfoMessage;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -210,6 +221,9 @@ public:
 		callStatsId = env->GetMethodID(callStatsClass, "<init>", "(JJ)V");
 		callSetAudioStatsId = env->GetMethodID(callClass, "setAudioStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
 		callSetVideoStatsId = env->GetMethodID(callClass, "setVideoStats", "(Lorg/linphone/core/LinphoneCallStats;)V");
+		
+		infoMessageClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneInfoMessageImpl"));
+		infoMessageCtor = env->GetMethodID(infoMessageClass,"<init>", "(J)V");
 	}
 
 	~LinphoneCoreData() {
@@ -222,14 +236,13 @@ public:
 		env->DeleteGlobalRef(globalStateClass);
 		env->DeleteGlobalRef(registrationStateClass);
 		env->DeleteGlobalRef(callStateClass);
-		env->DeleteGlobalRef(callStatsClass);
 		env->DeleteGlobalRef(chatMessageStateClass);
 		env->DeleteGlobalRef(proxyClass);
 		env->DeleteGlobalRef(callClass);
 		env->DeleteGlobalRef(chatMessageClass);
 		env->DeleteGlobalRef(chatRoomClass);
 		env->DeleteGlobalRef(friendClass);
-
+		env->DeleteGlobalRef(infoMessageClass);
 	}
 	jobject core;
 	jobject listener;
@@ -244,6 +257,7 @@ public:
 	jmethodID dtmfReceivedId;
 	jmethodID callStatsUpdatedId;
 	jmethodID transferStateId;
+	jmethodID infoReceivedId;
 
 	jclass globalStateClass;
 	jmethodID globalStateId;
@@ -288,6 +302,9 @@ public:
 
 	jclass addressClass;
 	jmethodID addressCtrId;
+	
+	jclass infoMessageClass;
+	jmethodID infoMessageCtor;
 
 	LinphoneCoreVTable vTable;
 
@@ -517,6 +534,22 @@ public:
 							,lcData->core
 							,(jcall=lcData->getCall(env,call))
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)remote_call_state)
+							);
+	}
+	static void infoReceived(LinphoneCore *lc, const LinphoneInfoMessage *info){
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		jobject jcall;
+		if (result != 0) {
+			ms_error("cannot attach VM\n");
+			return;
+		}
+		LinphoneInfoMessage *copy_info=linphone_info_message_copy(info);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		env->CallVoidMethod(lcData->listener
+							,lcData->infoReceivedId
+							,lcData->core
+							,env->NewObject(lcData->infoMessageClass,lcData->infoMessageCtor,(jlong)copy_info)
 							);
 	}
 
@@ -2587,4 +2620,117 @@ extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject 
         env->ReleaseStringUTFChars(section, csection);
         env->ReleaseStringUTFChars(key, ckey);
 }
+
+static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content){
+	jclass contentClass;
+	jmethodID ctor;
+	jstring jtype, jsubtype, jdata;
+	
+	contentClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneContentImpl"));
+	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+	
+	jtype=env->NewStringUTF(content->type);
+	jsubtype=env->NewStringUTF(content->subtype);
+	jdata=content->data ? env->NewStringUTF((const char*)content->data) : NULL;
+	jobject jobj=env->NewObject(contentClass,ctor,jtype, jsubtype, jdata);
+	
+	env->DeleteGlobalRef(contentClass);
+	return jobj;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    getContent
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getContent(JNIEnv *env, jobject jobj, jlong infoptr){
+	const LinphoneContent *content=linphone_info_message_get_content((LinphoneInfoMessage*)infoptr);
+	if (content){
+		return create_java_linphone_content(env,content);
+	}
+	return NULL;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    setContent
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_setContent(JNIEnv *env, jobject jobj, jlong infoptr, jstring jtype, jstring jsubtype, jstring jdata){
+	const char *type,*subtype,*data;
+	LinphoneContent content;
+	
+	content.type=(char*)env->GetStringUTFChars(jtype,NULL);
+	content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
+	content.data=(void*)env->GetStringUTFChars(jdata,NULL);
+	content.size=strlen((char*)content.data);
+	linphone_info_message_set_content((LinphoneInfoMessage*)infoptr,&content);
+	env->ReleaseStringUTFChars(jtype,content.type);
+	env->ReleaseStringUTFChars(jsubtype,content.subtype);
+	env->ReleaseStringUTFChars(jdata,(char*)content.data);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    addHeader
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_addHeader(JNIEnv *env, jobject jobj, jlong infoptr, jstring jname, jstring jvalue){
+	const char *name=NULL,*value=NULL;
+	name=env->GetStringUTFChars(jname,NULL);
+	value=env->GetStringUTFChars(jvalue,NULL);
+	linphone_info_message_add_header((LinphoneInfoMessage*)infoptr,name,value);
+	env->ReleaseStringUTFChars(jname,name);
+	env->ReleaseStringUTFChars(jvalue,value);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    getHeader
+ * Signature: (JLjava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getHeader(JNIEnv *env, jobject jobj, jlong infoptr, jstring jname){
+	const char *name=name=env->GetStringUTFChars(jname,NULL);
+	const char *ret=linphone_info_message_get_header((LinphoneInfoMessage*)infoptr,name);
+	env->ReleaseStringUTFChars(jname,name);
+	return ret ? env->NewStringUTF(ret) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    getFrom
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getFrom(JNIEnv *env , jobject jobj, jlong infoptr){
+	const char *from=linphone_info_message_get_from((LinphoneInfoMessage*)infoptr);
+	return from ? env->NewStringUTF(from) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneInfoMessageImpl
+ * Method:    delete
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_delete(JNIEnv *env, jobject jobj , jlong infoptr){
+	linphone_info_message_destroy((LinphoneInfoMessage*)infoptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreFactoryImpl__1setLogHandler(JNIEnv *env, jobject jfactory, jobject jhandler){
+	static int init_done=FALSE;
+	
+	if (!init_done){
+		handler_class=(jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneLogHandler"));
+		loghandler_id=env->GetMethodID(handler_class,"log", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V");
+		if (loghandler_id==NULL) ms_fatal("log method not found");
+		init_done=TRUE;
+	}
+	if (handler_obj) {
+		env->DeleteGlobalRef(handler_obj);
+		handler_obj=NULL;
+	}
+	if (jhandler){
+		handler_obj=env->NewGlobalRef(jhandler);
+	}
+}
+
 

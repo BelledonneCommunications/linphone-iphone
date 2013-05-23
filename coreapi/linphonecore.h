@@ -250,7 +250,9 @@ LINPHONE_PUBLIC void linphone_info_message_add_header(LinphoneInfoMessage *im, c
 LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name);
 LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
 LINPHONE_PUBLIC const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im);
+LINPHONE_PUBLIC const char *linphone_info_message_get_from(const LinphoneInfoMessage *im);
 LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
+LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig);
 
 /**
  * Enum describing failure reasons.

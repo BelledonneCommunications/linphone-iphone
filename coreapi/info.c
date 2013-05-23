@@ -102,6 +102,15 @@ void linphone_info_message_destroy(LinphoneInfoMessage *im){
 	ms_free(im);
 }
 
+
+LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig){
+	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
+	linphone_content_copy(&im->content,&orig->content);
+	if (orig->headers) im->headers=sal_custom_header_clone(orig->headers);
+	if (orig->op) im->op=sal_op_ref(orig->op);
+	return im;
+}
+
 /**
  * Creates an empty info message.
  * @param lc the LinphoneCore object.
@@ -152,7 +161,7 @@ const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, cons
 /**
  * Returns origin of received LinphoneInfoMessage 
 **/
-const char *linphone_info_message_get_from(LinphoneInfoMessage *im){
+const char *linphone_info_message_get_from(const LinphoneInfoMessage *im){
 	return sal_op_get_from(im->op);
 }
 
