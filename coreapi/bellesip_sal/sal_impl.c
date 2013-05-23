@@ -683,6 +683,14 @@ int sal_get_dns_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_dns_timeout(sal->stack);
 }
 
+void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file) {
+	belle_sip_stack_set_dns_user_hosts_file(sal->stack, hosts_file);
+}
+
+const char * sal_get_dns_user_hosts_file(const Sal *sal) {
+	return belle_sip_stack_get_dns_user_hosts_file(sal->stack);
+}
+
 SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	SalAuthInfo* auth_info = sal_auth_info_new();
 	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event)) ;

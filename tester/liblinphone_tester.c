@@ -47,6 +47,8 @@ const char *liblinphone_tester_file_prefix="Assets";
 const char *liblinphone_tester_file_prefix="./tester";
 #endif
 
+const char *userhostsfile = "tester_hosts";
+
 #ifdef ANDROID
 extern void AndroidPrintf(FILE *stream, const char *fmt, ...);
 #define fprintf(file, fmt, ...) AndroidPrintf(file, fmt, ##__VA_ARGS__)  
@@ -109,16 +111,21 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	char ringpath[256];
 	char ringbackpath[256];
 	char rootcapath[256];
+	char dnsuserhostspath[256];
+
 	sprintf(filepath, "%s/%s", path, file);
 	lc =  linphone_core_new(v_table,NULL,filepath,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
 	counters = (stats*)linphone_core_get_user_data(lc);
-	
+
 	/* until we have good certificates on our test server...
 	linphone_core_verify_server_certificates(lc,FALSE);*/
 	sprintf(rootcapath, "%s/certificates/cacert.pem", path);
 	linphone_core_set_root_ca(lc,rootcapath);
-	
+
+	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
+	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+
 	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
 	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
 	linphone_core_set_ring(lc, ringpath);
