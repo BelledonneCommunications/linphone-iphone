@@ -115,7 +115,7 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 belle_sip_response_t *sal_op_create_response_from_request(SalOp *op, belle_sip_request_t *req, int code);
 
 void sal_process_authentication(SalOp *op);
-belle_sip_header_contact_t* sal_op_create_contact(SalOp *op,belle_sip_header_from_t* from_header) ;
+belle_sip_header_contact_t* sal_op_create_contact(SalOp *op) ;
 
 bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size);
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) ;

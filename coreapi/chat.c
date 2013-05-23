@@ -93,7 +93,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		}else identity=linphone_core_get_primary_contact(cr->lc);
 		/*sending out of calls*/
 		op = sal_op_new(cr->lc->sal);
-		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,FALSE);
+		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,lp_config_get_int(cr->lc->config,"sip","chat_msg_with_contact",0));
 		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 	}
 	if (msg->external_body_url) {

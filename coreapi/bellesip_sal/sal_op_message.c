@@ -138,6 +138,9 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		sal_op_set_to(op,to);
 	op->dir=SalOpDirOutgoing;
 	req=sal_op_build_request(op,"MESSAGE");
+	if (sal_op_get_contact(op)){
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
+	}
 	snprintf(content_type_raw,sizeof(content_type_raw),BELLE_SIP_CONTENT_TYPE ": %s",content_type);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_parse(content_type_raw)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
