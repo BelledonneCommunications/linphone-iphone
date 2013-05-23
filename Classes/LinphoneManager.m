@@ -132,6 +132,8 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "mp4v-es", 90000, @"mp4v-es_preference"},
 	{ "h264", 90000, @"h264_preference"},
 	{ "vp8", 90000, @"vp8_preference"},
+	{ "mpeg4-generic", 44100, @"aaceld_44k_preference"},
+	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
 	{ NULL,0,Nil }
 };
 
@@ -474,6 +476,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 			[self removeCTCallCenterCb];
             bluetoothAvailable = FALSE;
             bluetoothEnabled = FALSE;
+            /*IOS specific*/
+            linphone_core_start_dtmf_stream(theLinphoneCore);
 		}
 		if (incallBgTask) {
 			[[UIApplication sharedApplication]  endBackgroundTask:incallBgTask];
@@ -578,7 +582,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
     }
 	[chat setDirection:[NSNumber numberWithInt:1]];
-    [chat setTime:[NSDate date]];
+    [chat setTime:[NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(msg)]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
@@ -1302,14 +1306,14 @@ static void audioRouteChangeListenerCallback (
 		[error release];
 	} else {
 		char normalizedUserName[256];
-        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));  
+        LinphoneAddress* linphoneAddress = linphone_address_new(linphone_core_get_identity(theLinphoneCore));
 		linphone_proxy_config_normalize_number(proxyCfg,[address cStringUsingEncoding:[NSString defaultCStringEncoding]],normalizedUserName,sizeof(normalizedUserName));
         linphone_address_set_username(linphoneAddress, normalizedUserName);
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
         if(transfer) {
-            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), normalizedUserName);
+            linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {
             call=linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
         }
