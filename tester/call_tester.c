@@ -419,13 +419,15 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	CU_ASSERT_PTR_NOT_NULL(c2);
 
 	for (i=0;i<200;i++){
-		if (linphone_call_get_audio_stats(c1)->ice_state==LinphoneIceStateHostConnection &&
-			linphone_call_get_audio_stats(c2)->ice_state==LinphoneIceStateHostConnection ){
-			success=TRUE;
-			break;
+		if ((c1 != NULL) && (c2 != NULL)) {
+			if (linphone_call_get_audio_stats(c1)->ice_state==LinphoneIceStateHostConnection &&
+				linphone_call_get_audio_stats(c2)->ice_state==LinphoneIceStateHostConnection ){
+				success=TRUE;
+				break;
+			}
+			linphone_core_iterate(caller->lc);
+			linphone_core_iterate(callee->lc);
 		}
-		linphone_core_iterate(caller->lc);
-		linphone_core_iterate(callee->lc);
 		ms_usleep(50000);
 	}
 	return success;
