@@ -1,6 +1,24 @@
-linphone-3.xxx --
+linphone-3.6.0 -- May 27, 2013
+	UI:
+	* new friend list and chat messaging UI
+	* enhanced call history
+	* call and conference audio recording
+	* persistent chat history
+	* DSCP settings for SIP and RTP
+	* display of call statistics (when clicking on the quality indicator bar)
+	core:
+	* ICE for efficient RTP exchange
 	* fix bug in zRTP support (upgrade required)
-	*
+	* call recording
+	* uPnP
+	* call statistics
+	* adaptive bitrate control improvements
+	* faster call quality indicator feedback
+	* DSCP settings for SIP and RTP
+	* detailed call statistics feedback API
+
+	Requires: mediastreamer2 = 2.9.0 and ortp = 0.22.0
+
 
 linphone-3.5.2 -- February 22, 2012
 	* updated oRTP to 0.20.0
