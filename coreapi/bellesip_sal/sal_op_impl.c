@@ -130,7 +130,7 @@ belle_sip_response_t *sal_op_create_response_from_request(SalOp *op, belle_sip_r
 int sal_ping(SalOp *op, const char *from, const char *to){
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,to);
-	return sal_op_send_request(op,sal_op_build_request(op,"OPTION"));
+	return sal_op_send_request(op,sal_op_build_request(op,"OPTIONS"));
 }
 
 void sal_op_set_remote_ua(SalOp*op,belle_sip_message_t* message) {
@@ -241,7 +241,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	if (strcmp(belle_sip_request_get_method(request),"INVITE")==0
 			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
-			||strcmp(belle_sip_request_get_method(request),"OPTION")==0)
+			||strcmp(belle_sip_request_get_method(request),"OPTIONS")==0)
 		need_contact=TRUE;
 
 	return _sal_op_send_request_with_contact(op, request,need_contact);

@@ -523,10 +523,15 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 	op->base.local_media=desc;
 	return 0;
 }
-static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
+
+static belle_sip_header_allow_t *create_allow(){
 	belle_sip_header_allow_t* header_allow;
-	header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(header_allow));
+        header_allow = belle_sip_header_allow_create("INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+	return header_allow;
+}
+
+static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow()));
 
 	if (op->base.root->session_expires!=0){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "200"));
@@ -630,6 +635,7 @@ int sal_call_accept(SalOp*h){
 		ms_error("Fail to build answer for call");
 		return -1;
 	}
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(create_allow()));
 	if (h->base.root->session_expires!=0){
 		if (h->supports_session_timers) {
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),belle_sip_header_create( "Supported", "timer"));
