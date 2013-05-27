@@ -233,6 +233,10 @@ bool_t linphone_tunnel_enabled(LinphoneTunnel *tunnel){
 	return bcTunnel(tunnel)->isEnabled();
 }
 
+bool_t linphone_tunnel_connected(LinphoneTunnel *tunnel){
+	return bcTunnel(tunnel)->isReady();
+}
+
 static OrtpLogFunc tunnelOrtpLogHandler=NULL;
 
 /*

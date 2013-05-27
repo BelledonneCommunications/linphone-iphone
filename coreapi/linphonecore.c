@@ -825,6 +825,7 @@ typedef struct codec_desc{
 }codec_desc_t;
 
 static codec_desc_t codec_pref_order[]={
+	{"opus", 48000},
 	{"SILK", 16000},
 	{"speex", 16000},
 	{"speex", 8000},
@@ -1285,8 +1286,9 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	linphone_core_assign_payload_type(lc,&payload_type_silk_wb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_silk_swb,-1,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_g729,18,"annexb=no");
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=24; sizeLength=13; streamType=5");
-	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=24; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_22k,-1,"config=F8EE2000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_aaceld_44k,-1,"config=F8E82000; constantDuration=512;  indexDeltaLength=3; indexLength=3; mode=AAC-hbr; profile-level-id=76; sizeLength=13; streamType=5");
+	linphone_core_assign_payload_type(lc,&payload_type_opus,-1,"useinbandfec=1; usedtx=1");
 	linphone_core_handle_static_payloads(lc);
 	
 	ms_init();
@@ -2838,10 +2840,13 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
+#ifdef VIDEO_ENABLED
+	bool_t has_video = FALSE;
+#endif
 	if (params!=NULL){
 		linphone_call_set_state(call,LinphoneCallUpdating,"Updating call");
 #ifdef VIDEO_ENABLED
-		bool_t has_video = call->params.has_video;
+		has_video = call->params.has_video;
 
 		// Video removing
 		if((call->videostream != NULL) && !params->has_video) {
@@ -4190,7 +4195,7 @@ const char * linphone_core_get_stun_server(const LinphoneCore *lc){
 	return lc->net_conf.stun_server;
 }
 
-bool_t linphone_core_upnp_available(const LinphoneCore *lc){
+bool_t linphone_core_upnp_available(){
 #ifdef BUILD_UPNP
 	return TRUE;
 #else
@@ -4677,9 +4682,9 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * If not set the core will create its own window.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-	lc->preview_window_id=id;
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call=linphone_core_get_current_call(lc);
+	lc->preview_window_id=id;
 	if (call!=NULL && call->videostream){
 		video_stream_set_native_preview_window_id(call->videostream,id);
 	}else if (lc->previewstream){
@@ -4693,8 +4698,8 @@ void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long 
 **/
 void linphone_core_show_video(LinphoneCore *lc, bool_t show){
 #ifdef VIDEO_ENABLED
-	ms_error("linphone_core_show_video %d", show);
 	LinphoneCall *call=linphone_core_get_current_call(lc);
+	ms_error("linphone_core_show_video %d", show);
 	if (call!=NULL && call->videostream){
 		video_stream_show_video(call->videostream,show);
 	}
@@ -4730,9 +4735,11 @@ void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
 	ms_message("%s : rotation=%d\n", __FUNCTION__, rotation);
 	lc->device_rotation = rotation;
 #ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (call!=NULL && call->videostream){
-		video_stream_set_device_rotation(call->videostream,rotation);
+	{
+		LinphoneCall *call=linphone_core_get_current_call(lc);
+		if (call!=NULL && call->videostream){
+			video_stream_set_device_rotation(call->videostream,rotation);
+		}
 	}
 #endif
 }

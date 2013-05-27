@@ -1464,6 +1464,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 		case 480:
 			error=SalErrorFailure;
 			sr=SalReasonTemporarilyUnavailable;
+		break;
 		case 486:
 			error=SalErrorFailure;
 			sr=SalReasonBusy;
@@ -1653,7 +1654,7 @@ static void process_notify(Sal *sal, eXosip_event_t *ev){
 		//osip_content_type_t *ct=NULL;
 		osip_message_get_body(ev->request,0,&body);
 		//ct=osip_message_get_content_type(ev->request);
-		if (h->hvalue && strcasecmp(h->hvalue,"refer")==0){
+		if (h->hvalue && strncasecmp(h->hvalue,"refer",strlen("refer"))==0){
 			/*special handling of refer events*/
 			if (body && body->body){
 				osip_message_t *msg;
@@ -2400,6 +2401,7 @@ int sal_register_refresh(SalOp *op, int expires){
 		* the exosip lock in a non blocking way, and give up if it takes too long*/
 		while (eXosip_trylock()!=0){
 			ms_usleep(100000);
+			tries++;
 			if (tries>30) {/*after 3 seconds, give up*/
 				ms_warning("Could not obtain exosip lock in a reasonable time, giving up.");
 				return -1;

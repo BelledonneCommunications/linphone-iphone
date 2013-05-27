@@ -71,20 +71,20 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("bcg729");
 
 		//Main library
-		if (!hasNeonInCpuFeatures()) {
-			try {
-				if (!isArmv7() && !Version.isX86()) {
-					System.loadLibrary("linphonearmv5"); 
-				} else {
-					System.loadLibrary("linphonenoneon"); 
-				}
-				Log.w("linphone", "No-neon liblinphone loaded");
-			} catch (UnsatisfiedLinkError ule) {
-				Log.w("linphone", "Failed to load no-neon liblinphone, loading neon liblinphone");
-				System.loadLibrary("linphone"); 
+		if (isArmv7()) {
+			if (hasNeonInCpuFeatures()) {
+				Log.d("linphone", "armv7 liblinphone loaded");
+				System.loadLibrary("linphonearmv7"); 
+			} else {
+				Log.w("linphone", "No-neon armv7 liblinphone loaded");
+				System.loadLibrary("linphonearmv7noneon"); 
 			}
+		} else if (Version.isX86()) {
+			Log.d("linphone", "No-neon x86 liblinphone loaded");
+			System.loadLibrary("linphonex86"); 
 		} else {
-			System.loadLibrary("linphone"); 
+			Log.d("linphone", "No-neon armv5 liblinphone loaded");
+			System.loadLibrary("linphonearmv5noneon"); 
 		}
 
 		Version.dumpCapabilities();

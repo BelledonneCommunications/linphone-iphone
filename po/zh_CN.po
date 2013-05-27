@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-08 16:59+0200\n"
+"POT-Creation-Date: 2013-04-24 14:04+0200\n"
 "PO-Revision-Date: 2011-01-08 23:51+0800\n"
 "Last-Translator: Aron Xu <happyaron.xu@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -97,7 +97,7 @@ msgstr "静音"
 msgid "Couldn't find pixmap file: %s"
 msgstr "无法打开位图文件：%s"
 
-#: ../gtk/chat.c:324 ../gtk/friendlist.c:872
+#: ../gtk/chat.c:336 ../gtk/friendlist.c:872
 msgid "Invalid sip contact !"
 msgstr "无效的 SIP 联系人！"
 
@@ -160,11 +160,11 @@ msgstr "请输入 %s@%s 的密码："
 msgid "Call error"
 msgstr "呼叫历史"
 
-#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3189
+#: ../gtk/main.c:1129 ../coreapi/linphonecore.c:3210
 msgid "Call ended"
 msgstr "呼叫结束"
 
-#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:239
+#: ../gtk/main.c:1132 ../coreapi/linphonecore.c:240
 msgid "Incoming call"
 msgstr "呼入"
 
@@ -1514,19 +1514,19 @@ msgstr "2"
 msgid "1"
 msgstr "1"
 
-#: ../coreapi/linphonecore.c:227
+#: ../coreapi/linphonecore.c:228
 msgid "aborted"
 msgstr "中断"
 
-#: ../coreapi/linphonecore.c:230
+#: ../coreapi/linphonecore.c:231
 msgid "completed"
 msgstr "完成"
 
-#: ../coreapi/linphonecore.c:233
+#: ../coreapi/linphonecore.c:234
 msgid "missed"
 msgstr "丢失"
 
-#: ../coreapi/linphonecore.c:238
+#: ../coreapi/linphonecore.c:239
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1541,23 +1541,23 @@ msgstr ""
 "状态：%s\n"
 "状态：%i 分 %i 秒\n"
 
-#: ../coreapi/linphonecore.c:239
+#: ../coreapi/linphonecore.c:240
 msgid "Outgoing call"
 msgstr "呼出"
 
-#: ../coreapi/linphonecore.c:1312
+#: ../coreapi/linphonecore.c:1321
 msgid "Ready"
 msgstr "就绪"
 
-#: ../coreapi/linphonecore.c:2184
+#: ../coreapi/linphonecore.c:2205
 msgid "Looking for telephone number destination..."
 msgstr "查询电话号码目的地..."
 
-#: ../coreapi/linphonecore.c:2187
+#: ../coreapi/linphonecore.c:2208
 msgid "Could not resolve this number."
 msgstr "该号码无法解析。"
 
-#: ../coreapi/linphonecore.c:2231
+#: ../coreapi/linphonecore.c:2252
 msgid ""
 "Could not parse given sip address. A sip url usually looks like sip:"
 "user@domain"
@@ -1565,50 +1565,50 @@ msgstr ""
 "无法解析给定的 SIP 地址，SIP 地址应有如下格式：\n"
 "sip:用户名@域名"
 
-#: ../coreapi/linphonecore.c:2432
+#: ../coreapi/linphonecore.c:2453
 msgid "Contacting"
 msgstr "联系中"
 
-#: ../coreapi/linphonecore.c:2439
+#: ../coreapi/linphonecore.c:2460
 #, fuzzy
 msgid "Could not call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:2549
+#: ../coreapi/linphonecore.c:2570
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2731
+#: ../coreapi/linphonecore.c:2752
 msgid "is contacting you"
 msgstr "正在联系您"
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid " and asked autoanswer."
 msgstr " 并询问了自动回答。"
 
-#: ../coreapi/linphonecore.c:2732
+#: ../coreapi/linphonecore.c:2753
 msgid "."
 msgstr "."
 
-#: ../coreapi/linphonecore.c:2799
+#: ../coreapi/linphonecore.c:2820
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3138
+#: ../coreapi/linphonecore.c:3159
 msgid "Connected."
 msgstr "已连接。"
 
-#: ../coreapi/linphonecore.c:3166
+#: ../coreapi/linphonecore.c:3187
 #, fuzzy
 msgid "Call aborted"
 msgstr "中断"
 
-#: ../coreapi/linphonecore.c:3357
+#: ../coreapi/linphonecore.c:3378
 #, fuzzy
 msgid "Could not pause the call"
 msgstr "无法呼叫"
 
-#: ../coreapi/linphonecore.c:3362
+#: ../coreapi/linphonecore.c:3383
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1823,7 +1823,7 @@ msgstr "注册到 %s 失败: %s"
 msgid "Authentication token is %s"
 msgstr "Linphone - 需要认证"
 
-#: ../coreapi/linphonecall.c:2319
+#: ../coreapi/linphonecall.c:2355
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

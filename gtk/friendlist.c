@@ -352,6 +352,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 		} else {
 			linphone_gtk_load_chatroom(cr,uri,page);
 		}
+		linphone_chat_room_mark_as_read(cr);
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,page));
 		linphone_gtk_friend_list_update_chat_picture();
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
@@ -513,7 +514,11 @@ static gboolean friend_search_func(GtkTreeModel *model, gint column,
 	gboolean ret=TRUE;
 	gtk_tree_model_get(model,iter,FRIEND_NAME,&name,-1);
 	if (name!=NULL){
-		ret=strstr(name,key)==NULL;
+		gchar *uname=g_utf8_casefold(name,-1); /* need that to perform case-insensitive search in utf8 */
+		gchar *ukey=g_utf8_casefold(key,-1);
+		ret=strstr(uname,ukey)==NULL;
+		g_free(uname);
+		g_free(ukey);
 		g_free(name);
 	}
 	return ret;
@@ -552,6 +557,13 @@ static void on_name_column_clicked(GtkTreeModel *model){
 
 static int get_friend_weight(const LinphoneFriend *lf){
 	int w=0;
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneChatRoom *cr=linphone_core_get_chat_room(lc,linphone_friend_get_address(lf));
+	
+	if (cr && linphone_chat_room_get_unread_messages_count(cr)>0){
+		w+=2000;
+	}
+	
 	switch(linphone_friend_get_status(lf)){
 		case LinphoneStatusOnline:
 			w+=1000;
