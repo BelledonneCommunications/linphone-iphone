@@ -207,6 +207,12 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			}
 			belle_sip_uri_fix(next_hop_uri);
 		}
+		if (strcmp(belle_sip_request_get_method(request),"REGISTER")==0 && transport && 
+			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
+			/*RFC 5923: add 'alias' parameter to tell the server that we want it to keep the connection for future requests*/
+			belle_sip_header_via_t *via=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_via_t);
+			belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(via),"alias",NULL);
+		}
 	}
 
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
