@@ -364,6 +364,8 @@
 		22A10B5911F84E2D00373793 /* proto.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5311F84E2D00373793 /* proto.h */; };
 		22A10B5A11F84E2D00373793 /* toast.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5411F84E2D00373793 /* toast.h */; };
 		22A10B5B11F84E2D00373793 /* unproto.h in Headers */ = {isa = PBXBuildFile; fileRef = 22A10B5511F84E2D00373793 /* unproto.h */; };
+		22AF73BE1753E83700BE8398 /* msopus.c in Sources */ = {isa = PBXBuildFile; fileRef = 22AF73BD1753E83700BE8398 /* msopus.c */; };
+		22AF73C01753F3E100BE8398 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AF73BF1753F3E100BE8398 /* libopus.a */; };
 		22D07CD016F3BC5F009F2C9E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22D07CB416F3BC5F009F2C9E /* InfoPlist.strings */; };
 		22D07CD116F3BC5F009F2C9E /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22D07CB616F3BC5F009F2C9E /* MainWindow.xib */; };
 		22D07CD216F3BC5F009F2C9E /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22D07CB816F3BC5F009F2C9E /* mediastreamViewController.xib */; };
@@ -666,6 +668,8 @@
 		22A10B5311F84E2D00373793 /* proto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proto.h; sourceTree = "<group>"; };
 		22A10B5411F84E2D00373793 /* toast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toast.h; sourceTree = "<group>"; };
 		22A10B5511F84E2D00373793 /* unproto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unproto.h; sourceTree = "<group>"; };
+		22AF73BD1753E83700BE8398 /* msopus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = msopus.c; sourceTree = "<group>"; };
+		22AF73BF1753F3E100BE8398 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = "../liblinphone-sdk/apple-darwin/lib/libopus.a"; sourceTree = "<group>"; };
 		22D07CB516F3BC5F009F2C9E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		22D07CB716F3BC5F009F2C9E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		22D07CB916F3BC5F009F2C9E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/mediastreamViewController.xib; sourceTree = "<group>"; };
@@ -715,6 +719,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22AF73C01753F3E100BE8398 /* libopus.a in Frameworks */,
 				225D65CD1521C19A008B2E81 /* libortp.a in Frameworks */,
 				225D65CC1521C195008B2E81 /* libmediastreamer.a in Frameworks */,
 				2211DB9F14765CED00DEE054 /* libmssilk.a in Frameworks */,
@@ -767,6 +772,7 @@
 		0867D691FE84028FC02AAC07 /* liblinphone */ = {
 			isa = PBXGroup;
 			children = (
+				22AF73BF1753F3E100BE8398 /* libopus.a */,
 				2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */,
 				2211DB9E14765CEC00DEE054 /* libmssilk.a */,
 				7066FC0913E830B800EFC6DC /* libvpx.a */,
@@ -1050,6 +1056,7 @@
 		223CA7EF16D9268D00EF1BEC /* audiofilters */ = {
 			isa = PBXGroup;
 			children = (
+				22AF73BD1753E83700BE8398 /* msopus.c */,
 				0406A7651721FF79009FD24F /* aac-eld.c */,
 				22D07CE416F3BFCB009F2C9E /* speexec.c */,
 				223CA7F016D9268D00EF1BEC /* alaw.c */,
@@ -1679,6 +1686,7 @@
 				223CA8D416D9268D00EF1BEC /* scaler.c in Sources */,
 				223CA8D716D9268D00EF1BEC /* videostream.c in Sources */,
 				22D07CE516F3BFCB009F2C9E /* speexec.c in Sources */,
+				22AF73BE1753E83700BE8398 /* msopus.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
