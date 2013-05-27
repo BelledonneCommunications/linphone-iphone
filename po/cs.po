@@ -2,12 +2,13 @@
 # This file is distributed under the same license as the linphone package.
 # Copyright (C) 2009 Simon Morlat (msgids)
 # Klara Cihlarova <koty@seznam.cz>, 2005.
-# Petr Pisar <petr.pisar@atlas.cz>, 2006, 2007, 2008, 2009, 2010, 2011.
+# Petr Pisar <petr.pisar@atlas.cz>, 2006, 2007, 2008, 2009, 2010, 2011, 2013.
 #
 # XXX: Don't translate gtk-* messages. They will be replaced from GTK+
 # catalogue.
 #
 # On hold → odložen
+# chat → diskuze
 # Pause call → odložit hovor
 # Resume call → obnovit hovor
 # token → klíč
@@ -15,10 +16,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: linphone-3.4.99.4\n"
+"Project-Id-Version: linphone-3.5.99.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-08 16:59+0200\n"
-"PO-Revision-Date: 2011-11-04 22:30+0100\n"
+"PO-Revision-Date: 2013-05-01 09:55+0200\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "Language: cs\n"
@@ -38,49 +39,46 @@ msgid "Send text to %s"
 msgstr "Poslat text komu: %s"
 
 #: ../gtk/calllogs.c:223
-#, fuzzy, c-format
+#, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "<b>Probíhá hovor</b>"
+msgstr "<b>Nedávné hovory (%i)</b>"
 
 #: ../gtk/calllogs.c:300
 msgid "n/a"
 msgstr "–"
 
 #: ../gtk/calllogs.c:303
-#, fuzzy
 msgid "Aborted"
-msgstr "přerušen"
+msgstr "Přerušen"
 
 #: ../gtk/calllogs.c:306
-#, fuzzy
 msgid "Missed"
-msgstr "promeškán"
+msgstr "Zmeškán"
 
 #: ../gtk/calllogs.c:309
-#, fuzzy
 msgid "Declined"
-msgstr "Odmítnout"
+msgstr "Odmítnut"
 
 #: ../gtk/calllogs.c:315
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%i minuta"
+msgstr[1] "%i minuty"
+msgstr[2] "%i minut"
 
 #: ../gtk/calllogs.c:318
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%i sekunda"
+msgstr[1] "%i sekundy"
+msgstr[2] "%i sekund"
 
 #: ../gtk/calllogs.c:321 ../gtk/calllogs.c:327
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
-msgstr ""
+msgstr "<big><b>%s</b></big>\t%s"
 
 #: ../gtk/calllogs.c:323
 #, c-format
@@ -88,6 +86,8 @@ msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr ""
+"<small><i>%s</i>\t<i>Kvalita: %s</i></small>\n"
+"%s\t%s\t"
 
 #: ../gtk/calllogs.c:329
 #, c-format
@@ -95,6 +95,8 @@ msgid ""
 "<small><i>%s</i></small>\t\n"
 "%s"
 msgstr ""
+"<small><i>%s</i></small>\t\n"
+"%s"
 
 #: ../gtk/conference.c:38 ../gtk/main.ui.h:13
 msgid "Conference"
@@ -123,7 +125,7 @@ msgstr "Soubor, kam zapisovat protokol."
 
 #: ../gtk/main.c:106
 msgid "Start linphone with video disabled."
-msgstr ""
+msgstr "Spustí linphone se zakázaným obrazem."
 
 #: ../gtk/main.c:113
 msgid "Start only in the system tray, do not show the main interface."
@@ -197,14 +199,14 @@ msgid "Call paused"
 msgstr "Hovor odložen"
 
 #: ../gtk/main.c:1142
-#, fuzzy, c-format
+#, c-format
 msgid "<b>by %s</b>"
-msgstr "<b>Porty</b>"
+msgstr "<b>kým: %s</b>"
 
 #: ../gtk/main.c:1191
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
-msgstr ""
+msgstr "%s navrhuje začít videohovor. Přijímáte?"
 
 #: ../gtk/main.c:1353
 msgid "Website link"
@@ -237,9 +239,8 @@ msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
 #: ../gtk/friendlist.c:469
-#, fuzzy
 msgid "Add to addressbook"
-msgstr "Zobrazit adresář"
+msgstr "Přidat do adresáře"
 
 #: ../gtk/friendlist.c:643
 msgid "Presence status"
@@ -250,14 +251,12 @@ msgid "Name"
 msgstr "Jméno"
 
 #: ../gtk/friendlist.c:673
-#, fuzzy
 msgid "Call"
-msgstr "Volat komu: %s"
+msgstr "Zavolat"
 
 #: ../gtk/friendlist.c:678
-#, fuzzy
 msgid "Chat"
-msgstr "Diskuzní skupina"
+msgstr "Diskuze"
 
 #: ../gtk/friendlist.c:708
 #, c-format
@@ -275,9 +274,9 @@ msgid "Delete contact '%s'"
 msgstr "Odstranit kontakt „%s“"
 
 #: ../gtk/friendlist.c:926
-#, fuzzy, c-format
+#, c-format
 msgid "Delete chat history of '%s'"
-msgstr "Odstranit kontakt „%s“"
+msgstr "Odstranit historii diskuze u kontaktu „%s“"
 
 #: ../gtk/friendlist.c:977
 #, c-format
@@ -378,20 +377,21 @@ msgstr "norština"
 
 #: ../gtk/propertybox.c:780
 msgid "Hebrew"
-msgstr ""
+msgstr "hebrejština"
 
 #: ../gtk/propertybox.c:781
 msgid "Serbian"
-msgstr ""
+msgstr "srbština"
 
 #: ../gtk/propertybox.c:848
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "Aby se projevil výběr nového jazyka, je nutné znovu spustit linphone."
 
+# Media encryption type:
 #: ../gtk/propertybox.c:934
 msgid "None"
-msgstr "Žádná"
+msgstr "Žádné"
 
 #: ../gtk/propertybox.c:938
 msgid "SRTP"
@@ -451,23 +451,20 @@ msgstr ""
 "Tento průvodce vám pomůže používat sipový účet při vašich hovorech."
 
 #: ../gtk/setupwizard.c:43
-#, fuzzy
 msgid "Create an account on linphone.org"
-msgstr "Vytvořit účet vybráním uživatelského jména"
+msgstr "Vytvořit účet na linphone.org"
 
 #: ../gtk/setupwizard.c:44
-#, fuzzy
 msgid "I have already a linphone.org account and I just want to use it"
-msgstr "Účet již mám a chci jej použít"
+msgstr "Účet na linphone.org již mám a chci jej použít"
 
 #: ../gtk/setupwizard.c:45
-#, fuzzy
 msgid "I have already a sip account and I just want to use it"
-msgstr "Účet již mám a chci jej použít"
+msgstr "SIP účet již mám a chci jej použít"
 
 #: ../gtk/setupwizard.c:85
 msgid "Enter your linphone.org username"
-msgstr ""
+msgstr "Zadejte uživatelské jméno na linphone.org"
 
 #: ../gtk/setupwizard.c:92
 msgid "Username:"
@@ -479,53 +476,52 @@ msgstr "Heslo:"
 
 #: ../gtk/setupwizard.c:114
 msgid "Enter your account informations"
-msgstr ""
+msgstr "Zadejte údaje o vašem účtu"
 
 #: ../gtk/setupwizard.c:121
-#, fuzzy
 msgid "Username*"
-msgstr "Uživatelské jméno"
+msgstr "Uživatelské jméno*"
 
 #: ../gtk/setupwizard.c:122
-#, fuzzy
 msgid "Password*"
-msgstr "Heslo"
+msgstr "Heslo*"
 
 #: ../gtk/setupwizard.c:125
 msgid "Domain*"
-msgstr ""
+msgstr "Doména*"
 
 #: ../gtk/setupwizard.c:126
 msgid "Proxy"
-msgstr ""
+msgstr "Proxy"
 
 #: ../gtk/setupwizard.c:298
 msgid "(*) Required fields"
-msgstr ""
+msgstr "(*) Povinné položky"
 
 #: ../gtk/setupwizard.c:299
-#, fuzzy
 msgid "Username: (*)"
-msgstr "Uživatelské jméno:"
+msgstr "Uživatelské jméno: (*)"
 
 #: ../gtk/setupwizard.c:301
-#, fuzzy
 msgid "Password: (*)"
-msgstr "Heslo:"
+msgstr "Heslo: (*)"
 
 #: ../gtk/setupwizard.c:303
 msgid "Email: (*)"
-msgstr ""
+msgstr "E-mail: (*)"
 
 #: ../gtk/setupwizard.c:305
 msgid "Confirm your password: (*)"
-msgstr ""
+msgstr "Potvrďte heslo: (*)"
 
 #: ../gtk/setupwizard.c:369
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
 msgstr ""
+"Došlo k chybě (účet nebyl ověřen, uživatelské jméno již existuje nebo server "
+"není dostupný).\n"
+"Prosím, vraťte se a zkoste to znovu."
 
 #: ../gtk/setupwizard.c:380
 msgid "Thank you. Your account is now configured and ready for use."
@@ -537,6 +533,9 @@ msgid ""
 "email.\n"
 "Then come back here and press Next button."
 msgstr ""
+"Prosím, ověřte svůj účet tak, že kliknete na odkaz, který jsme vám právě "
+"zaslali e-mailem.\n"
+"Pak se sem vraťte a stiskněte tlačítko Další."
 
 #: ../gtk/setupwizard.c:564
 msgid "Welcome to the account setup assistant"
@@ -547,31 +546,28 @@ msgid "Account setup assistant"
 msgstr "Průvodce nastavením účtu"
 
 #: ../gtk/setupwizard.c:575
-#, fuzzy
 msgid "Configure your account (step 1/1)"
-msgstr "Nastavit SIP účet"
+msgstr "Nastavit účet (krok 1/1)"
 
 #: ../gtk/setupwizard.c:580
 msgid "Enter your sip username (step 1/1)"
-msgstr ""
+msgstr "Zadejte vaše sipové uživatelské jméno (krok 1/1)"
 
 #: ../gtk/setupwizard.c:584
 msgid "Enter account information (step 1/2)"
-msgstr ""
+msgstr "Zadejte údaje o účtu (krok 1/2)"
 
 #: ../gtk/setupwizard.c:593
 msgid "Validation (step 2/2)"
-msgstr ""
+msgstr "Ověření (krok 2/2)"
 
 #: ../gtk/setupwizard.c:598
-#, fuzzy
 msgid "Error"
-msgstr "Chyba."
+msgstr "Chyba"
 
 #: ../gtk/setupwizard.c:602
-#, fuzzy
 msgid "Terminating"
-msgstr "Ukončit hovor"
+msgstr "Ukončuje se"
 
 #: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
 #, c-format
@@ -584,62 +580,56 @@ msgid "Transfer to call #%i with %s"
 msgstr "Přepojit hovor č. %i s %s"
 
 #: ../gtk/incall_view.c:210 ../gtk/incall_view.c:213
-#, fuzzy
 msgid "Not used"
-msgstr "Nenalezeno"
+msgstr "Nepoužito"
 
 #: ../gtk/incall_view.c:220
 msgid "ICE not activated"
-msgstr ""
+msgstr "ICE není zapnuto"
 
 #: ../gtk/incall_view.c:222
-#, fuzzy
 msgid "ICE failed"
-msgstr "Filtr ICE"
+msgstr "ICE selhalo"
 
 #: ../gtk/incall_view.c:224
 msgid "ICE in progress"
-msgstr ""
+msgstr "Probíhá ICE"
 
 #: ../gtk/incall_view.c:226
 msgid "Going through one or more NATs"
-msgstr ""
+msgstr "Prochází se jedním nebo více NATy"
 
 #: ../gtk/incall_view.c:228
-#, fuzzy
 msgid "Direct"
-msgstr "Přesměrováno"
+msgstr "Přímé"
 
 #: ../gtk/incall_view.c:230
 msgid "Through a relay server"
-msgstr ""
+msgstr "Skrze relay server"
 
 #: ../gtk/incall_view.c:238
 msgid "uPnP not activated"
-msgstr ""
+msgstr "UPnP není zapnuto"
 
 #: ../gtk/incall_view.c:240
-#, fuzzy
 msgid "uPnP in progress"
-msgstr "Hledá se adresa pomocí STUN…"
+msgstr "Probíhá UPnP"
 
 #: ../gtk/incall_view.c:242
-#, fuzzy
 msgid "uPnp not available"
-msgstr "nedostupná"
+msgstr "UPnP není nedostupné"
 
 #: ../gtk/incall_view.c:244
 msgid "uPnP is running"
-msgstr ""
+msgstr "UPnP běží"
 
 #: ../gtk/incall_view.c:246
-#, fuzzy
 msgid "uPnP failed"
-msgstr "Filtr ICE"
+msgstr "UPnP selhalo"
 
 #: ../gtk/incall_view.c:256 ../gtk/incall_view.c:257
 msgid "Direct or through server"
-msgstr ""
+msgstr "Přímé nebo skrze server"
 
 #: ../gtk/incall_view.c:259 ../gtk/incall_view.c:265
 #, c-format
@@ -647,15 +637,17 @@ msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
+"příchozí: %f\n"
+"odchozí: %f (kb/s)"
 
 #: ../gtk/incall_view.c:286
 #, c-format
 msgid "%.3f seconds"
-msgstr ""
+msgstr "%.3f sekund"
 
 #: ../gtk/incall_view.c:384 ../gtk/main.ui.h:12
 msgid "Hang up"
-msgstr ""
+msgstr "Zavěsit"
 
 #: ../gtk/incall_view.c:476
 msgid "<b>Calling...</b>"
@@ -695,20 +687,20 @@ msgstr "nedostupná"
 
 #: ../gtk/incall_view.c:651
 msgid "Secured by SRTP"
-msgstr ""
+msgstr "Zabezpečeno pomocí SRTP"
 
 #: ../gtk/incall_view.c:657
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr ""
+msgstr "Zabezpečeno pomocí ZRTP – [ověřovací klíč: %s]"
 
 #: ../gtk/incall_view.c:663
 msgid "Set unverified"
-msgstr ""
+msgstr "Nastavit na neověřeno"
 
 #: ../gtk/incall_view.c:663 ../gtk/main.ui.h:4
 msgid "Set verified"
-msgstr ""
+msgstr "Nastavit na ověřeno"
 
 #: ../gtk/incall_view.c:684
 msgid "In conference"
@@ -733,17 +725,15 @@ msgstr "<b>Hovor skončil.</b>"
 
 #: ../gtk/incall_view.c:778
 msgid "Transfer in progress"
-msgstr ""
+msgstr "Probíhá přepojení"
 
 #: ../gtk/incall_view.c:781
-#, fuzzy
 msgid "Transfer done."
-msgstr "Přepojit"
+msgstr "Přepojení dokončeno."
 
 #: ../gtk/incall_view.c:784
-#, fuzzy
 msgid "Transfer failed."
-msgstr "Přepojit"
+msgstr "Přepojení selhalo."
 
 #: ../gtk/incall_view.c:828
 msgid "Resume"
@@ -759,11 +749,12 @@ msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
+"<small><i>Nahrává se do\n"
+"%s %s</i></small>"
 
 #: ../gtk/incall_view.c:900
-#, fuzzy
 msgid "(Paused)"
-msgstr "Odložit"
+msgstr "(Odloženo)"
 
 #: ../gtk/loginframe.c:93
 #, c-format
@@ -779,21 +770,20 @@ msgid "Send"
 msgstr "Odeslat"
 
 #: ../gtk/main.ui.h:3
-#, fuzzy
 msgid "End conference"
-msgstr "Probíhá konference"
+msgstr "Ukončit konferenci"
 
 #: ../gtk/main.ui.h:7
 msgid "Record this call to an audio file"
-msgstr ""
+msgstr "Nahrát tento hovor do zvukového souboru"
 
 #: ../gtk/main.ui.h:8
 msgid "Video"
-msgstr ""
+msgstr "Obraz"
 
 #: ../gtk/main.ui.h:10
 msgid "Mute"
-msgstr ""
+msgstr "Ztišit"
 
 #: ../gtk/main.ui.h:11
 msgid "Transfer"
@@ -817,7 +807,7 @@ msgstr "V_olby"
 
 #: ../gtk/main.ui.h:18
 msgid "Always start video"
-msgstr ""
+msgstr "Vždy spustit obraz"
 
 #: ../gtk/main.ui.h:19
 msgid "Enable self-view"
@@ -840,9 +830,8 @@ msgid "Check _Updates"
 msgstr "Vyhledat akt_ualizace"
 
 #: ../gtk/main.ui.h:24
-#, fuzzy
 msgid "Account assistant"
-msgstr "Průvodce nastavením účtu"
+msgstr "Průvodce účtem"
 
 #: ../gtk/main.ui.h:25
 msgid "SIP address or phone number:"
@@ -930,7 +919,7 @@ msgstr "Výchozí"
 
 #: ../gtk/main.ui.h:46
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: ../gtk/about.ui.h:1
 msgid "About linphone"
@@ -992,7 +981,7 @@ msgstr "Ladicí okno Linphonu"
 
 #: ../gtk/log.ui.h:2
 msgid "Scroll to end"
-msgstr ""
+msgstr "Přejít na konec"
 
 #: ../gtk/password.ui.h:1
 msgid "Linphone - Authentication required"
@@ -1052,7 +1041,7 @@ msgstr "Registrační období (s):"
 
 #: ../gtk/sip_account.ui.h:9
 msgid "Register"
-msgstr ""
+msgstr "Zaregistrovat se"
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Publish presence information"
@@ -1136,20 +1125,20 @@ msgstr "Zvukový RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:19
 msgid "DSCP fields"
-msgstr ""
+msgstr "Položky DSCP"
 
+# Port number
 #: ../gtk/parameters.ui.h:20
 msgid "Fixed"
-msgstr ""
+msgstr "Stálý"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Tunnel"
-msgstr ""
+msgstr "Tunel"
 
 #: ../gtk/parameters.ui.h:22
-#, fuzzy
 msgid "Media encryption is mandatory"
-msgstr "Druh šifrování médií"
+msgstr "Šifrování médií je povinné"
 
 #: ../gtk/parameters.ui.h:23
 msgid "<b>Network protocol and ports</b>"
@@ -1172,14 +1161,12 @@ msgid "Behind NAT / Firewall (use STUN to resolve)"
 msgstr "Za NAT/firewallem (adresu určí STUN)"
 
 #: ../gtk/parameters.ui.h:28
-#, fuzzy
 msgid "Behind NAT / Firewall (use ICE)"
-msgstr "Za NAT/firewallem (adresu určí STUN)"
+msgstr "Za NAT/firewallem (adresu určí ICE)"
 
 #: ../gtk/parameters.ui.h:29
-#, fuzzy
 msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "Za NAT/firewallem (adresu určí STUN)"
+msgstr "Za NAT/firewallem (adresu určí UPnP)"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Stun server:"
@@ -1259,7 +1246,7 @@ msgstr "<b>Implicitní totožnost</b>"
 
 #: ../gtk/parameters.ui.h:49
 msgid "Wizard"
-msgstr ""
+msgstr "Průvodce"
 
 #: ../gtk/parameters.ui.h:52
 msgid "Remove"
@@ -1307,7 +1294,7 @@ msgstr "Omezení příchozí rychlosti (kb/s):"
 
 #: ../gtk/parameters.ui.h:63
 msgid "Enable adaptive rate control"
-msgstr "Zapnout přizpůsobující řízení rychlosti"
+msgstr "Zapnout přizpůsobující se řízení rychlosti"
 
 #: ../gtk/parameters.ui.h:64
 msgid ""
@@ -1366,91 +1353,80 @@ msgid "Please wait"
 msgstr "Prosím, čekejte"
 
 #: ../gtk/dscp_settings.ui.h:1
-#, fuzzy
 msgid "Dscp settings"
-msgstr "Nastavení"
+msgstr "Nastavení DSCP"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
 msgstr "SIP"
 
 #: ../gtk/dscp_settings.ui.h:3
-#, fuzzy
 msgid "Audio RTP stream"
-msgstr "Převzorkování zvuku"
+msgstr "RTP proud zvuku"
 
 #: ../gtk/dscp_settings.ui.h:4
-#, fuzzy
 msgid "Video RTP stream"
-msgstr "Obrazový RTP/UDP:"
+msgstr "RTP proud obrazu"
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
-msgstr ""
+msgstr "<b>Nastavit hodnoty DSCP (šestnáctkově)</b>"
 
 #: ../gtk/call_statistics.ui.h:1
-#, fuzzy
 msgid "Call statistics"
-msgstr "Informace o hovoru"
+msgstr "Statistické údaje o hovoru"
 
 #: ../gtk/call_statistics.ui.h:2
-#, fuzzy
 msgid "Audio codec"
-msgstr "Kodeky zvuku"
+msgstr "Kodek zvuku"
 
 #: ../gtk/call_statistics.ui.h:3
-#, fuzzy
 msgid "Video codec"
-msgstr "Kodeky obrazu"
+msgstr "Kodek obrazu"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
-msgstr ""
+msgstr "Přenosová rychlost zvuku na úrovni IP"
 
 #: ../gtk/call_statistics.ui.h:5
-#, fuzzy
 msgid "Audio Media connectivity"
-msgstr "Druh šifrování médií"
+msgstr "Zvukové spojení"
 
 #: ../gtk/call_statistics.ui.h:6
 msgid "Video IP bandwidth usage"
-msgstr ""
+msgstr "Přenosová rychlost obrazu na úrovni IP"
 
 #: ../gtk/call_statistics.ui.h:7
-#, fuzzy
 msgid "Video Media connectivity"
-msgstr "Druh šifrování médií"
+msgstr "Obrazové spojení"
 
 #: ../gtk/call_statistics.ui.h:8
-#, fuzzy
 msgid "Round trip time"
-msgstr "Vlastnosti zvuku"
+msgstr "Odezva"
 
 #: ../gtk/call_statistics.ui.h:9
-#, fuzzy
 msgid "<b>Call statistics and information</b>"
-msgstr "<b>Informace o kontaktu</b>"
+msgstr "<b>Statistické a ostatní údaje o hovoru</b>"
 
 #: ../gtk/tunnel_config.ui.h:1
-#, fuzzy
 msgid "Configure VoIP tunnel"
-msgstr "Nastavit SIP účet"
+msgstr "Nastavit VoIP tunel"
 
 #: ../gtk/tunnel_config.ui.h:2
 msgid "Host"
-msgstr ""
+msgstr "Stroj"
 
 #: ../gtk/tunnel_config.ui.h:3
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
-msgstr ""
+msgstr "<b>Nastavit tunel</b>"
 
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
-msgstr ""
+msgstr "<b>Nastavit HTTP proxy (volitelné)</b>"
 
 #: ../gtk/keypad.ui.h:1
 msgid "D"
@@ -1564,7 +1540,7 @@ msgstr ""
 
 #: ../coreapi/linphonecore.c:2432
 msgid "Contacting"
-msgstr "Kontaktuji"
+msgstr "Navazuje se spojení"
 
 #: ../coreapi/linphonecore.c:2439
 msgid "Could not call"
@@ -1636,11 +1612,11 @@ msgstr "Hledá se adresa pomocí STUN…"
 
 #: ../coreapi/misc.c:630
 msgid "ICE local candidates gathering in progress..."
-msgstr ""
+msgstr "Shromažďují se místní kandidáti ICE…"
 
 #: ../coreapi/friend.c:33
 msgid "Online"
-msgstr "Připojeno"
+msgstr "Připojen"
 
 #: ../coreapi/friend.c:36
 msgid "Busy"
@@ -1668,19 +1644,19 @@ msgstr "Nerušit"
 
 #: ../coreapi/friend.c:54
 msgid "Moved"
-msgstr "Přestěhoval se"
+msgstr "Přestěhoval jsem se"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
-msgstr "Používá jinou službu přenosu zpráv"
+msgstr "Používám jinou službu přenosu zpráv"
 
 #: ../coreapi/friend.c:60
 msgid "Offline"
-msgstr "Odpojeno"
+msgstr "Odpojen"
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
-msgstr "Čeká"
+msgstr "Čekám"
 
 #: ../coreapi/friend.c:66
 msgid "Unknown-bug"
@@ -1691,7 +1667,7 @@ msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr ""
-"Adresa SIP proxy, kterou jste zadali, není platná. Musí začínat na „sip:“ a "
+"Adresa SIP proxy, kterou jste zadali, není platná. Musí začínat na „sip:“ a "
 "pak musí následovat jméno stroje."
 
 #: ../coreapi/proxy.c:210
@@ -1740,21 +1716,19 @@ msgstr "Hovor přijat kým: %s."
 
 #: ../coreapi/callbacks.c:412
 msgid "Incompatible, check codecs or security settings..."
-msgstr ""
+msgstr "Není slučitelné. Zkontrolujte nastavení kodeků a zabezpečení…"
 
 #: ../coreapi/callbacks.c:460
-#, fuzzy
 msgid "We have been resumed."
-msgstr "Byli jsme obnoveni…"
+msgstr "Byli jsme obnoveni."
 
 #: ../coreapi/callbacks.c:469
 msgid "We are paused by other party."
-msgstr ""
+msgstr "Byli jsme odloženi protistranou."
 
 #: ../coreapi/callbacks.c:475
-#, fuzzy
 msgid "Call is updated by remote."
-msgstr "Hovor byl aktualizován protistranou…"
+msgstr "Hovor byl aktualizován protistranou."
 
 #: ../coreapi/callbacks.c:544
 msgid "Call terminated."
@@ -1791,7 +1765,7 @@ msgstr "Přesměrováno"
 
 #: ../coreapi/callbacks.c:627
 msgid "Incompatible media parameters."
-msgstr ""
+msgstr "Neslučitelné parametry médií."
 
 #: ../coreapi/callbacks.c:633
 msgid "Call failed."

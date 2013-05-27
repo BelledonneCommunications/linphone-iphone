@@ -136,10 +136,20 @@ libgnutls (from the web)
 libgsm (from the web)
 libxml2 (compiled)
 libsoup (compiled)
+libsqlite3 (compiled)
 
 Remarks:
 For every package compiled that goes into linphone-deps, .la files (libtool files) must be removed to avoid libtool errors.
 When running "make install DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or space.
+
+- building sqlite3
+  * download the sources on the following website:
+  http://www.sqlite.org/download.html (choose the sqlite-autoconf-3XXX.tar.gz)
+  
+  * install: 
+  ./configure
+  make && make install DESTDIR=/home/<myuser>/sqlite3-install
+  then copy the content of ~/sqlite3-install/usr/local/ into linphone-deps/. 	
 
 - building ffmpeg 
   ./configure --enable-shared --disable-static --enable-memalign-hack --extra-cflags="-fno-common" --enable-gpl && make
@@ -151,6 +161,7 @@ When running "make install DESTDIR=<somepath>", somepath must be absolute and sh
   (that requires libxml2).
   ./configure --enable-shared --disable-static && make && make install DESTDIR=/home/<myuser>/libxml2-install
   copy ~/libxml2-install/usr/local/* into linphone-deps/.
+
 
 - building x264:
  

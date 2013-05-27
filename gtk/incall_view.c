@@ -701,9 +701,11 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	if (in_conf){
 		linphone_gtk_set_in_conference(call);
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"incall_mute"),FALSE);
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"hold_call"),FALSE);
 	}else{
 		linphone_gtk_unset_from_conference(call); /*in case it was previously*/
 		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"incall_mute"),TRUE);
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"hold_call"),TRUE);
 	}
 	gtk_widget_show_all(linphone_gtk_get_widget(callview,"buttons_panel"));
 	if (!in_conf) gtk_widget_show_all(linphone_gtk_get_widget(callview,"record_hbox"));
@@ -739,11 +741,12 @@ static gboolean in_call_view_terminated(LinphoneCall *call){
 
 void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_msg){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
+	if(callview==NULL) return;
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
 	gboolean in_conf=linphone_call_params_local_conference_mode(linphone_call_get_current_params(call));
 
-	if ((callview==NULL) || (status==NULL)) return;
+	if (status==NULL) return;
 	if (error_msg==NULL)
 		gtk_label_set_markup(GTK_LABEL(status),_("<b>Call ended.</b>"));
 	else{
@@ -758,10 +761,11 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"buttons_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"incall_audioview"));
+	gtk_widget_hide(linphone_gtk_get_widget(callview,"quality_indicator"));
 	linphone_gtk_enable_mute_button(
 		GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),FALSE);
 	linphone_gtk_enable_hold_button(call,FALSE,TRUE);
-
+	
 	if (taskid!=0) g_source_remove(taskid);
 	g_timeout_add_seconds(2,(GSourceFunc)in_call_view_terminated,call);
 	if (in_conf)
