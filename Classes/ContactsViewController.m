@@ -27,7 +27,7 @@
 
 static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
 static NSString* sAddAddress = nil;
-static BOOL sSipFilter = FALSE;
+static NSString* sSipFilter = nil;
 static BOOL sEmailFilter = FALSE;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
@@ -52,11 +52,11 @@ static BOOL sEmailFilter = FALSE;
     return sAddAddress;
 }
 
-+ (void)setSipFilter:(BOOL)enable {
-    sSipFilter = enable;
++ (void)setSipFilter:(NSString*)domain {
+    sSipFilter = domain;
 }
 
-+ (BOOL)getSipFilter {
++ (NSString*)getSipFilter {
     return sSipFilter;
 }
 
@@ -206,7 +206,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     if(view == History_Linphone) {
-        [ContactSelection setSipFilter:TRUE];
+        [ContactSelection setSipFilter:@"*"];
 	[ContactSelection setEmailFilter:FALSE];
         [tableController loadData];
         linphoneButton.selected = TRUE;

@@ -57,7 +57,7 @@ NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvailabilityUpdate";
-NSString *const kContactSipField = @"SIP";
+
 
 
 extern void libmsilbc_init();
@@ -246,6 +246,7 @@ struct codec_name_pref_table codec_pref_table[]={
         [self copyDefaultSettings];
         pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
         photoLibrary = [[ALAssetsLibrary alloc] init];
+
     }
     return self;
 }
@@ -925,6 +926,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 		//go directly to bg mode
 		[self resignActive];
 	}
+	
+	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value"];
+	if (_contactSipField == nil)
+		_contactSipField =@"SIP";
+	
     
     // Post event
     NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];

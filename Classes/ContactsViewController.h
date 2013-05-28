@@ -36,8 +36,9 @@ typedef enum _ContactSelectionMode {
 + (ContactSelectionMode)getSelectionMode;
 + (void)setAddAddress:(NSString*)address;
 + (NSString*)getAddAddress;
-+ (void)setSipFilter:(BOOL)enable;
-+ (BOOL)getSipFilter;
+/* define sip filter, can be * or sip domain*/
++ (void)setSipFilter:(NSString*) domain;
++ (NSString*)getSipFilter;
 + (void)setEmailFilter:(BOOL)enable;
 + (BOOL)getEmailFilter;
 

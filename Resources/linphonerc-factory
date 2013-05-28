@@ -47,3 +47,6 @@ stun=stun.linphone.org
 
 [video]
 display_filter_auto_rotate=0
+
+[app]
+#contact_display_username_only=1
