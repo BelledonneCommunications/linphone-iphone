@@ -47,8 +47,6 @@ extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 
-extern NSString *const kContactSipField;
-
 typedef enum _NetworkType {
     network_none = 0,
     network_2g,
@@ -117,6 +115,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSSet *)unsupportedCodecs;
 + (NSString *)getUserAgent;
 
+
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
 - (BOOL)resignActive;
@@ -155,6 +154,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
 
+
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) NetworkType network;
@@ -168,6 +168,7 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
+@property (readonly) NSString* contactSipField;
 
 @end
 

@@ -198,7 +198,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
                 CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                 BOOL add = false;
                 if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-                    if(CFStringCompare((CFStringRef)kContactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
+                    if(CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
                         add = true;
                     }
                 } else {
@@ -285,7 +285,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             lMap = ABMultiValueCreateMutable(kABDictionaryPropertyType);
         }
         CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey };
-        CFTypeRef values[] = { [value copy], kContactSipField };
+        CFTypeRef values[] = { [value copy], [LinphoneManager instance].contactSipField };
         CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, NULL, NULL);
         CFStringRef label = (CFStringRef)[labelArray objectAtIndex:0];
         if(!ABMultiValueAddValueAndLabel(lMap, lDict, label, &identifier)) {
@@ -497,7 +497,17 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
         CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
         CFStringRef valueRef = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
         if(valueRef != NULL) {
-            value = [NSString stringWithString:(NSString*) valueRef];
+			LinphoneAddress* addr=NULL;
+            if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"]
+				&& (addr=linphone_address_new([(NSString *)valueRef UTF8String]))) {
+				if (linphone_address_get_username(addr)) {
+					value = [NSString stringWithCString:linphone_address_get_username(addr)
+											   encoding:[NSString defaultCStringEncoding]];
+				} /*else value=@""*/
+			} else {
+				value = [NSString stringWithString:(NSString*) valueRef];
+			}
+			if (addr) linphone_address_destroy(addr);
         }
         CFRelease(lDict);
         CFRelease(lMap);
@@ -825,11 +835,33 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
             CFRelease(lcMap);
             int index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
-            CFTypeRef values[] = { [value copy], kContactSipField };
+            CFTypeRef values[] = { [value copy], [LinphoneManager instance].contactSipField };
             CFDictionaryRef lDict = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
             ABMultiValueReplaceValueAtIndex(lMap, lDict, index);
-            CFRelease(lDict);
-            ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
+			ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
+			CFRelease(lDict);
+			/*check if message type is kept or not*/
+			lcMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
+            lMap = ABMultiValueCreateMutableCopy(lcMap);
+            CFRelease(lcMap);
+            index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+			lDict = ABMultiValueCopyValueAtIndex(lMap,index);
+			if(!CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+				/*too bad probably a gtalk number, storing uri*/
+				NSString* username = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+				LinphoneAddress* address = linphone_core_interpret_url([LinphoneManager getLc]
+																	   ,[username UTF8String]);
+				char* uri = linphone_address_as_string_uri_only(address);
+				CFStringRef keys[] = { kABPersonInstantMessageUsernameKey,  kABPersonInstantMessageServiceKey};
+				CFTypeRef values[] = { [NSString stringWithCString:uri encoding:[NSString defaultCStringEncoding]], [LinphoneManager instance].contactSipField };
+				CFDictionaryRef lDict2 = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 2, NULL, NULL);
+				ABMultiValueReplaceValueAtIndex(lMap, lDict2, index);
+				ABRecordSetValue(contact, kABPersonInstantMessageProperty, lMap, nil);
+				CFRelease(lDict2);
+				linphone_address_destroy(address);
+				ms_free(uri);
+			}
+			CFRelease(lDict);
             CFRelease(lMap);
         } else if(contactSections[[path section]] == ContactSections_Email) {
             ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
