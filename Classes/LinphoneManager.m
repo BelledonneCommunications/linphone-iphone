@@ -133,6 +133,7 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "vp8", 90000, @"vp8_preference"},
 	{ "mpeg4-generic", 44100, @"aaceld_44k_preference"},
 	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
+	{ "opus", 48000, @"opus_preference"},
 	{ NULL,0,Nil }
 };
 
