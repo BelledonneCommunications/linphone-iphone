@@ -127,9 +127,11 @@ if test "$mingw_found" != "yes" ; then
 	CPPFLAGS=$CPPFLAGS_save
 	LIBS="$LIBS $LIBINTL"
 else
-	AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-	AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
-	LIBS="$LIBS -lintl"
+	if test "$USE_NLS" = "yes" ; then
+		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
+		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+		LIBS="$LIBS -lintl"
+	fi
 fi
 
 GETTEXT_PACKAGE=linphone
@@ -681,29 +683,16 @@ if test x$enable_msg_storage != xfalse; then
 		] )
 	
 fi
-SIPSTACK_CFLAGS=
-SIPSTACK_LIBS=
 
-AC_ARG_ENABLE([bellesip],
-	AS_HELP_STRING([--enable-bellesip], [Build with bellesip]))
 	
 PKG_CHECK_MODULES(BELLESIP, [belle-sip],[bellesip_found=yes],foo=bar)
 
-AM_CONDITIONAL([USE_BELLESIP], [test "x$enable_bellesip" != "xno" && test "x$bellesip_found" == "xyes"])
+AM_CONDITIONAL([USE_BELLESIP], [test "x$bellesip_found" == "xyes"])
 
+SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
+SIPSTACK_LIBS="$BELLESIP_LIBS"
+AC_DEFINE(USE_BELLESIP,1,[Defined when bellesip is used])
 
-if test $USE_BELLESIP_TRUE !='#' ; then
-	SIPSTACK_CFLAGS=$BELLESIP_CFLAGS
-	SIPSTACK_LIBS=$BELLESIP_LIBS
-	AC_DEFINE(USE_BELLESIP,1,[Defined when bellesip is used])
-else
-	dnl check for osip2
-	LP_CHECK_OSIP2
-	dnl setup flags for exosip library
-	LP_SETUP_EXOSIP
-	SIPSTACK_CFLAGS=$EXOSIP_CFLAGS $OSIP_CFLAGS
-	SIPSTACK_LIBS=$EXOSIP_LIBS $OSIP_LIBS
-fi
 
 AC_SUBST(SIPSTACK_CFLAGS)
 AC_SUBST(SIPSTACK_LIBS)
@@ -855,12 +844,8 @@ printf "* %-30s %s\n" "zRTP encryption (GPLv3)"	$zrtp
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 
 if test "$enable_tunnel" = "true" ; then
-	printf "* Tunnel support\t\t\ttrue\n"
+	printf "* %-30s %s\n" "Tunnel support" "true"
 fi
-if test $USE_BELLESIP_TRUE !='#' ; then
-	printf "* bellesip stack\t\t\ttrue\n"
-else
-	printf "* eXosip stack\t\t\ttrue\n"
-fi
+
 
 echo "Now type 'make' to compile, and then 'make install' as root to install it."
