@@ -317,7 +317,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddContactClick: (id) event {
     [ContactSelection setSelectionMode:ContactSelectionModeEdit];
     [ContactSelection setAddAddress:[addressField text]];
-    [ContactSelection setSipFilter:FALSE];
+    [ContactSelection setSipFilter:nil];
     [ContactSelection setEmailFilter:FALSE];
     ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
     if(controller != nil) {
