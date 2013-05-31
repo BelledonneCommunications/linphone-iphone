@@ -49,3 +49,7 @@ RANLIB=${SDK_BIN_PATH}/ranlib
 
 CPPFLAGS="-Dasm=__asm"
 OBJCFLAGS="-x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"
+#Force install script to use -C so that header files don't get re-written if not changed.
+INSTALL_DATA="ginstall -C"
+
+
