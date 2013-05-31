@@ -53,7 +53,8 @@ static BOOL sEmailFilter = FALSE;
 }
 
 + (void)setSipFilter:(NSString*)domain {
-    sSipFilter = domain;
+    [sSipFilter release];
+	sSipFilter = [domain retain];
 }
 
 + (NSString*)getSipFilter {
@@ -197,7 +198,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)changeView:(HistoryView)view {
     if(view == History_All) {
-        [ContactSelection setSipFilter:FALSE];
+        [ContactSelection setSipFilter:nil];
         [ContactSelection setEmailFilter:FALSE];
         [tableController loadData];
         allButton.selected = TRUE;
@@ -206,7 +207,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
     
     if(view == History_Linphone) {
-        [ContactSelection setSipFilter:@"*"];
+        [ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
 	[ContactSelection setEmailFilter:FALSE];
         [tableController loadData];
         linphoneButton.selected = TRUE;

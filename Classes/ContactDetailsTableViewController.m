@@ -201,17 +201,29 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
                     if(CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
                         add = true;
                     }
-                } else {
-                    add = true;
-                }
-                if(add) {
-                    Entry *entry = [[Entry alloc] initWithData:identifier];
-                    [subArray addObject: entry];
-                    [entry release];
-                }
-                CFRelease(lDict);
-            }
-            CFRelease(lMap);   
+				} else {						//check domain
+					LinphoneAddress* address = linphone_address_new([(NSString*)CFDictionaryGetValue(lDict,kABPersonInstantMessageUsernameKey) UTF8String]);
+					if (address) {
+						if ([[ContactSelection getSipFilter] compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+							add = true;
+						} else {
+							NSString* domain = [NSString stringWithCString:linphone_address_get_domain(address)
+																  encoding:[NSString defaultCStringEncoding]];
+							add = [domain compare:[ContactSelection getSipFilter] options:NSCaseInsensitiveSearch] == NSOrderedSame;
+						}
+						linphone_address_destroy(address);
+					} else {
+						add = false;
+					}
+				}
+				if(add) {
+					Entry *entry = [[Entry alloc] initWithData:identifier];
+					[subArray addObject: entry];
+					[entry release];
+				}
+				CFRelease(lDict);
+			}
+            CFRelease(lMap);
         }
         [dataCache addObject:subArray];
     }

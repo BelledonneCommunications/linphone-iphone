@@ -143,6 +143,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
 - (NSString*)lpConfigStringForKey:(NSString*)key;
+- (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)value;
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString*)section;
 - (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key;
@@ -169,6 +170,7 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
 @property (readonly) NSString* contactSipField;
+@property (readonly,copy) NSString* contactFilter;
 
 @end
 
