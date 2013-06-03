@@ -23,10 +23,12 @@ opus_dir?=externals/opus
 enable_opus?=yes
 
 libopus_configure_options=--disable-extra-programs --disable-doc 
-#ifeq (,$(findstring armv7s,$(host)))
-#        libopus_configure_options+= --enable-fixed-point 
-#compilation error with armv7, switching to fpu impl
-#endif
+ifneq (,$(findstring armv7,$(host)))
+        libopus_configure_options+= --enable-fixed-point --disable-asm
+endif
+ifneq (,$(findstring armv7s,$(host)))
+        libopus_configure_options+= --enable-fixed-point --disable-asm
+endif
 
 $(BUILDER_SRC_DIR)/$(opus_dir)/configure:
 	@echo -e "\033[01;32m Running autogen for msopus in $(BUILDER_SRC_DIR)/$(opus_dir) \033[0m"
@@ -47,7 +49,7 @@ build-opus: $(BUILDER_BUILD_DIR)/$(opus_dir)/Makefile
 	cd $(BUILDER_BUILD_DIR)/$(opus_dir) \
 		&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig \
 		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-		make -j1 && make install
+		make && make install
 
 
 else
