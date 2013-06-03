@@ -243,12 +243,21 @@ static int get_codec_bitrate(LinphoneCore *lc, const PayloadType *pt){
 	return pt->normal_bitrate;
 }
 
+/*
+ *((codec-birate*ptime/8) + RTP header + UDP header + IP header)*8/ptime;
+ *ptime=1/npacket
+ */
 static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt){
 	double npacket=50;
 	double packet_size;
 	int bitrate;
+	if (strcmp(payload_type_get_mime(&payload_type_aaceld_44k), payload_type_get_mime(pt))==0) {
+		/*special case of aac 44K because ptime= 10ms*/
+		npacket=100;
+	}
+		
 	bitrate=get_codec_bitrate(lc,pt);
-	packet_size= (((double)bitrate)/(50*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
+	packet_size= (((double)bitrate)/(npacket*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
 	return packet_size*8.0*npacket;
 }
 
