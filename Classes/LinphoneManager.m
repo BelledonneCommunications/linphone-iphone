@@ -842,10 +842,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 ,self);
 	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
                                  [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
+	[_contactSipField release];
+	_contactSipField = [[self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"] retain];
 	
-	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value"];
-	if (_contactSipField == nil)
-		_contactSipField =@"SIP";
 
 	fastAddressBook = [[FastAddressBook alloc] init];
 	
