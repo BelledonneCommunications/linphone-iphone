@@ -49,5 +49,5 @@ stun=stun.linphone.org
 display_filter_auto_rotate=0
 
 [app]
-#contact_display_username_only=1
-#contact_filter_on_default_domain=1
+contact_display_username_only=1
+contact_filter_on_default_domain=1
