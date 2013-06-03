@@ -11,7 +11,7 @@ $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile: $(BUILDER_SRC_DIR)/$(srtp_dir)/config
 
 build-srtp: $(BUILDER_BUILD_DIR)/$(srtp_dir)/Makefile
 	host_alias=$(host) && . /$(BUILDER_SRC_DIR)/build/$(config_site) && \
-	cd $(BUILDER_BUILD_DIR)/$(srtp_dir) && make libsrtp.a AR=$$AR && make install
+	cd $(BUILDER_BUILD_DIR)/$(srtp_dir) && make libsrtp.a AR="$$AR" && make install
 
 clean-srtp:
 	-cd $(BUILDER_BUILD_DIR)/$(srtp_dir)  && make clean
