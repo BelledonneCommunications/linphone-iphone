@@ -1,29 +1,9 @@
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 0426f92..38fdcb2 100755
+index c99a01c..48f8876 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -624,6 +624,9 @@ process_common_toolchain() {
-     if [ -d "/Developer/SDKs/MacOSX10.7.sdk" ]; then
-         osx_sdk_dir="/Developer/SDKs/MacOSX10.7.sdk"
-     fi
-+    if test -n "$SYSROOT_PATH" ; then
-+        osx_sdk_dir=$SYSROOT_PATH
-+    fi
- 
-     case ${toolchain} in
-         *-darwin8-*)
-@@ -743,9 +746,17 @@ process_common_toolchain() {
-         darwin*)
-             SDK_PATH=/Developer/Platforms/iPhoneOS.platform/Developer
-             TOOLCHAIN_PATH=${SDK_PATH}/usr/bin
-+            if test -n "$SYSROOT_PATH" ; then
-+               SDK_FULL_PATH=$SYSROOT_PATH
-+            else
-+               SDK_FULL_PATH="${SDK_PATH}/SDKs/iPhoneOS5.0.sdk"
-+            fi
-+            if test -n "$SDK_BIN_PATH" ; then
-+                TOOLCHAIN_PATH=$SDK_BIN_PATH
-+            fi
+@@ -892,7 +892,7 @@ process_common_toolchain() {
+             CXX=${TOOLCHAIN_PATH}/g++
              CC=${TOOLCHAIN_PATH}/gcc
              AR=${TOOLCHAIN_PATH}/ar
 -            LD=${TOOLCHAIN_PATH}/arm-apple-darwin10-llvm-gcc-4.2
@@ -31,39 +11,12 @@ index 0426f92..38fdcb2 100755
              AS=${TOOLCHAIN_PATH}/as
              STRIP=${TOOLCHAIN_PATH}/strip
              NM=${TOOLCHAIN_PATH}/nm
-@@ -757,12 +768,12 @@ process_common_toolchain() {
+@@ -904,7 +904,7 @@ process_common_toolchain() {
              ASFLAGS="-version -arch ${tgt_isa} -g"
  
              add_cflags -arch ${tgt_isa}
 -            add_ldflags -arch_only ${tgt_isa}
 +            add_ldflags -arch ${tgt_isa}
  
--            add_cflags  "-isysroot ${SDK_PATH}/SDKs/iPhoneOS5.0.sdk"
-+            add_cflags  "-isysroot $SDK_FULL_PATH"
- 
-             # This should be overridable
--            alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.0.sdk
-+            alt_libc=$SDK_FULL_PATH
- 
-             # Add the paths for the alternate libc
-             for d in usr/include; do
-diff --git a/configure b/configure
-index 6f20c6b..4638ea2 100755
---- a/configure
-+++ b/configure
-@@ -94,6 +94,7 @@ all_platforms="${all_platforms} iwmmxt-linux-gcc"
- all_platforms="${all_platforms} iwmmxt2-linux-rvct"
- all_platforms="${all_platforms} iwmmxt2-linux-gcc"
- all_platforms="${all_platforms} armv7-darwin-gcc"    #neon Cortex-A8
-+all_platforms="${all_platforms} armv7s-darwin-gcc"    #neon Cortex-A8
- all_platforms="${all_platforms} armv7-linux-rvct"    #neon Cortex-A8
- all_platforms="${all_platforms} armv7-linux-gcc"     #neon Cortex-A8
- all_platforms="${all_platforms} armv7-none-rvct"     #neon Cortex-A8
-@@ -198,6 +199,7 @@ ARCH_EXT_LIST="
-     armv5te
-     armv6
-     armv7
-+    armv7s
-     iwmmxt
-     iwmmxt2
- 
+             if [ -z "${alt_libc}" ]; then
+                 alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.1.sdk

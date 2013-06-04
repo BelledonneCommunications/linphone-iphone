@@ -400,7 +400,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 - (IBAction)onContactsClick:(id)event {
     [ContactSelection setSelectionMode:ContactSelectionModeNone];
     [ContactSelection setAddAddress:nil];
-    [ContactSelection setSipFilter:FALSE];
+    [ContactSelection setSipFilter:nil];
     [ContactSelection setEmailFilter:FALSE];
     [[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
 }
