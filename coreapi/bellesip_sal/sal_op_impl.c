@@ -40,7 +40,10 @@ void sal_op_release(SalOp *op){
 void sal_op_release_impl(SalOp *op){
 	ms_message("Destroying op [%p] of type [%s]",op,sal_op_type_to_string(op->type));
 	if (op->pending_auth_transaction) belle_sip_object_unref(op->pending_auth_transaction);
-	if (op->auth_info) sal_auth_info_delete(op->auth_info);
+	if (op->auth_info) {
+		sal_remove_pending_auth(op->base.root,op);
+		sal_auth_info_delete(op->auth_info);
+	}
 	if (op->sdp_answer) belle_sip_object_unref(op->sdp_answer);
 	if (op->refresher) {
 		belle_sip_object_unref(op->refresher);
@@ -259,6 +262,10 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 		case 400:
 			*sal_err=SalErrorUnknown;
 			break;
+		case 403:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonForbidden;
+			break;
 		case 404:
 			*sal_err=SalErrorFailure;
 			*sal_reason=SalReasonNotFound;
@@ -279,6 +286,10 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 			*sal_reason=SalReasonBusy;
 			break;
 		case 487:
+			break;
+		case 503:
+			*sal_err=SalErrorFailure;
+			*sal_reason=SalReasonServiceUnavailable;
 			break;
 		case 600:
 			*sal_err=SalErrorFailure;

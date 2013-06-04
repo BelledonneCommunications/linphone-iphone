@@ -779,7 +779,14 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 	} else if (error == SalErrorNoResponse) {
 		linphone_proxy_config_set_error(cfg, LinphoneReasonNoResponse);
 	}
-	linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
+	if (error== SalErrorFailure
+			&& reason == SalReasonServiceUnavailable
+			&& linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
+		linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,_("Service unavailable, retrying"));
+
+	} else {
+		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
+	}
 	if (error== SalErrorFailure && reason == SalReasonForbidden) {
 		const char *realm=NULL,*username=NULL;
 		if (sal_op_get_auth_requested(op,&realm,&username)==0){

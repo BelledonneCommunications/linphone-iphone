@@ -126,11 +126,12 @@ static void register_with_refresh_with_send_error() {
 	register_with_refresh_base(lc,TRUE,auth_domain,route);
 	/*simultate a network error*/
 	sal_set_send_error(lc->sal, -1);
-	while (counters->number_of_LinphoneRegistrationFailed<1 && retry++ <20) {
+	while (counters->number_of_LinphoneRegistrationProgress<2 && retry++ <20) {
 			linphone_core_iterate(lc);
 			ms_usleep(100000);
 	}
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,1);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,2);
 	linphone_core_destroy(lc);
 
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
@@ -348,7 +349,7 @@ static void transport_change(){
 	linphone_core_set_sip_transports(lc,&sip_tr);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok+number_of_udp_proxy));
 
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok+(total_number_of_proxies-number_of_udp_proxy)));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,total_number_of_proxies-number_of_udp_proxy));
 
 	linphone_core_destroy(lc);
 }
@@ -368,7 +369,9 @@ static void io_recv_error(){
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 	sal_set_recv_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationFailed,register_ok-number_of_udp_proxy /*because 1 udp*/));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
+
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 
 	linphone_core_destroy(lc);

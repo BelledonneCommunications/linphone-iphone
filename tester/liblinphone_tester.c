@@ -44,7 +44,7 @@ const char* test_route="sip2.linphone.org";
 #if WINAPI_FAMILY_PHONE_APP
 const char *liblinphone_tester_file_prefix="Assets";
 #else
-const char *liblinphone_tester_file_prefix="./tester";
+const char *liblinphone_tester_file_prefix=".";
 #endif
 
 const char *userhostsfile = "tester_hosts";

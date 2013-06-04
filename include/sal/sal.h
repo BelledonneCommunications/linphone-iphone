@@ -270,7 +270,8 @@ typedef enum SalReason{
 	SalReasonDoNotDisturb,
 	SalReasonMedia,
 	SalReasonForbidden,
-	SalReasonUnknown
+	SalReasonUnknown,
+	SalReasonServiceUnavailable
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);

@@ -1310,9 +1310,19 @@ void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
-	cfg->state=state;
-	if (lc && lc->vtable.registration_state_changed){
-		lc->vtable.registration_state_changed(lc,cfg,state,message);
+
+
+	ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg
+																					, linphone_proxy_config_get_identity(cfg)
+																					, linphone_registration_state_to_string(cfg->state)
+																					, linphone_registration_state_to_string(state));
+	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
+		cfg->state=state;
+		if (lc && lc->vtable.registration_state_changed){
+			lc->vtable.registration_state_changed(lc,cfg,state,message);
+		}
+	} else {
+		/*state already reported*/
 	}
 }
 
