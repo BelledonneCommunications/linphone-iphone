@@ -377,6 +377,42 @@ static void io_recv_error(){
 	linphone_core_destroy(lc);
 }
 
+static void io_recv_error_without_active_register(){
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+	int number_of_udp_proxy=0;
+	MSList* proxys;
+
+	memset (&v_table,0,sizeof(LinphoneCoreVTable));
+	v_table.registration_state_changed=registration_state_changed;
+	lc=configure_lc(&v_table);
+	counters = (stats*)linphone_core_get_user_data(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	number_of_udp_proxy=get_number_of_udp_proxy(lc);
+
+	for (proxys=ms_list_copy(linphone_core_get_proxy_config_list(lc));proxys!=NULL;proxys=proxys->next) {
+		LinphoneProxyConfig* proxy_cfg=(LinphoneProxyConfig*)proxys->data;
+		linphone_proxy_config_edit(proxy_cfg);
+		linphone_proxy_config_enable_register(proxy_cfg,FALSE);
+		linphone_proxy_config_done(proxy_cfg);
+	}
+	ms_list_free(proxys);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationCleared,register_ok /*because 1 udp*/));
+
+	sal_set_recv_error(lc->sal, 0);
+
+	/*nothing should happen because no active registration*/
+	CU_ASSERT_FALSE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/));
+
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
+
+	sal_set_recv_error(lc->sal, 1); /*reset*/
+
+	linphone_core_destroy(lc);
+}
+
 
 static void tls_certificate_failure(){
 	LinphoneCoreVTable v_table;
@@ -451,7 +487,8 @@ test_t register_tests[] = {
 	{ "Multi account", multiple_proxy },
 	{ "Transport change", transport_change },
 	{ "Network state change", network_state_change },
-	{ "io_recv_error_0", io_recv_error }
+	{ "Io recv error", io_recv_error },
+	{ "Io recv error without active registration", io_recv_error_without_active_register}
 };
 
 test_suite_t register_test_suite = {
