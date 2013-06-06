@@ -212,4 +212,9 @@ class LinphoneCallImpl implements LinphoneCall {
 	public State getTransferState() {
 		return State.fromInt(getTransferState(nativePtr));
 	}
+	private native int sendInfoMessage(long callPtr, long msgptr);
+	@Override
+	public void sendInfoMessage(LinphoneInfoMessage msg) {
+		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
+	}
 }

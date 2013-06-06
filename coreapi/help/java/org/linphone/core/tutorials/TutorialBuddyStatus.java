@@ -250,7 +250,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	}
 
 	@Override
-	public void infoReceived(LinphoneCore lc, LinphoneInfoMessage info) {
+	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1262,16 +1262,10 @@ public interface LinphoneCore {
 	
 	/**
 	 * Create an empty INFO message.
-	 * It can later be sent using {@link LinphoneCore.sendInfoMessage() }.
+	 * It can later be sent using {@link LinphoneCall.sendInfoMessage() }.
 	 * @return the new info message.
 	 */
 	public LinphoneInfoMessage createInfoMessage();
 	
-	/**
-	 * Send an INFO message to specified destination.
-	 * @param info the info message
-	 * @param dest the destination sip address.
-	 */
-	public void sendInfoMessage(LinphoneInfoMessage info, LinphoneAddress dest);
 
 }
