@@ -31,7 +31,8 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 }
 
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
+	LinphoneCoreManager *mgr=get_manager(lc);
 	LinphoneContent content;
 	
 	content.type="application";
@@ -44,7 +45,10 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		break;
 		case LinphoneSubscriptionIncomingReceived:
 			counters->number_of_LinphoneSubscriptionIncomingReceived++;
-			linphone_event_accept_subscription(lev);
+			if (!mgr->decline_subscribe)
+				linphone_event_accept_subscription(lev);
+			else
+				linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		break;
 		case LinphoneSubscriptionOutoingInit:
 			counters->number_of_LinphoneSubscriptionOutgoingInit++;
@@ -54,48 +58,95 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		break;
 		case LinphoneSubscriptionActive:
 			counters->number_of_LinphoneSubscriptionActive++;
-			if (linphone_event_get_dir(lev)==LinphoneSubscriptionIncoming)
+			if (linphone_event_get_dir(lev)==LinphoneSubscriptionIncoming){
+				mgr->lev=lev;
 				linphone_event_notify(lev,&content);
+			}
 		break;
 		case LinphoneSubscriptionTerminated:
 			counters->number_of_LinphoneSubscriptionTerminated++;
+			mgr->lev=NULL;
 		break;
 		case LinphoneSubscriptionError:
 			counters->number_of_LinphoneSubscriptionError++;
+			mgr->lev=NULL;
 		break;
 	}
 }
 
-
-
-
-
-static void subscribe_test() {
+static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
 	LinphoneContent content;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
+
 	content.type="application";
 	content.subtype="somexml";
 	content.data=(char*)subscribe_content;
 	content.size=strlen(subscribe_content);
 	
+	pauline->decline_subscribe=TRUE;
+	
 	linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionError,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
+static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneContent content;
+	LinphoneEvent *lev;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+
+	content.type="application";
+	content.subtype="somexml";
+	content.data=(char*)subscribe_content;
+	content.size=strlen(subscribe_content);
+	
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,1000));
 
+	if (terminated_by_subscriber){
+		linphone_event_terminate(lev);
+	}else{
+		linphone_event_terminate(pauline->lev);
+	}
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,1000));
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
+static void subscribe_test_terminated_by_subscriber(void){
+	subscribe_test_with_args(TRUE);
+}
+
+static void subscribe_test_terminated_by_notifier(void){
+	subscribe_test_with_args(FALSE);
+}
+
 test_t subscribe_tests[] = {
-	{ "Subscribe", subscribe_test },
+	{ "Subscribe declined"	,	subscribe_test_declined 	},
+	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
+	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier }
 };
 
 test_suite_t subscribe_test_suite = {

@@ -66,7 +66,6 @@ typedef enum SalOpType {
 	SalOpMessage,
 	SalOpPresence,
 	SalOpPublish,
-	SalOpInfo,
 	SalOpSubscribe
 }SalOpType_t;
 const char* sal_op_type_to_string(const SalOpType_t type);
@@ -124,9 +123,6 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/
 void sal_op_message_fill_cbs(SalOp*op);
-
-/*info*/
-void sal_op_info_fill_cbs(SalOp*op);
 
 void sal_op_subscribe_fill_cbs(SalOp*op);
 

@@ -34,7 +34,7 @@ void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState 
 																,linphone_call_state_to_string(cstate));
 	ms_free(to);
 	ms_free(from);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	switch (cstate) {
 	case LinphoneCallIncomingReceived:counters->number_of_LinphoneCallIncomingReceived++;break;
 	case LinphoneCallOutgoingInit :counters->number_of_LinphoneCallOutgoingInit++;break;
@@ -67,7 +67,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	ms_free(to);
 	ms_free(from);
 
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	switch (new_call_state) {
 	case LinphoneCallOutgoingInit :counters->number_of_LinphoneTransferCallOutgoingInit++;break;
 	case LinphoneCallOutgoingProgress :counters->number_of_LinphoneTransferCallOutgoingProgress++;break;
@@ -88,7 +88,7 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	ms_message("call from [%s] to [%s] receive iFrame",from,to);
 	ms_free(to);
 	ms_free(from);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = (stats*)get_stats(lc);
 	counters->number_of_IframeDecoded++;
 }
 
@@ -444,8 +444,11 @@ static void call_with_ice(void) {
 	CU_ASSERT_TRUE(call(pauline,marie));
 
 	CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	/*wait for the ICE reINVITE to complete*/
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
-	/*just to sleep*/
+	/*then close the call*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));

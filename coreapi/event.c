@@ -112,11 +112,14 @@ int linphone_event_accept_subscription(LinphoneEvent *lev){
 }
 
 int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
+	int err;
 	if (lev->state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_deny_subscription(): cannot deny subscription if subscription wasn't just received.");
 		return -1;
 	}
-	return sal_subscribe_decline(lev->op,linphone_reason_to_sal(reason));
+	err=sal_subscribe_decline(lev->op,linphone_reason_to_sal(reason));
+	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
+	return err;
 }
 
 int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){

@@ -152,6 +152,8 @@ typedef struct _LinphoneCoreManager {
 	LinphoneCore* lc;
 	stats stat;
 	LinphoneAddress* identity;
+	LinphoneEvent *lev;
+	bool_t decline_subscribe;
 } LinphoneCoreManager;
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies);
@@ -166,7 +168,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
-void info_message_received(LinphoneCore *lc, const LinphoneInfoMessage *msg);
+void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
@@ -179,5 +181,8 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr);
+stats * get_stats(LinphoneCore *lc);
+LinphoneCoreManager *get_manager(LinphoneCore *lc);
+
 #endif /* LIBLINPHONE_TESTER_H_ */
 

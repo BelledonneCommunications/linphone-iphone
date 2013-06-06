@@ -110,6 +110,17 @@ struct _LinphoneContent{
 typedef struct _LinphoneContent LinphoneContent;
 
 /**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
+**/
+struct _LinphoneCall;
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
+**/
+typedef struct _LinphoneCall LinphoneCall;
+
+/**
  * Enum describing failure reasons.
  * @ingroup misc
 **/
@@ -277,8 +288,8 @@ struct _LinphoneInfoMessage;
 **/
 typedef struct _LinphoneInfoMessage LinphoneInfoMessage;
 
-LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc);
-LINPHONE_PUBLIC int linphone_core_send_info_message(LinphoneCore *lc, const LinphoneInfoMessage *info, const LinphoneAddress *addr);
+LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore*lc);
+LINPHONE_PUBLIC int linphone_call_send_info_message(struct _LinphoneCall *call, const LinphoneInfoMessage *info);
 LINPHONE_PUBLIC void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value);
 LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name);
 LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
@@ -305,16 +316,7 @@ struct _LinphoneVideoPolicy{
 **/
 typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-struct _LinphoneCall;
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-typedef struct _LinphoneCall LinphoneCall;
+
 
 
 /**
@@ -872,7 +874,7 @@ typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneC
 typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /** Callback prototype for receiving info messages*/
-typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, const LinphoneInfoMessage *msg);
+typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.

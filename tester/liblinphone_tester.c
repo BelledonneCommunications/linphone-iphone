@@ -75,7 +75,7 @@ void auth_info_requested(LinphoneCore *lc, const char *realm, const char *userna
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 					,username
 					,realm);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
@@ -116,7 +116,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	sprintf(filepath, "%s/%s", path, file);
 	lc =  linphone_core_new(v_table,NULL,filepath,NULL);
 	linphone_core_set_user_data(lc,&global_stat);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 
 	/* until we have good certificates on our test server...
 	linphone_core_verify_server_certificates(lc,FALSE);*/
@@ -180,8 +180,18 @@ static void enable_codec(LinphoneCore* lc,const char* type,int rate) {
 	ms_list_free(codecs);
 }
 
+stats * get_stats(LinphoneCore *lc){
+	LinphoneCoreManager *manager=(LinphoneCoreManager *)linphone_core_get_user_data(lc);
+	return &manager->stat;
+}
+
+LinphoneCoreManager *get_manager(LinphoneCore *lc){
+	LinphoneCoreManager *manager=(LinphoneCoreManager *)linphone_core_get_user_data(lc);
+	return manager;
+}
+
 LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies) {
-	LinphoneCoreManager* mgr= malloc(sizeof(LinphoneCoreManager));
+	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	LinphoneProxyConfig* proxy;
 	memset (mgr,0,sizeof(LinphoneCoreManager));
 	mgr->v_table.registration_state_changed=registration_state_changed;
@@ -196,7 +206,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	mgr->v_table.notify_received=linphone_notify_received;
 	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, check_for_proxies?(rc_file?1:0):0);
 	enable_codec(mgr->lc,"PCMU",8000);
-	linphone_core_set_user_data(mgr->lc,&mgr->stat);
+	linphone_core_set_user_data(mgr->lc,mgr);
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
 	if (proxy) {
 		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
@@ -212,7 +222,7 @@ LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->lc) linphone_core_destroy(mgr->lc);
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
-	free(mgr);
+	ms_free(mgr);
 }
 
 
