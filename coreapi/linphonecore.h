@@ -1403,11 +1403,11 @@ int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
 float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
-unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
-void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
 
-unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
-void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
 int linphone_core_get_device_rotation(LinphoneCore *lc );
@@ -1422,7 +1422,7 @@ void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
  * @param lc The linphone core related to the operation
  * @return The camera sensor rotation in degrees (0 to 360) or -1 if it could not be retrieved
  */
-int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
 
 /* start or stop streaming video in case of embedded window */
 void linphone_core_show_video(LinphoneCore *lc, bool_t show);
