@@ -424,6 +424,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
 	belle_sip_header_expires_t* expires;
+
 	if (sal_compute_sal_errors(response,&error,&sr,reason, sizeof(reason))) {
 		ms_error("subscription to [%s] rejected reason [%s]",sal_op_get_to(op),reason[0]!=0?reason:sal_reason_to_string(sr));
 		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
@@ -436,9 +437,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
 
-
-		switch(dialog_state) {
-
+	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_NULL:
 		case BELLE_SIP_DIALOG_EARLY: {
 			ms_error("presence op [%p] receive an unexpected answer [%i]",op,code);
@@ -450,6 +449,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 				if(op->refresher) {
 					belle_sip_refresher_stop(op->refresher);
 					belle_sip_object_unref(op->refresher);
+					op->refresher=NULL;
 				}
 				if (expires>0){
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
@@ -475,9 +475,11 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 static void presence_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	ms_error("presence_process_timeout not implemented yet");
 }
+
 static void presence_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
 	ms_message("presence_process_transaction_terminated not implemented yet");
 }
+
 static void presence_process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
@@ -504,7 +506,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	switch(dialog_state) {
 
 	case BELLE_SIP_DIALOG_NULL: {
-		op->base.root->callbacks.subscribe_received(op,sal_op_get_from(op));
+		op->base.root->callbacks.subscribe_presence_received(op,sal_op_get_from(op));
 		break;
 	}
 	case BELLE_SIP_DIALOG_EARLY:
@@ -553,7 +555,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 		} else if (strcmp("SUBSCRIBE",belle_sip_request_get_method(req))==0) {
 			/*either a refresh of an unsubscribe*/
 			if (expires && belle_sip_header_expires_get_expires(expires)>0) {
-				op->base.root->callbacks.subscribe_received(op,sal_op_get_from(op));
+				op->base.root->callbacks.subscribe_presence_received(op,sal_op_get_from(op));
 			} else if(expires) {
 				ms_message("Unsubscribe received from [%s]",sal_op_get_from(op));
 				resp=sal_op_create_response_from_request(op,req,200);
@@ -566,9 +568,8 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	}
 	/* no break */
 	}
-
-
 }
+
 void sal_op_presence_fill_cbs(SalOp*op) {
 	op->callbacks.process_io_error=presence_process_io_error;
 	op->callbacks.process_response_event=presence_response_event;
@@ -597,29 +598,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 
 	return sal_op_send_request(op,req);
 }
-int sal_unsubscribe(SalOp *op){
-	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE"):NULL; /*cannot create request if dialog not set yet*/
-	if (!req) {
-		ms_error("Cannot unsubscribe to [%s]",sal_op_get_to(op));
-		return -1;
-	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(0)));
-	return sal_op_send_request(op,req);
-}
-int sal_subscribe_accept(SalOp *op){
-	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans));
-	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
-	belle_sip_response_t* resp = sal_op_create_response_from_request(op,req,200);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(expires));
-	belle_sip_server_transaction_send_response(op->pending_server_trans,resp);
-	return 0;
-}
-int sal_subscribe_decline(SalOp *op){
-	belle_sip_response_t*  resp = belle_sip_response_create_from_request(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),403);
-	belle_sip_server_transaction_send_response(op->pending_server_trans,resp);
-	return 0;
-}
+
 
 static belle_sip_request_t *create_presence_notify(SalOp *op){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
@@ -635,7 +614,7 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 	return sal_op_send_request(op,notify);
 }
 
-int sal_notify_close(SalOp *op){
+int sal_notify_presence_close(SalOp *op){
 	belle_sip_request_t* notify=create_presence_notify(op);
 	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),SalPresenceOffline); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)

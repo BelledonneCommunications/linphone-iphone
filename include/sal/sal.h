@@ -255,6 +255,7 @@ typedef struct SalOpBase{
 
 
 typedef enum SalError{
+	SalErrorNone,
 	SalErrorNoResponse,
 	SalErrorProtocol,
 	SalErrorFailure, /* see SalReason for more details */
@@ -298,6 +299,8 @@ typedef enum SalReferStatus{
 }SalReferStatus;
 
 typedef enum SalSubscribeStatus{
+	SalSubscribeNone,
+	SalSubscribePending,
 	SalSubscribeActive,
 	SalSubscribeTerminated
 }SalSubscribeStatus;
@@ -345,11 +348,14 @@ typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
 typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
-typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
+typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, SalError error, SalReason reason);
+typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
+typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
+typedef void (*SalOnSubscribeClosed)(SalOp *salop);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
-typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *from);
-typedef void (*SalOnSubscribeClosed)(SalOp *salop, const char *from);
+typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
+typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
 typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
@@ -378,11 +384,14 @@ typedef struct SalCallbacks{
 	SalOnRefer refer_received;
 	SalOnTextReceived text_received;
 	SalOnTextDeliveryUpdate text_delivery_update;
-	SalOnNotify notify;
-	SalOnNotifyPresence notify_presence;
 	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
 	SalOnSubscribeClosed subscribe_closed;
+	SalOnSubscribeResponse subscribe_response;
+	SalOnNotify notify;
+	SalOnSubscribePresenceReceived subscribe_presence_received;
+	SalOnSubscribePresenceClosed subscribe_presence_closed;
+	SalOnNotifyPresence notify_presence;
 	SalOnPingReply ping_reply;
 	SalOnAuthRequested auth_requested;
 	SalOnInfoReceived info_received;
@@ -516,14 +525,11 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to);
-int sal_unsubscribe(SalOp *op);
-int sal_subscribe_accept(SalOp *op);
-int sal_subscribe_decline(SalOp *op);
 int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message);
-int sal_notify_close(SalOp *op);
+int sal_notify_presence_close(SalOp *op);
 
 /*presence publish */
-int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus status);
+int sal_publish_presence(SalOp *op, const char *from, const char *to, SalPresenceStatus status);
 
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
@@ -532,6 +538,14 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 /*info messages*/
 int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body);
 
+/*generic subscribe/notify/publish api*/
+int sal_subscribe(SalOp *op, const char *from, const char *to, const char *eventname, int expires, const SalBody *body);
+int sal_unsubscribe(SalOp *op);
+int sal_subscribe_accept(SalOp *op);
+int sal_subscribe_decline(SalOp *op, SalReason reason);
+int sal_notify(SalOp *op, const SalBody *body);
+int sal_notify_close(SalOp *op);
+int sal_publish(SalOp *op, const char *from, const char *to, const char*event_name, int expires, const SalBody *body);
 
 
 #define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);

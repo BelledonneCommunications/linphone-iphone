@@ -742,6 +742,17 @@ const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_call_create_op(LinphoneCall *call);
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
+LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref);
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc);
+SalReason linphone_reason_to_sal(LinphoneReason reason);
+LinphoneReason linphone_reason_from_sal(SalReason reason);
+LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir);
+LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir);
+void linphone_event_destroy(LinphoneEvent *lev);
+void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
+void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
+LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
+const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 
 #ifdef __cplusplus
 }

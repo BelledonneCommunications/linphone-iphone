@@ -85,7 +85,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 		if (linphone_find_friend(lc->subscribers,uri,&lf)){
 			if (lf->pol==LinphoneSPDeny){
 				ms_message("Rejecting %s because we already rejected it once.",from);
-				sal_subscribe_decline(op);
+				sal_subscribe_decline(op,SalReasonDeclined);
 			}
 			else {
 				/* else it is in wait for approval state, because otherwise it is in the friend list.*/

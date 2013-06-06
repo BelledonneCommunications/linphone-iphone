@@ -5655,6 +5655,10 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Not answered";
 		case LinphoneReasonBusy:
 			return "Busy";
+		case LinphoneReasonMedia:
+			return "Incompatible media capabilities";
+		case LinphoneReasonIOError:
+			return "IO error";
 	}
 	return "unknown error";
 }

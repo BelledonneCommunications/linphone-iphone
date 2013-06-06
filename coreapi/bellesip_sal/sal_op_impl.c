@@ -256,56 +256,93 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	return _sal_op_send_request_with_contact(op, request,need_contact);
 }
 
+SalReason sal_reason_to_sip_code(SalReason r){
+	int ret=500;
+	switch(r){
+		case SalReasonUnknown:
+			ret=400;
+			break;
+		
+		case SalReasonBusy:
+			ret=486;
+			break;
+		case SalReasonDeclined:
+			ret=603;
+			break;
+		case SalReasonDoNotDisturb:
+			ret=600;
+			break;
+		case SalReasonForbidden:
+			ret=403;
+			break;
+		case SalReasonMedia:
+			ret=415;
+			break;
+		case SalReasonNotFound:
+			ret=404;
+			break;
+		case SalReasonRedirect:
+			ret=302;
+			break;
+		case SalReasonTemporarilyUnavailable:
+			ret=480;
+			break;
+		case SalReasonServiceUnavailable:
+			ret=503;
+			break;
+	}
+	return ret;
+}
 
 void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal_reason) {
-		switch(code) {
-		case 400:
-			*sal_err=SalErrorUnknown;
-			break;
-		case 403:
+	switch(code) {
+	case 400:
+		*sal_err=SalErrorUnknown;
+		break;
+	case 403:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonForbidden;
+		break;
+	case 404:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonNotFound;
+		break;
+	case 415:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonMedia;
+		break;
+	case 422:
+		ms_error ("422 not implemented yet");;
+		break;
+	case 480:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonTemporarilyUnavailable;
+		break;
+	case 486:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonBusy;
+		break;
+	case 487:
+		break;
+	case 600:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonDoNotDisturb;
+		break;
+	case 603:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonDeclined;
+		break;
+	case 503:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonServiceUnavailable;
+		break;
+	default:
+		if (code>0){
 			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonForbidden;
-			break;
-		case 404:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonNotFound;
-			break;
-		case 415:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonMedia;
-			break;
-		case 422:
-			ms_error ("422 not implemented yet");;
-			break;
-		case 480:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonTemporarilyUnavailable;
-			break;
-		case 486:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonBusy;
-			break;
-		case 487:
-			break;
-		case 503:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonServiceUnavailable;
-			break;
-		case 600:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonDoNotDisturb;
-			break;
-		case 603:
-			*sal_err=SalErrorFailure;
-			*sal_reason=SalReasonDeclined;
-			break;
-		default:
-			if (code>0){
-				*sal_err=SalErrorFailure;
-				*sal_reason=SalReasonUnknown;
-			}else *sal_err=SalErrorNoResponse;
-			/* no break */
-		}
+			*sal_reason=SalReasonUnknown;
+		}else *sal_err=SalErrorNoResponse;
+		/* no break */
+	}
 }
 /*return TRUE if error code*/
 bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,SalReason* sal_reason,char* reason, size_t reason_size) {
@@ -415,4 +452,35 @@ const char *sal_op_get_remote_contact(const SalOp *op){
 	return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
 }
 
+void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body){
+	if (body && body->type && body->subtype && body->data){
+		belle_sip_message_add_header((belle_sip_message_t*)req,
+			(belle_sip_header_t*)belle_sip_header_content_type_create(body->type,body->subtype));
+		belle_sip_message_add_header((belle_sip_message_t*)req,
+			(belle_sip_header_t*)belle_sip_header_content_length_create(body->size));
+		belle_sip_message_set_body((belle_sip_message_t*)req,(const char*)body->data,body->size);
+	}
+}
 
+
+bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
+	const char *body = NULL;
+	belle_sip_header_content_type_t *content_type;
+	belle_sip_header_content_length_t *clen=NULL;
+	
+	content_type=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_type_t);
+	if (content_type){
+		body=belle_sip_message_get_body(msg);
+		clen=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_length_t);
+	}
+	
+	if (content_type && body && clen) {
+		salbody->type=belle_sip_header_content_type_get_type(content_type);
+		salbody->subtype=belle_sip_header_content_type_get_subtype(content_type);
+		salbody->data=body;
+		salbody->size=belle_sip_header_content_length_get_content_length(clen);
+		return TRUE;
+	}
+	memset(salbody,0,sizeof(salbody));
+	return FALSE;
+}

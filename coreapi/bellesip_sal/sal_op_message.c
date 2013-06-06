@@ -149,6 +149,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	return sal_op_send_request(op,req);
 
 }
+
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
 	return sal_message_send(op,from,to,"text/plain",msg);
 }

@@ -58,13 +58,13 @@ static void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *r
 	obj->size=ref->size;
 }
 
-static void linphone_content_uninit(LinphoneContent * obj){
+void linphone_content_uninit(LinphoneContent * obj){
 	if (obj->type) ms_free(obj->type);
 	if (obj->subtype) ms_free(obj->subtype);
 	if (obj->data) ms_free(obj->data);
 }
 
-static LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
+LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
 	SET_STRING(obj,type,ref->type);
 	SET_STRING(obj,subtype,ref->subtype);
 	if (obj->data) {
@@ -80,7 +80,17 @@ static LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj
 	return obj;
 }
 
-static SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
+const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref){
+	if (ref && ref->type){
+		obj->type=(char*)ref->type;
+		obj->subtype=(char*)ref->subtype;
+		obj->data=(void*)ref->data;
+		obj->size=ref->size;
+	}
+	return NULL;
+}
+
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
 	if (lc->type){
 		body->type=lc->type;
 		body->subtype=lc->subtype;

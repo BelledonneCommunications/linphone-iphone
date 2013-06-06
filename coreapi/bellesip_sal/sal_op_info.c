@@ -31,23 +31,10 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,req);
-	belle_sip_header_content_type_t* content_type;
-	belle_sip_header_content_length_t *clen=NULL;
 	belle_sip_response_t* resp;
 	SalBody salbody;
-	const char *body = NULL;
 	
-	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
-	if (content_type){
-		body=belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-		clen=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_length_t);
-	}
-	
-	if (content_type && body && clen) {
-		salbody.type=belle_sip_header_content_type_get_type(content_type);
-		salbody.subtype=belle_sip_header_content_type_get_subtype(content_type);
-		salbody.data=body;
-		salbody.size=belle_sip_header_content_length_get_content_length(clen);
+	if (sal_op_get_body(op,(belle_sip_message_t*)req,&salbody)) {
 		op->base.root->callbacks.info_received(op,&salbody);
 	} else {
 		op->base.root->callbacks.info_received(op,NULL);
@@ -60,13 +47,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body){
 	belle_sip_request_t *req=sal_op_build_request(op,"INFO");
 	sal_op_info_fill_cbs(op);
-	if (body && body->type && body->subtype && body->data){
-		belle_sip_message_add_header((belle_sip_message_t*)req,
-			(belle_sip_header_t*)belle_sip_header_content_type_create(body->type,body->subtype));
-		belle_sip_message_add_header((belle_sip_message_t*)req,
-			(belle_sip_header_t*)belle_sip_header_content_length_create(body->size));
-		belle_sip_message_set_body((belle_sip_message_t*)req,(const char*)body->data,body->size);
-	}
+	sal_op_add_body(op,(belle_sip_message_t*)req,body);
 	return sal_op_send_request(op,req);
 }
 

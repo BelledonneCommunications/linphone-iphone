@@ -192,6 +192,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	mgr->v_table.notify_presence_recv=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
 	mgr->v_table.info_received=info_message_received;
+	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
+	mgr->v_table.notify_received=linphone_notify_received;
 	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, check_for_proxies?(rc_file?1:0):0);
 	enable_codec(mgr->lc,"PCMU",8000);
 	linphone_core_set_user_data(mgr->lc,&mgr->stat);
@@ -297,6 +299,7 @@ void liblinphone_tester_init(void) {
 #ifdef UPNP
 	add_test_suite(&upnp_test_suite);
 #endif
+	add_test_suite(&subscribe_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

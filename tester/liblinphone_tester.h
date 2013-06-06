@@ -51,6 +51,7 @@ extern test_suite_t call_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t presence_test_suite;
 extern test_suite_t upnp_test_suite;
+extern test_suite_t subscribe_test_suite;
 
 
 extern int liblinphone_tester_nb_test_suites(void);
@@ -137,6 +138,12 @@ typedef struct _stats {
 	int number_of_inforeceived;
 	int number_of_inforeceived_with_body;
 
+	int number_of_LinphoneSubscriptionIncomingReceived;
+	int number_of_LinphoneSubscriptionOutgoingInit;
+	int number_of_LinphoneSubscriptionPending;
+	int number_of_LinphoneSubscriptionActive;
+	int number_of_LinphoneSubscriptionTerminated;
+	int number_of_LinphoneSubscriptionError;
 
 }stats;
 
@@ -162,6 +169,8 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 void info_message_received(LinphoneCore *lc, const LinphoneInfoMessage *msg);
 void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
+void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
+void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
 
 LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;
 LinphoneAddress * create_linphone_address(const char * domain);

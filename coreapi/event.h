@@ -19,6 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef LINPHONEEVENT_H
 #define LINPHONEEVENT_H
 
+/**
+ * @addtogroup subscriptions
+ * @{
+**/
+
 struct _LinphoneEvent;
 
 typedef struct _LinphoneEvent LinphoneEvent;
@@ -28,13 +33,14 @@ typedef struct _LinphoneEvent LinphoneEvent;
 **/
 enum _LinphoneSubscriptionDir{
 	LinphoneSubscriptionIncoming,
-	LinphoneSubscriptionOutgoing
+	LinphoneSubscriptionOutgoing,
+	LinphoneSubscriptionInvalidDir
 };
 
 /**
  * Typedef alias for _LinphoneSubscriptionDir
 **/
-typedef _LinphoneSubscriptionDir LinphoneSubscriptionDir;
+typedef enum _LinphoneSubscriptionDir LinphoneSubscriptionDir;
 
 /**
  * Enum for subscription states.
@@ -49,7 +55,7 @@ enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionError /**<Subscription encountered an error, indicated by linphone_event_get_reason()*/
 };
 
-typedef _LinphoneSubscriptionState LinphoneSubscriptionState;
+typedef enum _LinphoneSubscriptionState LinphoneSubscriptionState;
 
 /**
  * Callback prototype for notifying the application about notification received from the network.
@@ -60,7 +66,7 @@ typedef void (*LinphoneEventIncomingNotifyCb)(LinphoneCore *lc, LinphoneEvent *l
 /**
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
 **/ 
-typedef void (*LinphoneSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubcriptionState state);
+typedef void (*LinphoneSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 
 /**
  * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
@@ -79,23 +85,24 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
  * @param lev a LinphoneEvent
  * @param body an optional body to include in the subscription update, may be NULL.
 **/
-void linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
+int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
 
 
 /**
  * Accept an incoming subcription.
 **/
-void linphone_event_accept_subscription(LinphoneEvent *lev);
+int linphone_event_accept_subscription(LinphoneEvent *lev);
 /**
  * Deny an incoming subscription with given reason.
 **/
-void linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason);
+int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason);
 /**
  * Send a notification.
  * @param lev a #LinphoneEvent corresponding to an incoming subscription previously received and accepted.
  * @param body an optional body containing the actual notification data.
+ * @return 0 if successful, -1 otherwise.
  **/
-void linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
+int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
 
 
 /**
@@ -106,6 +113,7 @@ void linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body);
  * @param event the event name
  * @param expires the lifetime of the publication
  * @param body the actual published data
+ * @return the LinphoneEvent holding the context of the publish.
 **/
 LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body);
 
@@ -114,12 +122,37 @@ LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *re
  * @param lev the #LinphoneEvent
  * @param body the new data to be published
 **/
-void linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
+int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
+
+
+/**
+ * Return reason code (in case of error state reached).
+**/
+LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev);
+
+/**
+ * Get subscription direction.
+**/
+LinphoneSubscriptionDir linphone_event_get_dir(LinphoneEvent *lev);
+
+/**
+ * Set a user (application) pointer.
+**/
+void linphone_event_set_user_data(LinphoneEvent *ev, void *up);
+
+/**
+ * Retrieve user pointer.
+**/
+void *linphone_event_get_user_data(const LinphoneEvent *ev);
 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
 **/
 void linphone_event_terminate(LinphoneEvent *lev);
+
+/**
+ * @}
+**/
 
 
 #endif
