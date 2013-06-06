@@ -4825,6 +4825,16 @@ void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation) {
 #endif
 }
 
+int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
+#ifdef VIDEO_ENABLED
+	LinphoneCall *call = linphone_core_get_current_call(lc);
+	if ((call != NULL) && (call->videostream != NULL)) {
+		return video_stream_get_camera_sensor_rotation(call->videostream);
+	}
+#endif
+	return -1;
+}
+
 static MSVideoSizeDef supported_resolutions[]={
 #ifdef ENABLE_HD
 	{	{MS_VIDEO_SIZE_1080P_W,MS_VIDEO_SIZE_1080P_H}	,	"1080p"	},
