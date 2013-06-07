@@ -1401,6 +1401,17 @@ void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
 int linphone_core_get_device_rotation(LinphoneCore *lc );
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
+/**
+ * @brief Get the camera sensor rotation.
+ *
+ * This is needed on some mobile platforms to get the number of degrees the camera sensor
+ * is rotated relative to the screen.
+ *
+ * @param lc The linphone core related to the operation
+ * @return The camera sensor rotation in degrees (0 to 360) or -1 if it could not be retrieved
+ */
+int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
+
 /* start or stop streaming video in case of embedded window */
 void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 

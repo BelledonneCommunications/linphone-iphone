@@ -568,7 +568,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		if (id!=0){
 			ms_message("Updating window decorations");
 #ifndef WIN32
-			w=gdk_window_foreign_new(id);
+			w=gdk_window_foreign_new((GdkNativeWindow)id);
 #else
 			w=gdk_window_foreign_new((HANDLE)id);
 #endif
@@ -587,7 +587,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 		if (id!=0){
 			ms_message("Updating window decorations for preview");
 #ifndef WIN32
-			w=gdk_window_foreign_new(id);
+			w=gdk_window_foreign_new((GdkNativeWindow)id);
 #else
 			w=gdk_window_foreign_new((HANDLE)id);
 #endif

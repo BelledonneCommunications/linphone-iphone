@@ -83,7 +83,7 @@ void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom 
 	int ret;
 	ret=sqlite3_exec(db,stmt,callback,cr,&errmsg);
 	if(ret != SQLITE_OK) {
-		printf("Error in creation: %s.\n", errmsg);
+		ms_error("Error in creation: %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -197,7 +197,7 @@ void linphone_create_table(sqlite3* db){
 	ret=sqlite3_exec(db,"CREATE TABLE if not exists history (id INTEGER PRIMARY KEY AUTOINCREMENT, localContact TEXT NOT NULL, remoteContact TEXT NOT NULL, direction INTEGER, message TEXT, time TEXT NOT NULL, read INTEGER, status INTEGER);",
 	        0,0,&errmsg);
 	if(ret != SQLITE_OK) {
-		printf("Error in creation: %s.\n", errmsg);
+		ms_error("Error in creation: %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -209,7 +209,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	ret=sqlite3_open(lc->chat_db_file,&db);
 	if(ret != SQLITE_OK) {
 		errmsg=sqlite3_errmsg(db);
-		printf("Error in the opening: %s.\n", errmsg);
+		ms_error("Error in the opening: %s.\n", errmsg);
 		sqlite3_close(db);
 	}
 	linphone_create_table(db);
