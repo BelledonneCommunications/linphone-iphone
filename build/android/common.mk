@@ -45,6 +45,7 @@ LOCAL_SRC_FILES := \
 	bellesip_sal/sal_op_registration.c \
 	bellesip_sal/sal_op_publish.c \
 	bellesip_sal/sal_op_info.c \
+	bellesip_sal/sal_op_events.c \
 	bellesip_sal/sal_sdp.c \
 	sal.c \
 	offeranswer.c \
@@ -54,7 +55,8 @@ LOCAL_SRC_FILES := \
 	ec-calibrator.c \
 	linphone_tunnel_config.c \
 	message_storage.c \
-	info.c
+	info.c \
+	event.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"

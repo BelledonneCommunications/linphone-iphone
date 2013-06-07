@@ -197,7 +197,8 @@ public:
 		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 		dtmfReceivedId = env->GetMethodID(listenerClass,"dtmfReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;I)V");
-		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneInfoMessage;)V");
+		infoReceivedId = env->GetMethodID(listenerClass,"infoReceived",
+										  "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneCall;Lorg/linphone/core/LinphoneInfoMessage;)V");
 
 		proxyClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
 		proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(J)V");
@@ -536,7 +537,7 @@ public:
 							,env->CallStaticObjectMethod(lcData->callStateClass,lcData->callStateFromIntId,(jint)remote_call_state)
 							);
 	}
-	static void infoReceived(LinphoneCore *lc, const LinphoneInfoMessage *info){
+	static void infoReceived(LinphoneCore *lc, LinphoneCall*call, const LinphoneInfoMessage *info){
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		jobject jcall;
@@ -549,6 +550,7 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,lcData->infoReceivedId
 							,lcData->core
+							,lcData->getCall(env,call)
 							,env->NewObject(lcData->infoMessageClass,lcData->infoMessageCtor,(jlong)copy_info)
 							);
 	}
@@ -606,8 +608,8 @@ JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneCoreImpl_createInfoMessag
 	return (jlong) linphone_core_create_info_message((LinphoneCore*)lcptr);
 }
 
-JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_sendInfoMessage(JNIEnv *env, jobject jobj, jlong lcptr, jlong infoptr, jlong addrptr){
-	return linphone_core_send_info_message((LinphoneCore*)lcptr,(LinphoneInfoMessage*)infoptr,(LinphoneAddress*)addrptr);
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_sendInfoMessage(JNIEnv *env, jobject jobj, jlong callptr, jlong infoptr){
+	return linphone_call_send_info_message((LinphoneCall*)callptr,(LinphoneInfoMessage*)infoptr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
@@ -2694,16 +2696,6 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getHead
 	const char *ret=linphone_info_message_get_header((LinphoneInfoMessage*)infoptr,name);
 	env->ReleaseStringUTFChars(jname,name);
 	return ret ? env->NewStringUTF(ret) : NULL;
-}
-
-/*
- * Class:     org_linphone_core_LinphoneInfoMessageImpl
- * Method:    getFrom
- * Signature: (J)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getFrom(JNIEnv *env , jobject jobj, jlong infoptr){
-	const char *from=linphone_info_message_get_from((LinphoneInfoMessage*)infoptr);
-	return from ? env->NewStringUTF(from) : NULL;
 }
 
 /*

@@ -24,7 +24,7 @@
 
 
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceivedLegacy++;
 }
 
@@ -35,7 +35,7 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 																,linphone_chat_message_get_text(message)
 																,linphone_chat_message_get_external_body_url(message));
 	ms_free(from);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
 	if (linphone_chat_message_get_external_body_url(message))
 			counters->number_of_LinphoneMessageExtBodyReceived++;
@@ -43,7 +43,7 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 
 void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
 	LinphoneCore* lc=(LinphoneCore*)ud;
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	ms_message("Message [%s] [%s]",linphone_chat_message_get_text(msg),linphone_chat_message_state_to_string(state));
 	switch (state) {
 	case LinphoneChatMessageStateDelivered:
@@ -163,8 +163,8 @@ static void text_message_with_send_error(void) {
 
 static const char *info_content="<somexml>blabla</somexml>";
 
-void info_message_received(LinphoneCore *lc, const LinphoneInfoMessage *msg){
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+void info_message_received(LinphoneCore *lc, LinphoneCall* call, const LinphoneInfoMessage *msg){
+	stats* counters = get_stats(lc);
 	const char *hvalue=linphone_info_message_get_header(msg, "Weather");
 	const LinphoneContent *content=linphone_info_message_get_content(msg);
 	CU_ASSERT_PTR_NOT_NULL_FATAL(hvalue);
@@ -189,7 +189,11 @@ void info_message_received(LinphoneCore *lc, const LinphoneInfoMessage *msg){
 static void info_message_with_args(bool_t with_content) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	LinphoneInfoMessage *info=linphone_core_create_info_message(marie->lc);
+	LinphoneInfoMessage *info;
+	
+	CU_ASSERT_TRUE(call(pauline,marie));
+	
+	info=linphone_core_create_info_message(marie->lc);
 	linphone_info_message_add_header(info,"Weather","still bad");
 	if (with_content) {
 		LinphoneContent ct;
@@ -199,7 +203,7 @@ static void info_message_with_args(bool_t with_content) {
 		ct.size=strlen(info_content);
 		linphone_info_message_set_content(info,&ct);
 	}
-	linphone_core_send_info_message(marie->lc,info,pauline->identity);
+	linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
 	linphone_info_message_destroy(info);
 	
 	if (with_content){

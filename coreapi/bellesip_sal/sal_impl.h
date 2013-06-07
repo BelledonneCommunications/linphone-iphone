@@ -66,7 +66,7 @@ typedef enum SalOpType {
 	SalOpMessage,
 	SalOpPresence,
 	SalOpPublish,
-	SalOpInfo
+	SalOpSubscribe
 }SalOpType_t;
 const char* sal_op_type_to_string(const SalOpType_t type);
 
@@ -124,8 +124,7 @@ void sal_op_presence_fill_cbs(SalOp*op);
 /*messaging*/
 void sal_op_message_fill_cbs(SalOp*op);
 
-/*info*/
-void sal_op_info_fill_cbs(SalOp*op);
+void sal_op_subscribe_fill_cbs(SalOp*op);
 
 /*call transfer*/
 void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event);
@@ -139,5 +138,10 @@ void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online
 belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_request_t *req, int code);
 
 void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
+
+void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
+bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
+
+SalReason sal_reason_to_sip_code(SalReason r);
 
 #endif /* SAL_IMPL_H_ */

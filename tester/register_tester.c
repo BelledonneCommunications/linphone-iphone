@@ -34,7 +34,7 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 				,linphone_registration_state_to_string(cstate)
 				,linphone_proxy_config_get_identity(cfg)
 				,linphone_proxy_config_get_addr(cfg));
-		counters = (stats*)linphone_core_get_user_data(lc);
+		counters = get_stats(lc);
 		switch (cstate) {
 		case LinphoneRegistrationNone:counters->number_of_LinphoneRegistrationNone++;break;
 		case LinphoneRegistrationProgress:counters->number_of_LinphoneRegistrationProgress++;break;
@@ -58,7 +58,7 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 
 	CU_ASSERT_PTR_NOT_NULL(lc);
 	if (!lc) return;
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	reset_counters(counters);
 	linphone_core_set_sip_transports(lc,&transport);
 
@@ -106,7 +106,7 @@ static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const ch
 }
 
 static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	register_with_refresh_base(lc,refresh,domain,route);
 	linphone_core_destroy(lc);
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,1);
@@ -117,7 +117,7 @@ static void register_with_refresh(LinphoneCore* lc, bool_t refresh,const char* d
 static void register_with_refresh_with_send_error() {
 	int retry=0;
 	LinphoneCore* lc = create_lc_with_auth(1);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
@@ -140,7 +140,7 @@ static void register_with_refresh_with_send_error() {
 
 static void simple_register(){
 	LinphoneCore* lc = create_lc();
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	register_with_refresh(lc,FALSE,NULL,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
@@ -148,14 +148,14 @@ static void simple_register(){
 /*take care of min expires configuration from server*/
 static void simple_register_with_refresh() {
 	LinphoneCore* lc = create_lc();
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	register_with_refresh(lc,TRUE,NULL,NULL);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
 
 static void simple_auth_register_with_refresh() {
 	LinphoneCore* lc = create_lc_with_auth(1);
-	stats* counters = (stats*)linphone_core_get_user_data(lc);
+	stats* counters = get_stats(lc);
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	register_with_refresh(lc,TRUE,auth_domain,route);
@@ -195,7 +195,7 @@ static void simple_authenticated_register(){
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_with_refresh(lc,FALSE,auth_domain,route);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
@@ -210,7 +210,7 @@ static void ha1_authenticated_register(){
 	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain); /*create authentication structure from identity*/
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_with_refresh(lc,FALSE,auth_domain,route);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,0);
 }
@@ -227,7 +227,7 @@ static void authenticated_register_with_no_initial_credentials(){
 	v_table.auth_info_requested=auth_info_requested;
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	linphone_core_set_user_data(lc,&stat);
-	counters= (stats*)linphone_core_get_user_data(lc);
+	counters= get_stats(lc);
 	counters->number_of_auth_info_requested=0;
 	register_with_refresh(lc,FALSE,auth_domain,route);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
@@ -238,7 +238,7 @@ static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 					,username
 					,realm);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
 
@@ -255,7 +255,7 @@ static void authenticated_register_with_late_credentials(){
 	v_table.auth_info_requested=auth_info_requested2;
 	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
 	linphone_core_set_user_data(lc,&stat);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_with_refresh_base_2(lc,FALSE,auth_domain,route,TRUE,transport);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 	linphone_core_destroy(lc);
@@ -276,7 +276,7 @@ static void authenticated_register_with_wrong_credentials(){
 	lc =  linphone_core_new(&v_table,NULL,NULL,NULL);
 	linphone_core_set_user_data(lc,&stat);
 	linphone_core_add_auth_info(lc,info); /*add wrong authentication info to LinphoneCore*/
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_with_refresh_base_2(lc,TRUE,auth_domain,route,TRUE,transport);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 	linphone_core_destroy(lc);
@@ -304,7 +304,7 @@ static void network_state_change(){
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	linphone_core_set_network_reachable(lc,FALSE);
 	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationNone,register_ok));
@@ -336,7 +336,7 @@ static void transport_change(){
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
@@ -364,7 +364,7 @@ static void io_recv_error(){
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 	sal_set_recv_error(lc->sal, 0);
@@ -388,7 +388,7 @@ static void io_recv_error_without_active_register(){
 	memset (&v_table,0,sizeof(LinphoneCoreVTable));
 	v_table.registration_state_changed=registration_state_changed;
 	lc=configure_lc(&v_table);
-	counters = (stats*)linphone_core_get_user_data(lc);
+	counters = get_stats(lc);
 	register_ok=counters->number_of_LinphoneRegistrationOk;
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 
@@ -418,14 +418,14 @@ static void tls_certificate_failure(){
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	stats stat;
-	//stats* counters;
+	
 	char rootcapath[256];
 	memset (&v_table,0,sizeof(v_table));
 	reset_counters(&stat);
 	v_table.registration_state_changed=registration_state_changed;
 	lc = configure_lc_from(&v_table,liblinphone_tester_file_prefix, "pauline_rc", 0);
 	linphone_core_set_user_data(lc,&stat);
-	//counters = (stats*)linphone_core_get_user_data(lc);
+	
 	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/agent.pem", liblinphone_tester_file_prefix); /*bad root ca*/
 	linphone_core_set_root_ca(lc,rootcapath);
 	linphone_core_set_network_reachable(lc,TRUE);

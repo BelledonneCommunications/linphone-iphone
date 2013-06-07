@@ -46,6 +46,7 @@ liblinphone_la_SOURCES=\
 	conference.c \
 	message_storage.c \
 	info.c \
+	event.c \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -63,7 +64,8 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_op_presence.c \
 				bellesip_sal/sal_op_publish.c \
 				bellesip_sal/sal_op_call_transfer.c \
-				bellesip_sal/sal_op_info.c
+				bellesip_sal/sal_op_info.c \
+				bellesip_sal/sal_op_events.c
 else
 liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
 							sal_eXosip2_sdp.c \

@@ -30,7 +30,6 @@
 
 struct _LinphoneInfoMessage{
 	LinphoneContent content;
-	SalOp *op;
 	SalCustomHeader *headers;
 };
 
@@ -58,13 +57,13 @@ static void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *r
 	obj->size=ref->size;
 }
 
-static void linphone_content_uninit(LinphoneContent * obj){
+void linphone_content_uninit(LinphoneContent * obj){
 	if (obj->type) ms_free(obj->type);
 	if (obj->subtype) ms_free(obj->subtype);
 	if (obj->data) ms_free(obj->data);
 }
 
-static LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
+LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
 	SET_STRING(obj,type,ref->type);
 	SET_STRING(obj,subtype,ref->subtype);
 	if (obj->data) {
@@ -80,7 +79,17 @@ static LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj
 	return obj;
 }
 
-static SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
+const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref){
+	if (ref && ref->type){
+		obj->type=(char*)ref->type;
+		obj->subtype=(char*)ref->subtype;
+		obj->data=(void*)ref->data;
+		obj->size=ref->size;
+	}
+	return NULL;
+}
+
+SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
 	if (lc->type){
 		body->type=lc->type;
 		body->subtype=lc->subtype;
@@ -95,8 +104,6 @@ static SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
  * Destroy a LinphoneInfoMessage
 **/
 void linphone_info_message_destroy(LinphoneInfoMessage *im){
-	/* FIXME: op is leaked. If we release it now, there is a high risk that the request won't be resent with authentication*/
-	/*if (im->op) sal_op_release(im->op);*/
 	linphone_content_uninit(&im->content);
 	sal_custom_header_free(im->headers);
 	ms_free(im);
@@ -107,13 +114,12 @@ LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig)
 	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
 	linphone_content_copy(&im->content,&orig->content);
 	if (orig->headers) im->headers=sal_custom_header_clone(orig->headers);
-	if (orig->op) im->op=sal_op_ref(orig->op);
 	return im;
 }
 
 /**
  * Creates an empty info message.
- * @param lc the LinphoneCore object.
+ * @param lc the LinphoneCore
  * @return a new LinphoneInfoMessage.
  * 
  * The info message can later be filled with information using linphone_info_message_add_header() or linphone_info_message_set_content(),
@@ -121,20 +127,18 @@ LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig)
 **/
 LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 	LinphoneInfoMessage *im=ms_new0(LinphoneInfoMessage,1);
-	im->op=sal_op_new(lc->sal);
 	return im;
 }
 
 /**
- * Send a LinphoneInfoMessage to a specified address.
- * @param lc the LinphoneCore
+ * Send a LinphoneInfoMessage through an established call
+ * @param call the call
  * @param info the info message
- * @param addr the destination address
 **/
-int linphone_core_send_info_message(LinphoneCore *lc, const LinphoneInfoMessage *info, const LinphoneAddress *addr){
+int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info){
 	SalBody body;
-	linphone_configure_op(lc,info->op,addr,info->headers,FALSE);
-	return sal_send_info(info->op,NULL, NULL, sal_body_from_content(&body,&info->content));
+	sal_op_set_sent_custom_header(call->op,info->headers);
+	return sal_send_info(call->op,NULL, NULL, sal_body_from_content(&body,&info->content));
 }
 
 /**
@@ -154,15 +158,7 @@ void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name,
  * @return the corresponding header's value, or NULL if not exists.
 **/
 const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name){
-	const SalCustomHeader *ch=sal_op_get_recv_custom_header(im->op);
-	return sal_custom_header_find(ch,name);
-}
-
-/**
- * Returns origin of received LinphoneInfoMessage 
-**/
-const char *linphone_info_message_get_from(const LinphoneInfoMessage *im){
-	return sal_op_get_from(im->op);
+	return sal_custom_header_find(im->headers,name);
 }
 
 /**
@@ -183,11 +179,13 @@ const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMess
 }
 
 void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body){
-	LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
-	info->op=sal_op_ref(op);
-	info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
-	if (body) linphone_content_copy_from_sal_body(&info->content,body);
-	if (lc->vtable.info_received)
-		lc->vtable.info_received(lc,info);
-	linphone_info_message_destroy(info);
+	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	if (call){
+		LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
+		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
+		if (body) linphone_content_copy_from_sal_body(&info->content,body);
+		if (lc->vtable.info_received)
+			lc->vtable.info_received(lc,call,info);
+		linphone_info_message_destroy(info);
+	}
 }

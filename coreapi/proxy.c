@@ -858,7 +858,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 		sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 		sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 	}
-	err=sal_publish(proxy->publish_op,NULL,NULL,linphone_online_status_to_sal(presence_mode));
+	err=sal_publish_presence(proxy->publish_op,NULL,NULL,linphone_online_status_to_sal(presence_mode));
 	return err;
 }
 

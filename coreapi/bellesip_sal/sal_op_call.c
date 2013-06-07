@@ -192,6 +192,7 @@ static void cancelling_invite(SalOp* op ){
 	sal_op_send_request(op,cancel);
 	op->state=SalOpStateTerminating;
 }
+
 static void call_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
@@ -480,8 +481,8 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			process_sdp_for_invite(op,req);
 
 			op->base.root->callbacks.call_updating(op);
-		} else if (strcmp("INFO",belle_sip_request_get_method(req))==0
-				&& belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
+		} else if (strcmp("INFO",belle_sip_request_get_method(req))==0){
+			if (belle_sip_message_get_body(BELLE_SIP_MESSAGE(req))
 				&&	strstr(belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)),"picture_fast_update")) {
 				/*vfu request*/
 				ms_message("Receiving VFU request on op [%p]",op);
@@ -489,8 +490,16 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 					op->base.root->callbacks.vfu_request(op);
 
 				}
-				resp=sal_op_create_response_from_request(op,req,200);
-				belle_sip_server_transaction_send_response(server_transaction,resp);
+			}else{
+				SalBody salbody;
+				if (sal_op_get_body(op,(belle_sip_message_t*)req,&salbody)) {
+					op->base.root->callbacks.info_received(op,&salbody);
+				} else {
+					op->base.root->callbacks.info_received(op,NULL);
+				}
+			}
+			resp=sal_op_create_response_from_request(op,req,200);
+			belle_sip_server_transaction_send_response(server_transaction,resp);
 		}else if (strcmp("REFER",belle_sip_request_get_method(req))==0) {
 			sal_op_process_refer(op,event);
 		} else if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {

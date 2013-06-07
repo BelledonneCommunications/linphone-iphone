@@ -130,7 +130,7 @@ public interface LinphoneCoreListener {
 	 * @param lc the LinphoneCore.
 	 * @param info the info message
 	 */
-	void infoReceived(LinphoneCore lc, LinphoneInfoMessage info);
+	void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */

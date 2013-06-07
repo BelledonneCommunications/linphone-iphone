@@ -33,12 +33,6 @@ public class LinphoneInfoMessageImpl implements LinphoneInfoMessage {
 	public String getHeader(String name) {
 		return getHeader(nativePtr,name);
 	}
-
-	private native String getFrom(long nativePtr);
-	@Override
-	public String getFrom() {
-		return getFrom(nativePtr);
-	}
 	
 	private native void delete(long nativePtr);
 	protected void finalize(){

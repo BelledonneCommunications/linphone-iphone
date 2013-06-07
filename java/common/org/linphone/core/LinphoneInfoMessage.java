@@ -2,6 +2,7 @@ package org.linphone.core;
 
 /**
  * The LinphoneInfoMessage represents an informational message (INFO) to be transmitted or received by the LinphoneCore.
+ * It can be created with {@link LinphoneCore.createInfoMessage() }.
  * @author smorlat
  *
  */
@@ -28,9 +29,4 @@ public interface LinphoneInfoMessage {
 	 * @return the header's value
 	 */
 	String getHeader(String name);
-	/**
-	 * Get the origin of the info message as a string URI.
-	 * @return origin of the message.
-	 */
-	String getFrom();
 }

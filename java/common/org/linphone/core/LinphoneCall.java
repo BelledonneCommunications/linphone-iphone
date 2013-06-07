@@ -298,4 +298,9 @@ public interface LinphoneCall {
 	 * @return the call state of the new call performed by the referee to the refer target.
 	 */
 	State getTransferState();
+	
+	/**
+	 * Send an info message to remote peer.
+	 */
+	void sendInfoMessage(LinphoneInfoMessage msg);
 }

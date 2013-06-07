@@ -91,10 +91,69 @@ typedef struct _LCSipTransports{
  * @var LinphoneAddress
  */
 typedef struct SalAddress LinphoneAddress;
+
+/**
+ * The LinphoneContent struct holds data that can be embedded in a signaling message.
+ * @ingroup misc
+**/
+struct _LinphoneContent{
+	char *type; /**<mime type for the data, for example "application"*/
+	char *subtype; /**<mime subtype for the data, for example "html"*/
+	void *data; /**<the actual data buffer, usually a string */
+	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.*/
+};
+
+/**
+ * Alias to the LinphoneContent struct.
+ * @ingroup misc
+**/
+typedef struct _LinphoneContent LinphoneContent;
+
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
+**/
+struct _LinphoneCall;
+/**
+ * The LinphoneCall object represents a call issued or received by the LinphoneCore
+ * @ingroup call_control
+**/
+typedef struct _LinphoneCall LinphoneCall;
+
+/**
+ * Enum describing failure reasons.
+ * @ingroup misc
+**/
+enum _LinphoneReason{
+	LinphoneReasonNone,
+	LinphoneReasonNoResponse, /**<No response received from remote*/
+	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
+	LinphoneReasonDeclined, /**<The call has been declined*/
+	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
+	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
+	LinphoneReasonBusy, /**<Phone line was busy */
+	LinphoneReasonMedia, /**<Incompatible media */
+	LinphoneReasonIOError /**<Transport error: connection failures, disconnections etc...*/
+};
+
+/**
+ * Enum describing failure reasons.
+ * @ingroup misc
+**/
+typedef enum _LinphoneReason LinphoneReason;
+
+/**
+ * Converts a LinphoneReason enum to a string.
+ * @ingroup misc
+**/
+const char *linphone_reason_to_string(LinphoneReason err);
+
 #ifdef IN_LINPHONE
 #include "linphonefriend.h"
+#include "event.h"
 #else
 #include "linphone/linphonefriend.h"
+#include "linphone/event.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *uri);
@@ -229,23 +288,8 @@ struct _LinphoneInfoMessage;
 **/
 typedef struct _LinphoneInfoMessage LinphoneInfoMessage;
 
-/**
- * The LinphoneContent struct holds data that can be embedded in a signaling message.
-**/
-struct _LinphoneContent{
-	char *type; /**<mime type for the data, for example "application"*/
-	char *subtype; /**<mime subtype for the data, for example "html"*/
-	void *data; /**<the actual data buffer, usually a string */
-	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.*/
-};
-
-/**
- * Alias to the LinphoneContent struct.
-**/
-typedef struct _LinphoneContent LinphoneContent;
-
-LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc);
-LINPHONE_PUBLIC int linphone_core_send_info_message(LinphoneCore *lc, const LinphoneInfoMessage *info, const LinphoneAddress *addr);
+LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore*lc);
+LINPHONE_PUBLIC int linphone_call_send_info_message(struct _LinphoneCall *call, const LinphoneInfoMessage *info);
 LINPHONE_PUBLIC void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value);
 LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, const char *name);
 LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
@@ -254,27 +298,7 @@ LINPHONE_PUBLIC const char *linphone_info_message_get_from(const LinphoneInfoMes
 LINPHONE_PUBLIC void linphone_info_message_destroy(LinphoneInfoMessage *im);
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_info_message_copy(const LinphoneInfoMessage *orig);
 
-/**
- * Enum describing failure reasons.
- * @ingroup initializing
-**/
-enum _LinphoneReason{
-	LinphoneReasonNone,
-	LinphoneReasonNoResponse, /**<No response received from remote*/
-	LinphoneReasonBadCredentials, /**<Authentication failed due to bad or missing credentials*/
-	LinphoneReasonDeclined, /**<The call has been declined*/
-	LinphoneReasonNotFound, /**<Destination of the calls was not found.*/
-	LinphoneReasonNotAnswered, /**<The call was not answered in time*/
-	LinphoneReasonBusy /**<Phone line was busy */
-};
 
-/**
- * Enum describing failure reasons.
- * @ingroup initializing
-**/
-typedef enum _LinphoneReason LinphoneReason;
-
-const char *linphone_reason_to_string(LinphoneReason err);
 
 /**
  * Structure describing policy regarding video streams establishments.
@@ -292,16 +316,7 @@ struct _LinphoneVideoPolicy{
 **/
 typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-struct _LinphoneCall;
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-typedef struct _LinphoneCall LinphoneCall;
+
 
 
 /**
@@ -809,8 +824,6 @@ typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
 typedef void (*DisplayUrlCb)(struct _LinphoneCore *lc, const char *message, const char *url);
 /** Callback prototype */
 typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
-/** Callback prototype */
-typedef void (*NotifyReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const char *from, const char *event);
 /**
  * Report status change for a friend previously \link linphone_core_add_friend() added \endlink to #LinphoneCore.
  * @param lc #LinphoneCore object .
@@ -861,7 +874,7 @@ typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneC
 typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /** Callback prototype for receiving info messages*/
-typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, const LinphoneInfoMessage *msg);
+typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
@@ -871,7 +884,7 @@ typedef struct _LinphoneVTable{
 	LinphoneRegistrationStateCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
-	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending subscription request */
+	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
 	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
 	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
 	MessageReceived message_received; /** a message is received, can be text or external body*/
@@ -880,9 +893,10 @@ typedef struct _LinphoneVTable{
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
 	LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
 	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
-	NotifyReceivedCb notify_recv; /**< Other notifications*/
 	CallStatsUpdated call_stats_updated; /**<Notifies on refreshing of call's statistics. */
 	LinphoneInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
+	LinphoneSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
+	LinphoneEventIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
@@ -1391,11 +1405,11 @@ int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
 float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
-unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
-void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
 
-unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
-void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
 
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
 int linphone_core_get_device_rotation(LinphoneCore *lc );
@@ -1410,7 +1424,7 @@ void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
  * @param lc The linphone core related to the operation
  * @return The camera sensor rotation in degrees (0 to 360) or -1 if it could not be retrieved
  */
-int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc);
 
 /* start or stop streaming video in case of embedded window */
 void linphone_core_show_video(LinphoneCore *lc, bool_t show);

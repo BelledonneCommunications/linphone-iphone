@@ -123,7 +123,7 @@ static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
-static void linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event);
+static void linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state);
 
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
@@ -281,13 +281,14 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event)
+linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state)
 {
-	if(!strcmp(event,"refer"))
-	{
-		linphonec_out("The distand endpoint %s of call %li has been transfered, you can safely close the call.\n",
-		              from,(long)linphone_call_get_user_pointer (call));
+	char *remote=linphone_call_get_remote_address_as_string(call);
+	if (new_call_state==LinphoneCallConnected){
+		linphonec_out("The distant endpoint %s of call %li has been transfered, you can safely close the call.\n",
+		              remote,(long)linphone_call_get_user_pointer (call));
 	}
+	ms_free(remote);
 }
 
 
@@ -638,7 +639,7 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.text_received=linphonec_text_received;
 	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
 	linphonec_vtable.refer_received=linphonec_display_refer;
-	linphonec_vtable.notify_recv=linphonec_notify_received;
+	linphonec_vtable.transfer_state_changed=linphonec_transfer_state_changed;
 	linphonec_vtable.call_encryption_changed=linphonec_call_encryption_changed;
 	
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);

@@ -1164,3 +1164,63 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 void _linphone_core_configure_resolver(){
 }
 
+SalReason linphone_reason_to_sal(LinphoneReason reason){
+	switch(reason){
+		case LinphoneReasonNone:
+			return SalReasonUnknown;
+		case LinphoneReasonNoResponse:
+			return SalReasonUnknown;
+		case LinphoneReasonBadCredentials:
+			return SalReasonForbidden;
+		case LinphoneReasonDeclined:
+			return SalReasonDeclined;
+		case LinphoneReasonNotFound:
+			return SalReasonNotFound;
+		case LinphoneReasonNotAnswered:
+			return SalReasonTemporarilyUnavailable;
+		case LinphoneReasonBusy:
+			return SalReasonBusy;
+		case LinphoneReasonMedia:
+			return SalReasonMedia;
+		case LinphoneReasonIOError:
+			return SalReasonServiceUnavailable;
+	}
+	return SalReasonUnknown;
+}
+
+LinphoneReason linphone_reason_from_sal(SalReason r){
+	LinphoneReason ret=LinphoneReasonNone;
+	switch(r){
+		case SalReasonUnknown:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonBusy:
+			ret=LinphoneReasonBusy;
+			break;
+		case SalReasonDeclined:
+			ret=LinphoneReasonDeclined;
+			break;
+		case SalReasonDoNotDisturb:
+			ret=LinphoneReasonDeclined;
+			break;
+		case SalReasonForbidden:
+			ret=LinphoneReasonBadCredentials;
+			break;
+		case SalReasonMedia:
+			ret=LinphoneReasonMedia;
+			break;
+		case SalReasonNotFound:
+			ret=LinphoneReasonNotFound;
+			break;
+		case SalReasonRedirect:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonTemporarilyUnavailable:
+			ret=LinphoneReasonNone;
+			break;
+		case SalReasonServiceUnavailable:
+			ret=LinphoneReasonIOError;
+	}
+	return ret;
+}
+
