@@ -438,7 +438,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else {
-			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY");
+			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY",belle_sip_request_get_method(req));
 			unsupported_method(server_transaction,req);
 		}
 		break;
