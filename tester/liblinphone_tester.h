@@ -158,6 +158,7 @@ typedef struct _LinphoneCoreManager {
 
 LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char * path, const char* rc_file);
+void linphone_core_manager_stop(LinphoneCoreManager *mgr);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
 
 void reset_counters( stats* counters);
@@ -174,9 +175,7 @@ void auth_info_requested(LinphoneCore *lc, const char *realm, const char *userna
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content);
 
-LinphoneCore* create_lc_with_auth(unsigned int with_auth) ;
 LinphoneAddress * create_linphone_address(const char * domain);
-LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, int proxy_count);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 
