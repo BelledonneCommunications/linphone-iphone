@@ -280,6 +280,20 @@ LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
+/**
+ * @ingroup call_control
+ * indicates if from must be replaced by anonymous value as described by rfc3325.
+ * @param params to be modified
+ * @param enable TRUE to enable privacy
+ * */
+LINPHONE_PUBLIC	void linphone_call_params_enable_privacy(LinphoneCallParams *params, bool_t enable);
+/**
+ * @ingroup call_control
+ * indicates if from must be replaced by anonymous value as described by rfc3325.
+ * @param params object
+ * @return TRUE if privacy enabled
+ * */
+LINPHONE_PUBLIC bool_t linphone_call_params_privacy_enabled(const LinphoneCallParams *params);
 
 
 struct _LinphoneInfoMessage;

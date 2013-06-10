@@ -484,3 +484,9 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
 	memset(salbody,0,sizeof(salbody));
 	return FALSE;
 }
+void sal_op_enable_privacy(SalOp* op,bool_t enable) {
+	op->privacy_enabled=enable;
+}
+ bool_t sal_op_privacy_enabled(const SalOp* op) {
+	return op->privacy_enabled;
+}

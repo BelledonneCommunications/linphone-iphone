@@ -90,6 +90,7 @@ struct SalOp{
 	belle_sip_refresher_t* refresher;
 	int ref;
 	SalOpType_t type;
+	bool_t privacy_enabled;
 };
 
 
@@ -144,4 +145,6 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
 
 SalReason sal_reason_to_sip_code(SalReason r);
 
+void sal_op_enable_privacy(SalOp* op,bool_t enable);
+bool_t sal_op_privacy_enabled(const SalOp* op);
 #endif /* SAL_IMPL_H_ */

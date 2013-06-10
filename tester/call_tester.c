@@ -608,6 +608,44 @@ static void call_with_video_added(void) {
 
 #endif
 
+static void call_with_privacy(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCall *c1,*c2;
+	LinphoneCallParams *params;
+
+	params=linphone_core_create_default_call_parameters(pauline->lc);
+	linphone_call_params_enable_privacy(params,TRUE);
+
+	CU_ASSERT_TRUE(call_with_params(pauline,marie,params));
+	linphone_call_params_destroy(params);
+
+	c1=linphone_core_get_current_call(pauline->lc);
+	c2=linphone_core_get_current_call(marie->lc);
+
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+
+	/*make sure local identity is unchanged*/
+	CU_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_log_get_from(linphone_call_get_call_log(c1)),pauline->identity));
+
+	/*make sure remote identity is hidden*/
+	CU_ASSERT_FALSE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline->identity));
+
+	CU_ASSERT_TRUE(linphone_call_params_privacy_enabled(linphone_call_get_current_params(c2)));
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
+
+
 static void simple_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
@@ -919,6 +957,7 @@ test_t call_tests[] = {
 #else
 	{ "SRTP ice call", srtp_ice_call },
 #endif
+	{ "Call with privacy", call_with_privacy },
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },

@@ -91,6 +91,7 @@ struct _LinphoneCallParams{
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
 	bool_t low_bandwidth;
+	bool_t privacy_enabled;
 };
 
 struct _LinphoneCallLog{
