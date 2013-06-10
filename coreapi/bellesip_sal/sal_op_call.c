@@ -81,13 +81,14 @@ static void sdp_process(SalOp *h){
 static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
-	int length;
+	belle_sip_error_code error = BELLE_SIP_OK;
+	unsigned int length = 0;
 	char buff[2048];
 
 	if (session_desc) {
 		content_type = belle_sip_header_content_type_create("application","sdp");
-		length = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,0,sizeof(buff));
-		if (length>=sizeof(buff)) {
+		error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,sizeof(buff),&length);
+		if (error != BELLE_SIP_OK) {
 			ms_error("Buffer too small or sdp too big");
 			return -1;
 		}
