@@ -250,7 +250,8 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	if (strcmp(belle_sip_request_get_method(request),"INVITE")==0
 			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
-			||strcmp(belle_sip_request_get_method(request),"OPTIONS")==0)
+			||strcmp(belle_sip_request_get_method(request),"OPTIONS")==0
+			||strcmp(belle_sip_request_get_method(request),"REFER")==0) /* Despite contact seems not mandatory, call flow example show a Contact in REFER requests*/
 		need_contact=TRUE;
 
 	return _sal_op_send_request_with_contact(op, request,need_contact);
