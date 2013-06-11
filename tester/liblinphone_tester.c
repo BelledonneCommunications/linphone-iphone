@@ -24,6 +24,7 @@
 #include "CUnit/CUCurses.h"
 #endif
 
+static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file);
 
 static test_suite_t **test_suite = NULL;
 static int nb_test_suites = 0;
@@ -34,7 +35,7 @@ static unsigned char curses = 0;
 #endif
 
 
-static  stats global_stat;
+
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
@@ -82,63 +83,39 @@ void auth_info_requested(LinphoneCore *lc, const char *realm, const char *userna
 
 }
 
-LinphoneCore* create_lc_with_auth(unsigned int with_auth) {
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
-	memset (&v_table,0,sizeof(v_table));
-	v_table.registration_state_changed=registration_state_changed;
-	if (with_auth) {
-		v_table.auth_info_requested=auth_info_requested;
-	}
-	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
-	linphone_core_set_user_data(lc,&global_stat);
-	/* until we have good certificates on our test server... */
-	linphone_core_verify_server_certificates(lc,FALSE);
-	/*to allow testing with 127.0.0.1*/
-	linphone_core_set_network_reachable(lc,TRUE);
-	return lc;
-}
+
 
 void reset_counters( stats* counters) {
 	memset(counters,0,sizeof(stats));
 }
 
-LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, int proxy_count) {
+static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file) {
 	LinphoneCore* lc;
-	int retry=0;
-	stats* counters;
-	char filepath[256];
-	char ringpath[256];
-	char ringbackpath[256];
-	char rootcapath[256];
-	char dnsuserhostspath[256];
+	char filepath[256]={0};
+	char ringpath[256]={0};
+	char ringbackpath[256]={0};
+	char rootcapath[256]={0};
+	char dnsuserhostspath[256]={0};
 
-	sprintf(filepath, "%s/%s", path, file);
-	lc =  linphone_core_new(v_table,NULL,filepath,NULL);
-	linphone_core_set_user_data(lc,&global_stat);
-	counters = get_stats(lc);
-
-	/* until we have good certificates on our test server...
-	linphone_core_verify_server_certificates(lc,FALSE);*/
-	sprintf(rootcapath, "%s/certificates/cacert.pem", path);
-	linphone_core_set_root_ca(lc,rootcapath);
-
-	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
-	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
-
-	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
-	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
-	linphone_core_set_ring(lc, ringpath);
-	linphone_core_set_ringback(lc, ringbackpath);
-
-	reset_counters(counters);
-	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
-
-	while (counters->number_of_LinphoneRegistrationOk<proxy_count && retry++ <20) {
-		linphone_core_iterate(lc);
-		ms_usleep(100000);
+	if (path && file){
+		sprintf(filepath, "%s/%s", path, file);
+		CU_ASSERT_TRUE_FATAL(ortp_file_exist(path)==0);
 	}
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,proxy_count);
+	
+	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
+
+	if (path){
+		sprintf(rootcapath, "%s/certificates/cacert.pem", path);
+		linphone_core_set_root_ca(lc,rootcapath);
+
+		sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
+		sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+
+		sprintf(ringpath, "%s/%s", path, "oldphone.wav");
+		sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
+		linphone_core_set_ring(lc, ringpath);
+		linphone_core_set_ringback(lc, ringbackpath);
+	}
 	return lc;
 }
 
@@ -193,8 +170,12 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	LinphoneProxyConfig* proxy;
-	memset (mgr,0,sizeof(LinphoneCoreManager));
+	int proxy_count=check_for_proxies?(rc_file?1:0):0;
+	int retry=0;
+	
+	memset(mgr,0,sizeof(LinphoneCoreManager));
 	mgr->v_table.registration_state_changed=registration_state_changed;
+	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
@@ -204,9 +185,18 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	mgr->v_table.info_received=info_message_received;
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
 	mgr->v_table.notify_received=linphone_notify_received;
-	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file, check_for_proxies?(rc_file?1:0):0);
-	enable_codec(mgr->lc,"PCMU",8000);
+	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file);
 	linphone_core_set_user_data(mgr->lc,mgr);
+	reset_counters(&mgr->stat);
+	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
+
+	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <20) {
+		linphone_core_iterate(mgr->lc);
+		ms_usleep(100000);
+	}
+	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count);
+	enable_codec(mgr->lc,"PCMU",8000);
+	
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
 	if (proxy) {
 		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
@@ -217,6 +207,13 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 
 LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_file) {
 	return linphone_core_manager_new2(path, rc_file, TRUE);
+}
+
+void linphone_core_manager_stop(LinphoneCoreManager *mgr){
+	if (mgr->lc) {
+		linphone_core_destroy(mgr->lc);
+		mgr->lc=NULL;
+	}
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
