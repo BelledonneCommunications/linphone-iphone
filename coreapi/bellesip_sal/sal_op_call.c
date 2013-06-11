@@ -82,7 +82,7 @@ static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* ses
 	belle_sip_header_content_type_t* content_type ;
 	belle_sip_header_content_length_t* content_length;
 	belle_sip_error_code error = BELLE_SIP_OK;
-	unsigned int length = 0;
+	size_t length = 0;
 	char buff[2048];
 
 	if (session_desc) {
