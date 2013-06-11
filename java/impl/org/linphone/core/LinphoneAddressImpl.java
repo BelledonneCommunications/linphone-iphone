@@ -31,6 +31,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native String toUri(long ptr);
 	private native void setDisplayName(long ptr,String name);
 	private native String toString(long ptr);
+	private native void setDomain(long ptr, String domain);
 	
 	protected LinphoneAddressImpl(String identity)  {
 		nativePtr = newLinphoneAddressImpl(identity, null);
@@ -85,7 +86,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 		return getPortInt();
 	}
 	public void setDomain(String domain) {
-		throw new RuntimeException("Not implemented");
+		setDomain(nativePtr, domain);
 	}
 	public void setPort(String port) {
 		throw new RuntimeException("Not implemented");
