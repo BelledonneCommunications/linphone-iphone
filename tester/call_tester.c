@@ -615,7 +615,7 @@ static void call_with_privacy(void) {
 	LinphoneCallParams *params;
 
 	params=linphone_core_create_default_call_parameters(pauline->lc);
-	linphone_call_params_enable_privacy(params,TRUE);
+	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
 	CU_ASSERT_TRUE(call_with_params(pauline,marie,params));
 	linphone_call_params_destroy(params);
@@ -632,7 +632,7 @@ static void call_with_privacy(void) {
 	/*make sure remote identity is hidden*/
 	CU_ASSERT_FALSE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline->identity));
 
-	CU_ASSERT_TRUE(linphone_call_params_privacy_enabled(linphone_call_get_current_params(c2)));
+	CU_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId);
 
 	/*just to sleep*/
 	linphone_core_terminate_all_calls(pauline->lc);

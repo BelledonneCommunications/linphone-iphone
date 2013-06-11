@@ -5888,6 +5888,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
+	params->privacy=LinphonePrivacyNone;
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

@@ -280,20 +280,43 @@ LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
+/***
+ * @ingroup call_control
+ * Defines privacy policy to apply as described by rfc3325
+ * */
+typedef enum _LinphonePrivacy {
+	/**
+	 * Default privacy as defined either globally or by proxy using #linphone_proxy_config_set_privacy
+	 */
+	LinphonePrivacyDefault,
+	/**
+	 * With this mode, "from" header is hidden, usually replaced by  From: "Anonymous" <sip:anonymous@anonymous.invalid>
+	 */
+	LinphonePrivacyId,
+	/**
+	 * No privacy action are taken
+	 */
+	LinphonePrivacyNone
+} LinphonePrivacy;
 /**
  * @ingroup call_control
- * indicates if from must be replaced by anonymous value as described by rfc3325.
+ * @return string value of LinphonePrivacy enum
+ * */
+const char* linphone_privacy_to_string(LinphonePrivacy privacy);
+/**
+ * @ingroup call_control
+ * Indicates if "from" must be replaced by anonymous value as described by rfc3325.
  * @param params to be modified
- * @param enable TRUE to enable privacy
+ * @param LinphonePrivacy to configure privacy
  * */
-LINPHONE_PUBLIC	void linphone_call_params_enable_privacy(LinphoneCallParams *params, bool_t enable);
+LINPHONE_PUBLIC	void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacy privacy);
 /**
  * @ingroup call_control
- * indicates if from must be replaced by anonymous value as described by rfc3325.
+ * indicates if "from" must be replaced by anonymous value as described by rfc3325.
  * @param params object
- * @return TRUE if privacy enabled
+ * @return Privacy mode
  * */
-LINPHONE_PUBLIC bool_t linphone_call_params_privacy_enabled(const LinphoneCallParams *params);
+LINPHONE_PUBLIC LinphonePrivacy linphone_call_params_get_privacy(const LinphoneCallParams *params);
 
 
 struct _LinphoneInfoMessage;

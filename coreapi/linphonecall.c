@@ -1141,13 +1141,20 @@ void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParam
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
 }
 
-void linphone_call_params_enable_privacy(LinphoneCallParams *params, bool_t enable) {
-	params->privacy_enabled=enable;
+void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacy privacy) {
+	params->privacy=privacy;
 }
-bool_t linphone_call_params_privacy_enabled(const LinphoneCallParams *params) {
-	return params->privacy_enabled;
+LinphonePrivacy linphone_call_params_get_privacy(const LinphoneCallParams *params) {
+	return params->privacy;
 }
-
+const char* linphone_privacy_to_string(LinphonePrivacy privacy) {
+	switch(privacy) {
+	case LinphonePrivacyDefault: return "LinphonePrivacyDefault";
+	case LinphonePrivacyId: return "LinphonePrivacyId";
+	case LinphonePrivacyNone: return "LinphonePrivacyNone";
+	default:	return "Unknown privacy mode";
+	}
+}
 /**
  * Copy existing LinphoneCallParams to a new LinphoneCallParams object.
 **/
