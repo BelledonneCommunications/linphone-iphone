@@ -202,15 +202,10 @@ if test "$build_upnp" != "false" ; then
 	AC_DEFINE(BUILD_UPNP, 1, [Define if upnp enabled])
 fi
 
-dnl check libxml2 (needed for tools)
-if test "$build_tools" != "false" ; then
-	PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[],
-		[if test "$build_tools" = "true" ; then
-			AC_MSG_ERROR([Could not found libxml2, tools cannot be compiled.])
-		else
-			build_tools=false
-		fi]
-	)
+dnl check libxml2
+PKG_CHECK_MODULES(LIBXML2, [libxml-2.0],[libxml2_found=yes],foo=bar)
+if test "$libxml2_found" != "yes" ; then
+	AC_MSG_ERROR([libxml2 not found. Install it and try again (the package is usually named libxml2-dev in the Linux distributions)])
 fi
 
 AM_CONDITIONAL(BUILD_TOOLS, test x$build_tools != xfalse)
