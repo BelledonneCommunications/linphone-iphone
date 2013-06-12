@@ -326,6 +326,23 @@ entity=\"%s\">\n\
 </dm:person>\n\
 </presence>",
 contact_info, contact_info);
+        }
+	else if (online_status == SalPresenceOnVacation)
+	{
+		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
+xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
+xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
+entity=\"%s\">\n\
+<tuple id=\"sg89ae\">\n\
+<status><basic>open</basic></status>\n\
+<contact priority=\"0.8\">%s</contact>\n\
+</tuple>\n\
+<dm:person id=\"sg89aep\">\n\
+<rpid:activities><rpid:vacation/></rpid:activities>\n\
+</dm:person>\n\
+</presence>",
+contact_info, contact_info);
 	}
 	else if (online_status==SalPresenceOnthephone)
 	{
@@ -356,7 +373,7 @@ entity=\"%s\">\n\
 <contact priority=\"0.8\">%s</contact>\n\
 </tuple>\n\
 <dm:person id=\"78787878\">\n\
-<rpid:activities><rpid:meal/></rpid:activities>\n\
+<rpid:activities><rpid:lunch/></rpid:activities>\n\
 <rpid:note>Out to lunch</rpid:note> \n\
 </dm:person>\n\
 </presence>",
@@ -533,12 +550,15 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 					|| strstr(body,"on-the-phone")!=NULL){
 				estatus=SalPresenceOnthephone;
 			}else if (strstr(body,"outtolunch")!=NULL
+                                        || strstr(body,"lunch")!=NULL
 					|| strstr(body,"meal")!=NULL){
 				estatus=SalPresenceOuttolunch;
 			}else if (strstr(body,"closed")!=NULL){
 				estatus=SalPresenceOffline;
 			}else if ((strstr(body,"online")!=NULL) || (strstr(body,"open")!=NULL)) {
 				estatus=SalPresenceOnline;
+                        }else if((strstr(body,"vacation")!=NULL)) {
+                               estatus = SalPresenceOnVacation;
 			}else{
 				estatus=SalPresenceOffline;
 			}

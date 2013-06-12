@@ -131,6 +131,9 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		case SalPresenceDonotdisturb:
 			estatus=LinphoneStatusDoNotDisturb;
 		break;
+		case SalPresenceOnVacation:
+			estatus=LinphoneStatusVacation;
+		break;
 		case SalPresenceMoved:
 		case SalPresenceAltService:
 			estatus=LinphoneStatusMoved;

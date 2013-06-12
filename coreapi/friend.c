@@ -62,6 +62,8 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 		case LinphoneStatusPending:
 		str=_("Pending");
 		break;
+                case LinphoneStatusVacation:
+                str=_("Vacation");
 		default:
 		str=_("Unknown-bug");
 	}
@@ -259,6 +261,9 @@ SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
 		case LinphoneStatusPending:
 			return SalPresenceOffline;
 		break;
+                case LinphoneStatusVacation:
+                       return SalPresenceOnVacation;
+                break;
 		default:
 			return SalPresenceOffline;
 		break;

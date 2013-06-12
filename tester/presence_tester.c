@@ -62,7 +62,8 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 		case LinphoneStatusAltService: counters->number_of_LinphoneStatusMoved++; break;
 		case LinphoneStatusPending: counters->number_of_LinphoneStatusPending++; break;
 		case LinphoneStatusEnd: counters->number_of_LinphoneStatusEnd++; break;
-
+		default:
+		break;
 	}
 }
 

@@ -97,6 +97,11 @@ typedef enum _LinphoneOnlineStatus{
 	 */
 	LinphoneStatusPending,
 
+        /**
+         * Vacation
+         */
+        LinphoneStatusVacation,
+
 	LinphoneStatusEnd
 }LinphoneOnlineStatus;
 
