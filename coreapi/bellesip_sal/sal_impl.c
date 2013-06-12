@@ -486,6 +486,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
 	if (ctx->callbacks.subscribe_closed==NULL)
 		ctx->callbacks.subscribe_closed=(SalOnSubscribeClosed)unimplemented_stub;
+	if (ctx->callbacks.parse_presence_requested==NULL)
+		ctx->callbacks.parse_presence_requested=(SalOnParsePresenceRequested)unimplemented_stub;
 	if (ctx->callbacks.notify_presence==NULL)
 		ctx->callbacks.notify_presence=(SalOnNotifyPresence)unimplemented_stub;
 	if (ctx->callbacks.subscribe_presence_received==NULL)

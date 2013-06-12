@@ -497,6 +497,26 @@ static void presence_process_transaction_terminated(void *user_ctx, const belle_
 	ms_message("presence_process_transaction_terminated not implemented yet");
 }
 
+static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_request_t *req) {
+	belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_content_type_t);
+	belle_sip_header_content_length_t *content_length = belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_content_length_t);
+	const char *body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
+	SalPresenceModel *result = NULL;
+
+	if ((content_type == NULL) || (content_length == NULL))
+		return NULL;
+	if (belle_sip_header_content_length_get_content_length(content_length) == 0)
+		return NULL;
+
+	op->base.root->callbacks.parse_presence_requested(op,
+							  belle_sip_header_content_type_get_type(content_type),
+							  belle_sip_header_content_type_get_subtype(content_type),
+							  body,
+							  &result);
+
+	return result;
+}
+
 static void presence_process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
@@ -505,7 +525,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
 	const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
-	SalPresenceStatus estatus=SalPresenceOffline;
+	SalPresenceModel *presence_model = NULL;
 	SalSubscribeStatus sub_state;
 	belle_sip_response_t* resp;
 	belle_sip_object_ref(server_transaction);
@@ -536,41 +556,22 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 				ms_error("No body in NOTIFY received from [%s]",sal_op_get_from(op));
 				return;
 			}
-			if (strstr(body,"pending")!=NULL){
-				estatus=SalPresenceOffline;
-			}else if (strstr(body,"busy")!=NULL){
-				estatus=SalPresenceBusy;
-			}else if (strstr(body,"berightback")!=NULL
-					|| strstr(body,"in-transit")!=NULL ){
-				estatus=SalPresenceBerightback;
-			}else if (strstr(body,"away")!=NULL
-					|| strstr(body,"idle")){
-				estatus=SalPresenceAway;
-			}else if (strstr(body,"onthephone")!=NULL
-					|| strstr(body,"on-the-phone")!=NULL){
-				estatus=SalPresenceOnthephone;
-			}else if (strstr(body,"outtolunch")!=NULL
-                                        || strstr(body,"lunch")!=NULL
-					|| strstr(body,"meal")!=NULL){
-				estatus=SalPresenceOuttolunch;
-			}else if (strstr(body,"closed")!=NULL){
-				estatus=SalPresenceOffline;
-			}else if ((strstr(body,"online")!=NULL) || (strstr(body,"open")!=NULL)) {
-				estatus=SalPresenceOnline;
-                        }else if((strstr(body,"vacation")!=NULL)) {
-                               estatus = SalPresenceOnVacation;
-			}else{
-				estatus=SalPresenceOffline;
+			presence_model = process_presence_notification(op, req);
+			if (presence_model != NULL) {
+				/* Presence notification body parsed successfully. */
+				if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
+					sub_state=SalSubscribeTerminated;
+					ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
+				} else {
+					sub_state=SalSubscribeActive;
+				}
+				op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
+				resp = sal_op_create_response_from_request(op, req, 200);
+			} else {
+				/* Formatting error in presence notification body. */
+				ms_error("Wrongly formatted presence notification received");
+				resp = sal_op_create_response_from_request(op, req, 400);
 			}
-			ms_message("We are notified that [%s] has online status [%s]",sal_op_get_to(op),sal_presence_status_to_string(estatus));
-			if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
-				sub_state=SalSubscribeTerminated;
-				ms_message("And outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
-			} else
-				sub_state=SalSubscribeActive;
-
-			op->base.root->callbacks.notify_presence(op,sub_state, estatus,NULL);
-			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else if (strcmp("SUBSCRIBE",belle_sip_request_get_method(req))==0) {
 			/*either a refresh of an unsubscribe*/

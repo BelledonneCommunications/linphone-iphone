@@ -119,7 +119,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
-		fr->status=LinphoneStatusOffline;
+		fr->presence=NULL;
 		/*
 		if (fr->lc->vtable.notify_recv)
 			fr->lc->vtable.notify_recv(fr->lc,(LinphoneFriend*)fr);
@@ -138,7 +138,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 LinphoneFriend * linphone_friend_new(){
 	LinphoneFriend *obj=ms_new0(LinphoneFriend,1);
 	obj->pol=LinphoneSPAccept;
-	obj->status=LinphoneStatusOffline;
+	obj->presence=NULL;
 	obj->subscribe=TRUE;
 	return obj;	
 }
@@ -304,6 +304,7 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
 	}
+	if (lf->presence != NULL) linphone_presence_model_delete(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
@@ -322,7 +323,90 @@ LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneF
 }
 
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
-	return lf->status;
+	LinphoneOnlineStatus online_status = LinphoneStatusOffline;
+	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
+	LinphonePresenceActivity activity = LinphonePresenceActivityUnknown;
+	char *activity_description = NULL;
+	unsigned int nb_activities = 0;
+	int err = 0;
+
+	if (lf->presence != NULL) {
+		basic_status = linphone_presence_model_get_basic_status(lf->presence);
+		nb_activities = linphone_presence_model_nb_activities(lf->presence);
+		online_status = (basic_status == LinphonePresenceBasicStatusOpen) ? LinphoneStatusOnline : LinphoneStatusOffline;
+		if (nb_activities > 1) {
+			char *tmp = NULL;
+			const LinphoneAddress *addr = linphone_friend_get_address(lf);
+			if (addr) tmp = linphone_address_as_string(addr);
+			ms_warning("Friend %s has several activities, get status from the first one", tmp ? tmp : "unknown");
+			if (tmp) ms_free(tmp);
+			nb_activities = 1;
+		}
+		if (nb_activities == 1) {
+			err = linphone_presence_model_get_activity(lf->presence, 0, &activity, &activity_description);
+			if (err == 0) {
+				switch (activity) {
+					case LinphonePresenceActivityBreakfast:
+					case LinphonePresenceActivityDinner:
+					case LinphonePresenceActivityLunch:
+					case LinphonePresenceActivityMeal:
+						online_status = LinphoneStatusOutToLunch;
+						break;
+					case LinphonePresenceActivityAppointment:
+					case LinphonePresenceActivityMeeting:
+					case LinphonePresenceActivityPerformance:
+					case LinphonePresenceActivityPresentation:
+					case LinphonePresenceActivitySpectator:
+					case LinphonePresenceActivityWorking:
+					case LinphonePresenceActivityWorship:
+						online_status = LinphoneStatusDoNotDisturb;
+						break;
+					case LinphonePresenceActivityAway:
+					case LinphonePresenceActivitySleeping:
+						online_status = LinphoneStatusAway;
+						break;
+					case LinphonePresenceActivityHoliday:
+					case LinphonePresenceActivityTravel:
+					case LinphonePresenceActivityVacation:
+						online_status = LinphoneStatusVacation;
+						break;
+					case LinphonePresenceActivityBusy:
+					case LinphonePresenceActivityLookingForWork:
+					case LinphonePresenceActivityPlaying:
+					case LinphonePresenceActivityShopping:
+					case LinphonePresenceActivityTV:
+						online_status = LinphoneStatusBusy;
+						break;
+					case LinphonePresenceActivityInTransit:
+					case LinphonePresenceActivitySteering:
+						online_status = LinphoneStatusBeRightBack;
+						break;
+					case LinphonePresenceActivityOnThePhone:
+						online_status = LinphoneStatusOnThePhone;
+						break;
+					case LinphonePresenceActivityOther:
+					case LinphonePresenceActivityPermanentAbsence:
+						online_status = LinphoneStatusMoved;
+						break;
+					case LinphonePresenceActivityUnknown:
+						break;
+				}
+			}
+		}
+	}
+
+	return online_status;
+}
+
+LinphonePresenceModel * linphone_friend_get_presence(LinphoneFriend *lf) {
+	return lf->presence;
+}
+
+void linphone_friend_set_presence(LinphoneFriend *lf, LinphonePresenceModel *model) {
+	if (lf->presence != NULL) {
+		linphone_presence_model_delete(lf->presence);
+	}
+	lf->presence = model;
 }
 
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){

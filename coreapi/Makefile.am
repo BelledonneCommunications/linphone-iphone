@@ -16,7 +16,7 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h lpconfig.h sipsetup.h  event.h
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonepresence.h linphonecore_utils.h lpconfig.h sipsetup.h event.h
 
 if BUILD_TUNNEL
 linphone_include_HEADERS+=linphone_tunnel.h

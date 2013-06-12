@@ -292,6 +292,9 @@ typedef enum SalPresenceStatus{
         SalPresenceOnVacation
 }SalPresenceStatus;
 
+struct _SalPresenceModel;
+typedef struct _SalPresenceModel SalPresenceModel;
+
 const char* sal_presence_status_to_string(const SalPresenceStatus status);
 
 typedef enum SalReferStatus{
@@ -355,7 +358,8 @@ typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status, Sal
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop);
-typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg);
+typedef void (*SalOnParsePresenceRequested)(SalOp *salop, const char *content_type, const char *content_subtype, const char *content, SalPresenceModel **result);
+typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg);
 typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
@@ -393,6 +397,7 @@ typedef struct SalCallbacks{
 	SalOnNotify notify;
 	SalOnSubscribePresenceReceived subscribe_presence_received;
 	SalOnSubscribePresenceClosed subscribe_presence_closed;
+	SalOnParsePresenceRequested parse_presence_requested;
 	SalOnNotifyPresence notify_presence;
 	SalOnPingReply ping_reply;
 	SalOnAuthRequested auth_requested;

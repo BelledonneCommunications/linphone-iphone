@@ -290,7 +290,8 @@ SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os);
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from);
-void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status);
+void linphone_notify_parse_presence(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result);
+void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
 
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
@@ -427,7 +428,7 @@ struct _LinphoneFriend{
 	SalOp *insub;
 	SalOp *outsub;
 	LinphoneSubscribePolicy pol;
-	LinphoneOnlineStatus status;
+	LinphonePresenceModel *presence;
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;

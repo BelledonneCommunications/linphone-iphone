@@ -19,9 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef LINPHONEFRIEND_H_
 #define LINPHONEFRIEND_H_
+
+#include "linphonepresence.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /**
  * @addtogroup buddy_list
  * @{
@@ -206,6 +210,10 @@ LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
  * @return #LinphoneOnlineStatus
  */
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
+
+LinphonePresenceModel * linphone_friend_get_presence(LinphoneFriend *lf);
+void linphone_friend_set_presence(LinphoneFriend *lf, LinphonePresenceModel *presence);
+
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
 const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);

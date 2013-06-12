@@ -877,9 +877,13 @@ static void text_received(SalOp *op, const SalMessage *msg){
 	}
 }
 
-static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceStatus status, const char *msg){
+static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
+	linphone_notify_parse_presence(op, content_type, content_subtype, body, result);
+}
+
+static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	linphone_notify_recv(lc,op,ss,status);
+	linphone_notify_recv(lc,op,ss,model);
 }
 
 static void subscribe_presence_received(SalOp *op, const char *from){
@@ -1085,6 +1089,7 @@ SalCallbacks linphone_sal_callbacks={
 	notify,
 	subscribe_presence_received,
 	subscribe_presence_closed,
+	parse_presence_requested,
 	notify_presence,
 	ping_reply,
 	auth_requested,
