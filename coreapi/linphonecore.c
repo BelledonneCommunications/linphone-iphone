@@ -4838,7 +4838,7 @@ int linphone_core_get_camera_sensor_rotation(LinphoneCore *lc) {
 static MSVideoSizeDef supported_resolutions[]={
 #ifdef ENABLE_HD
 	{	{MS_VIDEO_SIZE_1080P_W,MS_VIDEO_SIZE_1080P_H}	,	"1080p"	},
-	{	{MS_VIDEO_SIZE_720P_W,MS_VIDEO_SIZE_720P_H}	,	"1080p"	},
+	{	{MS_VIDEO_SIZE_720P_W,MS_VIDEO_SIZE_720P_H}	,	"720p"	},
 #endif
 	{	{MS_VIDEO_SIZE_SVGA_W,MS_VIDEO_SIZE_SVGA_H}	,	"svga"	},
 	{	{MS_VIDEO_SIZE_4CIF_W,MS_VIDEO_SIZE_4CIF_H}	,	"4cif"	},
