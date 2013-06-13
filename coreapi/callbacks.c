@@ -282,6 +282,9 @@ static void call_ringing(SalOp *h){
 	
 	if (call==NULL) return;
 	
+	/*set privacy*/
+	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Remote ringing."));
 	
@@ -339,6 +342,8 @@ static void call_accepted(SalOp *op){
 		ms_warning("No call to accept.");
 		return ;
 	}
+	/*set privacy*/
+	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 
 	/* Handle remote ICE attributes if any. */
 	if (call->ice_session != NULL) {
@@ -351,7 +356,7 @@ static void call_accepted(SalOp *op){
 #endif //BUILD_UPNP
 
 	md=sal_call_get_final_media_description(op);
-	if (md)
+	if (md) /*make sure re-invite will not prose video again*/
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||

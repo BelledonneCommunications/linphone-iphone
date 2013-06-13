@@ -480,6 +480,9 @@ void linphone_call_create_op(LinphoneCall *call){
 	if (call->params.referer)
 		sal_call_set_referer(call->op,call->params.referer->op);
 	linphone_configure_op(call->core,call->op,call->log->to,call->params.custom_headers,FALSE);
+	if (call->params.privacy != LinphonePrivacyDefault)
+		sal_op_set_privacy(call->op,(SalPrivacyMask)call->params.privacy);
+	/*else privacy might be set by proxy */
 }
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
@@ -526,6 +529,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	call->op=op;
 	call->core=lc;
 
+
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
 		if (lc->upnp != NULL && linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp &&
@@ -549,6 +553,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_common(call, from, to);
 	call->log->call_id=ms_strdup(sal_op_get_call_id(op)); /*must be known at that time*/
 	linphone_core_init_default_params(lc, &call->params);
+	/*set privacy*/
+	call->current_params.privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+
 	md=sal_call_get_remote_media_description(op);
 	call->params.has_video &= !!lc->video_policy.automatically_accept;
 	if (md) {
@@ -1141,18 +1148,26 @@ void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParam
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
 }
 
-void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacy privacy) {
+void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
 	params->privacy=privacy;
 }
-LinphonePrivacy linphone_call_params_get_privacy(const LinphoneCallParams *params) {
+LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
 	return params->privacy;
 }
+
+
+
+
 const char* linphone_privacy_to_string(LinphonePrivacy privacy) {
 	switch(privacy) {
 	case LinphonePrivacyDefault: return "LinphonePrivacyDefault";
+	case LinphonePrivacyUser: return "LinphonePrivacyUser";
+	case LinphonePrivacyHeader: return "LinphonePrivacyHeader";
+	case LinphonePrivacySession: return "LinphonePrivacySession";
 	case LinphonePrivacyId: return "LinphonePrivacyId";
 	case LinphonePrivacyNone: return "LinphonePrivacyNone";
-	default:	return "Unknown privacy mode";
+	case LinphonePrivacyCritical: return "LinphonePrivacyCritical";
+	default: return "Unknown privacy mode";
 	}
 }
 /**

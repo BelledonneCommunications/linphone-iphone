@@ -47,6 +47,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc,LinphoneProxyConfig *obj
 	obj->expires=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"reg_expires",3600);
 	obj->dial_prefix=ms_strdup(LP_CONFIG_DEFAULT_STRING((lc?lc->config:NULL),"dial_prefix",'\0'));
 	obj->dial_escape_plus=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"dial_escape_plus",0);
+	obj->privacy=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"privacy",LinphonePrivacyDefault);
 }
 
 /**
@@ -1065,6 +1066,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"publish",obj->publish);
 	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
 	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
+	lp_config_set_int(config,key,"privacy",obj->privacy);
 }
 
 
@@ -1107,6 +1109,8 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0) 
 		linphone_proxy_config_set_sip_setup(cfg,tmp);
+
+	linphone_proxy_config_set_privacy(cfg,lp_config_get_int(config,key,"privacy",LP_CONFIG_DEFAULT_INT(config,"privacy",LinphonePrivacyDefault)));
 
 	return cfg;
 }
@@ -1383,4 +1387,10 @@ const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) 
 	}
 
 	return ret;
+}
+void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy) {
+	params->privacy=privacy;
+}
+LinphonePrivacyMask linphone_proxy_config_get_privacy(const LinphoneProxyConfig *params) {
+	return params->privacy;
 }

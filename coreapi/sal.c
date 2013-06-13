@@ -555,3 +555,14 @@ const char* sal_presence_status_to_string(const SalPresenceStatus status) {
 	}
 
 }
+const char* sal_privacy_to_string(SalPrivacy privacy) {
+	switch(privacy) {
+	case SalPrivacyUser: return "user";
+	case SalPrivacyHeader: return "header";
+	case SalPrivacySession: return "session";
+	case SalPrivacyId: return "id";
+	case SalPrivacyNone: return "none";
+	case SalPrivacyCritical: return "critical";
+	default: return NULL;
+	}
+}

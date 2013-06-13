@@ -22,7 +22,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
+/*
+rfc3323
+4.2 Expressing Privacy Preferences
+When a Privacy header is constructed, it MUST consist of either the
+   value 'none', or one or more of the values 'user', 'header' and
+   'session' (each of which MUST appear at most once) which MAY in turn
+   be followed by the 'critical' indicator.
+ */
+void sal_op_set_privacy_from_message(SalOp* op,belle_sip_message_t* msg) {
+	belle_sip_header_privacy_t* privacy = belle_sip_message_get_header_by_type(msg,belle_sip_header_privacy_t);
+	if (!privacy) {
+		sal_op_set_privacy(op,SalPrivacyNone);
+	} else {
+		belle_sip_list_t* privacy_list=belle_sip_header_privacy_get_privacy(privacy);
+		sal_op_set_privacy(op,0);
+		for (;privacy_list!=NULL;privacy_list=privacy_list->next) {
+			char* privacy_value=(char*)privacy_list->data;
+			if(strcmp(sal_privacy_to_string(SalPrivacyCritical),privacy_value) == 0)
+				sal_op_set_privacy(op,sal_op_get_privacy(op)|SalPrivacyCritical);
+			if(strcmp(sal_privacy_to_string(SalPrivacyHeader),privacy_value) == 0)
+							sal_op_set_privacy(op,sal_op_get_privacy(op)|SalPrivacyHeader);
+			if(strcmp(sal_privacy_to_string(SalPrivacyId),privacy_value) == 0)
+							sal_op_set_privacy(op,sal_op_get_privacy(op)|SalPrivacyId);
+			if(strcmp(sal_privacy_to_string(SalPrivacyNone),privacy_value) == 0) {
+				sal_op_set_privacy(op,SalPrivacyNone);
+				break;
+			}
+			if(strcmp(sal_privacy_to_string(SalPrivacySession),privacy_value) == 0)
+							sal_op_set_privacy(op,sal_op_get_privacy(op)|SalPrivacySession);
+			if(strcmp(sal_privacy_to_string(SalPrivacyUser),privacy_value) == 0)
+										sal_op_set_privacy(op,sal_op_get_privacy(op)|SalPrivacyUser);
+		}
+	}
+}
 static void set_tls_properties(Sal *ctx);
 
 void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
@@ -206,7 +239,10 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 	if (!op->base.call_id) {
 		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_call_id_t))));
 	}
-	
+	/*It is worth noting that proxies can (and
+   will) remove this header field*/
+	sal_op_set_privacy_from_message(op,(belle_sip_message_t*)req);
+
 	sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
 	if (op->callbacks.process_request_event) {
 		op->callbacks.process_request_event(op,event);
@@ -246,6 +282,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		if (!op->base.call_id) {
 			op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(response), belle_sip_header_call_id_t))));
 		}
+
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		
 		if (op->callbacks.process_response_event) {

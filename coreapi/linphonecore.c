@@ -2596,6 +2596,9 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	const char *identity;
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
+		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
+			sal_op_set_privacy(op,linphone_proxy_config_get_privacy(proxy));
+		}
 	}else identity=linphone_core_get_primary_contact(lc);
 	/*sending out of calls*/
 	if (proxy){
@@ -2608,6 +2611,7 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	if (with_contact && proxy && proxy->op && sal_op_get_contact(proxy->op)){
 		sal_op_set_contact(op,sal_op_get_contact(proxy->op));
 	}
+
 }
 
 /**
@@ -5888,7 +5892,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->has_video=linphone_core_video_enabled(lc) && lc->video_policy.automatically_initiate;
 	params->media_encryption=linphone_core_get_media_encryption(lc);
 	params->in_conference=FALSE;
-	params->privacy=LinphonePrivacyNone;
+	params->privacy=LinphonePrivacyDefault;
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

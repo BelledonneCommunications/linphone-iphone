@@ -24,6 +24,7 @@ SalOp * sal_op_new(Sal *sal){
 	SalOp *op=ms_new0(SalOp,1);
 	__sal_op_init(op,sal);
 	op->type=SalOpUnknown;
+	op->privacy=SalPrivacyNone;
 	sal_op_ref(op);
 	return op;
 }
@@ -107,8 +108,13 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_uri_t* req_uri;
 	char token[10];
 
-	from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
+
+	if (strcmp("REGISTER",method)==0 || op->privacy==SalPrivacyNone) {
+		from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op))
 												,belle_sip_random_token(token,sizeof(token)));
+	} else {
+		from_header=belle_sip_header_from_create2("Anonymous <sip:anonymous@anonymous.invalid>",belle_sip_random_token(token,sizeof(token)));
+	}
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
 	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)to_header));
 
@@ -122,6 +128,26 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		                    belle_sip_header_via_new(),
 		                    70);
 
+	if (op->privacy&SalPrivacyId) {
+		belle_sip_header_p_preferred_identity_t* p_preferred_identity=belle_sip_header_p_preferred_identity_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op)));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(p_preferred_identity));
+	}
+	if (strcmp("REGISTER",method)!=0 && (op->privacy&(SalPrivacyNone|SalPrivacyDefault))==0 ) { /*at this level, default = none*/
+		belle_sip_header_privacy_t* privacy_header=belle_sip_header_privacy_new();
+		if (op->privacy&SalPrivacyCritical)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyCritical));
+		if (op->privacy&SalPrivacyHeader)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyHeader));
+		if (op->privacy&SalPrivacyId)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyId));
+		if (op->privacy&SalPrivacyNone)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyNone));
+		if (op->privacy&SalPrivacySession)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacySession));
+		if (op->privacy&SalPrivacyUser)
+			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyUser));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(privacy_header));
+	}
 	return req;
 }
 
@@ -485,9 +511,9 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
 	memset(salbody,0,sizeof(salbody));
 	return FALSE;
 }
-void sal_op_enable_privacy(SalOp* op,bool_t enable) {
-	op->privacy_enabled=enable;
+void sal_op_set_privacy(SalOp* op,SalPrivacyMask privacy) {
+	op->privacy=privacy;
 }
- bool_t sal_op_privacy_enabled(const SalOp* op) {
-	return op->privacy_enabled;
+SalPrivacyMask sal_op_get_privacy(const SalOp* op) {
+	return op->privacy;
 }

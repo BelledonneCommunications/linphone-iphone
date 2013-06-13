@@ -127,6 +127,7 @@ typedef enum{
 }SalStreamDir;
 const char* sal_stream_dir_to_string(SalStreamDir type);
 
+
 #define SAL_ENDPOINT_CANDIDATE_MAX 2
 
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_ADDR_LEN 64
@@ -547,6 +548,23 @@ int sal_subscribe_decline(SalOp *op, SalReason reason);
 int sal_notify(SalOp *op, const SalBody *body);
 int sal_notify_close(SalOp *op);
 int sal_publish(SalOp *op, const char *from, const char *to, const char*event_name, int expires, const SalBody *body);
+
+/*privacy, must be in sync with LinphonePrivacyMask*/
+typedef enum _SalPrivacy {
+	SalPrivacyDefault=0x0,
+	SalPrivacyUser=0x1,
+	SalPrivacyHeader=0x2,
+	SalPrivacySession=0x4,
+	SalPrivacyId=0x8,
+	SalPrivacyNone=0x10,
+	 SalPrivacyCritical=0x20
+} SalPrivacy;
+typedef  unsigned int SalPrivacyMask;
+
+const char* sal_privacy_to_string(SalPrivacy  privacy);
+void sal_op_set_privacy(SalOp* op,SalPrivacy privacy);
+SalPrivacy sal_op_get_privacy(const SalOp* op);
+
 
 
 #define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);

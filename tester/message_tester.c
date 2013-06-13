@@ -64,14 +64,43 @@ void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMes
 static void text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,1);
+
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void text_message_with_privacy(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneProxyConfig* pauline_proxy;
+	char* to = linphone_address_as_string(marie->identity);
+	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	ms_free(to);
+
+	/*test proxy config privacy*/
+	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
+	linphone_proxy_config_set_privacy(pauline_proxy,LinphonePrivacyId);
+
+	CU_ASSERT_PTR_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,1);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void text_message_compatibility_mode(void) {
 	char route[256];
 	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
@@ -225,6 +254,7 @@ static void info_message_with_body(){
 
 test_t message_tests[] = {
 	{ "Text message", text_message },
+	{ "Text message with privacy", text_message_with_privacy },
 	{ "Text message compatibility mode", text_message_compatibility_mode },
 	{ "Text message with ack", text_message_with_ack },
 	{ "Text message with send error", text_message_with_send_error },

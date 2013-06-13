@@ -132,8 +132,11 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* cal
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
 	if (!linphone_core_get_current_call_remote_address(callee_mgr->lc))
 		return 0;
-	CU_ASSERT_TRUE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
-
+	if (linphone_call_params_get_privacy(linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc))) == LinphonePrivacyNone) {
+		CU_ASSERT_TRUE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+	} else {
+		CU_ASSERT_FALSE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+	}
 
 	linphone_core_accept_call(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc));
 
@@ -613,7 +616,7 @@ static void call_with_privacy(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
-
+	LinphoneProxyConfig* pauline_proxy;
 	params=linphone_core_create_default_call_parameters(pauline->lc);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
@@ -638,6 +641,26 @@ static void call_with_privacy(void) {
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	/*test proxy config privacy*/
+	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
+	linphone_proxy_config_set_privacy(pauline_proxy,LinphonePrivacyId);
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+	c1=linphone_core_get_current_call(pauline->lc);
+	c2=linphone_core_get_current_call(marie->lc);
+
+	CU_ASSERT_PTR_NOT_NULL(c1);
+	CU_ASSERT_PTR_NOT_NULL(c2);
+
+	/*make sure remote identity is hidden*/
+	CU_ASSERT_FALSE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline->identity));
+
+	CU_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId);
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,2));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,2));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

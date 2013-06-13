@@ -74,9 +74,6 @@ extern "C" {
 #endif
 #endif
 
-struct LinphoneParams {
-
-};
 struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
@@ -94,7 +91,7 @@ struct _LinphoneCallParams{
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
 	bool_t low_bandwidth;
-	LinphonePrivacy privacy;
+	LinphonePrivacyMask privacy;
 };
 
 struct _LinphoneCallLog{
@@ -400,6 +397,7 @@ struct _LinphoneProxyConfig
 	void* user_data;
 	time_t deletion_date;
 	LinphoneReason error;
+	LinphonePrivacyMask privacy;
 };
 
 struct _LinphoneAuthInfo
