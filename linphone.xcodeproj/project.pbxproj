@@ -5451,7 +5451,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					IN_LINPHONE,
 					VIDEO_ENABLED,
 					HAVE_X264,
 					HAVE_SILK,
@@ -5460,14 +5459,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5533,14 +5525,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5776,14 +5761,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5848,14 +5826,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);

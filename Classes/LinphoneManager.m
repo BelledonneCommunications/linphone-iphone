@@ -31,7 +31,7 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "ChatModel.h"
 
-#include "linphonecore_utils.h"
+#include "linphone/linphonecore_utils.h"
 #include "lpconfig.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
@@ -780,7 +780,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_recv = NULL,
+	.notify_presence_recv=NULL,
 	.new_subscription_request = NULL,
 	.auth_info_requested = NULL,
 	.display_status = linphone_iphone_display_status,

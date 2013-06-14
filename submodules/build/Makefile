@@ -21,6 +21,7 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=no
+enable_opus=yes
 
 .NOTPARALLEL all: check_options build warning
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
@@ -57,7 +58,7 @@ warning:
 	@echo "*****************************************************************"
 endif
 
-LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp)
+LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp) enable_opus=$(enable_opus)
 
 build:
 	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
