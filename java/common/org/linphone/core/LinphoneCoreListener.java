@@ -132,6 +132,23 @@ public interface LinphoneCoreListener {
 	 */
 	void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info);
 	
+	/**
+	 * Notifies of subscription requests state changes, including new incoming subscriptions.
+	 * @param lc the LinphoneCore
+	 * @param ev LinphoneEvent object representing the subscription context.
+	 * @param state actual state of the subscription.
+	 */
+	void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev, SubscriptionState state);
+	
+	/**
+	 * Notifies of an incoming NOTIFY received.
+	 * @param lc the linphoneCore
+	 * @param ev a LinphoneEvent representing the subscription context for which this notify belongs, or null if it is a NOTIFY out of of any subscription. 
+	 * @param eventName the event name
+	 * @param content content of the NOTIFY request.
+	 */
+	void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content);
+	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */
 	void show(LinphoneCore lc);

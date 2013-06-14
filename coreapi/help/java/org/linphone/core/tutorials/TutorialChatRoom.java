@@ -24,6 +24,7 @@ import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
@@ -31,9 +32,11 @@ import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.SubscriptionState;
 
 
 /**
@@ -173,6 +176,20 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 
 	@Override
 	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			SubscriptionState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
+			String eventName, LinphoneContent content) {
 		// TODO Auto-generated method stub
 		
 	}

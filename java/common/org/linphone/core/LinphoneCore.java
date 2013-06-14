@@ -1267,5 +1267,27 @@ public interface LinphoneCore {
 	 */
 	public LinphoneInfoMessage createInfoMessage();
 	
-
+	/**
+	 * Sends an outgoing subscription for a resource with given event, expiration period, and content.
+	 * The state changes of the new subscriptions can be followed thanks to { @link LinphoneCoreListener.subscriptionStateChanged() } and
+	 * { @link LinphoneCoreListener.notifyReceived }.
+	 * @param resource the address of the resource for which the event needs to be monitored.
+	 * @param event the event name, as specified in the event package RFC.
+	 * @param expires the expiration period in seconds.
+	 * @param content optional content of the subscription.
+	 * @return a LinphoneEvent representing the subscription context.
+	 */
+	public LinphoneEvent subscribe(LinphoneAddress resource, String event, int expires, LinphoneContent content );
+	
+	/**
+	 * Publish an event.
+	 * After the initial publication, updates can be done with { @link LinphoneEvent.updatePublish() }
+	 * @param resource the resource to which the event belongs.
+	 * @param event the event name as specified in the event package RFC.
+	 * @param expires valid time for the event.
+	 * @param content content of the publish.
+	 * @return a LinphoneEvent representing the publish context.
+	 */
+	public LinphoneEvent publish(LinphoneAddress resource, String event, int expires, LinphoneContent content);
+	
 }

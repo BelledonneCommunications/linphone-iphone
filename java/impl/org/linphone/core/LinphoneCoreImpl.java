@@ -954,4 +954,16 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public LinphoneInfoMessage createInfoMessage() {
 		return new LinphoneInfoMessageImpl(createInfoMessage(nativePtr));
 	}
+	@Override
+	public LinphoneEvent subscribe(LinphoneAddress resource, String event,
+			int expires, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public LinphoneEvent publish(LinphoneAddress resource, String event,
+			int expires, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
