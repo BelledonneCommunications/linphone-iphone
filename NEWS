@@ -1,3 +1,8 @@
+linphone-3.6.1 -- June 17, 2013
+	* fix memory leak with some video cameras on windows.
+	
+	Requires: mediastreamer2 = 2.9.1 and ortp = 0.22.0
+
 linphone-3.6.0 -- May 27, 2013
 	UI:
 	* new friend list and chat messaging UI
