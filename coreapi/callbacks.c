@@ -1017,7 +1017,6 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status, SalError er
 	}else{
 		linphone_event_set_reason(lev, linphone_reason_from_sal(reason));
 		linphone_event_set_state(lev,LinphoneSubscriptionError);
-		linphone_event_destroy(lev);
 	}
 }
 
@@ -1028,17 +1027,14 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 	
 	if (lev==NULL) {
 		/*out of subscribe notify */
-		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionOutgoing);
+		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	if (lc->vtable.notify_received){
 		lc->vtable.notify_received(lc,lev,eventname,linphone_content_from_sal_body(&content,body));
 	}
 	if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
-		if (st==SalSubscribeTerminated)
-			linphone_event_destroy(lev);
 	}
-	
 }
 
 static void subscribe_received(SalOp *op, const char *eventname, const SalBody *body){
@@ -1046,7 +1042,7 @@ static void subscribe_received(SalOp *op, const char *eventname, const SalBody *
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	
 	if (lev==NULL) {
-		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionIncoming);
+		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionIncoming,eventname);
 		linphone_event_set_state(lev,LinphoneSubscriptionIncomingReceived);
 	}else{
 		/*subscribe refresh, unhandled*/
@@ -1058,7 +1054,6 @@ static void subscribe_closed(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
-	linphone_event_destroy(lev);
 }
 
 SalCallbacks linphone_sal_callbacks={

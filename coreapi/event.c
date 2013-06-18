@@ -27,6 +27,8 @@ struct _LinphoneEvent{
 	LinphoneSubscriptionState state;
 	LinphoneReason reason;
 	void *userdata;
+	int refcnt;
+	char *name;
 };
 
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss){
@@ -39,21 +41,23 @@ LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatu
 	return LinphoneSubscriptionNone;
 }
 
-LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir){
+static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, SalOp *op){
 	LinphoneEvent *lev=ms_new0(LinphoneEvent,1);
 	lev->lc=lc;
 	lev->dir=dir;
-	lev->op=sal_op_new(lc->sal);
+	lev->op=op;
+	lev->refcnt=1;
 	sal_op_set_user_pointer(lev->op,lev);
 	return lev;
 }
 
-LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir){
-	LinphoneEvent *lev=ms_new0(LinphoneEvent,1);
-	lev->lc=lc;
-	lev->dir=LinphoneSubscriptionIncoming;
-	lev->op=op;
-	sal_op_set_user_pointer(lev->op,lev);
+LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name){
+	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, sal_op_new(lc->sal));
+	return lev;
+}
+
+LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name){
+	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, op);
 	return lev;
 }
 
@@ -63,6 +67,9 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 		lev->state=state;
 		if (lc->vtable.subscription_state_changed){
 			lc->vtable.subscription_state_changed(lev->lc,lev,state);
+		}
+		if (state==LinphoneSubscriptionError || state==LinphoneSubscriptionTerminated){
+			linphone_event_unref(lev);
 		}
 	}
 }
@@ -76,7 +83,7 @@ LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
 }
 
 LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body){
-	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing);
+	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event);
 	SalBody salbody;
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
 	sal_subscribe(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
@@ -137,7 +144,7 @@ int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 
 LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body){
 	SalBody salbody;
-	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir);
+	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event);
 	linphone_configure_op(lc,lev->op,resource,NULL,FALSE);
 	sal_publish(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
 	return lev;
@@ -167,15 +174,35 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	if (lev->state!=LinphoneSubscriptionNone){
 		linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 	}
-	linphone_event_destroy(lev);
 }
 
-void linphone_event_destroy(LinphoneEvent *lev){
+
+LinphoneEvent *linphone_event_ref(LinphoneEvent *lev){
+	lev->refcnt++;
+	return lev;
+}
+
+static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->op)
 		sal_op_release(lev->op);
+	ms_free(lev->name);
 	ms_free(lev);
+}
+
+void linphone_event_unref(LinphoneEvent *lev){
+	lev->refcnt--;
+	if (lev->refcnt==0) linphone_event_destroy(lev);
 }
 
 LinphoneSubscriptionDir linphone_event_get_dir(LinphoneEvent *lev){
 	return lev->dir;
 }
+
+LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEvent *lev){
+	return lev->state;
+}
+
+const char *linphone_event_get_name(const LinphoneEvent *lev){
+	return lev->name;
+}
+

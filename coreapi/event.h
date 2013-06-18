@@ -59,9 +59,8 @@ typedef enum _LinphoneSubscriptionState LinphoneSubscriptionState;
 
 /**
  * Callback prototype for notifying the application about notification received from the network.
- * If the notification is not associated with any outgoing subscription, then the LinphoneEvent argument is NULL.
 **/
-typedef void (*LinphoneEventIncomingNotifyCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *event_name, const LinphoneContent *body);
+typedef void (*LinphoneEventIncomingNotifyCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body);
 
 /**
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
@@ -131,7 +130,13 @@ int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *bod
 LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev);
 
 /**
+ * Get subscription state. If the event object was not created by a subscription mechanism, #LinphoneSubscriptionNone is returned.
+**/
+LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEvent *lev);
+
+/**
  * Get subscription direction.
+ * If the object wasn't created by a subscription mechanism, #LinphoneSubscriptionInvalidDir is returned.
 **/
 LinphoneSubscriptionDir linphone_event_get_dir(LinphoneEvent *lev);
 
@@ -149,6 +154,22 @@ void *linphone_event_get_user_data(const LinphoneEvent *ev);
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
 **/
 void linphone_event_terminate(LinphoneEvent *lev);
+
+
+/**
+ * Increase reference count.
+**/
+LinphoneEvent *linphone_event_ref(LinphoneEvent *lev);
+
+/**
+ * Decrease reference count.
+**/
+void linphone_event_unref(LinphoneEvent *lev);
+
+/**
+ * Get the name of the event as specified in the event package RFC.
+**/
+const char *linphone_event_get_name(const LinphoneEvent *lev);
 
 /**
  * @}
