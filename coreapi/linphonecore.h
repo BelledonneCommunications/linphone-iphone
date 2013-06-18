@@ -286,9 +286,9 @@ LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const Linphon
 **/
 typedef enum _LinphonePrivacy {
 	/**
-	 * Default privacy as defined either globally or by proxy using #linphone_proxy_config_set_privacy
+	 * Privacy services must not perform any privacy function
 	 */
-	LinphonePrivacyDefault=0x0,
+	LinphonePrivacyNone=0x0,
 	/**
 	 * Request that privacy services provide a user-level privacy
 	 * function.
@@ -317,15 +317,16 @@ typedef enum _LinphonePrivacy {
 	 */
 	LinphonePrivacyId=0x8,
 	/**
-	 * Privacy services must not perform any privacy function
-	 */
-	LinphonePrivacyNone=0x10,
-	/**
 	 * Privacy service must perform the specified services or
 	 * fail the request
 	 *
 	 **/
-	 LinphonePrivacyCritical=0x20
+	LinphonePrivacyCritical=0x10,
+	 
+	/**
+	 * Default privacy as defined either globally or by proxy using #linphone_proxy_config_set_privacy
+	 */
+	LinphonePrivacyDefault=0x8000,
 } LinphonePrivacy;
 /*
  * a mask  of #LinphonePrivacy values

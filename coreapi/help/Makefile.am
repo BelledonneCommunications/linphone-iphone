@@ -33,8 +33,8 @@ clean-local:
 
 if ENABLE_TESTS
 #tutorials
-if BUILD_TESTS
-noinst_PROGRAMS=helloworld registration buddy_status chatroom
+
+noinst_PROGRAMS=helloworld registration buddy_status chatroom notify
 
 helloworld_SOURCES=helloworld.c
 LINPHONE_TUTOS=$(helloworld_SOURCES)
@@ -57,17 +57,20 @@ chatroom_SOURCES=chatroom.c
 LINPHONE_TUTOS+=$(chatroom_SOURCES)
 
 chatroom_LDADD=$(helloworld_LDADD)
-endif
-												
+
+notify_SOURCES=notify.c
+LINPHONE_TUTOS+=$(notify_SOURCES)
+
+notify_LDADD=$(helloworld_LDADD)
+
 endif
 
 AM_CFLAGS=\
+	-I$(top_srcdir)/coreapi \
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
 	$(ORTP_CFLAGS) \
-	$(OSIP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \
-	$(EXOSIP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \

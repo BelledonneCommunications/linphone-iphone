@@ -47,6 +47,7 @@ static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscri
 	lev->dir=dir;
 	lev->op=op;
 	lev->refcnt=1;
+	lev->name=ms_strdup(name);
 	sal_op_set_user_pointer(lev->op,lev);
 	return lev;
 }

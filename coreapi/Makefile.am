@@ -95,7 +95,7 @@ liblinphone_la_LIBADD= \
 		$(SQLITE3_LIBS)
 
 
-if BUILD_TESTS
+if ENABLE_TESTS
 noinst_PROGRAMS=test_lsd test_ecc test_numbers
 
 test_lsd_SOURCES=test_lsd.c

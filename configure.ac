@@ -62,7 +62,6 @@ case $target in
 	;;
 	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
-		build_tests=no
 		ios_found=yes
 	;;
 	x86_64-apple-darwin*|i686-apple-darwin*)
@@ -80,8 +79,6 @@ AC_SUBST(GUI_FLAGS)
 
 dnl localization tools
 IT_PROG_INTLTOOL([0.40], [no-xml])
-
-AM_CONDITIONAL(BUILD_TESTS,test x$build_tests != xno)
 
 dnl Initialize libtool
 LT_INIT([win32-dll shared disable-static])
@@ -757,7 +754,7 @@ AC_ARG_ENABLE(tests_enabled,
 		no)	tests_enabled=false ;;
 		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-tests) ;;
 	esac],
-	[tests_enabled=false]
+	[tests_enabled=yes]
 )
 AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
 
@@ -780,7 +777,7 @@ case "$target_os" in
 		CUNIT_LIBS+=" -lncurses"
 	;;
 esac
-AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$enable_tests != xno])
+AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$tests_enabled != xfalse])
 if test "$found_cunit" = "no" ; then
         AC_MSG_WARN([Could not find cunit framework, tests are not compiled.])
 else
