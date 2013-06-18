@@ -85,6 +85,7 @@ const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, cons
 		obj->subtype=(char*)ref->subtype;
 		obj->data=(void*)ref->data;
 		obj->size=ref->size;
+		return obj;
 	}
 	return NULL;
 }
