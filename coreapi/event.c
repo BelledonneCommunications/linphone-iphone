@@ -156,11 +156,11 @@ int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *bod
 	return sal_publish(lev->op,NULL,NULL,NULL,-1,sal_body_from_content(&salbody,body));
 }
 
-void linphone_event_set_user_pointer(LinphoneEvent *ev, void *up){
+void linphone_event_set_user_data(LinphoneEvent *ev, void *up){
 	ev->userdata=up;
 }
 
-void *linphone_event_get_user_pointer(const LinphoneEvent *ev){
+void *linphone_event_get_user_data(const LinphoneEvent *ev){
 	return ev->userdata;
 }
 
