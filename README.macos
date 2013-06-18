@@ -7,6 +7,10 @@ You need:
  - Macports: http://www.macports.org/
    Download and install macports using its user friendly installer.
 
+- In order to enable generation of bundle for multiple macos version it is recommended to edit /opt/local/etc/macports/macports.conf to add the 
+  following line:
+ macosx_deployment_target 10.6
+
 - Install build time dependencies
  $ sudo port install automake autoconf libtool intltool
 
@@ -17,7 +21,22 @@ You need:
  $ sudo port install ffmpeg-devel -gpl2
  $ sudo port install libvpx
  $ sudo port install readline
- 
+
+
+- Install gtk. It is recommended to use the quartz backend for better integration.
+ $ sudo port install gtk2 +quartz +no_x11
+ $ sudo port install gtk-osx-application -python27
+ $ sudo port install hicolor-icon-theme
+
+- Install additional librairies required for wizard (linphone.org account creation assistant)
+ $ sudo port install libsoup
+
+- Install sqlite3 for message storage
+ $ sudo port install sqlite3
+
+The softwares below need to be compiled manually. To ensure compatibility with multiple mac os version it is recommended to do:
+ $ export MACOSX_DEPLOYMENT_TARGET=10.6 
+
 - Install srtp (optional) for call encryption
  $ sudo port install srtp
  If that fails, get from source:
@@ -31,17 +50,6 @@ You need:
  $ cd zrtpcpp && cmake -Denable-ccrtp=false . && make
  $ sudo make install
 
-- Install gtk. It is recommended to use the quartz backend for better integration.
- $ sudo port install gtk2 +quartz +no_x11
- $ sudo port install gtk-osx-application -python27
- $ sudo port install hicolor-icon-theme
- 
-- Install additional librairies required for wizard (linphone.org account creation assistant)
- $ sudo port install libsoup
- 
- - Install sqlite3 for message storage
- $ sudo port install sqlite3
- 
  ** WARNING 2013-03-06 glib-networking is currently broken in macports - generates crashes or hangs when used in a bundle **
  As a temporary workaround, build a newer version by yourself:
  $ wget http://ftp.gnome.org/pub/gnome/sources/glib-networking/2.34/glib-networking-2.34.2.tar.xz
@@ -57,7 +65,6 @@ You need:
  Then or otherwise, do:
 
  $ ./configure --prefix=/opt/local && make && sudo make install
-
 
 - Compile linphone
 
@@ -82,8 +89,7 @@ Use git:
  $ sudo touch touch /opt/local/lib/charset.alias
 
 Then run, inside linphone source tree:
- 1. Run configure as told before but with "--enable-relativeprefix" appended.
- 
+ Run configure as told before but with "--enable-relativeprefix" appended.
  $ make
  $ make bundle
 
