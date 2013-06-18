@@ -132,7 +132,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		belle_sip_header_p_preferred_identity_t* p_preferred_identity=belle_sip_header_p_preferred_identity_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_from_address(op)));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(p_preferred_identity));
 	}
-	if (strcmp("REGISTER",method)!=0 && (op->privacy&(SalPrivacyNone|SalPrivacyDefault))==0 ) { /*at this level, default = none*/
+	if (strcmp("REGISTER",method)!=0 && (op->privacy !=SalPrivacyNone)==0 ) { /*at this level, default = none*/
 		belle_sip_header_privacy_t* privacy_header=belle_sip_header_privacy_new();
 		if (op->privacy&SalPrivacyCritical)
 			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyCritical));

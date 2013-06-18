@@ -551,13 +551,13 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char*event_na
 
 /*privacy, must be in sync with LinphonePrivacyMask*/
 typedef enum _SalPrivacy {
-	SalPrivacyDefault=0x0,
+	SalPrivacyNone=0x0,
 	SalPrivacyUser=0x1,
 	SalPrivacyHeader=0x2,
 	SalPrivacySession=0x4,
 	SalPrivacyId=0x8,
-	SalPrivacyNone=0x10,
-	 SalPrivacyCritical=0x20
+	SalPrivacyCritical=0x10,
+	SalPrivacyDefault=0x8000
 } SalPrivacy;
 typedef  unsigned int SalPrivacyMask;
 

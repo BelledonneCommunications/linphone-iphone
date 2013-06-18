@@ -280,6 +280,10 @@ LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
+
+/*
+ * Note for developers: this enum must be kept synchronized with the SalPrivacy enum declared in sal.h
+ */
 /**
  * @ingroup call_control
  * Defines privacy policy to apply as described by rfc3323
@@ -324,7 +328,7 @@ typedef enum _LinphonePrivacy {
 	LinphonePrivacyCritical=0x10,
 	 
 	/**
-	 * Default privacy as defined either globally or by proxy using #linphone_proxy_config_set_privacy
+	 * Special keyword to use privacy as defined either globally or by proxy using linphone_proxy_config_set_privacy()
 	 */
 	LinphonePrivacyDefault=0x8000,
 } LinphonePrivacy;
