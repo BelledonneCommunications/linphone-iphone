@@ -194,7 +194,7 @@ void linphone_event_unref(LinphoneEvent *lev){
 	if (lev->refcnt==0) linphone_event_destroy(lev);
 }
 
-LinphoneSubscriptionDir linphone_event_get_dir(LinphoneEvent *lev){
+LinphoneSubscriptionDir linphone_event_get_subscription_dir(LinphoneEvent *lev){
 	return lev->dir;
 }
 

@@ -138,7 +138,7 @@ LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEv
  * Get subscription direction.
  * If the object wasn't created by a subscription mechanism, #LinphoneSubscriptionInvalidDir is returned.
 **/
-LinphoneSubscriptionDir linphone_event_get_dir(LinphoneEvent *lev);
+LinphoneSubscriptionDir linphone_event_get_subscription_dir(LinphoneEvent *lev);
 
 /**
  * Set a user (application) pointer.

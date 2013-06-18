@@ -58,7 +58,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		break;
 		case LinphoneSubscriptionActive:
 			counters->number_of_LinphoneSubscriptionActive++;
-			if (linphone_event_get_dir(lev)==LinphoneSubscriptionIncoming){
+			if (linphone_event_get_subscription_dir(lev)==LinphoneSubscriptionIncoming){
 				mgr->lev=lev;
 				linphone_event_notify(lev,&content);
 			}

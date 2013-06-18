@@ -280,10 +280,10 @@ LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
-/***
+/**
  * @ingroup call_control
  * Defines privacy policy to apply as described by rfc3323
- * */
+**/
 typedef enum _LinphonePrivacy {
 	/**
 	 * Default privacy as defined either globally or by proxy using #linphone_proxy_config_set_privacy
@@ -291,28 +291,28 @@ typedef enum _LinphonePrivacy {
 	LinphonePrivacyDefault=0x0,
 	/**
 	 * Request that privacy services provide a user-level privacy
-     * function.
-      * With this mode, "from" header is hidden, usually replaced by  From: "Anonymous" <sip:anonymous@anonymous.invalid>
+	 * function.
+	 * With this mode, "from" header is hidden, usually replaced by  From: "Anonymous" <sip:anonymous@anonymous.invalid>
 	 */
 	LinphonePrivacyUser=0x1,
 	/**
 	 * Request that privacy services modify headers that cannot
-     * be set arbitrarily by the user (Contact/Via).
+	 * be set arbitrarily by the user (Contact/Via).
 	 */
 	LinphonePrivacyHeader=0x2,
-	/*
+	/**
 	 *  Request that privacy services provide privacy for session
-     * media
-    */
+	 * media
+	 */
 	LinphonePrivacySession=0x4,
 	/**
 	 * rfc3325
 	 * The presence of this privacy type in
-     * a Privacy header field indicates that the user would like the Network
-     * Asserted Identity to be kept private with respect to SIP entities
-     * outside the Trust Domain with which the user authenticated.  Note
-     * that a user requesting multiple types of privacy MUST include all of
-     * the requested privacy types in its Privacy header field value
+	 * a Privacy header field indicates that the user would like the Network
+	 * Asserted Identity to be kept private with respect to SIP entities
+	 * outside the Trust Domain with which the user authenticated.  Note
+	 * that a user requesting multiple types of privacy MUST include all of
+	 * the requested privacy types in its Privacy header field value
 	 *
 	 */
 	LinphonePrivacyId=0x8,
@@ -322,11 +322,10 @@ typedef enum _LinphonePrivacy {
 	LinphonePrivacyNone=0x10,
 	/**
 	 * Privacy service must perform the specified services or
-     * fail the request
+	 * fail the request
 	 *
 	 **/
 	 LinphonePrivacyCritical=0x20
-
 } LinphonePrivacy;
 /*
  * a mask  of #LinphonePrivacy values
@@ -340,15 +339,15 @@ typedef unsigned int LinphonePrivacyMask;
 const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 /**
  * @ingroup call_control
- * Indicates if "from" must be replaced by anonymous value as described by rfc3325.
- * @param params to be modified
+ * Set requested level of privacy for the call.
+ * @param params the call parameters to be modified
  * @param LinphonePrivacy to configure privacy
  * */
-LINPHONE_PUBLIC	void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
+LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
 /**
  * @ingroup call_control
- * indicates if "from" must be replaced by anonymous value as described by rfc3325.
- * @param params object
+ * Get requested level of privacy for the call.
+ * @param params the call parameters
  * @return Privacy mode
  * */
 LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params);
@@ -704,14 +703,13 @@ LINPHONE_PUBLIC	void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr
 LINPHONE_PUBLIC	void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr);
 
 /**
- *
- * Indicates if "from" must be replaced by anonymous value as described by rfc3325.
+ * Set default privacy policy for all calls routed through this proxy.
  * @param params to be modified
  * @param LinphonePrivacy to configure privacy
  * */
-LINPHONE_PUBLIC	void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy);
+LINPHONE_PUBLIC void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy);
 /**
- * indicates if "from" must be replaced by anonymous value as described by rfc3325.
+ * Get default privacy policy for all calls routed through this proxy.
  * @param params object
  * @return Privacy mode
  * */
