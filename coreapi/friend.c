@@ -226,57 +226,12 @@ int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscri
 	return 0;
 }
 
-SalPresenceStatus linphone_online_status_to_sal(LinphoneOnlineStatus os){
-	switch(os){
-		case LinphoneStatusOffline:
-			return SalPresenceOffline;
-		break;
-		case LinphoneStatusOnline:
-			return SalPresenceOnline;
-		break;
-		case LinphoneStatusBusy:
-			return SalPresenceBusy;
-		break;
-		case LinphoneStatusBeRightBack:
-			return SalPresenceBerightback;
-		break;
-		case LinphoneStatusAway:
-			return SalPresenceAway;
-		break;
-		case LinphoneStatusOnThePhone:
-			return SalPresenceOnthephone;
-		break;
-		case LinphoneStatusOutToLunch:
-			return SalPresenceOuttolunch;
-		break;
-		case LinphoneStatusDoNotDisturb:
-			return SalPresenceDonotdisturb;
-		break;
-		case LinphoneStatusMoved:
-			return SalPresenceMoved;
-		break;
-		case LinphoneStatusAltService:
-			return SalPresenceAltService;
-		break;
-		case LinphoneStatusPending:
-			return SalPresenceOffline;
-		break;
-                case LinphoneStatusVacation:
-                       return SalPresenceOnVacation;
-                break;
-		default:
-			return SalPresenceOffline;
-		break;
-	}
-	return SalPresenceOffline;
-}
-
-void linphone_friend_notify(LinphoneFriend *lf, LinphoneOnlineStatus os){
+void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence){
 	char *addr=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("Want to notify %s, insub=%p",addr,lf->insub);
 	ms_free(addr);
 	if (lf->insub!=NULL){
-		sal_notify_presence(lf->insub,linphone_online_status_to_sal(os),NULL);
+		sal_notify_presence(lf->insub,(SalPresenceModel *)presence);
 	}
 }
 
@@ -343,7 +298,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 			nb_activities = 1;
 		}
 		if (nb_activities == 1) {
-			err = linphone_presence_model_get_activity(lf->presence, 0, &activity, &activity_description);
+			err = linphone_presence_model_get_activity(lf->presence, &activity, &activity_description);
 			if (err == 0) {
 				switch (activity) {
 					case LinphonePresenceActivityBreakfast:
@@ -389,6 +344,12 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 						online_status = LinphoneStatusMoved;
 						break;
 					case LinphonePresenceActivityUnknown:
+						/* Rely on the basic status information. */
+						break;
+					case LinphonePresenceActivityOnline:
+					case LinphonePresenceActivityOffline:
+						/* Should not happen! */
+						ms_warning("LinphonePresenceActivityOnline or LinphonePresenceActivityOffline should not happen here!");
 						break;
 				}
 			}
@@ -414,27 +375,30 @@ BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 }
 
 void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
+	LinphonePresenceModel *model;
+
 	if (fr->uri==NULL) {
 		ms_warning("No sip url defined.");
 		return;
 	}
-	
 
 	linphone_core_write_friends_config(lc);
 
 	if (fr->inc_subscribe_pending){
 		switch(fr->pol){
 			case LinphoneSPWait:
-				linphone_friend_notify(fr,LinphoneStatusPending);
+				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOther, "Waiting for user acceptance");
+				linphone_friend_notify(fr,model);
+				linphone_presence_model_delete(model);
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)
 				  {
-					linphone_friend_notify(fr,fr->lc->presence_mode);
+					linphone_friend_notify(fr,fr->lc->presence_model);
 				  }
 				break;
 			case LinphoneSPDeny:
-				linphone_friend_notify(fr,LinphoneStatusOffline);
+				linphone_friend_notify(fr,NULL);
 				break;
 		}
 		fr->inc_subscribe_pending=FALSE;

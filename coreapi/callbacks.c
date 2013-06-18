@@ -219,21 +219,31 @@ static void call_received(SalOp *h){
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",TRUE);
 	
 	/* first check if we can answer successfully to this invite */
-	if (lc->presence_mode==LinphoneStatusBusy ||
-	    lc->presence_mode==LinphoneStatusOffline ||
-	    lc->presence_mode==LinphoneStatusDoNotDisturb ||
-	    lc->presence_mode==LinphoneStatusMoved){
-		if (lc->presence_mode==LinphoneStatusBusy )
-			sal_call_decline(h,SalReasonBusy,NULL);
-		else if (lc->presence_mode==LinphoneStatusOffline)
-			sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
-		else if (lc->presence_mode==LinphoneStatusDoNotDisturb)
-			sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
-		else if (lc->alt_contact!=NULL && lc->presence_mode==LinphoneStatusMoved)
-			sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
-		sal_op_release(h);
-		return;
+	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
+		LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+		if (linphone_presence_model_get_activity(lc->presence_model, &activity, NULL)) {
+			switch (activity) {
+				case LinphonePresenceActivityBusy:
+					sal_call_decline(h,SalReasonBusy,NULL);
+					break;
+				case LinphonePresenceActivityAppointment:
+				case LinphonePresenceActivityMeeting:
+				case LinphonePresenceActivityOffline:
+				case LinphonePresenceActivityWorship:
+					sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
+					break;
+				case LinphonePresenceActivityPermanentAbsence:
+					if (lc->alt_contact != NULL)
+						sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
+					break;
+				default:
+					break;
+			}
+			sal_op_release(h);
+			return;
+		}
 	}
+
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/
 		sal_call_decline(h,SalReasonBusy,NULL);
 		sal_op_release(h);
@@ -881,6 +891,10 @@ static void parse_presence_requested(SalOp *op, const char *content_type, const 
 	linphone_notify_parse_presence(op, content_type, content_subtype, body, result);
 }
 
+static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *presence, const char *contact, char **content) {
+	linphone_notify_convert_presence_to_xml(op, presence, contact, content);
+}
+
 static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	linphone_notify_recv(lc,op,ss,model);
@@ -1090,6 +1104,7 @@ SalCallbacks linphone_sal_callbacks={
 	subscribe_presence_received,
 	subscribe_presence_closed,
 	parse_presence_requested,
+	convert_presence_to_xml_requested,
 	notify_presence,
 	ping_reply,
 	auth_requested,

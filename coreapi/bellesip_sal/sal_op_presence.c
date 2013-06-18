@@ -18,404 +18,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
 
-typedef enum {
-	PIDF = 0,
-	RFCxxxx = 1,
-	MSOLDPRES = 2
-} presence_type_t;
 
-/*
- * REVISIT: this static variable forces every dialog to use the same presence description type depending
- * on what is received on a single dialog...
- */
-static presence_type_t presence_style = PIDF;
-
-static void mk_presence_body (const SalPresenceStatus online_status, const char *contact_info,
-		char *buf, size_t buflen, presence_type_t ptype) {
-  switch (ptype) {
-    case RFCxxxx: {
-	  /* definition from http://msdn.microsoft.com/en-us/library/cc246202%28PROT.10%29.aspx */
-	  int atom_id = 1000;
-
-	  if (online_status==SalPresenceOnline)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"online\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status == SalPresenceBusy ||
-			  online_status == SalPresenceDonotdisturb)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"busy\" />\n\
-</address>\n\
-</atom>\n</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceBerightback)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"berightback\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status == SalPresenceAway ||
-			  online_status == SalPresenceMoved)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceOnthephone)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"onthephone\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceOuttolunch)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"outtolunch\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence PUBLIC \"-//IETF//DTD RFCxxxx XPIDF 1.0//EN\" \"xpidf.dtd\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\" priority=\"0.800000\">\n\
-<status status=\"closed\" />\n\
-<msnsubstatus substatus=\"away\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-	  }
-	  break;
-    }
-    case MSOLDPRES: {
-	/* Couldn't find schema http://schemas.microsoft.com/2002/09/sip/presence
- 	*  so messages format has been taken from Communigate that can send notify
- 	*  requests with this schema
- 	*/
-	  int atom_id = 1000;
-
-	  if (online_status==SalPresenceOnline)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"open\" />\n\
-<msnsubstatus substatus=\"online\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status == SalPresenceBusy ||
-			  online_status == SalPresenceDonotdisturb)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"busy\" />\n\
-</address>\n\
-</atom>\n</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceBerightback)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"berightback\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status == SalPresenceAway ||
-			  online_status == SalPresenceMoved)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"idle\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceOnthephone)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inuse\" />\n\
-<msnsubstatus substatus=\"onthephone\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else if (online_status==SalPresenceOuttolunch)
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"inactive\" />\n\
-<msnsubstatus substatus=\"outtolunch\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-
-	  }
-	  else
-	  {
-		  snprintf(buf, buflen, "<?xml version=\"1.0\"?>\n\
-<!DOCTYPE presence SYSTEM \"http://schemas.microsoft.com/2002/09/sip/presence\">\n\
-<presence>\n\
-<presentity uri=\"%s;method=SUBSCRIBE\" />\n\
-<atom id=\"%i\">\n\
-<address uri=\"%s\">\n\
-<status status=\"closed\" />\n\
-<msnsubstatus substatus=\"offline\" />\n\
-</address>\n\
-</atom>\n\
-</presence>", contact_info, atom_id, contact_info);
-	  }
-	break;
-	}
-    default: { /* use pidf+xml as default format, rfc4479, rfc4480, rfc3863 */
-
-	if (online_status==SalPresenceOnline)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else if (online_status == SalPresenceBusy ||
-			online_status == SalPresenceDonotdisturb)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:busy/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else if (online_status==SalPresenceBerightback)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:in-transit/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else if (online_status == SalPresenceAway ||
-			online_status == SalPresenceMoved)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:away/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-        }
-	else if (online_status == SalPresenceOnVacation)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:vacation/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else if (online_status==SalPresenceOnthephone)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"sg89aep\">\n\
-<rpid:activities><rpid:on-the-phone/></rpid:activities>\n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else if (online_status==SalPresenceOuttolunch)
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"7777\">\n\
-<status><basic>open</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-<dm:person id=\"78787878\">\n\
-<rpid:activities><rpid:lunch/></rpid:activities>\n\
-<rpid:note>Out to lunch</rpid:note> \n\
-</dm:person>\n\
-</presence>",
-contact_info, contact_info);
-	}
-	else
-	{
-		snprintf(buf, buflen, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" \
-xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" \
-xmlns:rpid=\"urn:ietf:params:xml:ns:pidf:rpid\" \
-entity=\"%s\">\n\
-<tuple id=\"sg89ae\">\n\
-<status><basic>closed</basic></status>\n\
-<contact priority=\"0.8\">%s</contact>\n\
-</tuple>\n\
-</presence>\n", contact_info, contact_info);
-	}
-	break;
-    }
- } // switch
-
-}
-
-void sal_add_presence_info(belle_sip_message_t *notify, SalPresenceStatus online_status) {
-	char buf[1000];
+void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceModel *presence) {
 	char *contact_info;
+	char *content = NULL;
 	size_t content_length;
 
 	belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(notify,belle_sip_header_from_t);
 
 	contact_info=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
-	mk_presence_body (online_status, contact_info, buf, sizeof (buf), presence_style);
-
+	op->base.root->callbacks.convert_presence_to_xml_requested(op, presence, contact_info, &content);
+	if (content == NULL) {
+		ms_free(contact_info);
+		return;
+	}
 
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_TYPE);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application",presence_style?"xpidf+xml":"pidf+xml")));
+								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","pidf+xml")));
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_LENGTH);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-								,BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length=strlen(buf))));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),buf,content_length);
+								,BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length=strlen(content))));
+	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),content,content_length);
 	ms_free(contact_info);
 }
 
@@ -627,9 +251,9 @@ static belle_sip_request_t *create_presence_notify(SalOp *op){
 	return notify;
 }
 
-int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message){
+int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
 	belle_sip_request_t* notify=create_presence_notify(op);
-	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),status); /*FIXME, what about expires ??*/
+	sal_add_presence_info(op,BELLE_SIP_MESSAGE(notify),presence); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 			,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,600)));
 	return sal_op_send_request(op,notify);
@@ -637,7 +261,7 @@ int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_
 
 int sal_notify_presence_close(SalOp *op){
 	belle_sip_request_t* notify=create_presence_notify(op);
-	sal_add_presence_info(BELLE_SIP_MESSAGE(notify),SalPresenceOffline); /*FIXME, what about expires ??*/
+	sal_add_presence_info(op,BELLE_SIP_MESSAGE(notify),NULL); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));
 	return sal_op_send_request(op,notify);

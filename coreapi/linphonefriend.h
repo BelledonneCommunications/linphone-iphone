@@ -236,12 +236,29 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
  * @param os #LinphoneOnlineStatus
  */
 LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
+
 /**
- * get my presence status
+ * Set my presence status
+ * @param lc #LinphoneCore object
+ * @param minutes_away how long in away
+ * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
+ * @param presence #LinphonePresenceModel
+ */
+LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const char *alternative_contact, LinphonePresenceModel *presence);
+
+/**
+ * Get my presence status
  * @param lc #LinphoneCore object
  * @return #LinphoneOnlineStatus
  */
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
+
+/**
+ * Get my presence status
+ * @param lc #LinphoneCore object
+ * @return #LinphonePresenceModel
+ */
+LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
 
 void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
 /**
@@ -272,7 +289,7 @@ LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore 
  * @param lc #LinphoneCore object
  * @param os #LinphoneOnlineStatus to notify
  *  */
-void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os);
+void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence);
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
 LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 

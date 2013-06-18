@@ -849,8 +849,7 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 	if (realm!=NULL) cfg->realm=ms_strdup(realm);
 }
 
-int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
-			       LinphoneOnlineStatus presence_mode){
+int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
 	int err;
 	
 	if (proxy->publish_op==NULL){
@@ -859,7 +858,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
 		sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 		sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 	}
-	err=sal_publish_presence(proxy->publish_op,NULL,NULL,linphone_online_status_to_sal(presence_mode));
+	err=sal_publish_presence(proxy->publish_op,NULL,NULL,(SalPresenceModel *)presence);
 	return err;
 }
 
@@ -1190,7 +1189,7 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		}
 	}
 	if (cfg->publish && cfg->publish_op==NULL && cfg->state==LinphoneRegistrationOk){
-		linphone_proxy_config_send_publish(cfg,lc->presence_mode);
+		linphone_proxy_config_send_publish(cfg,lc->presence_model);
 	}
 }
 

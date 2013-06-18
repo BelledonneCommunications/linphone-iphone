@@ -1337,7 +1337,7 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 	sip_config_read(lc); /* this will start eXosip*/
 	video_config_read(lc);
 	//autoreplier_config_init(&lc->autoreplier_conf);
-	lc->presence_mode=LinphoneStatusOnline;
+	lc->presence_model=linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL);
 	misc_config_read(lc);
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
@@ -3568,12 +3568,12 @@ LinphoneCall *linphone_core_get_call_by_remote_address(LinphoneCore *lc, const c
 }
 
 int linphone_core_send_publish(LinphoneCore *lc,
-			       LinphoneOnlineStatus presence_mode)
+			       LinphonePresenceModel *presence)
 {
 	const MSList *elem;
 	for (elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=ms_list_next(elem)){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
-		if (cfg->publish) linphone_proxy_config_send_publish(cfg,presence_mode);
+		if (cfg->publish) linphone_proxy_config_send_publish(cfg,presence);
 	}
 	return 0;
 }
@@ -3642,10 +3642,59 @@ void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds){
 	lc->sip_conf.delayed_timeout=seconds;
 }
 
-void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
-													const char *contact,
-													LinphoneOnlineStatus presence_mode)
-{
+void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const char *contact, LinphoneOnlineStatus os) {
+	LinphonePresenceModel *presence = NULL;
+	char *description = NULL;
+	LinphonePresenceActivity activity = LinphonePresenceActivityUnknown;
+	switch (os) {
+		case LinphoneStatusOffline:
+			activity = LinphonePresenceActivityOffline;
+			break;
+		case LinphoneStatusOnline:
+			activity = LinphonePresenceActivityOnline;
+			break;
+		case LinphoneStatusBusy:
+			activity = LinphonePresenceActivityBusy;
+			break;
+		case LinphoneStatusBeRightBack:
+			activity = LinphonePresenceActivityInTransit;
+			break;
+		case LinphoneStatusAway:
+			activity = LinphonePresenceActivityAway;
+			break;
+		case LinphoneStatusOnThePhone:
+			activity = LinphonePresenceActivityOnThePhone;
+			break;
+		case LinphoneStatusOutToLunch:
+			activity = LinphonePresenceActivityLunch;
+			break;
+		case LinphoneStatusDoNotDisturb:
+			activity = LinphonePresenceActivityBusy;
+			description = "Do not disturb";
+			break;
+		case LinphoneStatusMoved:
+			activity = LinphonePresenceActivityPermanentAbsence;
+			break;
+		case LinphoneStatusAltService:
+			activity = LinphonePresenceActivityBusy;
+			description = "Using another messaging service";
+			break;
+		case LinphoneStatusPending:
+			activity = LinphonePresenceActivityOther;
+			description = "Waiting for user acceptance";
+			break;
+		case LinphoneStatusVacation:
+			activity = LinphonePresenceActivityVacation;
+			break;
+		case LinphoneStatusEnd:
+			ms_warning("Invalid status LinphoneStatusEnd");
+			return;
+	}
+	presence = linphone_presence_model_new_with_activity(activity, description);
+	linphone_core_set_presence_model(lc, minutes_away, contact, presence);
+}
+
+void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const char *contact, LinphonePresenceModel *presence) {
 	if (minutes_away>0) lc->minutes_away=minutes_away;
 
 	if (lc->alt_contact!=NULL) {
@@ -3653,20 +3702,75 @@ void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,
 		lc->alt_contact=NULL;
 	}
 	if (contact) lc->alt_contact=ms_strdup(contact);
-	if (lc->presence_mode!=presence_mode){
-		linphone_core_notify_all_friends(lc,presence_mode);
+	if (!linphone_presence_model_equals(lc->presence_model,presence)){
+		linphone_core_notify_all_friends(lc,presence);
 		/*
 		   Improve the use of all LINPHONE_STATUS available.
 		   !TODO Do not mix "presence status" with "answer status code"..
 		   Use correct parameter to follow sip_if_match/sip_etag.
 		 */
-		linphone_core_send_publish(lc,presence_mode);
+		linphone_core_send_publish(lc,presence);
 	}
-	lc->presence_mode=presence_mode;
+	if ((lc->presence_model != NULL) && (lc->presence_model != presence)) {
+		linphone_presence_model_delete(lc->presence_model);
+		lc->presence_model = presence;
+	}
 }
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
-	return lc->presence_mode;
+	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+	char *description = NULL;
+
+	if ((lc->presence_model == NULL)
+		|| (linphone_presence_model_get_activity(lc->presence_model, &activity, &description) < 0))
+		return LinphoneStatusOffline;
+
+	switch (activity) {
+		case LinphonePresenceActivityOffline:
+			return LinphoneStatusOffline;
+		case LinphonePresenceActivityOnline:
+			return LinphoneStatusOnline;
+		case LinphonePresenceActivityBusy:
+			if (description != NULL) {
+				if (strcmp(description, "Do not disturb") == 0)
+					return LinphoneStatusDoNotDisturb;
+				else if (strcmp(description, "Using another messaging service") == 0)
+					return LinphoneStatusAltService;
+			}
+			return LinphoneStatusBusy;
+		case LinphonePresenceActivityInTransit:
+		case LinphonePresenceActivitySteering:
+			return LinphoneStatusBeRightBack;
+		case LinphonePresenceActivityAway:
+			return LinphoneStatusAway;
+		case LinphonePresenceActivityOnThePhone:
+			return LinphoneStatusOnThePhone;
+		case LinphonePresenceActivityBreakfast:
+		case LinphonePresenceActivityDinner:
+		case LinphonePresenceActivityLunch:
+		case LinphonePresenceActivityMeal:
+			return LinphoneStatusOutToLunch;
+		case LinphonePresenceActivityPermanentAbsence:
+			return LinphoneStatusMoved;
+		case LinphonePresenceActivityOther:
+			if (description != NULL) {
+				if (strcmp(description, "Waiting for user acceptance") == 0)
+					return LinphoneStatusPending;
+			}
+			return LinphoneStatusBusy;
+		case LinphonePresenceActivityVacation:
+			return LinphoneStatusVacation;
+		case LinphonePresenceActivityAppointment:
+		case LinphonePresenceActivityMeeting:
+		case LinphonePresenceActivityWorship:
+			return LinphoneStatusDoNotDisturb;
+		default:
+			return LinphoneStatusBusy;
+	}
+}
+
+LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc) {
+	return lc->presence_model;
 }
 
 /**

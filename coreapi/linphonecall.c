@@ -412,8 +412,10 @@ static int select_random_port(LinphoneCore *lc, SalStreamType type) {
 }
 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
+	LinphonePresenceModel *model;
 	int port_offset;
 	int min_port, max_port;
+
 	call->magic=linphone_call_magic;
 	call->refcnt=1;
 	call->state=LinphoneCallIdle;
@@ -422,7 +424,9 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
-	linphone_core_notify_all_friends(call->core,LinphoneStatusOnThePhone);
+	model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
+	linphone_core_notify_all_friends(call->core,model);
+	linphone_presence_model_delete(model);
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	if (min_port == max_port) {
 		/* Used fixed RTP audio port. */
@@ -630,7 +634,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	}
 
 	if (ms_list_size(lc->calls)==0)
-		linphone_core_notify_all_friends(lc,lc->presence_mode);
+		linphone_core_notify_all_friends(lc,lc->presence_model);
 
 	linphone_core_conference_check_uninit(lc);
 	if (call->ringing_beep){

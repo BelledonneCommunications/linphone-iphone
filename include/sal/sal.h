@@ -359,6 +359,7 @@ typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *ev
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop);
 typedef void (*SalOnParsePresenceRequested)(SalOp *salop, const char *content_type, const char *content_subtype, const char *content, SalPresenceModel **result);
+typedef void (*SalOnConvertPresenceToXMLRequested)(SalOp *salop, SalPresenceModel *presence, const char *contact, char **content);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg);
 typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
@@ -398,6 +399,7 @@ typedef struct SalCallbacks{
 	SalOnSubscribePresenceReceived subscribe_presence_received;
 	SalOnSubscribePresenceClosed subscribe_presence_closed;
 	SalOnParsePresenceRequested parse_presence_requested;
+	SalOnConvertPresenceToXMLRequested convert_presence_to_xml_requested;
 	SalOnNotifyPresence notify_presence;
 	SalOnPingReply ping_reply;
 	SalOnAuthRequested auth_requested;
@@ -532,11 +534,11 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 
 /*presence Subscribe/notify*/
 int sal_subscribe_presence(SalOp *op, const char *from, const char *to);
-int sal_notify_presence(SalOp *op, SalPresenceStatus status, const char *status_message);
+int sal_notify_presence(SalOp *op, SalPresenceModel *presence);
 int sal_notify_presence_close(SalOp *op);
 
 /*presence publish */
-int sal_publish_presence(SalOp *op, const char *from, const char *to, SalPresenceStatus status);
+int sal_publish_presence(SalOp *op, const char *from, const char *to, SalPresenceModel *presence);
 
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
