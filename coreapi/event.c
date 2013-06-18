@@ -29,6 +29,8 @@ struct _LinphoneEvent{
 	void *userdata;
 	int refcnt;
 	char *name;
+	LinphoneAddress *from;
+	LinphoneAddress *resource_addr;
 };
 
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss){
@@ -59,6 +61,12 @@ LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir,
 
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name){
 	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, op);
+	if (dir==LinphoneSubscriptionIncoming){
+		lev->resource_addr=linphone_address_clone((LinphoneAddress*)sal_op_get_to_address(op));
+		lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
+	}else{
+		lev->resource_addr=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(op));
+	}
 	return lev;
 }
 
@@ -87,6 +95,8 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event);
 	SalBody salbody;
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
+	lev->resource_addr=linphone_address_clone(resource);
+	lev->from=linphone_address_clone((LinphoneAddress*)sal_op_get_from_address(lev->op));
 	sal_subscribe(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
 	linphone_event_set_state(lev,LinphoneSubscriptionOutoingInit);
 	return lev;
@@ -187,6 +197,8 @@ static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->op)
 		sal_op_release(lev->op);
 	ms_free(lev->name);
+	if (lev->resource_addr) linphone_address_destroy(lev->resource_addr);
+	if (lev->from) linphone_address_destroy(lev->from);
 	ms_free(lev);
 }
 
@@ -205,5 +217,13 @@ LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEv
 
 const char *linphone_event_get_name(const LinphoneEvent *lev){
 	return lev->name;
+}
+
+const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev){
+	return lev->from;
+}
+
+const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
+	return lev->resource_addr;
 }
 

@@ -172,6 +172,16 @@ void linphone_event_unref(LinphoneEvent *lev);
 const char *linphone_event_get_name(const LinphoneEvent *lev);
 
 /**
+ * Get the "from" address of the subscription.
+**/
+const LinphoneAddress *linphone_event_get_from(const LinphoneEvent *lev);
+
+/**
+ * Get the resource address of the subscription or publish.
+**/
+const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev);
+
+/**
  * @}
 **/
 
