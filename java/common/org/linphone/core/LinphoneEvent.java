@@ -6,6 +6,18 @@ public interface LinphoneEvent {
 	 * @return the event name.
 	 */
 	String getEventName();
+	
+	/**
+	 * Return subscription direction (incoming or outgoing). For publish initiated LinphoneEvent it is set to Invalid.
+	 * @return the subscription direction.
+	 */
+	SubscriptionDir getSubscriptionDir();
+	
+	/**
+	 * Get subscription state.
+	 * @return the current subscription state.
+	 */
+	SubscriptionState getSubscriptionState();
 	/**
 	 * Accept an incoming subscription. After it is accepted the application can immediately start to send notifications with
 	 * {@link LinphoneEvent.notify() }.

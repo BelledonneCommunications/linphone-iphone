@@ -954,16 +954,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public LinphoneInfoMessage createInfoMessage() {
 		return new LinphoneInfoMessageImpl(createInfoMessage(nativePtr));
 	}
+	
+	private native Object subscribe(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, String data);
 	@Override
-	public LinphoneEvent subscribe(LinphoneAddress resource, String event,
+	public LinphoneEvent subscribe(LinphoneAddress resource, String eventname,
 			int expires, LinphoneContent content) {
-		// TODO Auto-generated method stub
-		return null;
+		return (LinphoneEvent)subscribe(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getDataAsString() : null);
 	}
+	private native Object publish(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, String data);
 	@Override
-	public LinphoneEvent publish(LinphoneAddress resource, String event,
+	public LinphoneEvent publish(LinphoneAddress resource, String eventname,
 			int expires, LinphoneContent content) {
-		// TODO Auto-generated method stub
-		return null;
+		return (LinphoneEvent)publish(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getDataAsString() : null);
 	}
 }
