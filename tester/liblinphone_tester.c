@@ -96,6 +96,8 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	char ringbackpath[256]={0};
 	char rootcapath[256]={0};
 	char dnsuserhostspath[256]={0};
+	
+	if (path==NULL) path=".";
 
 	if (path && file){
 		sprintf(filepath, "%s/%s", path, file);
@@ -105,7 +107,11 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
 
 	if (path){
-		sprintf(rootcapath, "%s/certificates/cacert.pem", path);
+#ifndef ANDROID
+		snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cacert.pem", path);
+#else
+		snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
+#endif
 		linphone_core_set_root_ca(lc,rootcapath);
 
 		sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);

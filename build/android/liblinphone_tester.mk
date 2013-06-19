@@ -8,6 +8,7 @@ common_SRC_FILES := \
 	register_tester.c \
 	setup_tester.c \
 	upnp_tester.c \
+	eventapi_tester.c
  
 # neon
 
