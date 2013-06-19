@@ -62,8 +62,8 @@ void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMes
 }
 
 static void text_message(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
@@ -80,8 +80,8 @@ static void text_message(void) {
 }
 
 static void text_message_with_privacy(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneProxyConfig* pauline_proxy;
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
@@ -103,8 +103,8 @@ static void text_message_with_privacy(void) {
 
 static void text_message_compatibility_mode(void) {
 	char route[256];
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneProxyConfig* proxy;
 	LinphoneAddress* proxy_address;
 	char*tmp;
@@ -141,8 +141,8 @@ static void text_message_compatibility_mode(void) {
 }
 
 static void text_message_with_ack(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -155,8 +155,8 @@ static void text_message_with_ack(void) {
 }
 
 static void text_message_with_external_body(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -172,8 +172,8 @@ static void text_message_with_external_body(void) {
 }
 
 static void text_message_with_send_error(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	char* to = linphone_address_as_string(pauline->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(marie->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
@@ -216,8 +216,8 @@ void info_message_received(LinphoneCore *lc, LinphoneCall* call, const LinphoneI
 
 
 static void info_message_with_args(bool_t with_content) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneInfoMessage *info;
 	
 	CU_ASSERT_TRUE(call(pauline,marie));

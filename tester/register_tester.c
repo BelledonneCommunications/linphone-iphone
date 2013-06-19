@@ -23,7 +23,7 @@
 #include "liblinphone_tester.h"
 
 static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
-	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL,NULL);
+	LinphoneCoreManager* mgr=linphone_core_manager_new(NULL);
 	
 	if (with_auth) {
 		mgr->lc->vtable.auth_info_requested=auth_info_requested;
@@ -238,7 +238,7 @@ static void authenticated_register_with_no_initial_credentials(){
 	
 	sprintf(route,"sip:%s",test_route);
 	
-	mgr = linphone_core_manager_new(NULL,NULL);
+	mgr = linphone_core_manager_new(NULL);
 	
 	counters= get_stats(mgr->lc);
 	counters->number_of_auth_info_requested=0;
@@ -264,7 +264,7 @@ static void authenticated_register_with_late_credentials(){
 	
 	sprintf(route,"sip:%s",test_route);
 	
-	mgr =  linphone_core_manager_new(NULL,NULL);
+	mgr =  linphone_core_manager_new(NULL);
 	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
 	counters = get_stats(mgr->lc);
 	register_with_refresh_base_2(mgr->lc,FALSE,auth_domain,route,TRUE,transport);
@@ -281,7 +281,7 @@ static void authenticated_register_with_wrong_credentials(){
 	
 	sprintf(route,"sip:%s",test_route);
 	
-	mgr=linphone_core_manager_new(NULL,NULL);
+	mgr=linphone_core_manager_new(NULL);
 	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
 	
 	linphone_core_add_auth_info(mgr->lc,info); /*add wrong authentication info to LinphoneCore*/
@@ -292,7 +292,7 @@ static void authenticated_register_with_wrong_credentials(){
 }
 
 static LinphoneCoreManager* configure_lcm(void) {
-	LinphoneCoreManager *mgr=linphone_core_manager_new( liblinphone_tester_file_prefix, "multi_account_lrc");
+	LinphoneCoreManager *mgr=linphone_core_manager_new( "multi_account_lrc");
 	stats *counters=&mgr->stat;
 	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(mgr->lc))));
 	return mgr;
@@ -424,7 +424,7 @@ static void tls_certificate_failure(){
 	LinphoneCore *lc;
 	char rootcapath[256];
 	
-	mgr=linphone_core_manager_new2(liblinphone_tester_file_prefix, "pauline_rc",FALSE);
+	mgr=linphone_core_manager_new2("pauline_rc",FALSE);
 	lc=mgr->lc;
 	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/agent.pem", liblinphone_tester_file_prefix); /*bad root ca*/
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
@@ -448,7 +448,7 @@ static void tls_with_non_tls_server(){
 	char tmp[256];
 	LinphoneCore *lc;
 	
-	mgr=linphone_core_manager_new2(liblinphone_tester_file_prefix, "marie_rc", 0);
+	mgr=linphone_core_manager_new2( "marie_rc", 0);
 	lc=mgr->lc;
 	linphone_core_get_default_proxy(lc,&proxy_cfg);
 	linphone_proxy_config_edit(proxy_cfg);

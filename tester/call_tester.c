@@ -162,8 +162,8 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
 }
 
 static void simple_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCore* lc_marie=marie->lc;
 	LinphoneCore* lc_pauline=pauline->lc;
@@ -213,8 +213,8 @@ static void simple_call(void) {
 
 static void simple_call_compatibility_mode(void) {
 	char route[256];
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCore* lc_marie=marie->lc;
 	LinphoneCore* lc_pauline=pauline->lc;
@@ -279,8 +279,8 @@ static void simple_call_compatibility_mode(void) {
 
 
 static void cancelled_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
@@ -299,7 +299,7 @@ static void cancelled_call(void) {
 }
 
 static void call_with_dns_time_out(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new2(liblinphone_tester_file_prefix, "empty_rc", FALSE);
+	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
 	LCSipTransports transport = {9773,0,0,0};
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	linphone_core_iterate(marie->lc);
@@ -315,8 +315,8 @@ static void call_with_dns_time_out(void) {
 }
 
 static void cancelled_ringing_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
@@ -334,8 +334,8 @@ static void cancelled_ringing_call(void) {
 }
 
 static void early_declined_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCallLog* in_call;
 	LinphoneCall* out_call;
 
@@ -358,8 +358,8 @@ static void early_declined_call(void) {
 }
 
 static void call_declined(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCall* in_call;
 	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
@@ -383,8 +383,8 @@ static void call_declined(void) {
 }
 
 static void call_terminated_by_caller(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
 	CU_ASSERT_TRUE(call(pauline,marie));
 	/*just to sleep*/
@@ -397,8 +397,8 @@ static void call_terminated_by_caller(void) {
 }
 
 static void call_with_no_sdp(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_no_sdp_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_no_sdp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
 	CU_ASSERT_TRUE(call(marie,pauline));
 	/*just to sleep*/
@@ -436,8 +436,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	return success;
 }
 static void call_with_ice(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	
 	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 	linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
@@ -461,8 +461,8 @@ static void call_with_ice(void) {
 }
 
 static void call_with_custom_headers(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	const LinphoneCallParams *remote_params;
@@ -498,8 +498,8 @@ static void call_with_custom_headers(void) {
 }
 
 static void call_paused_resumed(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_obj;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
@@ -536,8 +536,8 @@ static bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,Linph
 }
 
 static void call_paused_resumed_from_callee(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall* call_obj;
 
 	CU_ASSERT_TRUE(call(pauline,marie));
@@ -595,8 +595,8 @@ static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee)
 
 }
 static void call_with_video_added(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	CU_ASSERT_TRUE(call(pauline,marie));
 
 	CU_ASSERT_TRUE(add_video(pauline,marie));
@@ -612,8 +612,8 @@ static void call_with_video_added(void) {
 #endif
 
 static void call_with_privacy(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	LinphoneProxyConfig* pauline_proxy;
@@ -670,9 +670,9 @@ static void call_with_privacy(void) {
 
 
 static void simple_conference(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new(liblinphone_tester_file_prefix, "laure_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
 	stats initial_laure_stat;
@@ -728,8 +728,8 @@ static void simple_conference(void) {
 
 
 static void srtp_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionSRTP)) {
 		linphone_core_set_media_encryption(marie->lc,LinphoneMediaEncryptionSRTP);
@@ -751,8 +751,8 @@ static void srtp_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 static void call_with_declined_srtp(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionSRTP)) {
 		linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
 
@@ -774,8 +774,8 @@ static void srtp_video_ice_call(void) {
 static void srtp_ice_call(void) {
 #endif
 	int i=0;
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	if (linphone_core_media_encryption_supported(marie->lc,LinphoneMediaEncryptionSRTP)) {
 		linphone_core_set_media_encryption(marie->lc,LinphoneMediaEncryptionSRTP);
@@ -817,8 +817,8 @@ static void srtp_ice_call(void) {
 
 
 static void early_media_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	CU_ASSERT_TRUE(call(pauline,marie));
 
@@ -834,9 +834,9 @@ static void early_media_call(void) {
 }
 
 static void simple_call_transfer(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new(liblinphone_tester_file_prefix, "laure_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCall* pauline_called_by_marie;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
@@ -883,9 +883,9 @@ static void simple_call_transfer(void) {
 }
 
 static void call_transfer_existing_call_outgoing_call(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new(liblinphone_tester_file_prefix, "laure_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;

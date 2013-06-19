@@ -167,7 +167,7 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 	return manager;
 }
 
-LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc_file, int check_for_proxies) {
+LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	LinphoneProxyConfig* proxy;
 	int proxy_count=check_for_proxies?(rc_file?1:0):0;
@@ -185,7 +185,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	mgr->v_table.info_received=info_message_received;
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
 	mgr->v_table.notify_received=linphone_notify_received;
-	mgr->lc=configure_lc_from(&mgr->v_table, path, rc_file);
+	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_file);
 	linphone_core_set_user_data(mgr->lc,mgr);
 	reset_counters(&mgr->stat);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
@@ -205,8 +205,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* path, const char* rc
 	return mgr;
 }
 
-LinphoneCoreManager* linphone_core_manager_new(const char* path, const char* rc_file) {
-	return linphone_core_manager_new2(path, rc_file, TRUE);
+LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
+	return linphone_core_manager_new2(rc_file, TRUE);
 }
 
 void linphone_core_manager_stop(LinphoneCoreManager *mgr){

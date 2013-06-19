@@ -23,7 +23,7 @@
 #include "liblinphone_tester.h"
 
 static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
-	LinphoneCoreManager* mgr= linphone_core_manager_new2(liblinphone_tester_file_prefix, "empty_rc", FALSE);
+	LinphoneCoreManager* mgr= linphone_core_manager_new2( "empty_rc", FALSE);
 	char* identity_char;
 	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
 	linphone_address_set_username(mgr->identity,username);
@@ -68,7 +68,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 }
 
 static void simple_publish(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	int i=0;
 	linphone_core_get_default_proxy(marie->lc,&proxy);
@@ -124,7 +124,7 @@ static void simple_subscribe(void) {
 }
 
 static void unsubscribe_while_subscribing(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneFriend* friend = linphone_friend_new_with_addr("sip:toto@git.linphone.org"); /*any unexisting address*/
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);

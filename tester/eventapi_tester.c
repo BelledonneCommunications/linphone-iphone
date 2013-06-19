@@ -77,8 +77,8 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 }
 
 static void subscribe_test_declined(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
@@ -104,8 +104,8 @@ static void subscribe_test_declined(void) {
 
 
 static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
-	LinphoneCoreManager* marie = linphone_core_manager_new(liblinphone_tester_file_prefix, "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(liblinphone_tester_file_prefix, "pauline_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content;
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);

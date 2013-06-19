@@ -25,7 +25,7 @@
 
 static void upnp_start_n_stop(void) {
 	int tmp = 0;
-	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2(liblinphone_tester_file_prefix, "upnp_rc", FALSE);
+	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 #ifdef BUILD_UPNP
 	CU_ASSERT_TRUE(lc_upnp->lc->upnp != NULL);
@@ -35,7 +35,7 @@ static void upnp_start_n_stop(void) {
 
 static void upnp_check_state(void) {
 	int tmp = 0;
-	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2(liblinphone_tester_file_prefix, "upnp_rc", FALSE);
+	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 	CU_ASSERT_TRUE(linphone_core_get_upnp_state(lc_upnp->lc) == LinphoneUpnpStateOk);
 	linphone_core_manager_destroy(lc_upnp);
@@ -43,7 +43,7 @@ static void upnp_check_state(void) {
 
 static void upnp_check_ipaddress(void) {
 	int tmp = 0;
-	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2(liblinphone_tester_file_prefix, "upnp_rc", FALSE);
+	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 	const char *addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
 	CU_ASSERT_TRUE(addr != NULL && strlen(addr)>=7);
