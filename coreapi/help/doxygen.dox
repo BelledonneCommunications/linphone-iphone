@@ -152,7 +152,7 @@ linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE mess
 
 
 <b> Publishing presence status </b>
-<br>Local presence status can be changed using function linphone_core_set_presence_info() .New status is propagated to all friends \link linphone_core_add_friend() previously added \endlink to #LinphoneCore. 
+<br>Local presence status can be changed using function linphone_core_set_presence_model() .New status is propagated to all friends \link linphone_core_add_friend() previously added \endlink to #LinphoneCore.
 
 <b>Handling incoming subscription request</b>
 <br> New incoming subscription requests are process according to \link linphone_friend_set_inc_subscribe_policy() the incoming subscription policy state \endlink for subscription initiated by \link linphone_core_add_friend() members of the buddy list. \endlink

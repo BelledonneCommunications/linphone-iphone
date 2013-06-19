@@ -51,9 +51,15 @@ static void stop(int signum){
  * presence state change notification callback
  */
 static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *friend) {
+	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+	const LinphonePresenceModel* model = linphone_friend_get_presence_model(friend);
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
-	printf("New state state [%s] for user id [%s] \n"
-				,linphone_online_status_to_string(linphone_friend_get_status(friend))
+	char *description = NULL;
+	linphone_presence_model_get_activity(model, &activity, &description);
+	printf("New state state [%s%s%s] for user id [%s] \n"
+				,linphone_presence_activity_to_string(activity)
+				,(description == NULL) ? "" : ": "
+				,(description == NULL) ? "" : description
 				,linphone_address_as_string (friend_address));
 }
 static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
@@ -164,7 +170,8 @@ int main(int argc, char *argv[]){
 
 	}
 
-	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOnline); /*set my status to online*/
+	/*set my status to online*/
+	linphone_core_set_presence_model(lc, 0, NULL, linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL));
 
 	/* main loop for receiving notifications and doing background linphone core work: */
 	while(running){
@@ -172,7 +179,8 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 	}
 
-	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOffline); /* change my presence status to offline*/
+	/* change my presence status to offline*/
+	linphone_core_set_presence_model(lc, 0, NULL, linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL));
 	linphone_core_iterate(lc); /* just to make sure new status is initiate message is issued */
 
 	linphone_friend_edit(my_friend); /* start editing friend */

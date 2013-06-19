@@ -945,6 +945,14 @@ static const char * presence_activity_to_string(LinphonePresenceActivity activit
 	return NULL;
 }
 
+const char * linphone_presence_activity_to_string(LinphonePresenceActivity activity) {
+	if (activity == LinphonePresenceActivityOffline)
+		return "offline";
+	if (activity == LinphonePresenceActivityOnline)
+		return "online";
+	return presence_activity_to_string(activity);
+}
+
 static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml_ctx, struct _LinphonePresencePerson *person, unsigned int person_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr activities_nodes_object;
@@ -1162,7 +1170,13 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
 
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence){
 	MSList *elem;
-	ms_message("Notifying all friends");
+	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+	char *description = NULL;
+	linphone_presence_model_get_activity(presence, &activity, &description);
+	ms_message("Notifying all friends that we are [%s%s%s]",
+		linphone_presence_activity_to_string(activity),
+		(description == NULL) ? "" : ": ",
+		(description == NULL) ? "" : description);
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend *)elem->data;
 		if (lf->insub){
@@ -1501,19 +1515,28 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	char *tmp;
 	LinphoneFriend *lf;
 	LinphoneAddress *friend=NULL;
+	LinphonePresenceModel *presence = (LinphonePresenceModel *)model;
 
 	lf=linphone_find_friend_by_out_subscribe(lc->friends,op);
 	if (lf!=NULL){
+		LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+		char *description = NULL;
 		friend=lf->uri;
 		tmp=linphone_address_as_string(friend);
-		linphone_friend_set_presence(lf, (LinphonePresenceModel *)model);
+		linphone_presence_model_get_activity(presence, &activity, &description);
+		ms_message("We are notified that [%s] has presence [%s%s%s]",
+				tmp,
+				linphone_presence_activity_to_string(activity),
+				(description == NULL) ? "" : ": ",
+				(description == NULL) ? "" : description);
+		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		if (lc->vtable.notify_presence_recv)
 			lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");
-		linphone_presence_model_delete((LinphonePresenceModel *)model);
+		linphone_presence_model_delete(presence);
 	}
 	if (ss==SalSubscribeTerminated){
 		sal_op_release(op);

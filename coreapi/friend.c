@@ -359,11 +359,11 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	return online_status;
 }
 
-LinphonePresenceModel * linphone_friend_get_presence(LinphoneFriend *lf) {
+LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf) {
 	return lf->presence;
 }
 
-void linphone_friend_set_presence(LinphoneFriend *lf, LinphonePresenceModel *model) {
+void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *model) {
 	if (lf->presence != NULL) {
 		linphone_presence_model_delete(lf->presence);
 	}

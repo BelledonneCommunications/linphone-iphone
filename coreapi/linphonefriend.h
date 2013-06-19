@@ -54,6 +54,7 @@ typedef  enum {
 
 /**
  * Enum describing remote friend status
+ * @deprecated Use #LinphonePresenceModel and #LinphonePresenceActivity instead
  */
 typedef enum _LinphoneOnlineStatus{
 	/**
@@ -206,13 +207,26 @@ LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
 
 
 /**
- * get friend status
+ * @brief Get the status of a friend
+ * @param[in] lf A #LinphoneFriend object
  * @return #LinphoneOnlineStatus
+ * @deprecated Use linphone_friend_get_presence_model() instead
  */
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 
-LinphonePresenceModel * linphone_friend_get_presence(LinphoneFriend *lf);
-void linphone_friend_set_presence(LinphoneFriend *lf, LinphonePresenceModel *presence);
+/**
+ * @brief Get the presence information of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @return A #LinphonePresenceModel object, or NULL if the friend to not have presence information (in which he is considered offline)
+ */
+LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
+
+/**
+ * @brief Set the presence information of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @param[in] presence A #LinphonePresenceModel object. It can be NULL to remove the presence information of the friend.
+ */
+void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *presence);
 
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
@@ -222,41 +236,44 @@ bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 #define linphone_friend_url(lf) ((lf)->url)
 
 /**
- * return humain readable presence status
+ * Return humain readable presence status
  * @param ss
+ * @deprecated Use #LinphonePresenceModel, #LinphonePresenceActivity and linphone_presence_activity_to_string() instead.
  */
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
 
 /**
- * Set my presence status
- * @param lc #LinphoneCore object
- * @param minutes_away how long in away
- * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
- * @param os #LinphoneOnlineStatus
+ * @brief Set my presence status
+ * @param[in] lc #LinphoneCore object
+ * @param[in] minutes_away how long in away
+ * @param[in] alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
+ * @param[in] os #LinphoneOnlineStatus
+ * @deprecated Use linphone_core_set_presence_model() instead
  */
 LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
 
 /**
- * Set my presence status
- * @param lc #LinphoneCore object
- * @param minutes_away how long in away
- * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
- * @param presence #LinphonePresenceModel
+ * @brief Set my presence status
+ * @param[in] lc #LinphoneCore object
+ * @param[in] minutes_away how long in away
+ * @param[in] alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
+ * @param[in] presence #LinphonePresenceModel
  */
 LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const char *alternative_contact, LinphonePresenceModel *presence);
 
 /**
- * Get my presence status
- * @param lc #LinphoneCore object
+ * @brief Get my presence status
+ * @param[in] lc #LinphoneCore object
  * @return #LinphoneOnlineStatus
+ * @deprecated Use linphone_core_get_presence_model() instead
  */
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
 
 /**
- * Get my presence status
- * @param lc #LinphoneCore object
- * @return #LinphonePresenceModel
+ * @brief Get my presence status
+ * @param[in] lc #LinphoneCore object
+ * @return A #LinphonePresenceModel object, or NULL if no presence model has been set.
  */
 LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
 
