@@ -41,6 +41,7 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 								,BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length=strlen(content))));
 	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),content,content_length);
 	ms_free(contact_info);
+	ms_free(content);
 }
 
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){

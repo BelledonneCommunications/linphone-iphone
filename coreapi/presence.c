@@ -991,6 +991,7 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 					}
 				}
 			}
+			if (activities_object != NULL) xmlXPathFreeObject(activities_object);
 			if (err < 0) break;
 		}
 	}
