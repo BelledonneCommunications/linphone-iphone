@@ -776,6 +776,7 @@ static void linphone_call_destroy(LinphoneCall *obj)
 		ms_free(obj->auth_token);
 	}
 	linphone_call_params_uninit(&obj->params);
+	linphone_call_params_uninit(&obj->current_params);
 	ms_free(obj);
 }
 
@@ -811,8 +812,6 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
-	if (call->params.record_file)
-		call->current_params.record_file=call->params.record_file;
 	return &call->current_params;
 }
 
@@ -1144,6 +1143,7 @@ const char *linphone_call_params_get_custom_header(const LinphoneCallParams *par
 }
 
 void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParams *cp){
+	if (ncp==cp) return;
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
 	/*
@@ -1608,8 +1608,10 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
-			if (!call->params.in_conference && call->params.record_file)
+			if (!call->params.in_conference && call->params.record_file){
 				audio_stream_mixed_record_open(call->audiostream,call->params.record_file);
+				call->current_params.record_file=ms_strdup(call->params.record_file);
+			}
 			audio_stream_start_full(
 				call->audiostream,
 				call->audio_profile,
