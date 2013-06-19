@@ -43,33 +43,82 @@ void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *
 
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
+	LinphonePresenceModel* presence;
+	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("New Notify request  from [%s] ",from);
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_NotifyReceived++;
 
-	switch(linphone_friend_get_status(lf)) {
-		case LinphoneStatusOffline: counters->number_of_LinphoneStatusOffline++; break;
-		case LinphoneStatusOnline: counters->number_of_LinphoneStatusOnline++; break;
-		case LinphoneStatusBusy: counters->number_of_LinphoneStatusBusy++; break;
-		case LinphoneStatusBeRightBack: counters->number_of_LinphoneStatusBeRightBack++; break;
-		case LinphoneStatusAway: counters->number_of_LinphoneStatusAway++; break;
-		case LinphoneStatusOnThePhone: counters->number_of_LinphoneStatusOnThePhone++; break;
-		case LinphoneStatusOutToLunch: counters->number_of_LinphoneStatusOutToLunch++; break;
-		case LinphoneStatusDoNotDisturb: counters->number_of_LinphoneStatusDoNotDisturb++; break;
-		case LinphoneStatusMoved: counters->number_of_LinphoneStatusMoved++; break;
-		case LinphoneStatusAltService: counters->number_of_LinphoneStatusMoved++; break;
-		case LinphoneStatusPending: counters->number_of_LinphoneStatusPending++; break;
-		case LinphoneStatusEnd: counters->number_of_LinphoneStatusEnd++; break;
-		default:
-		break;
+	presence = linphone_friend_get_presence_model(lf);
+	linphone_presence_model_get_activity(presence, &activity, NULL);
+	switch(activity) {
+		case LinphonePresenceActivityOffline:
+			counters->number_of_LinphonePresenceActivityOffline++; break;
+		case LinphonePresenceActivityOnline:
+			counters->number_of_LinphonePresenceActivityOnline++; break;
+		case LinphonePresenceActivityAppointment:
+			counters->number_of_LinphonePresenceActivityAppointment++; break;
+		case LinphonePresenceActivityAway:
+			counters->number_of_LinphonePresenceActivityAway++; break;
+		case LinphonePresenceActivityBreakfast:
+			counters->number_of_LinphonePresenceActivityBreakfast++; break;
+		case LinphonePresenceActivityBusy:
+			counters->number_of_LinphonePresenceActivityBusy++; break;
+		case LinphonePresenceActivityDinner:
+			counters->number_of_LinphonePresenceActivityDinner++; break;
+		case LinphonePresenceActivityHoliday:
+			counters->number_of_LinphonePresenceActivityHoliday++; break;
+		case LinphonePresenceActivityInTransit:
+			counters->number_of_LinphonePresenceActivityInTransit++; break;
+		case LinphonePresenceActivityLookingForWork:
+			counters->number_of_LinphonePresenceActivityLookingForWork++; break;
+		case LinphonePresenceActivityLunch:
+			counters->number_of_LinphonePresenceActivityLunch++; break;
+		case LinphonePresenceActivityMeal:
+			counters->number_of_LinphonePresenceActivityMeal++; break;
+		case LinphonePresenceActivityMeeting:
+			counters->number_of_LinphonePresenceActivityMeeting++; break;
+		case LinphonePresenceActivityOnThePhone:
+			counters->number_of_LinphonePresenceActivityOnThePhone++; break;
+		case LinphonePresenceActivityOther:
+			counters->number_of_LinphonePresenceActivityOther++; break;
+		case LinphonePresenceActivityPerformance:
+			counters->number_of_LinphonePresenceActivityPerformance++; break;
+		case LinphonePresenceActivityPermanentAbsence:
+			counters->number_of_LinphonePresenceActivityPermanentAbsence++; break;
+		case LinphonePresenceActivityPlaying:
+			counters->number_of_LinphonePresenceActivityPlaying++; break;
+		case LinphonePresenceActivityPresentation:
+			counters->number_of_LinphonePresenceActivityPresentation++; break;
+		case LinphonePresenceActivityShopping:
+			counters->number_of_LinphonePresenceActivityShopping++; break;
+		case LinphonePresenceActivitySleeping:
+			counters->number_of_LinphonePresenceActivitySleeping++; break;
+		case LinphonePresenceActivitySpectator:
+			counters->number_of_LinphonePresenceActivitySpectator++; break;
+		case LinphonePresenceActivitySteering:
+			counters->number_of_LinphonePresenceActivitySteering++; break;
+		case LinphonePresenceActivityTravel:
+			counters->number_of_LinphonePresenceActivityTravel++; break;
+		case LinphonePresenceActivityTV:
+			counters->number_of_LinphonePresenceActivityTV++; break;
+		case LinphonePresenceActivityUnknown:
+			counters->number_of_LinphonePresenceActivityUnknown++; break;
+		case LinphonePresenceActivityVacation:
+			counters->number_of_LinphonePresenceActivityVacation++; break;
+		case LinphonePresenceActivityWorking:
+			counters->number_of_LinphonePresenceActivityWorking++; break;
+		case LinphonePresenceActivityWorship:
+			counters->number_of_LinphonePresenceActivityWorship++; break;
 	}
 }
 
 static void simple_publish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
+	LinphonePresenceModel* presence;
 	int i=0;
 	linphone_core_get_default_proxy(marie->lc,&proxy);
 	linphone_proxy_config_edit(proxy);
@@ -79,7 +128,9 @@ static void simple_publish(void) {
 		linphone_core_iterate(marie->lc);
 		ms_usleep(100000);
 	}
-	linphone_core_set_presence_info(marie->lc,0,NULL,LinphoneStatusOffline);
+	presence = linphone_core_get_presence_model(marie->lc);
+	linphone_presence_model_set_activity(presence,LinphonePresenceActivityOffline,NULL);
+	linphone_core_set_presence_model(marie->lc,0,NULL,presence);
 	for (i=0;i<10;i++) {
 		linphone_core_iterate(marie->lc);
 		ms_usleep(100000);
@@ -101,8 +152,8 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 
 	linphone_core_add_friend(caller_mgr->lc,friend);
 
-	result=wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphoneStatusOnline,initial_callee.number_of_LinphoneStatusOnline+1);
-	result&=wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphoneStatusOnline,initial_caller.number_of_LinphoneStatusOnline+1);
+	result=wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_callee.number_of_LinphonePresenceActivityOnline+1);
+	result&=wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_caller.number_of_LinphonePresenceActivityOnline+1);
 
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NewSubscriptionRequest,initial_callee.number_of_NewSubscriptionRequest+1);
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NotifyReceived,initial_callee.number_of_NotifyReceived+1);
@@ -142,14 +193,14 @@ static void call_with_presence(void) {
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 
 	CU_ASSERT_TRUE(call(marie,pauline));
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneStatusOnThePhone,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneStatusOnThePhone,1);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone,1);
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnThePhone,1);
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 	linphone_core_terminate_all_calls(marie->lc);
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneStatusOnline,1));
-	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneStatusOnline,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnline,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1));
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

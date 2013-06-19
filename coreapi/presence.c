@@ -301,6 +301,7 @@ static int presence_model_set_basic_status(LinphonePresenceModel *model, Linphon
 	if (ms_list_size(model->services) > 0) {
 		ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
 		ms_list_free(model->services);
+		model->services = NULL;
 	}
 	id = generate_presence_id();
 	service = presence_service_new(id, basic_status);
