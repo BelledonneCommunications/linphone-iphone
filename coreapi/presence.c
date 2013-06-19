@@ -641,116 +641,6 @@ static xmlXPathObjectPtr get_xml_xpath_object_for_node_list(xmlparsing_context_t
 	return xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
 }
 
-static int process_rfcxxxx_presence_notification(xmlparsing_context_t *xml_ctx, LinphonePresenceModel *model) {
-	LinphonePresenceBasicStatus basic_status;
-	struct _LinphonePresenceService *service;
-	struct _LinphonePresencePerson *person;
-	struct _LinphonePresenceActivity *activity = NULL;
-	char *status_text = NULL;
-	char *substatus_text = NULL;
-
-	if (create_xml_xpath_context(xml_ctx) < 0)
-		return -1;
-	status_text = get_xml_text_content(xml_ctx, "/presence/atom/address/status/@status");
-	if (status_text == NULL)
-		return -1;
-	substatus_text = get_xml_text_content(xml_ctx, "/presence/atom/address/msnsubstatus/@substatus");
-	if (substatus_text == NULL) {
-		free_xml_text_content(status_text);
-		return -1;
-	}
-
-	if (strcmp(status_text, "open") == 0) {
-		basic_status = LinphonePresenceBasicStatusOpen;
-		if (strcmp(substatus_text, "berightback") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityInTransit, NULL);
-		} else if (strcmp(substatus_text, "away") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityAway, NULL);
-		} else if (strcmp(substatus_text, "outtolunch") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityMeal, NULL);
-		}
-	} else if (strcmp(status_text, "inuse") == 0) {
-		basic_status = LinphonePresenceBasicStatusOpen;
-		if (strcmp(substatus_text, "busy") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityBusy, NULL);
-		} else if (strcmp(substatus_text, "onthephone") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityOnThePhone, NULL);
-		}
-	} else if (strcmp(status_text, "closed") == 0) {
-		basic_status = LinphonePresenceBasicStatusClosed;
-	}
-	service = presence_service_new(NULL, basic_status);
-	if (service != NULL) {
-		presence_model_add_service(model, service);
-	}
-	if (activity != NULL) {
-		person = presence_person_new(NULL, time(NULL));
-		if (person != NULL) {
-			presence_person_add_activity(person, activity);
-			presence_model_add_person(model, person);
-		}
-	}
-	free_xml_text_content(status_text);
-	free_xml_text_content(substatus_text);
-
-	return 0;
-}
-
-static int process_msoldpres_presence_notification(xmlparsing_context_t *xml_ctx, LinphonePresenceModel *model) {
-	LinphonePresenceBasicStatus basic_status;
-	struct _LinphonePresenceService *service;
-	struct _LinphonePresencePerson *person;
-	struct _LinphonePresenceActivity *activity = NULL;
-	char *status_text = NULL;
-	char *substatus_text = NULL;
-
-	if (create_xml_xpath_context(xml_ctx) < 0)
-		return -1;
-	status_text = get_xml_text_content(xml_ctx, "/presence/atom/address/status/@status");
-	if (status_text == NULL)
-		return -1;
-	substatus_text = get_xml_text_content(xml_ctx, "/presence/atom/address/msnsubstatus/@substatus");
-	if (substatus_text == NULL) {
-		free_xml_text_content(status_text);
-		return -1;
-	}
-
-	if (strcmp(status_text, "open") == 0) {
-		basic_status = LinphonePresenceBasicStatusOpen;
-	} else if (strcmp(status_text, "inuse") == 0) {
-		basic_status = LinphonePresenceBasicStatusOpen;
-		if (strcmp(substatus_text, "busy") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityBusy, NULL);
-		} else if (strcmp(substatus_text, "onthephone") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityOnThePhone, NULL);
-		}
-	} else if (strcmp(status_text, "inactive") == 0) {
-		basic_status = LinphonePresenceBasicStatusOpen;
-		if (strcmp(substatus_text, "berightback") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityInTransit, NULL);
-		} else if (strcmp(substatus_text, "idle") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityAway, NULL);
-		} else if (strcmp(substatus_text, "outtolunch") == 0) {
-			activity = presence_activity_new(LinphonePresenceActivityMeal, NULL);
-		}
-	} else if (strcmp(status_text, "closed") == 0) {
-		basic_status = LinphonePresenceBasicStatusClosed;
-	}
-	service = presence_service_new(NULL, basic_status);
-	if (service != NULL) {
-		presence_model_add_service(model, service);
-	}
-	if (activity != NULL) {
-		person = presence_person_new(NULL, time(NULL));
-		if (person != NULL) {
-			presence_person_add_activity(person, activity);
-			presence_model_add_person(model, person);
-		}
-	}
-
-	return 0;
-}
-
 static const char *service_prefix = "/pidf:presence/pidf:tuple";
 
 static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx, struct _LinphonePresenceService *service, unsigned int service_idx) {
@@ -1093,31 +983,6 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 	return model;
 }
 
-static LinphonePresenceModel * process_xpidf_xml_presence_notification(xmlparsing_context_t *xml_ctx) {
-	LinphonePresenceModel *model = NULL;
-	int err = -1;
-	xmlDtdPtr dtd = xmlGetIntSubset(xml_ctx->doc);
-
-	if (dtd != NULL) {
-		if (strcmp((const char *)dtd->name, "presence") == 0) {
-			model = linphone_presence_model_new();
-			if ((strcmp((const char *)dtd->SystemID, "xpidf.dtd") == 0)
-				&& (strcmp((const char *)dtd->ExternalID, "-//IETF//DTD RFCxxxx XPIDF 1.0//EN") == 0)) {
-				err = process_rfcxxxx_presence_notification(xml_ctx, model);
-			} else if (strcmp((const char *)dtd->SystemID, "http://schemas.microsoft.com/2002/09/sip/presence") == 0) {
-				err = process_msoldpres_presence_notification(xml_ctx, model);
-			}
-		}
-	}
-
-	if ((err < 0) && (model != NULL)) {
-		linphone_presence_model_delete(model);
-		model = NULL;
-	}
-
-	return model;
-}
-
 
 
 
@@ -1199,8 +1064,6 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 
 void linphone_notify_parse_presence(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
 	xmlparsing_context_t *xml_ctx;
-	bool_t pidf_xml = FALSE;
-	bool_t xpidf_xml = FALSE;
 	LinphonePresenceModel *model = NULL;
 
 	if (strcmp(content_type, "application") != 0) {
@@ -1208,21 +1071,18 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 		return;
 	}
 
-	pidf_xml = (strcmp(content_subtype, "pidf+xml") == 0);
-	xpidf_xml = (strcmp(content_subtype, "xpidf+xml") == 0);
-	if (pidf_xml || xpidf_xml) {
+	if (strcmp(content_subtype, "pidf+xml") == 0) {
 		xml_ctx = xmlparsing_context_new();
 		xmlSetGenericErrorFunc(xml_ctx, xmlparsing_genericxml_error);
 		xml_ctx->doc = xmlReadDoc((const unsigned char*)body, 0, NULL, 0);
 		if (xml_ctx->doc != NULL) {
-			if (pidf_xml)
-				model = process_pidf_xml_presence_notification(xml_ctx);
-			if (xpidf_xml)
-				model = process_xpidf_xml_presence_notification(xml_ctx);
+			model = process_pidf_xml_presence_notification(xml_ctx);
 		} else {
 			ms_warning("Wrongly formatted presence XML: %s", xml_ctx->errorBuffer);
 		}
 		xmlparsing_context_destroy(xml_ctx);
+	} else {
+		ms_error("Unknown content type '%s/%s' for presence", content_type, content_subtype);
 	}
 
 	*result = (SalPresenceModel *)model;
