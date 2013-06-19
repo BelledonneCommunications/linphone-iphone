@@ -152,6 +152,13 @@ static void presence_note_delete(struct _LinphonePresenceNote *note) {
 	ms_free(note);
 }
 
+static void presence_note_set_content(struct _LinphonePresenceNote *note, const char *content) {
+	if (note->content != NULL) {
+		ms_free(note->content);
+	}
+	note->content = ms_strdup(content);
+}
+
 static struct _LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
 	struct _LinphonePresenceService *service = ms_new0(struct _LinphonePresenceService, 1);
 	if (id != NULL) {
@@ -425,7 +432,7 @@ LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(Linph
 	LinphonePresenceModel *model = linphone_presence_model_new();
 	if (model != NULL) {
 		linphone_presence_model_set_activity(model, activity, description);
-		linphone_presence_model_set_note(model, note, lang);
+		linphone_presence_model_add_note(model, note, lang);
 	}
 	return model;
 }
@@ -592,14 +599,163 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 	return 0;
 }
 
-const char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
-	// TODO
+struct _find_note_st {
+	const char *lang;
+	struct _LinphonePresenceNote *note;
+};
+
+static struct _LinphonePresenceNote * find_presence_note_in_list(MSList *list, const char *lang) {
+	int nb;
+	int i;
+
+	nb = ms_list_size(list);
+	for (i = 0; i < nb; i++) {
+		struct _LinphonePresenceNote *note = (struct _LinphonePresenceNote *)ms_list_nth_data(list, i);
+		if (lang == NULL) {
+			if (note->lang == NULL) {
+				return note;
+			}
+		} else {
+			if ((note->lang != NULL) && (strcmp(lang, note->lang) == 0)) {
+				return note;
+			}
+		}
+	}
+
 	return NULL;
 }
 
-int linphone_presence_model_set_note(LinphonePresenceModel *model, const char *note, const char *lang) {
-	// TODO
-	return -1;
+static void find_presence_person_note(struct _LinphonePresencePerson *person, struct _find_note_st *st) {
+	/* First look for the note in the activities notes... */
+	st->note = find_presence_note_in_list(person->activities_notes, st->lang);
+	if (st->note != NULL) return;
+
+	/* ... then look in the person notes. */
+	st->note = find_presence_note_in_list(person->notes, st->lang);
+}
+
+static void find_presence_service_note(struct _LinphonePresenceService *service, struct _find_note_st *st) {
+	st->note = find_presence_note_in_list(service->notes, st->lang);
+}
+
+static struct _LinphonePresenceNote * get_first_presence_note_in_list(MSList *list) {
+	return (struct _LinphonePresenceNote *)ms_list_nth_data(list, 0);
+}
+
+static void get_first_presence_person_note(struct _LinphonePresencePerson *person, struct _find_note_st *st) {
+	st->note = get_first_presence_note_in_list(person->activities_notes);
+	if (st->note != NULL) return;
+	st->note = get_first_presence_note_in_list(person->notes);
+}
+
+static void get_first_presence_service_note(struct _LinphonePresenceService *service, struct _find_note_st *st) {
+	st->note = get_first_presence_note_in_list(service->notes);
+}
+
+const char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
+	struct _find_note_st st;
+
+	if (model == NULL) return NULL;
+
+	st.note = NULL;
+	if (lang != NULL) {
+		/* First try to find a note in the specified language exactly. */
+		st.lang = lang;
+		ms_list_for_each2(model->persons, (MSIterate2Func)find_presence_person_note, &st);
+		if (st.note == NULL) {
+			ms_list_for_each2(model->services, (MSIterate2Func)find_presence_service_note, &st);
+		}
+		if (st.note == NULL) {
+			st.note = find_presence_note_in_list(model->notes, lang);
+		}
+	}
+
+	if (st.note == NULL) {
+		/* No notes in the specified language has been found, try to find one without language. */
+		st.lang = NULL;
+		ms_list_for_each2(model->persons, (MSIterate2Func)find_presence_person_note, &st);
+		if (st.note == NULL) {
+			ms_list_for_each2(model->services, (MSIterate2Func)find_presence_service_note, &st);
+		}
+		if (st.note == NULL) {
+			st.note = find_presence_note_in_list(model->notes, NULL);
+		}
+	}
+
+	if (st.note == NULL) {
+		/* Still no result, so get the first note even if it is not in the specified language. */
+		ms_list_for_each2(model->persons, (MSIterate2Func)get_first_presence_person_note, &st);
+		if (st.note == NULL) {
+			ms_list_for_each2(model->services, (MSIterate2Func)get_first_presence_service_note, &st);
+		}
+		if (st.note == NULL) {
+			st.note = get_first_presence_note_in_list(model->notes);
+		}
+	}
+
+	if (st.note == NULL)
+		return NULL;
+
+	return ms_strdup(st.note->content);
+}
+
+int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang) {
+	struct _LinphonePresenceService *service;
+	struct _LinphonePresenceNote *note;
+
+	if ((model == NULL) || (note_content == NULL))
+		return -1;
+
+	/* Will put the note in the first service. */
+	service = ms_list_nth_data(model->services, 0);
+	if (service == NULL) {
+		/* If no service exists, create one. */
+		service = presence_service_new(generate_presence_id(), LinphonePresenceBasicStatusClosed);
+	}
+	if (service == NULL)
+		return -1;
+
+	/* Search for an existing note in the specified language. */
+	note = find_presence_note_in_list(service->notes, lang);
+	if (note == NULL) {
+		note = presence_note_new(note_content, lang);
+	} else {
+		presence_note_set_content(note, note_content);
+	}
+	if (note == NULL)
+		return -1;
+
+	presence_service_add_note(service, note);
+
+	return 0;
+}
+
+static void clear_presence_person_notes(struct _LinphonePresencePerson *person) {
+	ms_list_for_each(person->activities_notes, (MSIterateFunc)presence_note_delete);
+	ms_list_free(person->activities_notes);
+	person->activities_notes = NULL;
+	ms_list_for_each(person->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_free(person->notes);
+	person->notes = NULL;
+}
+
+static void clear_presence_service_notes(struct _LinphonePresenceService *service) {
+	ms_list_for_each(service->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_free(service->notes);
+	service->notes = NULL;
+}
+
+int linphone_presence_model_clear_notes(LinphonePresenceModel *model) {
+	if (model == NULL)
+		return -1;
+
+	ms_list_for_each(model->persons, (MSIterateFunc)clear_presence_person_notes);
+	ms_list_for_each(model->services, (MSIterateFunc)clear_presence_service_notes);
+	ms_list_for_each(model->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_free(model->notes);
+	model->notes = NULL;
+
+	return 0;
 }
 
 static int create_xml_xpath_context(xmlparsing_context_t *xml_ctx) {

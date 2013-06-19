@@ -79,7 +79,8 @@ LINPHONE_PUBLIC int linphone_presence_model_get_nth_activity(const LinphonePrese
 LINPHONE_PUBLIC int linphone_presence_model_get_activity(const LinphonePresenceModel *model, LinphonePresenceActivity *activity, char **description);
 LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivity activity, const char *description);
 LINPHONE_PUBLIC const char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);
-LINPHONE_PUBLIC int linphone_presence_model_set_note(LinphonePresenceModel *model, const char *note, const char *lang);
+LINPHONE_PUBLIC int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang);
+LINPHONE_PUBLIC int linphone_presence_model_clear_notes(LinphonePresenceModel *model);
 
 
 #ifdef __cplusplus
