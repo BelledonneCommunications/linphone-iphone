@@ -252,7 +252,7 @@ LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *
  *
  * The string that is returned MUST be freed using ms_free().
  */
-LINPHONE_PUBLIC const char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);
+LINPHONE_PUBLIC char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);
 
 /**
  * @brief Adds a note to a presence model.

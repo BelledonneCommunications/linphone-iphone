@@ -5457,6 +5457,10 @@ void ui_config_uninit(LinphoneCore* lc)
 		ms_list_free(lc->friends);
 		lc->friends=NULL;
 	}
+	if (lc->presence_model) {
+		linphone_presence_model_delete(lc->presence_model);
+		lc->presence_model = NULL;
+	}
 }
 
 /**
@@ -5490,8 +5494,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
-	if (lc->presence_model)
-		linphone_presence_model_delete(lc->presence_model);
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){

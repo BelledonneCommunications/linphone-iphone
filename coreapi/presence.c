@@ -176,7 +176,7 @@ static void presence_service_delete(struct _LinphonePresenceService *service) {
 	if (service->contact != NULL) {
 		ms_free(service->contact);
 	}
-	ms_list_for_each(service->notes, (MSIterateFunc)presence_service_delete);
+	ms_list_for_each(service->notes, (MSIterateFunc)presence_note_delete);
 	ms_list_free(service->notes);
 	ms_free(service);
 };
@@ -455,8 +455,8 @@ bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const Lin
 	int nb;
 	int i;
 
-	/* Two null activities are considered equal. */
-	if ((m1 == NULL) && (m2 == NULL))
+	/* If the two pointers are the same, the presence model are equals. */
+	if (m1 == m2)
 		return TRUE;
 
 	/* A null activity is equal to an activity with no activity but a basic status of Closed. */
@@ -653,7 +653,7 @@ static void get_first_presence_service_note(struct _LinphonePresenceService *ser
 	st->note = get_first_presence_note_in_list(service->notes);
 }
 
-const char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
+char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
 	struct _find_note_st st;
 
 	if (model == NULL) return NULL;
@@ -808,14 +808,14 @@ static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx
 	const char *lang;
 	int i;
 
-	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note", service_prefix, service_idx);
+	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note", service_prefix, service_idx);
 	note_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note[%i]", service_prefix, service_idx, i);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note[%i]", service_prefix, service_idx, i);
 			note_str = get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note[%i]/@xml:lang", service_prefix, service_idx, i);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note[%i]/@xml:lang", service_prefix, service_idx, i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
 			note = presence_note_new(note_str, lang);
@@ -1026,14 +1026,14 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 	}
 	if (note_object != NULL) xmlXPathFreeObject(note_object);
 
-	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note", person_prefix, person_idx);
+	snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note", person_prefix, person_idx);
 	note_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note[%i]", person_prefix, person_idx, i);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note[%i]", person_prefix, person_idx, i);
 			note_str = get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:note[%i]/@xml:lang", person_prefix, person_idx, i);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note[%i]/@xml:lang", person_prefix, person_idx, i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
 			note = presence_note_new(note_str, lang);
@@ -1102,13 +1102,13 @@ static int process_pidf_xml_presence_notes(xmlparsing_context_t *xml_ctx, Linpho
 	const char *lang;
 	int i;
 
-	note_object = get_xml_xpath_object_for_node_list(xml_ctx, "/pidf:presence/rpid:note");
+	note_object = get_xml_xpath_object_for_node_list(xml_ctx, "/pidf:presence/pidf:note");
 	if ((note_object != NULL) && (note_object->nodesetval != NULL)) {
 		for (i = 1; i <= note_object->nodesetval->nodeNr; i++) {
-			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/rpid:note[%i]", i);
+			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/pidf:note[%i]", i);
 			note_str = get_xml_text_content(xml_ctx, xpath_str);
 			if (note_str == NULL) continue;
-			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/rpid:note[%i]/@xml:lang", i);
+			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/pidf:note[%i]/@xml:lang", i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
 			note = presence_note_new(note_str, lang);
@@ -1282,6 +1282,30 @@ struct _presence_note_obj_st {
 	int *err;
 };
 
+static int write_xml_presence_note(xmlTextWriterPtr writer, struct _LinphonePresenceNote *note, const char *ns) {
+	int err;
+	if (ns == NULL) {
+		err = xmlTextWriterStartElement(writer, (const xmlChar *)"note");
+	} else {
+		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)ns, (const xmlChar *)"note", NULL);
+	}
+	if ((err >= 0) && (note->lang != NULL)) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xml", (const xmlChar *)"lang", NULL, (const xmlChar *)note->lang);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteString(writer, (const xmlChar *)note->content);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterEndElement(writer);
+	}
+	return err;
+}
+
+static void write_xml_presence_note_obj(struct _LinphonePresenceNote *note, struct _presence_note_obj_st *st) {
+	int err = write_xml_presence_note(st->writer, note, st->ns);
+	if (err < 0) *st->err = err;
+}
+
 static int write_xml_presence_timestamp(xmlTextWriterPtr writer, time_t timestamp) {
 	int err;
 	char *timestamp_str = timestamp_to_string(timestamp);
@@ -1326,6 +1350,13 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, struct _LinphoneP
 		/* Close the "contact" element. */
 		err = xmlTextWriterEndElement(writer);
 	}
+	if ((err >= 0) && (service != NULL) && (service->notes != NULL)) {
+		struct _presence_note_obj_st st;
+		st.writer = writer;
+		st.ns = NULL;
+		st.err = &err;
+		ms_list_for_each2(service->notes, (MSIterate2Func)write_xml_presence_note_obj, &st);
+	}
 	if (err >= 0) {
 		if (service == NULL)
 			err = write_xml_presence_timestamp(writer, time(NULL));
@@ -1353,30 +1384,6 @@ static int write_xml_presence_activity(xmlTextWriterPtr writer, struct _Linphone
 
 static void write_xml_presence_activity_obj(struct _LinphonePresenceActivity *activity, struct _presence_activity_obj_st *st) {
 	int err = write_xml_presence_activity(st->writer, activity);
-	if (err < 0) *st->err = err;
-}
-
-static int write_xml_presence_note(xmlTextWriterPtr writer, struct _LinphonePresenceNote *note, const char *ns) {
-	int err;
-	if (ns == NULL) {
-		err = xmlTextWriterStartElement(writer, (const xmlChar *)"note");
-	} else {
-		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)ns, (const xmlChar *)"note", NULL);
-	}
-	if ((err >= 0) && (note->lang != NULL)) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xml", (const xmlChar *)"lang", NULL, (const xmlChar *)note->lang);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteString(writer, (const xmlChar *)note->content);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterEndElement(writer);
-	}
-	return err;
-}
-
-static void write_xml_presence_note_obj(struct _LinphonePresenceNote *note, struct _presence_note_obj_st *st) {
-	int err = write_xml_presence_note(st->writer, note, st->ns);
 	if (err < 0) *st->err = err;
 }
 
@@ -1416,7 +1423,7 @@ static int write_xml_presence_person(xmlTextWriterPtr writer, struct _LinphonePr
 		st.writer = writer;
 		st.ns = "dm";
 		st.err = &err;
-		ms_list_for_each2(person->activities_notes, (MSIterate2Func)write_xml_presence_note_obj, &st);
+		ms_list_for_each2(person->notes, (MSIterate2Func)write_xml_presence_note_obj, &st);
 	}
 	if (err >= 0) {
 		write_xml_presence_timestamp(writer, person->timestamp);
