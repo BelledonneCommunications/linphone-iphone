@@ -77,6 +77,14 @@ AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)
 AC_SUBST(GUI_FLAGS)
 
+case $host in
+	*-apple-darwin*)
+		HTTPS_CA_DIR=`openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
+	;;
+esac
+
+AC_SUBST(HTTPS_CA_DIR)
+
 dnl localization tools
 IT_PROG_INTLTOOL([0.40], [no-xml])
 
@@ -742,7 +750,7 @@ AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
-AC_ARG_ENABLE(tests_enabled,
+AC_ARG_ENABLE(tests,
 	[AS_HELP_STRING([--disable-tests], [Disable compilation of tests])],
 	[case "${enableval}" in
 		yes)	tests_enabled=true ;;

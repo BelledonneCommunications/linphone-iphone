@@ -32,7 +32,7 @@ pkgconfig_DATA=linphone.pc
 linphonedir=$(datadir)/linphone
 linphone_DATA=rootca.pem
 rootca.pem: 
-	$(top_srcdir)/scripts/mk-ca-bundle.pl rootca.pem
+	HTTPS_CA_DIR=$(HTTPS_CA_DIR) $(top_srcdir)/scripts/mk-ca-bundle.pl rootca.pem
 
 EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
 						$(LINPHONE_RINGS) \
