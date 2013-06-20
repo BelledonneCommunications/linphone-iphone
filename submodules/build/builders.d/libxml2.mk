@@ -23,7 +23,7 @@ libxml2_dir?=externals/libxml2
 
 libxml2_configure_options= \
 	--enable-static --disable-shared \
-	--disable-rebuild-docs --with-python=no
+	--disable-rebuild-docs --with-iconv=no --with-python=no --with-zlib=no
 
 $(BUILDER_SRC_DIR)/$(libxml2_dir)/patched.stamp:
 	cd $(BUILDER_SRC_DIR)/$(libxml2_dir) \
