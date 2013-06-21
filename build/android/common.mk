@@ -92,7 +92,9 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
 	$(LOCAL_PATH)/../../belle-sip/include \
-	$(LOCAL_PATH)/../../../gen
+	$(LOCAL_PATH)/../../../gen \
+	$(LOCAL_PATH)/../../externals/libxml2/include \
+	$(LOCAL_PATH)/../../externals/build/libxml2
 
 LOCAL_LDLIBS += -llog -ldl
 
@@ -101,7 +103,8 @@ LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
 	libortp \
 	libbellesip \
-	libgsm 
+	libgsm \
+	liblpxml2
 
 
 ifeq ($(BUILD_TUNNEL),1)
@@ -209,12 +212,7 @@ LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
 			../tools/xml2lpc_jni.cc \
 			../tools/lpc2xml.c \
         		../tools/lpc2xml_jni.cc 
-LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../../externals/libxml2/include \
-	$(LOCAL_PATH)/../../externals/build/libxml2
  
-LOCAL_STATIC_LIBRARIES += liblpxml2
-
 endif
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
