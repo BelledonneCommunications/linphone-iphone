@@ -138,7 +138,7 @@ typedef enum LinphonePresenceActivity {
 
 	/** The person is participating in religious rites. */
 	LinphonePresenceActivityWorship
-} LinphonePresenceActivity;
+} LinphonePresenceActivityType;
 
 /**
  * Structure holding the information about the presence of a person.
@@ -149,6 +149,26 @@ struct _LinphonePresenceModel;
  * Presence model type holding information about the presence of a person.
  */
 typedef struct _LinphonePresenceModel LinphonePresenceModel;
+
+/**
+ * Structure holding the information about a presence activity.
+ */
+struct _LinphonePresenceActivity;
+
+/**
+ * Presence activity type holding information about a presence activity.
+ */
+typedef struct _LinphonePresenceActivity LinphonePresenceActivity;
+
+/**
+ * Structure holding the information about a presence note.
+ */
+struct _LinphonePresenceNote;
+
+/**
+ * Presence note type holding information about a presence note.
+ */
+typedef struct _LinphonePresenceNote LinphonePresenceNote;
 
 
 
@@ -172,7 +192,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new(void);
  *
  * The created presence model has the activity specified in the parameters.
  */
-LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivity activity, const char *description);
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivityType activity, const char *description);
 
 /**
  * @brief Creates a presence model specifying an activity and adding a note.
@@ -186,7 +206,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activit
  *
  * The created presence model has the activity and the note specified in the parameters.
  */
-LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivity activity, const char *description, const char *note, const char *lang);
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityType activity, const char *description, const char *note, const char *lang);
 
 /**
  * @brief Deletes a presence model.
@@ -220,39 +240,33 @@ LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_activities(const Linphon
  * @brief Gets the nth activity of a presence model.
  * @param[in] model The #LinphonePresenceModel object to get the activity from.
  * @param[in] idx The index of the activity to get (the first activity having the index 0).
- * @param[out] activity The returned #LinphonePresenceActivity (may not be changed in case of error).
- * @param[out] description The description of the returned #LinphonePresenceActivity (may not be changed in case of error).
- * @return 0 if successful, a value < 0 in case of error.
+ * @return A pointer to a #LinphonePresenceActivity object if successful, NULL otherwise.
  */
-LINPHONE_PUBLIC int linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx, LinphonePresenceActivity *activity, char **description);
+LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx);
 
 /**
  * @brief Gets the first activity of a presence model (there is usually only one).
  * @param[in] model The #LinphonePresenceModel object to get the activity from.
- * @param[out] activity The returned #LinphonePresenceActivity (may not be changed in case of error).
- * @param[out] description The description of the returned #LinphonePresenceActivity (may not be changed in case of error).
- * @return 0 if successful, a value < 0 in case of error.
+ * @return A #LinphonePresenceActivity object if successful, NULL otherwise.
  */
-LINPHONE_PUBLIC int linphone_presence_model_get_activity(const LinphonePresenceModel *model, LinphonePresenceActivity *activity, char **description);
+LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_activity(const LinphonePresenceModel *model);
 
 /**
  * @brief Sets the activity of a presence model (limits to only one activity).
  * @param[in] model The #LinphonePresenceModel object for which to set the activity.
- * @param[in] activity The #LinphonePresenceActivity to set for the model.
+ * @param[in] activity The #LinphonePresenceActivityType to set for the model.
  * @param[in] description An additional description of the activity to set for the model. Can be NULL if no additional description is to be added.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivity activity, const char *description);
+LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
 
 /**
  * @brief Gets the first note of a presence model (there is usually only one).
  * @param[in] model The #LinphonePresenceModel object to get the note from.
  * @param[in] lang The language of the note to get. Can be NULL to a note that has no language specified or to get the first note whatever language it is written into.
- * @return A pointer to dynamically allocated string in case of success, NULL otherwise.
- *
- * The string that is returned MUST be freed using ms_free().
+ * @return A pointer to a #LinphonePresenceNote object if successful, NULL otherwise.
  */
-LINPHONE_PUBLIC char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);
 
 /**
  * @brief Adds a note to a presence model.
@@ -274,10 +288,40 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_notes(LinphonePresenceModel *m
 
 /**
  * @brief Gets the string representation of a presence activity.
- * @param[in] activity The #LinphonePresenceActivity for which to get a string representation.
- * @return A pointer to the string representing the given activity.
+ * @param[in] activity A pointer to the #LinphonePresenceActivity object for which to get a string representation.
+ * @return A pointer a dynamically allocated string representing the given activity.
+ *
+ * The returned string is to be freed by calling ms_free().
  */
-LINPHONE_PUBLIC const char * linphone_presence_activity_to_string(LinphonePresenceActivity activity);
+LINPHONE_PUBLIC char * linphone_presence_activity_to_string(const LinphonePresenceActivity * activity);
+
+/**
+ * @brief Gets the activity type of a presence activity.
+ * @param[in] activity A pointer to the #LinphonePresenceActivity for which to get the type.
+ * @return The #LinphonePresenceActivityType of the activity.
+ */
+LINPHONE_PUBLIC LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity);
+
+/**
+ * @brief Gets the description of a presence activity.
+ * @param[in] activity A pointer to the #LinphonePresenceActivity for which to get the description.
+ * @return A pointer to the description string of the presence activity, or NULL if no description is specified.
+ */
+LINPHONE_PUBLIC const char * linphone_presence_activity_get_description(const LinphonePresenceActivity *activity);
+
+/**
+ * @brief Gets the content of a presence note.
+ * @param[in] note A pointer to the #LinphonePresenceNote for which to get the content.
+ * @return A pointer to the content of the presence note.
+ */
+LINPHONE_PUBLIC const char * linphone_presence_note_get_content(const LinphonePresenceNote *note);
+
+/**
+ * @brief Gets the language of a presence note.
+ * @param[in] note A pointer to the #LinphonePresenceNote for which to get the language.
+ * @return A pointer to the language string of the presence note, or NULL if no language is specified.
+ */
+LINPHONE_PUBLIC const char * linphone_presence_note_get_lang(const LinphonePresenceNote *note);
 
 
 /**

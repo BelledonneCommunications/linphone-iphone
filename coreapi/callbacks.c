@@ -220,28 +220,26 @@ static void call_received(SalOp *h){
 	
 	/* first check if we can answer successfully to this invite */
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
-		LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
-		if (linphone_presence_model_get_activity(lc->presence_model, &activity, NULL)) {
-			switch (activity) {
-				case LinphonePresenceActivityBusy:
-					sal_call_decline(h,SalReasonBusy,NULL);
-					break;
-				case LinphonePresenceActivityAppointment:
-				case LinphonePresenceActivityMeeting:
-				case LinphonePresenceActivityOffline:
-				case LinphonePresenceActivityWorship:
-					sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
-					break;
-				case LinphonePresenceActivityPermanentAbsence:
-					if (lc->alt_contact != NULL)
-						sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
-					break;
-				default:
-					break;
-			}
-			sal_op_release(h);
-			return;
+		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
+		switch (linphone_presence_activity_get_type(activity)) {
+			case LinphonePresenceActivityBusy:
+				sal_call_decline(h,SalReasonBusy,NULL);
+				break;
+			case LinphonePresenceActivityAppointment:
+			case LinphonePresenceActivityMeeting:
+			case LinphonePresenceActivityOffline:
+			case LinphonePresenceActivityWorship:
+				sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
+				break;
+			case LinphonePresenceActivityPermanentAbsence:
+				if (lc->alt_contact != NULL)
+					sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
+				break;
+			default:
+				break;
 		}
+		sal_op_release(h);
+		return;
 	}
 
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/

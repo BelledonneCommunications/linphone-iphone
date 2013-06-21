@@ -48,7 +48,7 @@ struct _LinphonePresenceService {
 };
 
 struct _LinphonePresenceActivity {
-	LinphonePresenceActivity activity;
+	LinphonePresenceActivityType type;
 	char *description;
 };
 
@@ -193,9 +193,9 @@ static void presence_service_add_note(struct _LinphonePresenceService *service, 
 	service->notes = ms_list_append(service->notes, note);
 }
 
-static struct _LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivity activity, const char *description) {
+static struct _LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
 	struct _LinphonePresenceActivity *act = ms_new0(struct _LinphonePresenceActivity, 1);
-	act->activity = activity;
+	act->type = acttype;
 	if (description != NULL) {
 		act->description = ms_strdup(description);
 	}
@@ -315,14 +315,10 @@ static void presence_model_clear_activities(LinphonePresenceModel *model) {
 	ms_list_for_each(model->persons, (MSIterateFunc)presence_person_clear_activities);
 }
 
-static int presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity activity, const char *description) {
+static int presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
 	char *id = NULL;
 	struct _LinphonePresencePerson *person = NULL;
 	struct _LinphonePresenceActivity *act = NULL;
-
-	/* Do not add activity for special cases Offline and Online. */
-	if ((activity == LinphonePresenceActivityOffline) || (activity == LinphonePresenceActivityOnline))
-		return 0;
 
 	if (ms_list_size(model->persons) == 0) {
 		/* There is no person in the presence model, add one. */
@@ -336,7 +332,7 @@ static int presence_model_add_activity(LinphonePresenceModel *model, LinphonePre
 		/* Add the activity to the first person in the model. */
 		person = (struct _LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
 	}
-	act = presence_activity_new(activity, description);
+	act = presence_activity_new(acttype, description);
 	if (act == NULL)
 		return -1;
 	presence_person_add_activity(person, act);
@@ -376,7 +372,7 @@ static bool_t presence_activity_equals(const struct _LinphonePresenceActivity *a
 		|| ((a1->description != NULL) && (a2->description == NULL)))
 		return FALSE;
 
-	if (a1->activity != a2->activity)
+	if (a1->type != a2->type)
 		return FALSE;
 
 	if ((a1->description != NULL) && (a2->description != NULL)) {
@@ -421,18 +417,18 @@ LinphonePresenceModel * linphone_presence_model_new(void) {
 	return ms_new0(LinphonePresenceModel, 1);
 }
 
-LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivity activity, const char *description) {
+LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceModel *model = linphone_presence_model_new();
 	if (model != NULL) {
-		linphone_presence_model_set_activity(model, activity, description);
+		linphone_presence_model_set_activity(model, acttype, description);
 	}
 	return model;
 }
 
-LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivity activity, const char *description, const char *note, const char *lang) {
+LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang) {
 	LinphonePresenceModel *model = linphone_presence_model_new();
 	if (model != NULL) {
-		linphone_presence_model_set_activity(model, activity, description);
+		linphone_presence_model_set_activity(model, acttype, description);
 		linphone_presence_model_add_note(model, note, lang);
 	}
 	return model;
@@ -451,7 +447,7 @@ void linphone_presence_model_delete(LinphonePresenceModel *model) {
 }
 
 bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const LinphonePresenceModel *m2) {
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+	LinphonePresenceActivity *activity = NULL;
 	int nb;
 	int i;
 
@@ -461,14 +457,14 @@ bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const Lin
 
 	/* A null activity is equal to an activity with no activity but a basic status of Closed. */
 	if (m1 == NULL) {
-		if ((linphone_presence_model_get_activity(m2, &activity, NULL) < 0)
-			|| (activity != LinphonePresenceActivityOffline))
+		activity = linphone_presence_model_get_activity(m2);
+		if (linphone_presence_activity_get_type(activity) != LinphonePresenceActivityOffline)
 			return FALSE;
 		return TRUE;
 	}
 	if (m2 == NULL) {
-		if ((linphone_presence_model_get_activity(m2, &activity, NULL) < 0)
-			|| (activity != LinphonePresenceActivityOffline))
+		activity = linphone_presence_model_get_activity(m2);
+		if (linphone_presence_activity_get_type(activity) != LinphonePresenceActivityOffline)
 			return FALSE;
 		return TRUE;
 	}
@@ -521,64 +517,41 @@ unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *
 struct _get_activity_st {
 	unsigned int requested_idx;
 	unsigned int current_idx;
-	LinphonePresenceActivity *activity;
-	char **description;
+	struct _LinphonePresenceActivity *activity;
 };
 
 static void presence_model_get_activity(const struct _LinphonePresencePerson *person, struct _get_activity_st *st) {
-	struct _LinphonePresenceActivity *activity;
 	unsigned int size = ms_list_size(person->activities);
 	if (st->requested_idx < (st->current_idx + size)) {
-		activity = (struct _LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
-		*st->activity = activity->activity;
-		if (st->description != NULL) {
-			*st->description = activity->description;
-		}
+		st->activity = (struct _LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
 	} else {
 		st->current_idx += size;
 	}
 }
 
-int linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx, LinphonePresenceActivity *activity, char **description) {
+LinphonePresenceActivity * linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx) {
 	struct _get_activity_st st;
 
-	if ((model == NULL) || (activity == NULL) || (idx >= linphone_presence_model_nb_activities(model)))
-		return -1;
+	if ((model == NULL) || (idx >= linphone_presence_model_nb_activities(model)))
+		return NULL;
 
 	memset(&st, 0, sizeof(st));
 	st.requested_idx = idx;
-	st.activity = activity;
-	*st.activity = LinphonePresenceActivityUnknown;
-	if (description != NULL) {
-		st.description = description;
-	}
 	ms_list_for_each2(model->persons, (MSIterate2Func)presence_model_get_activity, &st);
 
-	return 0;
+	return st.activity;
 }
 
-int linphone_presence_model_get_activity(const LinphonePresenceModel *model, LinphonePresenceActivity *activity, char **description) {
-	if ((model == NULL) || (activity == NULL))
-		return -1;
-
-	if (linphone_presence_model_get_nth_activity(model, 0, activity, description) < 0) {
-		/* There is no activities, base the result on the basic status. */
-		LinphonePresenceBasicStatus basic_status = linphone_presence_model_get_basic_status(model);
-		if (basic_status == LinphonePresenceBasicStatusOpen)
-			*activity = LinphonePresenceActivityOnline;
-		else
-			*activity = LinphonePresenceActivityOffline;
-	}
-
-	return 0;
+LinphonePresenceActivity * linphone_presence_model_get_activity(const LinphonePresenceModel *model) {
+	return linphone_presence_model_get_nth_activity(model, 0);
 }
 
-int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivity activity, const char *description) {
+int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusOpen;
 
 	if (model == NULL) return -1;
 
-	switch (activity) {
+	switch (acttype) {
 		case LinphonePresenceActivityAppointment:
 		case LinphonePresenceActivityBusy:
 		case LinphonePresenceActivityMeeting:
@@ -594,7 +567,7 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 	if (presence_model_set_basic_status(model, basic_status) < 0)
 		return -1;
 	presence_model_clear_activities(model);
-	if (presence_model_add_activity(model, activity, description) < 0)
+	if (presence_model_add_activity(model, acttype, description) < 0)
 		return -1;
 
 	return 0;
@@ -653,7 +626,7 @@ static void get_first_presence_service_note(struct _LinphonePresenceService *ser
 	st->note = get_first_presence_note_in_list(service->notes);
 }
 
-char * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
+LinphonePresenceNote * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang) {
 	struct _find_note_st st;
 
 	if (model == NULL) return NULL;
@@ -694,10 +667,7 @@ char * linphone_presence_model_get_note(const LinphonePresenceModel *model, cons
 		}
 	}
 
-	if (st.note == NULL)
-		return NULL;
-
-	return ms_strdup(st.note->content);
+	return st.note;
 }
 
 int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang) {
@@ -892,7 +862,7 @@ static const char *person_prefix = "/pidf:presence/dm:person";
 
 struct _presence_activity_name_map {
 	const char *name;
-	LinphonePresenceActivity activity;
+	LinphonePresenceActivityType type;
 };
 
 static struct _presence_activity_name_map activity_map[] = {
@@ -925,34 +895,66 @@ static struct _presence_activity_name_map activity_map[] = {
 	{ "worship", LinphonePresenceActivityWorship }
 };
 
-static int activity_name_to_linphone_presence_activity(const char *name, LinphonePresenceActivity *activity) {
+static int activity_name_to_presence_activity_type(const char *name, LinphonePresenceActivityType *acttype) {
 	unsigned int i;
 	for (i = 0; i < (sizeof(activity_map) / sizeof(activity_map[0])); i++) {
 		if (strcmp(name, activity_map[i].name) == 0) {
-			*activity = activity_map[i].activity;
+			*acttype = activity_map[i].type;
 			return 0;
 		}
 	}
 	return -1;
 }
 
-static const char * presence_activity_to_string(LinphonePresenceActivity activity) {
+static const char * presence_activity_type_to_string(LinphonePresenceActivityType acttype) {
 	unsigned int i;
 	for (i = 0; i < (sizeof(activity_map) / sizeof(activity_map[0])); i++) {
-		if (activity == activity_map[i].activity) {
+		if (acttype == activity_map[i].type) {
 			return activity_map[i].name;
 		}
 	}
 	return NULL;
 }
 
-const char * linphone_presence_activity_to_string(LinphonePresenceActivity activity) {
-	if (activity == LinphonePresenceActivityOffline)
-		return "offline";
-	if (activity == LinphonePresenceActivityOnline)
-		return "online";
-	return presence_activity_to_string(activity);
+char * linphone_presence_activity_to_string(const LinphonePresenceActivity *activity) {
+	LinphonePresenceActivityType acttype = linphone_presence_activity_get_type(activity);
+	const char *description = linphone_presence_activity_get_description(activity);
+	const char *acttype_str;
+
+	if (acttype == LinphonePresenceActivityOffline)
+		acttype_str = "offline";
+	else if (acttype == LinphonePresenceActivityOnline)
+		acttype_str = "online";
+	else
+		acttype_str = presence_activity_type_to_string(acttype);
+
+	return ms_strdup_printf("%s: %s", acttype_str, (description == NULL) ? "" : description);
 }
+
+LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity) {
+	if (activity == NULL)
+		return LinphonePresenceActivityOffline;
+	return activity->type;
+}
+
+const char * linphone_presence_activity_get_description(const LinphonePresenceActivity *activity) {
+	if (activity == NULL)
+		return NULL;
+	return activity->description;
+}
+
+const char * linphone_presence_note_get_content(const LinphonePresenceNote *note) {
+	if (note == NULL)
+		return NULL;
+	return note->content;
+}
+
+const char * linphone_presence_note_get_lang(const LinphonePresenceNote *note) {
+	if (note == NULL)
+		return NULL;
+	return note->lang;
+}
+
 
 static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml_ctx, struct _LinphonePresencePerson *person, unsigned int person_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
@@ -977,15 +979,15 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 						&& (activity_node->ns != NULL)
 						&& (activity_node->ns->prefix != NULL)
 						&& (strcmp((const char *)activity_node->ns->prefix, "rpid") == 0)) {
-						LinphonePresenceActivity linphone_activity;
+						LinphonePresenceActivityType acttype;
 						description = (const char *)xmlNodeGetContent(activity_node);
 						if ((description != NULL) && (description[0] == '\0')) {
 							free_xml_text_content(description);
 							description = NULL;
 						}
-						err = activity_name_to_linphone_presence_activity((const char *)activity_node->name, &linphone_activity);
+						err = activity_name_to_presence_activity_type((const char *)activity_node->name, &acttype);
 						if (err < 0) break;
-						activity = presence_activity_new(linphone_activity, description);
+						activity = presence_activity_new(acttype, description);
 						presence_person_add_activity(person, activity);
 						if (description != NULL) free_xml_text_content(description);
 					}
@@ -1172,13 +1174,10 @@ void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
 
 void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence){
 	MSList *elem;
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
-	char *description = NULL;
-	linphone_presence_model_get_activity(presence, &activity, &description);
-	ms_message("Notifying all friends that we are [%s%s%s]",
-		linphone_presence_activity_to_string(activity),
-		(description == NULL) ? "" : ": ",
-		(description == NULL) ? "" : description);
+	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(presence);
+	char *activity_str = linphone_presence_activity_to_string(activity);
+	ms_message("Notifying all friends that we are [%s]", activity_str);
+	if (activity_str != NULL) ms_free(activity_str);
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend *)elem->data;
 		if (lf->insub){
@@ -1255,6 +1254,26 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 		xmlparsing_context_destroy(xml_ctx);
 	} else {
 		ms_error("Unknown content type '%s/%s' for presence", content_type, content_subtype);
+	}
+
+	/* If no activities are present in the model, add a dummy activity so that linphone_presence_activity_get_type() returns
+	 * the expected result. */
+	if (model != NULL) {
+		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
+		if (activity == NULL) {
+			LinphonePresenceBasicStatus basic_status = linphone_presence_model_get_basic_status(model);
+			LinphonePresenceActivityType acttype;
+			switch (basic_status) {
+				case LinphonePresenceBasicStatusOpen:
+					acttype = LinphonePresenceActivityOnline;
+					break;
+				case LinphonePresenceBasicStatusClosed:
+				default:
+					acttype = LinphonePresenceActivityOffline;
+					break;
+			}
+			presence_model_add_activity(model, acttype, NULL);
+		}
 	}
 
 	*result = (SalPresenceModel *)model;
@@ -1370,9 +1389,19 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, struct _LinphoneP
 	return err;
 }
 
+static bool_t is_valid_activity(struct _LinphonePresenceActivity *activity) {
+	if ((activity->type == LinphonePresenceActivityOffline) || (activity->type == LinphonePresenceActivityOnline))
+		return FALSE;
+	return TRUE;
+}
+
 static int write_xml_presence_activity(xmlTextWriterPtr writer, struct _LinphonePresenceActivity *activity) {
-	int err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"rpid",
-					      (const xmlChar *)presence_activity_to_string(activity->activity), NULL);
+	int err;
+
+	if (is_valid_activity(activity) == FALSE) return 0;
+
+	err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"rpid",
+					      (const xmlChar *)presence_activity_type_to_string(activity->type), NULL);
 	if ((err >= 0) && (activity->description != NULL)) {
 		err = xmlTextWriterWriteString(writer, (const xmlChar *)activity->description);
 	}
@@ -1387,8 +1416,22 @@ static void write_xml_presence_activity_obj(struct _LinphonePresenceActivity *ac
 	if (err < 0) *st->err = err;
 }
 
+static void person_has_valid_activity(struct _LinphonePresenceActivity *activity, bool_t *has_valid_activities) {
+	if (is_valid_activity(activity) == TRUE) *has_valid_activities = TRUE;
+}
+
+static bool_t person_has_valid_activities(struct _LinphonePresencePerson *person) {
+	bool_t has_valid_activities = FALSE;
+	ms_list_for_each2(person->activities, (MSIterate2Func)person_has_valid_activity, &has_valid_activities);
+	return has_valid_activities;
+}
+
 static int write_xml_presence_person(xmlTextWriterPtr writer, struct _LinphonePresencePerson *person) {
-	int err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"dm", (const xmlChar *)"person", NULL);
+	int err;
+
+	if ((person_has_valid_activities(person) == FALSE) && (person->notes == NULL)) return 0;
+
+	err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"dm", (const xmlChar *)"person", NULL);
 	if (err >= 0) {
 		if (person->id == NULL) {
 			char *text = generate_presence_id();
@@ -1398,7 +1441,7 @@ static int write_xml_presence_person(xmlTextWriterPtr writer, struct _LinphonePr
 			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"id", (const xmlChar *)person->id);
 		}
 	}
-	if ((err >= 0) && ((person->activities_notes != NULL) || (person->activities != NULL))) {
+	if ((err >= 0) && ((person->activities_notes != NULL) || (person_has_valid_activities(person) == TRUE))) {
 		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"rpid", (const xmlChar *)"activities", NULL);
 		if ((err >= 0) && (person->activities_notes != NULL)) {
 			struct _presence_note_obj_st st;
@@ -1528,16 +1571,14 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 
 	lf=linphone_find_friend_by_out_subscribe(lc->friends,op);
 	if (lf!=NULL){
-		LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
-		char *description = NULL;
+		LinphonePresenceActivity *activity = NULL;
+		char *activity_str;
 		friend=lf->uri;
 		tmp=linphone_address_as_string(friend);
-		linphone_presence_model_get_activity(presence, &activity, &description);
-		ms_message("We are notified that [%s] has presence [%s%s%s]",
-				tmp,
-				linphone_presence_activity_to_string(activity),
-				(description == NULL) ? "" : ": ",
-				(description == NULL) ? "" : description);
+		activity = linphone_presence_model_get_activity(presence);
+		activity_str = linphone_presence_activity_to_string(activity);
+		ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
+		if (activity_str != NULL) ms_free(activity_str);
 		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		if (lc->vtable.notify_presence_recv)

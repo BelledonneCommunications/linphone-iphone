@@ -280,10 +280,8 @@ LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneF
 LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	LinphoneOnlineStatus online_status = LinphoneStatusOffline;
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusClosed;
-	LinphonePresenceActivity activity = LinphonePresenceActivityUnknown;
-	char *activity_description = NULL;
+	LinphonePresenceActivity *activity = NULL;
 	unsigned int nb_activities = 0;
-	int err = 0;
 
 	if (lf->presence != NULL) {
 		basic_status = linphone_presence_model_get_basic_status(lf->presence);
@@ -298,60 +296,58 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 			nb_activities = 1;
 		}
 		if (nb_activities == 1) {
-			err = linphone_presence_model_get_activity(lf->presence, &activity, &activity_description);
-			if (err == 0) {
-				switch (activity) {
-					case LinphonePresenceActivityBreakfast:
-					case LinphonePresenceActivityDinner:
-					case LinphonePresenceActivityLunch:
-					case LinphonePresenceActivityMeal:
-						online_status = LinphoneStatusOutToLunch;
-						break;
-					case LinphonePresenceActivityAppointment:
-					case LinphonePresenceActivityMeeting:
-					case LinphonePresenceActivityPerformance:
-					case LinphonePresenceActivityPresentation:
-					case LinphonePresenceActivitySpectator:
-					case LinphonePresenceActivityWorking:
-					case LinphonePresenceActivityWorship:
-						online_status = LinphoneStatusDoNotDisturb;
-						break;
-					case LinphonePresenceActivityAway:
-					case LinphonePresenceActivitySleeping:
-						online_status = LinphoneStatusAway;
-						break;
-					case LinphonePresenceActivityHoliday:
-					case LinphonePresenceActivityTravel:
-					case LinphonePresenceActivityVacation:
-						online_status = LinphoneStatusVacation;
-						break;
-					case LinphonePresenceActivityBusy:
-					case LinphonePresenceActivityLookingForWork:
-					case LinphonePresenceActivityPlaying:
-					case LinphonePresenceActivityShopping:
-					case LinphonePresenceActivityTV:
-						online_status = LinphoneStatusBusy;
-						break;
-					case LinphonePresenceActivityInTransit:
-					case LinphonePresenceActivitySteering:
-						online_status = LinphoneStatusBeRightBack;
-						break;
-					case LinphonePresenceActivityOnThePhone:
-						online_status = LinphoneStatusOnThePhone;
-						break;
-					case LinphonePresenceActivityOther:
-					case LinphonePresenceActivityPermanentAbsence:
-						online_status = LinphoneStatusMoved;
-						break;
-					case LinphonePresenceActivityUnknown:
-						/* Rely on the basic status information. */
-						break;
-					case LinphonePresenceActivityOnline:
-					case LinphonePresenceActivityOffline:
-						/* Should not happen! */
-						ms_warning("LinphonePresenceActivityOnline or LinphonePresenceActivityOffline should not happen here!");
-						break;
-				}
+			activity = linphone_presence_model_get_activity(lf->presence);
+			switch (linphone_presence_activity_get_type(activity)) {
+				case LinphonePresenceActivityBreakfast:
+				case LinphonePresenceActivityDinner:
+				case LinphonePresenceActivityLunch:
+				case LinphonePresenceActivityMeal:
+					online_status = LinphoneStatusOutToLunch;
+					break;
+				case LinphonePresenceActivityAppointment:
+				case LinphonePresenceActivityMeeting:
+				case LinphonePresenceActivityPerformance:
+				case LinphonePresenceActivityPresentation:
+				case LinphonePresenceActivitySpectator:
+				case LinphonePresenceActivityWorking:
+				case LinphonePresenceActivityWorship:
+					online_status = LinphoneStatusDoNotDisturb;
+					break;
+				case LinphonePresenceActivityAway:
+				case LinphonePresenceActivitySleeping:
+					online_status = LinphoneStatusAway;
+					break;
+				case LinphonePresenceActivityHoliday:
+				case LinphonePresenceActivityTravel:
+				case LinphonePresenceActivityVacation:
+					online_status = LinphoneStatusVacation;
+					break;
+				case LinphonePresenceActivityBusy:
+				case LinphonePresenceActivityLookingForWork:
+				case LinphonePresenceActivityPlaying:
+				case LinphonePresenceActivityShopping:
+				case LinphonePresenceActivityTV:
+					online_status = LinphoneStatusBusy;
+					break;
+				case LinphonePresenceActivityInTransit:
+				case LinphonePresenceActivitySteering:
+					online_status = LinphoneStatusBeRightBack;
+					break;
+				case LinphonePresenceActivityOnThePhone:
+					online_status = LinphoneStatusOnThePhone;
+					break;
+				case LinphonePresenceActivityOther:
+				case LinphonePresenceActivityPermanentAbsence:
+					online_status = LinphoneStatusMoved;
+					break;
+				case LinphonePresenceActivityUnknown:
+					/* Rely on the basic status information. */
+					break;
+				case LinphonePresenceActivityOnline:
+				case LinphonePresenceActivityOffline:
+					/* Should not happen! */
+					ms_warning("LinphonePresenceActivityOnline or LinphonePresenceActivityOffline should not happen here!");
+					break;
 			}
 		}
 	}

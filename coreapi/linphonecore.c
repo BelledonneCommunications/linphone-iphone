@@ -3645,52 +3645,52 @@ void linphone_core_set_delayed_timeout(LinphoneCore *lc, int seconds){
 void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const char *contact, LinphoneOnlineStatus os) {
 	LinphonePresenceModel *presence = NULL;
 	char *description = NULL;
-	LinphonePresenceActivity activity = LinphonePresenceActivityUnknown;
+	LinphonePresenceActivityType acttype = LinphonePresenceActivityUnknown;
 	switch (os) {
 		case LinphoneStatusOffline:
-			activity = LinphonePresenceActivityOffline;
+			acttype = LinphonePresenceActivityOffline;
 			break;
 		case LinphoneStatusOnline:
-			activity = LinphonePresenceActivityOnline;
+			acttype = LinphonePresenceActivityOnline;
 			break;
 		case LinphoneStatusBusy:
-			activity = LinphonePresenceActivityBusy;
+			acttype = LinphonePresenceActivityBusy;
 			break;
 		case LinphoneStatusBeRightBack:
-			activity = LinphonePresenceActivityInTransit;
+			acttype = LinphonePresenceActivityInTransit;
 			break;
 		case LinphoneStatusAway:
-			activity = LinphonePresenceActivityAway;
+			acttype = LinphonePresenceActivityAway;
 			break;
 		case LinphoneStatusOnThePhone:
-			activity = LinphonePresenceActivityOnThePhone;
+			acttype = LinphonePresenceActivityOnThePhone;
 			break;
 		case LinphoneStatusOutToLunch:
-			activity = LinphonePresenceActivityLunch;
+			acttype = LinphonePresenceActivityLunch;
 			break;
 		case LinphoneStatusDoNotDisturb:
-			activity = LinphonePresenceActivityBusy;
+			acttype = LinphonePresenceActivityBusy;
 			description = "Do not disturb";
 			break;
 		case LinphoneStatusMoved:
-			activity = LinphonePresenceActivityPermanentAbsence;
+			acttype = LinphonePresenceActivityPermanentAbsence;
 			break;
 		case LinphoneStatusAltService:
-			activity = LinphonePresenceActivityBusy;
+			acttype = LinphonePresenceActivityBusy;
 			description = "Using another messaging service";
 			break;
 		case LinphoneStatusPending:
-			activity = LinphonePresenceActivityOther;
+			acttype = LinphonePresenceActivityOther;
 			description = "Waiting for user acceptance";
 			break;
 		case LinphoneStatusVacation:
-			activity = LinphonePresenceActivityVacation;
+			acttype = LinphonePresenceActivityVacation;
 			break;
 		case LinphoneStatusEnd:
 			ms_warning("Invalid status LinphoneStatusEnd");
 			return;
 	}
-	presence = linphone_presence_model_new_with_activity(activity, description);
+	presence = linphone_presence_model_new_with_activity(acttype, description);
 	linphone_core_set_presence_model(lc, minutes_away, contact, presence);
 }
 
@@ -3718,14 +3718,12 @@ void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const 
 }
 
 LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc){
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
-	char *description = NULL;
+	LinphonePresenceActivity *activity = NULL;
+	const char *description = NULL;
 
-	if ((lc->presence_model == NULL)
-		|| (linphone_presence_model_get_activity(lc->presence_model, &activity, &description) < 0))
-		return LinphoneStatusOffline;
-
-	switch (activity) {
+	activity = linphone_presence_model_get_activity(lc->presence_model);
+	description = linphone_presence_activity_get_description(activity);
+	switch (linphone_presence_activity_get_type(activity)) {
 		case LinphonePresenceActivityOffline:
 			return LinphoneStatusOffline;
 		case LinphonePresenceActivityOnline:

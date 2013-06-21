@@ -43,7 +43,7 @@ void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *
 
 void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	stats* counters;
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
+	LinphonePresenceActivity *activity = NULL;
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	ms_message("New Notify request  from [%s] ",from);
 	ms_free(from);
@@ -51,8 +51,8 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	counters->number_of_NotifyReceived++;
 
 	counters->last_received_presence = linphone_friend_get_presence_model(lf);
-	linphone_presence_model_get_activity(counters->last_received_presence, &activity, NULL);
-	switch(activity) {
+	activity = linphone_presence_model_get_activity(counters->last_received_presence);
+	switch (linphone_presence_activity_get_type(activity)) {
 		case LinphonePresenceActivityOffline:
 			counters->number_of_LinphonePresenceActivityOffline++; break;
 		case LinphonePresenceActivityOnline:
@@ -213,9 +213,10 @@ static void presence_information(void) {
 	LinphoneCoreManager *marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager *pauline = presence_linphone_core_manager_new("pauline");
 	LinphonePresenceModel *presence;
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
-	char *description = NULL;
-	char *note = NULL;
+	LinphonePresenceActivity *activity = NULL;
+	LinphonePresenceNote *note = NULL;
+	const char *description = NULL;
+	const char *note_content = NULL;
 
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie, pauline));
 
@@ -224,8 +225,10 @@ static void presence_information(void) {
 	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityDinner, 1);
-	linphone_presence_model_get_activity(marie->stat.last_received_presence, &activity, &description);
-	CU_ASSERT_EQUAL(activity, LinphonePresenceActivityDinner);
+	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
+	CU_ASSERT_PTR_NOT_NULL(activity);
+	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityDinner);
+	description = linphone_presence_activity_get_description(activity);
 	CU_ASSERT_PTR_NULL(description);
 
 	/* Presence activity with description. */
@@ -233,8 +236,10 @@ static void presence_information(void) {
 	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivitySteering, 1);
-	linphone_presence_model_get_activity(marie->stat.last_received_presence, &activity, &description);
-	CU_ASSERT_EQUAL(activity, LinphonePresenceActivitySteering);
+	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
+	CU_ASSERT_PTR_NOT_NULL(activity);
+	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivitySteering);
+	description = linphone_presence_activity_get_description(activity);
 	CU_ASSERT_PTR_NOT_NULL(description);
 	if (description != NULL) CU_ASSERT_EQUAL(strcmp(description, bike_description), 0);
 
@@ -243,14 +248,19 @@ static void presence_information(void) {
 	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityVacation, 1);
-	linphone_presence_model_get_activity(marie->stat.last_received_presence, &activity, &description);
-	CU_ASSERT_EQUAL(activity, LinphonePresenceActivityVacation);
+	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
+	CU_ASSERT_PTR_NOT_NULL(activity);
+	CU_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivityVacation);
+	description = linphone_presence_activity_get_description(activity);
 	CU_ASSERT_PTR_NULL(description);
 	note = linphone_presence_model_get_note(marie->stat.last_received_presence, NULL);
 	CU_ASSERT_PTR_NOT_NULL(note);
 	if (note != NULL) {
-		CU_ASSERT_EQUAL(strcmp(note, vacation_note), 0);
-		ms_free(note);
+		note_content = linphone_presence_note_get_content(note);
+		CU_ASSERT_PTR_NOT_NULL(note_content);
+		if (note_content != NULL) {
+			CU_ASSERT_EQUAL(strcmp(note_content, vacation_note), 0);
+		}
 	}
 
 	linphone_core_manager_destroy(marie);

@@ -51,15 +51,12 @@ static void stop(int signum){
  * presence state change notification callback
  */
 static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *friend) {
-	LinphonePresenceActivity activity = LinphonePresenceActivityOffline;
 	const LinphonePresenceModel* model = linphone_friend_get_presence_model(friend);
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
-	char *description = NULL;
-	linphone_presence_model_get_activity(model, &activity, &description);
-	printf("New state state [%s%s%s] for user id [%s] \n"
-				,linphone_presence_activity_to_string(activity)
-				,(description == NULL) ? "" : ": "
-				,(description == NULL) ? "" : description
+	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
+	char *activity_str = linphone_presence_activity_to_string(activity);
+	printf("New state state [%s] for user id [%s] \n"
+				,activity_str
 				,linphone_address_as_string (friend_address));
 }
 static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
