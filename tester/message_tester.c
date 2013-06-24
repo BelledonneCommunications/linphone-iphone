@@ -164,9 +164,10 @@ static void text_message_with_external_body(void) {
 	linphone_chat_room_send_message2(chat_room,message,linphone_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
+
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
-
+	/*fixme use history to check message content*/
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

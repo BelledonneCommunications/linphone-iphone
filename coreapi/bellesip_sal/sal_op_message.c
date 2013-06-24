@@ -108,12 +108,19 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				,belle_sip_header_cseq_get_seq_number(cseq));
 		salmsg.from=from;
 		salmsg.text=plain_text?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
-		salmsg.url=external_body?belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"):NULL;
+		salmsg.url=NULL;
+		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
+			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
+			char* url = ms_malloc(url_length);
+			if (sscanf(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"),"\"%s\"",url) ==1)
+				salmsg.url=url;
+		}
 		salmsg.message_id=message_id;
 		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
 		op->base.root->callbacks.text_received(op,&salmsg);
 		belle_sip_object_unref(address);
 		belle_sip_free(from);
+		if (salmsg.url) ms_free((char*)salmsg.url);
 		response_code=200;
 	} else {
 		ms_error("Unsupported MESSAGE with content type [%s/%s]",belle_sip_header_content_type_get_type(content_type)
