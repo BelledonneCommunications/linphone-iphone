@@ -290,6 +290,7 @@ static void presence_person_add_note(struct _LinphonePresencePerson *person, str
 static void presence_person_clear_activities(struct _LinphonePresencePerson *person) {
 	ms_list_for_each(person->activities, (MSIterateFunc)presence_activity_delete);
 	ms_list_free(person->activities);
+	person->activities = NULL;
 }
 
 static void presence_model_add_service(LinphonePresenceModel *model, struct _LinphonePresenceService *service) {
