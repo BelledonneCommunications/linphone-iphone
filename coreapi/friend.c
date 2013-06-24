@@ -179,7 +179,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}else if (lc->default_proxy!=NULL){
 			/*try adding domain part from default current proxy*/
 			LinphoneAddress * id=linphone_address_new(linphone_core_get_identity(lc));
-			if (id!=NULL){
+			if ((id!=NULL) && (uri[0] != '\0')){
 				linphone_address_set_display_name(id,NULL);
 				linphone_address_set_username(id,uri);
 				*result=linphone_address_as_string(id);
