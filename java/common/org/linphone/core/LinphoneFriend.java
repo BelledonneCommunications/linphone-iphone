@@ -103,10 +103,21 @@ public interface LinphoneFriend {
 	 */
 	boolean isSubscribesEnabled();
 	/**
-	 * get friend status
-	 * @return
+	 * @brief Get the status of a friend
+	 * @return OnlineStatus
+	 * @deprecated Use getPresenceModel() instead
 	 */
 	OnlineStatus getStatus();
+	/**
+	 * @brief Get the presence information of a friend
+	 * @return A #PresenceModel object, or null if the friend do not have presence information (in which case he is considered offline)
+	 */
+	PresenceModel getPresenceModel();
+	/**
+	 * @brief Set the presence information of a friend
+	 * @param presence A #PresenceModel object. It can be null to remove the presence information of the friend.
+	 */
+	void setPresenceModel(PresenceModel presence);
 	/**
 	 * Starts editing a friend configuration.
 	 *<br> Because friend configuration must be consistent, applications MUST call {@link #edit()} before doing any attempts to modify friend configuration (such as address or subscription policy and so on). 

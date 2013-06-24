@@ -50,6 +50,27 @@ extern "C" void libmsbcg729_init();
 #endif
 #endif /*ANDROID*/
 
+
+
+#define RETURN_USER_DATA_OBJECT(javaclass, funcprefix, cobj) \
+	{ \
+		jclass jUserDataObjectClass; \
+		jmethodID jUserDataObjectCtor; \
+		jobject jUserDataObj; \
+		jUserDataObj = (jobject)funcprefix ## _get_user_data(cobj); \
+		if (jUserDataObj == NULL) { \
+			jUserDataObjectClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/" javaclass)); \
+			jUserDataObjectCtor = env->GetMethodID(jUserDataObjectClass,"<init>", "(J)V"); \
+			jUserDataObj = env->NewObject(jUserDataObjectClass, jUserDataObjectCtor, (jlong)funcprefix ## _ref(cobj)); \
+			jUserDataObj = env->NewGlobalRef(jUserDataObj); \
+			funcprefix ## _set_user_data(cobj, jUserDataObj); \
+			env->DeleteGlobalRef(jUserDataObjectClass); \
+		} \
+		return jUserDataObj; \
+	}
+
+
+
 static JavaVM *jvm=0;
 static const char* LogDomain = "Linphone";
 static jclass handler_class;
@@ -1062,12 +1083,40 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
-																			,jint minute_away
+																			,jint minutes_away
 																			,jstring jalternative_contact
 																			,jint status) {
 	const char* alternative_contact = jalternative_contact?env->GetStringUTFChars(jalternative_contact, NULL):NULL;
-	linphone_core_set_presence_info((LinphoneCore*)lc,minute_away,alternative_contact,(LinphoneOnlineStatus)status);
+	linphone_core_set_presence_info((LinphoneCore*)lc,minutes_away,alternative_contact,(LinphoneOnlineStatus)status);
 	if (alternative_contact) env->ReleaseStringUTFChars(jalternative_contact, alternative_contact);
+}
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getPresenceInfo(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jint)linphone_core_get_presence_info((LinphoneCore *)lc);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setPresenceModel
+ * Signature: (JILjava/lang/String;J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jint minutes_away, jstring jalternative_contact, jlong modelPtr) {
+	LinphoneCore *lc = (LinphoneCore *)ptr;
+	const char *calternative_contact = jalternative_contact ? env->GetStringUTFChars(jalternative_contact, NULL) : NULL;
+	LinphonePresenceModel *model = (LinphonePresenceModel *)modelPtr;
+	linphone_core_set_presence_model(lc, minutes_away, calternative_contact, model);
+	if (calternative_contact) env->ReleaseStringUTFChars(jalternative_contact, calternative_contact);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getPresenceModel
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_getPresenceModel(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphoneCore *lc = (LinphoneCore *)ptr;
+	LinphonePresenceModel *model = linphone_core_get_presence_model(lc);
+	if (model == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model)
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  env
@@ -1952,6 +2001,30 @@ extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getStatus(JNIEnv*  env
 																		,jlong ptr) {
 	return (jint)linphone_friend_get_status((LinphoneFriend*)ptr);
 }
+
+/*
+ * Class:     org_linphone_core_LinphoneFriendImpl
+ * Method:    getPresenceModel
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneFriendImpl_getPresenceModel(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	LinphonePresenceModel *model = linphone_friend_get_presence_model(lf);
+	if (model == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneFriendImpl
+ * Method:    setPresenceModel
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneFriendImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jlong presencePtr) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	LinphonePresenceModel *model = (LinphonePresenceModel *)presencePtr;
+	linphone_friend_set_presence_model(lf, model);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_edit(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -3040,3 +3113,184 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_unref(JNIEnv *en
 	linphone_event_unref(ev);
 }
 
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    unref
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PresenceModelImpl_unref(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	linphone_presence_model_unref(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getBasicStatus
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_getBasicStatus(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jint)linphone_presence_model_get_basic_status(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    nbActivities
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_nbActivities(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jlong)linphone_presence_model_nb_activities(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getNthActivity
+ * Signature: (JJ)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_PresenceModelImpl_getNthActivity(JNIEnv *env, jobject jobj, jlong ptr, jlong idx) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	LinphonePresenceActivity *activity = linphone_presence_model_get_nth_activity(model, (unsigned int)idx);
+	if (activity == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceActivityImpl", linphone_presence_activity, activity)
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getActivity
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_PresenceModelImpl_getActivity(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
+	if (activity == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceActivityImpl", linphone_presence_activity, activity)
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    setActivity
+ * Signature: (JILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_setActivity(JNIEnv *env, jobject jobj, jlong ptr, jint acttype, jstring description) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	const char *cdescription = description ? env->GetStringUTFChars(description, NULL) : NULL;
+	jint res = (jint)linphone_presence_model_set_activity(model, (LinphonePresenceActivityType)acttype, cdescription);
+	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
+	return res;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getNote
+ * Signature: (JLjava/lang/String;)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_PresenceModelImpl_getNote(JNIEnv *env , jobject jobj, jlong ptr, jstring lang) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
+	LinphonePresenceNote *note = linphone_presence_model_get_note(model, clang);
+	if (clang) env->ReleaseStringUTFChars(lang, clang);
+	if (note == NULL) return NULL;
+	RETURN_USER_DATA_OBJECT("PresenceNoteImpl", linphone_presence_note, note)
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    addNote
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_addNote(JNIEnv *env, jobject jobj, jlong ptr, jstring description, jstring lang) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	const char *cdescription = description ? env->GetStringUTFChars(description, NULL) : NULL;
+	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
+	jint res = (jint)linphone_presence_model_add_note(model, cdescription, clang);
+	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
+	if (clang) env->ReleaseStringUTFChars(lang, clang);
+	return res;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    clearNotes
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_clearNotes(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jint)linphone_presence_model_clear_notes(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceActivityImpl
+ * Method:    unref
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PresenceActivityImpl_unref(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceActivity *activity = (LinphonePresenceActivity *)ptr;
+	linphone_presence_activity_unref(activity);
+}
+
+  /*
+ * Class:     org_linphone_core_PresenceActivityImpl
+ * Method:    toString
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceActivityImpl_toString(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceActivity *activity = (LinphonePresenceActivity *)ptr;
+	char *cactstr = linphone_presence_activity_to_string(activity);
+	jstring jactstr = cactstr ? env->NewStringUTF(cactstr) : NULL;
+	if (cactstr) ms_free(cactstr);
+	return jactstr;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceActivityImpl
+ * Method:    getType
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceActivityImpl_getType(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceActivity *activity = (LinphonePresenceActivity *)ptr;
+	return (jint)linphone_presence_activity_get_type(activity);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceActivityImpl
+ * Method:    getDescription
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceActivityImpl_getDescription(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceActivity *activity = (LinphonePresenceActivity *)ptr;
+	const char *cdescription = linphone_presence_activity_get_description(activity);
+	return cdescription ? env->NewStringUTF(cdescription) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    unref
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PresenceNoteImpl_unref(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
+	linphone_presence_note_unref(note);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    getContent
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceNoteImpl_getContent(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
+	const char *ccontent = linphone_presence_note_get_content(note);
+	return ccontent ? env->NewStringUTF(ccontent) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    getLang
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceNoteImpl_getLang(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
+	const char *clang = linphone_presence_note_get_lang(note);
+	return clang ? env->NewStringUTF(clang) : NULL;
+}

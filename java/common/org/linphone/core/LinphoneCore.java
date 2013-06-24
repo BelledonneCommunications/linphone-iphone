@@ -669,11 +669,31 @@ public interface LinphoneCore {
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 
 	/**
-	 * Set my presence status
-	 * @param minute_away how long in away
+	 * @brief Set my presence status
+	 * @param minutes_away how long in away
 	 * @param status sip uri used to redirect call in state LinphoneStatusMoved
+	 * @param status OnlineStatus
+	 * @deprecated Use setPresenceModel() instead
 	 */
-	void setPresenceInfo(int minute_away,String alternative_contact, OnlineStatus status);
+	void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status);
+	/**
+	 * @brief Get my presence status
+	 * @return OnlineStatus
+	 * @deprecated Use getPresenceModel() instead
+	 */
+	OnlineStatus getPresenceInfo();
+	/**
+	 * @brief Set my presence status
+	 * @param minutess_away how long in away
+	 * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
+	 * @param presence #LinphonePresenceModel
+	 */
+	void setPresenceModel(int minutes_away, String alternative_contact, PresenceModel presence);
+	/**
+	 * @brief Get my presence status
+	 * @return A #PresenceModel object, or null if no presence model has been set.
+	 */
+	PresenceModel getPresenceModel();
 	/**
 	 * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
 	 * @param to 	destination address for messages 

@@ -215,6 +215,34 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activit
 LINPHONE_PUBLIC void linphone_presence_model_delete(LinphonePresenceModel *model);
 
 /**
+ * Increase the reference count of the #LinphonePresenceModel object.
+ * @param[in] model The #LinphonePresenceModel object for which the reference count is to be increased.
+ * @return The #LinphonePresenceModel object with the increased reference count.
+ */
+LinphonePresenceModel * linphone_presence_model_ref(LinphonePresenceModel *model);
+
+/**
+ * Decrease the reference count of the #LinphonePresenceModel object and destroy it if it reaches 0.
+ * @param[in] model The #LinphonePresenceModel object for which the reference count is to be decreased.
+ * @return The #LinphonePresenceModel object if the reference count is still positive, NULL if the object has been destroyed.
+ */
+LinphonePresenceModel * linphone_presence_model_unref(LinphonePresenceModel *model);
+
+/**
+ * Sets the user data of a #LinphonePresenceModel object.
+ * @param[in] model The #LinphonePresenceModel object for which to set the user data.
+ * @param[in] user_data A pointer to the user data to set.
+ */
+void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *user_data);
+
+/**
+ * Gets the user data of a #LinphonePresenceModel object.
+ * @param[in] model The #LinphonePresenceModel object for which to get the user data.
+ * @return A pointer to the user data.
+ */
+void * linphone_presence_model_get_user_data(LinphonePresenceModel *model);
+
+/**
  * @brief Compares two presence models.
  * @param[in] m1 The first #LinphonePresenceModel object.
  * @param[in] m2 The second #LinphonePresenceModel object.
@@ -287,6 +315,34 @@ LINPHONE_PUBLIC int linphone_presence_model_add_note(LinphonePresenceModel *mode
 LINPHONE_PUBLIC int linphone_presence_model_clear_notes(LinphonePresenceModel *model);
 
 /**
+ * Increase the reference count of the #LinphonePresenceActivity object.
+ * @param[in] activity The #LinphonePresenceActivity object for which the reference count is to be increased.
+ * @return The #LinphonePresenceActivity object with the increased reference count.
+ */
+LinphonePresenceActivity * linphone_presence_activity_ref(LinphonePresenceActivity *activity);
+
+/**
+ * Decrease the reference count of the #LinphonePresenceActivity object and destroy it if it reaches 0.
+ * @param[in] activity The #LinphonePresenceActivity object for which the reference count is to be decreased.
+ * @return The #LinphonePresenceActivity object if the reference count is still positive, NULL if the object has been destroyed.
+ */
+LinphonePresenceActivity * linphone_presence_activity_unref(LinphonePresenceActivity *activity);
+
+/**
+ * Sets the user data of a #LinphonePresenceActivity object.
+ * @param[in] activity The #LinphonePresenceActivity object for which to set the user data.
+ * @param[in] user_data A pointer to the user data to set.
+ */
+void linphone_presence_activity_set_user_data(LinphonePresenceActivity *activity, void *user_data);
+
+/**
+ * Gets the user data of a #LinphonePresenceActivity object.
+ * @param[in] activity The #LinphonePresenceActivity object for which to get the user data.
+ * @return A pointer to the user data.
+ */
+void * linphone_presence_activity_get_user_data(LinphonePresenceActivity *activity);
+
+/**
  * @brief Gets the string representation of a presence activity.
  * @param[in] activity A pointer to the #LinphonePresenceActivity object for which to get a string representation.
  * @return A pointer a dynamically allocated string representing the given activity.
@@ -308,6 +364,34 @@ LINPHONE_PUBLIC LinphonePresenceActivityType linphone_presence_activity_get_type
  * @return A pointer to the description string of the presence activity, or NULL if no description is specified.
  */
 LINPHONE_PUBLIC const char * linphone_presence_activity_get_description(const LinphonePresenceActivity *activity);
+
+/**
+ * Increase the reference count of the #LinphonePresenceNote object.
+ * @param[in] note The #LinphonePresenceNote object for which the reference count is to be increased.
+ * @return The #LinphonePresenceNote object with the increased reference count.
+ */
+LinphonePresenceNote * linphone_presence_note_ref(LinphonePresenceNote *note);
+
+/**
+ * Decrease the reference count of the #LinphonePresenceNote object and destroy it if it reaches 0.
+ * @param[in] note The #LinphonePresenceNote object for which the reference count is to be decreased.
+ * @return The #LinphonePresenceNote object if the reference count is still positive, NULL if the object has been destroyed.
+ */
+LinphonePresenceNote * linphone_presence_note_unref(LinphonePresenceNote *note);
+
+/**
+ * Sets the user data of a #LinphonePresenceNote object.
+ * @param[in] note The #LinphonePresenceNote object for which to set the user data.
+ * @param[in] user_data A pointer to the user data to set.
+ */
+void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user_data);
+
+/**
+ * Gets the user data of a #LinphonePresenceNote object.
+ * @param[in] note The #LinphonePresenceNote object for which to get the user data.
+ * @return A pointer to the user data.
+ */
+void * linphone_presence_note_get_user_data(LinphonePresenceNote *note);
 
 /**
  * @brief Gets the content of a presence note.

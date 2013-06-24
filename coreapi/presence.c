@@ -37,6 +37,8 @@ extern const char *__policy_enum_to_str(LinphoneSubscribePolicy pol);
 
 
 struct _LinphonePresenceNote {
+	void *user_data;
+	int refcnt;
 	char *lang;
 	char *content;
 };
@@ -50,6 +52,8 @@ struct _LinphonePresenceService {
 };
 
 struct _LinphonePresenceActivity {
+	void *user_data;
+	int refcnt;
 	LinphonePresenceActivityType type;
 	char *description;
 };
@@ -67,6 +71,8 @@ struct _LinphonePresencePerson {
  * This model is not complete. For example, it does not handle devices.
  */
 struct _LinphonePresenceModel {
+	void *user_data;
+	int refcnt;
 	MSList *services;	/**< A list of _LinphonePresenceService structures. Also named tuples in the RFC. */
 	MSList *persons;	/**< A list of _LinphonePresencePerson structures. */
 	MSList *notes;		/**< A list of _LinphonePresenceNote structures. */
@@ -139,6 +145,7 @@ static const char * presence_basic_status_to_string(LinphonePresenceBasicStatus 
 
 static struct _LinphonePresenceNote * presence_note_new(const char *content, const char *lang) {
 	struct _LinphonePresenceNote * note = ms_new0(struct _LinphonePresenceNote, 1);
+	note->refcnt = 1;
 	note->content = ms_strdup(content);
 	if (lang != NULL) {
 		note->lang = ms_strdup(lang);
@@ -446,6 +453,28 @@ void linphone_presence_model_delete(LinphonePresenceModel *model) {
 	ms_list_for_each(model->notes, (MSIterateFunc)presence_note_delete);
 	ms_list_free(model->notes);
 	ms_free(model);
+}
+
+LinphonePresenceModel * linphone_presence_model_ref(LinphonePresenceModel *model) {
+	model->refcnt++;
+	return model;
+}
+
+LinphonePresenceModel * linphone_presence_model_unref(LinphonePresenceModel *model) {
+	model->refcnt--;
+	if (model->refcnt == 0) {
+		linphone_presence_model_delete(model);
+		return NULL;
+	}
+	return model;
+}
+
+void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *user_data) {
+	model->user_data = user_data;
+}
+
+void * linphone_presence_model_get_user_data(LinphonePresenceModel *model) {
+	return model->user_data;
 }
 
 bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const LinphonePresenceModel *m2) {
@@ -918,6 +947,28 @@ static const char * presence_activity_type_to_string(LinphonePresenceActivityTyp
 	return NULL;
 }
 
+LinphonePresenceActivity * linphone_presence_activity_ref(LinphonePresenceActivity *activity) {
+	activity->refcnt++;
+	return activity;
+}
+
+LinphonePresenceActivity * linphone_presence_activity_unref(LinphonePresenceActivity *activity) {
+	activity->refcnt--;
+	if (activity->refcnt == 0) {
+		presence_note_delete(activity);
+		return NULL;
+	}
+	return activity;
+}
+
+void linphone_presence_activity_set_user_data(LinphonePresenceActivity *activity, void *user_data) {
+	activity->user_data = user_data;
+}
+
+void * linphone_presence_activity_get_user_data(LinphonePresenceActivity *activity) {
+	return activity->user_data;
+}
+
 char * linphone_presence_activity_to_string(const LinphonePresenceActivity *activity) {
 	LinphonePresenceActivityType acttype = linphone_presence_activity_get_type(activity);
 	const char *description = linphone_presence_activity_get_description(activity);
@@ -945,6 +996,28 @@ const char * linphone_presence_activity_get_description(const LinphonePresenceAc
 	if (activity == NULL)
 		return NULL;
 	return activity->description;
+}
+
+LinphonePresenceNote * linphone_presence_note_ref(LinphonePresenceNote *note) {
+	note->refcnt++;
+	return note;
+}
+
+LinphonePresenceNote * linphone_presence_note_unref(LinphonePresenceNote *note) {
+	note->refcnt--;
+	if (note->refcnt == 0) {
+		presence_note_delete(note);
+		return NULL;
+	}
+	return note;
+}
+
+void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user_data) {
+	note->user_data = user_data;
+}
+
+void * linphone_presence_note_get_user_data(LinphonePresenceNote *note) {
+	return note->user_data;
 }
 
 const char * linphone_presence_note_get_content(const LinphonePresenceNote *note) {

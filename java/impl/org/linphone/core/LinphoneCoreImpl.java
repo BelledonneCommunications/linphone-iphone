@@ -80,7 +80,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreviewWindowId(long nativePtr, Object wid);
 	private native void setDeviceRotation(long nativePtr, int rotation);
 	private native void addFriend(long nativePtr,long friend);
-	private native void setPresenceInfo(long nativePtr,int minute_away, String alternative_contact,int status);
+	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
+	private native int getPresenceInfo(long nativePtr);
+	private native void setPresenceModel(long nativePtr, int minutes_away, String alternative_contact, long presencePtr);
+	private native Object getPresenceModel(long nativePtr);
 	private native long createChatRoom(long nativePtr,String to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
@@ -368,10 +371,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
 		
 	}
-	public synchronized void setPresenceInfo(int minute_away, String alternative_contact,
-			OnlineStatus status) {
-		setPresenceInfo(nativePtr,minute_away,alternative_contact,status.mValue);
+	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {
+		setPresenceInfo(nativePtr,minutes_away,alternative_contact,status.mValue);
 		
+	}
+	public synchronized OnlineStatus getPresenceInfo() {
+		return OnlineStatus.fromInt(getPresenceInfo(nativePtr));
+	}
+	public synchronized void setPresenceModel(int minutes_away, String alternative_contact, PresenceModel presence) {
+		setPresenceModel(nativePtr, minutes_away, alternative_contact, ((PresenceModelImpl)presence).getNativePtr());
+	}
+	public synchronized PresenceModel getPresenceModel() {
+		return (PresenceModel)getPresenceModel(nativePtr);
 	}
 	public synchronized LinphoneChatRoom createChatRoom(String to) {
 		return new LinphoneChatRoomImpl(createChatRoom(nativePtr,to));
