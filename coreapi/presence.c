@@ -928,7 +928,9 @@ char * linphone_presence_activity_to_string(const LinphonePresenceActivity *acti
 	else
 		acttype_str = presence_activity_type_to_string(acttype);
 
-	return ms_strdup_printf("%s: %s", acttype_str, (description == NULL) ? "" : description);
+	return ms_strdup_printf("%s%s%s", acttype_str,
+				(description == NULL) ? "" : ": ",
+				(description == NULL) ? "" : description);
 }
 
 LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity) {
