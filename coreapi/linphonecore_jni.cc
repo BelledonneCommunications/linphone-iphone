@@ -1539,7 +1539,14 @@ extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_getDomain(JNIEnv* 
 		return NULL;
 	}
 }
-
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_setDomain(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jdomain) {
+	const char* domain = env->GetStringUTFChars(jdomain, NULL);
+    linphone_address_set_domain((LinphoneAddress*)ptr, domain);
+	env->ReleaseStringUTFChars(jdomain, domain);
+}
 extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_toString(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {

@@ -2890,7 +2890,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->dest_proxy && call->dest_proxy->op){
 		/*give a chance to update the contact address if connectivity has changed*/
 		sal_op_set_contact(call->op,sal_op_get_contact(call->dest_proxy->op));
-	}
+	}else sal_op_set_contact(call->op,NULL);
 	return sal_call_update(call->op,subject);
 }
 

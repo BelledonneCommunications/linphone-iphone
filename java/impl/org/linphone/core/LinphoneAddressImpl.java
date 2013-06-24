@@ -33,6 +33,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native void setDomain(long ptr,String domain);
 	private native void setUserName(long ptr,String username);
 	private native String toString(long ptr);
+	private native void setDomain(long ptr, String domain);
 	
 	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
 		nativePtr = newLinphoneAddressImpl(identity, null);
@@ -92,7 +93,7 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 		return getPortInt();
 	}
 	public void setDomain(String domain) {
-		setDomain(nativePtr,domain);
+		setDomain(nativePtr, domain);
 	}
 	public void setPort(String port) {
 		throw new RuntimeException("Not implemented");
