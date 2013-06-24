@@ -928,7 +928,9 @@ char * linphone_presence_activity_to_string(const LinphonePresenceActivity *acti
 	else
 		acttype_str = presence_activity_type_to_string(acttype);
 
-	return ms_strdup_printf("%s: %s", acttype_str, (description == NULL) ? "" : description);
+	return ms_strdup_printf("%s%s%s", acttype_str,
+				(description == NULL) ? "" : ": ",
+				(description == NULL) ? "" : description);
 }
 
 LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity) {
@@ -955,6 +957,15 @@ const char * linphone_presence_note_get_lang(const LinphonePresenceNote *note) {
 	return note->lang;
 }
 
+static bool_t is_valid_activity_name(const char *name) {
+	unsigned int i;
+	for (i = 0; i < (sizeof(activity_map) / sizeof(activity_map[0])); i++) {
+		if (strcmp(name, activity_map[i].name) == 0) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 
 static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml_ctx, struct _LinphonePresencePerson *person, unsigned int person_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
@@ -970,15 +981,12 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 	activities_nodes_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 	if ((activities_nodes_object != NULL) && (activities_nodes_object->nodesetval != NULL)) {
 		for (i = 1; i <= activities_nodes_object->nodesetval->nodeNr; i++) {
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities[%i]/*", person_prefix, person_idx, i);
+			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities[%i]/rpid:*", person_prefix, person_idx, i);
 			activities_object = get_xml_xpath_object_for_node_list(xml_ctx, xpath_str);
 			if ((activities_object != NULL) && (activities_object->nodesetval != NULL)) {
 				for (j = 0; j < activities_object->nodesetval->nodeNr; j++) {
 					activity_node = activities_object->nodesetval->nodeTab[j];
-					if ((activity_node->name != NULL)
-						&& (activity_node->ns != NULL)
-						&& (activity_node->ns->prefix != NULL)
-						&& (strcmp((const char *)activity_node->ns->prefix, "rpid") == 0)) {
+					if ((activity_node->name != NULL) && (is_valid_activity_name((const char *)activity_node->name) == TRUE)) {
 						LinphonePresenceActivityType acttype;
 						description = (const char *)xmlNodeGetContent(activity_node);
 						if ((description != NULL) && (description[0] == '\0')) {
