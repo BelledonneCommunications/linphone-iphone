@@ -175,31 +175,32 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 	belle_sip_header_to_t* to;
 	belle_sip_response_t* resp;
 	belle_sip_header_t *evh;
+	const char *method=belle_sip_request_get_method(req);
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
-	} else if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
+	}else if (strcmp("INVITE",method)==0) {
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
-	} else if (strcmp("SUBSCRIBE",belle_sip_request_get_method(req))==0 && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
+	}else if ((strcmp("SUBSCRIBE",method)==0 || strcmp("NOTIFY",method)==0) && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		if (strncmp(belle_sip_header_get_unparsed_value(evh),"presence",strlen("presence"))==0){
 			sal_op_presence_fill_cbs(op);
 		}else
 			sal_op_subscribe_fill_cbs(op);
-	} else if (strcmp("MESSAGE",belle_sip_request_get_method(req))==0) {
+	}else if (strcmp("MESSAGE",method)==0) {
 		op=sal_op_new((Sal*)sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_message_fill_cbs(op);
-	} else if (strcmp("OPTIONS",belle_sip_request_get_method(req))==0) {
+	}else if (strcmp("OPTIONS",method)==0) {
 		resp=belle_sip_response_create_from_request(req,200);
 		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
 		return;
-	}else if (strcmp("INFO",belle_sip_request_get_method(req))==0) {
+	}else if (strcmp("INFO",method)==0) {
 		resp=belle_sip_response_create_from_request(req,481);/*INFO out of call dialogs are not allowed*/
 		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
 		return;

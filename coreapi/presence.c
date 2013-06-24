@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphonecore.h"
 #include "private.h"
+#include "lpconfig.h"
+
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/xpath.h>
@@ -1216,14 +1218,14 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	}
 	
 	/* check if we answer to this subscription */
-	if (linphone_find_friend(lc->friends,uri,&lf)!=NULL){
+	if (linphone_find_friend_by_addr(lc->friends,uri,&lf)!=NULL){
 		lf->insub=op;
 		lf->inc_subscribe_pending=TRUE;
 		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
 	}else{
 		/* check if this subscriber is in our black list */
-		if (linphone_find_friend(lc->subscribers,uri,&lf)){
+		if (linphone_find_friend_by_addr(lc->subscribers,uri,&lf)){
 			if (lf->pol==LinphoneSPDeny){
 				ms_message("Rejecting %s because we already rejected it once.",from);
 				sal_subscribe_decline(op,SalReasonDeclined);
@@ -1578,6 +1580,11 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	LinphonePresenceModel *presence = (LinphonePresenceModel *)model;
 
 	lf=linphone_find_friend_by_out_subscribe(lc->friends,op);
+	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
+		const SalAddress *addr=sal_op_get_from_address(op);
+		lf=NULL;
+		linphone_find_friend_by_addr(lc->friends,(LinphoneAddress*)addr,&lf);
+	}
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;
 		char *activity_str;

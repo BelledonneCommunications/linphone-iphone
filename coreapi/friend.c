@@ -73,16 +73,16 @@ const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 static int friend_compare(const void * a, const void * b){
 	LinphoneAddress *fa=((LinphoneFriend*)a)->uri;
 	LinphoneAddress *fb=((LinphoneFriend*)b)->uri;
-	if (linphone_address_weak_equal (fa,fb)) return 0;
+	if (linphone_address_weak_equal(fa,fb)) return 0;
 	return 1;
 }
 
 
-MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *friend, LinphoneFriend **lf){
+MSList *linphone_find_friend_by_addr(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf){
 	MSList *res=NULL;
 	LinphoneFriend dummy;
 	if (lf!=NULL) *lf=NULL;
-	dummy.uri=(LinphoneAddress*)friend;
+	dummy.uri=(LinphoneAddress*)addr;
 	res=ms_list_find_custom(fl,friend_compare,&dummy);
 	if (lf!=NULL && res!=NULL) *lf=(LinphoneFriend*)res->data;
 	return res;
@@ -99,8 +99,9 @@ LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op){
 
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 	MSList *elem;
+	LinphoneFriend *lf;
 	for (elem=l;elem!=NULL;elem=elem->next){
-		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
+		lf=(LinphoneFriend*)elem->data;
 		if (lf->outsub==op) return lf;
 	}
 	return NULL;

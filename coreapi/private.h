@@ -248,6 +248,7 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
+MSList *linphone_find_friend_by_addr(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen);
 int set_lock_file();
@@ -297,7 +298,7 @@ void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalO
 void linphone_subscription_answered(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op);
 
-MSList *linphone_find_friend(MSList *fl, const LinphoneAddress *fri, LinphoneFriend **lf);
+MSList *linphone_find_friend_by_addr(MSList *fl, const LinphoneAddress *fri, LinphoneFriend **lf);
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);

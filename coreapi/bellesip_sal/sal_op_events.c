@@ -64,7 +64,7 @@ static void subscribe_response_event(void *op_base, const belle_sip_response_eve
 	}
 	set_or_update_dialog(op_base,belle_sip_response_event_get_dialog(event));
 	if (!op->dialog) {
-		ms_message("subscribe op [%p] receive out of dialog answer [%i]",op,code);
+		ms_message("subscribe op [%p] received out of dialog answer [%i]",op,code);
 		return;
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
@@ -112,18 +112,34 @@ static void subscribe_process_transaction_terminated(void *user_ctx, const belle
 	ms_message("subscribe_process_transaction_terminated not implemented yet");
 }
 
+static void handle_notify(SalOp *op, belle_sip_request_t *req, const char *eventname, SalBody * body){
+	SalSubscribeStatus sub_state;
+	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
+	belle_sip_response_t* resp;
+	belle_sip_server_transaction_t* server_transaction = op->pending_server_trans;
+	
+	if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
+		sub_state=SalSubscribeTerminated;
+		ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
+	} else
+		sub_state=SalSubscribeActive;
+
+	op->base.root->callbacks.notify(op,sub_state,eventname,body);
+	resp=sal_op_create_response_from_request(op,req,200);
+	belle_sip_server_transaction_send_response(server_transaction,resp);
+}
+
 static void subscribe_process_request_event(void *op_base, const belle_sip_request_event_t *event) {
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
-	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
 	belle_sip_header_t *event_header;
 	SalBody body;
-	SalSubscribeStatus sub_state;
 	belle_sip_response_t* resp;
 	const char *eventname=NULL;
+	const char *method=belle_sip_request_get_method(req);
 	
 	belle_sip_object_ref(server_transaction);
 	if (op->pending_server_trans)  belle_sip_object_unref(op->pending_server_trans);
@@ -141,10 +157,15 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	}
 	
 	if (!op->dialog) {
-		op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
-		belle_sip_dialog_set_application_data(op->dialog,op);
-		sal_op_ref(op);
-		ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
+		if (strcmp(method,"SUBSCRIBE")==0){
+			op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
+			belle_sip_dialog_set_application_data(op->dialog,op);
+			sal_op_ref(op);
+			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
+		}else{ /*this is a NOTIFY*/
+			handle_notify(op,req,eventname,&body);
+			return;
+		}
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
 	switch(dialog_state) {
@@ -158,17 +179,9 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 		break;
 
 	case BELLE_SIP_DIALOG_CONFIRMED:
-		if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
-			if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
-				sub_state=SalSubscribeTerminated;
-				ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
-			} else
-				sub_state=SalSubscribeActive;
-
-			op->base.root->callbacks.notify(op,sub_state,eventname,&body);
-			resp=sal_op_create_response_from_request(op,req,200);
-			belle_sip_server_transaction_send_response(server_transaction,resp);
-		} else if (strcmp("SUBSCRIBE",belle_sip_request_get_method(req))==0) {
+		if (strcmp("NOTIFY",method)==0) {
+			handle_notify(op,req,eventname,&body);
+		} else if (strcmp("SUBSCRIBE",method)==0) {
 			/*either a refresh of an unsubscribe*/
 			if (expires && belle_sip_header_expires_get_expires(expires)>0) {
 
