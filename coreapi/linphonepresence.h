@@ -42,7 +42,7 @@ typedef enum LinphonePresenceBasicStatus {
 } LinphonePresenceBasicStatus;
 
 /** Activities as defined in section 3.2 of RFC 4480 */
-typedef enum LinphonePresenceActivity {
+typedef enum LinphonePresenceActivityType {
 	/** This value is not defined in the RFC, it corresponds to no activity with a basic status of "closed". */
 	LinphonePresenceActivityOffline,
 
@@ -263,7 +263,7 @@ LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *
 /**
  * @brief Gets the first note of a presence model (there is usually only one).
  * @param[in] model The #LinphonePresenceModel object to get the note from.
- * @param[in] lang The language of the note to get. Can be NULL to a note that has no language specified or to get the first note whatever language it is written into.
+ * @param[in] lang The language of the note to get. Can be NULL to get a note that has no language specified or to get the first note whatever language it is written into.
  * @return A pointer to a #LinphonePresenceNote object if successful, NULL otherwise.
  */
 LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_model_get_note(const LinphonePresenceModel *model, const char *lang);

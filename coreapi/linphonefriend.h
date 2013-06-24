@@ -217,7 +217,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 /**
  * @brief Get the presence information of a friend
  * @param[in] lf A #LinphoneFriend object
- * @return A #LinphonePresenceModel object, or NULL if the friend to not have presence information (in which he is considered offline)
+ * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information (in which case he is considered offline)
  */
 LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
