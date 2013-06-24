@@ -33,7 +33,6 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	private native void setDomain(long ptr,String domain);
 	private native void setUserName(long ptr,String username);
 	private native String toString(long ptr);
-	private native void setDomain(long ptr, String domain);
 	
 	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
 		nativePtr = newLinphoneAddressImpl(identity, null);
