@@ -3702,15 +3702,16 @@ void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const 
 		lc->alt_contact=NULL;
 	}
 	if (contact) lc->alt_contact=ms_strdup(contact);
-	if (!linphone_presence_model_equals(lc->presence_model,presence)){
-		linphone_core_notify_all_friends(lc,presence);
-		/*
-		   Improve the use of all LINPHONE_STATUS available.
-		   !TODO Do not mix "presence status" with "answer status code"..
-		   Use correct parameter to follow sip_if_match/sip_etag.
-		 */
-		linphone_core_send_publish(lc,presence);
-	}
+
+	// TODO: Check that the presence timestamp is newer than the last sent presence.
+	linphone_core_notify_all_friends(lc,presence);
+	/*
+	   Improve the use of all LINPHONE_STATUS available.
+	   !TODO Do not mix "presence status" with "answer status code"..
+	   Use correct parameter to follow sip_if_match/sip_etag.
+	 */
+	linphone_core_send_publish(lc,presence);
+
 	if ((lc->presence_model != NULL) && (lc->presence_model != presence)) {
 		linphone_presence_model_delete(lc->presence_model);
 		lc->presence_model = presence;
