@@ -3713,7 +3713,7 @@ void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const 
 	linphone_core_send_publish(lc,presence);
 
 	if ((lc->presence_model != NULL) && (lc->presence_model != presence)) {
-		linphone_presence_model_delete(lc->presence_model);
+		linphone_presence_model_unref(lc->presence_model);
 		lc->presence_model = presence;
 	}
 }
@@ -5457,7 +5457,7 @@ void ui_config_uninit(LinphoneCore* lc)
 		lc->friends=NULL;
 	}
 	if (lc->presence_model) {
-		linphone_presence_model_delete(lc->presence_model);
+		linphone_presence_model_unref(lc->presence_model);
 		lc->presence_model = NULL;
 	}
 }

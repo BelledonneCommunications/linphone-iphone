@@ -260,7 +260,7 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
 	}
-	if (lf->presence != NULL) linphone_presence_model_delete(lf->presence);
+	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	ms_free(lf);
@@ -379,7 +379,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 			case LinphoneSPWait:
 				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOther, "Waiting for user acceptance");
 				linphone_friend_notify(fr,model);
-				linphone_presence_model_delete(model);
+				linphone_presence_model_unref(model);
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)

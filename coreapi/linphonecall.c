@@ -426,7 +426,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->owns_call_log=TRUE;
 	model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
 	linphone_core_notify_all_friends(call->core,model);
-	linphone_presence_model_delete(model);
+	linphone_presence_model_unref(model);
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	if (min_port == max_port) {
 		/* Used fixed RTP audio port. */

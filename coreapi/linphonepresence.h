@@ -209,12 +209,6 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activit
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityType activity, const char *description, const char *note, const char *lang);
 
 /**
- * @brief Deletes a presence model.
- * @param[in] model The #LinphonePresenceModel object to delete.
- */
-LINPHONE_PUBLIC void linphone_presence_model_delete(LinphonePresenceModel *model);
-
-/**
  * Increase the reference count of the #LinphonePresenceModel object.
  * @param[in] model The #LinphonePresenceModel object for which the reference count is to be increased.
  * @return The #LinphonePresenceModel object with the increased reference count.

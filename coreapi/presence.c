@@ -185,7 +185,7 @@ static void presence_service_delete(struct _LinphonePresenceService *service) {
 	if (service->contact != NULL) {
 		ms_free(service->contact);
 	}
-	ms_list_for_each(service->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(service->notes);
 	ms_free(service);
 };
@@ -204,6 +204,7 @@ static void presence_service_add_note(struct _LinphonePresenceService *service, 
 
 static struct _LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
 	struct _LinphonePresenceActivity *act = ms_new0(struct _LinphonePresenceActivity, 1);
+	act->refcnt = 1;
 	act->type = acttype;
 	if (description != NULL) {
 		act->description = ms_strdup(description);
@@ -266,11 +267,11 @@ static void presence_person_delete(struct _LinphonePresencePerson *person) {
 	if (person->id != NULL) {
 		ms_free(person->id);
 	}
-	ms_list_for_each(person->activities, (MSIterateFunc)presence_activity_delete);
+	ms_list_for_each(person->activities, (MSIterateFunc)linphone_presence_activity_unref);
 	ms_list_free(person->activities);
-	ms_list_for_each(person->activities_notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(person->activities_notes);
-	ms_list_for_each(person->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(person->notes);
 	ms_free(person);
 }
@@ -288,7 +289,7 @@ static void presence_person_add_note(struct _LinphonePresencePerson *person, str
 }
 
 static void presence_person_clear_activities(struct _LinphonePresencePerson *person) {
-	ms_list_for_each(person->activities, (MSIterateFunc)presence_activity_delete);
+	ms_list_for_each(person->activities, (MSIterateFunc)linphone_presence_activity_unref);
 	ms_list_free(person->activities);
 	person->activities = NULL;
 }
@@ -424,7 +425,9 @@ static bool_t presence_person_equals(const struct _LinphonePresencePerson *p1, c
 }
 
 LinphonePresenceModel * linphone_presence_model_new(void) {
-	return ms_new0(LinphonePresenceModel, 1);
+	LinphonePresenceModel *model = ms_new0(LinphonePresenceModel, 1);
+	model->refcnt = 1;
+	return model;
 }
 
 LinphonePresenceModel * linphone_presence_model_new_with_activity(LinphonePresenceActivityType acttype, const char *description) {
@@ -444,14 +447,14 @@ LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(Linph
 	return model;
 }
 
-void linphone_presence_model_delete(LinphonePresenceModel *model) {
+static void presence_model_delete(LinphonePresenceModel *model) {
 	if (model == NULL) return;
 
 	ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
 	ms_list_free(model->services);
 	ms_list_for_each(model->persons, (MSIterateFunc)presence_person_delete);
 	ms_list_free(model->persons);
-	ms_list_for_each(model->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(model->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(model->notes);
 	ms_free(model);
 }
@@ -464,7 +467,7 @@ LinphonePresenceModel * linphone_presence_model_ref(LinphonePresenceModel *model
 LinphonePresenceModel * linphone_presence_model_unref(LinphonePresenceModel *model) {
 	model->refcnt--;
 	if (model->refcnt == 0) {
-		linphone_presence_model_delete(model);
+		presence_model_delete(model);
 		return NULL;
 	}
 	return model;
@@ -734,16 +737,16 @@ int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *n
 }
 
 static void clear_presence_person_notes(struct _LinphonePresencePerson *person) {
-	ms_list_for_each(person->activities_notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(person->activities_notes);
 	person->activities_notes = NULL;
-	ms_list_for_each(person->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(person->notes);
 	person->notes = NULL;
 }
 
 static void clear_presence_service_notes(struct _LinphonePresenceService *service) {
-	ms_list_for_each(service->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(service->notes);
 	service->notes = NULL;
 }
@@ -754,7 +757,7 @@ int linphone_presence_model_clear_notes(LinphonePresenceModel *model) {
 
 	ms_list_for_each(model->persons, (MSIterateFunc)clear_presence_person_notes);
 	ms_list_for_each(model->services, (MSIterateFunc)clear_presence_service_notes);
-	ms_list_for_each(model->notes, (MSIterateFunc)presence_note_delete);
+	ms_list_for_each(model->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(model->notes);
 	model->notes = NULL;
 
@@ -1228,7 +1231,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 	}
 
 	if (err < 0) {
-		linphone_presence_model_delete(model);
+		linphone_presence_model_unref(model);
 		model = NULL;
 	}
 
@@ -1669,7 +1672,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
 		if (activity_str != NULL) ms_free(activity_str);
 		if (lf->presence != NULL) {
-			linphone_presence_model_delete(lf->presence);
+			linphone_presence_model_unref(lf->presence);
 		}
 		lf->presence = presence;
 		lf->subscribe_active=TRUE;
@@ -1678,7 +1681,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");
-		linphone_presence_model_delete(presence);
+		linphone_presence_model_unref(presence);
 	}
 	if (ss==SalSubscribeTerminated){
 		sal_op_release(op);
