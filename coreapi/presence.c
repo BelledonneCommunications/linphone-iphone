@@ -1668,7 +1668,10 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		activity_str = linphone_presence_activity_to_string(activity);
 		ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
 		if (activity_str != NULL) ms_free(activity_str);
-		linphone_friend_set_presence_model(lf, presence);
+		if (lf->presence != NULL) {
+			linphone_presence_model_delete(lf->presence);
+		}
+		lf->presence = presence;
 		lf->subscribe_active=TRUE;
 		if (lc->vtable.notify_presence_recv)
 			lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);

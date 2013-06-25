@@ -356,15 +356,8 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 	return online_status;
 }
 
-LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf) {
+const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf) {
 	return lf->presence;
-}
-
-void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *model) {
-	if (lf->presence != NULL) {
-		linphone_presence_model_delete(lf->presence);
-	}
-	lf->presence = model;
 }
 
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){

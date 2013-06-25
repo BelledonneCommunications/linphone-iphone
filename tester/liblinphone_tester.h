@@ -151,7 +151,7 @@ typedef struct _stats {
 	int number_of_LinphonePresenceActivityVacation;
 	int number_of_LinphonePresenceActivityWorking;
 	int number_of_LinphonePresenceActivityWorship;
-	LinphonePresenceModel *last_received_presence;
+	const LinphonePresenceModel *last_received_presence;
 	
 	int number_of_inforeceived;
 	int number_of_inforeceived_with_body;

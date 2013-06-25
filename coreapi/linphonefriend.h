@@ -219,14 +219,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
  * @param[in] lf A #LinphoneFriend object
  * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information (in which case he is considered offline)
  */
-LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
-
-/**
- * @brief Set the presence information of a friend
- * @param[in] lf A #LinphoneFriend object
- * @param[in] presence A #LinphonePresenceModel object. It can be NULL to remove the presence information of the friend.
- */
-void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *presence);
+const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);

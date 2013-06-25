@@ -2009,20 +2009,9 @@ extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getStatus(JNIEnv*  env
  */
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneFriendImpl_getPresenceModel(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphoneFriend *lf = (LinphoneFriend *)ptr;
-	LinphonePresenceModel *model = linphone_friend_get_presence_model(lf);
+	const LinphonePresenceModel *model = linphone_friend_get_presence_model(lf);
 	if (model == NULL) return NULL;
 	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model);
-}
-
-/*
- * Class:     org_linphone_core_LinphoneFriendImpl
- * Method:    setPresenceModel
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneFriendImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jlong presencePtr) {
-	LinphoneFriend *lf = (LinphoneFriend *)ptr;
-	LinphonePresenceModel *model = (LinphonePresenceModel *)presencePtr;
-	linphone_friend_set_presence_model(lf, model);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_edit(JNIEnv*  env
