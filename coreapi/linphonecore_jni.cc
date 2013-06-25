@@ -2007,7 +2007,7 @@ extern "C" jint Java_org_linphone_core_LinphoneFriendImpl_getStatus(JNIEnv*  env
  */
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneFriendImpl_getPresenceModel(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphoneFriend *lf = (LinphoneFriend *)ptr;
-	const LinphonePresenceModel *model = linphone_friend_get_presence_model(lf);
+	LinphonePresenceModel *model = (LinphonePresenceModel *)linphone_friend_get_presence_model(lf);
 	if (model == NULL) return NULL;
 	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model);
 }
@@ -3118,6 +3118,41 @@ JNIEXPORT void JNICALL Java_org_linphone_core_PresenceModelImpl_unref(JNIEnv *en
 JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_getBasicStatus(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
 	return (jint)linphone_presence_model_get_basic_status(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getTimestamp
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_getTimestamp(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jlong)linphone_presence_model_get_timestamp(model);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    getContact
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceModelImpl_getContact(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	char *ccontact = linphone_presence_model_get_contact(model);
+	jstring jcontact = ccontact ? env->NewStringUTF(ccontact) : NULL;
+	if (ccontact) ms_free(ccontact);
+	return jcontact;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    setContact
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PresenceModelImpl_setContact(JNIEnv *env, jobject jobj, jlong ptr, jstring contact) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	const char *ccontact = contact ? env->GetStringUTFChars(contact, NULL) : NULL;
+	linphone_presence_model_set_contact(model, ccontact);
+	if (ccontact) env->ReleaseStringUTFChars(contact, ccontact);
 }
 
 /*

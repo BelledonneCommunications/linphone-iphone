@@ -41,6 +41,24 @@ public class PresenceModelImpl implements PresenceModel {
 		return BasicStatus.fromInt(getBasicStatus(mNativePtr));
 	}
 
+	private native long getTimestamp(long nativePtr);
+	@Override
+	public long getTimestamp() {
+		return getTimestamp(mNativePtr);
+	}
+
+	private native String getContact(long nativePtr);
+	@Override
+	public String getContact() {
+		return getContact(mNativePtr);
+	}
+
+	private native void setContact(long nativePtr, String contact);
+	@Override
+	public void setContact(String contact) {
+		setContact(mNativePtr, contact);
+	}
+
 	private native long nbActivities(long nativePtr);
 	@Override
 	public long nbActivities() {

@@ -57,6 +57,24 @@ public interface PresenceModel {
 	BasicStatus getBasicStatus();
 
 	/**
+	 * @brief Gets the timestamp of a presence model.
+	 * @return The timestamp of the #LinphonePresenceModel object or -1 on error.
+	 */
+	long getTimestamp();
+
+	/**
+	 * @brief Gets the contact of a presence model.
+	 * @return A string containing the contact, or null if no contact is found.
+	 */
+	String getContact();
+
+	/**
+	 * @brief Sets the contact of a presence model.
+	 * @param contact The contact string to set.
+	 */
+	void setContact(String contact);
+
+	/**
 	 * @brief Gets the number of activities included in the presence model.
 	 * @return The number of activities included in the #PresenceModel object.
 	 */
