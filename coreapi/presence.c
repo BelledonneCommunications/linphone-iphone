@@ -357,73 +357,6 @@ static void presence_model_find_open_basic_status(struct _LinphonePresenceServic
 	}
 }
 
-static bool_t presence_service_equals(const struct _LinphonePresenceService *s1, const struct _LinphonePresenceService *s2) {
-	if (s1->status != s2->status)
-		return FALSE;
-	return TRUE;
-}
-
-static bool_t presence_note_equals(const struct _LinphonePresenceNote *n1, const struct _LinphonePresenceNote *n2) {
-	if (((n1->lang == NULL) && (n2->lang != NULL))
-		|| ((n1->lang != NULL) && (n2->lang == NULL)))
-		return FALSE;
-
-	if (strcmp(n1->content, n2->content) != 0)
-		return FALSE;
-	if ((n1->lang != NULL) && (n2->lang != NULL)) {
-		if (strcmp(n1->lang, n2->lang) != 0)
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
-static bool_t presence_activity_equals(const struct _LinphonePresenceActivity *a1, const struct _LinphonePresenceActivity *a2) {
-	if (((a1->description == NULL) && (a2->description != NULL))
-		|| ((a1->description != NULL) && (a2->description == NULL)))
-		return FALSE;
-
-	if (a1->type != a2->type)
-		return FALSE;
-
-	if ((a1->description != NULL) && (a2->description != NULL)) {
-		if (strcmp(a1->description, a2->description) != 0)
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
-static bool_t presence_person_equals(const struct _LinphonePresencePerson *p1, const struct _LinphonePresencePerson *p2) {
-	int nb;
-	int i;
-
-	if ((ms_list_size(p1->activities) != ms_list_size(p2->activities))
-		|| (ms_list_size(p1->activities_notes) != ms_list_size(p2->activities_notes))
-		|| (ms_list_size(p1->notes) != ms_list_size(p2->notes)))
-		return FALSE;
-
-	nb = ms_list_size(p1->activities);
-	for (i = 0; i < nb; i++) {
-		if (presence_activity_equals(ms_list_nth_data(p1->activities, i), ms_list_nth_data(p2->activities, i)) == FALSE)
-			return FALSE;
-	}
-
-	nb = ms_list_size(p1->activities_notes);
-	for (i = 0; i < nb; i++) {
-		if (presence_note_equals(ms_list_nth_data(p1->activities_notes, i), ms_list_nth_data(p2->activities_notes, i)) == FALSE)
-			return FALSE;
-	}
-
-	nb = ms_list_size(p1->notes);
-	for (i = 0; i < nb; i++) {
-		if (presence_note_equals(ms_list_nth_data(p1->notes, i), ms_list_nth_data(p2->notes, i)) == FALSE)
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
 LinphonePresenceModel * linphone_presence_model_new(void) {
 	LinphonePresenceModel *model = ms_new0(LinphonePresenceModel, 1);
 	model->refcnt = 1;
@@ -479,55 +412,6 @@ void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *u
 
 void * linphone_presence_model_get_user_data(LinphonePresenceModel *model) {
 	return model->user_data;
-}
-
-bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const LinphonePresenceModel *m2) {
-	LinphonePresenceActivity *activity = NULL;
-	int nb;
-	int i;
-
-	/* If the two pointers are the same, the presence model are equals. */
-	if (m1 == m2)
-		return TRUE;
-
-	/* A null activity is equal to an activity with no activity but a basic status of Closed. */
-	if (m1 == NULL) {
-		activity = linphone_presence_model_get_activity(m2);
-		if (linphone_presence_activity_get_type(activity) != LinphonePresenceActivityOffline)
-			return FALSE;
-		return TRUE;
-	}
-	if (m2 == NULL) {
-		activity = linphone_presence_model_get_activity(m2);
-		if (linphone_presence_activity_get_type(activity) != LinphonePresenceActivityOffline)
-			return FALSE;
-		return TRUE;
-	}
-
-	if ((ms_list_size(m1->services) != ms_list_size(m2->services))
-		|| (ms_list_size(m1->persons) != ms_list_size(m2->persons))
-		|| (ms_list_size(m1->notes) != ms_list_size(m2->notes)))
-		return FALSE;
-
-	nb = ms_list_size(m1->services);
-	for (i = 0; i < nb; i++) {
-		if (presence_service_equals(ms_list_nth_data(m1->services, i), ms_list_nth_data(m2->services, i)) == FALSE)
-			return FALSE;
-	}
-
-	nb = ms_list_size(m1->persons);
-	for (i = 0; i < nb; i++) {
-		if (presence_person_equals(ms_list_nth_data(m1->persons, i), ms_list_nth_data(m2->persons, i)) == FALSE)
-			return FALSE;
-	}
-
-	nb = ms_list_size(m1->notes);
-	for (i = 0; i < nb; i++) {
-		if (presence_note_equals(ms_list_nth_data(m1->notes, i), ms_list_nth_data(m2->notes, i)) == FALSE)
-			return FALSE;
-	}
-
-	return TRUE;
 }
 
 /* Suppose that if at least one service is open, then the model is open. */

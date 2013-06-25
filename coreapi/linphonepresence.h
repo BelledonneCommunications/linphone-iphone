@@ -237,14 +237,6 @@ void linphone_presence_model_set_user_data(LinphonePresenceModel *model, void *u
 void * linphone_presence_model_get_user_data(LinphonePresenceModel *model);
 
 /**
- * @brief Compares two presence models.
- * @param[in] m1 The first #LinphonePresenceModel object.
- * @param[in] m2 The second #LinphonePresenceModel object.
- * @return TRUE if the #LinphonePresenceModel objects are equals, FALSE otherwise.
- */
-LINPHONE_PUBLIC bool_t linphone_presence_model_equals(const LinphonePresenceModel *m1, const LinphonePresenceModel *m2);
-
-/**
  * @brief Gets the basic status of a presence model.
  * @param[in] model The #LinphonePresenceModel object to get the basic status from.
  * @return The #LinphonePresenceBasicStatus of the #LinphonePresenceModel object given as parameter.
