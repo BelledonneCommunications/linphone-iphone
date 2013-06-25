@@ -48,10 +48,26 @@ abstract public class LinphoneCoreFactory {
 		}
 		return theLinphoneCoreFactory;
 	}
+	/**
+	 * create  {@link LinphoneAuthInfo}
+	 * @param username
+	 * @param userid user id as set in auth header
+	 * @param passwd
+	 * */
 	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
+	/**
+	 * create  {@link LinphoneAuthInfo}
+	 * @param username
+	 * @param userid user id as set in auth header
+	 * @param passwd
+	 * @param ha1
+	 * @param realm
+	 * */
+	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1,String realm);
 	
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;
+
 
 	/**
 	 * Constructs a LinphoneAddress object
@@ -67,6 +83,7 @@ abstract public class LinphoneCoreFactory {
 	 * @return
 	 */
 	abstract public LinphoneAddress createLinphoneAddress(String address);
+	abstract public LpConfig createLpConfig(String file);
 	
 	abstract public  LinphoneProxyConfig createProxyConfig(String identity, String proxy,String route,boolean enableRegister) throws LinphoneCoreException;
 	/**

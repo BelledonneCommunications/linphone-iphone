@@ -31,11 +31,13 @@ pkgconfig_DATA=linphone.pc
 
 linphonedir=$(datadir)/linphone
 linphone_DATA=rootca.pem
+rootca.pem: 
+	$(top_srcdir)/scripts/mk-ca-bundle.pl rootca.pem
 
 EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
-								$(LINPHONE_RINGS) \
-						        linphone.desktop.in   \
-								linphone.pc.in \
-								Makefile.inc \
-								rootca.pem
+						$(LINPHONE_RINGS) \
+					        linphone.desktop.in   \
+						linphone.pc.in \
+						Makefile.inc \
+						rootca.pem
 

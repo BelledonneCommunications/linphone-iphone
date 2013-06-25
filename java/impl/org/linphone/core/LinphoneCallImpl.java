@@ -68,9 +68,11 @@ class LinphoneCallImpl implements LinphoneCall {
 		videoStats = stats;
 	}
 	public LinphoneCallStats getAudioStats() {
+		if (audioStats!=null) ((LinphoneCallStatsImpl)audioStats).updateRealTimeStats(this);
 		return audioStats;
 	}
 	public LinphoneCallStats getVideoStats() {
+		if (videoStats!=null) ((LinphoneCallStatsImpl)videoStats).updateRealTimeStats(this);
 		return videoStats;
 	}
 	public CallDirection getDirection() {
@@ -179,6 +181,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	public String getRemoteUserAgent() {
 		return getRemoteUserAgent(nativePtr);
 	}
+
+	private native String getRemoteContact(long nativePtr);
+	public String getRemoteContact() {
+		return getRemoteContact(nativePtr);
+	}
 	
 	private native void takeSnapshot(long nativePtr, String path);
 	public void takeSnapshot(String path) {
@@ -188,5 +195,16 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native void zoomVideo(long nativePtr, float factor, float cx, float cy);
 	public void zoomVideo(float factor, float cx, float cy) {
 		zoomVideo(nativePtr, factor, cx, cy);
+	}
+	
+	private native void startRecording(long nativePtr);
+	@Override
+	public void startRecording() {
+		startRecording(nativePtr);
+	}
+	private native void stopRecording(long nativePtr);
+	@Override
+	public void stopRecording() {
+		stopRecording(nativePtr);
 	}
 }

@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <net/if.h>
 #include <ifaddrs.h>
 #endif
-
+#include <math.h>
 
 #if !defined(WIN32)
 
@@ -234,17 +234,26 @@ static int get_codec_bitrate(LinphoneCore *lc, const PayloadType *pt){
 	return pt->normal_bitrate;
 }
 
+/*
+ *((codec-birate*ptime/8) + RTP header + UDP header + IP header)*8/ptime;
+ *ptime=1/npacket
+ */
 static double get_audio_payload_bandwidth(LinphoneCore *lc, const PayloadType *pt){
 	double npacket=50;
 	double packet_size;
 	int bitrate;
+	if (strcmp(payload_type_get_mime(&payload_type_aaceld_44k), payload_type_get_mime(pt))==0) {
+		/*special case of aac 44K because ptime= 10ms*/
+		npacket=100;
+	}
+		
 	bitrate=get_codec_bitrate(lc,pt);
-	packet_size= (((double)bitrate)/(50*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
+	packet_size= (((double)bitrate)/(npacket*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
 	return packet_size*8.0*npacket;
 }
 
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt){
-	call->audio_bw=(int)(get_audio_payload_bandwidth(call->core,pt)/1000.0);
+	call->audio_bw=(int)(ceil(get_audio_payload_bandwidth(call->core,pt)/1000.0)); /*rounding codec bandwidth should be avoid, specially for AMR*/
 	ms_message("Audio bandwidth for this call is %i",call->audio_bw);
 }
 
@@ -734,7 +743,7 @@ void linphone_core_update_local_media_description_from_ice(SalMediaDescription *
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < desc->nstreams; i++) {
+	for (i = 0; i < desc->n_active_streams; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
@@ -838,7 +847,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
-			for (i = 0; i < md->nstreams; i++) {
+			for (i = 0; i < md->n_total_streams; i++) {
 				const SalStreamDescription *stream = &md->streams[i];
 				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
@@ -857,7 +866,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
-		for (i = 0; i < md->nstreams; i++) {
+		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
@@ -873,10 +882,10 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < md->nstreams; i++) {
+		for (i = 0; i < md->n_total_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (cl == NULL) {
+			if ((cl == NULL) && (i < md->n_active_streams)) {
 				cl = ice_check_list_new();
 				ice_session_add_check_list(call->ice_session, cl);
 				switch (stream->type) {
@@ -930,7 +939,7 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 			}
 		}
-		for (i = ice_session_nb_check_lists(call->ice_session); i > md->nstreams; i--) {
+		for (i = ice_session_nb_check_lists(call->ice_session); i > md->n_active_streams; i--) {
 			ice_session_remove_check_list(call->ice_session, ice_session_check_list(call->ice_session, i - 1));
 		}
 		ice_session_check_mismatch(call->ice_session);
@@ -948,8 +957,8 @@ bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescr
 {
 	int i;
 
-	for (i = 0; i < md->nstreams; i++) {
-		if ((md->streams[i].type == SalVideo) && (md->streams[i].rtp_port != 0))
+	for (i = 0; i < md->n_active_streams; i++) {
+		if (md->streams[i].type == SalVideo)
 			return TRUE;
 	}
 	return FALSE;
@@ -988,6 +997,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			else if (strcasecmp(name,"VOL_RCV")==0) ret|=AUDIO_STREAM_FEATURE_VOL_RCV;
 			else if (strcasecmp(name,"DTMF")==0) ret|=AUDIO_STREAM_FEATURE_DTMF;
 			else if (strcasecmp(name,"DTMF_ECHO")==0) ret|=AUDIO_STREAM_FEATURE_DTMF_ECHO;
+			else if (strcasecmp(name,"MIXED_RECORDING")==0) ret|=AUDIO_STREAM_FEATURE_MIXED_RECORDING;
 			else if (strcasecmp(name,"ALL")==0) ret|=AUDIO_STREAM_FEATURE_ALL;
 			else if (strcasecmp(name,"NONE")==0) ret=0;
 			else ms_error("Unsupported audio feature %s requested in config file.",name);
@@ -995,9 +1005,18 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 			p=n;
 		}
 	}else ret=AUDIO_STREAM_FEATURE_ALL;
+	
+	if (ret==AUDIO_STREAM_FEATURE_ALL){
+		/*since call recording is specified before creation of the stream in linphonecore,
+		* it will be requested on demand. It is not necessary to include it all the time*/
+		ret&=~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+	}
 	return ret;
 }
 
+bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
+	return lp_config_get_int(lc->config,"sound","tone_indications",1);
+}
 
 #ifdef HAVE_GETIFADDRS
 
@@ -1021,14 +1040,15 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size)
 		if (ifp->ifa_addr && ifp->ifa_addr->sa_family == type
 			&& (ifp->ifa_flags & UP_FLAG) && !(ifp->ifa_flags & IFF_LOOPBACK))
 		{
-			getnameinfo(ifp->ifa_addr,
+			if(getnameinfo(ifp->ifa_addr,
 						(type == AF_INET6) ?
 						sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
-						address, size, NULL, 0, NI_NUMERICHOST);
-			if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
-				/*ms_message("getifaddrs() found %s",address);*/
-				ret++;
-				break;
+						address, size, NULL, 0, NI_NUMERICHOST) == 0) {
+				if (strchr(address, '%') == NULL) {	/*avoid ipv6 link-local addresses */
+					/*ms_message("getifaddrs() found %s",address);*/
+					ret++;
+					break;
+				}
 			}
 		}
 	}
@@ -1099,26 +1119,34 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
-	strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
-#ifdef HAVE_GETIFADDRS
-	if (dest==NULL) {
-		/*we use getifaddrs for lookup of default interface */
-		int found_ifs;
+	int err;
+        strcpy(result,type==AF_INET ? "127.0.0.1" : "::1");
 	
-		found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
-		if (found_ifs==1){
-			return 0;
-		}else if (found_ifs<=0){
-			/*absolutely no network on this machine */
-			return -1;
-		}
+	if (dest==NULL){
+		if (type==AF_INET)
+			dest="87.98.157.38"; /*a public IP address*/
+		else dest="2a00:1450:8002::68";
+	}
+        err=get_local_ip_for_with_connect(type,dest,result);
+	if (err==0) return 0;
+	
+	/* if the connect method failed, which happens when no default route is set, 
+	 * try to find 'the' running interface with getifaddrs*/
+	
+#ifdef HAVE_GETIFADDRS
+
+	/*we use getifaddrs for lookup of default interface */
+	int found_ifs;
+
+	found_ifs=get_local_ip_with_getifaddrs(type,result,LINPHONE_IPADDR_SIZE);
+	if (found_ifs==1){
+		return 0;
+	}else if (found_ifs<=0){
+		/*absolutely no network on this machine */
+		return -1;
 	}
 #endif
-	/*else use connect to find the best local ip address */
-	if (type==AF_INET)
-		dest="87.98.157.38"; /*a public IP address*/
-	else dest="2a00:1450:8002::68";
-	return get_local_ip_for_with_connect(type,dest,result);
+      return 0;  
 }
 
 #ifndef WIN32

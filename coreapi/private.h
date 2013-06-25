@@ -28,9 +28,11 @@
 extern "C" {
 #endif
 #include "linphonecore.h"
+#include "linphonefriend.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal.h"
+#include "sipsetup.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -38,6 +40,13 @@ extern "C" {
 #include "mediastreamer2/ice.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msconference.h"
+#ifdef BUILD_UPNP
+#include "upnp.h"
+#endif //BUILD_UPNP
+
+#ifdef MSG_STORAGE_ENABLED
+#include "sqlite3.h"
+#endif
 
 #ifndef LIBLINPHONE_VERSION
 #define LIBLINPHONE_VERSION LINPHONE_VERSION
@@ -75,29 +84,60 @@ struct _LinphoneCallParams{
 	int up_bw;
 	int down_ptime;
 	int up_ptime;
+	char *record_file;
+	SalCustomHeader *custom_headers;
 	bool_t has_video;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t pad;
 	bool_t low_bandwidth;
 };
-    
+
+struct _LinphoneCallLog{
+	struct _LinphoneCore *lc;
+	LinphoneCallDir dir; /**< The direction of the call*/
+	LinphoneCallStatus status; /**< The status of the call*/
+	LinphoneAddress *from; /**<Originator of the call as a LinphoneAddress object*/
+	LinphoneAddress *to; /**<Destination of the call as a LinphoneAddress object*/
+	char start_date[128]; /**<Human readable string containing the start date*/
+	int duration; /**<Duration of the call in seconds*/
+	char *refkey;
+	void *user_pointer;
+	rtp_stats_t local_stats;
+	rtp_stats_t remote_stats;
+	float quality;
+	time_t start_date_time; /**Start date of the call in seconds as expressed in a time_t */
+	char* call_id; /**unique id of a call*/
+	bool_t video_enabled;
+};
+
 typedef struct _CallCallbackObj
 {
-    LinphoneCallCbFunc _func;
-    void * _user_data;
+	LinphoneCallCbFunc _func;
+	void * _user_data;
 }CallCallbackObj;
 
 static const int linphone_call_magic=0x3343;
 
+typedef enum _LinphoneChatMessageDir{
+	LinphoneChatMessageIncoming,
+	LinphoneChatMessageOutgoing
+} LinphoneChatMessageDir;
+
 struct _LinphoneChatMessage {
-	char* message;
 	LinphoneChatRoom* chat_room;
+	LinphoneChatMessageDir dir;
+	char* message;
 	LinphoneChatMessageStateChangeCb cb;
 	void* cb_ud;
 	void* message_userdata;
 	char* external_body_url;
-	LinphoneAddress* from;
+	LinphoneAddress *from;
+	LinphoneAddress *to;
+	time_t time;
+	SalCustomHeader *custom_headers;
+	LinphoneChatMessageState state;
+	bool_t is_read;
 };
 
 typedef struct StunCandidate{
@@ -145,9 +185,14 @@ struct _LinphoneCall
 	OrtpEvQueue *videostream_app_evq;
 	CallCallbackObj nextVideoFrameDecoded;
 	LinphoneCallStats stats[2];
+#ifdef BUILD_UPNP
+	UpnpSession *upnp_session;
+#endif //BUILD_UPNP
 	IceSession *ice_session;
 	LinphoneChatMessage* pending_message;
 	int ping_time;
+	unsigned int remote_session_id;
+	unsigned int remote_session_ver;
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
@@ -165,6 +210,8 @@ struct _LinphoneCall
 	
 	bool_t was_automatically_paused;
 	bool_t ping_replied;
+	bool_t record_active;
+	bool_t paused_by_app;
 };
 
 
@@ -269,7 +316,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 int linphone_proxy_config_normalize_number(LinphoneProxyConfig *cfg, const char *username, char *result, size_t result_len);
 
-void linphone_core_message_received(LinphoneCore *lc, const char *from, const char *raw_msg,const char* external_url);
+void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 
 void linphone_core_play_tone(LinphoneCore *lc);
 
@@ -284,8 +331,10 @@ void linphone_call_stop_audio_stream(LinphoneCall *call);
 void linphone_call_stop_video_stream(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
+void linphone_call_delete_upnp_session(LinphoneCall *call);
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md);
+void linphone_call_update_remote_session_id_and_ver(LinphoneCall *call);
 
 const char * linphone_core_get_identity(LinphoneCore *lc);
 const char * linphone_core_get_route(LinphoneCore *lc);
@@ -357,6 +406,7 @@ struct _LinphoneChatRoom{
 	char  *peer;
 	LinphoneAddress *peer_url;
 	void * user_data;
+	MSList *messages_hist;
 };
 
 
@@ -385,17 +435,18 @@ typedef struct sip_config
 	MSList *deleted_proxies;
 	int inc_timeout;	/*timeout after an un-answered incoming call is rejected*/
 	int in_call_timeout;	/*timeout after a call is hangup */
+	int delayed_timeout; 	/*timeout after a delayed call is resumed */
 	unsigned int keepalive_period; /* interval in ms between keep alive messages sent to the proxy server*/
 	LCSipTransports transports;
-	bool_t use_info;
-	bool_t use_rfc2833;	/*force RFC2833 to be sent*/
 	bool_t guess_hostname;
 	bool_t loopback_only;
 	bool_t ipv6_enabled;
 	bool_t sdp_200_ack;
 	bool_t register_only_when_network_is_up;
+	bool_t register_only_when_upnp_is_ok;
 	bool_t ping_with_options;
 	bool_t auto_net_state_mon;
+	bool_t tcp_tls_keepalive;
 } sip_config_t;
 
 typedef struct rtp_config
@@ -407,6 +458,7 @@ typedef struct rtp_config
 	int audio_jitt_comp;  /*jitter compensation*/
 	int video_jitt_comp;  /*jitter compensation*/
 	int nortp_timeout;
+	int disable_upnp;
 	bool_t rtp_no_xmit_on_audio_mute;
                               /* stop rtp xmit when audio muted */
 	bool_t audio_adaptive_jitt_comp_enabled;
@@ -492,6 +544,7 @@ struct _LinphoneConference{
 	MSAudioConference *conf;
 	AudioStream *local_participant;
 	MSAudioEndpoint *local_endpoint;
+	MSAudioEndpoint *record_endpoint;
 	RtpProfile *local_dummy_profile;
 	bool_t local_muted;
 };
@@ -561,8 +614,8 @@ struct _LinphoneCore
 	bool_t network_reachable;
 	bool_t use_preview_window;
 	
-        time_t network_last_check;
-        bool_t network_last_status;
+	time_t network_last_check;
+	bool_t network_last_status;
 
 	bool_t ringstream_autorelease;
 	bool_t pad[3];
@@ -571,13 +624,20 @@ struct _LinphoneCore
 	LinphoneTunnel *tunnel;
 	char* device_id;
 	MSList *last_recv_msg_ids;
+	char *chat_db_file;
+#ifdef MSG_STORAGE_ENABLED
+	sqlite3 *db;
+#endif
+#ifdef BUILD_UPNP
+	UpnpContext *upnp;
+#endif //BUILD_UPNP
 };
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
-	
+
 bool_t linphone_core_can_we_add_call(LinphoneCore *lc);
 int linphone_core_add_call( LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call);
@@ -602,12 +662,13 @@ struct _EcCalibrator{
 	MSTicker *ticker;
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
-	int recv_count;
-	int sent_count;
+	LinphoneEcCalibrationAudioInit audio_init_cb;
+	LinphoneEcCalibrationAudioUninit audio_uninit_cb;
 	int64_t acc;
 	int delay;
 	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
+	bool_t freq1,freq2,freq3;
 };
 
 typedef struct _EcCalibrator EcCalibrator;
@@ -618,6 +679,8 @@ void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
+int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
+
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 /* When a conference participant pause the conference he may send a music.
@@ -644,6 +707,28 @@ void call_logs_write_to_config_file(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+void _linphone_call_params_copy(LinphoneCallParams *params, const LinphoneCallParams *refparams);
+void linphone_call_params_uninit(LinphoneCallParams *params);
+
+int linphone_upnp_init(LinphoneCore *lc);
+void linphone_upnp_destroy(LinphoneCore *lc);
+
+#ifdef MSG_STORAGE_ENABLED
+sqlite3 * linphone_message_storage_init();
+#endif
+void linphone_chat_message_store(LinphoneChatMessage *msg);
+void linphone_chat_message_store_state(LinphoneChatMessage *msg);
+void linphone_core_message_storage_init(LinphoneCore *lc);
+void linphone_core_message_storage_close(LinphoneCore *lc);
+
+typedef enum _LinphoneToneID{
+	LinphoneToneBusy,
+	LinphoneToneCallWaiting,
+	LinphoneToneCallOnHold,
+	LinphoneToneCallFailed
+}LinphoneToneID;
+void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
+bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 
 #ifdef __cplusplus
 }

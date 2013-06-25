@@ -81,6 +81,26 @@ void sal_remove_in_subscribe(Sal *sal, SalOp *op){
 	sal->in_subscribes=ms_list_remove(sal->in_subscribes,op);
 }
 
+static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+
+static void msg_add_current_date(osip_message_t *msg){
+	char tmp[64]={0};
+	time_t curtime=time(NULL);
+	struct tm *ret;
+#ifndef WIN32
+	struct tm gmt;
+	ret=gmtime_r(&curtime,&gmt);
+#else
+	ret=gmtime(&curtime);
+#endif
+	/*cannot use strftime because it is locale dependant*/
+	snprintf(tmp,sizeof(tmp)-1,"%s, %i %s %i %02i:%02i:%02i GMT",
+			days[ret->tm_wday],ret->tm_mday,months[ret->tm_mon],1900+ret->tm_year,ret->tm_hour,ret->tm_min,ret->tm_sec);
+	osip_message_replace_header(msg,"Date",tmp);
+}
+
+
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg){
 	osip_message_t *sip=NULL;
 
@@ -97,6 +117,8 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 		eXosip_message_build_request(&sip,"MESSAGE",sal_op_get_to(op),
 			sal_op_get_from(op),sal_op_get_route(op));
 		if (sip!=NULL){
+			sal_exosip_add_custom_headers(sip,op->base.custom_headers);
+			msg_add_current_date(sip);
 			osip_message_set_content_type(sip,content_type);
 			if (msg) osip_message_set_body(sip,msg,strlen(msg));
 			sal_add_other(op->base.root,op,sip);
@@ -118,6 +140,8 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 			eXosip_unlock();
 			return -1;
 		}
+		sal_exosip_add_custom_headers(sip,op->base.custom_headers);
+		msg_add_current_date(sip);
 		osip_message_set_content_type(sip,content_type);
 		if (msg) osip_message_set_body(sip,msg,strlen(msg));
 		eXosip_call_send_request(op->did,sip);
@@ -125,6 +149,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	}
 	return 0;
 }
+
 int sal_text_send(SalOp *op, const char *from, const char *to, const char *msg) {
 	return sal_message_send(op,from,to,"text/plain",msg);
 }
@@ -612,23 +637,26 @@ int sal_publish(SalOp *op, const char *from, const char *to, SalPresenceStatus p
 	osip_message_t *pub;
 	int i;
 	char buf[1024];
+	const char *route=sal_op_get_route(op);
 
 	mk_presence_body (presence_mode, from, buf, sizeof (buf), presence_style);
 
-	i = eXosip_build_publish(&pub,from, to, NULL, "presence", "300", 
+	i = eXosip_build_publish(&pub,to, from, NULL, "presence", "600", 
 		presence_style ? "application/xpidf+xml" : "application/pidf+xml", buf);
 	if (i<0){
 		ms_warning("Failed to build publish request.");
 		return -1;
 	}
-
+	if (route)
+		sal_message_add_route(pub,route);
+	
 	eXosip_lock();
 	i = eXosip_publish(pub, to); /* should update the sip-if-match parameter
 				    from sip-etag  from last 200ok of PUBLISH */
 	eXosip_unlock();
 	if (i<0){
-	  ms_message("Failed to send publish request.");
-	  return -1;
+		ms_message("Failed to send publish request.");
+		return -1;
 	}
 	sal_add_other(sal_op_get_sal(op),op,pub);
 	return 0;

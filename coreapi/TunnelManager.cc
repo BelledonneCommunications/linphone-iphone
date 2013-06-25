@@ -102,11 +102,19 @@ int TunnelManager::eXosipSelect(int max_fds, fd_set *s1, fd_set *s2, fd_set *s3,
 
 
 void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay) {
+	if (ip == NULL) {
+		ip = "";
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+	}
 	addServer(ip,port);
 	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip,udpMirrorPort),delay));
 }
 
 void TunnelManager::addServer(const char *ip, int port) {
+	if (ip == NULL) {
+		ip = "";
+		ms_warning("Adding tunnel server with empty ip, it will not work!");
+	}
 	mServerAddrs.push_back(ServerAddr(ip,port));
 	if (mTunnelClient) mTunnelClient->addServer(ip,port);
 }
@@ -181,7 +189,7 @@ bool TunnelManager::isStarted() {
 }
 
 bool TunnelManager::isReady() const {
-	return mTunnelClient && mTunnelClient->isReady();
+	return mTunnelClient && mTunnelClient->isReady() && mReady;
 }
 
 int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
@@ -206,6 +214,7 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :TunnelClientController()
 ,mEnabled(false)
 ,mTunnelClient(NULL)
 ,mAutoDetectStarted(false)
+,mReady(false)
 ,mHttpProxyPort(0){
 
 	mExosipTransport.data=this;
@@ -253,7 +262,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		//force transport to udp
 		LCSipTransports lTransport;
 		
-		lTransport.udp_port=15060;
+		lTransport.udp_port=(0xDFFF&random())+1024;
 		lTransport.tcp_port=0;
 		lTransport.tls_port=0;
 		lTransport.dtls_port=0;
@@ -263,6 +272,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);
 		}
+		mReady=true;
 	}else if (mEnabled && !mTunnelClient->isReady()){
 		/* we got disconnected from the tunnel */
 		if (lProxy && linphone_proxy_config_is_registered(lProxy)) {
@@ -270,6 +280,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 			linphone_proxy_config_edit(lProxy);
 			linphone_core_iterate(mCore);
 		}
+		mReady=false;
 	}
 }
 
@@ -309,7 +320,7 @@ void TunnelManager::enable(bool isEnable) {
 		
 		mEnabled=false;
 		stopClient();
-		
+		mReady=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
 		eXosip_transport_hook_register(NULL);

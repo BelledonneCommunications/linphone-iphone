@@ -35,6 +35,7 @@ static void masquerade_via(osip_message_t *msg, const char *ip, const char *port
 static bool_t fix_message_contact(SalOp *op, osip_message_t *request,osip_message_t *last_answer, bool_t expire_last_contact);
 static void update_contact_from_response(SalOp *op, osip_message_t *response);
 
+
 void _osip_list_set_empty(osip_list_t *l, void (*freefunc)(void*)){
 	void *data;
 	while(!osip_list_eol(l,0)) {
@@ -51,7 +52,6 @@ void sal_get_default_local_ip(Sal *sal, int address_family,char *ip, size_t iple
 		ms_error("Could not find default routable ip address !");
 	}
 }
-
 
 static SalOp * sal_find_call(Sal *sal, int cid){
 	const MSList *elem;
@@ -397,7 +397,8 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	bool_t ipv6;
 	int proto=IPPROTO_UDP;
 	int keepalive = ctx->keepalive_period;
-	
+
+	ctx->transport = tr;
 	switch (tr) {
 	case SalTransportUDP:
 		proto=IPPROTO_UDP;
@@ -406,7 +407,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	case SalTransportTCP:
 	case SalTransportTLS:
 		proto= IPPROTO_TCP;
-		keepalive=-1;
+		if (!ctx->tcp_tls_keepalive) keepalive=-1;
 		eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE,&keepalive);
 		set_tls_options(ctx);
 		break;
@@ -588,18 +589,15 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 		
-		for(i=0;i<h->result->nstreams;++i){
-			if (h->result->streams[i].rtp_port>0){
-				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
-				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
-				h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
-				h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
-				h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
-				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
-				
-				if (h->result->streams[i].proto == SalProtoRtpSavp) {
-					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0]; 
-				}
+		for(i=0;i<h->result->n_active_streams;++i){
+			strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);
+			strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
+			h->result->streams[i].ptime=h->base.remote_media->streams[i].ptime;
+			h->result->streams[i].bandwidth=h->base.remote_media->streams[i].bandwidth;
+			h->result->streams[i].rtp_port=h->base.remote_media->streams[i].rtp_port;
+			h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
+			if (h->result->streams[i].proto == SalProtoRtpSavp) {
+				h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
 			}
 		}
 	}
@@ -655,6 +653,7 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		osip_message_set_header(invite, "Session-expires", "200");
 		osip_message_set_supported(invite, "timer");
 	}
+	sal_exosip_add_custom_headers(invite,h->base.custom_headers);
 	if (h->base.local_media){
 		h->sdp_offering=TRUE;
 		set_sdp_from_desc(invite,h->base.local_media);
@@ -673,8 +672,11 @@ int sal_call(SalOp *h, const char *from, const char *to){
 		ms_error("Fail to send invite ! Error code %d", err);
 		return -1;
 	}else{
+		char *tmp=NULL;
 		callid=osip_message_get_call_id(invite);
-		osip_call_id_to_str(callid,(char **)(&h->base.call_id));
+		osip_call_id_to_str(callid,&tmp);
+		h->base.call_id=ms_strdup(tmp);
+		osip_free(tmp);
 		sal_add_call(h->base.root,h);
 	}
 	return 0;
@@ -1016,6 +1018,19 @@ static void set_remote_ua(SalOp* op, osip_message_t *req){
 	}
 }
 
+static void set_remote_contact(SalOp* op, osip_message_t *req){
+	if (op->base.remote_contact==NULL){
+		osip_contact_t *h=NULL;
+		osip_message_get_contact(req,0,&h);
+		if (h){
+			char *tmp=NULL;
+			osip_contact_to_str(h,&tmp);
+			__sal_op_set_remote_contact(op,tmp);
+			osip_free(tmp);
+		}
+	}
+}
+
 static void set_replaces(SalOp *op, osip_message_t *req){
 	osip_header_t *h=NULL;
 
@@ -1053,14 +1068,20 @@ static void inc_new_call(Sal *sal, eXosip_event_t *ev){
 	SalOp *op=sal_op_new(sal);
 	osip_from_t *from,*to;
 	osip_call_info_t *call_info;
-	char *tmp;
+	char *tmp=NULL;
 	sdp_message_t *sdp=eXosip_get_sdp_info(ev->request);
+	
 	osip_call_id_t *callid=osip_message_get_call_id(ev->request);
-	osip_call_id_to_str(callid,(char**)(&op->base.call_id));
-
+	
+	osip_call_id_to_str(callid,&tmp);
+	op->base.call_id=ms_strdup(tmp);
+	osip_free(tmp);
+	
 	set_network_origin(op,ev->request);
+	set_remote_contact(op,ev->request);
 	set_remote_ua(op,ev->request);
 	set_replaces(op,ev->request);
+	sal_op_set_custom_header(op,sal_exosip_get_custom_headers(ev->request));
 	
 	if (sdp){
 		op->sdp_offering=FALSE;
@@ -1236,6 +1257,7 @@ static void call_accepted(Sal *sal, eXosip_event_t *ev){
 
 	op->did=ev->did;
 	set_remote_ua(op,ev->response);
+	set_remote_contact(op,ev->response);
 
 	sdp=eXosip_get_sdp_info(ev->response);
 	if (sdp){
@@ -1442,6 +1464,7 @@ static bool_t call_failure(Sal *sal, eXosip_event_t *ev){
 		case 480:
 			error=SalErrorFailure;
 			sr=SalReasonTemporarilyUnavailable;
+		break;
 		case 486:
 			error=SalErrorFailure;
 			sr=SalReasonBusy;
@@ -1631,7 +1654,7 @@ static void process_notify(Sal *sal, eXosip_event_t *ev){
 		//osip_content_type_t *ct=NULL;
 		osip_message_get_body(ev->request,0,&body);
 		//ct=osip_message_get_content_type(ev->request);
-		if (h->hvalue && strcasecmp(h->hvalue,"refer")==0){
+		if (h->hvalue && strncasecmp(h->hvalue,"refer",strlen("refer"))==0){
 			/*special handling of refer events*/
 			if (body && body->body){
 				osip_message_t *msg;
@@ -1746,6 +1769,29 @@ static bool_t comes_from_local_if(osip_message_t *msg){
 	return FALSE;
 }
 
+static const char *days[]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+static const char *months[]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+
+static int utc_offset() {
+	time_t ref = 24 * 60 * 60L;
+	struct tm * timeptr;
+	int gmtime_hours;
+
+	/* get the local reference time for Jan 2, 1900 00:00 UTC */
+	timeptr = localtime(&ref);
+	gmtime_hours = timeptr->tm_hour;
+
+	/* if the local time is the "day before" the UTC, subtract 24 hours
+	from the hours to get the UTC offset */
+	if (timeptr->tm_mday < 2) gmtime_hours -= 24;
+
+	return gmtime_hours;
+}
+
+time_t mktime_utc(struct tm *timeptr) {
+	return mktime(timeptr) + utc_offset() * 3600;
+}
+
 static void text_received(Sal *sal, eXosip_event_t *ev){
 	osip_body_t *body=NULL;
 	char *from=NULL,*msg=NULL;
@@ -1755,6 +1801,26 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 	int external_body_size=0;
 	SalMessage salmsg;
 	char message_id[256]={0};
+	osip_header_t *date=NULL;
+	struct tm ret={0};
+	char tmp1[80]={0};
+	char tmp2[80]={0};
+	SalOp *op=sal_op_new(sal);
+
+	osip_message_get_date(ev->request,0,&date);
+	if(date!=NULL){
+		int i,j;
+		sscanf(date->hvalue,"%3c,%d%s%d%d:%d:%d",tmp1,&ret.tm_mday,tmp2,
+	             &ret.tm_year,&ret.tm_hour,&ret.tm_min,&ret.tm_sec);
+		ret.tm_year-=1900;
+		for(i=0;i<7;i++) { 
+			if(strcmp(tmp1,days[i])==0) ret.tm_wday=i; 
+		}
+		for(j=0;j<12;j++) { 
+			if(strcmp(tmp2,months[j])==0) ret.tm_mon=j; 
+		}
+		ret.tm_isdst=0;
+	}else ms_warning("No date header in SIP MESSAGE, we don't know when it was sent.");
 	
 	content_type= osip_message_get_content_type(ev->request);
 	if (!content_type) {
@@ -1789,17 +1855,19 @@ static void text_received(Sal *sal, eXosip_event_t *ev){
 		osip_free(from);
 		return;
 	}
+	sal_op_set_custom_header(op,sal_exosip_get_custom_headers(ev->request));
+	
 	snprintf(message_id,sizeof(message_id)-1,"%s%s",ev->request->call_id->number,ev->request->cseq->number);
 	
 	salmsg.from=from;
 	salmsg.text=msg;
 	salmsg.url=external_body_size>0 ? unquoted_external_body_url : NULL;
 	salmsg.message_id=message_id;
-	sal->callbacks.text_received(sal,&salmsg);
+	salmsg.time=date!=NULL ? mktime_utc(&ret) : time(NULL);
+	sal->callbacks.text_received(op,&salmsg);
+	sal_op_release(op);
 	osip_free(from);
 }
-
-
 
 static void other_request(Sal *sal, eXosip_event_t *ev){
 	ms_message("in other_request");
@@ -2250,7 +2318,7 @@ static void register_set_contact(osip_message_t *msg, const char *contact){
 	osip_uri_uparam_add(ct->url,osip_strdup("line"),line);
 }
 
-static void sal_register_add_route(osip_message_t *msg, const char *proxy){
+void sal_message_add_route(osip_message_t *msg, const char *proxy){
 	osip_route_t *route;
 
 	osip_list_special_free(&msg->routes,(void (*)(void*))osip_route_free);
@@ -2297,7 +2365,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 		h->rid=eXosip_register_build_initial_register(from,domain,NULL,expires,&msg);
 		if (msg){
 			if (contact) register_set_contact(msg,contact);
-			sal_register_add_route(msg,proxy);
+			sal_message_add_route(msg,proxy);
 			sal_add_register(h->base.root,h);
 		}else{
 			ms_error("Could not build initial register.");
@@ -2307,7 +2375,7 @@ int sal_register(SalOp *h, const char *proxy, const char *from, int expires){
 	}else{
 		eXosip_lock();
 		eXosip_register_build_register(h->rid,expires,&msg);
-		sal_register_add_route(msg,proxy);
+		sal_message_add_route(msg,proxy);
 	}
 	if (msg){
 		eXosip_register_send_register(h->rid,msg);
@@ -2333,6 +2401,7 @@ int sal_register_refresh(SalOp *op, int expires){
 		* the exosip lock in a non blocking way, and give up if it takes too long*/
 		while (eXosip_trylock()!=0){
 			ms_usleep(100000);
+			tries++;
 			if (tries>30) {/*after 3 seconds, give up*/
 				ms_warning("Could not obtain exosip lock in a reasonable time, giving up.");
 				return -1;
@@ -2345,7 +2414,7 @@ int sal_register_refresh(SalOp *op, int expires){
 	eXosip_register_build_register(op->rid,expires,&msg);
 	if (msg!=NULL){
 		if (contact) register_set_contact(msg,contact);
-		sal_register_add_route(msg,sal_op_get_route(op));
+		sal_message_add_route(msg,sal_op_get_route(op));
 		eXosip_register_send_register(op->rid,msg);
 	}else ms_error("Could not build REGISTER refresh message.");
 	eXosip_unlock();
@@ -2512,9 +2581,24 @@ void sal_address_destroy(SalAddress *u){
 	osip_from_free((osip_from_t*)u);
 }
 
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled) {
+	ctx->tcp_tls_keepalive = enabled;
+}
+
 void sal_set_keepalive_period(Sal *ctx,unsigned int value) {
-	ctx->keepalive_period=value;
-	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &value);
+	switch (ctx->transport) {
+		case SalTransportUDP:
+			ctx->keepalive_period = value;
+			break;
+		case SalTransportTCP:
+		case SalTransportTLS:
+			if (ctx->tcp_tls_keepalive) ctx->keepalive_period = value;
+			else ctx->keepalive_period = -1;
+			break;
+		default:
+			break;
+	}
+	eXosip_set_option (EXOSIP_OPT_UDP_KEEP_ALIVE, &ctx->keepalive_period);
 }
 unsigned int sal_get_keepalive_period(Sal *ctx) {
 	return ctx->keepalive_period;
@@ -2577,6 +2661,28 @@ int sal_call_update(SalOp *h, const char *subject){
 	eXosip_unlock();
 	return err;
 }
+
 void sal_reuse_authorization(Sal *ctx, bool_t value) {
 	ctx->reuse_authorization=value;
 }
+
+void sal_exosip_add_custom_headers(osip_message_t *msg, SalCustomHeader *ch){
+	MSList *elem=(MSList*)ch;
+	for (;elem!=NULL;elem=elem->next){
+		SalCustomHeader *it=(SalCustomHeader*)elem;
+		osip_message_set_header(msg,it->header_name,it->header_value);
+	}
+}
+
+SalCustomHeader * sal_exosip_get_custom_headers(osip_message_t *msg){
+	int i=0;
+	osip_header_t *header;
+	SalCustomHeader *ret=NULL;
+
+	while((header=osip_list_get(&msg->headers,i))!=NULL){
+		ret=sal_custom_header_append(ret,header->hname,header->hvalue);
+		i++;
+	}
+	return ret;
+}
+

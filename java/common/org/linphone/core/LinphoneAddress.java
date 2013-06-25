@@ -39,21 +39,48 @@ public interface LinphoneAddress {
 	 */
 	public String getUserName();
 	/**
-	 * 
+	 * Domain name
 	 * @return null if not set
 	 */
 	public String getDomain();
+	/**
+	 * Port as String
+	 * @return null if not set
+	 */
 	public String getPort();
+	/**
+	 * Port as integer value. 
+	 * @return negative value if not set if not set
+	 */
 	public int getPortInt();
 	/**
 	 * set display name 
 	 * @param name
 	 */
 	public void setDisplayName(String name);
+	/**
+	 * set user name 
+	 * @param username
+	 */
 	public void setUserName(String username);
+	/**
+	 * set domain name 
+	 * @param domain
+	 */
 	public void setDomain(String domain);
+	/**
+	 * set port as String 
+	 * @param port, null if not set
+	 */
 	public void setPort(String port);
+	/**
+	 * set port as int 
+	 * @param port, negative value if not set
+	 */
 	public void setPortInt(int port);
+	/**
+	 * Removes address's tags and uri headers so that it is displayable to the user.
+	**/
 	public void clean();
 	
 	/**

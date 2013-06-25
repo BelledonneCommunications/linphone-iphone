@@ -44,7 +44,8 @@ LOCAL_SRC_FILES := \
 	linphonecall.c \
 	conference.c \
 	ec-calibrator.c \
-	linphone_tunnel.cc
+	linphone_tunnel_config.c \
+	message_storage.c
 
 ifndef LINPHONE_VERSION
 LINPHONE_VERSION = "Devel"
@@ -55,13 +56,10 @@ LOCAL_CFLAGS += \
 	-DORTP_INET6 \
 	-DINET6 \
 	-DOSIP_MT \
-	-DHAVE_EXOSIP_GET_VERSION \
-	-DHAVE_EXOSIP_RESET_TRANSPORTS \
 	-DENABLE_TRACE \
+	-DHAVE_CONFIG_H \
 	-DLINPHONE_VERSION=\"$(LINPHONE_VERSION)\" \
 	-DLINPHONE_PLUGINS_DIR=\"\\tmp\" \
-	-DHAVE_EXOSIP_TRYLOCK=1 \
-	-DHAVE_EXOSIP_TLS_VERIFY_CERTIFICATE=1 
 
 LOCAL_CFLAGS += -DIN_LINPHONE
 
@@ -79,6 +77,7 @@ endif
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH) \
 	$(LOCAL_PATH)/include \
+	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
 	$(LOCAL_PATH)/../../externals/exosip/include \
@@ -97,15 +96,24 @@ LOCAL_STATIC_LIBRARIES := \
 	libosip2 \
 	libgsm 
 
+ifeq ($(BUILD_REMOTE_PROVISIONING),1)
+LOCAL_STATIC_LIBRARIES += \
+	libxml2lpc \
+	liblpc2xml \
+	liblpxml2
+endif
+
 ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../tunnel/include $(LOCAL_PATH)/../../tunnel/src
-LOCAL_SRC_FILES +=  TunnelManager.cc
+LOCAL_SRC_FILES +=  linphone_tunnel.cc TunnelManager.cc
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_SHARED_LIBRARIES += libtunnelclient
 else
 LOCAL_STATIC_LIBRARIES += libtunnelclient
 endif
+else
+LOCAL_SRC_FILES += linphone_tunnel_stubs.c
 endif
 
 
@@ -150,6 +158,11 @@ LOCAL_STATIC_LIBRARIES += \
 	libmsx264 \
 	libx264
 endif
+endif
+
+ifeq ($(BUILD_UPNP),1)
+LOCAL_CFLAGS += -DBUILD_UPNP
+LOCAL_SRC_FILES += upnp.c
 endif
 
 LOCAL_STATIC_LIBRARIES += libspeex 

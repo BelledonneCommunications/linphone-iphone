@@ -190,6 +190,7 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 
 					if (pos2-pos1>=0){
 						/* found a pair key,value */
+						
 						if (cur!=NULL){
 							LpItem *item=lp_section_find_item(cur,key);
 							if (item==NULL){
@@ -198,7 +199,7 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 								ms_free(item->value);
 								item->value=strdup(pos1);
 							}
-							/*printf("Found %s %s={%s}\n",cur->name,key,pos1);*/
+							/*ms_message("Found %s=%s",key,pos1);*/
 						}else{
 							ms_warning("found key,item but no sections");
 						}
@@ -210,23 +211,34 @@ void lp_config_parse(LpConfig *lpconfig, FILE *file){
 }
 
 LpConfig * lp_config_new(const char *filename){
+	return lp_config_new_with_factory(filename, NULL);
+}
+
+LpConfig *lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename) {
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
-	if (filename!=NULL){
-		lpconfig->filename=ortp_strdup(filename);
-		lpconfig->file=fopen(filename,"rw");
+	if (config_filename!=NULL){
+		ms_message("Using (r/w) config information from %s", config_filename);
+		lpconfig->filename=ortp_strdup(config_filename);
+		lpconfig->file=fopen(config_filename,"r+");
 		if (lpconfig->file!=NULL){
+			struct stat fileStat;
 			lp_config_parse(lpconfig,lpconfig->file);
-			fclose(lpconfig->file);			
+			fclose(lpconfig->file);
 #if !defined(_WIN32_WCE)
-			/* make existing configuration files non-group/world-accessible */
-			if (chmod(filename, S_IRUSR | S_IWUSR) == -1)
-				ms_warning("unable to correct permissions on "
-				  	  "configuration file: %s",
-					   strerror(errno));
+			if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
+				/* make existing configuration files non-group/world-accessible */
+				if (chmod(config_filename, S_IRUSR | S_IWUSR) == -1) {
+					ms_warning("unable to correct permissions on "
+					"configuration file: %s", strerror(errno));
+				}
+			}
 #endif /*_WIN32_WCE*/
 			lpconfig->file=NULL;
 			lpconfig->modified=0;
 		}
+	}
+	if (factory_config_filename != NULL) {
+		lp_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
 }
@@ -234,6 +246,7 @@ LpConfig * lp_config_new(const char *filename){
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 	FILE* f=fopen(filename,"r");
 	if (f!=NULL){
+		ms_message("Reading config information from %s", filename);
 		lp_config_parse(lpconfig,f);
 		fclose(f);
 		return 0;

@@ -14,3 +14,5 @@
 ./bin/libgpg-error-0.dll
 ./bin/libgnutls-26.dll
 ./bin/libtasn1-3.dll
+./bin/libsqlite3-0.dll
+./bin/libzrtpcpp.dll

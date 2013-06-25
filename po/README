@@ -1,0 +1,14 @@
+How to add a translation file
+*****************************
+To add a translation file in linphone project you should first :
+	- change the variable ALL_LINGUAS in configure.ac by adding the language (ex: fr)
+	- then add the file .po in the directory /po
+	- run ./autogen.sh
+
+Update the translation files 
+***************************
+To update all the translation files, in the directory /po run the following command 
+	$ make update-po
+
+
+

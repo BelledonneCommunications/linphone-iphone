@@ -55,22 +55,38 @@ static void remove_local_endpoint(LinphoneConference *ctx){
 	}
 }
 
+static int linphone_conference_get_size(LinphoneConference *conf){
+	if (conf->conf == NULL) {
+		return 0;
+	}
+	return ms_audio_conference_get_size(conf->conf) - (conf->record_endpoint ? 1 : 0);
+}
+
 static int remote_participants_count(LinphoneConference *ctx) {
-	if (!ctx->conf || ms_audio_conference_get_size(ctx->conf)==0) return 0;
-	if (!ctx->local_participant) return ms_audio_conference_get_size(ctx->conf);
-	return ms_audio_conference_get_size(ctx->conf) -1;
+	int count=linphone_conference_get_size(ctx);
+	if (count==0) return 0;
+	if (!ctx->local_participant) return count;
+	return count -1;
 }
 
 void linphone_core_conference_check_uninit(LinphoneCore *lc){
 	LinphoneConference *ctx=&lc->conf_ctx;
 	if (ctx->conf){
-		ms_message("conference_check_uninit(): nmembers=%i",ms_audio_conference_get_size(ctx->conf));
-		if (remote_participants_count(ctx)==1){
+		int remote_count=remote_participants_count(ctx);
+		ms_message("conference_check_uninit(): size=%i",linphone_conference_get_size(ctx));
+		if (remote_count==1){
 			convert_conference_to_call(lc);
 		}
-		if (ms_audio_conference_get_size(ctx->conf)==1 && ctx->local_participant!=NULL){
-			remove_local_endpoint(ctx);
+		if (remote_count==0){
+			if (ctx->local_participant!=NULL)
+				remove_local_endpoint(ctx);
+			if (ctx->record_endpoint){
+				ms_audio_conference_remove_member(ctx->conf,ctx->record_endpoint);
+				ms_audio_endpoint_destroy(ctx->record_endpoint);
+				ctx->record_endpoint=NULL;
+			}
 		}
+		
 		if (ms_audio_conference_get_size(ctx->conf)==0){
 			ms_audio_conference_destroy(ctx->conf);
 			ctx->conf=NULL;
@@ -161,11 +177,11 @@ float linphone_core_get_conference_local_input_volume(LinphoneCore *lc){
  * 
  * If this is the first call that enters the conference, the virtual conference will be created automatically.
  * If the local user was actively part of the call (ie not in paused state), then the local user is automatically entered into the conference.
+ * If the call was in paused state, then it is automatically resumed when entering into the conference.
  * 
  * @returns 0 if successful, -1 otherwise.
 **/
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
-	LinphoneCallParams params;
 	LinphoneConference *conf=&lc->conf_ctx;
 	
 	if (call->current_params.in_conference){
@@ -173,21 +189,25 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call){
 		return -1;
 	}
 	conference_check_init(&lc->conf_ctx, lp_config_get_int(lc->config, "sound","conference_rate",16000));
-	call->params.in_conference=TRUE;
-	call->params.has_video=FALSE;
-	call->params.media_encryption=LinphoneMediaEncryptionNone;
-	params=call->params;
-	if (call->state==LinphoneCallPaused)
+	
+	if (call->state==LinphoneCallPaused){
+		call->params.in_conference=TRUE;
+		call->params.has_video=FALSE;
 		linphone_core_resume_call(lc,call);
-	else if (call->state==LinphoneCallStreamsRunning){
-		/*this will trigger a reINVITE that will later redraw the streams */
+	}else if (call->state==LinphoneCallStreamsRunning){
+		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		params->in_conference=TRUE;
+		params->has_video=FALSE;
+		
 		if (call->audiostream || call->videostream){
 			linphone_call_stop_media_streams (call); /*free the audio & video local resources*/
 		}
 		if (call==lc->current_call){
 			lc->current_call=NULL;
 		}
-		linphone_core_update_call(lc,call,&params);
+		/*this will trigger a reINVITE that will later redraw the streams */
+		linphone_core_update_call(lc,call,params);
+		linphone_call_params_destroy(params);
 		add_local_endpoint(conf,lc);
 	}else{
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
@@ -214,16 +234,19 @@ static int remove_from_conference(LinphoneCore *lc, LinphoneCall *call, bool_t a
 	ms_message("%s will be removed from conference", str);
 	ms_free(str);
 	if (active){
+		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
+		params->in_conference=FALSE;
 		// reconnect local audio with this call
 		if (linphone_core_is_in_conference(lc)){
 			ms_message("Leaving conference for reconnecting with unique call.");
 			linphone_core_leave_conference(lc);
 		}
 		ms_message("Updating call to actually remove from conference");
-		err=linphone_core_update_call(lc,call,&call->params);
+		err=linphone_core_update_call(lc,call,params);
+		linphone_call_params_destroy(params);
 	} else{
 		ms_message("Pausing call to actually remove from conference");
-		err=linphone_core_pause_call(lc,call);
+		err=_linphone_core_pause_call(lc,call);
 	}
 
 	return err;
@@ -256,9 +279,12 @@ static int convert_conference_to_call(LinphoneCore *lc){
  * @param call a call that has been previously merged into the conference.
  * 
  * After removing the remote participant belonging to the supplied call, the call becomes a normal call in paused state.
- * If one single remote participant is left alone in the conference after the removal, then it is
- * automatically removed from the conference and put into a simple call, like before entering the conference.
+ * If one single remote participant is left alone together with the local user in the conference after the removal, then the conference is
+ * automatically transformed into a simple call in StreamsRunning state.
  * The conference's resources are then automatically destroyed.
+ * 
+ * In other words, unless linphone_core_leave_conference() is explicitely called, the last remote participant of a conference is automatically
+ * put in a simple call in running state.
  * 
  * @returns 0 if successful, -1 otherwise.
  **/
@@ -319,7 +345,7 @@ int linphone_core_enter_conference(LinphoneCore *lc){
 		return -1;
 	}
 	if (lc->current_call != NULL) {
-		linphone_core_pause_call(lc, lc->current_call);
+		_linphone_core_pause_call(lc, lc->current_call);
 	}
 	LinphoneConference *conf=&lc->conf_ctx;
 	if (conf->local_participant==NULL) add_local_endpoint(conf,lc);
@@ -377,10 +403,37 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
  * @returns the number of participants to the conference
 **/
 int linphone_core_get_conference_size(LinphoneCore *lc) {
-	if (lc->conf_ctx.conf == NULL) {
-		return 0;
+	LinphoneConference *conf=&lc->conf_ctx;
+	return linphone_conference_get_size(conf);
+}
+
+
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (conf->conf == NULL) {
+		ms_warning("linphone_core_start_conference_recording(): no conference now.");
+		return -1;
 	}
-	return ms_audio_conference_get_size(lc->conf_ctx.conf);
+	if (conf->record_endpoint==NULL){
+		conf->record_endpoint=ms_audio_endpoint_new_recorder();
+		ms_audio_conference_add_member(conf->conf,conf->record_endpoint);
+	}
+	ms_audio_recorder_endpoint_start(conf->record_endpoint,path);
+	return 0;
+}
+
+int linphone_core_stop_conference_recording(LinphoneCore *lc){
+	LinphoneConference *conf=&lc->conf_ctx;
+	if (conf->conf == NULL) {
+		ms_warning("linphone_core_stop_conference_recording(): no conference now.");
+		return -1;
+	}
+	if (conf->record_endpoint==NULL){
+		ms_warning("linphone_core_stop_conference_recording(): no record active.");
+		return -1;
+	}
+	ms_audio_recorder_endpoint_stop(conf->record_endpoint);
+	return 0;
 }
 
 /**

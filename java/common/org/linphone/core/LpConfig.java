@@ -45,4 +45,9 @@ public interface LpConfig {
 	 * @param key 
 	 */
 	void setInt(String section, String key, int value);
+
+	/**
+	 * Synchronize LpConfig with file
+	 */
+	void sync();
 }

@@ -206,7 +206,7 @@ static LPC_COMMAND commands[] = {
 	{ "autoanswer", lpc_cmd_autoanswer, "Show/set auto-answer mode",
 		"'autoanswer'       \t: show current autoanswer mode\n"
 		"'autoanswer enable'\t: enable autoanswer mode\n"
-		"'autoanswer disable'\t: disable autoanswer mode \n"},
+		"'autoanswer disable'\t: disable autoanswer mode��\n"},
 	{ "proxy", lpc_cmd_proxy, "Manage proxies",
 		"'proxy list' : list all proxy setups.\n"
 		"'proxy add' : add a new proxy setup.\n"
@@ -244,6 +244,8 @@ static LPC_COMMAND commands[] = {
 		"'firewall none'   : use direct connection.\n"
 		"'firewall nat'    : use nat address given with the 'nat' command.\n"
 		"'firewall stun'   : use stun server given with the 'stun' command.\n"
+		"'firewall ice'    : use ice.\n"
+		"'firewall upnp'   : use uPnP IGD.\n"
 	},
 	{ "call-logs", lpc_cmd_call_logs, "Calls history", NULL },
 	{ "friend", lpc_cmd_friend, "Manage friends",
@@ -850,6 +852,10 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 		{
 			linphone_core_set_firewall_policy(lc,LinphonePolicyNoFirewall);
 		}
+		else if (strcmp(args,"upnp")==0) 
+		{
+			linphone_core_set_firewall_policy(lc,LinphonePolicyUseUpnp);
+		}
 		else if (strcmp(args,"ice")==0)
 		{
 			setting = linphone_core_get_stun_server(lc);
@@ -895,6 +901,9 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 			break;
 		case LinphonePolicyUseIce:
 			linphonec_out("Using ice with stun server %s to discover firewall address\n", setting ? setting : linphone_core_get_stun_server(lc));
+			break;
+		case LinphonePolicyUseUpnp:
+			linphonec_out("Using uPnP IGD protocol\n");
 			break;
 	}
 	return 1;
@@ -1962,7 +1971,7 @@ static int lpc_cmd_duration(LinphoneCore *lc, char *args){
 	for(;elem!=NULL;elem=elem->next){
 		if (elem->next==NULL){
 			cl=(LinphoneCallLog*)elem->data;
-			linphonec_out("%i seconds\n",cl->duration);
+			linphonec_out("%i seconds\n",linphone_call_log_get_duration(cl));
 		}
 	}
 	return 1;
@@ -2501,13 +2510,15 @@ static int lpc_cmd_camera(LinphoneCore *lc, char *args){
 		const LinphoneCallParams *cp=linphone_call_get_current_params (call);
 		if (args){
 			linphone_call_enable_camera(call,activated);
-			if ((activated && !linphone_call_params_video_enabled (cp))){
-				/*update the call to add the video stream*/
-				LinphoneCallParams *ncp=linphone_call_params_copy(cp);
-				linphone_call_params_enable_video(ncp,TRUE);
-				linphone_core_update_call(lc,call,ncp);
-				linphone_call_params_destroy (ncp);
-				linphonec_out("Trying to bring up video stream...\n");
+			if (linphone_call_get_state(call)==LinphoneCallStreamsRunning){
+				if ((activated && !linphone_call_params_video_enabled (cp))){
+					/*update the call to add the video stream*/
+					LinphoneCallParams *ncp=linphone_call_params_copy(cp);
+					linphone_call_params_enable_video(ncp,TRUE);
+					linphone_core_update_call(lc,call,ncp);
+					linphone_call_params_destroy (ncp);
+					linphonec_out("Trying to bring up video stream...\n");
+				}
 			}
 		}
 		if (linphone_call_camera_enabled (call))

@@ -76,7 +76,7 @@ void sal_media_description_unref(SalMediaDescription *md){
 SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
     SalMediaProto proto, SalStreamType type){
 	int i;
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		if (ss->proto==proto && ss->type==type) return ss;
 	}
@@ -84,17 +84,13 @@ SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
 }
 
 bool_t sal_media_description_empty(const SalMediaDescription *md){
-	int i;
-	for(i=0;i<md->nstreams;++i){
-		const SalStreamDescription *ss=&md->streams[i];
-		if (ss->rtp_port!=0) return FALSE;
-	}
+	if (md->n_active_streams > 0) return FALSE;
 	return TRUE;
 }
 
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		SalStreamDescription *ss=&md->streams[i];
 		ss->dir=stream_dir;
 	}
@@ -110,7 +106,7 @@ static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
 
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
-	for(i=0;i<md->nstreams;++i){
+	for(i=0;i<md->n_active_streams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (ss->dir==stream_dir) return TRUE;
 		/*compatibility check for phones that only used the null address and no attributes */
@@ -224,9 +220,9 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	int i;
 
 	if (strcmp(md1->addr, md2->addr) != 0) result |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
-	if (md1->nstreams != md2->nstreams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	if (md1->n_total_streams != md2->n_total_streams) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
-	for(i = 0; i < md1->nstreams; ++i){
+	for(i = 0; i < md1->n_total_streams; ++i){
 		result |= sal_stream_description_equals(&md1->streams[i], &md2->streams[i]);
 	}
 	return result;
@@ -277,6 +273,10 @@ const char *sal_op_get_contact(const SalOp *op){
 	return ((SalOpBase*)op)->contact;
 }
 
+const char *sal_op_get_remote_contact(const SalOp *op){
+	return ((SalOpBase*)op)->remote_contact;
+}
+
 const char *sal_op_get_route(const SalOp *op){
 	return ((SalOpBase*)op)->route;
 }
@@ -308,6 +308,9 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin){
 	assign_string(&((SalOpBase*)op)->origin,origin);
 }
 
+void __sal_op_set_remote_contact(SalOp *op, const char *ct){
+	assign_string(&((SalOpBase*)op)->remote_contact,ct);
+}
 
 void __sal_op_free(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
@@ -335,12 +338,18 @@ void __sal_op_free(SalOp *op){
 		ms_free(b->remote_ua);
 		b->remote_ua=NULL;
 	}
+	if (b->remote_contact){
+		ms_free(b->remote_contact);
+		b->remote_contact=NULL;
+	}
 	if (b->local_media)
 		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
 	if (b->call_id)
-		ms_free((void*)b->call_id);
+		ms_free(b->call_id);
+	if (b->custom_headers)
+		sal_custom_header_free(b->custom_headers);
 	ms_free(op);
 }
 
@@ -364,4 +373,61 @@ void sal_auth_info_delete(const SalAuthInfo* auth_info) {
 	if (auth_info->password) ms_free(auth_info->password);
 	ms_free((void*)auth_info);
 }
+
+SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value){
+	SalCustomHeader *h=ms_new0(SalCustomHeader,1);
+	h->header_name=ms_strdup(name);
+	h->header_value=ms_strdup(value);
+	h->node.data=h;
+	return (SalCustomHeader*)ms_list_append_link((MSList*)ch,(MSList*)h);
+}
+
+const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name){
+	const MSList *it;
+	for (it=(const MSList*)ch;it!=NULL;it=it->next){
+		const SalCustomHeader *itch=(const SalCustomHeader *)it;
+		if (strcasecmp(itch->header_name,name)==0)
+			return itch->header_value;
+	}
+	return NULL;
+}
+
+static void sal_custom_header_uninit(SalCustomHeader *ch){
+	ms_free(ch->header_name);
+	ms_free(ch->header_value);
+}
+
+void sal_custom_header_free(SalCustomHeader *ch){
+	ms_list_for_each((MSList*)ch,(void (*)(void*))sal_custom_header_uninit);
+	ms_list_free((MSList *)ch);
+}
+
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
+	const MSList *it;
+	SalCustomHeader *ret=NULL;
+	for (it=(const MSList*)ch;it!=NULL;it=it->next){
+		const SalCustomHeader *itch=(const SalCustomHeader *)it;
+		ret=sal_custom_header_append(ret,itch->header_name,itch->header_value);
+	}
+	return ret;
+}
+
+const SalCustomHeader *sal_op_get_custom_header(SalOp *op){
+	SalOpBase *b=(SalOpBase *)op;
+	return b->custom_headers;
+}
+
+/*
+ * Warning: this function takes owneship of the custom headers
+ */
+void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch){
+	SalOpBase *b=(SalOpBase *)op;
+	if (b->custom_headers){
+		sal_custom_header_free(b->custom_headers);
+		b->custom_headers=NULL;
+	}
+	b->custom_headers=ch;
+}
+
+
 

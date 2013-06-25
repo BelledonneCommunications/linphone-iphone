@@ -23,9 +23,27 @@ package org.linphone.core;
 class LpConfigImpl implements LpConfig {
 
 	private final long nativePtr;
+	boolean ownPtr = false;
 	
 	public LpConfigImpl(long ptr) {
 		nativePtr=ptr;
+	}
+	
+	private native long newLpConfigImpl(String file);
+	private native void delete(long ptr);
+	public LpConfigImpl(String file) {
+		nativePtr = newLpConfigImpl(file);
+		ownPtr = true;
+	}
+	protected void finalize() throws Throwable {
+		if(ownPtr) {
+			delete(nativePtr);
+		}
+	}
+
+	private native void sync(long ptr);
+	public void sync() {
+		sync(nativePtr);
 	}
 
 	private native void setInt(long ptr, String section, String key, int value);

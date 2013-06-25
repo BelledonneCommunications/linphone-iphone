@@ -46,6 +46,10 @@ struct SalAddress;
 
 typedef struct SalAddress SalAddress;
 
+struct SalCustomHeader;
+
+typedef struct SalCustomHeader SalCustomHeader;
+
 typedef enum {
 	SalTransportUDP, /*UDP*/
 	SalTransportTCP, /*TCP*/
@@ -178,7 +182,8 @@ typedef struct SalMediaDescription{
 	int refcount;
 	char addr[64];
 	char username[64];
-	int nstreams;
+	int n_active_streams;
+	int n_total_streams;
 	int bandwidth;
 	unsigned int session_ver;
 	unsigned int session_id;
@@ -194,6 +199,7 @@ typedef struct SalMessage{
 	const char *text;
 	const char *url;
 	const char *message_id;
+	time_t time;
 }SalMessage;
 
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
@@ -220,7 +226,9 @@ typedef struct SalOpBase{
 	SalMediaDescription *local_media;
 	SalMediaDescription *remote_media;
 	void *user_pointer;
-	const char* call_id;
+	char* call_id;
+	char *remote_contact;
+	SalCustomHeader *custom_headers;
 } SalOpBase;
 
 
@@ -288,7 +296,7 @@ typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason
 typedef void (*SalOnVfuRequest)(SalOp *op);
 typedef void (*SalOnDtmfReceived)(SalOp *op, char dtmf);
 typedef void (*SalOnRefer)(Sal *sal, SalOp *op, const char *referto);
-typedef void (*SalOnTextReceived)(Sal *sal, const SalMessage *msg);
+typedef void (*SalOnTextReceived)(SalOp *op, const SalMessage *msg);
 typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus status);
 typedef void (*SalOnNotify)(SalOp *op, const char *from, const char *event);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
@@ -343,6 +351,7 @@ ortp_socket_t sal_get_socket(Sal *ctx);
 void sal_set_user_agent(Sal *ctx, const char *user_agent);
 /*keepalive period in ms*/
 void sal_set_keepalive_period(Sal *ctx,unsigned int value);
+void sal_use_tcp_tls_keepalive(Sal *ctx, bool_t enabled);
 /**
  * returns keepalive period in ms
  * 0 desactiaved
@@ -383,6 +392,7 @@ const char *sal_op_get_to(const SalOp *op);
 const char *sal_op_get_contact(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
+const char *sal_op_get_remote_contact(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);
 /*returns far-end "User-Agent" string */
@@ -440,16 +450,30 @@ int sal_ping(SalOp *op, const char *from, const char *to);
 
 
 
-#define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
+#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);
 #define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
 
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
+struct SalCustomHeader{
+	MSList node;
+	char *header_name;
+	char *header_value;
+};
+
+SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
+const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
+void sal_custom_header_free(SalCustomHeader *ch);
+SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch);
+const SalCustomHeader *sal_op_get_custom_header(SalOp *op);
+void sal_op_set_custom_header(SalOp *op, SalCustomHeader* ch);
+
 
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);
 void __sal_op_set_network_origin(SalOp *op, const char *origin /*a sip uri*/);
+void __sal_op_set_remote_contact(SalOp *op, const char *ct);
 void __sal_op_free(SalOp *b);
 
 #endif

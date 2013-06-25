@@ -154,13 +154,13 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr,
 			LinphoneChatMessage message) {
-		write("Message [" + message.getMessage() + "] received from [" + message.getFrom().asString() + "]");
+		write("Message [" + message.getText() + "] received from [" + message.getFrom().asString() + "]");
 	}
 
 	@Override
 	public void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg,
 			org.linphone.core.LinphoneChatMessage.State state) {
-		write("Sent message [" + msg.getMessage() + "] new state is " + state.toString());
+		write("Sent message [" + msg.getText() + "] new state is " + state.toString());
 	}
 
 

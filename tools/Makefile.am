@@ -11,6 +11,8 @@ COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	$(LIBXML2_CFLAGS) 
 
+EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
+
 if BUILD_TOOLS
 
 lib_LTLIBRARIES=libxml2lpc.la liblpc2xml.la

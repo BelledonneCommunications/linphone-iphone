@@ -27,6 +27,9 @@ FirewallPolicyResponse::FirewallPolicyResponse(LinphoneCore *core) : Response() 
 			ost << "ice\n";
 			ost << "Address: " << linphone_core_get_stun_server(core) << "\n";
 			break;
+		case LinphonePolicyUseUpnp:
+			ost << "upnp\n";
+			break;
 	}
 	setBody(ost.str().c_str());
 }
@@ -34,7 +37,7 @@ FirewallPolicyResponse::FirewallPolicyResponse(LinphoneCore *core) : Response() 
 FirewallPolicyCommand::FirewallPolicyCommand() :
 		DaemonCommand("firewall-policy", "firewall-policy <type> [<address>]",
 				"Set the firewall policy if type is set, otherwise return the used firewall policy.\n"
-				"<type> must be one of these values: none, nat, stun, ice.\n"
+				"<type> must be one of these values: none, nat, stun, ice, upnp.\n"
 				"<address> must be specified for the 'nat' and 'stun' types. "
 				"It represents the public address of the gateway for the 'nat' type and the STUN server address for the 'stun' and 'ice' types.") {
 	addExample(new DaemonCommandExample("firewall-policy stun stun.linphone.org",
@@ -73,6 +76,9 @@ void FirewallPolicyCommand::exec(Daemon *app, const char *args) {
 		} else if (type.compare("ice") == 0) {
 			policy = LinphonePolicyUseIce;
 			get_address = true;
+		} else if (type.compare("upnp") == 0) {
+			policy = LinphonePolicyUseUpnp;
+			get_address = false;
 		} else {
 			app->sendResponse(Response("Incorrect type parameter.", Response::Error));
 			return;

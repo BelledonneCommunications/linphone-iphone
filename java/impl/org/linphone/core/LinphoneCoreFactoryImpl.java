@@ -20,8 +20,8 @@ package org.linphone.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.linphone.mediastream.CpuUtils;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
@@ -43,6 +43,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("avutil");
 		loadOptionalLibrary("swscale");
 		loadOptionalLibrary("avcore");
+
+		System.loadLibrary("neon");
 		
 		if (!hasNeonInCpuFeatures()) {
 			boolean noNeonLibrariesLoaded = loadOptionalLibrary("avcodecnoneon");
@@ -69,20 +71,20 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("bcg729");
 
 		//Main library
-		if (!hasNeonInCpuFeatures()) {
-			try {
-				if (!isArmv7() && !Version.isX86()) {
-					System.loadLibrary("linphonearmv5"); 
-				} else {
-					System.loadLibrary("linphonenoneon"); 
-				}
-				Log.w("linphone", "No-neon liblinphone loaded");
-			} catch (UnsatisfiedLinkError ule) {
-				Log.w("linphone", "Failed to load no-neon liblinphone, loading neon liblinphone");
-				System.loadLibrary("linphone"); 
+		if (isArmv7()) {
+			if (hasNeonInCpuFeatures()) {
+				Log.d("linphone", "armv7 liblinphone loaded");
+				System.loadLibrary("linphonearmv7"); 
+			} else {
+				Log.w("linphone", "No-neon armv7 liblinphone loaded");
+				System.loadLibrary("linphonearmv7noneon"); 
 			}
+		} else if (Version.isX86()) {
+			Log.d("linphone", "No-neon x86 liblinphone loaded");
+			System.loadLibrary("linphonex86"); 
 		} else {
-			System.loadLibrary("linphone"); 
+			Log.d("linphone", "No-neon armv5 liblinphone loaded");
+			System.loadLibrary("linphonearmv5noneon"); 
 		}
 
 		Version.dumpCapabilities();
@@ -102,6 +104,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	@Override
 	public LinphoneAddress createLinphoneAddress(String identity) {
 		return new LinphoneAddressImpl(identity);
+	}
+	
+	@Override
+	public LpConfig createLpConfig(String file) {
+		return new LpConfigImpl(file);
 	}
 
 	@Override
@@ -151,32 +158,18 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	public static boolean hasNeonInCpuFeatures()
 	{
-		ProcessBuilder cmd;
-		boolean result = false;
-		
-		try {
-			String[] args = {"/system/bin/cat", "/proc/cpuinfo"};
-			cmd = new ProcessBuilder(args);
-	
-		   Process process = cmd.start();
-		   InputStream in = process.getInputStream();
-		   byte[] re = new byte[1024];
-		   while(in.read(re) != -1){
-			   String line = new String(re);
-			   if (line.contains("Features")) {
-				   result = line.contains("neon");
-				   break;
-			   }
-		   }
-		   in.close();
-		} catch(IOException ex){
-			ex.printStackTrace();
-		}
-		return result;
+		CpuUtils cpu = new CpuUtils();
+		return cpu.isCpuNeon();
 	}
 	
 	public static boolean isArmv7()
 	{
 		return System.getProperty("os.arch").contains("armv7");
+	}
+
+	@Override
+	public LinphoneAuthInfo createAuthInfo(String username, String userid,
+			String passwd, String ha1, String realm) {
+		return new LinphoneAuthInfoImpl(username,userid,passwd,ha1,realm);
 	}
 }

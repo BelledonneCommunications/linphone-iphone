@@ -48,17 +48,17 @@ ISCC=ISCC.exe
 PACKAGE_WIN32_FILELIST=$(PACKAGE)-win32.filelist
 PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 
-EXTRA_DIST = config.rpath  BUGS linphone.kdevelop  \
-				README.arm \
-				README.mingw \
-				README.macos \
-				autogen.sh \
-				linphone.spec \
-				linphone.spec.in \
-				$(GTK_FILELIST) \
-				gen-gtkfilelist.sh \
-				$(LINPHONEDEPS_FILELIST) \
-				$(ISS_SCRIPT).in
+EXTRA_DIST =		BUGS  \
+			README.arm \
+			README.mingw \
+			README.macos \
+			autogen.sh \
+			linphone.spec \
+			linphone.spec.in \
+			$(GTK_FILELIST) \
+			gen-gtkfilelist.sh \
+			$(LINPHONEDEPS_FILELIST) \
+			$(ISS_SCRIPT).in
 
 DISTCLEANFILES= $(ISS_SCRIPT) $(PACKAGE_WIN32_FILELIST)
 
@@ -220,7 +220,7 @@ bundle: $(LIBICONV_HACK)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
-	sed -e 's:@executable_path/../Resources:../..:g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
+	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
 	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
 

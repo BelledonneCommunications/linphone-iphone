@@ -1,6 +1,6 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
-GITDESCRIBE=`git describe`
+GITDESCRIBE=`git describe --always`
 GITREVISION=`git rev-parse HEAD`
 
 ECHO=/bin/echo
@@ -16,7 +16,7 @@ CLEANFILES=$(GITVERSION_FILE)
 ## Process this file with automake to produce Makefile.in
 linphone_includedir=$(includedir)/linphone
 
-linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h ../config.h lpconfig.h sipsetup.h 
+linphone_include_HEADERS=linphonecore.h linphonefriend.h linphonecore_utils.h lpconfig.h sipsetup.h 
 
 if BUILD_TUNNEL
 linphone_include_HEADERS+=linphone_tunnel.h
@@ -47,15 +47,22 @@ liblinphone_la_SOURCES=\
 	lsd.c linphonecore_utils.h \
 	ec-calibrator.c \
 	conference.c \
-	linphone_tunnel.cc \
+	message_storage.c \
 	$(GITVERSION_FILE)
+
+if BUILD_UPNP
+liblinphone_la_SOURCES+=upnp.c upnp.h
+endif
 	
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
 
+liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
-liblinphone_la_SOURCES+=TunnelManager.cc TunnelManager.hh 
+liblinphone_la_SOURCES+=linphone_tunnel.cc TunnelManager.cc TunnelManager.hh 
+else
+liblinphone_la_SOURCES+=linphone_tunnel_stubs.c
 endif
 
 
@@ -67,7 +74,9 @@ liblinphone_la_LIBADD= \
 		$(MEDIASTREAMER_LIBS) \
 		$(ORTP_LIBS) $(OPENSSL_LIBS) \
 		$(TUNNEL_LIBS) \
-		$(LIBSOUP_LIBS)
+		$(LIBSOUP_LIBS) \
+		$(SQLITE3_LIBS)
+
 
 if BUILD_TESTS
 noinst_PROGRAMS=test_lsd test_ecc test_numbers
@@ -100,7 +109,8 @@ AM_CFLAGS=\
 	$(IPV6_CFLAGS) \
 	-DORTP_INET6 \
 	$(VIDEO_CFLAGS) \
-	$(TUNNEL_CFLAGS)
+	$(TUNNEL_CFLAGS) \
+	$(SQLITE3_CFLAGS)
 
 if BUILD_WIZARD
 AM_CFLAGS+= -DBUILD_WIZARD 

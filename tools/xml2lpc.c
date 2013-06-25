@@ -148,7 +148,7 @@ static int processEntry(xmlElement *element, const char *sectionName, xml2lpc_co
 	if(name != NULL) {
 		const char *str = lp_config_get_string(ctx->lpc, sectionName, name, NULL);
 		if(str == NULL || overwrite) {
-			xml2lpc_log(ctx, XML2LPC_MESSAGE, "Set %s|%s = %s",sectionName, name, value);
+			xml2lpc_log(ctx, XML2LPC_MESSAGE, "Set %s|%s = %s", sectionName, name, value);
 			lp_config_set_string(ctx->lpc, sectionName, name, value);
 		} else {
 			xml2lpc_log(ctx, XML2LPC_MESSAGE, "Don't touch %s|%s = %s",sectionName, name, str);
@@ -231,8 +231,10 @@ int xml2lpc_validate(xml2lpc_context *xmlCtx) {
 	xmlSchemaSetValidErrors(validCtx, xml2lpc_genericxml_error, xml2lpc_genericxml_warning, xmlCtx);
 	int ret =  xmlSchemaValidateDoc(validCtx, xmlCtx->doc);
 	if(ret > 0) {
-		xml2lpc_log(xmlCtx, XML2LPC_WARNING, "%s", xmlCtx->warningBuffer);
-		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "%s", xmlCtx->errorBuffer);
+		if(strlen(xmlCtx->warningBuffer) > 0)
+			xml2lpc_log(xmlCtx, XML2LPC_WARNING, "%s", xmlCtx->warningBuffer);
+		if(strlen(xmlCtx->errorBuffer) > 0)
+			xml2lpc_log(xmlCtx, XML2LPC_ERROR, "%s", xmlCtx->errorBuffer);
 	} else if(ret < 0) {
 		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "Internal error");
 	}
@@ -242,6 +244,13 @@ int xml2lpc_validate(xml2lpc_context *xmlCtx) {
 
 int xml2lpc_convert(xml2lpc_context *xmlCtx, LpConfig *lpc) {
 	xml2lpc_context_clear_logs(xmlCtx);
+	if(xmlCtx->doc == NULL) {
+		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "No doc set");
+		return -1;
+	}
+	if(lpc == NULL) {
+		xml2lpc_log(xmlCtx, XML2LPC_ERROR, "Invalid lpc");
+	}
 	xmlCtx->lpc = lpc;
 	return internal_convert_xml2lpc(xmlCtx);
 }

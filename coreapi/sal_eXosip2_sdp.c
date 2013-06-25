@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal.h"
 #include <eXosip2/eXosip.h>
 
-#define keywordcmp(key,b) strncmp(key,b,sizeof(key))
+#define keywordcmp(key,b) strcmp(key,b)
 
 #ifdef FOR_LATER
 
@@ -394,7 +394,7 @@ static void add_line(sdp_message_t *msg, int lineno, const SalStreamDescription 
 sdp_message_t *media_description_to_sdp(const SalMediaDescription *desc){
 	int i;
 	sdp_message_t *msg=create_generic_sdp(desc);
-	for(i=0;i<desc->nstreams;++i){
+	for(i=0;i<desc->n_total_streams;++i){
 		add_line(msg,i,&desc->streams[i]);
 	}
 	return msg;
@@ -434,9 +434,16 @@ static int payload_type_fill_from_rtpmap(PayloadType *pt, const char *rtpmap){
 int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 	int i,j;
 	const char *mtype,*proto,*rtp_port,*rtp_addr,*number;
+	const char *sess;
 	sdp_bandwidth_t *sbw=NULL;
 	sdp_attribute_t *attr;
 	int nb_ice_candidates;
+
+	/* Get session information. */
+	sess = sdp_message_o_sess_id_get(msg);
+	if (sess) desc->session_id = strtoul(sess, NULL, 10);
+	sess = sdp_message_o_sess_version_get(msg);
+	if (sess) desc->session_ver = strtoul(sess, NULL, 10);
 
 	rtp_addr=sdp_message_c_addr_get (msg, -1, 0);
 	if (rtp_addr)
@@ -455,6 +462,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			desc->ice_lite = TRUE;
 		}
 	}
+
+	desc->n_active_streams = 0;
 
 	/* for each m= line */
 	for (i=0; !sdp_message_endof_media (msg, i) && i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++)
@@ -479,6 +488,8 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			strncpy(stream->rtp_addr,rtp_addr,sizeof(stream->rtp_addr));
 		if (rtp_port)
 			stream->rtp_port=atoi(rtp_port);
+		if (stream->rtp_port > 0)
+			desc->n_active_streams++;
 		
 		stream->ptime=_sdp_message_get_a_ptime(msg,i);
 		if (strcasecmp("audio", mtype) == 0){
@@ -536,7 +547,7 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			for (k=0;valid_count < SAL_CRYPTO_ALGO_MAX && (attr=sdp_message_attribute_get(msg,i,k))!=NULL;k++){
 				char tmp[256], tmp2[256];
 				if (keywordcmp("crypto",attr->a_att_field)==0 && attr->a_att_value!=NULL){
-					int nb = sscanf(attr->a_att_value, "%d %256s inline:%256s",
+					int nb = sscanf(attr->a_att_value, "%d %255s inline:%255s",
 						&stream->crypto[valid_count].tag,
 						tmp,
 						tmp2);
@@ -602,6 +613,6 @@ int sdp_to_media_description(sdp_message_t *msg, SalMediaDescription *desc){
 			}
 		}
 	}
-	desc->nstreams=i;
+	desc->n_total_streams=i;
 	return 0;
 }

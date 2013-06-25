@@ -21,7 +21,6 @@
 
 LOCAL_PATH:= $(call my-dir)/../../coreapi
 
-
 include $(CLEAR_VARS)
 
 include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
@@ -36,11 +35,16 @@ endif
 
 LOCAL_MODULE := liblinphonenoneon
 ifeq ($(TARGET_ARCH_ABI),armeabi)
-LOCAL_MODULE_FILENAME := liblinphonearmv5
+LOCAL_MODULE_FILENAME := liblinphonearmv5noneon
+endif
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+LOCAL_MODULE_FILENAME := liblinphonearmv7noneon
+endif
+ifeq ($(TARGET_ARCH_ABI),x86)
+LOCAL_MODULE_FILENAME := liblinphonex86
 endif
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/cpufeatures)
-
 
