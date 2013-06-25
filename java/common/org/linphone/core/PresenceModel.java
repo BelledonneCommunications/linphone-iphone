@@ -21,40 +21,11 @@ package org.linphone.core;
 
 public interface PresenceModel {
 
-	/** Basic status as defined in section 4.1.4 of RFC 3863 */
-	public enum BasicStatus {
-		/** This value means that the associated contact element, if any, is ready to accept communication. */
-		Open(0),
-		/** This value means that the associated contact element, if any, is unable to accept communication. */
-		Closed(1),
-		Invalid(2);
-
-		protected final int mValue;
-
-		private BasicStatus(int value) {
-			mValue = value;
-		}
-
-		public int toInt() {
-			return mValue;
-		}
-
-		static protected BasicStatus fromInt(int value) {
-			switch (value) {
-			case 0: return Open;
-			case 1: return Closed;
-			default: return Invalid;
-			}
-		}
-	}
-
-
-
 	/**
 	 * @brief Gets the basic status of a presence model.
 	 * @return The #BasicStatus of the #PresenceModel object.
 	 */
-	BasicStatus getBasicStatus();
+	PresenceBasicStatus getBasicStatus();
 
 	/**
 	 * @brief Gets the timestamp of a presence model.
