@@ -252,6 +252,22 @@ LINPHONE_PUBLIC bool_t linphone_presence_model_equals(const LinphonePresenceMode
 LINPHONE_PUBLIC LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const LinphonePresenceModel *model);
 
 /**
+ * @brief Gets the contact of a presence model.
+ * @param[in] model The #LinphonePresenceModel object to get the contact from.
+ * @return A pointer to a dynamically allocated string containing the contact, or NULL if no contact is found.
+ *
+ * The returned string is to be freed by calling ms_free().
+ */
+LINPHONE_PUBLIC char * linphone_presence_model_get_contact(const LinphonePresenceModel *model);
+
+/**
+ * @brief Sets the contact of a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to set the contact.
+ * @param[in] contact The contact string to set.
+ */
+LINPHONE_PUBLIC void linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact);
+
+/**
  * @brief Gets the number of activities included in the presence model.
  * @param[in] model The #LinphonePresenceModel object to get the number of activities from.
  * @return The number of activities included in the #LinphonePresenceModel object.

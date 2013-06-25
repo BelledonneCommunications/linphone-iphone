@@ -601,7 +601,6 @@ struct _LinphoneCore
 	MSList *subscribers;	/* unknown subscribers */
 	int minutes_away;
 	LinphonePresenceModel *presence_model;
-	char *alt_contact;
 	void *data;
 	char *play_file;
 	char *rec_file;

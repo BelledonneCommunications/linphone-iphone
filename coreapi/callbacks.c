@@ -215,6 +215,7 @@ static void call_received(SalOp *h){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
 	LinphoneCall *call;
 	const char *from,*to;
+	char *alt_contact;
 	LinphoneAddress *from_addr, *to_addr;
 	bool_t prevent_colliding_calls=lp_config_get_int(lc->config,"sip","prevent_colliding_calls",TRUE);
 	
@@ -232,8 +233,11 @@ static void call_received(SalOp *h){
 				sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
 				break;
 			case LinphonePresenceActivityPermanentAbsence:
-				if (lc->alt_contact != NULL)
-					sal_call_decline(h,SalReasonRedirect,lc->alt_contact);
+				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
+				if (alt_contact != NULL) {
+					sal_call_decline(h,SalReasonRedirect,alt_contact);
+					ms_free(alt_contact);
+				}
 				break;
 			default:
 				break;

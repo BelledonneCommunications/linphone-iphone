@@ -210,6 +210,7 @@ static void presence_information(void) {
 	const char *bike_description = "Riding my bike";
 	const char *vacation_note = "I'm on vacation until July 4th";
 	const char *vacation_lang = "en";
+	const char *contact = "sip:toto@example.com";
 	LinphoneCoreManager *marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager *pauline = presence_linphone_core_manager_new("pauline");
 	LinphonePresenceModel *presence;
@@ -217,6 +218,7 @@ static void presence_information(void) {
 	LinphonePresenceNote *note = NULL;
 	const char *description = NULL;
 	const char *note_content = NULL;
+	char *contact2;
 
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie, pauline));
 
@@ -261,6 +263,19 @@ static void presence_information(void) {
 		if (note_content != NULL) {
 			CU_ASSERT_EQUAL(strcmp(note_content, vacation_note), 0);
 		}
+	}
+
+	/* Presence contact. */
+	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
+	linphone_presence_model_set_contact(presence, contact);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	wait_core(marie->lc);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone, 1);
+	contact2 = linphone_presence_model_get_contact(presence);
+	CU_ASSERT_PTR_NOT_NULL(contact2);
+	if (contact2 != NULL) {
+		CU_ASSERT_EQUAL(strcmp(contact, contact2), 0);
+		ms_free(contact2);
 	}
 
 	linphone_core_manager_destroy(marie);

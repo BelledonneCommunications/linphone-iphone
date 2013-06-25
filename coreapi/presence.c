@@ -539,6 +539,33 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 	return status;
 }
 
+static void presence_model_find_contact(struct _LinphonePresenceService *service, char **contact) {
+	if ((service->contact != NULL) && (*contact == NULL))
+		*contact = service->contact;
+}
+
+char * linphone_presence_model_get_contact(const LinphonePresenceModel *model) {
+	char *contact = NULL;
+	ms_list_for_each2(model->services, (MSIterate2Func)presence_model_find_contact, &contact);
+	if (contact == NULL) return NULL;
+	return ms_strdup(contact);
+}
+
+void linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact) {
+	struct _LinphonePresenceService *service;
+	if (model != NULL) {
+		service = (struct _LinphonePresenceService *)ms_list_nth_data(model->services, 0);
+		if (service != NULL) {
+			if (service->contact != NULL)
+				ms_free(service->contact);
+			if (contact != NULL)
+				service->contact = ms_strdup(contact);
+			else
+				service->contact = NULL;
+		}
+	}
+}
+
 static void presence_model_count_activities(const struct _LinphonePresencePerson *person, unsigned int *nb) {
 	*nb += ms_list_size(person->activities);
 }

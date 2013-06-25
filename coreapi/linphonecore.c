@@ -3648,11 +3648,6 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 	LinphonePresenceActivityType acttype = LinphonePresenceActivityUnknown;
 
 	if (minutes_away>0) lc->minutes_away=minutes_away;
-	if (lc->alt_contact!=NULL) {
-		ms_free(lc->alt_contact);
-		lc->alt_contact=NULL;
-	}
-	if (contact) lc->alt_contact=ms_strdup(contact);
 
 	switch (os) {
 		case LinphoneStatusOffline:
@@ -3699,6 +3694,7 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 			return;
 	}
 	presence = linphone_presence_model_new_with_activity(acttype, description);
+	linphone_presence_model_set_contact(presence, contact);
 	linphone_core_set_presence_model(lc, presence);
 }
 
