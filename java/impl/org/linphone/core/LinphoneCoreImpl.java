@@ -82,7 +82,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void addFriend(long nativePtr,long friend);
 	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
 	private native int getPresenceInfo(long nativePtr);
-	private native void setPresenceModel(long nativePtr, int minutes_away, String alternative_contact, long presencePtr);
+	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native Object getPresenceModel(long nativePtr);
 	private native long createChatRoom(long nativePtr,String to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
@@ -378,8 +378,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized OnlineStatus getPresenceInfo() {
 		return OnlineStatus.fromInt(getPresenceInfo(nativePtr));
 	}
-	public synchronized void setPresenceModel(int minutes_away, String alternative_contact, PresenceModel presence) {
-		setPresenceModel(nativePtr, minutes_away, alternative_contact, ((PresenceModelImpl)presence).getNativePtr());
+	public synchronized void setPresenceModel(PresenceModel presence) {
+		setPresenceModel(nativePtr, ((PresenceModelImpl)presence).getNativePtr());
 	}
 	public synchronized PresenceModel getPresenceModel() {
 		return (PresenceModel)getPresenceModel(nativePtr);

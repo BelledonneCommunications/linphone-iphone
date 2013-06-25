@@ -671,7 +671,7 @@ public interface LinphoneCore {
 	/**
 	 * @brief Set my presence status
 	 * @param minutes_away how long in away
-	 * @param status sip uri used to redirect call in state LinphoneStatusMoved
+	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved
 	 * @param status OnlineStatus
 	 * @deprecated Use setPresenceModel() instead
 	 */
@@ -684,11 +684,9 @@ public interface LinphoneCore {
 	OnlineStatus getPresenceInfo();
 	/**
 	 * @brief Set my presence status
-	 * @param minutess_away how long in away
-	 * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
 	 * @param presence #LinphonePresenceModel
 	 */
-	void setPresenceModel(int minutes_away, String alternative_contact, PresenceModel presence);
+	void setPresenceModel(PresenceModel presence);
 	/**
 	 * @brief Get my presence status
 	 * @return A #PresenceModel object, or null if no presence model has been set.

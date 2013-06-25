@@ -3646,6 +3646,14 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 	LinphonePresenceModel *presence = NULL;
 	char *description = NULL;
 	LinphonePresenceActivityType acttype = LinphonePresenceActivityUnknown;
+
+	if (minutes_away>0) lc->minutes_away=minutes_away;
+	if (lc->alt_contact!=NULL) {
+		ms_free(lc->alt_contact);
+		lc->alt_contact=NULL;
+	}
+	if (contact) lc->alt_contact=ms_strdup(contact);
+
 	switch (os) {
 		case LinphoneStatusOffline:
 			acttype = LinphonePresenceActivityOffline;
@@ -3691,18 +3699,10 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 			return;
 	}
 	presence = linphone_presence_model_new_with_activity(acttype, description);
-	linphone_core_set_presence_model(lc, minutes_away, contact, presence);
+	linphone_core_set_presence_model(lc, presence);
 }
 
-void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const char *contact, LinphonePresenceModel *presence) {
-	if (minutes_away>0) lc->minutes_away=minutes_away;
-
-	if (lc->alt_contact!=NULL) {
-		ms_free(lc->alt_contact);
-		lc->alt_contact=NULL;
-	}
-	if (contact) lc->alt_contact=ms_strdup(contact);
-
+void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence) {
 	// TODO: Check that the presence timestamp is newer than the last sent presence.
 	linphone_core_notify_all_friends(lc,presence);
 	/*

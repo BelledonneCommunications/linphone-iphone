@@ -249,11 +249,9 @@ LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minute
 /**
  * @brief Set my presence status
  * @param[in] lc #LinphoneCore object
- * @param[in] minutes_away how long in away
- * @param[in] alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
  * @param[in] presence #LinphonePresenceModel
  */
-LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, int minutes_away, const char *alternative_contact, LinphonePresenceModel *presence);
+LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence);
 
 /**
  * @brief Get my presence status

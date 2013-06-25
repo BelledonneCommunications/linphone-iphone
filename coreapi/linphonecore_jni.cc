@@ -1099,12 +1099,10 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getPresenceInfo(JNIEnv *
  * Method:    setPresenceModel
  * Signature: (JILjava/lang/String;J)V
  */
-JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jint minutes_away, jstring jalternative_contact, jlong modelPtr) {
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setPresenceModel(JNIEnv *env, jobject jobj, jlong ptr, jlong modelPtr) {
 	LinphoneCore *lc = (LinphoneCore *)ptr;
-	const char *calternative_contact = jalternative_contact ? env->GetStringUTFChars(jalternative_contact, NULL) : NULL;
 	LinphonePresenceModel *model = (LinphonePresenceModel *)modelPtr;
-	linphone_core_set_presence_model(lc, minutes_away, calternative_contact, model);
-	if (calternative_contact) env->ReleaseStringUTFChars(jalternative_contact, calternative_contact);
+	linphone_core_set_presence_model(lc, model);
 }
 
 /*

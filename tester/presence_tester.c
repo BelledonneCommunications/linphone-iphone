@@ -134,7 +134,7 @@ static void simple_publish(void) {
 	linphone_proxy_config_done(proxy);
 	wait_core(marie->lc);
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,NULL);
-	linphone_core_set_presence_model(marie->lc,0,NULL,presence);
+	linphone_core_set_presence_model(marie->lc,presence);
 	wait_core(marie->lc);
 	linphone_core_manager_destroy(marie);
 }
@@ -222,7 +222,7 @@ static void presence_information(void) {
 
 	/* Presence activity without description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityDinner, NULL);
-	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
+	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityDinner, 1);
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
@@ -233,7 +233,7 @@ static void presence_information(void) {
 
 	/* Presence activity with description. */
 	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivitySteering, bike_description);
-	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
+	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivitySteering, 1);
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);
@@ -245,7 +245,7 @@ static void presence_information(void) {
 
 	/* Presence activity with description and note. */
 	presence = linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityVacation, NULL, vacation_note, vacation_lang);
-	linphone_core_set_presence_model(pauline->lc, 0, NULL, presence);
+	linphone_core_set_presence_model(pauline->lc, presence);
 	wait_core(marie->lc);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityVacation, 1);
 	activity = linphone_presence_model_get_activity(marie->stat.last_received_presence);

@@ -168,7 +168,7 @@ int main(int argc, char *argv[]){
 	}
 
 	/*set my status to online*/
-	linphone_core_set_presence_model(lc, 0, NULL, linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL));
+	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL));
 
 	/* main loop for receiving notifications and doing background linphone core work: */
 	while(running){
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]){
 	}
 
 	/* change my presence status to offline*/
-	linphone_core_set_presence_model(lc, 0, NULL, linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL));
+	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL));
 	linphone_core_iterate(lc); /* just to make sure new status is initiate message is issued */
 
 	linphone_friend_edit(my_friend); /* start editing friend */
