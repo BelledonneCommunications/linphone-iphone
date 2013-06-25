@@ -956,7 +956,7 @@ LinphonePresenceActivity * linphone_presence_activity_ref(LinphonePresenceActivi
 LinphonePresenceActivity * linphone_presence_activity_unref(LinphonePresenceActivity *activity) {
 	activity->refcnt--;
 	if (activity->refcnt == 0) {
-		presence_note_delete(activity);
+		presence_activity_delete(activity);
 		return NULL;
 	}
 	return activity;
