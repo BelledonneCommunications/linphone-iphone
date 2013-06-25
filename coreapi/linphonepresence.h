@@ -252,6 +252,13 @@ LINPHONE_PUBLIC bool_t linphone_presence_model_equals(const LinphonePresenceMode
 LINPHONE_PUBLIC LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const LinphonePresenceModel *model);
 
 /**
+ * @brief Gets the timestamp of a presence model.
+ * @param[in] model The #LinphonePresenceModel object to get the timestamp from.
+ * @return The timestamp of the #LinphonePresenceModel object or -1 on error.
+ */
+LINPHONE_PUBLIC time_t linphone_presence_model_get_timestamp(const LinphonePresenceModel *model);
+
+/**
  * @brief Gets the contact of a presence model.
  * @param[in] model The #LinphonePresenceModel object to get the contact from.
  * @return A pointer to a dynamically allocated string containing the contact, or NULL if no contact is found.

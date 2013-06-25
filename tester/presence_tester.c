@@ -219,6 +219,7 @@ static void presence_information(void) {
 	const char *description = NULL;
 	const char *note_content = NULL;
 	char *contact2;
+	time_t current_timestamp, presence_timestamp;
 
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie, pauline));
 
@@ -277,6 +278,15 @@ static void presence_information(void) {
 		CU_ASSERT_EQUAL(strcmp(contact, contact2), 0);
 		ms_free(contact2);
 	}
+
+	/* Presence timestamp. */
+	current_timestamp = time(NULL);
+	presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityShopping, NULL);
+	linphone_core_set_presence_model(pauline->lc, presence);
+	wait_core(marie->lc);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1);
+	presence_timestamp = linphone_presence_model_get_timestamp(presence);
+	CU_ASSERT_TRUE(presence_timestamp >= current_timestamp);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

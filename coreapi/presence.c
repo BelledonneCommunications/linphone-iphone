@@ -539,6 +539,28 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 	return status;
 }
 
+static void presence_service_find_newer_timestamp(struct _LinphonePresenceService *service, time_t *timestamp) {
+	if (service->timestamp > *timestamp)
+		*timestamp = service->timestamp;
+}
+
+static void presence_person_find_newer_timestamp(struct _LinphonePresencePerson *person, time_t *timestamp) {
+	if (person->timestamp > *timestamp)
+		*timestamp = person->timestamp;
+}
+
+time_t linphone_presence_model_get_timestamp(const LinphonePresenceModel *model) {
+	time_t timestamp = (time_t)-1;
+
+	if (model == NULL)
+		return timestamp;
+
+	ms_list_for_each2(model->services, (MSIterate2Func)presence_service_find_newer_timestamp, &timestamp);
+	ms_list_for_each2(model->persons, (MSIterate2Func)presence_person_find_newer_timestamp, &timestamp);
+
+	return timestamp;
+}
+
 static void presence_model_find_contact(struct _LinphonePresenceService *service, char **contact) {
 	if ((service->contact != NULL) && (*contact == NULL))
 		*contact = service->contact;
