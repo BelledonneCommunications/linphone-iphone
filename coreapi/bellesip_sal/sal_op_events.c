@@ -123,10 +123,11 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req, const char *event
 		ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
 	} else
 		sub_state=SalSubscribeActive;
-
+	sal_op_ref(op);
 	op->base.root->callbacks.notify(op,sub_state,eventname,body);
 	resp=sal_op_create_response_from_request(op,req,200);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
+	sal_op_unref(op);
 }
 
 static void subscribe_process_request_event(void *op_base, const belle_sip_request_event_t *event) {
