@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2206D2D3177AC70900C40726 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C6177AC70900C40726 /* InfoPlist.strings */; };
+		2206D2D4177AC70900C40726 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C8177AC70900C40726 /* MainWindow.xib */; };
+		2206D2D5177AC70900C40726 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CA177AC70900C40726 /* mediastreamViewController.xib */; };
+		2206D2D6177AC70900C40726 /* mediastream-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CC177AC70900C40726 /* mediastream-Info.plist */; };
+		2206D2D7177AC70900C40726 /* mediastreamAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2206D2CF177AC70900C40726 /* mediastreamAppDelegate.m */; };
+		2206D2D8177AC70900C40726 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2206D2D1177AC70900C40726 /* mediastreamViewController.m */; };
+		2206D2D9177AC70900C40726 /* mediastream.c in Sources */ = {isa = PBXBuildFile; fileRef = 2206D2D2177AC70900C40726 /* mediastream.c */; };
+		2206D2DE177ACD3800C40726 /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C8D0E91769F8FF00DAFB4E /* libmediastreamer_voip.a */; };
+		2206D2E1177ACF5700C40726 /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2E0177ACF5700C40726 /* nowebcamCIF.jpg */; };
 		220ED19A13A8F87700AC21E0 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19713A8F87700AC21E0 /* libspeexdsp.a */; };
 		220ED19B13A8F87700AC21E0 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19813A8F87700AC21E0 /* libspeex.a */; };
 		220ED19C13A8F87700AC21E0 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220ED19913A8F87700AC21E0 /* libortp.a */; };
@@ -556,12 +565,6 @@
 		22DD19C113A8D7FA0018ECD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C013A8D7FA0018ECD4 /* UIKit.framework */; };
 		22DD19C213A8D7FA0018ECD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		22DD19C413A8D7FA0018ECD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */; };
-		22DD19F713A8DFA70018ECD4 /* mediastream.c in Sources */ = {isa = PBXBuildFile; fileRef = 22DD19E713A8D82C0018ECD4 /* mediastream.c */; };
-		22DD21AE13A8E3310018ECD4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A113A8E3310018ECD4 /* InfoPlist.strings */; };
-		22DD21AF13A8E3310018ECD4 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A313A8E3310018ECD4 /* MainWindow.xib */; };
-		22DD21B013A8E3310018ECD4 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */; };
-		22DD21B313A8E3310018ECD4 /* mediastreamAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */; };
-		22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */; };
 		7014533C13FA7ECA00A01D86 /* zrtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533B13FA7ECA00A01D86 /* zrtp.h */; };
 		7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0913E830B800EFC6DC /* libvpx.a */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
@@ -596,6 +599,13 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		2206D2DA177ACCE400C40726 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 22C8D0401769F8FF00DAFB4E;
+			remoteInfo = libmediastreamer_voip;
+		};
 		225D65C61521C09D008B2E81 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -635,6 +645,17 @@
 
 /* Begin PBXFileReference section */
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
+		2206D2C7177AC70900C40726 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2206D2C9177AC70900C40726 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		2206D2CB177AC70900C40726 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/mediastreamViewController.xib; sourceTree = "<group>"; };
+		2206D2CC177AC70900C40726 /* mediastream-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "mediastream-Info.plist"; sourceTree = "<group>"; };
+		2206D2CD177AC70900C40726 /* mediastream-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mediastream-Prefix.pch"; sourceTree = "<group>"; };
+		2206D2CE177AC70900C40726 /* mediastreamAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamAppDelegate.h; sourceTree = "<group>"; };
+		2206D2CF177AC70900C40726 /* mediastreamAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamAppDelegate.m; sourceTree = "<group>"; };
+		2206D2D0177AC70900C40726 /* mediastreamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamViewController.h; sourceTree = "<group>"; };
+		2206D2D1177AC70900C40726 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
+		2206D2D2177AC70900C40726 /* mediastream.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = mediastream.c; path = tools/mediastream.c; sourceTree = "<group>"; };
+		2206D2E0177ACF5700C40726 /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = "../liblinphone-sdk/apple-darwin/share/images/nowebcamCIF.jpg"; sourceTree = "<group>"; };
 		220ED19713A8F87700AC21E0 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		220ED19813A8F87700AC21E0 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		220ED19913A8F87700AC21E0 /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
@@ -902,16 +923,6 @@
 		22DD19BE13A8D7FA0018ECD4 /* mediastream.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mediastream.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22DD19C013A8D7FA0018ECD4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		22DD19E713A8D82C0018ECD4 /* mediastream.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = mediastream.c; sourceTree = "<group>"; };
-		22DD21A213A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		22DD21A413A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
-		22DD21A613A8E3310018ECD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/mediastreamViewController.xib; sourceTree = "<group>"; };
-		22DD21A813A8E3310018ECD4 /* mediastream-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "mediastream-Info.plist"; sourceTree = "<group>"; };
-		22DD21A913A8E3310018ECD4 /* mediastream-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "mediastream-Prefix.pch"; sourceTree = "<group>"; };
-		22DD21AA13A8E3310018ECD4 /* mediastreamAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamAppDelegate.h; sourceTree = "<group>"; };
-		22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamAppDelegate.m; sourceTree = "<group>"; };
-		22DD21AC13A8E3310018ECD4 /* mediastreamViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mediastreamViewController.h; sourceTree = "<group>"; };
-		22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamViewController.m; sourceTree = "<group>"; };
 		7014533B13FA7ECA00A01D86 /* zrtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zrtp.h; sourceTree = "<group>"; };
 		7014533D13FA841E00A01D86 /* zrtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zrtp.c; sourceTree = "<group>"; };
 		7066FC0913E830B800EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
@@ -965,6 +976,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2206D2DE177ACD3800C40726 /* libmediastreamer_voip.a in Frameworks */,
 				22AF73C01753F3E100BE8398 /* libopus.a in Frameworks */,
 				225D65CD1521C19A008B2E81 /* libortp.a in Frameworks */,
 				225D65CC1521C195008B2E81 /* libmediastreamer_base.a in Frameworks */,
@@ -1052,6 +1064,7 @@
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				2206D2DF177ACF0A00C40726 /* Resources */,
 			);
 			name = liblinphone;
 			sourceTree = "<group>";
@@ -1073,6 +1086,31 @@
 			name = Classes;
 			sourceTree = "<group>";
 		};
+		2206D2C5177AC70900C40726 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				2206D2C6177AC70900C40726 /* InfoPlist.strings */,
+				2206D2C8177AC70900C40726 /* MainWindow.xib */,
+				2206D2CA177AC70900C40726 /* mediastreamViewController.xib */,
+				2206D2CC177AC70900C40726 /* mediastream-Info.plist */,
+				2206D2CD177AC70900C40726 /* mediastream-Prefix.pch */,
+				2206D2CE177AC70900C40726 /* mediastreamAppDelegate.h */,
+				2206D2CF177AC70900C40726 /* mediastreamAppDelegate.m */,
+				2206D2D0177AC70900C40726 /* mediastreamViewController.h */,
+				2206D2D1177AC70900C40726 /* mediastreamViewController.m */,
+			);
+			name = ios;
+			path = tools/ios;
+			sourceTree = "<group>";
+		};
+		2206D2DF177ACF0A00C40726 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2206D2E0177ACF5700C40726 /* nowebcamCIF.jpg */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		222CA4CE11F6CF1900621220 /* oRTP */ = {
 			isa = PBXGroup;
 			children = (
@@ -1086,9 +1124,10 @@
 		222CA4CF11F6CF2000621220 /* mediastreamer2 */ = {
 			isa = PBXGroup;
 			children = (
+				2206D2C5177AC70900C40726 /* ios */,
+				2206D2D2177AC70900C40726 /* mediastream.c */,
 				22405EE1160066C700B92522 /* voipdescs.h */,
 				22405EDC160065C200B92522 /* basedescs.h */,
-				22DD19E013A8D82C0018ECD4 /* tests */,
 				222CA5B811F6CF7600621220 /* include */,
 				222CA5DC11F6CF7600621220 /* src */,
 			);
@@ -1484,31 +1523,6 @@
 			);
 			name = inc;
 			path = externals/gsm/inc;
-			sourceTree = "<group>";
-		};
-		22DD19E013A8D82C0018ECD4 /* tests */ = {
-			isa = PBXGroup;
-			children = (
-				22DD21A013A8E3310018ECD4 /* ios */,
-				22DD19E713A8D82C0018ECD4 /* mediastream.c */,
-			);
-			path = tests;
-			sourceTree = "<group>";
-		};
-		22DD21A013A8E3310018ECD4 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				22DD21A113A8E3310018ECD4 /* InfoPlist.strings */,
-				22DD21A313A8E3310018ECD4 /* MainWindow.xib */,
-				22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */,
-				22DD21A813A8E3310018ECD4 /* mediastream-Info.plist */,
-				22DD21A913A8E3310018ECD4 /* mediastream-Prefix.pch */,
-				22DD21AA13A8E3310018ECD4 /* mediastreamAppDelegate.h */,
-				22DD21AB13A8E3310018ECD4 /* mediastreamAppDelegate.m */,
-				22DD21AC13A8E3310018ECD4 /* mediastreamViewController.h */,
-				22DD21AD13A8E3310018ECD4 /* mediastreamViewController.m */,
-			);
-			path = ios;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -2002,6 +2016,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2206D2DB177ACCE400C40726 /* PBXTargetDependency */,
 				225D65CB1521C181008B2E81 /* PBXTargetDependency */,
 			);
 			name = mediastream;
@@ -2067,9 +2082,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22DD21AE13A8E3310018ECD4 /* InfoPlist.strings in Resources */,
-				22DD21AF13A8E3310018ECD4 /* MainWindow.xib in Resources */,
-				22DD21B013A8E3310018ECD4 /* mediastreamViewController.xib in Resources */,
+				2206D2D3177AC70900C40726 /* InfoPlist.strings in Resources */,
+				2206D2D4177AC70900C40726 /* MainWindow.xib in Resources */,
+				2206D2D5177AC70900C40726 /* mediastreamViewController.xib in Resources */,
+				2206D2D6177AC70900C40726 /* mediastream-Info.plist in Resources */,
+				2206D2E1177ACF5700C40726 /* nowebcamCIF.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2235,9 +2252,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22DD19F713A8DFA70018ECD4 /* mediastream.c in Sources */,
-				22DD21B313A8E3310018ECD4 /* mediastreamAppDelegate.m in Sources */,
-				22DD21B413A8E3310018ECD4 /* mediastreamViewController.m in Sources */,
+				2206D2D7177AC70900C40726 /* mediastreamAppDelegate.m in Sources */,
+				2206D2D8177AC70900C40726 /* mediastreamViewController.m in Sources */,
+				2206D2D9177AC70900C40726 /* mediastream.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2285,6 +2302,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2206D2DB177ACCE400C40726 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 22C8D0401769F8FF00DAFB4E /* libmediastreamer_voip */;
+			targetProxy = 2206D2DA177ACCE400C40726 /* PBXContainerItemProxy */;
+		};
 		225D65C71521C09D008B2E81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 225D64FA1521C009008B2E81 /* libortp */;
@@ -2313,26 +2335,26 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		22DD21A113A8E3310018ECD4 /* InfoPlist.strings */ = {
+		2206D2C6177AC70900C40726 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				22DD21A213A8E3310018ECD4 /* en */,
+				2206D2C7177AC70900C40726 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		22DD21A313A8E3310018ECD4 /* MainWindow.xib */ = {
+		2206D2C8177AC70900C40726 /* MainWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				22DD21A413A8E3310018ECD4 /* en */,
+				2206D2C9177AC70900C40726 /* en */,
 			);
 			name = MainWindow.xib;
 			sourceTree = "<group>";
 		};
-		22DD21A513A8E3310018ECD4 /* mediastreamViewController.xib */ = {
+		2206D2CA177AC70900C40726 /* mediastreamViewController.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				22DD21A613A8E3310018ECD4 /* en */,
+				2206D2CB177AC70900C40726 /* en */,
 			);
 			name = mediastreamViewController.xib;
 			sourceTree = "<group>";
@@ -3101,7 +3123,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
+				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
@@ -3127,7 +3149,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
-				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3322,7 +3344,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
+				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
@@ -3348,7 +3370,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
-				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3369,7 +3391,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tests/ios/mediastream-Prefix.pch";
+				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
@@ -3395,7 +3417,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
-				INFOPLIST_FILE = "linphone/mediastreamer2/tests/ios/mediastream-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
