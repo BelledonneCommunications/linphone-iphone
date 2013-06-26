@@ -17902,7 +17902,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-11-06T09:45:46Z</date>
+					<date>2013-06-26T10:38:34Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -17912,7 +17912,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>d8b4f45bf8fca397a7f791bd55a61e1c
+					<string>3d30b341d7d52a2764e5683a2ca348c1
 </string>
 					<key>name</key>
 					<string>Audio.strings</string>
@@ -18275,6 +18275,31 @@ Raison: %2$s</string>
 								<string>Gain microphone</string>
 								<key>ru</key>
 								<string>Усиление микрофона</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Adaptive rate control</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Adaptive rate control</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Adaptive rate control</string>
+								<key>fr</key>
+								<string>Contrôle de débit</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

@@ -42,3 +42,6 @@
 
 /* Microphone gain */
 "Microphone gain" = "Усиление микрофона";
+
+/* Adaptive rate control */
+"Adaptive rate control" = "Adaptive rate control";

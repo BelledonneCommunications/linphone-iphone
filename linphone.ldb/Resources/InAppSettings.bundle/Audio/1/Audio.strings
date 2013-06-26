@@ -42,3 +42,6 @@
 
 /* Microphone gain */
 "Microphone gain" = "Microphone gain";
+
+/* Adaptive rate control */
+"Adaptive rate control" = "Adaptive rate control";

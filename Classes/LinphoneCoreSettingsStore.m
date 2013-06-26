@@ -182,7 +182,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
 	{
 		[self transformCodecsToKeys: linphone_core_get_audio_codecs(lc)];
-		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)]; 
+		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)];
+        [self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
 	}
 	
 	{	
@@ -492,6 +493,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
+
+    linphone_core_enable_adaptive_rate_control(lc, [self boolForKey:@"adaptive_rate_control_preference"]);
 	
     linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
