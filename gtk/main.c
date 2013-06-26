@@ -223,6 +223,15 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 		const char *factory_config_file, const char *db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
+	long num_cpu=1;
+#ifdef WIN32 /*fixme to be tested*/
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo( &sysinfo );
+
+	num_cpu = sysinfo.dwNumberOfProcessors;
+#else if __APPLE_ || __linux
+	num_cpu = sysconf( _SC_NPROCESSORS_ONLN );
+#endif
 
 	vtable.call_state_changed=linphone_gtk_call_state_changed;
 	vtable.registration_state_changed=linphone_gtk_registration_state_changed;
@@ -243,6 +252,9 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
+	if (num_cpu>1) {
+		ms_set_cpu_count(num_cpu);
+	}
 	linphone_core_set_user_agent(the_core,"Linphone", LINPHONE_VERSION);
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
