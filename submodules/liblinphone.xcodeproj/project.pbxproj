@@ -2389,6 +2389,7 @@
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/libxml2",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -2424,6 +2425,7 @@
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/libxml2",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -3104,6 +3106,7 @@
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/libxml2",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
