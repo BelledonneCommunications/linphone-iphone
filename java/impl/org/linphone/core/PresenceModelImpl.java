@@ -37,8 +37,8 @@ public class PresenceModelImpl implements PresenceModel {
 
 	private native int getBasicStatus(long nativePtr);
 	@Override
-	public BasicStatus getBasicStatus() {
-		return BasicStatus.fromInt(getBasicStatus(mNativePtr));
+	public PresenceBasicStatus getBasicStatus() {
+		return PresenceBasicStatus.fromInt(getBasicStatus(mNativePtr));
 	}
 
 	private native long getTimestamp(long nativePtr);
