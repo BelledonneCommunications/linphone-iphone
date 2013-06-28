@@ -198,6 +198,34 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<integer>32</integer>
+			<key>Key</key>
+			<string>audio_codec_bitrate_limit_preference</string>
+			<key>Title</key>
+			<string>Codec bitrate limit</string>
+			<key>Titles</key>
+			<array>
+				<string>10 kbits/s</string>
+				<string>15 kbits/s</string>
+				<string>20 kbits/s</string>
+				<string>32 kbits/s</string>
+				<string>64 kbits/s</string>
+				<string>128 kbits/s</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<integer>10</integer>
+				<integer>15</integer>
+				<integer>20</integer>
+				<integer>32</integer>
+				<integer>64</integer>
+				<integer>128</integer>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

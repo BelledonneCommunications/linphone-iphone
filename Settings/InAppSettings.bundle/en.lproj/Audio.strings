@@ -45,3 +45,6 @@
 
 /* Adaptive rate control */
 "Adaptive rate control" = "Adaptive rate control";
+
+/* Codec bitrate limit */
+"Codec bitrate limit" = "Codec bitrate limit";
