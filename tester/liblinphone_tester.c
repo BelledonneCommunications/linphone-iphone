@@ -100,8 +100,8 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	if (path==NULL) path=".";
 
 	if (path && file){
-		sprintf(filepath, "%s/%s", path, file);
-		CU_ASSERT_TRUE_FATAL(ortp_file_exist(path)==0);
+		snprintf(filepath, sizeof(filepath), "%s/%s", path, file);
+		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
 	}
 	
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
