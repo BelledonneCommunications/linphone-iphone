@@ -92,18 +92,25 @@ static belle_sdp_media_description_t *stream_description_to_sdp ( const SalMedia
 				 ,1
 				 ,sal_media_proto_to_string ( stream->proto )
 				 ,NULL );
-	for ( pt_it=stream->payloads; pt_it!=NULL; pt_it=pt_it->next ) {
-		pt= ( PayloadType* ) pt_it->data;
-		mime_param= belle_sdp_mime_parameter_create ( pt->mime_type
+	if (stream->payloads) {
+		for ( pt_it=stream->payloads; pt_it!=NULL; pt_it=pt_it->next ) {
+			pt= ( PayloadType* ) pt_it->data;
+			mime_param= belle_sdp_mime_parameter_create ( pt->mime_type
 					, payload_type_get_number ( pt )
 					, pt->clock_rate
 					,stream->type==SalAudio?1:-1 );
-		belle_sdp_mime_parameter_set_parameters ( mime_param,pt->recv_fmtp );
-		if ( stream->ptime>0 ) {
-			belle_sdp_mime_parameter_set_ptime ( mime_param,stream->ptime );
+			belle_sdp_mime_parameter_set_parameters ( mime_param,pt->recv_fmtp );
+			if ( stream->ptime>0 ) {
+				belle_sdp_mime_parameter_set_ptime ( mime_param,stream->ptime );
+			}
+			belle_sdp_media_description_append_values_from_mime_parameter ( media_desc,mime_param );
+			belle_sip_object_unref ( mime_param );
 		}
-		belle_sdp_media_description_append_values_from_mime_parameter ( media_desc,mime_param );
-		belle_sip_object_unref ( mime_param );
+	} else {
+		/* to comply with SDP we cannot have an empty payload type number list */
+		/* as it happens only when mline is declined with a zero port, it does not matter to put whatever codec*/
+		belle_sip_list_t* format = belle_sip_list_append(NULL,0);
+		belle_sdp_media_set_media_formats(belle_sdp_media_description_get_media(media_desc),format);
 	}
 	/*only add a c= line within the stream description if address are differents*/
 	if (rtp_addr[0]!='\0' && strcmp(rtp_addr,md->addr)!=0){
