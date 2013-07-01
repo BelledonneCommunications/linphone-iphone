@@ -131,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\tester\call_tester.c" />
+    <ClCompile Include="..\..\..\tester\eventapi_tester.c" />
     <ClCompile Include="..\..\..\tester\liblinphone_tester.c" />
     <ClCompile Include="..\..\..\tester\message_tester.c" />
     <ClCompile Include="..\..\..\tester\presence_tester.c" />

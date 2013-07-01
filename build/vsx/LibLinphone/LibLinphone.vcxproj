@@ -116,7 +116,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDIr)..\..\..\..\tunnel\include;$(ProjectDir)..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;TUNNEL_ENABLED;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LINPHONE_VERSION="Devel";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -250,6 +250,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\tunnel\build\windows\tunnel\tunnel\tunnel.vcxproj">
       <Project>{59500dd1-b192-4ddf-a402-8a8e3739e032}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\libxml2\libxml2\libxml2.vcxproj">
+      <Project>{5dfa07b4-0be9-46a9-ba32-fdf5a55c580b}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)'=='ARM'">

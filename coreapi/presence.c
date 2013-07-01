@@ -244,7 +244,7 @@ static char * timestamp_to_string(time_t timestamp) {
 	struct tm gmt;
 	ret = gmtime_r(&timestamp,&gmt);
 #else
-	ret = gmtime(&curtime);
+	ret = gmtime(&timestamp);
 #endif
 	snprintf(timestamp_str, sizeof(timestamp_str), "%4d-%02d-%02dT%02d:%02d:%02dZ",
 		 ret->tm_year + 1900, ret->tm_mon + 1, ret->tm_mday, ret->tm_hour, ret->tm_min, ret->tm_sec);
