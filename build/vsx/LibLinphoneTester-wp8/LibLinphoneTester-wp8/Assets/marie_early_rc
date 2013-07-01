@@ -1,6 +1,3 @@
-[net]
-mtu=1300
-
 [sip]
 sip_port=5082
 sip_tcp_port=5082
@@ -18,8 +15,8 @@ realm="sip.example.org"
 
 
 [proxy_0]
-reg_proxy=sip2.linphone.org;transport=tcp
-reg_route=sip2.linphone.org;transport=tcp;lr
+reg_proxy=sip.example.org;transport=tcp
+reg_route=sip.example.org;transport=tcp;lr
 reg_identity=sip:marie@sip.example.org
 reg_expires=3600
 reg_sendregister=1

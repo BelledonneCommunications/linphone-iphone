@@ -187,4 +187,7 @@
   </Target>
   -->
   <ProjectExtensions />
+  <PropertyGroup>
+    <PreBuildEvent>Xcopy /I /Y $(ProjectDir)..\..\..\..\tester\*rc $(ProjectDir)Assets\</PreBuildEvent>
+  </PropertyGroup>
 </Project>

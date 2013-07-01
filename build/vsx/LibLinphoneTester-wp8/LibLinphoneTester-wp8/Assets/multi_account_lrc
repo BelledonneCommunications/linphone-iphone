@@ -1,6 +1,3 @@
-[net]
-mtu=1300
-
 [sip]
 sip_port=5072
 sip_tcp_port=5072
@@ -32,8 +29,7 @@ passwd=secret
 realm="sip.example.org"
 
 [proxy_0]
-reg_proxy=sip2.linphone.org
-reg_route=sip2.linphone.org
+reg_proxy=sip2.linphone.org;transport=tls
 reg_identity=sip:pauline@sip.example.org
 reg_expires=3600
 reg_sendregister=1
@@ -41,8 +37,7 @@ publish=0
 dial_escape_plus=0
 
 [proxy_1]
-reg_proxy=sip2.linphone.org;transport=tcp
-reg_route=sip2.linphone.org;transport=tcp
+reg_proxy=sip.example.org;transport=tcp
 reg_identity=sip:marie@sip.example.org
 reg_expires=3600
 reg_sendregister=1
@@ -50,8 +45,7 @@ publish=0
 dial_escape_plus=0
 
 [proxy_2]
-reg_proxy=sip2.linphone.org
-reg_route=sip2.linphone.org
+reg_proxy=auth1.example.org
 reg_identity=sip:liblinphone_tester@auth1.example.org
 reg_expires=3600
 reg_sendregister=1
