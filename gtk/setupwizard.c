@@ -60,7 +60,7 @@ static int all_account_information_entered(GtkWidget *w) {
 	if (gtk_entry_get_text_length(username) > 0 &&
 	gtk_entry_get_text_length(domain) > 0 &&
 	g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0) &&
-	g_regex_match_simple("^(sip:)?([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(domain), 0, 0)) {
+	g_regex_match_simple("^(sip:)?([a-zA-Z0-9]+([\\.-][a-zA-Z0-9]+)*)$", gtk_entry_get_text(domain), 0, 0)) {
 		return 1;
 	}
 	return 0;
