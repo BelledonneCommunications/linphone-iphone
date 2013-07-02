@@ -1145,7 +1145,6 @@ int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
 	 * try to find 'the' running interface with getifaddrs*/
 	
 #ifdef HAVE_GETIFADDRS
-
 	/*we use getifaddrs for lookup of default interface */
 	int found_ifs;
 

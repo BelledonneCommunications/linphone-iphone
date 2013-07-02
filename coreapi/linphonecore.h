@@ -1682,7 +1682,6 @@ LINPHONE_PUBLIC void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
 
-
 #ifdef __cplusplus
 }
 #endif

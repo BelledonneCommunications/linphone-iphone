@@ -3,7 +3,7 @@ linphone-3.7...??
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
 	* fully asynchronous behavior: no more lengthly DNS or connections 
 
-llinphone-3.6.1 -- June 17, 2013
+linphone-3.6.1 -- June 17, 2013
 	* fix memory leak with some video cameras on windows.
 	
 	Requires: mediastreamer2 = 2.9.1 and ortp = 0.22.0

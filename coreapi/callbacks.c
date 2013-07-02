@@ -368,7 +368,7 @@ static void call_accepted(SalOp *op){
 #endif //BUILD_UPNP
 
 	md=sal_call_get_final_media_description(op);
-	if (md) /*make sure re-invite will not prose video again*/
+	if (md) /*make sure re-invite will not propose video again*/
 		call->params.has_video &= linphone_core_media_description_contains_video_stream(md);
 	
 	if (call->state==LinphoneCallOutgoingProgress ||

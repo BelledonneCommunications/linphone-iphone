@@ -246,7 +246,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 		gtk_text_buffer_get_iter_at_line_offset(b,&end,line,0);
 		gtk_text_buffer_delete(b,&start,&end);
 		gtk_text_buffer_get_iter_at_line(b,&iter,line);
-		
+
 		switch (state) {
 			case LinphoneChatMessageStateInProgress:
 				result="Sending ..";
