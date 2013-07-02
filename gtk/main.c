@@ -229,7 +229,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	GetSystemInfo( &sysinfo );
 
 	num_cpu = sysinfo.dwNumberOfProcessors;
-#else if __APPLE_ || __linux
+#elif __APPLE_ || __linux
 	num_cpu = sysconf( _SC_NPROCESSORS_ONLN );
 #endif
 
