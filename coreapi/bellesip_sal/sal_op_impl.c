@@ -268,6 +268,9 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 
 int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	bool_t need_contact=FALSE;
+	if (request==NULL) {
+		return -1; /*sanity check*/
+	}
 	/*
   	  Header field          where   proxy ACK BYE CAN INV OPT REG
       ___________________________________________________________
