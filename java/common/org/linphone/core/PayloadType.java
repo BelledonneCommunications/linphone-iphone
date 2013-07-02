@@ -19,8 +19,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 public interface PayloadType {
-
+	/**
+	 * Obtain the registered mime-type (actually submime) of the PayloadType. For example: "H264", "speex"...
+	 * @return the (sub) mime type.
+	 */
 	String getMime();
 	
+	/**
+	 * Return the RTP clockrate. It is usually the same as the audio sampling rate, and 90000 for video payload types.
+	 * @return
+	 */
 	int getRate();
+	
+	/**
+	 * Set format parameter string wished for incoming stream. It is advertised in SDP.
+	 * @param fmtp the fmtp string, like "octet-align=1;mode-set=4,5,6,7"
+	 */
+	void setRecvFmtp(String fmtp);
+	
+	/**
+	 * Return the format parameters wished for incoming stream.
+	 * @return the format parameter string.
+	 */
+	String getRecvFmtp();
+	
+	/**
+	 * Set the format parameter effective for the outgoing stream (unusual).
+	 * @param fmtp
+	 */
+	void setSendFmtp(String fmtp);
+	
+	/**
+	 * Return the format parameter effective for the outgoing stream.
+	 * @return
+	 */
+	String getSendFmtp();
 }

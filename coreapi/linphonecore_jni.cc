@@ -3316,3 +3316,52 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceNoteImpl_getLang(JNIEnv
 	const char *clang = linphone_presence_note_get_lang(note);
 	return clang ? env->NewStringUTF(clang) : NULL;
 }
+
+/*
+ * Class:     org_linphone_core_PayloadTypeImpl
+ * Method:    setRecvFmtp
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PayloadTypeImpl_setRecvFmtp(JNIEnv *env, jobject jobj, jlong ptr, jstring jfmtp){
+	PayloadType *pt=(PayloadType *)ptr;
+	const char *fmtp=jfmtp ? env->GetStringUTFChars(jfmtp,NULL) : NULL;
+	payload_type_set_recv_fmtp(pt,fmtp);
+	if (fmtp) env->ReleaseStringUTFChars(jfmtp,fmtp);
+}
+
+/*
+ * Class:     org_linphone_core_PayloadTypeImpl
+ * Method:    getRecvFmtp
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PayloadTypeImpl_getRecvFmtp(JNIEnv *env, jobject jobj, jlong ptr){
+	PayloadType *pt=(PayloadType *)ptr;
+	const char *fmtp=pt->recv_fmtp;
+	return fmtp ? env->NewStringUTF(fmtp) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_PayloadTypeImpl
+ * Method:    setSendFmtp
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_PayloadTypeImpl_setSendFmtp(JNIEnv *env, jobject jobj, jlong ptr , jstring jfmtp){
+	PayloadType *pt=(PayloadType *)ptr;
+	const char *fmtp=jfmtp ? env->GetStringUTFChars(jfmtp,NULL) : NULL;
+	payload_type_set_send_fmtp(pt,fmtp);
+	if (fmtp) env->ReleaseStringUTFChars(jfmtp,fmtp);
+}
+
+/*
+ * Class:     org_linphone_core_PayloadTypeImpl
+ * Method:    getSendFmtp
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_PayloadTypeImpl_getSendFmtp(JNIEnv *env, jobject jobj, jlong ptr){
+	PayloadType *pt=(PayloadType *)ptr;
+	const char *fmtp=pt->send_fmtp;
+	return fmtp ? env->NewStringUTF(fmtp) : NULL;
+}
+  
+  
+
