@@ -963,6 +963,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
+	if (linphone_call_log_get_call_id(linphone_call_get_call_log(call)) == nil) {
+		ms_error ("no callid for call [%p]", call);
+		return 1;
+	}
 	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 

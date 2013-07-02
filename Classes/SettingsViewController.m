@@ -586,7 +586,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
     
-    [hiddenKeys addObject:@"audio_advanced_group"];
     [hiddenKeys addObject:@"playback_gain_preference"];
     [hiddenKeys addObject:@"microphone_gain_preference"];
     

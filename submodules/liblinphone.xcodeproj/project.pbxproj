@@ -3209,12 +3209,11 @@
 					linphone/mediastreamer2/include,
 					linphone/oRTP/include,
 					externals/gsm/,
-					externals/osip/include,
-					externals/exosip/include,
 					externals/speex/include,
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/opus",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -3265,12 +3264,11 @@
 					linphone/mediastreamer2/include,
 					linphone/oRTP/include,
 					externals/gsm/,
-					externals/osip/include,
-					externals/exosip/include,
 					externals/speex/include,
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/opus",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -3321,12 +3319,11 @@
 					linphone/mediastreamer2/include,
 					linphone/oRTP/include,
 					externals/gsm/,
-					externals/osip/include,
-					externals/exosip/include,
 					externals/speex/include,
 					externals/ffmpeg,
 					external/ffmpeg/swscale,
 					"../liblinphone-sdk/apple-darwin/include",
+					"../liblinphone-sdk/apple-darwin/include/opus",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (

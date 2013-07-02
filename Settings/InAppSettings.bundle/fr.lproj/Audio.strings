@@ -42,3 +42,9 @@
 
 /* Microphone gain */
 "Microphone gain" = "Gain microphone";
+
+/* Adaptive rate control */
+"Adaptive rate control" = "Contrôle de débit";
+
+/* Codec bitrate limit */
+"Codec bitrate limit" = "Limite de débit du codec";
