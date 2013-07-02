@@ -66,7 +66,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32;_WINDLL;_USRDLL;_CRT_SECURE_NO_WARNINGS;HAVE_WIN32_THREADS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>LIBXML_MODULES_ENABLED</UndefinePreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
@@ -83,9 +83,9 @@
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
+    <PreBuildEvent>
       <Command>install_headers.bat $(SolutionDir)$(Platform)\$(Configuration)\include</Command>
-    </PostBuildEvent>
+    </PreBuildEvent>
     <CustomBuildStep>
       <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -94,7 +94,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32;_WINDLL;_USRDLL;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>LIBXML_MODULES_ENABLED</UndefinePreprocessorDefinitions>
       <StringPooling>true</StringPooling>
@@ -113,9 +113,9 @@
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
+    <PreBuildEvent>
       <Command>install_headers.bat $(SolutionDir)$(Platform)\$(Configuration)\include</Command>
-    </PostBuildEvent>
+    </PreBuildEvent>
     <CustomBuildStep>
       <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -123,7 +123,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32;WIN32;_WINDLL;_USRDLL;_CRT_SECURE_NO_WARNINGS;HAVE_WIN32_THREADS;HAVE_COMPILER_TLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>LIBXML_MODULES_ENABLED</UndefinePreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
@@ -141,9 +141,9 @@
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
+    <PreBuildEvent>
       <Command>install_headers.bat $(SolutionDir)$(Platform)\$(Configuration)\include</Command>
-    </PostBuildEvent>
+    </PreBuildEvent>
     <CustomBuildStep>
       <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -152,7 +152,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN32;_WINDLL;_USRDLL;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>LIBXML_MODULES_ENABLED</UndefinePreprocessorDefinitions>
       <StringPooling>true</StringPooling>
@@ -171,9 +171,9 @@
       <ImportLibrary>$(TargetDir)$(TargetName)_dll.lib</ImportLibrary>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
+    <PreBuildEvent>
       <Command>install_headers.bat $(SolutionDir)$(Platform)\$(Configuration)\include</Command>
-    </PostBuildEvent>
+    </PreBuildEvent>
     <CustomBuildStep>
       <Outputs>$(TargetDir)$(TargetName)_dll.lib;%(Outputs)</Outputs>
     </CustomBuildStep>
