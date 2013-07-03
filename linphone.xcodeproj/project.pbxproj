@@ -1704,6 +1704,101 @@
 		22F2508B107141E100AC9B3F /* DialerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DialerViewController.h; sourceTree = "<group>"; };
 		22F2508C107141E100AC9B3F /* DialerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = DialerViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		22F254801073D99800AC9B3F /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ringback.wav; path = Resources/ringback.wav; sourceTree = "<group>"; };
+		22F9B0891784711500E0212F /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		22F9B08A1784711500E0212F /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		22F9B08B1784711500E0212F /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
+		22F9B08C1784711500E0212F /* TunnelManager.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TunnelManager.cc; sourceTree = "<group>"; };
+		22F9B08D1784711500E0212F /* TunnelManager.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TunnelManager.hh; sourceTree = "<group>"; };
+		22F9B08E1784711500E0212F /* address.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = address.c; sourceTree = "<group>"; };
+		22F9B08F1784711500E0212F /* authentication.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = authentication.c; sourceTree = "<group>"; };
+		22F9B0911784711500E0212F /* sal_address_impl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_address_impl.c; sourceTree = "<group>"; };
+		22F9B0921784711500E0212F /* sal_impl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_impl.c; sourceTree = "<group>"; };
+		22F9B0931784711500E0212F /* sal_impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sal_impl.h; sourceTree = "<group>"; };
+		22F9B0941784711500E0212F /* sal_op_call.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_call.c; sourceTree = "<group>"; };
+		22F9B0951784711500E0212F /* sal_op_call_transfer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_call_transfer.c; sourceTree = "<group>"; };
+		22F9B0961784711500E0212F /* sal_op_events.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_events.c; sourceTree = "<group>"; };
+		22F9B0971784711500E0212F /* sal_op_impl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_impl.c; sourceTree = "<group>"; };
+		22F9B0981784711500E0212F /* sal_op_info.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_info.c; sourceTree = "<group>"; };
+		22F9B0991784711500E0212F /* sal_op_message.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_message.c; sourceTree = "<group>"; };
+		22F9B09A1784711500E0212F /* sal_op_presence.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_presence.c; sourceTree = "<group>"; };
+		22F9B09B1784711500E0212F /* sal_op_publish.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_publish.c; sourceTree = "<group>"; };
+		22F9B09C1784711500E0212F /* sal_op_registration.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_op_registration.c; sourceTree = "<group>"; };
+		22F9B09D1784711500E0212F /* sal_sdp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_sdp.c; sourceTree = "<group>"; };
+		22F9B09E1784711500E0212F /* callbacks.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = callbacks.c; sourceTree = "<group>"; };
+		22F9B09F1784711500E0212F /* callbacks.c.orig */ = {isa = PBXFileReference; lastKnownFileType = text; path = callbacks.c.orig; sourceTree = "<group>"; };
+		22F9B0A01784711500E0212F /* chat.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = chat.c; sourceTree = "<group>"; };
+		22F9B0A11784711500E0212F /* conference.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = conference.c; sourceTree = "<group>"; };
+		22F9B0A21784711500E0212F /* eXosip_transport_hook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = eXosip_transport_hook.h; sourceTree = "<group>"; };
+		22F9B0A31784711500E0212F /* ec-calibrator.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ec-calibrator.c"; sourceTree = "<group>"; };
+		22F9B0A41784711500E0212F /* enum.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = enum.c; sourceTree = "<group>"; };
+		22F9B0A51784711500E0212F /* enum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = enum.h; sourceTree = "<group>"; };
+		22F9B0A61784711500E0212F /* event.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = event.c; sourceTree = "<group>"; };
+		22F9B0A71784711500E0212F /* event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = event.h; sourceTree = "<group>"; };
+		22F9B0A81784711500E0212F /* fonis.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fonis.c; sourceTree = "<group>"; };
+		22F9B0A91784711500E0212F /* friend.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = friend.c; sourceTree = "<group>"; };
+		22F9B0AB1784711500E0212F /* Doxyfile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doxyfile.in; sourceTree = "<group>"; };
+		22F9B0AC1784711500E0212F /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		22F9B0AD1784711500E0212F /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
+		22F9B0AE1784711500E0212F /* buddy_status.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = buddy_status.c; sourceTree = "<group>"; };
+		22F9B0AF1784711500E0212F /* chatroom.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = chatroom.c; sourceTree = "<group>"; };
+		22F9B0B01784711500E0212F /* doxygen.dox */ = {isa = PBXFileReference; lastKnownFileType = text; path = doxygen.dox; sourceTree = "<group>"; };
+		22F9B0B11784711500E0212F /* helloworld.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = helloworld.c; sourceTree = "<group>"; };
+		22F9B0B71784711500E0212F /* TutorialBuddyStatus.java */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.java; path = TutorialBuddyStatus.java; sourceTree = "<group>"; };
+		22F9B0B81784711500E0212F /* TutorialChatRoom.java */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.java; path = TutorialChatRoom.java; sourceTree = "<group>"; };
+		22F9B0B91784711500E0212F /* TutorialHelloWorld.java */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.java; path = TutorialHelloWorld.java; sourceTree = "<group>"; };
+		22F9B0BA1784711500E0212F /* TutorialNotifier.java */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.java; path = TutorialNotifier.java; sourceTree = "<group>"; };
+		22F9B0BB1784711500E0212F /* TutorialRegistration.java */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.java; path = TutorialRegistration.java; sourceTree = "<group>"; };
+		22F9B0BC1784711500E0212F /* notify.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = notify.c; sourceTree = "<group>"; };
+		22F9B0BD1784711500E0212F /* registration.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = registration.c; sourceTree = "<group>"; };
+		22F9B0BE1784711500E0212F /* info.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = info.c; sourceTree = "<group>"; };
+		22F9B0BF1784711500E0212F /* liblinphone_gitversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = liblinphone_gitversion.h; sourceTree = "<group>"; };
+		22F9B0C01784711500E0212F /* linphone_tunnel.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = linphone_tunnel.cc; sourceTree = "<group>"; };
+		22F9B0C11784711500E0212F /* linphone_tunnel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linphone_tunnel.h; sourceTree = "<group>"; };
+		22F9B0C21784711500E0212F /* linphone_tunnel_config.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = linphone_tunnel_config.c; sourceTree = "<group>"; };
+		22F9B0C31784711500E0212F /* linphone_tunnel_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = linphone_tunnel_stubs.c; sourceTree = "<group>"; };
+		22F9B0C41784711500E0212F /* linphonecall.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = linphonecall.c; sourceTree = "<group>"; };
+		22F9B0C51784711500E0212F /* linphonecore.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = linphonecore.c; sourceTree = "<group>"; };
+		22F9B0C61784711500E0212F /* linphonecore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linphonecore.h; sourceTree = "<group>"; };
+		22F9B0C71784711500E0212F /* linphonecore_jni.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = linphonecore_jni.cc; sourceTree = "<group>"; };
+		22F9B0C81784711500E0212F /* linphonecore_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linphonecore_utils.h; sourceTree = "<group>"; };
+		22F9B0C91784711500E0212F /* linphonefriend.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linphonefriend.h; sourceTree = "<group>"; };
+		22F9B0CA1784711500E0212F /* linphonepresence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = linphonepresence.h; sourceTree = "<group>"; };
+		22F9B0CB1784711500E0212F /* lpconfig.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lpconfig.c; sourceTree = "<group>"; };
+		22F9B0CC1784711500E0212F /* lpconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lpconfig.h; sourceTree = "<group>"; };
+		22F9B0CD1784711500E0212F /* lsd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lsd.c; sourceTree = "<group>"; };
+		22F9B0CE1784711500E0212F /* message_storage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = message_storage.c; sourceTree = "<group>"; };
+		22F9B0CF1784711500E0212F /* misc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = misc.c; sourceTree = "<group>"; };
+		22F9B0D01784711500E0212F /* offeranswer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = offeranswer.c; sourceTree = "<group>"; };
+		22F9B0D11784711500E0212F /* offeranswer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = offeranswer.h; sourceTree = "<group>"; };
+		22F9B0D41784711500E0212F /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		22F9B0D51784711500E0212F /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		22F9B0D61784711500E0212F /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
+		22F9B0D71784711500E0212F /* INSTALL */ = {isa = PBXFileReference; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
+		22F9B0D81784711500E0212F /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		22F9B0D91784711500E0212F /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
+		22F9B0DA1784711500E0212F /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		22F9B0DB1784711500E0212F /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
+		22F9B0DC1784711500E0212F /* configure.ac */ = {isa = PBXFileReference; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
+		22F9B0DE1784711500E0212F /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		22F9B0DF1784711500E0212F /* lookup.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lookup.c; sourceTree = "<group>"; };
+		22F9B0E01784711500E0212F /* presence.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = presence.c; sourceTree = "<group>"; };
+		22F9B0E11784711500E0212F /* private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = private.h; sourceTree = "<group>"; };
+		22F9B0E21784711500E0212F /* proxy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = proxy.c; sourceTree = "<group>"; };
+		22F9B0E31784711500E0212F /* sal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal.c; sourceTree = "<group>"; };
+		22F9B0E41784711500E0212F /* sal.h.orig */ = {isa = PBXFileReference; lastKnownFileType = text; path = sal.h.orig; sourceTree = "<group>"; };
+		22F9B0E51784711500E0212F /* sal_eXosip2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_eXosip2.c; sourceTree = "<group>"; };
+		22F9B0E61784711500E0212F /* sal_eXosip2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sal_eXosip2.h; sourceTree = "<group>"; };
+		22F9B0E71784711500E0212F /* sal_eXosip2_presence.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_eXosip2_presence.c; sourceTree = "<group>"; };
+		22F9B0E81784711500E0212F /* sal_eXosip2_sdp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sal_eXosip2_sdp.c; sourceTree = "<group>"; };
+		22F9B0E91784711500E0212F /* siplogin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = siplogin.c; sourceTree = "<group>"; };
+		22F9B0EA1784711500E0212F /* sipsetup.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sipsetup.c; sourceTree = "<group>"; };
+		22F9B0EB1784711500E0212F /* sipsetup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sipsetup.h; sourceTree = "<group>"; };
+		22F9B0EC1784711500E0212F /* sipwizard.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sipwizard.c; sourceTree = "<group>"; };
+		22F9B0ED1784711500E0212F /* test_ecc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_ecc.c; sourceTree = "<group>"; };
+		22F9B0EE1784711500E0212F /* test_lsd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_lsd.c; sourceTree = "<group>"; };
+		22F9B0EF1784711500E0212F /* test_numbers.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_numbers.c; sourceTree = "<group>"; };
+		22F9B0F01784711500E0212F /* upnp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = upnp.c; sourceTree = "<group>"; };
+		22F9B0F11784711500E0212F /* upnp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = upnp.h; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
@@ -2980,6 +3075,197 @@
 			path = openssl;
 			sourceTree = "<group>";
 		};
+		22F9B087178470F400E0212F /* liblinphone */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0881784711500E0212F /* coreapi */,
+			);
+			name = liblinphone;
+			sourceTree = "<group>";
+		};
+		22F9B0881784711500E0212F /* coreapi */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0891784711500E0212F /* .gitignore */,
+				22F9B08A1784711500E0212F /* Makefile.am */,
+				22F9B08B1784711500E0212F /* Makefile.in */,
+				22F9B08C1784711500E0212F /* TunnelManager.cc */,
+				22F9B08D1784711500E0212F /* TunnelManager.hh */,
+				22F9B08E1784711500E0212F /* address.c */,
+				22F9B08F1784711500E0212F /* authentication.c */,
+				22F9B0901784711500E0212F /* bellesip_sal */,
+				22F9B09E1784711500E0212F /* callbacks.c */,
+				22F9B09F1784711500E0212F /* callbacks.c.orig */,
+				22F9B0A01784711500E0212F /* chat.c */,
+				22F9B0A11784711500E0212F /* conference.c */,
+				22F9B0A21784711500E0212F /* eXosip_transport_hook.h */,
+				22F9B0A31784711500E0212F /* ec-calibrator.c */,
+				22F9B0A41784711500E0212F /* enum.c */,
+				22F9B0A51784711500E0212F /* enum.h */,
+				22F9B0A61784711500E0212F /* event.c */,
+				22F9B0A71784711500E0212F /* event.h */,
+				22F9B0A81784711500E0212F /* fonis.c */,
+				22F9B0A91784711500E0212F /* friend.c */,
+				22F9B0AA1784711500E0212F /* help */,
+				22F9B0BE1784711500E0212F /* info.c */,
+				22F9B0BF1784711500E0212F /* liblinphone_gitversion.h */,
+				22F9B0C01784711500E0212F /* linphone_tunnel.cc */,
+				22F9B0C11784711500E0212F /* linphone_tunnel.h */,
+				22F9B0C21784711500E0212F /* linphone_tunnel_config.c */,
+				22F9B0C31784711500E0212F /* linphone_tunnel_stubs.c */,
+				22F9B0C41784711500E0212F /* linphonecall.c */,
+				22F9B0C51784711500E0212F /* linphonecore.c */,
+				22F9B0C61784711500E0212F /* linphonecore.h */,
+				22F9B0C71784711500E0212F /* linphonecore_jni.cc */,
+				22F9B0C81784711500E0212F /* linphonecore_utils.h */,
+				22F9B0C91784711500E0212F /* linphonefriend.h */,
+				22F9B0CA1784711500E0212F /* linphonepresence.h */,
+				22F9B0CB1784711500E0212F /* lpconfig.c */,
+				22F9B0CC1784711500E0212F /* lpconfig.h */,
+				22F9B0CD1784711500E0212F /* lsd.c */,
+				22F9B0CE1784711500E0212F /* message_storage.c */,
+				22F9B0CF1784711500E0212F /* misc.c */,
+				22F9B0D01784711500E0212F /* offeranswer.c */,
+				22F9B0D11784711500E0212F /* offeranswer.h */,
+				22F9B0D21784711500E0212F /* plugins */,
+				22F9B0E01784711500E0212F /* presence.c */,
+				22F9B0E11784711500E0212F /* private.h */,
+				22F9B0E21784711500E0212F /* proxy.c */,
+				22F9B0E31784711500E0212F /* sal.c */,
+				22F9B0E41784711500E0212F /* sal.h.orig */,
+				22F9B0E51784711500E0212F /* sal_eXosip2.c */,
+				22F9B0E61784711500E0212F /* sal_eXosip2.h */,
+				22F9B0E71784711500E0212F /* sal_eXosip2_presence.c */,
+				22F9B0E81784711500E0212F /* sal_eXosip2_sdp.c */,
+				22F9B0E91784711500E0212F /* siplogin.c */,
+				22F9B0EA1784711500E0212F /* sipsetup.c */,
+				22F9B0EB1784711500E0212F /* sipsetup.h */,
+				22F9B0EC1784711500E0212F /* sipwizard.c */,
+				22F9B0ED1784711500E0212F /* test_ecc.c */,
+				22F9B0EE1784711500E0212F /* test_lsd.c */,
+				22F9B0EF1784711500E0212F /* test_numbers.c */,
+				22F9B0F01784711500E0212F /* upnp.c */,
+				22F9B0F11784711500E0212F /* upnp.h */,
+			);
+			name = coreapi;
+			path = submodules/linphone/coreapi;
+			sourceTree = "<group>";
+		};
+		22F9B0901784711500E0212F /* bellesip_sal */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0911784711500E0212F /* sal_address_impl.c */,
+				22F9B0921784711500E0212F /* sal_impl.c */,
+				22F9B0931784711500E0212F /* sal_impl.h */,
+				22F9B0941784711500E0212F /* sal_op_call.c */,
+				22F9B0951784711500E0212F /* sal_op_call_transfer.c */,
+				22F9B0961784711500E0212F /* sal_op_events.c */,
+				22F9B0971784711500E0212F /* sal_op_impl.c */,
+				22F9B0981784711500E0212F /* sal_op_info.c */,
+				22F9B0991784711500E0212F /* sal_op_message.c */,
+				22F9B09A1784711500E0212F /* sal_op_presence.c */,
+				22F9B09B1784711500E0212F /* sal_op_publish.c */,
+				22F9B09C1784711500E0212F /* sal_op_registration.c */,
+				22F9B09D1784711500E0212F /* sal_sdp.c */,
+			);
+			path = bellesip_sal;
+			sourceTree = "<group>";
+		};
+		22F9B0AA1784711500E0212F /* help */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0AB1784711500E0212F /* Doxyfile.in */,
+				22F9B0AC1784711500E0212F /* Makefile.am */,
+				22F9B0AD1784711500E0212F /* Makefile.in */,
+				22F9B0AE1784711500E0212F /* buddy_status.c */,
+				22F9B0AF1784711500E0212F /* chatroom.c */,
+				22F9B0B01784711500E0212F /* doxygen.dox */,
+				22F9B0B11784711500E0212F /* helloworld.c */,
+				22F9B0B21784711500E0212F /* java */,
+				22F9B0BC1784711500E0212F /* notify.c */,
+				22F9B0BD1784711500E0212F /* registration.c */,
+			);
+			path = help;
+			sourceTree = "<group>";
+		};
+		22F9B0B21784711500E0212F /* java */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0B31784711500E0212F /* org */,
+			);
+			path = java;
+			sourceTree = "<group>";
+		};
+		22F9B0B31784711500E0212F /* org */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0B41784711500E0212F /* linphone */,
+			);
+			path = org;
+			sourceTree = "<group>";
+		};
+		22F9B0B41784711500E0212F /* linphone */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0B51784711500E0212F /* core */,
+			);
+			path = linphone;
+			sourceTree = "<group>";
+		};
+		22F9B0B51784711500E0212F /* core */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0B61784711500E0212F /* tutorials */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		22F9B0B61784711500E0212F /* tutorials */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0B71784711500E0212F /* TutorialBuddyStatus.java */,
+				22F9B0B81784711500E0212F /* TutorialChatRoom.java */,
+				22F9B0B91784711500E0212F /* TutorialHelloWorld.java */,
+				22F9B0BA1784711500E0212F /* TutorialNotifier.java */,
+				22F9B0BB1784711500E0212F /* TutorialRegistration.java */,
+			);
+			path = tutorials;
+			sourceTree = "<group>";
+		};
+		22F9B0D21784711500E0212F /* plugins */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0D31784711500E0212F /* buddylookup */,
+			);
+			path = plugins;
+			sourceTree = "<group>";
+		};
+		22F9B0D31784711500E0212F /* buddylookup */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0D41784711500E0212F /* AUTHORS */,
+				22F9B0D51784711500E0212F /* COPYING */,
+				22F9B0D61784711500E0212F /* ChangeLog */,
+				22F9B0D71784711500E0212F /* INSTALL */,
+				22F9B0D81784711500E0212F /* Makefile.am */,
+				22F9B0D91784711500E0212F /* NEWS */,
+				22F9B0DA1784711500E0212F /* README */,
+				22F9B0DB1784711500E0212F /* autogen.sh */,
+				22F9B0DC1784711500E0212F /* configure.ac */,
+				22F9B0DD1784711500E0212F /* src */,
+			);
+			path = buddylookup;
+			sourceTree = "<group>";
+		};
+		22F9B0DD1784711500E0212F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				22F9B0DE1784711500E0212F /* Makefile.am */,
+				22F9B0DF1784711500E0212F /* lookup.c */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -3017,6 +3303,7 @@
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
 				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
+				22F9B087178470F400E0212F /* liblinphone */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
@@ -5546,7 +5833,7 @@
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
-				PROVISIONING_PROFILE = "B0005B58-1160-4269-B1FC-C5BA54ACBA65";
+				PROVISIONING_PROFILE = "906D0BA7-CD8F-470C-A060-F0752867FC5D";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

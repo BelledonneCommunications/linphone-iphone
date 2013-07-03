@@ -40,7 +40,8 @@ linphone_configure_controls=  \
 			      --disable-tests \
                               --with-srtp=$(prefix) \
                               --with-antlr=$(prefix) \
-                              --disable-msg-storage
+                              --disable-msg-storage 
+
 
 ifeq ($(enable_zrtp),yes)
 	linphone_configure_controls+= --enable-zrtp
@@ -50,7 +51,14 @@ endif
                               
 #path
 BUILDER_SRC_DIR?=$(shell pwd)/../
+ifeq ($(enable_debug),yes)
+BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)-debug
+linphone_configure_controls += CFLAGS="-g"
+prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)-debug
+else
 BUILDER_BUILD_DIR?=$(shell pwd)/../build-$(host)
+prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
+endif
 
 LINPHONE_SRC_DIR=$(BUILDER_SRC_DIR)/linphone
 LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
@@ -100,7 +108,6 @@ ifneq (,$(findstring armv7,$(host)))
 	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm 
 endif
 
-prefix?=$(BUILDER_SRC_DIR)/../liblinphone-sdk/$(host)
 
 
 clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
@@ -124,7 +131,7 @@ veryclean-linphone: veryclean-libantlr veryclean-polarssl veryclean-belle-sip ve
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-libantlr clean-makefile-polarssl clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-openssl clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk clean-makefile-opus clean-makefile-libxml2
+clean-makefile-linphone: clean-makefile-libantlr clean-makefile-polarssl clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk clean-makefile-opus clean-makefile-libxml2
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -138,7 +145,7 @@ $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
         ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
 	PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
-	CFLAGS="$(CFLAGS) -DMS2_MINIMAL_SIZE" $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
+	$(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 	${linphone_configure_controls}
 	
 
@@ -267,7 +274,8 @@ multi-arch:
         	if  test ! -f "$$armv7s_path"; then \
 			armv7s_path= ; \
 		fi; \
-        	destpath=`echo $$archive | sed -e "s/armv7-//"` ;\
+        	destpath=`echo $$archive | sed -e "s/-debug//"` ;\
+        	destpath=`echo $$destpath | sed -e "s/armv7-//"` ;\
         	if test -f "$$i386_path"; then \
                 	echo "Mixing $$archive into $$destpath"; \
                 	mkdir -p `dirname $$destpath` ; \
