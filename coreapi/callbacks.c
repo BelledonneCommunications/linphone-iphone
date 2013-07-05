@@ -646,6 +646,11 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
+			case SalReasonRequestPending:
+				/*restore previous state, the application will decide to resubmit the action if relevant*/
+				linphone_call_set_state(call,call->prevstate,msg);
+				return;
+			break;
 			default:
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,_("Call failed."));

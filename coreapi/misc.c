@@ -1219,6 +1219,10 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			break;
 		case SalReasonServiceUnavailable:
 			ret=LinphoneReasonIOError;
+			break;
+		case SalReasonRequestPending:
+			ret=LinphoneReasonNone;
+			break;
 	}
 	return ret;
 }

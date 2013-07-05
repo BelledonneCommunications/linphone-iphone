@@ -99,29 +99,29 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	
 	if (path==NULL) path=".";
 
-	if (path && file){
-		snprintf(filepath, sizeof(filepath), "%s/%s", path, file);
+	if (file){
+		sprintf(filepath, "%s/%s", path, file);
 		CU_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
 	}
 	
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
 
-	if (path){
+	
 #ifndef ANDROID
-		snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cacert.pem", path);
+	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cacert.pem", path);
 #else
-		snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
+	snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
 #endif
-		linphone_core_set_root_ca(lc,rootcapath);
+	linphone_core_set_root_ca(lc,rootcapath);
 
-		sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
-		sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
+	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 
-		sprintf(ringpath, "%s/%s", path, "oldphone.wav");
-		sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
-		linphone_core_set_ring(lc, ringpath);
-		linphone_core_set_ringback(lc, ringbackpath);
-	}
+	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
+	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
+	linphone_core_set_ring(lc, ringpath);
+	linphone_core_set_ringback(lc, ringbackpath);
+
 	return lc;
 }
 

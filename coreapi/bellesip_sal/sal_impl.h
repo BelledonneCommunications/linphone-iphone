@@ -128,8 +128,8 @@ void sal_op_message_fill_cbs(SalOp*op);
 void sal_op_subscribe_fill_cbs(SalOp*op);
 
 /*call transfer*/
-void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event);
-void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event);
+void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event, belle_sip_server_transaction_t *tr);
+void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event, belle_sip_server_transaction_t *tr);
 /*create SalAuthInfo by copying username and realm from suth event*/
 SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) ;
 void sal_add_pending_auth(Sal *sal, SalOp *op);

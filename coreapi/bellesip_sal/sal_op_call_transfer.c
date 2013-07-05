@@ -168,14 +168,14 @@ int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
 }
 
 
-void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
+void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event, belle_sip_server_transaction_t *server_transaction){
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_header_refer_to_t *refer_to= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_refer_to_t);
 	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);
-	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,req);
 	belle_sip_response_t* resp;
 	belle_sip_uri_t* refer_to_uri;
 	char* refer_to_uri_str;
+	
 	ms_message("Receiving REFER request on op [%p]",op);
 	if (refer_to) {
 		refer_to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to));
@@ -200,8 +200,7 @@ void sal_op_process_refer(SalOp *op, const belle_sip_request_event_t *event){
 
 }
 
-void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event){
-	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
+void sal_op_call_process_notify(SalOp *op, const belle_sip_request_event_t *event, belle_sip_server_transaction_t* server_transaction){
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
 	belle_sip_header_t* header_event=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event");

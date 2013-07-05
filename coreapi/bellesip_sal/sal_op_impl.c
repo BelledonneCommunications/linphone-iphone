@@ -31,7 +31,7 @@ SalOp * sal_op_new(Sal *sal){
 
 void sal_op_release(SalOp *op){
 	op->state=SalOpStateTerminated;
-	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn not mean freeing op. Make sure back pointer will not be used later*/
+	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
 	}
@@ -292,7 +292,6 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonUnknown:
 			ret=400;
 			break;
-		
 		case SalReasonBusy:
 			ret=486;
 			break;
@@ -319,6 +318,9 @@ SalReason sal_reason_to_sip_code(SalReason r){
 			break;
 		case SalReasonServiceUnavailable:
 			ret=503;
+			break;
+		case SalReasonRequestPending:
+			ret=491;
 			break;
 	}
 	return ret;
@@ -353,6 +355,10 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 		*sal_reason=SalReasonBusy;
 		break;
 	case 487:
+		break;
+	case 491:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonRequestPending;
 		break;
 	case 600:
 		*sal_err=SalErrorFailure;

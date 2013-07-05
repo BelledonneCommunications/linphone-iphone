@@ -2813,7 +2813,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
 			sal_call_decline(call->op,SalReasonMedia,NULL);
 			linphone_core_del_call(lc,call);
-			linphone_call_ref(call);
+			linphone_call_unref(call);
 			return;
 		}
 	}
@@ -3327,7 +3327,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	switch (call->state) {
 	case LinphoneCallReleased:
 	case LinphoneCallEnd:
-		ms_warning("No need to terminate a call [%p] in sate [%s]",call,linphone_call_state_to_string(call->state));
+		ms_warning("No need to terminate a call [%p] in state [%s]",call,linphone_call_state_to_string(call->state));
 		return -1;
 	case LinphoneCallIncomingReceived:
 	case LinphoneCallIncomingEarlyMedia:

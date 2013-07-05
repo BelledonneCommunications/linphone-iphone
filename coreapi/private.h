@@ -163,7 +163,8 @@ struct _LinphoneCall
 	char localip[LINPHONE_IPADDR_SIZE]; /* our best guess for local ipaddress for this call */
 	time_t start_time; /*time at which the call was initiated*/
 	time_t media_start_time; /*time at which it was accepted, media streams established*/
-	LinphoneCallState	state;
+	LinphoneCallState state;
+	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneReason reason;
 	LinphoneProxyConfig *dest_proxy;
@@ -384,7 +385,6 @@ struct _LinphoneProxyConfig
 	char *realm;
 	char *contact_params;
 	int expires;
-	int reg_time;
 	SalOp *op;
 	char *type;
 	struct _SipSetupContext *ssctx;
@@ -396,6 +396,8 @@ struct _LinphoneProxyConfig
 	bool_t reg_sendregister;
 	bool_t publish;
 	bool_t dial_escape_plus;
+	bool_t send_publish;
+	bool_t pad[3];
 	void* user_data;
 	time_t deletion_date;
 	LinphoneReason error;

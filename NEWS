@@ -2,6 +2,14 @@ linphone-3.7...??
 	* multiple SIP transports simualtaneously now allowed
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
 	* fully asynchronous behavior: no more lengthly DNS or connections 
+	* +sip.instance parameter (RFC???)
+	* alias parameter (RFC????)
+	* better management of network disconnections
+	* SIP/TLS handled through lightweighted polarssl library (instead of openssl)
+	* SIP transaction state machines improved (RFC6026)
+	* Privacy API
+	* Full support of rich presence
+
 
 linphone-3.6.1 -- June 17, 2013
 	* fix memory leak with some video cameras on windows.

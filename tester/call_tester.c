@@ -336,22 +336,22 @@ static void cancelled_ringing_call(void) {
 static void early_declined_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneCallLog* in_call;
+	LinphoneCallLog* out_call_log;
 	LinphoneCall* out_call;
 
 	linphone_core_set_max_calls(marie->lc,0);
 	out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1));
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallError,1);
 	/* FIXME http://git.linphone.org/mantis/view.php?id=757
-	CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_call_logs(marie->lc)),1);
-	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined);
+	
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonBusy);
 	 */
-	if (ms_list_size(linphone_core_get_call_logs(marie->lc))>0) {
-		CU_ASSERT_PTR_NOT_NULL(in_call=(LinphoneCallLog*)(linphone_core_get_call_logs(marie->lc)->data));
-		CU_ASSERT_EQUAL(linphone_call_log_get_status(in_call),LinphoneCallDeclined);
+	if (ms_list_size(linphone_core_get_call_logs(pauline->lc))>0) {
+		CU_ASSERT_PTR_NOT_NULL(out_call_log=(LinphoneCallLog*)(linphone_core_get_call_logs(pauline->lc)->data));
+		CU_ASSERT_EQUAL(linphone_call_log_get_status(out_call_log),LinphoneCallAborted);
 	}
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);

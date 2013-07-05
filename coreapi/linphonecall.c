@@ -700,6 +700,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 	LinphoneCore *lc=call->core;
 
 	if (call->state!=cstate){
+		call->prevstate=call->state;
 		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
 			if (cstate!=LinphoneCallReleased){
 				ms_warning("Spurious call state change from %s to %s, ignored.",linphone_call_state_to_string(call->state),
@@ -2585,7 +2586,7 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 	if (contact){
 		sal_op_set_contact(call->op, contact);
 #ifndef USE_BELLESIP
-		ms_free(contact);
+	ms_free(contact);
 #else
 	linphone_address_destroy(contact);
 #endif

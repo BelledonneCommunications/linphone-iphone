@@ -273,7 +273,8 @@ typedef enum SalReason{
 	SalReasonMedia,
 	SalReasonForbidden,
 	SalReasonUnknown,
-	SalReasonServiceUnavailable
+	SalReasonServiceUnavailable,
+	SalReasonRequestPending
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);
@@ -538,7 +539,7 @@ int sal_notify_presence(SalOp *op, SalPresenceModel *presence);
 int sal_notify_presence_close(SalOp *op);
 
 /*presence publish */
-int sal_publish_presence(SalOp *op, const char *from, const char *to, SalPresenceModel *presence);
+int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence);
 
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/

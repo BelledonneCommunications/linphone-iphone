@@ -252,11 +252,6 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 			sal_unregister(obj->op);
 		}
 	}
-	if (obj->publish_op){
-		/*we should certainly cancel our publish by some manner*/
-		sal_op_release(obj->publish_op);
-		obj->publish_op=NULL;
-	}
 }
 
 void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
@@ -858,7 +853,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 		sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 	}
-	err=sal_publish_presence(proxy->publish_op,NULL,NULL,(SalPresenceModel *)presence);
+	err=sal_publish_presence(proxy->publish_op,NULL,NULL,proxy->expires,(SalPresenceModel *)presence);
 	return err;
 }
 
@@ -1186,10 +1181,12 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (can_register(cfg)){
 			linphone_proxy_config_register(cfg);
 			cfg->commit=FALSE;
+			if (cfg->publish) cfg->send_publish=TRUE;
 		}
 	}
-	if (cfg->publish && cfg->publish_op==NULL && cfg->state==LinphoneRegistrationOk){
+	if (cfg->send_publish && (cfg->state==LinphoneRegistrationOk || cfg->state==LinphoneRegistrationCleared)){
 		linphone_proxy_config_send_publish(cfg,lc->presence_model);
+		cfg->send_publish=FALSE;
 	}
 }
 
