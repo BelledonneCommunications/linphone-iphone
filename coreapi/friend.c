@@ -111,6 +111,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	char *friend=NULL;
 	const char *from=NULL;
 	LinphoneProxyConfig *cfg;
+	LinphoneCore *lc=fr->lc;
 	
 	friend=linphone_address_as_string(fr->uri);
 	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
@@ -129,9 +130,9 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 		sal_op_release(fr->outsub);
 		fr->outsub=NULL;
 	}
-	fr->outsub=sal_op_new(fr->lc->sal);
-	linphone_configure_op(fr->lc,fr->outsub,fr->uri,NULL,TRUE);
-	sal_subscribe_presence(fr->outsub,from,friend);
+	fr->outsub=sal_op_new(lc->sal);
+	linphone_configure_op(lc,fr->outsub,fr->uri,NULL,TRUE);
+	sal_subscribe_presence(fr->outsub,from,friend,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
 	fr->subscribe_active=TRUE;
 	ms_free(friend);
 }
@@ -239,6 +240,14 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence)
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	if (lf->outsub!=NULL) {
 		sal_unsubscribe(lf->outsub);
+		lf->subscribe_active=FALSE;
+	}
+}
+
+static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
+	if (lf->outsub!=NULL) {
+		sal_op_release(lf->outsub);
+		lf->outsub=NULL;
 		lf->subscribe_active=FALSE;
 	}
 }
@@ -383,9 +392,7 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 				break;
 			case LinphoneSPAccept:
 				if (fr->lc!=NULL)
-				  {
 					linphone_friend_notify(fr,fr->lc->presence_model);
-				  }
 				break;
 			case LinphoneSPDeny:
 				linphone_friend_notify(fr,NULL);
@@ -441,11 +448,21 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc){
 	const MSList *elem;
+	if (lc->initial_subscribes_sent) return;
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		if (f->commit)
-			linphone_friend_apply(f,lc);
+		linphone_friend_apply(f,lc);
 	}
+	lc->initial_subscribes_sent=TRUE;
+}
+
+void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){
+	const MSList *elem;
+	for(elem=lc->friends;elem!=NULL;elem=elem->next){
+		LinphoneFriend *f=(LinphoneFriend*)elem->data;
+		linphone_friend_invalidate_subscription(f);
+	}
+	lc->initial_subscribes_sent=FALSE;
 }
 
 void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key){

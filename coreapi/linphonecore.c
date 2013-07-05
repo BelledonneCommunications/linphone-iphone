@@ -2206,10 +2206,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 	linphone_core_run_hooks(lc);
 	linphone_core_do_plugin_tasks(lc);
 
-	if (lc->initial_subscribes_sent==FALSE && lc->netup_time!=0 &&
-	    (curtime-lc->netup_time)>3){
+	if (lc->network_reachable && lc->netup_time!=0 && (curtime-lc->netup_time)>3){
+		/*not do that immediately, take your time.*/
 		linphone_core_send_initial_subscribes(lc);
-		lc->initial_subscribes_sent=TRUE;
 	}
 
 	if (one_second_elapsed) {
@@ -5581,13 +5580,15 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
 	
+	if (!lc->network_reachable) linphone_core_invalidate_friend_subscriptions(lc);
+	
 	if(!isReachable) {
 		sal_reset_transports(lc->sal);
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {
 		if(isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
-			lc->upnp = linphone_upnp_context_new(lc);	
+			lc->upnp = linphone_upnp_context_new(lc);
 		}
 	} else {
 		if(!isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
@@ -5595,7 +5596,7 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 			lc->upnp = NULL;
 		}
 	}
-#endif	
+#endif
 }
 
 void linphone_core_refresh_registers(LinphoneCore* lc) {

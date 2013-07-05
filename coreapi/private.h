@@ -758,6 +758,8 @@ void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);
 
+void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+
 #ifdef __cplusplus
 }
 #endif

@@ -534,7 +534,7 @@ int sal_text_send(SalOp *op, const char *from, const char *to, const char *text)
 int sal_message_send(SalOp *op, const char *from, const char *to, const char* content_type, const char *msg);
 
 /*presence Subscribe/notify*/
-int sal_subscribe_presence(SalOp *op, const char *from, const char *to);
+int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expires);
 int sal_notify_presence(SalOp *op, SalPresenceModel *presence);
 int sal_notify_presence_close(SalOp *op);
 

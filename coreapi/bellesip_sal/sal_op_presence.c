@@ -56,6 +56,20 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 	}
 }
 
+static void presence_refresher_listener( const belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
+	SalOp* op = (SalOp*)user_pointer;
+	switch(status_code){
+		case 481:
+			ms_message("The server or remote ua lost the SUBSCRIBE dialog context. Let's restart a new one.");
+			belle_sip_refresher_stop(op->refresher);
+			belle_sip_object_unref(op->refresher);
+			op->refresher=NULL;
+			sal_subscribe_presence(op,NULL,NULL,-1);
+		break;
+	}
+}
+
+
 static void presence_response_event(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_dialog_state_t dialog_state;
@@ -96,6 +110,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 				}
 				if (expires>0){
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
+					belle_sip_refresher_set_listener(op->refresher,presence_refresher_listener,op);
 				}
 			}
 			break;
@@ -246,7 +261,7 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 
 
 /*presence Subscribe/notify*/
-int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
+int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expires){
 	belle_sip_request_t *req=NULL;
 	if (from)
 		sal_op_set_from(op,from);
@@ -255,10 +270,16 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to){
 
 	sal_op_presence_fill_cbs(op);
 
-	/*???sal_exosip_fix_route(op); make sure to ha ;lr*/
+	if (expires==-1){
+		if (op->refresher){
+			expires=belle_sip_refresher_get_expires(op->refresher);
+		}else{
+			ms_error("sal_subscribe_presence(): cannot guess expires from previous refresher.");
+		}
+	}
 	req=sal_op_build_request(op,"SUBSCRIBE");
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(600)));
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
 
 	return sal_op_send_request(op,req);
 }
