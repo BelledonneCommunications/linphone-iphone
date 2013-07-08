@@ -213,6 +213,8 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		const MSList *elem=sal_op_get_route_addresses(op);
 		belle_sip_uri_t *next_hop_uri;
 		const char *transport;
+		const char *method=belle_sip_request_get_method(request);
+		
 		if (elem) {
 			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
 			next_hop_uri=outbound_proxy;
@@ -236,7 +238,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			}
 			belle_sip_uri_fix(next_hop_uri);
 		}
-		if (strcmp(belle_sip_request_get_method(request),"REGISTER")==0 && transport && 
+		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport && 
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
 			/*RFC 5923: add 'alias' parameter to tell the server that we want it to keep the connection for future requests*/
 			belle_sip_header_via_t *via=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_via_t);
