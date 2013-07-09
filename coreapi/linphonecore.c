@@ -5276,7 +5276,7 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	linphone_core_free_hooks(lc);
-	lc->video_conf.show_local = false;
+	lc->video_conf.show_local = FALSE;
 
 	while(lc->calls)
 	{
