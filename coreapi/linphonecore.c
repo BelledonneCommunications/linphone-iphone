@@ -2138,9 +2138,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
 	    && (curtime-lc->dmfs_playing_start_time)>5){
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-		lc->dmfs_playing_start_time=0;
+		linphone_core_stop_dtmf_stream(lc);
 	}
 
 	sal_iterate(lc->sal);
@@ -2831,9 +2829,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	if (ms_list_size(lc->calls)==1){
 		lc->current_call=call;
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
-			ring_stop(lc->ringstream);
-			lc->ringstream=NULL;
-			lc->dmfs_playing_start_time=0;
+			linphone_core_stop_dtmf_stream(lc);
 		}
 		if (lc->sound_conf.ring_sndcard!=NULL){
 			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
@@ -3192,9 +3188,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	/*stop ringing */
 	if (lc->ringstream!=NULL) {
 		ms_message("stop ringing");
-		ring_stop(lc->ringstream);
-		ms_message("ring stopped");
-		lc->ringstream=NULL;
+		linphone_core_stop_ringing(lc);
 		was_ringing=TRUE;
 	}
 	if (call->ringing_beep){
@@ -3249,10 +3243,7 @@ int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *e
 	sal_call_terminate(call->op);
 
 	/*stop ringing*/
-	if (lc->ringstream!=NULL) {
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-	}
+	linphone_core_stop_ringing(lc);
 	linphone_call_stop_media_streams(call);
 
 #ifdef BUILD_UPNP
@@ -3271,10 +3262,7 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 			call->reason=LinphoneReasonDeclined;
 	}
 	/*stop ringing*/
-	if (lc->ringstream!=NULL) {
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-	}
+	linphone_core_stop_ringing(lc);
 
 	linphone_call_stop_media_streams(call);
 
@@ -3510,8 +3498,7 @@ void linphone_core_preempt_sound_resources(LinphoneCore *lc){
 		_linphone_core_pause_call(lc,current_call);
 	}
 	if (lc->ringstream){
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
+		linphone_core_stop_ringing(lc);
 	}
 }
 
@@ -5523,7 +5510,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	sip_config_uninit(lc);
 	net_config_uninit(lc);
 	rtp_config_uninit(lc);
-	if (lc->ringstream) ring_stop(lc->ringstream);
+	linphone_core_stop_ringing(lc);
 	sound_config_uninit(lc);
 	video_config_uninit(lc);
 	codecs_config_uninit(lc);
@@ -5834,10 +5821,18 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
 }
 
-void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
-	if (lc->ringstream && lc->dmfs_playing_start_time!=0) {
+void linphone_core_stop_ringing(LinphoneCore* lc) {
+	if (lc->ringstream) {
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
+		lc->dmfs_playing_start_time=0;
+		lc->ringstream_autorelease=TRUE;
+	}
+}
+
+void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
+	if (lc->dmfs_playing_start_time!=0) {
+		linphone_core_stop_ringing(lc);
 	}
 }
 

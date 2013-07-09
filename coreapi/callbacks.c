@@ -89,10 +89,7 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
 	SalMediaDescription *oldmd=call->resultdesc;
 	
-	if (lc->ringstream!=NULL){
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-	}
+	linphone_core_stop_ringing(lc);
 	if (new_md!=NULL){
 		sal_media_description_ref(new_md);
 		call->media_pending=FALSE;
@@ -302,12 +299,8 @@ static void call_ringing(SalOp *h){
 	
 	md=sal_call_get_final_media_description(h);
 	if (md==NULL){
-		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
-			ring_stop(lc->ringstream);
-			lc->ringstream=NULL;
-			lc->dmfs_playing_start_time=0;
-		}
-		if (lc->ringstream!=NULL) return;	/*already ringing !*/
+		linphone_core_stop_dtmf_stream(lc);
+		if (lc->ringstream!=NULL) return;/*already ringing !*/
 		if (lc->sound_conf.play_sndcard!=NULL){
 			MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.play_sndcard;
 			if (call->localdesc->streams[0].max_rate>0) ms_snd_card_set_preferred_sample_rate(ringcard, call->localdesc->streams[0].max_rate);
@@ -331,10 +324,7 @@ static void call_ringing(SalOp *h){
 		if (lc->vtable.display_status) 
 			lc->vtable.display_status(lc,_("Early media."));
 		linphone_call_set_state(call,LinphoneCallOutgoingEarlyMedia,"Early media");
-		if (lc->ringstream!=NULL){
-			ring_stop(lc->ringstream);
-			lc->ringstream=NULL;
-		}
+		linphone_core_stop_ringing(lc);
 		ms_message("Doing early media...");
 		linphone_core_update_streams(lc,call,md);
 	}
@@ -552,8 +542,7 @@ static void call_terminated(SalOp *op, const char *from){
 	ms_message("Current call terminated...");
 	//we stop the call only if we have this current call or if we are in call
 	if (lc->ringstream!=NULL && ( (ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc) )) {
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
+		linphone_core_stop_ringing(lc);
 	}
 	linphone_call_stop_media_streams(call);
 	if (lc->vtable.show!=NULL)
@@ -657,10 +646,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		}
 	}
 
-	if (lc->ringstream!=NULL) {
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
-	}
+	linphone_core_stop_ringing(lc);
 	linphone_call_stop_media_streams (call);
 	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
 		/*resume to the call that send us the refer automatically*/
