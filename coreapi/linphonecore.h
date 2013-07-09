@@ -589,6 +589,20 @@ LINPHONE_PUBLIC	void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_
 **/
 LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
+/**
+ * Gets the size of the video that is sent.
+ * @param[in] call The call for which to get the sent video size.
+ * @return The sent video size or MS_VIDEO_SIZE_UNKNOWN if not available.
+ */
+LINPHONE_PUBLIC MSVideoSize linphone_call_get_sent_video_size(const LinphoneCall *call);
+
+/**
+ * Gets the size of the video that is received.
+ * @param[in] call The call for which to get the received video size.
+ * @return The received video size or MS_VIDEO_SIZE_UNKNOWN if not available.
+ */
+LINPHONE_PUBLIC MSVideoSize linphone_call_get_received_video_size(const LinphoneCall *call);
+
 /*keep this in sync with mediastreamer2/msvolume.h*/
 
 /**

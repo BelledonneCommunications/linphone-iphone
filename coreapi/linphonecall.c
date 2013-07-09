@@ -2506,6 +2506,24 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
 }
 
+MSVideoSize linphone_call_get_sent_video_size(const LinphoneCall *call) {
+	VideoStream *vstream = call->videostream;
+	MSVideoSize vsize = MS_VIDEO_SIZE_UNKNOWN;
+	if (vstream != NULL) {
+		vsize = video_stream_get_sent_video_size(vstream);
+	}
+	return vsize;
+}
+
+MSVideoSize linphone_call_get_received_video_size(const LinphoneCall *call) {
+	VideoStream *vstream = call->videostream;
+	MSVideoSize vsize = MS_VIDEO_SIZE_UNKNOWN;
+	if (vstream != NULL) {
+		vsize = video_stream_get_received_video_size(vstream);
+	}
+	return vsize;
+}
+
 #ifndef USE_BELLESIP
 static char *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call , LinphoneProxyConfig *dest_proxy){
 #else
