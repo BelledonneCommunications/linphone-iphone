@@ -293,7 +293,8 @@ int sal_notify(SalOp *op, const SalBody *body){
 	
 	if (!op->dialog) return -1;
 	
-	notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	if (!(notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY"))) return -1;
+
 	if (set_event_name(op,(belle_sip_message_t*)notify)==-1){
 		belle_sip_object_unref(notify);
 		return -1;
@@ -309,7 +310,7 @@ int sal_notify(SalOp *op, const SalBody *body){
 int sal_notify_close(SalOp *op){
 	belle_sip_request_t* notify;
 	if (!op->dialog) return -1;
-	notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	if (!(notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY"))) return -1;
 	set_event_name(op,(belle_sip_message_t*)notify);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));

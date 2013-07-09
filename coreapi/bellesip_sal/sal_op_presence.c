@@ -287,18 +287,29 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expi
 
 static belle_sip_request_t *create_presence_notify(SalOp *op){
 	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	if (!notify) return NULL;
+
 	belle_sip_message_add_header((belle_sip_message_t*)notify,belle_sip_header_create("Event","presence"));
 	return notify;
 }
 
-int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
+static int sal_op_check_dialog_state(SalOp *op) {
 	belle_sip_dialog_state_t state=op->dialog?belle_sip_dialog_get_state(op->dialog): BELLE_SIP_DIALOG_NULL;
-	belle_sip_request_t* notify=NULL;
 	if (state != BELLE_SIP_DIALOG_CONFIRMED) {
-		ms_warning("Cannot notify presence because dialog in state [%s]",belle_sip_dialog_state_to_string(state));
+		ms_warning("Cannot notify presence for op [%p] because dialog in state [%s]",op, belle_sip_dialog_state_to_string(state));
+		return -1;
+	} else
+		return 0;
+
+}
+int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
+	belle_sip_request_t* notify=NULL;
+	if (sal_op_check_dialog_state(op)) {
 		return -1;
 	}
 	notify=create_presence_notify(op);
+	if (!notify) return-1;
+
 	sal_add_presence_info(op,BELLE_SIP_MESSAGE(notify),presence); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 			,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,600)));
@@ -306,7 +317,13 @@ int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
 }
 
 int sal_notify_presence_close(SalOp *op){
-	belle_sip_request_t* notify=create_presence_notify(op);
+	belle_sip_request_t* notify=NULL;
+	if (sal_op_check_dialog_state(op)) {
+		return -1;
+	}
+	notify=create_presence_notify(op);
+	if (!notify) return-1;
+
 	sal_add_presence_info(op,BELLE_SIP_MESSAGE(notify),NULL); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));

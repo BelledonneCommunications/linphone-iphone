@@ -30,6 +30,8 @@ static const char *notify_content="<somexml2>blabla</somexml2>";
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	CU_ASSERT_PTR_NOT_NULL_FATAL(content);
 	CU_ASSERT_TRUE(strcmp(notify_content,(const char*)content->data)==0);
+	LinphoneCoreManager *mgr=get_manager(lc);
+	mgr->stat.number_of_NotifyReceived++;
 }
 
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
@@ -123,6 +125,9 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,1000));
+
+	/*make sure marie receives first notification before terminating
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));*/
 
 	if (terminated_by_subscriber){
 		linphone_event_terminate(lev);
