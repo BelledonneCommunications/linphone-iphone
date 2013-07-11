@@ -40,19 +40,19 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	static {
 		// FFMPEG (audio/video)
-		loadOptionalLibrary("avutil");
-		loadOptionalLibrary("swscale");
-		loadOptionalLibrary("avcore");
+		loadOptionalLibrary("linavutil");
+		loadOptionalLibrary("linswscale");
+		loadOptionalLibrary("linavcore");
 
 		System.loadLibrary("neon");
 		
 		if (!hasNeonInCpuFeatures()) {
-			boolean noNeonLibrariesLoaded = loadOptionalLibrary("avcodecnoneon");
+			boolean noNeonLibrariesLoaded = loadOptionalLibrary("linavcodecnoneon");
 			if (!noNeonLibrariesLoaded) {
-				loadOptionalLibrary("avcodec");
+				loadOptionalLibrary("linavcodec");
 			}
 		} else {
-			loadOptionalLibrary("avcodec");
+			loadOptionalLibrary("linavcodec");
 		}
  
 		// OPENSSL (cryptography)
