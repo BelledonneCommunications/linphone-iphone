@@ -1460,7 +1460,7 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
  * @param uri which should match call remote uri
  * @return LinphoneCall or NULL is no match is found
  */
-const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri);
+LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri);
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_add_all_to_conference(LinphoneCore *lc);
