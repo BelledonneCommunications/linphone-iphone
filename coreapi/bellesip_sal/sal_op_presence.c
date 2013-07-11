@@ -62,8 +62,6 @@ static void presence_refresher_listener( const belle_sip_refresher_t* refresher,
 		case 481:
 			ms_message("The server or remote ua lost the SUBSCRIBE dialog context. Let's restart a new one.");
 			belle_sip_refresher_stop(op->refresher);
-			belle_sip_object_unref(op->refresher);
-			op->refresher=NULL;
 			sal_subscribe_presence(op,NULL,NULL,-1);
 		break;
 	}
@@ -273,10 +271,15 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expi
 	if (expires==-1){
 		if (op->refresher){
 			expires=belle_sip_refresher_get_expires(op->refresher);
+			belle_sip_object_unref(op->refresher);
+			op->refresher=NULL;
 		}else{
 			ms_error("sal_subscribe_presence(): cannot guess expires from previous refresher.");
+			return -1;
 		}
 	}
+	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(op->base.from_address),"tag");
+	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(op->base.to_address),"tag");
 	req=sal_op_build_request(op,"SUBSCRIBE");
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
