@@ -27,10 +27,10 @@ include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
 ifeq ($(LINPHONE_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
-	libavcodec \
-	libswscale \
-	libavcore \
-	libavutil
+	liblinavcodec \
+	liblinswscale \
+	liblinavcore \
+	liblinavutil
 endif
 
 LOCAL_MODULE := liblinphone
