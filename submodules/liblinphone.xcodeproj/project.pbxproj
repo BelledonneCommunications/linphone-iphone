@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1561A554178D9C68006B4B2F /* ioshardware.h in Headers */ = {isa = PBXBuildFile; fileRef = 1561A553178D9C68006B4B2F /* ioshardware.h */; };
+		1561A555178D9C71006B4B2F /* ioshardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 1561A551178D98E2006B4B2F /* ioshardware.m */; };
 		2206D2D3177AC70900C40726 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C6177AC70900C40726 /* InfoPlist.strings */; };
 		2206D2D4177AC70900C40726 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C8177AC70900C40726 /* MainWindow.xib */; };
 		2206D2D5177AC70900C40726 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CA177AC70900C40726 /* mediastreamViewController.xib */; };
@@ -391,7 +393,6 @@
 		225D65B81521C009008B2E81 /* netsim.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F23D145710540035B0D0 /* netsim.c */; };
 		225D65B91521C009008B2E81 /* ortp_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F4D9F23E145710540035B0D0 /* ortp_srtp.c */; };
 		225D65BF1521C009008B2E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
-		225D65C01521C009008B2E81 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */; };
 		225D65CC1521C195008B2E81 /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225D64F81521BFA6008B2E81 /* libmediastreamer_base.a */; };
 		225D65CD1521C19A008B2E81 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 225D65C51521C009008B2E81 /* libortp.a */; };
 		229A615313DEE8A500090183 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A615113DEE8A400090183 /* libx264.a */; };
@@ -644,6 +645,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1561A551178D98E2006B4B2F /* ioshardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ioshardware.m; sourceTree = "<group>"; };
+		1561A553178D9C68006B4B2F /* ioshardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioshardware.h; sourceTree = "<group>"; };
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
 		2206D2C7177AC70900C40726 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2206D2C9177AC70900C40726 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
@@ -959,7 +962,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				225D65BF1521C009008B2E81 /* Foundation.framework in Frameworks */,
-				225D65C01521C009008B2E81 /* libSKP_SILK_SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1452,6 +1454,8 @@
 				223CA85116D9268D00EF1BEC /* bitratecontrol.c */,
 				223CA85216D9268D00EF1BEC /* bitratedriver.c */,
 				223CA85316D9268D00EF1BEC /* ice.c */,
+				1561A553178D9C68006B4B2F /* ioshardware.h */,
+				1561A551178D98E2006B4B2F /* ioshardware.m */,
 				223CA85416D9268D00EF1BEC /* layouts.c */,
 				223CA85516D9268D00EF1BEC /* layouts.h */,
 				223CA85616D9268D00EF1BEC /* mediastream.c */,
@@ -1855,6 +1859,7 @@
 				22C8D0951769F8FF00DAFB4E /* private.h in Headers */,
 				22C8D0961769F8FF00DAFB4E /* rfc2429.h in Headers */,
 				22C8D0971769F8FF00DAFB4E /* scaler.h in Headers */,
+				1561A554178D9C68006B4B2F /* ioshardware.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2245,6 +2250,7 @@
 				22C8D0DF1769F8FF00DAFB4E /* speexec.c in Sources */,
 				22C8D0E01769F8FF00DAFB4E /* msopus.c in Sources */,
 				22C8D0ED176A079600DAFB4E /* aac-eld.c in Sources */,
+				1561A555178D9C71006B4B2F /* ioshardware.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3151,7 +3157,7 @@
 					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
@@ -3369,7 +3375,7 @@
 					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
@@ -3416,7 +3422,7 @@
 					"TARGET_OS_IPHONE=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "$(SRCROOT)/linphone/mediastreamer2/tools/ios/mediastream-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (

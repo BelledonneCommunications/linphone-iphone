@@ -1286,6 +1286,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         } else {
@@ -1308,6 +1310,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {
