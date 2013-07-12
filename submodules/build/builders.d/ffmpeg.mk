@@ -4,13 +4,14 @@ ffmpeg_configure_options=\
 	--disable-ffprobe --disable-ffserver  --disable-avdevice \
 	--disable-avfilter  --disable-network \
 	--disable-everything  --enable-decoder=mjpeg --enable-encoder=mjpeg --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
-	--enable-decoder=h264 --disable-avformat --enable-armv5te --enable-armv6 --enable-armv6t2 \
-	--enable-armvfp \
+	--enable-decoder=h264 --disable-avformat --enable-armv6 --enable-armv6t2 \
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
 	--enable-static   --disable-shared --target-os=darwin \
 	--extra-cflags="-arch $$ARCH " --extra-ldflags="-arch $$ARCH -Wl,-syslibroot,$$SYSROOT_PATH " \
-	--source-path=$(BUILDER_SRC_DIR)/$(ffmpeg_dir) 
+	--disable-iconv \
+	--disable-armv5te
+
 #	--as=$(BUILDER_SRC_DIR)/externals/x264/extras/gas-preprocessor.pl
 
 #--sysinclude=PATH        location of cross-build system headers
