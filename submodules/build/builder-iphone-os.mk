@@ -77,6 +77,8 @@ $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties:
 	rm -f $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
+enable_gpl_third_parties?=yes
+
 ifeq ($(enable_gpl_third_parties),yes) 
 linphone_configure_controls+= --enable-ffmpeg 
 detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
