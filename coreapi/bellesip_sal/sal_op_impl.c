@@ -205,6 +205,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_uri_t* outbound_proxy=NULL;
 	belle_sip_header_contact_t* contact;
+	int result =-1;
 	
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 	
@@ -264,7 +265,14 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
 	}
-	return belle_sip_client_transaction_send_request_to(client_transaction,outbound_proxy/*might be null*/);
+	result = belle_sip_client_transaction_send_request_to(client_transaction,outbound_proxy/*might be null*/);
+	
+	/*update call id if not set yet for this OP*/
+	if (result == 0 && !op->base.call_id) {
+		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request), belle_sip_header_call_id_t))));
+	}
+	
+	return result;
 
 }
 
@@ -519,7 +527,7 @@ bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
 		salbody->size=belle_sip_header_content_length_get_content_length(clen);
 		return TRUE;
 	}
-	memset(salbody,0,sizeof(salbody));
+	memset(salbody,0,sizeof(SalBody));
 	return FALSE;
 }
 void sal_op_set_privacy(SalOp* op,SalPrivacyMask privacy) {

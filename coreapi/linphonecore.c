@@ -1230,7 +1230,7 @@ static void misc_config_read (LinphoneCore *lc) {
 		char tmp[64];
 		sal_create_uuid(lc->sal,tmp,sizeof(tmp));
 		lp_config_set_string(config,"misc","uuid",tmp);
-	}else
+	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		sal_set_uuid(lc->sal, uuid);
 }
 
