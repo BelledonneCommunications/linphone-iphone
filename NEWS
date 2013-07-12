@@ -2,8 +2,8 @@ linphone-3.7...??
 	* multiple SIP transports simualtaneously now allowed
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
 	* fully asynchronous behavior: no more lengthly DNS or connections 
-	* +sip.instance parameter (RFC???)
-	* alias parameter (RFC????)
+	* +sip.instance parameter (RFC5626)
+	* alias parameter (RFC5923)
 	* better management of network disconnections
 	* SIP/TLS handled through lightweighted polarssl library (instead of openssl)
 	* SIP transaction state machines improved (RFC6026)
