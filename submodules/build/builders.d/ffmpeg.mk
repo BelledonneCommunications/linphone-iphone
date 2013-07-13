@@ -28,7 +28,7 @@ $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched :
 	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/ffmpeg.patch \
 	&& touch $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched
 	
-$(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak: $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched
+$(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
