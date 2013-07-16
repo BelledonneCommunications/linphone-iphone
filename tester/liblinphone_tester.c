@@ -179,7 +179,6 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	int proxy_count=check_for_proxies?(rc_file?1:0):0;
 	int retry=0;
 	
-	memset(mgr,0,sizeof(LinphoneCoreManager));
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -334,18 +333,17 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		run_test_suite(test_suite[i]);
 	}
 
-#if HAVE_CU_GET_SUITE
 	if (suite_name){
 		CU_pSuite suite;
 		CU_basic_set_mode(CU_BRM_VERBOSE);
-		suite=CU_get_suite(suite_name);
+		suite=CU_get_suite_by_name(suite_name, CU_get_registry());
 		if (test_name) {
 			CU_pTest test=CU_get_test_by_name(test_name, suite);
-			CU_basic_run_test(suite, test);
+			CU_ErrorCode err= CU_basic_run_test(suite, test);
+			if (err != CUE_SUCCESS) ms_error("CU_basic_run_test error %d", err);
 		} else
 			CU_basic_run_suite(suite);
 	} else
-#endif
 	{
 #if HAVE_CU_CURSES
 		if (curses) {
@@ -413,10 +411,8 @@ void helper(const char *name) {
 			"\t\t\t--config <config path>\n"
 			"\t\t\t--domain <test sip domain>\n"
 			"\t\t\t--auth-domain <test auth domain>\n"
-#if HAVE_CU_GET_SUITE
 			"\t\t\t--suite <suite name>\n"
 			"\t\t\t--test <test name>\n"
-#endif
 #if HAVE_CU_CURSES
 			"\t\t\t--curses\n"
 #endif

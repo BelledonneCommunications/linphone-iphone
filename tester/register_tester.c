@@ -204,6 +204,7 @@ static void simple_tls_register(){
 	linphone_core_manager_destroy(lcm);
 }
 
+
 static void simple_authenticated_register(){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
@@ -464,11 +465,43 @@ static void tls_with_non_tls_server(){
 	linphone_core_manager_destroy(mgr);
 }
 
+static void tls_alt_name_register(){
+	LinphoneCoreManager* mgr;
+	LinphoneCore *lc;
+	char rootcapath[256];
+	
+	mgr=linphone_core_manager_new2("pauline_alt_rc",FALSE);
+	lc=mgr->lc;
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cacert.pem", liblinphone_tester_file_prefix);
+	linphone_core_set_root_ca(mgr->lc,rootcapath);
+	linphone_core_refresh_registers(mgr->lc);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
+	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationFailed,0);
+	linphone_core_destroy(mgr->lc);
+}
+
+static void tls_wildcard_register(){
+	LinphoneCoreManager* mgr;
+	LinphoneCore *lc;
+	char rootcapath[256];
+	
+	mgr=linphone_core_manager_new2("pauline_wild_rc",FALSE);
+	lc=mgr->lc;
+	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cacert.pem", liblinphone_tester_file_prefix);
+	linphone_core_set_root_ca(mgr->lc,rootcapath);
+	linphone_core_refresh_registers(mgr->lc);
+	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
+	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationFailed,0);
+	linphone_core_destroy(mgr->lc);
+}
+
 test_t register_tests[] = {
 	{ "Simple register", simple_register },
 	{ "TCP register", simple_tcp_register },
 	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
 	{ "TLS register", simple_tls_register },
+	{ "TLS register with alt. name certificate", tls_alt_name_register },
+	{ "TLS register with wildcard certificate", tls_wildcard_register },
 	{ "TLS certificate not verified",tls_certificate_failure},
 	{ "TLS with non tls server",tls_with_non_tls_server},
 	{ "Simple authenticated register", simple_authenticated_register },
