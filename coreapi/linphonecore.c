@@ -3488,10 +3488,12 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 
 void linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	LinphoneCall *current_call;
+	
 	if (linphone_core_is_in_conference(lc)){
 		linphone_core_leave_conference(lc);
 		return;
 	}
+	
 	current_call=linphone_core_get_current_call(lc);
 	if(current_call != NULL){
 		ms_message("Pausing automatically the current call.");
@@ -3518,6 +3520,10 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 		return -1;
 	}
 	if (call->params.in_conference==FALSE){
+		if (linphone_core_sound_resources_locked(lc)){
+			ms_warning("Cannot resume call %p because another call is locking the sound resources.",the_call);
+			return -1;
+		}
 		linphone_core_preempt_sound_resources(lc);
 		ms_message("Resuming call %p",call);
 	}
@@ -3541,7 +3547,9 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *the_call)
 	if(sal_call_update(call->op,subject) != 0){
 		return -1;
 	}
-	linphone_call_set_state (call,LinphoneCallResuming,"Resuming");
+	linphone_call_set_state(call,LinphoneCallResuming,"Resuming");
+	if (call->params.in_conference==FALSE)
+		lc->current_call=call;
 	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
 	if (lc->vtable.display_status)
 		lc->vtable.display_status(lc,temp);
@@ -5928,10 +5936,9 @@ const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const cha
  * @param lc The LinphoneCore
 **/
 bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
-	MSList *calls=lc->calls;
-	while(calls) {
-		LinphoneCall *c=(LinphoneCall*)calls->data;
-		calls=calls->next;
+	MSList *elem;
+	for(elem=lc->calls;elem!=NULL;elem=elem->next) {
+		LinphoneCall *c=(LinphoneCall*)elem->data;
 		switch (c->state) {
 			case LinphoneCallOutgoingInit:
 			case LinphoneCallOutgoingProgress:
@@ -5941,6 +5948,7 @@ bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 			case LinphoneCallRefered:
 			case LinphoneCallIncomingEarlyMedia:
 			case LinphoneCallUpdating:
+				ms_message("Call %p is locking sound resources.",c);
 				return TRUE;
 			default:
 				break;
