@@ -232,10 +232,10 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 					op->base.root->callbacks.call_accepted(op); /*INVITE*/
 
 					op->state=SalOpStateActive;
-				}  else {
-					if (code >= 300){
-						call_set_error(op,response);
-					}
+				}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
+					call_set_error(op,response);
+				} else {
+						/*ignoring*/
 				}
 			break;
 			case SalOpStateTerminating:
