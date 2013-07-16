@@ -44,6 +44,7 @@ struct Sal{
 	bool_t tls_verify;
 	bool_t tls_verify_cn;
 	bool_t use_dates;
+	int refresher_retry_after; /*retry after value for refresher*/
 };
 
 typedef enum SalOpState {

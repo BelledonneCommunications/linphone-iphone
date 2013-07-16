@@ -451,6 +451,7 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 		if ((op->refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
 			belle_sip_refresher_enable_nat_helper(op->refresher,op->base.root->nat_helper_enabled);
 			belle_sip_refresher_set_listener(op->refresher,listener,op);
+			belle_sip_refresher_set_retry_after(op->refresher,op->base.root->refresher_retry_after);
 			return 0;
 		} else {
 			return -1;

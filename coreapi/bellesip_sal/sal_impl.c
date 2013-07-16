@@ -440,6 +440,7 @@ Sal * sal_init(){
 	belle_sip_provider_add_sip_listener(sal->prov,sal->listener);
 	sal->tls_verify=TRUE;
 	sal->tls_verify_cn=TRUE;
+	sal->refresher_retry_after=60000; /*default value in ms*/
 	return sal;
 }
 void sal_set_user_pointer(Sal *sal, void *user_data){
@@ -871,4 +872,10 @@ belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_req
 	belle_sip_response_t *resp=belle_sip_response_create_from_request(req,code);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
 	return resp;
+}
+void sal_set_refresher_retry_after(Sal *sal,int value) {
+	sal->refresher_retry_after=value;
+}
+int sal_get_refresher_retry_after(const Sal *sal) {
+	return sal->refresher_retry_after;
 }

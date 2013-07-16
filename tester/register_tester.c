@@ -383,6 +383,65 @@ static void io_recv_error(){
 	linphone_core_manager_destroy(mgr);
 }
 
+static void io_recv_error_retry_immediatly(){
+	LinphoneCoreManager *mgr;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+	int number_of_udp_proxy=0;
+
+
+	mgr=configure_lcm();
+	lc=mgr->lc;
+	counters = get_stats(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	number_of_udp_proxy=get_number_of_udp_proxy(lc);
+	sal_set_recv_error(lc->sal, 0);
+
+	CU_ASSERT_TRUE(wait_for(lc,NULL,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
+	sal_set_recv_error(lc->sal, 1); /*reset*/
+
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*(register_ok-number_of_udp_proxy)));
+
+	linphone_core_manager_destroy(mgr);
+}
+
+static void io_recv_error_late_recovery(){
+	LinphoneCoreManager *mgr;
+	LinphoneCore* lc;
+	int register_ok;
+	stats* counters ;
+	int number_of_udp_proxy=0;
+	MSList* lcs;
+
+	mgr=linphone_core_manager_new2( "multi_account_lrc",FALSE); /*to make sure iterates are not call yet*/
+	lc=mgr->lc;
+	sal_set_refresher_retry_after(lc->sal,1000);
+	counters=&mgr->stat;
+	CU_ASSERT_TRUE(wait_for(mgr->lc,mgr->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(mgr->lc))));
+
+
+	counters = get_stats(lc);
+	register_ok=counters->number_of_LinphoneRegistrationOk;
+	number_of_udp_proxy=get_number_of_udp_proxy(lc);
+	/*simulate a general socket error*/
+	sal_set_recv_error(lc->sal, 0);
+	sal_set_send_error(lc->sal, -1);
+
+	CU_ASSERT_TRUE(wait_for(lc,NULL,&counters->number_of_LinphoneRegistrationProgress,(register_ok-number_of_udp_proxy)+register_ok /*because 1 udp*/));
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
+
+	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationFailed,(register_ok-number_of_udp_proxy),sal_get_refresher_retry_after(lc->sal)+1000));
+
+	sal_set_recv_error(lc->sal, 1); /*reset*/
+	sal_set_send_error(lc->sal, 0);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+1000));
+
+	linphone_core_manager_destroy(mgr);
+}
+
 static void io_recv_error_without_active_register(){
 	LinphoneCoreManager *mgr;
 	LinphoneCore* lc;
@@ -516,6 +575,8 @@ test_t register_tests[] = {
 	{ "Transport change", transport_change },
 	{ "Network state change", network_state_change },
 	{ "Io recv error", io_recv_error },
+	{ "Io recv error with recovery", io_recv_error_retry_immediatly},
+	{ "Io recv error with late recovery", io_recv_error_late_recovery},
 	{ "Io recv error without active registration", io_recv_error_without_active_register}
 };
 

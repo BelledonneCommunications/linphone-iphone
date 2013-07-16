@@ -606,6 +606,9 @@ void __sal_op_free(SalOp *b);
 LINPHONE_PUBLIC	void sal_set_send_error(Sal *sal,int value);
 /*1 for no error*/
 LINPHONE_PUBLIC	void sal_set_recv_error(Sal *sal,int value);
+/*refresher retry after value in ms*/
+LINPHONE_PUBLIC	void sal_set_refresher_retry_after(Sal *sal,int value);
+LINPHONE_PUBLIC	int sal_get_refresher_retry_after(const Sal *sal);
 /*enable contact fixing*/
 void sal_nat_helper_enable(Sal *sal,bool_t enable);
 bool_t sal_nat_helper_enabled(Sal *sal);
