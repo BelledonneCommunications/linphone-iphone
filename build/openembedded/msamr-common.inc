@@ -11,9 +11,9 @@ DEPENDS_append_wideband = " vo-amrwbenc"
 MSAMR_WIDEBAND = ""
 MSAMR_WIDEBAND_wideband = "--enable-wideband"
 
-EXTRA_OECONF =	"\
-		${MSAMR_WIDEBAND} \
-		"
+EXTRA_OECONF =        "\
+                ${MSAMR_WIDEBAND} \
+                "
 
 FILES_${PN} = "${libdir}/mediastreamer/plugins/*.so.*"
 FILES_${PN}-dev = "${libdir}/mediastreamer/plugins/*.la ${libdir}/mediastreamer/plugins/*.so"

@@ -3,7 +3,7 @@ SRC_URI = "file://${HOME}/msx264-1.4.2.tar.gz"
 S = "${WORKDIR}/msx264-1.4.2"
 
 do_configure_prepend () {
-	./autogen.sh
+        ./autogen.sh
 }
 
 DEFAULT_PREFERENCE="-1"

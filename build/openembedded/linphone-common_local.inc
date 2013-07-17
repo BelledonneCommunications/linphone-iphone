@@ -1,11 +1,12 @@
-SRC_URI = "file://${HOME}/linphone-3.5.2.tar.gz"
+SRC_URI = "file://${HOME}/linphone-3.6.1.tar.gz"
 
-S = "${WORKDIR}/linphone-3.5.2"
+S = "${WORKDIR}/linphone-3.6.1"
 
 require linphone-common.inc
 
 do_configure_prepend () {
-	./autogen.sh
+        ./autogen.sh
+        libtoolize --copy --force
 }
 
 #Required to avoid compile errors on May 2011.

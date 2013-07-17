@@ -12,19 +12,19 @@ S = "${WORKDIR}/linphone"
 # There is also a problem with autogen and AC_SUBST
 # note: don't use a ssh key with password, it does not work.
 do_fetch_prepend () {
-	import os,bb
-	bb.note("Hack preparing clone in %s" %"${LINPHONE_TMP_DIR}")
-	os.system("rm -rf ${LINPHONE_TMP_DIR}")
-	os.system("mkdir -p ${LINPHONE_TMP_DIR}")
+        import os,bb
+        bb.note("Hack preparing clone in %s" %"${LINPHONE_TMP_DIR}")
+        os.system("rm -rf ${LINPHONE_TMP_DIR}")
+        os.system("mkdir -p ${LINPHONE_TMP_DIR}")
 
-	bb.note("Hack cloning linphone !recursively")
-	os.system("cd ${LINPHONE_TMP_DIR}; git clone --depth 1 --recursive ${L_GIT_SRC_URI} linphone")
+        bb.note("Hack cloning linphone !recursively")
+        os.system("cd ${LINPHONE_TMP_DIR}; git clone --depth 1 --recursive ${L_GIT_SRC_URI} linphone")
 
-	bb.note("Hack launching autogen.sh manually")
-	os.system("cd ${LINPHONE_TMP_DIR}/linphone; ./autogen.sh")
+        bb.note("Hack launching autogen.sh manually")
+        os.system("cd ${LINPHONE_TMP_DIR}/linphone; ./autogen.sh")
 
-	bb.note("Hack preparing linphone.tar.gz")
-	os.system("cd ${LINPHONE_TMP_DIR}; tar czf linphone.tar.gz --exclude .git linphone")
+        bb.note("Hack preparing linphone.tar.gz")
+        os.system("cd ${LINPHONE_TMP_DIR}; tar czf linphone.tar.gz --exclude .git linphone")
 }
 
 require linphone-common.inc

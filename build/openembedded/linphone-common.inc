@@ -6,7 +6,7 @@ SECTION_linphonec =  "console/network"
 
 SRC_URI_append_igep0020 = " file://alsa_8khz.patch"
 
-DEPENDS = "intltool readline libosip2 libexosip2 speex alsa-lib spandsp"
+DEPENDS = "intltool-native readline libosip2 libexosip2 speex alsa-lib spandsp"
 DEPENDS_append_video = " libxv ffmpeg libv4l"
 DEPENDS_append_gtk = " gtk+"
 DEPENDS_append_gsm = " libgsm"
@@ -38,22 +38,22 @@ LINPHONE_OE_ENABLE_GTK_UI = "no"
 LINPHONE_OE_ENABLE_GTK_UI_gtk = "yes"
 
 do_install_append(){
-	install -d ${D}${bindir}
+        install -d ${D}${bindir}
 }
 
 EXTRA_OECONF = " \
-		${LINPHONE_OE_ENABLE_TESTS} \
+                ${LINPHONE_OE_ENABLE_TESTS} \
                 ${LINPHONE_OE_ENABLE_VIDEO} \
-		${LINPHONE_OE_ENABLE_X11} \
+                ${LINPHONE_OE_ENABLE_X11} \
                 --enable-alsa \
                 --with-osip=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-readline=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --with-speex=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --disable-manual --enable-tests=yes \
-		--enable-console_ui=${LINPHONE_OE_ENABLE_CONSOLE_UI} \
-		--enable-gtk_ui=${LINPHONE_OE_ENABLE_GTK_UI} \
-		--with-realprefix=/usr \
-		"
+                --enable-console_ui=${LINPHONE_OE_ENABLE_CONSOLE_UI} \
+                --enable-gtk_ui=${LINPHONE_OE_ENABLE_GTK_UI} \
+                --with-realprefix=/usr \
+                "
 
 EXTRA_OEMAKE = " V=1"
 
@@ -61,15 +61,15 @@ PACKAGES_gtk = "${PN}-dbg ${PN} ${PN}-doc ${PN}-dev ${PN}-locale ${PN}c linphone
 PACKAGES = "${PN}-dbg ${PN}-dev ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
 
 FILES_${PN} = " \ 
-	    ${bindir}/linphone \
+            ${bindir}/linphone \
             ${datadir}/linphone \
- 	    ${datadir}/pixmaps \
-	    ${datadir}/applications \
-	    ${datadir}/gnome/apps \
-	    ${datadir}/sounds/linphone/hello8000.wav \
-	    ${datadir}/sounds/linphone/hello16000.wav \
-	    ${datadir}/images/nowebcamCIF.jpg \
-	    "
+             ${datadir}/pixmaps \
+            ${datadir}/applications \
+            ${datadir}/gnome/apps \
+            ${datadir}/sounds/linphone/hello8000.wav \
+            ${datadir}/sounds/linphone/hello16000.wav \
+            ${datadir}/images/nowebcamCIF.jpg \
+            "
 FILES_${PN}c = "${bindir}/linphonec ${bindir}/linphone-daemon ${bindir}/linphone-daemon-pipetest ${bindir}/linphonecsh ${bindir}/sipomatic ${datadir}/sounds/linphone/ringback.wav"
 FILES_${PN}-rings = "${datadir}/sounds/linphone/rings"
 FILES_liblinphone = "${libdir}/liblinphone.so.*"

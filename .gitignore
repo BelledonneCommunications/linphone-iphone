@@ -53,3 +53,13 @@ coreapi/test_ecc
 coreapi/test_lsd
 gtk/version_date.h
 
+daemon/linphone-daemon
+daemon/linphone-daemon-pipetest
+tools/lpc2xml_test
+tools/xml2lpc_test
+*.la
+*.lo
+*.deps
+*.libs
+share/certdata.txt
+coreapi/test_numbers
