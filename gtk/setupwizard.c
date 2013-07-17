@@ -60,7 +60,7 @@ static int all_account_information_entered(GtkWidget *w) {
 	if (gtk_entry_get_text_length(username) > 0 &&
 	gtk_entry_get_text_length(domain) > 0 &&
 	g_regex_match_simple("^[a-zA-Z]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0) &&
-	g_regex_match_simple("^(sip:)?([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(domain), 0, 0)) {
+	g_regex_match_simple("^(sip:)?([a-zA-Z0-9]+([\\.-][a-zA-Z0-9]+)*)$", gtk_entry_get_text(domain), 0, 0)) {
 		return 1;
 	}
 	return 0;
@@ -422,11 +422,17 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 
 		gchar *username = creator->username + 4;
 		const gchar *needle = "@";
-		username = g_strndup(username, (g_strrstr(username, needle) - username));
+		const gchar *needle_ptr = g_strrstr(username, needle);
+		if (needle_ptr != NULL) {
+			username = g_strndup(username, needle_ptr - username);
+		} else {
+			username = g_strdup(username);
+		}
 		gchar domain[128];
 		g_snprintf(domain, sizeof(domain), "\"%s\"", creator->domain + 4);
 		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, domain);
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
+		g_free(username);
 
 		if (linphone_core_add_proxy_config(linphone_gtk_get_core(),cfg)==-1)
 			return;

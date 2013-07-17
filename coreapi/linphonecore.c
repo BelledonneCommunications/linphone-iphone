@@ -2903,7 +2903,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 		err = linphone_core_start_update_call(lc, call);
 	}else{
 #ifdef VIDEO_ENABLED
-		if (call->videostream!=NULL){
+		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			if (call->camera_active && call->videostream->cam!=lc->video_conf.device){
 				video_stream_change_camera(call->videostream,lc->video_conf.device);
@@ -5276,6 +5276,8 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	linphone_core_free_hooks(lc);
+	lc->video_conf.show_local = FALSE;
+
 	while(lc->calls)
 	{
 		LinphoneCall *the_call = lc->calls->data;
@@ -5676,11 +5678,11 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
 }
 
-const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
+LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
 	if (uri == NULL) return NULL;
 	MSList *calls=lc->calls;
 	while(calls) {
-		const LinphoneCall *c=(LinphoneCall*)calls->data;
+		LinphoneCall *c=(LinphoneCall*)calls->data;
 		calls=calls->next;
 		const LinphoneAddress *address = linphone_call_get_remote_address(c);
 		char *current_uri=linphone_address_as_string_uri_only(address);

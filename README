@@ -33,10 +33,10 @@ This is Linphone, a free (GPL) video softphone based on the SIP protocol.
 
 	Here is the command line to get these dependencies installed for Ubuntu && Debian 
 
-	$ sudo apt-get install libtool intltool libgtk2.0-dev libosip2-dev libexosip2-dev libspeexdsp-dev libavcodec-dev libswscale-dev libx11-dev libvx-dev ligl1-mesa-dev libglew-dev libv4l-dev
+	$ sudo apt-get install libtool intltool libgtk2.0-dev libosip2-dev libexosip2-dev libspeexdsp-dev libavcodec-dev libswscale-dev libx11-dev libvxl1-dev libgl1-mesa-dev libglew1.6-dev libv4l-dev
 
 	+ for optional library
-	$ sudo apt-get install libreadline-dev liggsm1-dev libtheora-dev libsoup2.4-dev libsqlit3-dev libupnp6-dev 
+	$ sudo apt-get install libreadline-dev libgsm1-dev libtheora-dev libsoup2.4-dev libsqlite3-dev libupnp4-dev 
 	
 	+ Install srtp (optional) for call encryption :
 		$ git clone git://git.linphone.org/srtp.git
