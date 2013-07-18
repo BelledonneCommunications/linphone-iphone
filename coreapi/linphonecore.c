@@ -5254,11 +5254,7 @@ void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float 
 	if (lc->wait_cb){
 		lc->wait_ctx=lc->wait_cb(lc,lc->wait_ctx,LinphoneWaitingProgress,purpose,progress);
 	}else{
-#ifdef WIN32
-		Sleep(50000);
-#else
-		usleep(50000);
-#endif
+		ms_usleep(50000);
 	}
 }
 
@@ -5342,11 +5338,7 @@ void sip_config_uninit(LinphoneCore *lc)
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 			still_registered|=linphone_proxy_config_is_registered(cfg);
 		}
-#ifndef WIN32
-		usleep(100000);
-#else
-		Sleep(100);
-#endif
+		ms_usleep(100000);
 	}
 	if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	ms_list_for_each(config->proxies,(void (*)(void*)) linphone_proxy_config_destroy);
@@ -5490,11 +5482,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		LinphoneCall *the_call = lc->calls->data;
 		linphone_core_terminate_call(lc,the_call);
 		linphone_core_iterate(lc);
-#ifdef WIN32
-		Sleep(50000);
-#else
-		usleep(50000);
-#endif
+		ms_usleep(50000);
 	}
 
 

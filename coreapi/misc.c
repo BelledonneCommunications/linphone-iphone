@@ -535,11 +535,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 					sendStunRequest(sock2,(struct sockaddr*)&ss,ss_len,2,FALSE);
 				}
 			}
-#ifdef WIN32
-			Sleep(10);
-#else
-			usleep(10000);
-#endif
+			ms_usleep(10000);
 
 			if (recvStunResponse(sock1,ac->addr,
 						&ac->port,&id)>0){
