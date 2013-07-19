@@ -706,6 +706,7 @@ char *Daemon::readLine(const char *prompt) {
 #ifdef HAVE_READLINE
 	return readline(prompt);
 #else
+	if (cin.eof()) return NULL;
 	cout << prompt;
 	char *buff = (char *) malloc(sLineSize);
 	cin.getline(buff, sLineSize);
@@ -734,6 +735,10 @@ int Daemon::run() {
 		}
 		if (mServerFd == -1 && ret != NULL) {
 			free(ret);
+		}
+		if (!ret && mRunning) {
+			mRunning = false; // ctrl+d
+			cout << "Quitting..." << endl;
 		}
 	}
 	stopThread();
