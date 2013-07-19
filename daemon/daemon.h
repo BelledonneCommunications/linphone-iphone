@@ -126,25 +126,27 @@ private:
 class EventResponse: public Response {
 public:
 	EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state);
-private:
 };
 
 class CallStatsResponse: public Response {
 public:
 	CallStatsResponse(Daemon *daemon, LinphoneCall *call, const LinphoneCallStats *stats, bool unique);
-private:
+};
+
+class AudioStreamStatsResponse: public Response {
+public:
+	AudioStreamStatsResponse(Daemon *daemon, AudioStream *stream,
+		const LinphoneCallStats *stats, bool event);
 };
 
 class DtmfResponse: public Response {
 public:
 	DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf);
-private:
 };
 
 class PayloadTypeResponse: public Response {
 public:
 	PayloadTypeResponse(LinphoneCore *core, const PayloadType *payloadType, int index = -1, const std::string &prefix = std::string(), bool enabled_status = true);
-private:
 };
 
 class PayloadTypeParser {
@@ -157,6 +159,21 @@ private:
 	bool mAll;
 	bool mSuccesful;
 	int mPayloadTypeNumber;
+};
+
+struct AudioStreamAndOther {
+	AudioStream *stream;
+	OrtpEvQueue *queue;
+	LinphoneCallStats stats;
+	AudioStreamAndOther(AudioStream *as) : stream(as) {
+		queue = ortp_ev_queue_new();
+		rtp_session_register_event_queue(as->ms.session, queue);
+		memset(&stats, 0, sizeof(stats));
+	}
+	~AudioStreamAndOther() {
+		rtp_session_unregister_event_queue(stream->ms.session, queue);
+		ortp_ev_queue_destroy(queue);
+	}
 };
 
 class Daemon {
@@ -174,6 +191,7 @@ public:
 	LinphoneCall *findCall(int id);
 	LinphoneProxyConfig *findProxy(int id);
 	AudioStream *findAudioStream(int id);
+	AudioStreamAndOther *findAudioStreamAndOther(int id);
 	void removeAudioStream(int id);
 	bool pullEvent();
 	int updateCallId(LinphoneCall *call);
@@ -196,10 +214,12 @@ private:
 	char *readLine(const char *);
 	char *readPipe(char *buffer, int buflen);
 	void iterate();
+	void iterateStreamStats();
 	void startThread();
 	void stopThread();
 	void initCommands();
 	void uninitCommands();
+	void iterateStreamStats(LinphoneCore *lc);
 	LinphoneCore *mLc;
 	LinphoneSoundDaemon *mLSD;
 	std::list<DaemonCommand*> mCommands;
@@ -216,7 +236,7 @@ private:
 	ms_thread_t mThread;
 	ms_mutex_t mMutex;
 	static const int sLineSize = 512;
-	std::map<int, AudioStream*> mAudioStreams;
+	std::map<int, AudioStreamAndOther*> mAudioStreams;
 };
 
 #endif //DAEMON_H_

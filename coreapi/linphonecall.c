@@ -2230,6 +2230,27 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	}
 }
 
+// this method should be put in mediastreamer but has been kept here, private,
+// to save time.
+void linphone_call_stream_stats_hack(MediaStream* stream, LinphoneCallStats *stats, OrtpEvent *ev) {
+	OrtpEventType evt=ortp_event_get_type(ev);
+	OrtpEventData *evd=ortp_event_get_data(ev);
+	if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+		stats->round_trip_delay = rtp_session_get_round_trip_propagation(stream->session);
+		if(stats->received_rtcp != NULL) freemsg(stats->received_rtcp);
+		stats->received_rtcp = evd->packet;
+		evd->packet = NULL;
+		update_local_stats(stats,stream);
+
+	} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+		memcpy(&stats->jitter_stats, rtp_session_get_jitter_stats(stream->session), sizeof(jitter_stats_t));
+		if(stats->sent_rtcp != NULL) freemsg(stats->sent_rtcp);
+		stats->sent_rtcp = evd->packet;
+		evd->packet = NULL;
+		update_local_stats(stats,stream);
+	}
+}
+
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed){
 	LinphoneCore* lc = call->core;
 	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
@@ -2259,6 +2280,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL) {
 		OrtpEvent *ev;
+		LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_VIDEO];
 
 		/* Ensure there is no dangling ICE check list. */
 		if (call->ice_session == NULL) call->videostream->ms.ice_check_list = NULL;
@@ -2272,24 +2294,10 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 			OrtpEventData *evd=ortp_event_get_data(ev);
 			if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
 				linphone_call_videostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-				call->stats[LINPHONE_CALL_STATS_VIDEO].round_trip_delay = rtp_session_get_round_trip_propagation(call->videostream->ms.session);
-				if(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp);
-				call->stats[LINPHONE_CALL_STATS_VIDEO].received_rtcp = evd->packet;
-				evd->packet = NULL;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
+			} else if  (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED || evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+				linphone_call_stream_stats_hack(&call->videostream->ms, stats, ev);
 				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				memcpy(&call->stats[LINPHONE_CALL_STATS_VIDEO].jitter_stats, rtp_session_get_jitter_stats(call->videostream->ms.session), sizeof(jitter_stats_t));
-				if(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp);
-				call->stats[LINPHONE_CALL_STATS_VIDEO].sent_rtcp = evd->packet;
-				evd->packet = NULL;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO],(MediaStream*)call->videostream);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+					lc->vtable.call_stats_updated(lc, call, stats);
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 				|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
 				handle_ice_events(call, ev);
@@ -2300,6 +2308,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 #endif
 	if (call->audiostream!=NULL) {
 		OrtpEvent *ev;
+		LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_AUDIO];
 
 		/* Ensure there is no dangling ICE check list. */
 		if (call->ice_session == NULL) call->audiostream->ms.ice_check_list = NULL;
@@ -2315,24 +2324,10 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
 			} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
 				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
-				call->stats[LINPHONE_CALL_STATS_AUDIO].round_trip_delay = rtp_session_get_round_trip_propagation(call->audiostream->ms.session);
-				if(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp);
-				call->stats[LINPHONE_CALL_STATS_AUDIO].received_rtcp = evd->packet;
-				evd->packet = NULL;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
+			} else if  (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED || evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+				linphone_call_stream_stats_hack(&call->audiostream->ms, stats, ev);
 				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-			} else if (evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
-				memcpy(&call->stats[LINPHONE_CALL_STATS_AUDIO].jitter_stats, rtp_session_get_jitter_stats(call->audiostream->ms.session), sizeof(jitter_stats_t));
-				if(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp != NULL)
-					freemsg(call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp);
-				call->stats[LINPHONE_CALL_STATS_AUDIO].sent_rtcp = evd->packet;
-				evd->packet = NULL;
-				update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO],(MediaStream*)call->audiostream);
-				if (lc->vtable.call_stats_updated)
-					lc->vtable.call_stats_updated(lc, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+					lc->vtable.call_stats_updated(lc, call, stats);
 			} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 				|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
 				handle_ice_events(call, ev);

@@ -22,6 +22,7 @@
 #include "commands/audio-codec-toggle.h"
 #include "commands/audio-stream-start.h"
 #include "commands/audio-stream-stop.h"
+#include "commands/audio-stream-stats.h"
 #include "commands/call.h"
 #include "commands/call-stats.h"
 #include "commands/call-status.h"
@@ -43,6 +44,7 @@
 #include "commands/quit.h"
 #include "commands/version.h"
 
+#include "private.h"
 using namespace std;
 
 #ifndef WIN32
@@ -99,25 +101,7 @@ DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
 	ms_free(remote);
 }
 
-CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const LinphoneCallStats *stats, bool event) {
-	const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
-	const char *prefix = "";
-
-	ostringstream ostr;
-	if (event) {
-		ostr << "Event-type: call-stats\n";
-		ostr << "Id: " << daemon->updateCallId(call) << "\n";
-		ostr << "Type: ";
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
-			ostr << "Audio";
-		} else {
-			ostr << "Video";
-		}
-		ostr << "\n";
-	} else {
-		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
-	}
-
+static ostream &printCallStatsHelper(ostream &ostr, const LinphoneCallStats *stats, const string &prefix) {
 	ostr << prefix << "ICE state: " << ice_state_str[stats->ice_state] << "\n";
 	ostr << prefix << "RoundTripDelay: " << stats->round_trip_delay << "\n";
 	ostr << prefix << "Jitter: " << stats->jitter_stats.jitter << "\n";
@@ -163,6 +147,29 @@ CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const L
 		ostr << prefix << "Sent-InterarrivalJitter: " << ij << "\n";
 		ostr << prefix << "Sent-FractionLost: " << flost << "\n";
 	}
+	return ostr;
+}
+
+CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const LinphoneCallStats *stats, bool event) {
+	const LinphoneCallParams *callParams = linphone_call_get_current_params(call);
+	const char *prefix = "";
+
+	ostringstream ostr;
+	if (event) {
+		ostr << "Event-type: call-stats\n";
+		ostr << "Id: " << daemon->updateCallId(call) << "\n";
+		ostr << "Type: ";
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+			ostr << "Audio";
+		} else {
+			ostr << "Video";
+		}
+		ostr << "\n";
+	} else {
+		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
+	}
+
+	printCallStatsHelper(ostr, stats, prefix);
 
 	if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
 		const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
@@ -172,6 +179,31 @@ CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const L
 		ostr << PayloadTypeResponse(linphone_call_get_core(call), videoCodec, -1, prefix, false).getBody() << "\n";
 	}
 
+	setBody(ostr.str().c_str());
+}
+
+
+AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* stream,
+		const LinphoneCallStats *stats, bool event) {
+	const char *prefix = "";
+	
+	ostringstream ostr;
+	if (event) {
+		ostr << "Event-type: audio-stream-stats\n";
+		ostr << "Id: " << daemon->updateAudioStreamId(stream) << "\n";
+		ostr << "Type: ";
+		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+			ostr << "Audio";
+		} else {
+			ostr << "Video";
+		}
+		ostr << "\n";
+	} else {
+		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
+	}
+	
+	printCallStatsHelper(ostr, stats, prefix);
+	
 	setBody(ostr.str().c_str());
 }
 
@@ -336,27 +368,36 @@ LinphoneProxyConfig *Daemon::findProxy(int id) {
 }
 
 int Daemon::updateAudioStreamId(AudioStream *audio_stream) {
-	for (std::map<int, AudioStream*>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
-		if (it->second == audio_stream)
+	for (std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
+		if (it->second->stream == audio_stream)
 			return it->first;
 	}
 
 	++mProxyIds;
-	mAudioStreams.insert(std::pair<int, AudioStream*>(mProxyIds, audio_stream));
+	mAudioStreams.insert(make_pair(mProxyIds, new AudioStreamAndOther(audio_stream)));
 	return mProxyIds;
 }
 
-AudioStream *Daemon::findAudioStream(int id) {
-	std::map<int, AudioStream*>::iterator it = mAudioStreams.find(id);
+AudioStreamAndOther *Daemon::findAudioStreamAndOther(int id) {
+	std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.find(id);
 	if (it != mAudioStreams.end())
 		return it->second;
 	return NULL;
 }
 
-void Daemon::removeAudioStream(int id) {
-	std::map<int, AudioStream*>::iterator it = mAudioStreams.find(id);
+AudioStream *Daemon::findAudioStream(int id) {
+	std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.find(id);
 	if (it != mAudioStreams.end())
+		return it->second->stream;
+	return NULL;
+}
+
+void Daemon::removeAudioStream(int id) {
+	std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.find(id);
+	if (it != mAudioStreams.end()) {
 		mAudioStreams.erase(it);
+		delete(it->second);
+	}
 }
 
 void Daemon::initCommands() {
@@ -379,6 +420,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new AudioCodecSetCommand());
 	mCommands.push_back(new AudioStreamStartCommand());
 	mCommands.push_back(new AudioStreamStopCommand());
+	mCommands.push_back(new AudioStreamStatsCommand());
 	mCommands.push_back(new MSFilterAddFmtpCommand());
 	mCommands.push_back(new PtimeCommand());
 	mCommands.push_back(new IPv6Command());
@@ -452,8 +494,24 @@ void Daemon::dtmfReceived(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	app->dtmfReceived(call, dtmf);
 }
 
+void Daemon::iterateStreamStats() {
+	for (std::map<int, AudioStreamAndOther*>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
+		OrtpEvent *ev;
+		while (it->second->queue && (NULL != (ev=ortp_ev_queue_get(it->second->queue)))){
+			OrtpEventType evt=ortp_event_get_type(ev);
+			if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED || evt == ORTP_EVENT_RTCP_PACKET_EMITTED) {
+				linphone_call_stream_stats_hack(&it->second->stream->ms, &it->second->stats, ev);
+				if (mUseStatsEvents) mEventQueue.push(new AudioStreamStatsResponse(this,
+					it->second->stream, &it->second->stats, true));
+			}
+			ortp_event_destroy(ev);
+		}
+	}
+}
+
 void Daemon::iterate() {
 	linphone_core_iterate(mLc);
+	iterateStreamStats();
 	if (mChildFd == -1) {
 		if (!mEventQueue.empty()) {
 			Response *r = mEventQueue.front();
@@ -707,8 +765,8 @@ void Daemon::enableLSD(bool enabled) {
 Daemon::~Daemon() {
 	uninitCommands();
 
-	for (std::map<int, AudioStream *>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
-		audio_stream_stop(it->second);
+	for (std::map<int, AudioStreamAndOther *>::iterator it = mAudioStreams.begin(); it != mAudioStreams.end(); ++it) {
+		audio_stream_stop(it->second->stream);
 	}
 
 	enableLSD(false);

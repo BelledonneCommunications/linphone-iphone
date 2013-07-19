@@ -11,6 +11,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/audio-codec-toggle.cc \
 			commands/audio-stream-start.cc \
 			commands/audio-stream-stop.cc \
+			commands/audio-stream-stats.cc \
 			commands/call.cc \
 			commands/call-stats.cc \
 			commands/call-status.cc \
@@ -41,6 +42,7 @@ linphone_daemon_SOURCES=daemon.cc \
 			commands/audio-codec-toggle.h \
 			commands/audio-stream-start.h \
 			commands/audio-stream-stop.h \
+			commands/audio-stream-stats.h \
 			commands/call.h \
 			commands/call-stats.h \
 			commands/call-status.h \

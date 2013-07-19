@@ -730,6 +730,7 @@ typedef enum _LinphoneToneID{
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 
+void linphone_call_stream_stats_hack(MediaStream* stream, LinphoneCallStats *stats, OrtpEvent *ev);
 #ifdef __cplusplus
 }
 #endif
