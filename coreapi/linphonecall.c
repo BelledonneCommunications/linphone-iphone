@@ -2507,9 +2507,11 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 }
 
 MSVideoSize linphone_call_get_sent_video_size(const LinphoneCall *call) {
-	MSVideoSize vsize = MS_VIDEO_SIZE_UNKNOWN;
+	MSVideoSize vsize;
+	VideoStream *vstream;
+	MS_VIDEO_SIZE_ASSIGN(vsize, UNKNOWN);
 #ifdef VIDEO_ENABLED
-	VideoStream *vstream = call->videostream;
+	vstream = call->videostream;
 	if (vstream != NULL) {
 		vsize = video_stream_get_sent_video_size(vstream);
 	}
@@ -2518,9 +2520,11 @@ MSVideoSize linphone_call_get_sent_video_size(const LinphoneCall *call) {
 }
 
 MSVideoSize linphone_call_get_received_video_size(const LinphoneCall *call) {
-	MSVideoSize vsize = MS_VIDEO_SIZE_UNKNOWN;
+	MSVideoSize vsize;
+	VideoStream *vstream;
+	MS_VIDEO_SIZE_ASSIGN(vsize, UNKNOWN);
 #ifdef VIDEO_ENABLED
-	VideoStream *vstream = call->videostream;
+	vstream = call->videostream;
 	if (vstream != NULL) {
 		vsize = video_stream_get_received_video_size(vstream);
 	}
