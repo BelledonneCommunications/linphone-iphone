@@ -19,6 +19,8 @@ automatically_accept=0
 
 [net]
 firewall_policy=0
+download_bw=512
+upload_bw=512
 
 [app]
 rotation_preference=auto
