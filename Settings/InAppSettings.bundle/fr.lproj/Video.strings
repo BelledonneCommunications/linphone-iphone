@@ -10,6 +10,9 @@
 /* Show preview */
 "Show preview" = "Activer la prévisualisation";
 
+/* Preferred video size */
+"Preferred video size" = "Taille de vidéo préférée";
+
 /* Codecs */
 "Codecs" = "Codecs";
 

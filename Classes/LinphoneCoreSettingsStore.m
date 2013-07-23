@@ -245,6 +245,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
         [self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
         [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
+		MSVideoSize vsize = linphone_core_get_preferred_video_size(lc);
+		int index;
+		if ((vsize.width == MS_VIDEO_SIZE_720P_W) && (vsize.height == MS_VIDEO_SIZE_720P_H)) {
+			index = 0;
+		} else if ((vsize.width == MS_VIDEO_SIZE_VGA_W) && (vsize.height == MS_VIDEO_SIZE_VGA_H)) {
+			index = 1;
+		} else {
+			index = 2;
+		}
+		[self setInteger:index forKey:@"video_preferred_size_preference"];
 	}
     {
         [self setBool:linphone_core_get_use_info_for_dtmf(lc) forKey:@"sipinfo_dtmf_preference"];
@@ -548,6 +558,26 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     linphone_core_set_video_policy(lc, &policy);
     linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
     linphone_core_enable_video_preview(lc, [self boolForKey:@"preview_preference"]);
+	MSVideoSize vsize;
+	int bw;
+	switch ([self integerForKey:@"video_preferred_size_preference"]) {
+		case 0:
+			MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
+			bw = 1024 * 1024;
+			break;
+		case 1:
+			MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
+			bw = 512 * 1024;
+			break;
+		case 2:
+		default:
+			MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
+			bw = 380 * 1024;
+			break;
+	}
+	linphone_core_set_preferred_video_size(lc, vsize);
+	[self setInteger: bw forKey:@"upload_bandwidth_preference"];
+	[self setInteger: bw forKey:@"download_bandwidth_preference"];
     
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];

@@ -10,6 +10,9 @@
 /* Show preview */
 "Show preview" = "Предварительный просмотр";
 
+/* Preferred video size */
+"Preferred video size" = "Preferred video size";
+
 /* Codecs */
 "Codecs" = "Кодеки";
 
