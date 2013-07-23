@@ -3345,27 +3345,12 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
  * @param reason the reason for rejecting the call: LinphoneReasonDeclined or LinphoneReasonBusy
 **/
 int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason){
-	SalReason sal_reason=SalReasonUnknown;
 	if (call->state!=LinphoneCallIncomingReceived && call->state!=LinphoneCallIncomingEarlyMedia){
 		ms_error("linphone_core_decline_call(): Cannot decline a call that is in state %s",linphone_call_state_to_string(call->state));
 		return -1;
 	}
-	switch(reason){
-		case LinphoneReasonDeclined:
-			sal_reason=SalReasonDeclined;
-		break;
-		case LinphoneReasonBusy:
-			sal_reason=SalReasonBusy;
-		break;
-		case LinphoneReasonDoNotDistrub:
-			sal_reason = SalReasonDoNotDisturb;
-		break;
-		default:
-			ms_error("linphone_core_decline_call(): unsupported reason %s",linphone_reason_to_string(reason));
-			return -1;
-		break;
-	}
-	sal_call_decline(call->op,sal_reason,NULL);
+
+	sal_call_decline(call->op,linphone_reason_to_sal(reason),NULL);
 	terminate_call(lc,call);
 	return 0;
 }
@@ -5785,7 +5770,7 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Incompatible media capabilities";
 		case LinphoneReasonIOError:
 			return "IO error";
-		case LinphoneReasonDoNotDistrub:
+		case LinphoneReasonDoNotDisturb:
 			return "Do not distrub";
 	}
 	return "unknown error";

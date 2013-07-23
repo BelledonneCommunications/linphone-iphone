@@ -43,7 +43,7 @@ public class Reason {
 	/**
 	 * Transport error: connection failures, disconnections etc...
 	 * */
-	static public Reason DoNotDistrub = new Reason(9,"DoNotDistrub");
+	static public Reason DoNotDisturb = new Reason(9,"DoNotDisturb");
 		
 	protected final int mValue;
 	private final String mStringValue;

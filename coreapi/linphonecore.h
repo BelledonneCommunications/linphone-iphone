@@ -134,7 +134,7 @@ enum _LinphoneReason{
 	LinphoneReasonBusy, /**<Phone line was busy */
 	LinphoneReasonMedia, /**<Incompatible media */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
-	LinphoneReasonDoNotDistrub /*Do not disturb reason*/
+	LinphoneReasonDoNotDisturb /*Do not disturb reason*/
 
 };
 
