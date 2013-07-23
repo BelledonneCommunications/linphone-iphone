@@ -2414,7 +2414,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	}
 end:
 	if (found_cfg!=NULL && found_cfg!=default_cfg){
-		ms_message("Overriding default proxy setting for this call/message/subscribe operation.");
+		ms_debug("Overriding default proxy setting for this call/message/subscribe operation.");
 	}else found_cfg=default_cfg;
 	
 	return found_cfg;

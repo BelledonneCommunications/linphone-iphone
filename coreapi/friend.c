@@ -449,11 +449,28 @@ void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 void linphone_core_send_initial_subscribes(LinphoneCore *lc){
 	const MSList *elem;
 	if (lc->initial_subscribes_sent) return;
+	lc->initial_subscribes_sent=TRUE; /*set to true and see if looping on friends will change this status*/
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		linphone_friend_apply(f,lc);
+		LinphoneProxyConfig* cfg;
+		if (!f->initial_subscribes_sent) {
+			lc->initial_subscribes_sent=FALSE; /*at least 1 was not sent */
+			if ((cfg=linphone_core_lookup_known_proxy(f->lc,linphone_friend_get_address(f)))) {
+				/*check if already registered*/
+				if (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk)
+					continue; /*skip this friend because not registered yet*/
+				else {
+					char* lf_string = linphone_address_as_string(linphone_friend_get_address(f));
+					ms_message("Identity [%s] registered, we can now subscribe to [%s]",linphone_proxy_config_get_identity(cfg),lf_string);
+					ms_free(lf_string);
+				}
+			}
+			linphone_friend_apply(f,lc);
+			f->initial_subscribes_sent=TRUE;
+		}
+
 	}
-	lc->initial_subscribes_sent=TRUE;
+
 }
 
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){
