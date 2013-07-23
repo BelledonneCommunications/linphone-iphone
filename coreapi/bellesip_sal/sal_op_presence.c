@@ -62,6 +62,11 @@ static void presence_refresher_listener( const belle_sip_refresher_t* refresher,
 		case 481:
 			ms_message("The server or remote ua lost the SUBSCRIBE dialog context. Let's restart a new one.");
 			belle_sip_refresher_stop(op->refresher);
+			if (op->dialog) { /*delete previous dialog if any*/
+				belle_sip_dialog_set_application_data(op->dialog,NULL);
+				belle_sip_object_unref(op->dialog);
+				op->dialog=NULL;
+			}
 			sal_subscribe_presence(op,NULL,NULL,-1);
 		break;
 	}
