@@ -3357,6 +3357,9 @@ int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneRe
 		case LinphoneReasonBusy:
 			sal_reason=SalReasonBusy;
 		break;
+		case LinphoneReasonDoNotDistrub:
+			sal_reason = SalReasonDoNotDisturb;
+		break;
 		default:
 			ms_error("linphone_core_decline_call(): unsupported reason %s",linphone_reason_to_string(reason));
 			return -1;
@@ -5782,6 +5785,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "Incompatible media capabilities";
 		case LinphoneReasonIOError:
 			return "IO error";
+		case LinphoneReasonDoNotDistrub:
+			return "Do not distrub";
 	}
 	return "unknown error";
 }

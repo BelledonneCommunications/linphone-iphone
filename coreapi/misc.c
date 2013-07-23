@@ -1179,6 +1179,8 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonMedia;
 		case LinphoneReasonIOError:
 			return SalReasonServiceUnavailable;
+		case LinphoneReasonDoNotDistrub:
+			return SalReasonDoNotDisturb;
 	}
 	return SalReasonUnknown;
 }
@@ -1196,7 +1198,7 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			ret=LinphoneReasonDeclined;
 			break;
 		case SalReasonDoNotDisturb:
-			ret=LinphoneReasonDeclined;
+			ret=LinphoneReasonDoNotDistrub;
 			break;
 		case SalReasonForbidden:
 			ret=LinphoneReasonBadCredentials;
