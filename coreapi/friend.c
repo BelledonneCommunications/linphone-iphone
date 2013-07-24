@@ -250,6 +250,7 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 		lf->outsub=NULL;
 		lf->subscribe_active=FALSE;
 	}
+	lf->initial_subscribes_sent=FALSE;
 }
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
