@@ -398,11 +398,11 @@ static void io_recv_error_retry_immediatly(){
 	number_of_udp_proxy=get_number_of_udp_proxy(lc);
 	sal_set_recv_error(lc->sal, 0);
 
-	CU_ASSERT_TRUE(wait_for(lc,NULL,&counters->number_of_LinphoneRegistrationProgress,2*(register_ok-number_of_udp_proxy) /*because 1 udp*/));
+	CU_ASSERT_TRUE(wait_for(lc,NULL,&counters->number_of_LinphoneRegistrationProgress,(register_ok-number_of_udp_proxy)+register_ok /*because 1 udp*/));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0)
 	sal_set_recv_error(lc->sal, 1); /*reset*/
 
-	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,2*(register_ok-number_of_udp_proxy)));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy+register_ok));
 
 	linphone_core_manager_destroy(mgr);
 }

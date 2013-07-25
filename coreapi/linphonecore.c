@@ -5465,6 +5465,8 @@ LpConfig *linphone_core_get_config(LinphoneCore *lc){
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	linphone_core_free_hooks(lc);
+	lc->video_conf.show_local = FALSE;
+
 	while(lc->calls)
 	{
 		LinphoneCall *the_call = lc->calls->data;
@@ -5883,7 +5885,7 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
 }
 
-const LinphoneCall* linphone_core_find_call_from_uri(LinphoneCore *lc, const char *uri) {
+const LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
 	MSList *calls;
 	const LinphoneCall *c;
 	const LinphoneAddress *address;
