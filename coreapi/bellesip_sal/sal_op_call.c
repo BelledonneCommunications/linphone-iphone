@@ -759,10 +759,16 @@ void sal_call_send_vfu_request(SalOp *op){
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
 	if (dialog_state == BELLE_SIP_DIALOG_CONFIRMED) {
 		belle_sip_request_t* info =	belle_sip_dialog_create_request(op->dialog,"INFO");
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","media_control+xml")));
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_lenth)));
-		belle_sip_message_set_body(BELLE_SIP_MESSAGE(info),info_body,content_lenth);
-		sal_op_send_request(op,info);
+		int error=TRUE;
+		if (info) {
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","media_control+xml")));
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_lenth)));
+			belle_sip_message_set_body(BELLE_SIP_MESSAGE(info),info_body,content_lenth);
+			error=sal_op_send_request(op,info);
+		}
+		if (error)
+			ms_warning("Cannot send vfu request to [%s] ", sal_op_get_to(op));
+
 	} else {
 		ms_warning("Cannot send vfu request to [%s] because dialog [%p] in wrong state [%s]",sal_op_get_to(op)
 																							,op->dialog
