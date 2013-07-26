@@ -181,7 +181,7 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
-		if (op==NULL && op->state==SalOpStateTerminated){
+		if (op==NULL || op->state==SalOpStateTerminated){
 			ms_warning("Receiving request for null or terminated op [%p], ignored",op);
 			return;
 		}
