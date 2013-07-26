@@ -153,7 +153,7 @@ static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminat
 static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	belle_sip_client_transaction_t*client_transaction;
 	SalOp* op;
-	if (belle_sip_object_is_instance_of(BELLE_SIP_OBJECT(belle_sip_io_error_event_get_source(event)),BELLE_SIP_TYPE_ID(belle_sip_client_transaction_t))) {
+	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(belle_sip_io_error_event_get_source(event),belle_sip_client_transaction_t)) {
 		client_transaction=BELLE_SIP_CLIENT_TRANSACTION(belle_sip_io_error_event_get_source(event));
 		op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 		if (op->callbacks.process_io_error) {
