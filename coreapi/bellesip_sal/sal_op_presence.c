@@ -59,7 +59,8 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 static void presence_refresher_listener( const belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
 	SalOp* op = (SalOp*)user_pointer;
 	switch(status_code){
-		case 481:
+		case 481: {
+
 			ms_message("The server or remote ua lost the SUBSCRIBE dialog context. Let's restart a new one.");
 			belle_sip_refresher_stop(op->refresher);
 			if (op->dialog) { /*delete previous dialog if any*/
@@ -67,8 +68,19 @@ static void presence_refresher_listener( const belle_sip_refresher_t* refresher,
 				belle_sip_object_unref(op->dialog);
 				op->dialog=NULL;
 			}
+
+			if (sal_op_get_contact_address(op)) {
+				/*contact is also probably not good*/
+				SalAddress* contact=sal_address_clone(sal_op_get_contact_address(op));
+				sal_address_set_port_int(contact,-1);
+				sal_address_set_domain(contact,NULL);
+				sal_op_set_contact_address(op,contact);
+				sal_address_destroy(contact);
+			}
+
 			sal_subscribe_presence(op,NULL,NULL,-1);
 		break;
+		}
 	}
 }
 
