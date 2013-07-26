@@ -5885,9 +5885,9 @@ const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc){
 	return lc->zrtp_secrets_cache;
 }
 
-const LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
+LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri) {
 	MSList *calls;
-	const LinphoneCall *c;
+	LinphoneCall *c;
 	const LinphoneAddress *address;
 	char *current_uri;
 
