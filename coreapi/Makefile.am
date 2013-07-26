@@ -53,7 +53,6 @@ if BUILD_UPNP
 liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
 	
-if USE_BELLESIP
 liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_impl.c \
 				bellesip_sal/sal_op_impl.c \
@@ -66,11 +65,7 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_op_call_transfer.c \
 				bellesip_sal/sal_op_info.c \
 				bellesip_sal/sal_op_events.c
-else
-liblinphone_la_SOURCES+= 	sal_eXosip2.c sal_eXosip2.h\
-							sal_eXosip2_sdp.c \
-							sal_eXosip2_presence.c 	
-endif
+
 if BUILD_WIZARD
 liblinphone_la_SOURCES+=sipwizard.c 
 endif
@@ -133,9 +128,8 @@ AM_CFLAGS=\
 if BUILD_WIZARD
 AM_CFLAGS+= -DBUILD_WIZARD 
 endif
-if USE_BELLESIP
+
 AM_CFLAGS+= -DUSE_BELLESIP
-endif
 
 AM_CXXFLAGS=$(AM_CFLAGS)
 

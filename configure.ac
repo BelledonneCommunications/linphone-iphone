@@ -685,13 +685,10 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 	
-PKG_CHECK_MODULES(BELLESIP, [belle-sip],[bellesip_found=yes],foo=bar)
-
-AM_CONDITIONAL([USE_BELLESIP], [test "x$bellesip_found" == "xyes"])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"
-AC_DEFINE(USE_BELLESIP,1,[Defined when bellesip is used])
 
 
 AC_SUBST(SIPSTACK_CFLAGS)

@@ -16,8 +16,6 @@ You need:
 
 - Install some linphone dependencies with macports
  $ sudo port install speex
- $ sudo port install libosip2 # WARNING: currently outdated in macport
- $ sudo port install libeXosip2 #WARNING: currently outdated in macport
  $ sudo port install ffmpeg-devel -gpl2
  $ sudo port install libvpx
  $ sudo port install readline
@@ -36,6 +34,13 @@ You need:
 
 The softwares below need to be compiled manually. To ensure compatibility with multiple mac os version it is recommended to do:
  $ export MACOSX_DEPLOYMENT_TARGET=10.6 
+
+
+- Install belle-sip (sip stack)
+ $ git clone git://git.linphone.org/belle-sip.git
+ $ cd belle-sip
+ $ ./autogen.sh && ./configure --prefix=/opt/local && make
+ $ sudo make install
 
 - Install srtp (optional) for call encryption
  $ sudo port install srtp
