@@ -2512,10 +2512,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setZrtpSecretsCache(JNIE
 
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_findCallFromUri(JNIEnv *env,jobject thiz,jlong pCore, jstring jUri) {
 	const char* cUri=env->GetStringUTFChars(jUri, NULL);
-	LinphoneCall *call=linphone_core_find_call_from_uri((const LinphoneCore *) pCore,cUri);
+	const LinphoneCall *call=linphone_core_find_call_from_uri((const LinphoneCore *) pCore,cUri);
 	env->ReleaseStringUTFChars(jUri, cUri);
 	LinphoneCoreData *lcdata=(LinphoneCoreData*)linphone_core_get_user_data((LinphoneCore*)pCore);
-	return (jobject) lcdata->getCall(env,call);
+	return (jobject) lcdata->getCall(env,(LinphoneCall*)call);
 }
 
 
