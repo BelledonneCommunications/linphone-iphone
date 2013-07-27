@@ -5809,6 +5809,14 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
 }
 
+/**
+ * Whenever the liblinphone is playing a ring to advertise an incoming call or ringback of an outgoing call, this function stops
+ * the ringing. Typical use is to stop ringing when the user requests to ignore the call.
+ *
+ * @param lc The LinphoneCore object
+ *
+ * @ingroup media_parameters
+**/
 void linphone_core_stop_ringing(LinphoneCore* lc) {
 	if (lc->ringstream) {
 		ring_stop(lc->ringstream);
