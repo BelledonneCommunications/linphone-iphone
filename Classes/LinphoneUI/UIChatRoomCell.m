@@ -93,19 +93,18 @@ static UIFont *CELL_FONT = nil;
 #pragma mark - 
 
 - (void)setChat:(ChatModel *)achat {
-    if(chat == achat) {
-        return;
-    }
-    
-    if(chat != nil) {
-        [chat release];
-        chat = nil;
-    }
-    
-    if(achat != nil) {
-        chat = [achat retain];
-        [self update];
-    }
+    if(chat != achat) {
+		if(chat != nil) {
+			[chat release];
+			chat = nil;
+		}
+		
+		if(achat != nil) {
+			chat = [achat retain];
+		}
+	}
+	[self update];
+	
 }
 
 - (void)update {

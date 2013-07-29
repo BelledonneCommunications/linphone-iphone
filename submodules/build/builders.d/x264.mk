@@ -51,7 +51,7 @@ x264_dir?=externals/x264
 $(BUILDER_BUILD_DIR)/$(x264_dir)/configure: 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
-	&& rsync -av --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
+	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
 
 $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/configure
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \

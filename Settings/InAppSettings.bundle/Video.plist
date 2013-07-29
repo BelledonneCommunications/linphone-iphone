@@ -41,6 +41,28 @@
 			<string>preview_preference</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+			<key>Key</key>
+			<string>video_preferred_size_preference</string>
+			<key>Title</key>
+			<string>Preferred video size</string>
+			<key>Titles</key>
+			<array>
+				<string>HD (960x720)</string>
+				<string>VGA (640x480)</string>
+				<string>QVGA (320x240)</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Codecs</string>
 			<key>Type</key>

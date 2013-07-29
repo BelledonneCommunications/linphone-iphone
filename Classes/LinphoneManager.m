@@ -31,7 +31,7 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "ChatModel.h"
 
-#include "linphonecore_utils.h"
+#include "linphone/linphonecore_utils.h"
 #include "lpconfig.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
@@ -780,7 +780,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_recv = NULL,
+	.notify_presence_recv=NULL,
 	.new_subscription_request = NULL,
 	.auth_info_requested = NULL,
 	.display_status = linphone_iphone_display_status,
@@ -963,6 +963,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
+	if (linphone_call_log_get_call_id(linphone_call_get_call_log(call)) == nil) {
+		ms_error ("no callid for call [%p]", call);
+		return 1;
+	}
 	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
@@ -1282,6 +1286,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         } else {
@@ -1304,6 +1310,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {

@@ -21,6 +21,8 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=no
+enable_opus=yes
+enable_debug=no
 
 .NOTPARALLEL all: check_options build warning
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
@@ -35,23 +37,29 @@ endif
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
 	@echo 
-	@echo "*****************************************************************"
-	@echo "*****************************************************************"
-	@echo "*****CAUTION, this liblinphone SDK is built using GPL code ******"
-	@echo "*****To disable gpl code, use make enable_gpl_third_parties=no***"
-	@echo "*****************************************************************"
-	@echo "*****************************************************************"
+	@echo "***************************************************************************"
+	@echo "***************************************************************************"
+	@echo "*****CAUTION, this liblinphone SDK is built using 3rd party GPL code ******"
+	@echo "*****Even if you acquired a proprietary license from Belledonne      ******"
+	@echo "*****Communications, this SDK is GPL and GPL only.                   ******"
+	@echo "*****To disable 3rd party gpl code, please use:                      ******"
+	@echo "*****$ make enable_gpl_third_parties=no                              ******"
+	@echo "***************************************************************************"
+	@echo "***************************************************************************"
 else
 warning:
 	@echo 
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
-	@echo "*****linphone SDK without GPL code                         ******"
+	@echo "*****Linphone SDK without 3rd party GPL software           ******"
+	@echo "*****If you acquired a proprietary license from Belledonne ******"
+	@echo "*****Communications, this SDK can be used to create        ******"
+	@echo "*****a proprietary linphone-based application.             ******"
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
 endif
 
-LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp)
+LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp) enable_opus=$(enable_opus) enable_debug=$(enable_debug)
 
 build:
 	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \
