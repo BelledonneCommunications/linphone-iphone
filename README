@@ -15,7 +15,7 @@ Once xcode and macports are installed, open a terminal and install the required 
 	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen ImageMagick optipng antlr3
 
 
-Install gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
+Install gas-preprosessor.pl version above Jully 2013  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
 
 	$ wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
 	$ sudo mv gas-preprocessor.pl /opt/local/bin/.
