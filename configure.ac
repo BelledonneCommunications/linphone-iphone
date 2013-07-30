@@ -702,9 +702,6 @@ dnl for external use of linphone libs
 LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
 LINPHONE_LIBS="-L${libdir} -llinphone"
 
-if test x$mingw_found = xyes ; then
-	LINPHONE_LIBS="$LINPHONE_LIBS $OSIP_LIBS"
-fi
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
 
