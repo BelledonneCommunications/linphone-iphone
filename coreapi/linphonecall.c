@@ -749,6 +749,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 
 static void linphone_call_destroy(LinphoneCall *obj)
 {
+	ms_message("Call [%p] freed.",obj);
 #ifdef BUILD_UPNP
 	linphone_call_delete_upnp_session(obj);
 #endif //BUILD_UPNP

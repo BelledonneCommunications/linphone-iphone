@@ -568,7 +568,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 
 	if (call==NULL){
-		ms_warning("Call faillure reported on already cleaned call ?");
+		ms_warning("Call faillure reported on already terminated call.");
 		return ;
 	}
 	

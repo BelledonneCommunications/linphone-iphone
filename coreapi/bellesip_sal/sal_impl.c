@@ -141,7 +141,7 @@ void sal_process_authentication(SalOp *op) {
 }
 
 static void process_dialog_terminated(void *sal, const belle_sip_dialog_terminated_event_t *event){
-	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_get_dialog(event);
+	belle_sip_dialog_t* dialog =  belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op = belle_sip_dialog_get_application_data(dialog);
 	if (op && op->callbacks.process_dialog_terminated) {
 		op->callbacks.process_dialog_terminated(op,event);
@@ -749,7 +749,8 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event)) ;
 	return auth_info;
 }
-const char* sal_op_type_to_string(const SalOpType_t type) {
+
+const char* sal_op_type_to_string(const SalOpType type) {
 	switch(type) {
 	case SalOpRegister: return "SalOpRegister";
 	case SalOpCall: return "SalOpCall";

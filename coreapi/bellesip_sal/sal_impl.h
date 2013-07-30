@@ -59,7 +59,7 @@ const char* sal_op_state_to_string(SalOpState value);
 typedef enum SalOpDir {
 	SalOpDirIncoming=0
 	,SalOpDirOutgoing
-}SalOpDir_t;
+}SalOpDir;
 typedef enum SalOpType {
 	SalOpUnknown,
 	SalOpRegister,
@@ -68,8 +68,9 @@ typedef enum SalOpType {
 	SalOpPresence,
 	SalOpPublish,
 	SalOpSubscribe
-}SalOpType_t;
-const char* sal_op_type_to_string(const SalOpType_t type);
+}SalOpType;
+
+const char* sal_op_type_to_string(SalOpType type);
 
 struct SalOp{
 	SalOpBase base;
@@ -78,20 +79,21 @@ struct SalOp{
 	belle_sip_server_transaction_t* pending_server_trans;
 	belle_sip_client_transaction_t* pending_client_trans;
 	SalAuthInfo* auth_info;
-	bool_t sdp_offering;
 	belle_sip_dialog_t* dialog;
 	belle_sip_header_replaces_t *replaces;
 	belle_sip_header_referred_by_t *referred_by;
-	bool_t auto_answer_asked;
 	SalMediaDescription *result;
 	belle_sdp_session_description_t *sdp_answer;
 	bool_t supports_session_timers;
 	SalOpState state;
-	SalOpDir_t dir;
+	SalOpDir dir;
 	belle_sip_refresher_t* refresher;
 	int ref;
-	SalOpType_t type;
+	SalOpType type;
 	SalPrivacyMask privacy;
+	bool_t auto_answer_asked;
+	bool_t sdp_offering;
+	bool_t call_released;
 };
 
 

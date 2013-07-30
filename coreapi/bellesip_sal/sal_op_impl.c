@@ -436,8 +436,11 @@ SalOp* sal_op_ref(SalOp* op) {
 }
 /*return null, destroy op if ref count =0*/
 void* sal_op_unref(SalOp* op) {
-	if (--op->ref <=0) {
+	op->ref--;
+	if (op->ref==0) {
 		sal_op_release_impl(op);
+	}else if (op->ref<0){
+		ms_fatal("SalOp [%p]: too many unrefs.",op);
 	}
 	return NULL;
 }
