@@ -187,7 +187,8 @@ static MSList *make_codec_list(LinphoneCore *lc, const MSList *codecs, int bandw
 		PayloadType *pt=(PayloadType*)it->data;
 		if (pt->flags & PAYLOAD_TYPE_ENABLED){
 			if (bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,bandwidth_limit)){
-				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint.",pt->mime_type,pt->clock_rate);
+				ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
+					   pt->mime_type,pt->clock_rate,bandwidth_limit);
 				continue;
 			}
 			if (linphone_core_check_payload_type_usability(lc,pt)){

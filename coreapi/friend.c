@@ -454,7 +454,7 @@ void linphone_core_send_initial_subscribes(LinphoneCore *lc){
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *f=(LinphoneFriend*)elem->data;
 		LinphoneProxyConfig* cfg;
-		if (!f->initial_subscribes_sent) {
+		if (f->subscribe && !f->initial_subscribes_sent) {
 			lc->initial_subscribes_sent=FALSE; /*at least 1 was not sent */
 			if ((cfg=linphone_core_lookup_known_proxy(f->lc,linphone_friend_get_address(f)))) {
 				/*check if already registered*/
