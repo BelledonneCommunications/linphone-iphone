@@ -125,6 +125,7 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 				}
 				if (expires>0){
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
+					belle_sip_refresher_enable_nat_helper(op->refresher,op->base.root->nat_helper_enabled);
 					belle_sip_refresher_set_listener(op->refresher,presence_refresher_listener,op);
 				}
 			}
