@@ -573,17 +573,22 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	int status_code =early_media?183:180;
 	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans));
 	belle_sip_response_t* ringing_response = sal_op_create_response_from_request(op,req,status_code);
+	belle_sip_header_t *require;
+	const char *tags=NULL;
+	
 	if (early_media){
 		handle_offer_answer_response(op,ringing_response);
 	}
-	/*fixme it should support PRACK in the right way*/
-	if (belle_sip_message_get_header((belle_sip_message_t*)req,"Require") || belle_sip_message_get_header((belle_sip_message_t*)req,"Supported")) {
+	require=belle_sip_message_get_header((belle_sip_message_t*)req,"Require");
+	if (require) tags=belle_sip_header_get_unparsed_value(require);
+	/* if client requires 100rel, then add necessary stuff*/
+	if (tags && strstr(tags,"100rel")!=0) {
 		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
 		belle_sip_header_contact_t* contact_header;
-		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("Require","100Rel")));
+		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("Require","100rel")));
 		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("RSeq","1")));
 		if (contact && (contact_header=belle_sip_header_contact_create(contact))) {
-				belle_sip_message_add_header(BELLE_SIP_MESSAGE(ringing_response),BELLE_SIP_HEADER(contact_header));
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(ringing_response),BELLE_SIP_HEADER(contact_header));
 		}
 	}
 	belle_sip_server_transaction_send_response(op->pending_server_trans,ringing_response);
