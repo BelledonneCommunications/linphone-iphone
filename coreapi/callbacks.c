@@ -782,16 +782,13 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		lc->vtable.display_status(lc,msg);
 		ms_free(msg);
 	}
-	if (error== SalErrorFailure && reason == SalReasonForbidden) {
-		linphone_proxy_config_set_error(cfg, LinphoneReasonBadCredentials);
-	} else if (error == SalErrorNoResponse) {
-		linphone_proxy_config_set_error(cfg, LinphoneReasonNoResponse);
-	}
+
+	linphone_proxy_config_set_error(cfg,linphone_reason_from_sal(reason));
+
 	if (error== SalErrorFailure
 			&& reason == SalReasonServiceUnavailable
 			&& linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,_("Service unavailable, retrying"));
-
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
