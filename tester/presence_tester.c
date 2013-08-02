@@ -163,11 +163,47 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	return result;
 
 }
+static void subscribe_failure_handle_by_app(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneProxyConfig* config;
+	LinphoneFriend* lf;
+	char* lf_identity=linphone_address_as_string_uri_only(pauline->identity);
+	 linphone_core_get_default_proxy(marie->lc,&config);
+
+	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+	wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1); /*just to wait for unsubscription even if not notified*/
+
+	sal_set_recv_error(marie->lc->sal, 0); /*simulate an error*/
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationProgress,2));
+	CU_ASSERT_EQUAL(linphone_proxy_config_get_error(config),LinphoneReasonIOError);
+	sal_set_recv_error(marie->lc->sal, 1);
+
+	lf = linphone_core_get_friend_by_address(marie->lc,lf_identity);
+	linphone_friend_edit(lf);
+	linphone_friend_enable_subscribes(lf,FALSE); /*disable subscription*/
+	linphone_friend_done(lf);
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationOk,2)); /*wait for register ok*/
+	linphone_friend_edit(lf);
+	linphone_friend_enable_subscribes(lf,TRUE);
+	linphone_friend_done(lf);
+	CU_ASSERT_FALSE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
+
+	linphone_core_manager_destroy(marie);
+	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,3)); /*just to wait for unsubscription even if not notified*/
+
+	linphone_core_manager_destroy(pauline);
+}
+
 static void simple_subscribe(void) {
 	LinphoneCoreManager* marie = presence_linphone_core_manager_new("marie");
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+
+
+
 
 	linphone_core_manager_destroy(marie);
 	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
@@ -298,6 +334,7 @@ test_t presence_tests[] = {
 	{ "Call with Presence", call_with_presence },
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },
+	{ "App managed presence failure", subscribe_failure_handle_by_app },
 };
 
 test_suite_t presence_test_suite = {
