@@ -557,7 +557,9 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 		if (op->sdp_offering) {
 			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),op->base.local_media);
 		}else{
-			if (op->sdp_answer==NULL) sdp_process(op);
+
+			sdp_process(op);
+
 			if (op->sdp_answer){
 				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
 				belle_sip_object_unref(op->sdp_answer);
