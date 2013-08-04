@@ -111,9 +111,8 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		salmsg.url=NULL;
 		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
 			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
-			char* url = ms_malloc(url_length);
-			if (sscanf(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"),"\"%s\"",url) ==1)
-				salmsg.url=url;
+			salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/
+			((char*)salmsg.url)[url_length-2]='\0'; /*remove trailing "*/
 		}
 		salmsg.message_id=message_id;
 		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);

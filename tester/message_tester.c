@@ -22,6 +22,7 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+static char* message_external_body_url;
 
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message) {
 	stats* counters = get_stats(lc);
@@ -37,8 +38,10 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
-	if (linphone_chat_message_get_external_body_url(message))
+	if (linphone_chat_message_get_external_body_url(message)) {
 			counters->number_of_LinphoneMessageExtBodyReceived++;
+			CU_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(message),message_external_body_url);
+	}
 }
 
 void linphone_chat_message_state_change(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
@@ -160,14 +163,14 @@ static void text_message_with_external_body(void) {
 	char* to = linphone_address_as_string(marie->identity);
 	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
-	linphone_chat_message_set_external_body_url(message,"http://www.linphone.org");
+	linphone_chat_message_set_external_body_url(message,message_external_body_url="http://www.linphone.org");
 	linphone_chat_room_send_message2(chat_room,message,linphone_chat_message_state_change,pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1);
-	/*fixme use history to check message content*/
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
