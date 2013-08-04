@@ -3072,7 +3072,7 @@ int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const
 	if (params==NULL){
 		call->params.has_video=lc->video_policy.automatically_accept || call->current_params.has_video;
 	}else
-		call->params=*params;
+		_linphone_call_params_copy(&call->params,params);
 
 	if (call->params.has_video && !linphone_core_video_enabled(lc)){
 		ms_warning("linphone_core_accept_call_update(): requested video but video support is globally disabled. Refusing video.");
