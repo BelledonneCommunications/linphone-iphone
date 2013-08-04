@@ -496,6 +496,16 @@ int sal_call_set_local_media_description(SalOp *op, SalMediaDescription *desc){
 	if (op->base.local_media)
 		sal_media_description_unref(op->base.local_media);
 	op->base.local_media=desc;
+	
+	if (op->base.remote_media){
+		/*case of an incoming call where we modify the local capabilities between the time
+		 * the call is ringing and it is accepted (for example if you want to accept without video*/
+		/*reset the sdp answer so that it is computed again*/
+		if (op->sdp_answer){
+			belle_sip_object_unref(op->sdp_answer);
+			op->sdp_answer=NULL;
+		}
+	}
 	return 0;
 }
 
@@ -558,7 +568,7 @@ static void handle_offer_answer_response(SalOp* op, belle_sip_response_t* respon
 			set_sdp_from_desc(BELLE_SIP_MESSAGE(response),op->base.local_media);
 		}else{
 
-			sdp_process(op);
+			if (op->sdp_answer==NULL) sdp_process(op);
 
 			if (op->sdp_answer){
 				set_sdp(BELLE_SIP_MESSAGE(response),op->sdp_answer);
