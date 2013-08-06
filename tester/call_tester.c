@@ -322,6 +322,32 @@ static void call_with_dns_time_out(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void early_cancelled_call(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_alt_rc");
+
+	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"sip:marie@sip.example.org");
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+	linphone_core_terminate_call(pauline->lc,out_call);
+	
+	/*since everything is executed in a row, no response can be received from the server, thus the CANCEL cannot be sent.
+	 It will ring at Marie's side.*/
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	
+	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1);
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
+	/* now the CANCEL should have been sent and the the call at marie's side should terminate*/
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void cancelled_ringing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1037,6 +1063,7 @@ test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
 	{ "Cancelled call", cancelled_call },
+	{ "Early cancelled call", early_cancelled_call},
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Simple call", simple_call },

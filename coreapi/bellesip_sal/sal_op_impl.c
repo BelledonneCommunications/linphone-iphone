@@ -30,7 +30,9 @@ SalOp * sal_op_new(Sal *sal){
 }
 
 void sal_op_release(SalOp *op){
-	op->state=SalOpStateTerminated;
+	/*if in terminating state, keep this state because it means we are waiting for a response to be able to terminate the operation.*/
+	if (op->state!=SalOpStateTerminating)
+		op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
@@ -413,6 +415,7 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 		return FALSE;
 	}
 }
+
 void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 	/*check if dialog has changed*/
 	if (dialog && dialog != op->dialog) {

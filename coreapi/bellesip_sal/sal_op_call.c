@@ -173,7 +173,7 @@ static void cancelling_invite(SalOp* op ){
 	op->state=SalOpStateTerminating;
 }
 
-static void call_response_event(void *op_base, const belle_sip_response_event_t *event){
+static void call_process_response(void *op_base, const belle_sip_response_event_t *event){
 	SalOp* op = (SalOp*)op_base;
 	belle_sip_request_t* ack;
 	belle_sip_dialog_state_t dialog_state;
@@ -198,16 +198,20 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		case BELLE_SIP_DIALOG_EARLY: {
 			if (strcmp("INVITE",belle_sip_request_get_method(req))==0 ) {
 				if (op->state == SalOpStateTerminating) {
+					/*check if CANCEL was sent before*/
 					if (strcmp("CANCEL",belle_sip_request_get_method(belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_client_trans))))!=0) {
+						/*it wasn't sent */
 						if (code<200) {
 							cancelling_invite(op);
-						} else if (code<400) {
-							sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
-						} else {
-							/*nop ?*/
+						}else{
+							/* no need to send the INVITE because the UAS rejected the INVITE*/
+							if (op->dialog==NULL) call_set_released(op);
 						}
 					} else {
-						/*nop, already cancelled*/
+						/*it was sent already, so just expect the 487 or any error response to send the call_released() notification*/
+						if (code>=300){
+							if (op->dialog==NULL) call_set_released(op);
+						}
 					}
 				} else if (code >= 180 && code<300) {
 					handle_sdp_from_response(op,response);
@@ -221,54 +225,51 @@ static void call_response_event(void *op_base, const belle_sip_response_event_t 
 		break;
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			switch (op->state) {
-			case SalOpStateEarly:/*invite case*/
-			case SalOpStateActive: /*re-invite case*/
-				if (code >=200
-					&& code<300
-					&& strcmp("INVITE",belle_sip_request_get_method(req))==0) {
-					handle_sdp_from_response(op,response);
-					ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
-					if (ack==NULL) {
-						ms_error("This call has been already terminated.");
-						return ;
+				case SalOpStateEarly:/*invite case*/
+				case SalOpStateActive: /*re-invite case*/
+					if (code >=200
+						&& code<300
+						&& strcmp("INVITE",belle_sip_request_get_method(req))==0) {
+						handle_sdp_from_response(op,response);
+						ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
+						if (ack==NULL) {
+							ms_error("This call has been already terminated.");
+							return ;
+						}
+						if (op->sdp_answer){
+							set_sdp(BELLE_SIP_MESSAGE(ack),op->sdp_answer);
+							belle_sip_object_unref(op->sdp_answer);
+							op->sdp_answer=NULL;
+						}
+						belle_sip_dialog_send_ack(op->dialog,ack);
+						op->base.root->callbacks.call_accepted(op); /*INVITE*/
+						op->state=SalOpStateActive;
+					}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
+						call_set_error(op,response);
+					} else {
+							/*ignoring*/
 					}
-					if (op->sdp_answer){
-						set_sdp(BELLE_SIP_MESSAGE(ack),op->sdp_answer);
-						belle_sip_object_unref(op->sdp_answer);
-						op->sdp_answer=NULL;
-					}
-					belle_sip_dialog_send_ack(op->dialog,ack);
-					op->base.root->callbacks.call_accepted(op); /*INVITE*/
-
-					op->state=SalOpStateActive;
-				}  else if (code >= 300 && strcmp("INVITE",belle_sip_request_get_method(req))==0){
-					call_set_error(op,response);
-				} else {
-						/*ignoring*/
-				}
-			break;
-			case SalOpStateTerminating:
-				//FIXME send bye
-			case SalOpStateTerminated:
-			default:
-				ms_error("call op [%p] receive answer [%i] not implemented",op,code);
+				break;
+				case SalOpStateTerminating:
+					sal_op_send_request(op,belle_sip_dialog_create_request(op->dialog,"BYE"));
+				break;
+				case SalOpStateTerminated:
+				default:
+					ms_error("Call op [%p] receives unexpected answer [%i] while in state [%s].",op,code, sal_op_state_to_string(op->state));
 			}
-		break;
 		}
+		break;
 		case BELLE_SIP_DIALOG_TERMINATED: {
 			if (code >= 300){
 				call_set_error(op,response);
 			}
-			break;
 		}
-		/* no break */
+		break;
 		default: {
 			ms_error("call op [%p] receive answer [%i] not implemented",op,code);
 		}
-		/* no break */
+		break;
 	}
-
-
 }
 
 static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
@@ -553,7 +554,7 @@ int sal_call(SalOp *op, const char *from, const char *to){
 
 void sal_op_call_fill_cbs(SalOp*op) {
 	op->callbacks.process_io_error=call_process_io_error;
-	op->callbacks.process_response_event=call_response_event;
+	op->callbacks.process_response_event=call_process_response;
 	op->callbacks.process_timeout=call_process_timeout;
 	op->callbacks.process_transaction_terminated=call_process_transaction_terminated;
 	op->callbacks.process_request_event=process_request_event;
@@ -741,15 +742,16 @@ int sal_call_terminate(SalOp *op){
 			if (op->dir == SalOpDirIncoming) {
 				sal_call_decline(op, SalReasonDeclined,NULL);
 				op->state=SalOpStateTerminated;
-			} else if (op->pending_client_trans
-					&& belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
-				cancelling_invite(op);
-				break;
-			} else {
-				/*just schedule call released*/
-				if (op->dialog==NULL) belle_sip_main_loop_do_later(belle_sip_stack_get_main_loop(op->base.root->stack)
-									,(belle_sip_callback_t) call_set_released
-									, op);
+			} else if (op->pending_client_trans){
+				if (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(op->pending_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
+					cancelling_invite(op);
+				}else{
+					/* Case where the CANCEL cannot be sent because no provisional response was received so far.
+					 * The Op must be kept for the time of the transaction in case a response is received later.
+					 * The state is passed to Terminating to remember to terminate later.
+					 */
+					op->state=SalOpStateTerminating;
+				}
 			}
 			break;
 		}
