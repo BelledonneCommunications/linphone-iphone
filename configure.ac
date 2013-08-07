@@ -356,7 +356,7 @@ AC_ARG_ENABLE(debug,
 	esac],
 	[debug_enabled=no]
 )
-AS_CASE([$enable_debug],
+AS_CASE([$debug_enabled],
 		[yes],[
 			CFLAGS="$CFLAGS -g -DDEBUG"
 			CXXFLAGS="$CXXFLAGS -g -DDEBUG"
@@ -374,7 +374,7 @@ AS_CASE([$enable_debug],
 				;;
 			esac
 		],
-		[AC_MSG_ERROR([Bad value ($enable_debug) for --enable-debug. Valid values are yes or no.])])
+		[AC_MSG_ERROR([Bad value ($debug_enabled) for --enable-debug. Valid values are yes or no.])])
 
 dnl enable truespeech codec support
 AC_ARG_ENABLE(truespeech,
