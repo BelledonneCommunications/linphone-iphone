@@ -86,7 +86,8 @@ struct _UpnpContext {
 
 
 bool_t linphone_core_upnp_hook(void *data);
-void linphone_core_upnp_refresh(UpnpContext *ctx);
+void linphone_upnp_update(UpnpContext *ctx);
+bool_t linphone_upnp_is_blacklisted(UpnpContext *ctx);
 
 UpnpPortBinding *linphone_upnp_port_binding_new();
 UpnpPortBinding *linphone_upnp_port_binding_new_with_parameters(upnp_igd_ip_protocol protocol, int local_port, int external_port);
@@ -198,6 +199,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 	const char *ip_address = NULL;
 	const char *connection_status = NULL;
 	bool_t nat_enabled = FALSE;
+	bool_t blacklisted = FALSE;
 	LinphoneUpnpState old_state;
 
 	if(lupnp == NULL || lupnp->upnp_igd_ctxt == NULL) {
@@ -217,6 +219,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 		ip_address = upnp_igd_get_external_ipaddress(lupnp->upnp_igd_ctxt);
 		connection_status = upnp_igd_get_connection_status(lupnp->upnp_igd_ctxt);
 		nat_enabled = upnp_igd_get_nat_enabled(lupnp->upnp_igd_ctxt);
+		blacklisted = linphone_upnp_is_blacklisted(lupnp);
 
 		if(ip_address == NULL || connection_status == NULL) {
 			ms_message("uPnP IGD: Pending");
@@ -224,11 +227,14 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 		} else if(strcasecmp(connection_status, "Connected")  || !nat_enabled) {
 			ms_message("uPnP IGD: Not Available");
 			lupnp->state = LinphoneUpnpStateNotAvailable;
+		} else if(blacklisted) {
+			ms_message("uPnP IGD: Router is blacklisted");
+			lupnp->state = LinphoneUpnpStateNotAvailable;
 		} else {
 			ms_message("uPnP IGD: Connected");
 			lupnp->state = LinphoneUpnpStateOk;
 			if(old_state != LinphoneUpnpStateOk) {
-				linphone_core_upnp_refresh(lupnp);
+				linphone_upnp_update(lupnp);
 			}
 		}
 
@@ -493,6 +499,45 @@ int linphone_upnp_context_get_external_port(UpnpContext *lupnp) {
 		ms_mutex_unlock(&lupnp->mutex);
 	}
 	return port;
+}
+
+bool_t linphone_upnp_is_blacklisted(UpnpContext *lupnp) {
+	const char * device_model_name = upnp_igd_get_device_model_name(lupnp->upnp_igd_ctxt);
+	const char * device_model_number = upnp_igd_get_device_model_number(lupnp->upnp_igd_ctxt); 	
+	const char * blacklist = lp_config_get_string(lupnp->lc->config, "net", "upnp_blacklist", NULL);
+	bool_t blacklisted = FALSE;
+	char *str;
+	char *pch;
+	char *model_name;
+	char *model_number;
+
+	// Sanity checks
+	if(device_model_name == NULL || device_model_number == NULL || blacklist == NULL) {
+		return FALSE;
+	}
+
+	// Find in the list	
+	str = strdup(blacklist);
+	pch = strtok(str, ";");
+	while (pch != NULL && !blacklisted) {
+		// Extract model name & number
+		model_name = pch;
+		model_number = strstr(pch, ",");
+		if(model_number != NULL) {
+			*(model_number++) = '\0';
+		}
+
+		// Compare with current device
+		if(strcmp(model_name, device_model_name) == 0) {
+			if(model_number == NULL || strcmp(model_number, device_model_number) == 0) {
+				blacklisted = TRUE;
+			}
+		}	
+		pch = strtok(NULL, ";");
+	}
+	free(str);
+
+	return blacklisted;
 }
 
 void linphone_upnp_refresh(UpnpContext * lupnp) {
@@ -800,13 +845,24 @@ int linphone_upnp_call_process(LinphoneCall *call) {
 	return ret;
 }
 
-void linphone_core_upnp_refresh(UpnpContext *lupnp) {
+static const char *linphone_core_upnp_get_charptr_null(const char *str) {
+	if(str != NULL) {
+		return str;
+	}
+	return "(Null)";
+}
+
+void linphone_upnp_update(UpnpContext *lupnp) {
 	MSList *global_list = NULL;
 	MSList *list = NULL;
 	MSList *item;
 	LinphoneCall *call;
 	UpnpPortBinding *port_mapping, *port_mapping2;
 
+	ms_message("uPnP IGD: Name:%s", linphone_core_upnp_get_charptr_null(upnp_igd_get_device_name(lupnp->upnp_igd_ctxt)));
+	ms_message("uPnP IGD: Device:%s %s", 
+                   linphone_core_upnp_get_charptr_null(upnp_igd_get_device_model_name(lupnp->upnp_igd_ctxt)), 
+	           linphone_core_upnp_get_charptr_null(upnp_igd_get_device_model_number(lupnp->upnp_igd_ctxt)));
 	ms_message("uPnP IGD: Refresh mappings");
 
 	if(lupnp->sip_udp != NULL) {
