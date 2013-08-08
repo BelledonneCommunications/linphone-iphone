@@ -535,7 +535,7 @@ public:
 								,lcData->messageReceivedId
 								,lcData->core
 								,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-								,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
+                                ,env->NewObject(lcData->chatMessageClass,lcData->chatMessageCtrId,(jlong)msg));
 		}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
 		JNIEnv *env = 0;
@@ -718,6 +718,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_sendInfoMessage(J
 	return linphone_call_send_info_message((LinphoneCall*)callptr,(LinphoneInfoMessage*)infoptr);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setChatDatabasePath(JNIEnv* env, jobject  thiz, jlong lc, jstring jpath) {
+    const char* path = env->GetStringUTFChars(jpath, NULL);
+    linphone_core_set_chat_database_path((LinphoneCore*)lc, path);
+    env->ReleaseStringUTFChars(jpath, path);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv* env, jobject  thiz, jlong lc, jstring jdisplayname, jstring jusername) {
 	const char* displayname = env->GetStringUTFChars(jdisplayname, NULL);
 	const char* username = env->GetStringUTFChars(jusername, NULL);
@@ -753,7 +759,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(	
 }
 
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
-	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
+    const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
 	jlongArray jProxies = env->NewLongArray(proxyCount);
 	jlong *jInternalArray = env->GetLongArrayElements(jProxies, NULL);
@@ -1009,7 +1015,7 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_listVideoPayloadTy
 		codecs = codecs->next;
 	}
 
-	env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
+    env->ReleaseLongArrayElements(jCodecs, jInternalArray, 0);
 
 	return jCodecs;
 }
@@ -2038,6 +2044,23 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JNIE
 	return (jlong) lf;
 }
 //LinphoneChatRoom
+extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNIEnv*  env
+                                                                        ,jobject  thiz
+                                                                        ,jlong ptr) {
+    MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, 20);
+    int historySize = ms_list_size(history);
+    jlongArray jHistory = env->NewLongArray(historySize);
+    jlong *jInternalArray = env->GetLongArrayElements(jHistory, NULL);
+
+    for (int i = 0; i < historySize; i++) {
+        jInternalArray[i] = (unsigned long) (history->data);
+        history = history->next;
+    }
+
+    env->ReleaseLongArrayElements(jHistory, jInternalArray, 0);
+
+    return jHistory;
+}
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_getPeerAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -2158,6 +2181,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*
 	jobject listener = env->NewGlobalRef(jlistener);
 	linphone_chat_room_send_message2((LinphoneChatRoom*)ptr, (LinphoneChatMessage*)jmessage, chat_room_impl_callback, (void*)listener);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv* env
 																		,jobject thiz
 																		,jlong lc

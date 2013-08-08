@@ -20,8 +20,10 @@ package org.linphone.core;
 
 import java.util.Vector;
 
-import org.linphone.core.LinphoneCall.State;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
+
+import android.view.SurfaceView;
 
 /**
  * Linphone core main object created by method {@link LinphoneCoreFactory#createLinphoneCore(LinphoneCoreListener, String, String, Object)}.	
@@ -1313,4 +1315,9 @@ public interface LinphoneCore {
 	 */
 	public LinphoneEvent publish(LinphoneAddress resource, String event, int expires, LinphoneContent content);
 	
+	/**
+	 * Sets the path to the database where the chat messages will be stored (if enabled)
+	 * @param path the database where the chat messages will be stored.
+	 */
+	public void setChatDatabasePath(String path);
 }

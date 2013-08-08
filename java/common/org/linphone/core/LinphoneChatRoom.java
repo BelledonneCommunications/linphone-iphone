@@ -48,4 +48,10 @@ public interface LinphoneChatRoom {
 	 * @return LinphoneChatMessage object
 	 */
 	LinphoneChatMessage createLinphoneChatMessage(String message);
+	
+	/**
+	 * Returns the chat history associated with the peer address associated with this chat room
+	 * @return an array of LinphoneChatMessage
+	 */
+	LinphoneChatMessage[] getHistory();
 }

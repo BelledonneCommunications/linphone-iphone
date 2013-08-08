@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 import static android.media.AudioManager.MODE_IN_CALL;
-import static android.media.AudioManager.MODE_RINGTONE;
 
 import java.io.File;
 import java.io.IOException;
@@ -133,6 +132,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setIncomingTimeout(long nativePtr, int timeout);
 	private native void setInCallTimeout(long nativePtr, int timeout);
 	private native void setPrimaryContact(long nativePtr, String displayName, String username);
+	private native void setChatDatabasePath(long nativePtr, String path);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
 		mListener=listener;
@@ -979,5 +979,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 			int expires, LinphoneContent content) {
 		return (LinphoneEvent)publish(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
 				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getDataAsString() : null);
+	}
+	
+	public void setChatDatabasePath(String path) {
+		setChatDatabasePath(nativePtr, path);
 	}
 }
