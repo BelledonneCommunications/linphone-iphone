@@ -545,10 +545,10 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	sal_op_call_fill_cbs(op);
 	if (op->replaces){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->replaces));
-			if (op->referred_by)
-				belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->referred_by));
 	}
-
+	if (op->referred_by)
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(op->referred_by));
+	
 	return sal_op_send_request(op,invite);
 }
 
