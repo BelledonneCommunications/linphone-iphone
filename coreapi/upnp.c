@@ -229,7 +229,7 @@ void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
 			lupnp->state = LinphoneUpnpStateNotAvailable;
 		} else if(blacklisted) {
 			ms_message("uPnP IGD: Router is blacklisted");
-			lupnp->state = LinphoneUpnpStateNotAvailable;
+			lupnp->state = LinphoneUpnpStateBlacklisted;
 		} else {
 			ms_message("uPnP IGD: Connected");
 			lupnp->state = LinphoneUpnpStateOk;

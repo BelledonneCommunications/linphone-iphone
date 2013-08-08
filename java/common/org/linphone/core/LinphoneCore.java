@@ -327,6 +327,11 @@ public interface LinphoneCore {
 		 * Ko 
 		 */
 		static public UpnpState Ko = new UpnpState(6, "Ko");
+		/**
+		 * Blacklisted 
+		 */
+		static public UpnpState Blacklisted = new UpnpState(6, "Blacklisted");
+
 		protected final int mValue;
 		private final String mStringValue;
 

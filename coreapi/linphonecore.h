@@ -306,6 +306,7 @@ enum _LinphoneUpnpState{
 	LinphoneUpnpStateNotAvailable,  /**< uPnP is not available */
 	LinphoneUpnpStateOk, /**< uPnP is enabled */
 	LinphoneUpnpStateKo, /**< uPnP processing has failed */
+	LinphoneUpnpStateBlacklisted, /**< IGD router is blacklisted */
 };
 
 /**
