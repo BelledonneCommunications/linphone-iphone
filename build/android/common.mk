@@ -215,6 +215,13 @@ LOCAL_SRC_FILES += 	../tools/xml2lpc.c \
  
 endif
 
+ifeq ($(BUILD_SQLITE),1)
+LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED
+LOCAL_STATIC_LIBRARIES += liblinsqlite
+LOCAL_C_INCLUDES += \
+        $(LOCAL_PATH)/../../externals/sqlite3/
+endif
+
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
 
