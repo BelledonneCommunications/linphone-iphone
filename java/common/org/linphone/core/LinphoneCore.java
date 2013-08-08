@@ -330,7 +330,7 @@ public interface LinphoneCore {
 		/**
 		 * Blacklisted 
 		 */
-		static public UpnpState Blacklisted = new UpnpState(6, "Blacklisted");
+		static public UpnpState Blacklisted = new UpnpState(7, "Blacklisted");
 
 		protected final int mValue;
 		private final String mStringValue;
