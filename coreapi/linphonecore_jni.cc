@@ -1216,7 +1216,9 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 		ms_error("Could not get soundcard.");
 		return TRUE;
 	}
-	return (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) || (ms_snd_card_get_minimal_latency(sndcard)>0);
+	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
+	if (ms_snd_card_get_minimal_latency(sndcard)==0) return TRUE;
+	return FALSE;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryption(JNIEnv*  env
