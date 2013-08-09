@@ -48,8 +48,10 @@ static void create_chat_message(char **argv, void *data){
 	char tmp2[80]={0};
 	
 	if(atoi(argv[3])==LinphoneChatMessageIncoming){
+		new_message->dir=LinphoneChatMessageIncoming;
 		from=linphone_address_new(argv[2]);
 	} else {
+		new_message->dir=LinphoneChatMessageOutgoing;
 		from=linphone_address_new(argv[1]);
 	}
 	linphone_chat_message_set_from(new_message,from);
@@ -69,6 +71,7 @@ static void create_chat_message(char **argv, void *data){
 		ret.tm_isdst=-1;
 	}
 	new_message->time=argv[5]!=NULL ? mktime(&ret) : time(NULL);
+	new_message->is_read=atoi(argv[6]);
 	new_message->state=atoi(argv[7]);
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }

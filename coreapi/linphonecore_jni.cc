@@ -523,7 +523,7 @@ public:
 							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
 							,message ? env->NewStringUTF(message) : NULL);
 	}
-	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+    static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 			JNIEnv *env = 0;
 			jint result = jvm->AttachCurrentThread(&env,NULL);
 			if (result != 0) {
@@ -2138,6 +2138,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatMessageImpl_getTime(JNIEnv* 
 																		,jobject  thiz
 																		,jlong ptr) {
 	return (jlong) linphone_chat_message_get_time((LinphoneChatMessage*)ptr);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getStatus(JNIEnv*  env
+                                                                         ,jobject  thiz
+                                                                         ,jlong ptr) {
+    return (jint) linphone_chat_message_get_state((LinphoneChatMessage*)ptr);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isRead(JNIEnv*  env
+                                                                         ,jobject  thiz
+                                                                         ,jlong ptr) {
+    return (jboolean) linphone_chat_message_is_read((LinphoneChatMessage*)ptr);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isOutgoing(JNIEnv*  env
+                                                                         ,jobject  thiz
+                                                                         ,jlong ptr) {
+    return (jboolean) linphone_chat_message_is_outgoing((LinphoneChatMessage*)ptr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env

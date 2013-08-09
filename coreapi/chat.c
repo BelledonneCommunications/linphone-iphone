@@ -181,6 +181,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 	msg->time=sal_msg->time;
 	msg->state=LinphoneChatMessageStateDelivered;
 	msg->is_read=FALSE;
+	msg->dir=LinphoneChatMessageIncoming;
 	ch=sal_op_get_recv_custom_header(op);
 	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
 	
@@ -399,6 +400,22 @@ void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const
 **/
 const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name){
 	return sal_custom_header_find(message->custom_headers,header_name);
+}
+
+/**
+ * Returns TRUE if the message has been read, otherwise returns FALSE.
+ * @param message the message
+**/
+bool_t linphone_chat_message_is_read(LinphoneChatMessage* message) {
+	return message->is_read;
+}
+
+/**
+ * Returns TRUE if the message has been sent, returns FALSE if the message has been received.
+ * @param message the message
+**/
+bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
+	return message->dir == LinphoneChatMessageOutgoing;
 }
 
 /**

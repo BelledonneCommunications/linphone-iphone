@@ -884,6 +884,8 @@ LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_message_get_peer_address(Li
 LINPHONE_PUBLIC	LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message);
 LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value);
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_read(LinphoneChatMessage* message);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message);
 
 /**
  * @}

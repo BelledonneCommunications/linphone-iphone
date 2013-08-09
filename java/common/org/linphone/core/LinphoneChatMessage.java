@@ -112,4 +112,22 @@ public interface LinphoneChatMessage {
 	 * @return the time in milliseconds
 	 */
 	long getTime();
+	
+	/**
+	 * Gets the status of the message
+	 * @return the status of the message
+	 */
+	LinphoneChatMessage.State getStatus();
+	
+	/**
+	 * Returns wether or not the message has been read
+	 * @return true if it has been read, flase otherwise
+	 */
+	boolean isRead();
+	
+	/**
+	 * Returns wether the message has been sent or received
+	 * @return true if the message has been sent, false if it has been received
+	 */
+	boolean isOutgoing();
 }
