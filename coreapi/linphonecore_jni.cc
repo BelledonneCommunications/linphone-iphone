@@ -2158,6 +2158,24 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isOutgoing(JN
     return (jboolean) linphone_chat_message_is_outgoing((LinphoneChatMessage*)ptr);
 }
 
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
+                                                                           ,jobject  thiz
+                                                                           ,jlong ptr) {
+    MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
+    int chatsSize = ms_list_size(chats);
+    jlongArray jChats = env->NewLongArray(chatsSize);
+    jlong *jInternalArray = env->GetLongArrayElements(jChats, NULL);
+
+    for (int i = 0; i < chatsSize; i++) {
+        jInternalArray[i] = (unsigned long) (chats->data);
+        chats = chats->next;
+    }
+
+    env->ReleaseLongArrayElements(jChats, jInternalArray, 0);
+
+    return jChats;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr

@@ -730,6 +730,7 @@ void linphone_upnp_destroy(LinphoneCore *lc);
 
 #ifdef MSG_STORAGE_ENABLED
 sqlite3 * linphone_message_storage_init();
+void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
 void linphone_chat_message_store(LinphoneChatMessage *msg);
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);

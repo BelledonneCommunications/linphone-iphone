@@ -1320,4 +1320,10 @@ public interface LinphoneCore {
 	 * @param path the database where the chat messages will be stored.
 	 */
 	public void setChatDatabasePath(String path);
+	
+	/**
+	 * Gets the chat rooms
+	 * @return an array of LinphoneChatRoom
+	 */
+	public LinphoneChatRoom[] getChatRooms();
 }

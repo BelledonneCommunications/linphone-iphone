@@ -32,6 +32,15 @@
  */
 
 /**
+ * Returns an array of chat rooms
+ * @param lc #LinphoneCore object
+ * @return An array of #LinpĥoneChatRoom
+**/
+MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
+	return lc->chatrooms;
+}
+
+/**
  * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
  * @param lc #LinphoneCore object
  * @param to destination address for messages

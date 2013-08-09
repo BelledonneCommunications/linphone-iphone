@@ -76,6 +76,14 @@ static void create_chat_message(char **argv, void *data){
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
 
+// Called when fetching all conversations from database
+static int callback_all(void *data, int argc, char **argv, char **colName){
+	LinphoneCore* lc = (LinphoneCore*) data;
+	char* address = argv[0];
+	linphone_core_create_chat_room(lc, address);
+    return 0;
+}
+
 static int callback(void *data, int argc, char **argv, char **colName){
     create_chat_message(argv,data);
     return 0;
@@ -94,9 +102,20 @@ void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom 
 void linphone_sql_request(sqlite3* db,const char *stmt){
 	char* errmsg=NULL;
 	int ret;
-	ret=sqlite3_exec(db,stmt,0,0,&errmsg);
+	ret=sqlite3_exec(db,stmt,NULL,NULL,&errmsg);
 	if(ret != SQLITE_OK) {
 		ms_error("linphone_sql_request: error sqlite3_exec(): %s.\n", errmsg);
+		sqlite3_free(errmsg);
+	}
+}
+
+// Process the request to fetch all chat contacts
+void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
+	char* errmsg=NULL;
+	int ret;
+	ret=sqlite3_exec(db,stmt,callback_all,lc,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_error("linphone_sql_request_all: error sqlite3_exec(): %s.\n", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -205,6 +224,13 @@ void linphone_create_table(sqlite3* db){
 	}
 }
 
+void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
+	if (lc->db==NULL) return NULL;
+	char *buf=sqlite3_mprintf("SELECT remoteContact FROM history Group By remoteContact;");
+	linphone_sql_request_all(lc->db,buf,lc);
+	sqlite3_free(buf);
+}
+
 void linphone_core_message_storage_init(LinphoneCore *lc){
 	int ret;
 	const char *errmsg;
@@ -217,6 +243,9 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 	}
 	linphone_create_table(db);
 	lc->db=db;
+
+	// Create a chatroom for each contact in the chat history
+	linphone_message_storage_init_chat_rooms(lc);
 }
 
 void linphone_core_message_storage_close(LinphoneCore *lc){
@@ -242,6 +271,9 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
+}
+
+void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
 }
 
 void linphone_core_message_storage_init(LinphoneCore *lc){

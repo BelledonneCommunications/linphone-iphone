@@ -133,6 +133,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setInCallTimeout(long nativePtr, int timeout);
 	private native void setPrimaryContact(long nativePtr, String displayName, String username);
 	private native void setChatDatabasePath(long nativePtr, String path);
+	private native long[] getChatRooms(long nativePtr);
 	
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
 		mListener=listener;
@@ -983,5 +984,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 	
 	public void setChatDatabasePath(String path) {
 		setChatDatabasePath(nativePtr, path);
+	}
+	
+	public synchronized LinphoneChatRoom[] getChatRooms() {
+		long[] typesPtr = getChatRooms(nativePtr);
+		if (typesPtr == null) return null;
+		
+		LinphoneChatRoom[] proxies = new LinphoneChatRoom[typesPtr.length];
+
+		for (int i=0; i < proxies.length; i++) {
+			proxies[i] = new LinphoneChatRoomImpl(typesPtr[i]);
+		}
+
+		return proxies;
 	}
 }
