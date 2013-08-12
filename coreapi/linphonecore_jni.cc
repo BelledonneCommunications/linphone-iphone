@@ -1123,13 +1123,13 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_getPresenceMod
 	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model)
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createChatRoom(JNIEnv*  env
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
 																			,jstring jto) {
 
 	const char* to = env->GetStringUTFChars(jto, NULL);
-	LinphoneChatRoom* lResult = linphone_core_create_chat_room((LinphoneCore*)lc,to);
+    LinphoneChatRoom* lResult = linphone_core_get_or_create_chat_room((LinphoneCore*)lc,to);
 	env->ReleaseStringUTFChars(jto, to);
 	return (jlong)lResult;
 }

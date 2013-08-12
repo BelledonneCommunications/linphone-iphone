@@ -705,7 +705,7 @@ public interface LinphoneCore {
 	 *
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
-	LinphoneChatRoom createChatRoom(String to);
+	LinphoneChatRoom getOrCreateChatRoom(String to);
 	/**
 	 * Set the native video window id where the video is to be displayed.
 	 * On Android, it must be of type {@link AndroidVideoWindowImpl}

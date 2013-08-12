@@ -59,6 +59,28 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
 	}
 	return NULL;
 }
+
+static int chat_room_compare(LinphoneChatRoom* room, const char* to) {
+        return strcmp(linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room)), to); /*return 0 if equals*/
+}
+
+/**
+ * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org if not already existing, else return exisiting one
+ * @param lc #LinphoneCore object
+ * @param to destination address for messages
+ * @return #LinphoneChatRoom where messaging can take place.
+ */
+LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
+	if (ms_list_size(lc->chatrooms) == 0)
+		return linphone_core_create_chat_room(lc, to);
+
+	MSList* found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) chat_room_compare, to);
+	if (found != NULL) {
+		return (LinphoneChatRoom*)found->data;
+	} else {
+		return linphone_core_create_chat_room(lc, to);
+	}
+}
  
 /**
  * Destroy a LinphoneChatRoom.

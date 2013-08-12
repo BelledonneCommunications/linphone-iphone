@@ -119,7 +119,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 
 		try {
 			// Next step is to create a chat room
-			LinphoneChatRoom chatRoom = lc.createChatRoom(destinationSipAddress);
+			LinphoneChatRoom chatRoom = lc.getOrCreateChatRoom(destinationSipAddress);
 			
 			// Send message
 			LinphoneChatMessage chatMessage = chatRoom.createLinphoneChatMessage("Hello world");

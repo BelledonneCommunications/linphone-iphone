@@ -83,7 +83,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getPresenceInfo(long nativePtr);
 	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native Object getPresenceModel(long nativePtr);
-	private native long createChatRoom(long nativePtr,String to);
+	private native long getOrCreateChatRoom(long nativePtr,String to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
 	private native void setFirewallPolicy(long nativePtr, int enum_value);
@@ -385,8 +385,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized PresenceModel getPresenceModel() {
 		return (PresenceModel)getPresenceModel(nativePtr);
 	}
-	public synchronized LinphoneChatRoom createChatRoom(String to) {
-		return new LinphoneChatRoomImpl(createChatRoom(nativePtr,to));
+	public synchronized LinphoneChatRoom getOrCreateChatRoom(String to) {
+		return new LinphoneChatRoomImpl(getOrCreateChatRoom(nativePtr,to));
 	}
 	public synchronized void setPreviewWindow(Object w) {
 		setPreviewWindowId(nativePtr,w);
