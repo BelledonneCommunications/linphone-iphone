@@ -54,4 +54,9 @@ public interface LinphoneChatRoom {
 	 * @return an array of LinphoneChatMessage
 	 */
 	LinphoneChatMessage[] getHistory();
+	
+	/**
+	 * Destroys a LinphoneChatRoom.
+	 */
+	void destroy();
 }

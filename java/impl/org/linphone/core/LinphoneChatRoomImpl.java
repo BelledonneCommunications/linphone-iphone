@@ -27,6 +27,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native void sendMessage(long ptr, String message);
 	private native void sendMessage2(long ptr, long message, StateListener listener);
 	private native long[] getHistory(long ptr);
+	private native void destroy(long ptr);
 
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -61,5 +62,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 
 		return messages;
+	}
+	
+	public void destroy() {
+		destroy(nativePtr);
 	}
 }
