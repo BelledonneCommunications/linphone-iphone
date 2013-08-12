@@ -2049,7 +2049,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JNIE
 extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNIEnv*  env
                                                                         ,jobject  thiz
                                                                         ,jlong ptr) {
-    MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, 20);
+    MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, 0);
     int historySize = ms_list_size(history);
     jlongArray jHistory = env->NewLongArray(historySize);
     jlong *jInternalArray = env->GetLongArrayElements(jHistory, NULL);
@@ -2088,6 +2088,12 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteHistory(JNIEnv
                                                                     ,jlong ptr) {
     linphone_chat_room_delete_history((LinphoneChatRoom*)ptr);
 }
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  env
+                                                                       ,jobject  thiz
+                                                                       ,jlong ptr) {
+    linphone_chat_room_mark_as_read((LinphoneChatRoom*)ptr);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
                                                                     ,jobject  thiz
                                                                     ,jlong ptr) {

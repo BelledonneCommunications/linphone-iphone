@@ -30,6 +30,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
 	private native void deleteHistory(long ptr);
+	private native void markAsRead(long ptr);
 
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -76,5 +77,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	
 	public void deleteHistory() {
 		deleteHistory(nativePtr);
+	}
+	
+	public void markAsRead() {
+		markAsRead(nativePtr);
 	}
 }

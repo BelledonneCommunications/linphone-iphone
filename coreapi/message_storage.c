@@ -196,11 +196,16 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	MSList *ret;
+	char *buf;
+	char *peer;
 	
 	if (lc->db==NULL) return NULL;
-	char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 	cr->messages_hist = NULL;
-	char *buf=sqlite3_mprintf("select * from history where remoteContact = %Q order by id DESC limit %i ;",peer,nb_message);
+	if (nb_message > 0)
+		buf=sqlite3_mprintf("select * from history where remoteContact = %Q order by id DESC limit %i ;",peer,nb_message);
+	else
+		buf=sqlite3_mprintf("select * from history where remoteContact = %Q order by id DESC;",peer);
 	linphone_sql_request_message(lc->db,buf,cr);
 	sqlite3_free(buf);
 	ret=cr->messages_hist;
@@ -225,7 +230,7 @@ void linphone_create_table(sqlite3* db){
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
-	if (lc->db==NULL) return NULL;
+	if (lc->db==NULL) return;
 	char *buf=sqlite3_mprintf("SELECT remoteContact FROM history Group By remoteContact;");
 	linphone_sql_request_all(lc->db,buf,lc);
 	sqlite3_free(buf);

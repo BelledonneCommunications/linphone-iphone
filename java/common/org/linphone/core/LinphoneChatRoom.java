@@ -70,4 +70,9 @@ public interface LinphoneChatRoom {
 	 * Deletes all the messages associated with the peer of this chat room
 	 */
 	void deleteHistory();
+	
+	/**
+	 * Marks all the messages in this conversation as read
+	 */
+	void markAsRead();
 }
