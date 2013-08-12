@@ -80,6 +80,8 @@ struct _LinphoneCallParams{
 	LinphoneMediaEncryption media_encryption;
 	PayloadType *audio_codec; /*audio codec currently in use */
 	PayloadType *video_codec; /*video codec currently in use */
+	MSVideoSize sent_vsize; /* Size of the video currently being sent */
+	MSVideoSize recv_vsize; /* Size of the video currently being received */
 	int down_bw;
 	int up_bw;
 	int down_ptime;

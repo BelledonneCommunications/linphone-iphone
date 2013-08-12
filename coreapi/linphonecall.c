@@ -815,6 +815,18 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
+	VideoStream *vstream;
+
+	MS_VIDEO_SIZE_ASSIGN(call->current_params.sent_vsize, UNKNOWN);
+	MS_VIDEO_SIZE_ASSIGN(call->current_params.recv_vsize, UNKNOWN);
+#ifdef VIDEO_ENABLED
+	vstream = call->videostream;
+	if (vstream != NULL) {
+		call->current_params.sent_vsize = video_stream_get_sent_video_size(vstream);
+		call->current_params.recv_vsize = video_stream_get_received_video_size(vstream);
+	}
+#endif
+
 	return &call->current_params;
 }
 
@@ -1059,6 +1071,14 @@ const PayloadType* linphone_call_params_get_used_audio_codec(const LinphoneCallP
 **/
 const PayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
+}
+
+MSVideoSize linphone_call_params_get_sent_video_size(const LinphoneCallParams *cp) {
+	return cp->sent_vsize;
+}
+
+MSVideoSize linphone_call_params_get_received_video_size(const LinphoneCallParams *cp) {
+	return cp->recv_vsize;
 }
 
 /**
@@ -2506,32 +2526,6 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 		zoom[2] = *cy;
         	ms_filter_call_method(vstream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
 	}else ms_warning("Could not apply zoom: video output wasn't activated.");
-}
-
-MSVideoSize linphone_call_get_sent_video_size(const LinphoneCall *call) {
-	MSVideoSize vsize;
-	VideoStream *vstream;
-	MS_VIDEO_SIZE_ASSIGN(vsize, UNKNOWN);
-#ifdef VIDEO_ENABLED
-	vstream = call->videostream;
-	if (vstream != NULL) {
-		vsize = video_stream_get_sent_video_size(vstream);
-	}
-#endif
-	return vsize;
-}
-
-MSVideoSize linphone_call_get_received_video_size(const LinphoneCall *call) {
-	MSVideoSize vsize;
-	VideoStream *vstream;
-	MS_VIDEO_SIZE_ASSIGN(vsize, UNKNOWN);
-#ifdef VIDEO_ENABLED
-	vstream = call->videostream;
-	if (vstream != NULL) {
-		vsize = video_stream_get_received_video_size(vstream);
-	}
-#endif
-	return vsize;
 }
 
 #ifndef USE_BELLESIP
