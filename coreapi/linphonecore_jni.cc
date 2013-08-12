@@ -2078,6 +2078,16 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
 
 	return (jlong) chatMessage;
 }
+extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getUnreadMessagesCount(JNIEnv*  env
+                                                                                  ,jobject  thiz
+                                                                                  ,jlong ptr) {
+    return (jint) linphone_chat_room_get_unread_messages_count((LinphoneChatRoom*)ptr);
+}
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteHistory(JNIEnv*  env
+                                                                    ,jobject  thiz
+                                                                    ,jlong ptr) {
+    linphone_chat_room_delete_history((LinphoneChatRoom*)ptr);
+}
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
                                                                     ,jobject  thiz
                                                                     ,jlong ptr) {

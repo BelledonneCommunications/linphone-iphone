@@ -59,4 +59,15 @@ public interface LinphoneChatRoom {
 	 * Destroys a LinphoneChatRoom.
 	 */
 	void destroy();
+	
+	/**
+	 * Returns the amount of unread messages associated with the peer of this chatRoom.
+	 * @return the amount of unread messages
+	 */
+	int getUnreadMessagesCount();
+	
+	/**
+	 * Deletes all the messages associated with the peer of this chat room
+	 */
+	void deleteHistory();
 }
