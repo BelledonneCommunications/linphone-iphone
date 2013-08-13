@@ -399,7 +399,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 						"foreground",CODEC_COLOR,
                                                    NULL);
 	gtk_tree_view_append_column (listview, column);
-	column = gtk_tree_view_column_new_with_attributes (_("Min bitrate (kbit/s)"),
+	column = gtk_tree_view_column_new_with_attributes (_("Bitrate (kbit/s)"),
                                                    renderer,
                                                    "text", CODEC_BITRATE,
 						"foreground",CODEC_COLOR,
