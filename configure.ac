@@ -408,13 +408,6 @@ AC_ARG_ENABLE(nonstandard-gsm,
 	[exotic_gsm=no]
 )
 
-
-dnl support for RSVP (by Vincent Maury)
-AC_ARG_ENABLE(rsvp,
-	[AS_HELP_STRING([--enable-rsvp], [Enable support for QoS reservations.])],
-	AC_DEFINE(VINCENT_MAURY_RSVP,1,[Tell whether RSVP support should be compiled.])
-)
-
 if test "x${prefix}" = "xNONE"; then
 	package_prefix=${ac_default_prefix}
 else
@@ -444,22 +437,6 @@ AC_DEFINE_UNQUOTED(PACKAGE_SOUND_DIR, "${package_prefix}/${DATADIRNAME}/sounds/l
 
 dnl check if we have the getifaddrs() sytem call
 AC_CHECK_FUNCS(getifaddrs)
-
-
-dnl conditionnal build for ssl
-AC_ARG_ENABLE(ssl,
-	[AS_HELP_STRING([--enable-ssl], [Turn on ssl support compiling. Required for sip tls. (default=false)])],
-	[case "${enableval}" in
-		yes)	build_ssl=true ;;
-		no)	build_ssl=false ;;
-		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-ssl) ;;
-	esac],
-	[build_ssl=false]
-)
-
-if test "$build_ssl" = "true"; then
-	PKG_CHECK_MODULES(OPENSSL, libssl >= 0.9.8)
-fi
 
 if test "$console_ui" = "true" ; then
 	dnl check gnu readline

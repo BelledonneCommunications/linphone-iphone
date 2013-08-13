@@ -125,8 +125,10 @@ These notes are useful if you want to upgrade part of the software that is inclu
 linphone-deps packages.
 
 List of software included in linphone-deps:
-libosip2  (compiled)
-libeXosip2 (compiled)
+antlr3c (compiled)
+polarssl (compiled
+belle-sip (compiled)
+libsrtp (compiled)
 libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all these from ffmpeg)
 libtheora (from the web)
 libx264 (compiled from the version distributed from linphone's web site)
@@ -141,6 +143,45 @@ libsqlite3 (compiled)
 Remarks:
 For every package compiled that goes into linphone-deps, .la files (libtool files) must be removed to avoid libtool errors.
 When running "make install DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or space.
+
+- building antlr3c
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/antlr3.git
+  * compile and install
+    $ cd runtime/C
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/antlr3c-install
+    $ cp 
+
+- building polarssl
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/polarssl.git
+  * compile and install:
+    $ cd polarssl
+    $ make lib SHARED=1 WINDOWS=1
+    $ make install DESTDIR=/usr
+    $ make install DESTDIR=/home/<myuser>/polarssl-install
+
+- building belle-sip
+  * download the sources with:
+    $ git clone git://git.linphone.org/belle-sip.git
+  * compile and install, assuming you have already compiled polarssl and antlr3c and installed in /.
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static 
+    $ make && make install && make install DESTDIR=/home/<myuser>/belle-sip-install
+
+- building libsrtp
+  *  download the sources with
+    $ git clone git://git.linphone.org/srtp.git
+  * compile with 
+    $ autoconf
+    $ ./configure --prefix=/usr
+    $ make libsrtp.a
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/libsrtp-install
 
 - building sqlite3
   * download the sources on the following website:

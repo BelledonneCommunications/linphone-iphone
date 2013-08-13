@@ -81,12 +81,12 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
 	LinphoneCore* lc = (LinphoneCore*) data;
 	char* address = argv[0];
 	linphone_core_create_chat_room(lc, address);
-    return 0;
+	return 0;
 }
 
 static int callback(void *data, int argc, char **argv, char **colName){
-    create_chat_message(argv,data);
-    return 0;
+	create_chat_message(argv,data);
+	return 0;
 }
 
 void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom *cr){
@@ -230,8 +230,10 @@ void linphone_create_table(sqlite3* db){
 }
 
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
+	char *buf;
+	
 	if (lc->db==NULL) return;
-	char *buf=sqlite3_mprintf("SELECT remoteContact FROM history Group By remoteContact;");
+	buf=sqlite3_mprintf("SELECT remoteContact FROM history Group By remoteContact;");
 	linphone_sql_request_all(lc->db,buf,lc);
 	sqlite3_free(buf);
 }
