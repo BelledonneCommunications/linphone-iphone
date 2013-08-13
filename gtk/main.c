@@ -82,6 +82,7 @@ static gchar *workingdir=NULL;
 static char *progpath=NULL;
 gchar *linphone_logfile=NULL;
 static gboolean workaround_gtk_entry_chinese_bug=FALSE;
+static gchar *custom_config_file=NULL;
 
 static GOptionEntry linphone_options[]={
 	{
@@ -132,6 +133,13 @@ static GOptionEntry linphone_options[]={
 	    .arg = G_OPTION_ARG_STRING,
 	    .arg_data = (gpointer) & workingdir,
 	    .description = N_("Specifiy a working directory (should be the base of the installation, eg: c:\\Program Files\\Linphone)")
+	},
+	{
+		.long_name = "config",
+		.short_name = '\0',
+		.arg = G_OPTION_ARG_STRING,
+		.arg_data = (gpointer) &custom_config_file,
+		.description = N_("Configuration file")
 	},
 	{0}
 };
@@ -1925,6 +1933,8 @@ int main(int argc, char *argv[]){
 		gdk_threads_leave();
 		return -1;
 	}
+	if (config_file) free(config_file);
+	config_file=linphone_gtk_get_config_file(custom_config_file);
 
 	settings=gtk_settings_get_default();
 	g_type_class_unref (g_type_class_ref (GTK_TYPE_IMAGE_MENU_ITEM));
