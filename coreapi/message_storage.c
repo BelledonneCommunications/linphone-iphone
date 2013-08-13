@@ -74,6 +74,7 @@ static void create_chat_message(char **argv, void *data){
 	new_message->is_read=atoi(argv[6]);
 	new_message->state=atoi(argv[7]);
 	new_message->storage_id=atoi(argv[0]);
+	new_message->external_body_url=argv[8]?ms_strdup(argv[8]):NULL;
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
 
@@ -128,8 +129,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
 		char datebuf[26];
-		char *buf=sqlite3_mprintf("insert into history values(NULL,%Q,%Q,%i,%Q,%Q,%i,%i);",
-						local_contact,peer,msg->dir,msg->message,my_ctime_r(&msg->time,datebuf),msg->is_read,msg->state);
+		char *buf=sqlite3_mprintf("insert into history values(NULL,%Q,%Q,%i,%Q,%Q,%i,%i,%Q);",
+						local_contact,peer,msg->dir,msg->message,my_ctime_r(&msg->time,datebuf),msg->is_read,msg->state,msg->external_body_url);
 		linphone_sql_request(lc->db,buf);
 		sqlite3_free(buf);
 		ms_free(local_contact);
@@ -243,6 +244,18 @@ void linphone_create_table(sqlite3* db){
 	}
 }
 
+void linphone_update_table(sqlite3* db) {
+	char* errmsg=NULL;
+	int ret;
+	ret=sqlite3_exec(db,"ALTER TABLE history ADD COLUMN url TEXT;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_warning("Table already up to date: %s.\n", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ms_debug("Table updated successfuly.");
+	}
+}
+
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc) {
 	char *buf;
 	
@@ -263,6 +276,7 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 		sqlite3_close(db);
 	}
 	linphone_create_table(db);
+	linphone_update_table(db);
 	lc->db=db;
 
 	// Create a chatroom for each contact in the chat history
