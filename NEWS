@@ -1,4 +1,5 @@
 linphone-3.7...??
+	Liblinphone level improvements thanks to belle-sip new SIP stack:
 	* multiple SIP transports simualtaneously now allowed
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
 	* fully asynchronous behavior: no more lengthly DNS or connections 
@@ -7,8 +8,8 @@ linphone-3.7...??
 	* better management of network disconnections
 	* SIP/TLS handled through lightweighted polarssl library (instead of openssl)
 	* SIP transaction state machines improved (RFC6026)
-	* Privacy API
-	* Full support of rich presence
+	* Privacy API (RFC3323, RFC3325)
+	* Full support of rich presence in (RFC4480)
 
 
 linphone-3.6.1 -- June 17, 2013

@@ -208,6 +208,10 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 		resp=belle_sip_response_create_from_request(req,481);/*INFO out of call dialogs are not allowed*/
 		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
 		return;
+	}else if (strcmp("BYE",method)==0) {
+		resp=belle_sip_response_create_from_request(req,481);/*out of dialog BYE */
+		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		return;
 	}else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
 		resp=belle_sip_response_create_from_request(req,501);
