@@ -73,6 +73,7 @@ static void create_chat_message(char **argv, void *data){
 	new_message->time=argv[5]!=NULL ? mktime(&ret) : time(NULL);
 	new_message->is_read=atoi(argv[6]);
 	new_message->state=atoi(argv[7]);
+	new_message->storage_id=atoi(argv[0]);
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
 }
 
@@ -120,8 +121,9 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 	}
 }
 
-void linphone_chat_message_store(LinphoneChatMessage *msg){
+unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
+	int id=0;
 	if (lc->db){
 		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));
@@ -132,7 +134,9 @@ void linphone_chat_message_store(LinphoneChatMessage *msg){
 		sqlite3_free(buf);
 		ms_free(local_contact);
 		ms_free(peer);
+		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
 	}
+	return id;
 }
 
 void linphone_chat_message_store_state(LinphoneChatMessage *msg){
@@ -179,6 +183,16 @@ int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
 	sqlite3_free(buf);
 	ms_free(peer);
 	return numrows;
+}
+
+void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	LinphoneCore *lc=cr->lc;
+	
+	if (lc->db==NULL) return ;
+	
+	char *buf=sqlite3_mprintf("delete from history where id = %i;", msg->storage_id);
+	linphone_sql_request(lc->db,buf);
+	sqlite3_free(buf);
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
@@ -264,7 +278,7 @@ void linphone_core_message_storage_close(LinphoneCore *lc){
 
 #else 
 
-void linphone_chat_message_store(LinphoneChatMessage *cr){
+unsigned int linphone_chat_message_store(LinphoneChatMessage *cr){
 }
 
 void linphone_chat_message_store_state(LinphoneChatMessage *cr){
@@ -275,6 +289,9 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 
 MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return NULL;
+}
+
+void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){

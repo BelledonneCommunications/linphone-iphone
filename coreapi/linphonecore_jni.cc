@@ -2088,6 +2088,12 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteHistory(JNIEnv
                                                                     ,jlong ptr) {
     linphone_chat_room_delete_history((LinphoneChatRoom*)ptr);
 }
+extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_deleteMessage(JNIEnv*  env
+                                                                    ,jobject  thiz
+                                                                    ,jlong room
+                                                                    ,jlong msg) {
+    linphone_chat_room_delete_message((LinphoneChatRoom*)room, (LinphoneChatMessage*)msg);
+}
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  env
                                                                        ,jobject  thiz
                                                                        ,jlong ptr) {

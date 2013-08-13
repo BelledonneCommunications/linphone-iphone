@@ -141,6 +141,7 @@ struct _LinphoneChatMessage {
 	SalCustomHeader *custom_headers;
 	LinphoneChatMessageState state;
 	bool_t is_read;
+	unsigned int storage_id;
 };
 
 typedef struct StunCandidate{
@@ -734,7 +735,7 @@ void linphone_upnp_destroy(LinphoneCore *lc);
 sqlite3 * linphone_message_storage_init();
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
-void linphone_chat_message_store(LinphoneChatMessage *msg);
+unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);

@@ -75,4 +75,10 @@ public interface LinphoneChatRoom {
 	 * Marks all the messages in this conversation as read
 	 */
 	void markAsRead();
+	
+	/**
+	 * Deletes a message
+	 * @param message the message to delete
+	 */
+	void deleteMessage(LinphoneChatMessage message);
 }

@@ -136,7 +136,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	}
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
-	linphone_chat_message_store(msg);
+	msg->storage_id=linphone_chat_message_store(msg);
 }
 
 /**
@@ -220,7 +220,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
 	linphone_address_destroy(addr);
-	linphone_chat_message_store(msg);
+	msg->storage_id=linphone_chat_message_store(msg);
 	linphone_chat_room_message_received(cr,lc,msg);
 	ms_free(cleanfrom);
 	ms_free(from);
@@ -473,6 +473,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	new_message->cb=msg->cb;
 	new_message->time=msg->time;
 	new_message->state=msg->state;
+	new_message->storage_id=msg->storage_id;
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
 	return new_message;
 }
