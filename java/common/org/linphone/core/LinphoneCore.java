@@ -864,6 +864,14 @@ public interface LinphoneCore {
 	**/
 	void setPreferredVideoSize(VideoSize vSize);
 	/**
+	 * Sets the preferred video size giving a known size name.
+	 *
+	 * This applies only to the stream that is captured and sent to the remote party,
+	 * since we accept all standard video size on the receive path.
+	 * @param name A known video name (eg. vga or 720p)
+	**/
+	void setPreferredVideoSizeByName(String name);
+	/**
 	 * get current preferred video size for sending.
 	 * @return  video size
 	 *

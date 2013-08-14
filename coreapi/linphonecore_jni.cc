@@ -2493,6 +2493,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSize(JN
 	linphone_core_set_preferred_video_size((LinphoneCore *)lc, vsize);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setPreferredVideoSizeByName(JNIEnv *env, jobject thiz, jlong lc, jstring jName) {
+	const char* cName = env->GetStringUTFChars(jName, NULL);
+	linphone_core_set_preferred_video_size_by_name((LinphoneCore *)lc, cName);
+	env->ReleaseStringUTFChars(jName, cName);
+}
+
 extern "C" jintArray Java_org_linphone_core_LinphoneCoreImpl_getPreferredVideoSize(JNIEnv *env, jobject thiz, jlong lc){
 	MSVideoSize vsize = linphone_core_get_preferred_video_size((LinphoneCore *)lc);
     jintArray arr = env->NewIntArray(2);

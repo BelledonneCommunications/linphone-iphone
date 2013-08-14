@@ -95,6 +95,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setUploadBandwidth(long nativePtr, int bw);
 	private native void setDownloadBandwidth(long nativePtr, int bw);
 	private native void setPreferredVideoSize(long nativePtr, int width, int heigth);
+	private native void setPreferredVideoSizeByName(long nativePtr, String name);
 	private native int[] getPreferredVideoSize(long nativePtr);
 	private native void setRing(long nativePtr, String path);
 	private native String getRing(long nativePtr);
@@ -449,6 +450,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void setPreferredVideoSize(VideoSize vSize) {
 		setPreferredVideoSize(nativePtr, vSize.width, vSize.height);
+	}
+
+	public synchronized void setPreferredVideoSizeByName(String name) {
+		setPreferredVideoSizeByName(nativePtr, name);
 	}
 
 	public synchronized VideoSize getPreferredVideoSize() {
