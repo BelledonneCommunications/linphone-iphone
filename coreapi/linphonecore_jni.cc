@@ -2104,6 +2104,27 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
 
 	return (jlong) chatMessage;
 }
+extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatMessage2(JNIEnv* env
+                                                                        ,jobject thiz
+                                                                        ,jlong ptr
+                                                                        ,jstring jmessage
+                                                                        ,jstring jurl
+                                                                        ,jint state
+                                                                        ,jlong time
+                                                                        ,jboolean read
+                                                                        ,jboolean incoming) {
+    const char* message = jmessage?env->GetStringUTFChars(jmessage, NULL):NULL;
+    const char* url = jurl?env->GetStringUTFChars(jurl, NULL):NULL;
+
+    LinphoneChatMessage *chatMessage = linphone_chat_room_create_message_2((LinphoneChatRoom *)ptr, message, url, (LinphoneChatMessageState)state, (time_t)time, read, incoming);
+
+    if (jmessage != NULL)
+        env->ReleaseStringUTFChars(jmessage, message);
+    if (jurl != NULL)
+        env->ReleaseStringUTFChars(jurl, url);
+
+    return (jlong) chatMessage;
+}
 extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getUnreadMessagesCount(JNIEnv*  env
                                                                                   ,jobject  thiz
                                                                                   ,jlong ptr) {
@@ -2145,6 +2166,13 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setUserData(JNIEn
 	jobject ud = env->NewGlobalRef(thiz);
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr,(void*) ud);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_store(JNIEnv*  env
+                                                                            ,jobject  thiz
+                                                                            ,jlong ptr) {
+    linphone_chat_message_store((LinphoneChatMessage*)ptr);
+}
+
 extern "C" jstring Java_org_linphone_core_LinphoneChatMessageImpl_getText(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {

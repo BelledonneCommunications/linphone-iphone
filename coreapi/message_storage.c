@@ -125,6 +125,7 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
 	int id=0;
+
 	if (lc->db){
 		char *peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(msg->chat_room));
 		char *local_contact=linphone_address_as_string_uri_only(linphone_chat_message_get_local_address(msg));

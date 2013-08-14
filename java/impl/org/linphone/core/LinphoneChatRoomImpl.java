@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneChatMessage.StateListener;
 
 class LinphoneChatRoomImpl implements LinphoneChatRoom {
@@ -33,6 +34,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
 	private native void updateUrl(long room, long message);
+	private native long createLinphoneChatMessage2(long ptr, String message,
+			String url, int state, long timestamp, boolean isRead,
+			boolean isIncoming);
 
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -49,7 +53,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	@Override
 	public void sendMessage(LinphoneChatMessage message, StateListener listener) {
 		sendMessage2(nativePtr, message.getNativePtr(), listener);
-		
 	}
 
 	@Override
@@ -93,5 +96,12 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void updateUrl(LinphoneChatMessage message) {
 		if (message != null)
 			updateUrl(nativePtr, message.getNativePtr());
+	}
+	
+	@Override
+	public LinphoneChatMessage createLinphoneChatMessage(String message,
+			String url, State state, long timestamp, boolean isRead,
+			boolean isIncoming) {
+		return new LinphoneChatMessageImpl(createLinphoneChatMessage2(nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
 	}
 }

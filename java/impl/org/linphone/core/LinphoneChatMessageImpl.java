@@ -12,6 +12,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native int getStatus(long ptr);
 	private native boolean isRead(long ptr);
 	private native boolean isOutgoing(long ptr);
+	private native void store(long ptr);
 	
 	protected LinphoneChatMessageImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -83,5 +84,9 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	public boolean isOutgoing() {
 		return isOutgoing(nativePtr);
+	}
+	
+	public void store() {
+		store(nativePtr);
 	}
 }

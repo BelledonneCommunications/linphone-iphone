@@ -271,6 +271,34 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 }
 
 /**
+ * Create a message attached to a dedicated chat room;
+ * @param cr the chat room.
+ * @param message text message, NULL if absent.
+ * @return a new #LinphoneChatMessage
+ */
+LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
+	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+
+	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);
+	msg->chat_room=(LinphoneChatRoom*)cr;
+	msg->message=message?ms_strdup(message):NULL;
+	msg->external_body_url=external_body_url?ms_strdup(external_body_url):NULL;
+	msg->time=time;
+	msg->state=state;
+	msg->is_read=is_read;
+	if (is_incoming) {
+		msg->dir=LinphoneChatMessageIncoming;
+		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
+	} else {
+		msg->dir=LinphoneChatMessageOutgoing;
+		linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(lc)));
+	}
+	return msg;
+}
+
+/**
  * Send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
  * @param msg #LinphoneChatMessage message to be sent
@@ -366,6 +394,16 @@ void linphone_chat_message_set_from(LinphoneChatMessage* message, const Linphone
  */
 const LinphoneAddress* linphone_chat_message_get_from(const LinphoneChatMessage* message) {
 	return message->from;
+}
+
+/**
+ * Set destination of the message
+ *@param message #LinphoneChatMessage obj
+ *@param to #LinphoneAddress destination of this message (copied)
+ */
+void linphone_chat_message_set_to(LinphoneChatMessage* message, const LinphoneAddress* to) {
+	if(message->to) linphone_address_destroy(message->to);
+	message->to=linphone_address_clone(to);
 }
 
 /**
