@@ -81,4 +81,10 @@ public interface LinphoneChatRoom {
 	 * @param message the message to delete
 	 */
 	void deleteMessage(LinphoneChatMessage message);
+	
+	/**
+	 * Update the value stored in the database for the external_body_url field
+	 * @param message to update
+	 */
+	void updateUrl(LinphoneChatMessage message);
 }

@@ -32,6 +32,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native void deleteHistory(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
+	private native void updateUrl(long room, long message);
 
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -87,5 +88,10 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void deleteMessage(LinphoneChatMessage message) {
 		if (message != null)
 			deleteMessage(nativePtr, message.getNativePtr());
+	}
+	
+	public void updateUrl(LinphoneChatMessage message) {
+		if (message != null)
+			updateUrl(nativePtr, message.getNativePtr());
 	}
 }

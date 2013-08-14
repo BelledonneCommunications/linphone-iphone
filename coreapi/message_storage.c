@@ -165,6 +165,16 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	ms_free(peer);
 }
 
+void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	
+	if (lc->db==NULL) return ;
+
+	char *buf=sqlite3_mprintf("update history set url=%Q where id=%i;",msg->external_body_url,msg->storage_id);
+	linphone_sql_request(lc->db,buf);
+	sqlite3_free(buf);
+}
+
 int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 	int numrows=0;
@@ -318,6 +328,9 @@ void linphone_core_message_storage_init(LinphoneCore *lc){
 }
 
 void linphone_core_message_storage_close(LinphoneCore *lc){
+}
+
+void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 }
 
 int linphone_chat_room_get_unread_messages_count(LinphoneChatRoom *cr){
