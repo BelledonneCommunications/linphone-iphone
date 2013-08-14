@@ -938,6 +938,8 @@ static void simple_call_transfer(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCall* pauline_called_by_marie;
+	LinphoneCall *marie_calling_pauline;
+	LinphoneCall *marie_calling_laure;
 
 	char* laure_identity=linphone_address_as_string(laure->identity);
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -946,6 +948,7 @@ static void simple_call_transfer(void) {
 
 
 	CU_ASSERT_TRUE(call(marie,pauline));
+	marie_calling_pauline=linphone_core_get_current_call(marie->lc);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 
 	reset_counters(&marie->stat);
@@ -961,6 +964,9 @@ static void simple_call_transfer(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallPaused,1,2000));
 	/*marie calling laure*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingProgress,1,2000));
+	
+	CU_ASSERT_PTR_NOT_NULL(linphone_call_get_transfer_target_call(marie_calling_pauline));
+	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallOutgoingInit,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallIncomingReceived,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingRinging,1,2000));
@@ -970,6 +976,11 @@ static void simple_call_transfer(void) {
 	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,2000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,2000));
+	
+	marie_calling_laure=linphone_core_get_current_call(marie->lc);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(marie_calling_laure);
+	CU_ASSERT_TRUE(linphone_call_get_transferer_call(marie_calling_laure)==marie_calling_pauline);
+	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallConnected,1,2000));
 
 	/*terminate marie to pauline call*/

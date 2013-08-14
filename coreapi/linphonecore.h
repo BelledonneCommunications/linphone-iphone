@@ -121,7 +121,9 @@ struct _LinphoneCall;
 typedef struct _LinphoneCall LinphoneCall;
 
 /**
- * Enum describing failure reasons.
+ * Enum describing various failure reasons or contextual information for some events.
+ * @see linphone_call_get_reason()
+ * @see linphone_proxy_config_get_error()
  * @ingroup misc
 **/
 enum _LinphoneReason{
@@ -134,8 +136,7 @@ enum _LinphoneReason{
 	LinphoneReasonBusy, /**<Phone line was busy */
 	LinphoneReasonMedia, /**<Incompatible media */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
-	LinphoneReasonDoNotDisturb /*Do not disturb reason*/
-
+	LinphoneReasonDoNotDisturb /**<Do not disturb reason*/
 };
 
 /**
@@ -533,7 +534,7 @@ typedef enum _LinphoneCallState{
 
 LINPHONE_PUBLIC	const char *linphone_call_state_to_string(LinphoneCallState cs);
 
-LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
@@ -543,15 +544,17 @@ LINPHONE_PUBLIC	LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall * linphone_call_ref(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_unref(LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call);
-const char *linphone_call_get_refer_to(const LinphoneCall *call);
-bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+LINPHONE_PUBLIC const char *linphone_call_get_refer_to(const LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_call_has_transfer_pending(const LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCall *linphone_call_get_transferer_call(const LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCall *linphone_call_get_transfer_target_call(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_call_get_duration(const LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call);
 LINPHONE_PUBLIC	const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_call_enable_camera(LinphoneCall *lc, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_call_camera_enabled(const LinphoneCall *lc);
-int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
+LINPHONE_PUBLIC int linphone_call_take_video_snapshot(LinphoneCall *call, const char *file);
 LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
@@ -566,8 +569,8 @@ LINPHONE_PUBLIC void linphone_call_send_vfu_request(LinphoneCall *call);
 LINPHONE_PUBLIC void *linphone_call_get_user_pointer(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_set_user_pointer(LinphoneCall *call, void *user_pointer);
 LINPHONE_PUBLIC	void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data);
-LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
-void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
+LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call);
+LINPHONE_PUBLIC void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy);
 LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
 /**
@@ -1152,7 +1155,7 @@ LINPHONE_PUBLIC	int linphone_core_accept_call_with_params(LinphoneCore *lc, Linp
 
 LINPHONE_PUBLIC	int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
-int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
+LINPHONE_PUBLIC int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
 LINPHONE_PUBLIC	int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
 

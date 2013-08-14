@@ -2333,7 +2333,10 @@ void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 		call->refer_pending=FALSE;
 		newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
 		linphone_call_params_destroy(cp);
-		if (newcall) linphone_core_notify_refer_state(lc,call,newcall);
+		if (newcall) {
+			call->transfer_target=linphone_call_ref(newcall);
+			linphone_core_notify_refer_state(lc,call,newcall);
+		}
 	}
 }
 
@@ -2670,6 +2673,10 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		linphone_call_unref(call);
 		return NULL;
 	}
+	if (params && params->referer){
+		call->transferer=linphone_call_ref(params->referer);
+	}
+	
 	/* this call becomes now the current one*/
 	lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
@@ -2728,6 +2735,10 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
  * @ingroup call_control
  * The remote endpoint is expected to issue a new call to the specified destination.
  * The current call remains active and thus can be later paused or terminated.
+ * 
+ * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
+ * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallOutgoingConnected.
 **/
 int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *url)
 {
@@ -2764,6 +2775,10 @@ int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char
  * This method will send a transfer request to the transfered person. The phone of the transfered is then
  * expected to automatically call to the destination of the transfer. The receiver of the transfer will then automatically
  * close the call with us (the 'dest' call).
+ * 
+ * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
+ * In this case, the transfer_state_changed callback of the #LinphoneCoreVTable is invoked to notify of the state of the new call at the other party.
+ * The notified states are #LinphoneCallOutgoingInit , #LinphoneCallOutgoingProgress, #LinphoneCallOutgoingRinging and #LinphoneCallOutgoingConnected.
 **/
 int linphone_core_transfer_call_to_another(LinphoneCore *lc, LinphoneCall *call, LinphoneCall *dest){
 	int result = sal_call_refer_with_replaces (call->op,dest->op);
@@ -3312,25 +3327,23 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 		call = the_call;
 	}
 	switch (call->state) {
-	case LinphoneCallReleased:
-	case LinphoneCallEnd:
-		ms_warning("No need to terminate a call [%p] in state [%s]",call,linphone_call_state_to_string(call->state));
-		return -1;
-	case LinphoneCallIncomingReceived:
-	case LinphoneCallIncomingEarlyMedia:
-		return linphone_core_decline_call(lc,call,LinphoneReasonDeclined);
-	case LinphoneCallOutgoingInit: {
-			/* In state OutgoingInit, op has to be destroyed */
-			sal_op_release(call->op);
-			call->op = NULL;
+		case LinphoneCallReleased:
+		case LinphoneCallEnd:
+			ms_warning("No need to terminate a call [%p] in state [%s]",call,linphone_call_state_to_string(call->state));
+			return -1;
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+			return linphone_core_decline_call(lc,call,LinphoneReasonDeclined);
+		case LinphoneCallOutgoingInit: {
+				/* In state OutgoingInit, op has to be destroyed */
+				sal_op_release(call->op);
+				call->op = NULL;
+				break;
+			}
+		default:
+			sal_call_terminate(call->op);
 			break;
-		}
-
-	default:
-		sal_call_terminate(call->op);
-		break;
 	}
-
 	terminate_call(lc,call);
 	return 0;
 }

@@ -743,6 +743,15 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				sal_op_release(call->op);
 				call->op=NULL;
 			}
+			/*it is necessary to reset pointers to other call to prevent circular references that would result in memory never freed.*/
+			if (call->transferer){
+				linphone_call_unref(call->transferer);
+				call->transferer=NULL;
+			}
+			if (call->transfer_target){
+				linphone_call_unref(call->transfer_target);
+				call->transfer_target=NULL;
+			}
 			linphone_call_unref(call);
 		}
 	}
@@ -772,6 +781,12 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	}
 	if (obj->refer_to){
 		ms_free(obj->refer_to);
+	}
+	if (obj->transferer){
+		linphone_call_unref(obj->transferer);
+	}
+	if (obj->transfer_target){
+		linphone_call_unref(obj->transfer_target);
 	}
 	if (obj->owns_call_log)
 		linphone_call_log_destroy(obj->log);
@@ -938,6 +953,21 @@ LinphoneCallLog *linphone_call_get_call_log(const LinphoneCall *call){
 **/
 const char *linphone_call_get_refer_to(const LinphoneCall *call){
 	return call->refer_to;
+}
+
+/**
+ * Returns the transferer if this call was started automatically as a result of an incoming transfer request.
+ * The call in which the transfer request was received is returned in this case.
+**/
+LinphoneCall *linphone_call_get_transferer_call(const LinphoneCall *call){
+	return call->transferer;
+}
+
+/**
+ * When this call has received a transfer request, returns the new call that was automatically created as a result of the transfer.
+**/
+LinphoneCall *linphone_call_get_transfer_target_call(const LinphoneCall *call){
+	return call->transfer_target;
 }
 
 /**
@@ -2468,6 +2498,10 @@ void linphone_call_log_completed(LinphoneCall *call){
 	call_logs_write_to_config_file(lc);
 }
 
+/**
+ * Returns the current transfer state, if a transfer has been initiated from this call.
+ * @see linphone_core_transfer_call() , linphone_core_transfer_call_to_another()
+**/
 LinphoneCallState linphone_call_get_transfer_state(LinphoneCall *call) {
 	return call->transfer_state;
 }

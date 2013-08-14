@@ -198,6 +198,8 @@ struct _LinphoneCall
 	int ping_time;
 	unsigned int remote_session_id;
 	unsigned int remote_session_ver;
+	LinphoneCall *transferer; /*if this call is the result of a transfer, transferer points to the call from which the transfer request was received.*/
+	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;
