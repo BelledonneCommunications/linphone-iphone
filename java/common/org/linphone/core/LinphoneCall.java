@@ -303,4 +303,16 @@ public interface LinphoneCall {
 	 * Send an info message to remote peer.
 	 */
 	void sendInfoMessage(LinphoneInfoMessage msg);
+	
+	/**
+	 * Returns the transferer if this call was started automatically as a result of an incoming transfer request.
+	 * The call in which the transfer request was received is returned in this case.
+	 **/
+	LinphoneCall getTransfererCall();
+	
+	/**
+	 * When this call has received a transfer request, returns the new call that was automatically created as a result of the transfer.
+	**/
+	LinphoneCall getTransferTargetCall();
+	
 }

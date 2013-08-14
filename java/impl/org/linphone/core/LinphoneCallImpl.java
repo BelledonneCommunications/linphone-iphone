@@ -217,4 +217,14 @@ class LinphoneCallImpl implements LinphoneCall {
 	public void sendInfoMessage(LinphoneInfoMessage msg) {
 		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
 	}
+	private native Object getTransfererCall(long callPtr); 
+	@Override
+	public LinphoneCall getTransfererCall() {
+		return (LinphoneCall)getTransfererCall(nativePtr);
+	}
+	private native Object getTransferTargetCall(long callPtr);
+	@Override
+	public LinphoneCall getTransferTargetCall() {
+		return (LinphoneCall)getTransferTargetCall(nativePtr);
+	}
 }

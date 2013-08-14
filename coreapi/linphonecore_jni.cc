@@ -1911,6 +1911,32 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransferState(
 	return linphone_call_get_transfer_state(call);
 }
 
+/*
+ * Class:     org_linphone_core_LinphoneCallImpl
+ * Method:    getTransfererCall
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransfererCall(JNIEnv *env, jobject jCall, jlong callptr){
+	LinphoneCall *call=(LinphoneCall*)callptr;
+	LinphoneCore *lc=linphone_call_get_core(call);
+	LinphoneCoreData *lcdata=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	LinphoneCall *ret=linphone_call_get_transferer_call(call);
+	return lcdata->getCall(env,ret);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCallImpl
+ * Method:    getTransferTargetCall
+ * Signature: (J)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCallImpl_getTransferTargetCall(JNIEnv *env, jobject jCall, jlong callptr){
+	LinphoneCall *call=(LinphoneCall*)callptr;
+	LinphoneCore *lc=linphone_call_get_core(call);
+	LinphoneCoreData *lcdata=(LinphoneCoreData*)linphone_core_get_user_data(lc);
+	LinphoneCall *ret=linphone_call_get_transfer_target_call(call);
+	return lcdata->getCall(env,ret);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_enableEchoCancellation(	JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
