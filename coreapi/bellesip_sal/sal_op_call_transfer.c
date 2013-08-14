@@ -148,6 +148,9 @@ static int send_notify_for_refer(SalOp* op, const char *sipfrag){
 }
 
 int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
+	if(belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_TERMINATED){
+		return 0;
+	}
 	belle_sip_dialog_state_t state=newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
 	switch(state) {
 	case BELLE_SIP_DIALOG_NULL:

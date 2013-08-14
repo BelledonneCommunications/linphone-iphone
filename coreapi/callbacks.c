@@ -540,6 +540,9 @@ static void call_terminated(SalOp *op, const char *from){
 		break;
 	}
 	ms_message("Current call terminated...");
+	if (call->refer_pending){
+		linphone_core_start_refered_call(lc,call);
+	}
 	//we stop the call only if we have this current call or if we are in call
 	if (lc->ringstream!=NULL && ( (ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc) )) {
 		linphone_core_stop_ringing(lc);

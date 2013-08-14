@@ -80,6 +80,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	}
 }
 
+#ifdef VIDEO_ENABLED
 static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -91,8 +92,7 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 	counters = (stats*)get_stats(lc);
 	counters->number_of_IframeDecoded++;
 }
-
-
+#endif
 
 bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
@@ -870,10 +870,10 @@ static void call_with_declined_srtp(void) {
 }
 #ifdef VIDEO_ENABLED
 static void srtp_video_ice_call(void) {
+	int i=0;
 #else
 static void srtp_ice_call(void) {
 #endif
-	int i=0;
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
@@ -993,6 +993,52 @@ static void simple_call_transfer(void) {
 	ms_list_free(lcs);
 }
 
+static void mean_call_transfer(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	LinphoneCall* pauline_called_by_marie;
+
+	char* laure_identity=linphone_address_as_string(laure->identity);
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_called_by_marie=linphone_core_get_current_call(marie->lc);
+
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	reset_counters(&laure->stat);
+
+	linphone_core_transfer_call(marie->lc,pauline_called_by_marie,laure_identity);
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallRefered,1,2000));
+	
+	/*marie ends the call  */
+	linphone_core_terminate_call(marie->lc,pauline_called_by_marie);
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+	
+	/*Pauline starts the transfer*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingInit,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingProgress,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallIncomingReceived,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,2000));
+	linphone_core_accept_call(laure->lc,linphone_core_get_current_call(laure->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallConnected,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,2000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,2000));
+
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
+}
+
 static void call_transfer_existing_call_outgoing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1097,6 +1143,7 @@ test_t call_tests[] = {
 	{ "Call with privacy", call_with_privacy },
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
+	{ "Mean call transfer", mean_call_transfer },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
 	{ "Call with custom headers",call_with_custom_headers}

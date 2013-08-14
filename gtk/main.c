@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WIN32
 #define chdir _chdir
+#include "direct.h"
 #endif
 
 #if defined(HAVE_NOTIFY1) || defined(HAVE_NOTIFY4)
