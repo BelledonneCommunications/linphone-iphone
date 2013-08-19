@@ -2116,7 +2116,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
     const char* message = jmessage?env->GetStringUTFChars(jmessage, NULL):NULL;
     const char* url = jurl?env->GetStringUTFChars(jurl, NULL):NULL;
 
-    LinphoneChatMessage *chatMessage = linphone_chat_room_create_message_2((LinphoneChatRoom *)ptr, message, url, (LinphoneChatMessageState)state, (time_t)time, read, incoming);
+    LinphoneChatMessage *chatMessage = linphone_chat_room_create_message_2(
+                (LinphoneChatRoom *)ptr, message, url, (LinphoneChatMessageState)state,
+                (time_t)time, read, incoming);
 
     if (jmessage != NULL)
         env->ReleaseStringUTFChars(jmessage, message);

@@ -274,9 +274,16 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
  * Create a message attached to a dedicated chat room;
  * @param cr the chat room.
  * @param message text message, NULL if absent.
+ * @param external_body_url the URL given in external body or NULL.
+ * @param state the LinphoneChatMessage.State of the message.
+ * @param time the time_t at which the message has been received/sent.
+ * @param is_read TRUE if the message should be flagged as read, FALSE otherwise.
+ * @param is_incoming TRUE if the message has been received, FALSE otherwise.
  * @return a new #LinphoneChatMessage
  */
-LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
+LinphoneChatMessage* linphone_chat_room_create_message_2(
+        LinphoneChatRoom *cr, const char* message, const char* external_body_url,
+        LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
 	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
 
 	LinphoneChatMessage* msg = ms_new0(LinphoneChatMessage,1);

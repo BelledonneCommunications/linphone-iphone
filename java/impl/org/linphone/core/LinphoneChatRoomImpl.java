@@ -102,6 +102,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public LinphoneChatMessage createLinphoneChatMessage(String message,
 			String url, State state, long timestamp, boolean isRead,
 			boolean isIncoming) {
-		return new LinphoneChatMessageImpl(createLinphoneChatMessage2(nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
+		return new LinphoneChatMessageImpl(createLinphoneChatMessage2(
+				nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
 	}
 }
