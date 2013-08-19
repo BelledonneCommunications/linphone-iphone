@@ -304,6 +304,7 @@ void linphone_core_message_storage_close(LinphoneCore *lc){
 #else 
 
 unsigned int linphone_chat_message_store(LinphoneChatMessage *cr){
+	return 0;
 }
 
 void linphone_chat_message_store_state(LinphoneChatMessage *cr){
