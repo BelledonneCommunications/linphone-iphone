@@ -4,7 +4,7 @@
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
-		coreapi console gtk share scripts tools tester
+		coreapi console gtk share scripts tools tester include
 
 
 

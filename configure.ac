@@ -696,7 +696,7 @@ AM_CONDITIONAL(ENABLE_MANUAL, test x$have_sgmltools$build_manual = xyesyes )
 
 dnl for external use of linphone libs
 LINPHONE_CFLAGS="-I${includedir} -I${includedir}/linphone"
-LINPHONE_LIBS="-L${libdir} -llinphone"
+LINPHONE_LIBS="-L${libdir} -llinphone -llpc2xml -lxml2lpc"
 
 AC_SUBST(LINPHONE_CFLAGS)
 AC_SUBST(LINPHONE_LIBS)
@@ -796,6 +796,7 @@ AC_CONFIG_FILES([
 	m4/Makefile
 	po/Makefile.in
 	pixmaps/Makefile
+	include/Makefile
 	coreapi/Makefile
 	coreapi/help/Makefile
 	coreapi/help/Doxyfile

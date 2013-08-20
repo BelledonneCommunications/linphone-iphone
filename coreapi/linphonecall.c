@@ -830,8 +830,9 @@ void linphone_call_unref(LinphoneCall *obj){
  * Returns current parameters associated to the call.
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
+#ifdef VIDEO_ENABLED
 	VideoStream *vstream;
-
+#endif
 	MS_VIDEO_SIZE_ASSIGN(call->current_params.sent_vsize, UNKNOWN);
 	MS_VIDEO_SIZE_ASSIGN(call->current_params.recv_vsize, UNKNOWN);
 #ifdef VIDEO_ENABLED

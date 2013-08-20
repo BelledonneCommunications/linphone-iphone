@@ -27,7 +27,7 @@ lib_LTLIBRARIES=liblinphone.la
 liblinphone_la_SOURCES=\
 	linphonecore.c linphonecore.h private.h\
 	offeranswer.c offeranswer.h\
-	sal.c sal.h \
+	sal.c \
 	callbacks.c \
 	misc.c  \
 	address.c \
@@ -54,7 +54,7 @@ liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
 	
 liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
-				bellesip_sal/sal_impl.c \
+				bellesip_sal/sal_impl.c bellesip_sal/sal_impl.h \
 				bellesip_sal/sal_op_impl.c \
 				bellesip_sal/sal_op_call.c \
 				bellesip_sal/sal_op_registration.c \
