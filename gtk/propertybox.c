@@ -1100,7 +1100,7 @@ void linphone_gtk_show_parameters(void){
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"use_upnp")),TRUE);
 		break;
 	}
-	if(!linphone_core_upnp_available(lc)) {
+	if(!linphone_core_upnp_available()) {
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"use_upnp"));
 	}
 
