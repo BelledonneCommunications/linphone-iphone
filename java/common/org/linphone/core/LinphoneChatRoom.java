@@ -59,6 +59,13 @@ public interface LinphoneChatRoom {
 	LinphoneChatMessage[] getHistory();
 	
 	/**
+	 * Returns the chat history associated with the peer address associated with this chat room
+	 * @param limit the maximum number of messages to fetch
+	 * @return an array of LinphoneChatMessage
+	 */
+	LinphoneChatMessage[] getHistory(int limit);
+	
+	/**
 	 * Destroys a LinphoneChatRoom.
 	 */
 	void destroy();

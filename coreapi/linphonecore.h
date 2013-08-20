@@ -897,7 +897,7 @@ LINPHONE_PUBLIC	void linphone_chat_message_add_custom_header(LinphoneChatMessage
 LINPHONE_PUBLIC	const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name);
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_read(LinphoneChatMessage* message);
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message);
-
+LINPHONE_PUBLIC unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message);
 /**
  * @}
  */

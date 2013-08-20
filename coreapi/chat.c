@@ -495,6 +495,15 @@ bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
 }
 
 /**
+ * Returns the id used to identify this message in the storage database
+ * @param message the message
+ * @return the id
+ */
+unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message) {
+    return message->storage_id;
+}
+
+/**
  * Duplicate a LinphoneChatMessage
 **/
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {

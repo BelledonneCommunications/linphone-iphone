@@ -2074,8 +2074,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JNIE
 //LinphoneChatRoom
 extern "C" jlongArray Java_org_linphone_core_LinphoneChatRoomImpl_getHistory(JNIEnv*  env
                                                                         ,jobject  thiz
-                                                                        ,jlong ptr) {
-    MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, 0);
+                                                                        ,jlong ptr
+                                                                        ,jint limit) {
+    MSList* history = linphone_chat_room_get_history((LinphoneChatRoom*)ptr, limit);
     int historySize = ms_list_size(history);
     jlongArray jHistory = env->NewLongArray(historySize);
     jlong *jInternalArray = env->GetLongArrayElements(jHistory, NULL);
@@ -2249,6 +2250,12 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isOutgoing(JN
                                                                          ,jobject  thiz
                                                                          ,jlong ptr) {
     return (jboolean) linphone_chat_message_is_outgoing((LinphoneChatMessage*)ptr);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getStorageId(JNIEnv*  env
+                                                                         ,jobject  thiz
+                                                                         ,jlong ptr) {
+    return (jint) linphone_chat_message_get_storage_id((LinphoneChatMessage*)ptr);
 }
 
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env

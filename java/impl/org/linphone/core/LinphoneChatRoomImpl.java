@@ -27,7 +27,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native long getPeerAddress(long ptr);
 	private native void sendMessage(long ptr, String message);
 	private native void sendMessage2(long ptr, long message, StateListener listener);
-	private native long[] getHistory(long ptr);
+	private native long[] getHistory(long ptr, int limit);
 	private native void destroy(long ptr);
 	private native int getUnreadMessagesCount(long ptr);
 	private native void deleteHistory(long ptr);
@@ -61,7 +61,11 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	}
 	
 	public LinphoneChatMessage[] getHistory() {
-		long[] typesPtr = getHistory(nativePtr);
+		return getHistory(0);
+	}
+	
+	public LinphoneChatMessage[] getHistory(int limit) {
+		long[] typesPtr = getHistory(nativePtr, limit);
 		if (typesPtr == null) return null;
 		
 		LinphoneChatMessage[] messages = new LinphoneChatMessage[typesPtr.length];

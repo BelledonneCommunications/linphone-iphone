@@ -135,4 +135,10 @@ public interface LinphoneChatMessage {
 	 * THIS METHOD IS ONLY USED TO IMPORT OLD MESSAGES, DON'T USE IT FOR ANY OTHER USAGE!
 	 */
 	void store();
+	
+	/**
+	 * Returns the id used to id this message in the database
+	 * @return the id used to id this message in the database
+	 */
+	int getStorageId();
 }
