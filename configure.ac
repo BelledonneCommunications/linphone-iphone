@@ -78,7 +78,7 @@ AC_SUBST(CONSOLE_FLAGS)
 AC_SUBST(GUI_FLAGS)
 
 case $build_os in
-	darwin*)
+	darwin|darwin*)
 		HTTPS_CA_DIR=`openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
 	;;
 esac
