@@ -97,7 +97,9 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 
 	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0) && retry++ <310) {
 		linphone_core_iterate(lc);
-		if (counters->number_of_auth_info_requested>0 && late_auth_info) {
+		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
+			if (!linphone_core_get_auth_info_list(lc))
+				CU_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized);
 			info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
 			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 		}

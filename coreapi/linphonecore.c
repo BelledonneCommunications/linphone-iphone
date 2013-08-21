@@ -5787,6 +5787,8 @@ const char *linphone_reason_to_string(LinphoneReason err){
 			return "IO error";
 		case LinphoneReasonDoNotDisturb:
 			return "Do not distrub";
+		case LinphoneReasonUnauthorized:
+					return "Unauthorized";
 	}
 	return "unknown error";
 }

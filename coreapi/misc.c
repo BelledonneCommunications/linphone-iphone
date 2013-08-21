@@ -1181,6 +1181,8 @@ SalReason linphone_reason_to_sal(LinphoneReason reason){
 			return SalReasonServiceUnavailable;
 		case LinphoneReasonDoNotDisturb:
 			return SalReasonDoNotDisturb;
+		case LinphoneReasonUnauthorized:
+			return SalReasonUnauthorized;
 	}
 	return SalReasonUnknown;
 }
@@ -1221,6 +1223,9 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 		case SalReasonRequestPending:
 			ret=LinphoneReasonNone;
 			break;
+		case SalReasonUnauthorized:
+			ret=LinphoneReasonUnauthorized;
+		break;
 	}
 	return ret;
 }

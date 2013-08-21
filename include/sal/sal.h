@@ -274,7 +274,8 @@ typedef enum SalReason{
 	SalReasonForbidden,
 	SalReasonUnknown,
 	SalReasonServiceUnavailable,
-	SalReasonRequestPending
+	SalReasonRequestPending,
+	SalReasonUnauthorized
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);

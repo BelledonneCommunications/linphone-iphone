@@ -44,6 +44,10 @@ public class Reason {
 	 * Transport error: connection failures, disconnections etc...
 	 * */
 	static public Reason DoNotDisturb = new Reason(9,"DoNotDisturb");
+	/**
+	 * Operation not authorized because no credentials found
+	 * */
+	static public Reason Unauthorized = new Reason(10,"Unauthorized");
 		
 	protected final int mValue;
 	private final String mStringValue;

@@ -334,6 +334,9 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonRequestPending:
 			ret=491;
 			break;
+		case SalReasonUnauthorized:
+			ret=401;
+			break;
 	}
 	return ret;
 }
@@ -342,6 +345,11 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 	switch(code) {
 	case 400:
 		*sal_err=SalErrorUnknown;
+		break;
+	case 401:
+	case 407:
+		*sal_err=SalErrorFailure;
+		*sal_reason=SalReasonUnauthorized;
 		break;
 	case 403:
 		*sal_err=SalErrorFailure;
