@@ -79,10 +79,6 @@ AC_SUBST(GUI_FLAGS)
 
 case "$build_os" in
 	*darwin*)
-		echo "Defining HTTPS_CA_DIR"
-		echo `which openssl`
-		echo `openssl version -d`
-		echo `openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
 		HTTPS_CA_DIR=`openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
 	;;
 esac
