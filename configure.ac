@@ -77,8 +77,8 @@ AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)
 AC_SUBST(GUI_FLAGS)
 
-case $build_os in
-	darwin|darwin*)
+case "$build_os" in
+	*darwin*)
 		HTTPS_CA_DIR=`openssl version -d | sed  "s/OPENSSLDIR: \"\(.*\)\"/\1/"`
 	;;
 esac
