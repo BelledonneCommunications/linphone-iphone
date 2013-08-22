@@ -31,7 +31,6 @@ endif
 clean-local:
 	rm -rf doc
 
-if ENABLE_TESTS
 #tutorials
 
 noinst_PROGRAMS=helloworld registration buddy_status chatroom notify
@@ -62,8 +61,6 @@ notify_SOURCES=notify.c
 LINPHONE_TUTOS+=$(notify_SOURCES)
 
 notify_LDADD=$(helloworld_LDADD)
-
-endif
 
 AM_CFLAGS=\
 	-I$(top_srcdir)/coreapi \
