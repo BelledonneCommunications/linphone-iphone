@@ -53,7 +53,7 @@ Libraries and headers required to develop software with linphone.
 %if !%{video}
 	--disable-video \
 %endif
-	--docdir=%{_docdir} --enable-ipv6 --enable-static --enable-external-mediastreamer --enable-external-ortp
+	--disable-tests --docdir=%{_docdir} --enable-ipv6 --enable-static --enable-external-mediastreamer --enable-external-ortp
 %__make %{?_smp_mflags}
 
 
