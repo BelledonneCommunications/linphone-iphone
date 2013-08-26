@@ -211,42 +211,24 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [self updateApplicationBadgeNumber];
 }
 
-- (void)registrationUpdate:(NSNotification*)notif { 
+- (void)registrationUpdate:(NSNotification*)notif {
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
-    // Show error
-    if (state == LinphoneRegistrationFailed) {
-		NSString* lErrorMessage = nil;
-        LinphoneReason reason = linphone_proxy_config_get_error(cfg);
-		if (reason == LinphoneReasonBadCredentials) {
-			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings", nil);
-		} else if (reason == LinphoneReasonNoResponse) {
-			lErrorMessage = NSLocalizedString(@"SIP server unreachable", nil);
-		} else {
-            lErrorMessage = NSLocalizedString(@"Unknown error", nil);
-        }
-		
-		if (lErrorMessage != nil && linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { 
-            //do not report network connection issue on registration
-			//default behavior if no registration delegates
-			UIApplicationState s = [UIApplication sharedApplication].applicationState;
-            
-            // do not stack error message when going to backgroud
-            if (s != UIApplicationStateBackground) {
-                UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
-                                                                message:lErrorMessage
-                                                               delegate:nil 
-                                                      cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-                                                      otherButtonTitles:nil,nil];
-                [error show];
-                [error release];
-            }
-		}
-		
+	//Only report bad credential issue
+    if (state == LinphoneRegistrationFailed
+		&&[UIApplication sharedApplication].applicationState != UIApplicationStateBackground
+		&& linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials ) {
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
+														message:NSLocalizedString(@"Bad credentials, check your account settings", nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil,nil];
+		[error show];
+		[error release];
 	}
 }
 
-- (void)callUpdate:(NSNotification*)notif {  
+- (void)callUpdate:(NSNotification*)notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     NSString *message = [notif.userInfo objectForKey: @"message"];
