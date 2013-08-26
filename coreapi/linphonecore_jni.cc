@@ -1147,6 +1147,14 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoEnabled(JNIEn
 																			,jlong lc) {
 	return (jboolean)linphone_core_video_enabled((LinphoneCore*)lc);
 }
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isVideoSupported(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	return (jboolean)linphone_core_video_supported((LinphoneCore*)lc);
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPlayFile(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
