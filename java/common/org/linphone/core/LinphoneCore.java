@@ -738,6 +738,13 @@ public interface LinphoneCore {
 	**/
 	int getVideoDevice();
 	
+	
+	/**
+	 * Teturns true if the underlying sdk support video
+	 * 
+	 * */
+	boolean isVideoSupported();
+	
 	/**
 	 * Enables video globally.
 	 *

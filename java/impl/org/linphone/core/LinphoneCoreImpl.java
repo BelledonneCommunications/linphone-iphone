@@ -86,6 +86,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long getOrCreateChatRoom(long nativePtr,String to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
+	private native boolean isVideoSupported(long nativePtr);
 	private native void setFirewallPolicy(long nativePtr, int enum_value);
 	private native int getFirewallPolicy(long nativePtr);
 	private native void setStunServer(long nativePtr, String stun_server);
@@ -404,6 +405,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized boolean isVideoEnabled() {
 		return isVideoEnabled(nativePtr);
+	}
+	public synchronized boolean isVideoSupported() {
+		return isVideoSupported(nativePtr);
 	}
 	public synchronized FirewallPolicy getFirewallPolicy() {
 		return FirewallPolicy.fromInt(getFirewallPolicy(nativePtr));
