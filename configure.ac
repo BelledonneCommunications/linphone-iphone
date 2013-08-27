@@ -740,6 +740,17 @@ AC_SUBST(ORTP_LIBS)
 AC_SUBST([ORTP_VERSION])
 AC_SUBST([ORTP_DIR])
 
+AC_ARG_ENABLE(tutorials,
+	[AS_HELP_STRING([--disable-tutorials], [Disable compilation of tutorials])],
+	[case "${enableval}" in
+		yes)	tutorials_enabled=true ;;
+		no)	tutorials_enabled=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --disable-tutorials) ;;
+	esac],
+	[tutorials_enabled=yes]
+)
+AM_CONDITIONAL(ENABLE_TUTORIALS, test x$tutorials_enabled = xyes)
+
 AC_ARG_ENABLE(tests,
 	[AS_HELP_STRING([--disable-tests], [Disable compilation of tests])],
 	[case "${enableval}" in

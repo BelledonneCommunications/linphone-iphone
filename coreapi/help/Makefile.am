@@ -33,6 +33,8 @@ clean-local:
 
 #tutorials
 
+if ENABLE_TUTORIALS
+
 noinst_PROGRAMS=helloworld registration buddy_status chatroom notify
 
 helloworld_SOURCES=helloworld.c
@@ -78,3 +80,4 @@ AM_CFLAGS=\
 tutodir=$(datadir)/tutorials/linphone
 
 tuto_DATA=$(LINPHONE_TUTOS)
+endif 
