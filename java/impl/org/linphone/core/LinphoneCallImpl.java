@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
 class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
@@ -81,7 +80,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphoneAddress getRemoteAddress() {
 		long lNativePtr = getRemoteAddress(nativePtr);
 		if (lNativePtr!=0) {
-			return new LinphoneAddressImpl(lNativePtr); 
+			return new LinphoneAddressImpl(lNativePtr,LinphoneAddressImpl.WrapMode.FromConst); 
 		} else {
 			return null;
 		}

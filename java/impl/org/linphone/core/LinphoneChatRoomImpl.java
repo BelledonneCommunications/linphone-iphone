@@ -43,7 +43,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	}
 
 	public LinphoneAddress getPeerAddress() {
-		return new LinphoneAddressImpl(getPeerAddress(nativePtr));
+		return new LinphoneAddressImpl(getPeerAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 
 	public void sendMessage(String message) {

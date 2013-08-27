@@ -42,7 +42,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	@Override
 	public LinphoneAddress getPeerAddress() {
-		return new LinphoneAddressImpl(getPeerAddress(nativePtr));
+		return new LinphoneAddressImpl(getPeerAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	
 	@Override
@@ -57,7 +57,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	
 	@Override
 	public LinphoneAddress getFrom() {
-		return new LinphoneAddressImpl(getFrom(nativePtr));
+		return new LinphoneAddressImpl(getFrom(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	
 	private native void addCustomHeader(long nativePtr, String name, String value);

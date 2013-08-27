@@ -216,7 +216,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		if (ptr==0) {
 			return null;
 		} else {
-			return new LinphoneAddressImpl(ptr);
+			return new LinphoneAddressImpl(ptr,LinphoneAddressImpl.WrapMode.FromConst);
 		}
 	}
 	public synchronized  boolean isIncall() {
@@ -267,7 +267,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized LinphoneAddress interpretUrl(String destination) throws LinphoneCoreException {
 		long lAddress = interpretUrl(nativePtr,destination);
 		if (lAddress != 0) {
-			return new LinphoneAddressImpl(lAddress,true);
+			return new LinphoneAddressImpl(lAddress,LinphoneAddressImpl.WrapMode.FromNew);
 		} else {
 			throw new LinphoneCoreException("Cannot interpret ["+destination+"]");
 		}

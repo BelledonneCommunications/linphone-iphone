@@ -1566,10 +1566,23 @@ extern "C" jlong Java_org_linphone_core_LinphoneAddressImpl_newLinphoneAddressIm
 
 	return  (jlong) address;
 }
-extern "C" void Java_org_linphone_core_LinphoneAddressImpl_delete(JNIEnv*  env
+
+extern "C" jlong Java_org_linphone_core_LinphoneAddressImpl_ref(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
-	linphone_address_destroy((LinphoneAddress*)ptr);
+	return (jlong)linphone_address_ref((LinphoneAddress*)ptr);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneAddressImpl_clone(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	return (jlong) (ptr ? linphone_address_clone((const LinphoneAddress*)ptr) : NULL);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneAddressImpl_unref(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	linphone_address_unref((LinphoneAddress*)ptr);
 }
 
 extern "C" jstring Java_org_linphone_core_LinphoneAddressImpl_getDisplayName(JNIEnv*  env

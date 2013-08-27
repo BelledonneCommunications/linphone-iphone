@@ -54,7 +54,7 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
 	}
 	public LinphoneAddress getAddress() {
-		return new LinphoneAddressImpl(getAddress(nativePtr));
+		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
 		setIncSubscribePolicy(nativePtr,policy.mValue);

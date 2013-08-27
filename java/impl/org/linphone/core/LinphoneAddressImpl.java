@@ -21,10 +21,16 @@ package org.linphone.core;
 
 
 public class LinphoneAddressImpl implements LinphoneAddress {
+	public enum WrapMode{
+		FromNew,
+		FromConst,
+		FromExisting
+	};
 	protected final long nativePtr;
-	boolean ownPtr = false;
 	private native long newLinphoneAddressImpl(String uri,String displayName);
-	private native void  delete(long ptr);
+	private native long ref(long ptr);
+	private native void unref(long ptr);
+	private native long clone(long ptr);
 	private native String getDisplayName(long ptr);
 	private native String getUserName(long ptr);
 	private native String getDomain(long ptr);
@@ -46,16 +52,28 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 		this.setUserName(username);
 		this.setDomain(domain);
 	}
-	protected LinphoneAddressImpl(long aNativePtr,boolean javaOwnPtr)  {
-		nativePtr = aNativePtr;
-		ownPtr=javaOwnPtr;
+	//this method is there because JNI is calling it.
+	private LinphoneAddressImpl(long aNativeptr){
+		this(aNativeptr,WrapMode.FromConst);
 	}
-	protected LinphoneAddressImpl(long aNativePtr)  {
-		nativePtr = aNativePtr;
-		ownPtr=false;
+	protected LinphoneAddressImpl(long aNativePtr, WrapMode mode)  {
+		switch(mode){
+		case FromNew:
+			nativePtr=aNativePtr;
+			break;
+		case FromConst:
+			nativePtr=clone(aNativePtr);
+			break;
+		case FromExisting:
+			nativePtr=ref(aNativePtr);
+			break;
+		default:
+			nativePtr=0;
+		}
 	}
+	
 	protected void finalize() throws Throwable {
-		if (ownPtr) delete(nativePtr);
+		if (nativePtr!=0) unref(nativePtr);
 	}
 	public String getDisplayName() {
 		return getDisplayName(nativePtr);

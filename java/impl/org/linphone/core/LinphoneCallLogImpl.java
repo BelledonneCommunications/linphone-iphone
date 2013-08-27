@@ -41,11 +41,11 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	}
 
 	public LinphoneAddress getFrom() {
-		return new LinphoneAddressImpl(getFrom(nativePtr));
+		return new LinphoneAddressImpl(getFrom(nativePtr),LinphoneAddressImpl.WrapMode.FromExisting);
 	}
 
 	public LinphoneAddress getTo() {
-		return new LinphoneAddressImpl(getTo(nativePtr));
+		return new LinphoneAddressImpl(getTo(nativePtr),LinphoneAddressImpl.WrapMode.FromExisting);
 	}
 	public CallStatus getStatus() {
 		return LinphoneCallLog.CallStatus.fromInt(getStatus(nativePtr));
