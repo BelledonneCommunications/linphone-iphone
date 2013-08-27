@@ -38,6 +38,7 @@ linphone_configure_controls=  \
 			      --enable-bellesip \
                               --with-gsm=$(prefix) \
 			      --disable-tests \
+			      --disable-tutorials \
                               --with-srtp=$(prefix) \
                               --with-antlr=$(prefix) \
                               --disable-msg-storage 
