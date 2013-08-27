@@ -1587,7 +1587,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	char *tmp;
 	LinphoneFriend *lf;
 	LinphoneAddress *friend=NULL;
-	LinphonePresenceModel *presence = (LinphonePresenceModel *)model;
+	LinphonePresenceModel *presence = model ? (LinphonePresenceModel *)model:linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL);
 
 	lf=linphone_find_friend_by_out_subscribe(lc->friends,op);
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){

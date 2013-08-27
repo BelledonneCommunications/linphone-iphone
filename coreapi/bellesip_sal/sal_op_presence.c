@@ -98,8 +98,8 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	belle_sip_header_expires_t* expires;
 
 	if (sal_compute_sal_errors(response,&error,&sr,reason, sizeof(reason))) {
-		ms_error("subscription to [%s] rejected reason [%s]",sal_op_get_to(op),reason[0]!=0?reason:sal_reason_to_string(sr));
-		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, SalPresenceOffline,NULL);
+		ms_error("subscription to [%s] rejected reason  [%s]",sal_op_get_to(op),reason[0]!=0?reason:sal_reason_to_string(sr));
+		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
 		return;
 	}
 	set_or_update_dialog(op_base,belle_sip_response_event_get_dialog(event));
