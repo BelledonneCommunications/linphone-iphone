@@ -44,6 +44,20 @@ LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr){
 }
 
 /**
+ * Increment reference count of LinphoneAddress object.
+**/
+LinphoneAddress * linphone_address_ref(LinphoneAddress *addr){
+	return sal_address_ref(addr);
+}
+
+/**
+ * Decrement reference count of LinphoneAddress object. When dropped to zero, memory is freed.
+**/
+void linphone_address_unref(LinphoneAddress *addr){
+	sal_address_unref(addr);
+}
+
+/**
  * Returns the address scheme, normally "sip".
 **/
 const char *linphone_address_get_scheme(const LinphoneAddress *u){
@@ -153,10 +167,10 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 }
 
 /**
- * Destroys a LinphoneAddress object.
+ * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
 **/
 void linphone_address_destroy(LinphoneAddress *u){
-	sal_address_destroy(u);
+	sal_address_unref(u);
 }
 
 int linphone_address_get_port_int(const LinphoneAddress *u) {

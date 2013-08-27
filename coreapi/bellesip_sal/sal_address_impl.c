@@ -103,18 +103,23 @@ void sal_address_set_display_name(SalAddress *addr, const char *display_name){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_header_address_set_displayname(header_addr,display_name);
 }
+
 void sal_address_set_username(SalAddress *addr, const char *username){
 	SAL_ADDRESS_SET(addr,user,username);
 }
+
 void sal_address_set_domain(SalAddress *addr, const char *host){
 	SAL_ADDRESS_SET(addr,host,host);
 }
+
 void sal_address_set_port(SalAddress *addr, const char *port){
 	SAL_ADDRESS_SET(addr,port,atoi(port));
 }
+
 void sal_address_set_port_int(SalAddress *addr, int port){
 	SAL_ADDRESS_SET(addr,port,port);
 }
+
 void sal_address_clean(SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri=belle_sip_header_address_get_uri(header_addr);
@@ -122,19 +127,17 @@ void sal_address_clean(SalAddress *addr){
 	belle_sip_parameters_clean(BELLE_SIP_PARAMETERS(header_addr));
 	return ;
 }
+
 char *sal_address_as_string(const SalAddress *addr){
 	return belle_sip_object_to_string(BELLE_SIP_OBJECT(addr));
 }
+
 char *sal_address_as_string_uri_only(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
 	return belle_sip_object_to_string(BELLE_SIP_OBJECT(uri));
 }
-void sal_address_destroy(SalAddress *addr){
-	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
-	belle_sip_object_unref(header_addr);
-	return ;
-}
+
 void sal_address_set_param(SalAddress *addr,const char* name,const char* value){
 	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(addr);
 	belle_sip_parameters_set_parameter(parameters,name,value);
@@ -148,3 +151,16 @@ void sal_address_set_transport(SalAddress* addr,SalTransport transport){
 void sal_address_set_transport_name(SalAddress* addr,const char *transport){
 	SAL_ADDRESS_SET(addr,transport_param,transport);
 }
+
+SalAddress *sal_address_ref(SalAddress *addr){
+	return (SalAddress*)belle_sip_object_ref(BELLE_SIP_HEADER_ADDRESS(addr));
+}
+
+void sal_address_unref(SalAddress *addr){
+	belle_sip_object_unref(BELLE_SIP_HEADER_ADDRESS(addr));
+}
+
+void sal_address_destroy(SalAddress *addr){
+	sal_address_unref(addr);
+}
+

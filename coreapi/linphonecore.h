@@ -161,8 +161,10 @@ const char *linphone_reason_to_string(LinphoneReason err);
 #include "linphone/event.h"
 #endif
 
-LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *uri);
-LinphoneAddress * linphone_address_clone(const LinphoneAddress *uri);
+LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
+LinphoneAddress * linphone_address_clone(const LinphoneAddress *addr);
+LinphoneAddress * linphone_address_ref(LinphoneAddress *addr);
+void linphone_address_unref(LinphoneAddress *addr);
 const char *linphone_address_get_scheme(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);

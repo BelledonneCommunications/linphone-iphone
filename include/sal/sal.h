@@ -76,6 +76,8 @@ SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
 SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
+SalAddress * sal_address_ref(SalAddress *addr);
+void sal_address_unref(SalAddress *addr);
 const char *sal_address_get_scheme(const SalAddress *addr);
 const char *sal_address_get_display_name(const SalAddress* addr);
 const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
