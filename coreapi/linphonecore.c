@@ -5554,6 +5554,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
 	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
+	
+	if (lc->network_reachable==isReachable) return; // no change, ignore.
 
 	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
 	for(;elem!=NULL;elem=elem->next){
@@ -5569,9 +5571,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	lc->netup_time=curtime;
 	lc->network_reachable=isReachable;
 	
-	if (!lc->network_reachable) linphone_core_invalidate_friend_subscriptions(lc);
-	
-	if(!isReachable) {
+	if (!lc->network_reachable){
+		linphone_core_invalidate_friend_subscriptions(lc);
 		sal_reset_transports(lc->sal);
 	}
 #ifdef BUILD_UPNP

@@ -1312,10 +1312,10 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 	LinphoneCore *lc=cfg->lc;
 
 
-	ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg
-																					, linphone_proxy_config_get_identity(cfg)
-																					, linphone_registration_state_to_string(cfg->state)
-																					, linphone_registration_state_to_string(state));
+	ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
+								linphone_proxy_config_get_identity(cfg),
+								linphone_registration_state_to_string(cfg->state),
+								linphone_registration_state_to_string(state));
 	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
 		cfg->state=state;
 		if (lc && lc->vtable.registration_state_changed){

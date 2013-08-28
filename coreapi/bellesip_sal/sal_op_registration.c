@@ -76,6 +76,12 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
 	
+	if (op->refresher){
+		belle_sip_refresher_stop(op->refresher);
+		belle_sip_object_unref(op->refresher);
+		op->refresher=NULL;
+	}
+	
 	op->type=SalOpRegister;
 	sal_op_set_from(op,from);
 	sal_op_set_to(op,from);
