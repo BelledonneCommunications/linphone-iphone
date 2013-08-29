@@ -31,13 +31,22 @@ pkgconfig_DATA=linphone.pc
 
 linphonedir=$(datadir)/linphone
 linphone_DATA=rootca.pem
-rootca.pem: 
-	HTTPS_CA_DIR=$(HTTPS_CA_DIR) $(top_srcdir)/scripts/mk-ca-bundle.pl rootca.pem
+
+#download root ca from mozilla using script from curl (mk-ca-bundle.pl).
+#if that fails (no connection, no perl SSL...) , then a rootca bundle archived in the source tree is taken instead.
+rootca.pem:
+	rm -f $(builddir)/fresh-rootca.pem
+	- HTTPS_CA_DIR=$(HTTPS_CA_DIR) $(top_srcdir)/scripts/mk-ca-bundle.pl $(builddir)/fresh-rootca.pem
+	if test -f $(builddir)/fresh-rootca.pem ; then \
+		cp -f $(builddir)/fresh-rootca.pem $(builddir)/rootca.pem ; \
+	else \
+		cp -f $(srcdir)/archived-rootca.pem $(builddir)/rootca.pem ; \
+	fi
 
 EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
 						$(LINPHONE_RINGS) \
 					        linphone.desktop.in   \
 						linphone.pc.in \
 						Makefile.inc \
-						rootca.pem
+						archived-rootca.pem
 
