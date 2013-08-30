@@ -92,6 +92,7 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	} else {
 		contact_header= belle_sip_header_contact_new();
 	}
+	belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
 	if (op->base.root->uuid){
 		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
 			char *instance_id=belle_sip_strdup_printf("\"<urn:uuid:%s>\"",op->base.root->uuid);
@@ -463,7 +464,6 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 			belle_sip_object_unref(op->refresher);
 		}
 		if ((op->refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
-			belle_sip_refresher_enable_nat_helper(op->refresher,op->base.root->nat_helper_enabled);
 			belle_sip_refresher_set_listener(op->refresher,listener,op);
 			belle_sip_refresher_set_retry_after(op->refresher,op->base.root->refresher_retry_after);
 			return 0;

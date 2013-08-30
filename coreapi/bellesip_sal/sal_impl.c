@@ -271,15 +271,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	} else {
 		SalOp* op = (SalOp*)belle_sip_transaction_get_application_data(BELLE_SIP_TRANSACTION(client_transaction));
 		belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
-		belle_sip_header_contact_t* original_contact;
-		belle_sip_header_address_t* contact_address=NULL;
-		belle_sip_header_via_t* via_header;
-		belle_sip_uri_t* contact_uri;
-		unsigned int contact_port;
-		const char* received;
-		int rport;
-		bool_t contact_updated=FALSE;
-		char* new_contact;
 
 		if (op->state == SalOpStateTerminated) {
 			belle_sip_message("Op is terminated, nothing to do with this [%i]",response_code);
@@ -295,59 +286,6 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		
 		if (op->callbacks.process_response_event) {
-
-			if (op->base.root->nat_helper_enabled) {
-				/*Fix contact if needed*/
-				via_header= (belle_sip_header_via_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_VIA);
-				received = belle_sip_header_via_get_received(via_header);
-				rport = belle_sip_header_via_get_rport(via_header);
-				if ((original_contact=belle_sip_message_get_header_by_type(request,belle_sip_header_contact_t))) {
-					/*update contact with sent values in any cases*/
-					contact_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(original_contact)));
-					sal_op_set_contact_address(op,(const SalAddress *)contact_address);
-					belle_sip_object_unref(contact_address);
-				}
-				if (sal_op_get_contact(op)){
-					if (received!=NULL || rport>0) {
-						contact_address = BELLE_SIP_HEADER_ADDRESS(sal_address_clone(sal_op_get_contact_address(op)));
-						contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_address));
-						if (received && strcmp(received,belle_sip_uri_get_host(contact_uri))!=0) {
-							/*need to update host*/
-							belle_sip_uri_set_host(contact_uri,received);
-							contact_updated=TRUE;
-						}
-						contact_port =  belle_sip_uri_get_port(contact_uri);
-						if (rport>0 && rport!=contact_port && (contact_port+rport)!=5060) {
-							/*need to update port*/
-							belle_sip_uri_set_port(contact_uri,rport);
-							contact_updated=TRUE;
-						}
-
-						/*try to fix transport if needed (very unlikely)*/
-						if (strcasecmp(belle_sip_header_via_get_transport(via_header),"UDP")!=0) {
-							if (!belle_sip_uri_get_transport_param(contact_uri)
-									||strcasecmp(belle_sip_uri_get_transport_param(contact_uri),belle_sip_header_via_get_transport(via_header))!=0) {
-								belle_sip_uri_set_transport_param(contact_uri,belle_sip_header_via_get_transport_lowercase(via_header));
-								contact_updated=TRUE;
-							}
-						} else {
-							if (belle_sip_uri_get_transport_param(contact_uri)) {
-								contact_updated=TRUE;
-								belle_sip_uri_set_transport_param(contact_uri,NULL);
-							}
-						}
-						if (contact_updated) {
-							char* old_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(sal_op_get_contact_address(op)));
-							new_contact=belle_sip_object_to_string(BELLE_SIP_OBJECT(contact_address));
-							ms_message("Updating contact from [%s] to [%s] for [%p]",old_contact,new_contact,op);
-							sal_op_set_contact_address(op,(const SalAddress *)contact_address);
-							belle_sip_free(new_contact);
-							belle_sip_free(old_contact);
-						}
-						if (contact_address)belle_sip_object_unref(contact_address);
-					}
-				}
-			}
 			
 			/*handle authorization*/
 			switch (response_code) {
@@ -422,7 +360,7 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event
 Sal * sal_init(){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
-	sal->nat_helper_enabled=TRUE;
+	sal->auto_contacts=TRUE;
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LINPHONE_VERSION);
@@ -432,6 +370,7 @@ Sal * sal_init(){
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
 	sal->prov = belle_sip_stack_create_provider(sal->stack,NULL);
+	sal_nat_helper_enable(sal,TRUE);
 	memset(&listener_callbacks,0,sizeof(listener_callbacks));
 	listener_callbacks.process_dialog_terminated=process_dialog_terminated;
 	listener_callbacks.process_io_error=process_io_error;
@@ -727,6 +666,7 @@ void  sal_set_recv_error(Sal *sal,int value) {
 }
 void sal_nat_helper_enable(Sal *sal,bool_t enable) {
 	sal->nat_helper_enabled=enable;
+	belle_sip_provider_enable_nat_helper(sal->prov,enable);
 	ms_message("Sal nat helper [%s]",enable?"enabled":"disabled");
 }
 bool_t sal_nat_helper_enabled(Sal *sal) {
@@ -878,9 +818,15 @@ belle_sip_response_t* sal_create_response_from_request ( Sal* sal, belle_sip_req
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(resp),BELLE_SIP_HEADER(sal->user_agent));
 	return resp;
 }
+
 void sal_set_refresher_retry_after(Sal *sal,int value) {
 	sal->refresher_retry_after=value;
 }
+
 int sal_get_refresher_retry_after(const Sal *sal) {
 	return sal->refresher_retry_after;
+}
+
+void sal_enable_auto_contacts(Sal *ctx, bool_t enabled){
+	ctx->auto_contacts=enabled;
 }

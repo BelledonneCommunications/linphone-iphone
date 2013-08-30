@@ -28,12 +28,7 @@ static void register_refresher_listener ( const belle_sip_refresher_t* refresher
 	SalReason sal_reason;
 	belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));
 	ms_message("Register refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));
-	/*fix contact if needed*/
-	if (op->base.root->nat_helper_enabled && belle_sip_refresher_get_nated_contact(refresher)) {
-		belle_sip_header_address_t* contact_address = BELLE_SIP_HEADER_ADDRESS(belle_sip_object_clone(BELLE_SIP_OBJECT(belle_sip_refresher_get_nated_contact(refresher))));
-		sal_op_set_contact_address(op,(SalAddress*)contact_address);
-		belle_sip_object_unref(contact_address);
-	}
+	
 	if (belle_sip_refresher_get_auth_events(refresher)) {
 		if (op->auth_info) sal_auth_info_delete(op->auth_info);
 		/*only take first one for now*/

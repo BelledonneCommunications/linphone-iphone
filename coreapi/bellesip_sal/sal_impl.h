@@ -38,13 +38,14 @@ struct Sal{
 	unsigned int keep_alive;
 	char *root_ca;
 	char *uuid;
+	int refresher_retry_after; /*retry after value for refresher*/
 	bool_t one_matching_codec;
 	bool_t use_tcp_tls_keep_alive;
 	bool_t nat_helper_enabled;
 	bool_t tls_verify;
 	bool_t tls_verify_cn;
 	bool_t use_dates;
-	int refresher_retry_after; /*retry after value for refresher*/
+	bool_t auto_contacts;
 };
 
 typedef enum SalOpState {
