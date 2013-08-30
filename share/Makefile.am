@@ -50,3 +50,5 @@ EXTRA_DIST = 					$(LINPHONE_SOUNDS) \
 						Makefile.inc \
 						archived-rootca.pem
 
+CLEANFILES=rootca.pem
+
