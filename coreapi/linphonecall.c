@@ -2628,11 +2628,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 }
 
 void linphone_call_set_contact_op(LinphoneCall* call) {
-#ifndef USE_BELLESIP
-	char *contact;
-#else
 	LinphoneAddress *contact;
-#endif
 
 	if (call->dest_proxy == NULL) {
 		/* Try to define the destination proxy if it has not already been done to have a correct contact field in the SIP messages */
@@ -2641,11 +2637,10 @@ void linphone_call_set_contact_op(LinphoneCall* call) {
 
 	contact=get_fixed_contact(call->core,call,call->dest_proxy);
 	if (contact){
+		SalTransport tport=sal_address_get_transport((SalAddress*)contact);
+		sal_address_clean((SalAddress*)contact); /* clean out contact_params that come from proxy config*/
+		sal_address_set_transport((SalAddress*)contact,tport);
 		sal_op_set_contact(call->op, contact);
-#ifndef USE_BELLESIP
-	ms_free(contact);
-#else
-	linphone_address_destroy(contact);
-#endif
-}
+		linphone_address_destroy(contact);
+	}
 }

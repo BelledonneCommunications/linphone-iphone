@@ -2615,10 +2615,17 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_set_to_address(op,dest);
 	sal_op_set_from(op,identity);
 	sal_op_set_sent_custom_header(op,headers);
-	if (with_contact && proxy && proxy->op && sal_op_get_contact(proxy->op)){
-		sal_op_set_contact(op,sal_op_get_contact(proxy->op));
+	if (with_contact && proxy && proxy->op){
+		const SalAddress *contact;
+		if ((contact=sal_op_get_contact(proxy->op))){
+			SalTransport tport=sal_address_get_transport((SalAddress*)contact);
+			SalAddress *new_contact=sal_address_clone(contact);
+			sal_address_clean(new_contact); /* clean out contact_params that come from proxy config*/
+			sal_address_set_transport(new_contact,tport);
+			sal_op_set_contact(op,new_contact);
+			sal_address_destroy(new_contact);
+		}
 	}
-
 }
 
 /**
