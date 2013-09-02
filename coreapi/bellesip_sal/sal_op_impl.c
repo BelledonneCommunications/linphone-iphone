@@ -514,6 +514,9 @@ const char *sal_op_get_remote_contact(const SalOp *op){
 }
 
 void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body){
+	belle_sip_message_remove_header((belle_sip_message_t*)req,"Content-type");
+	belle_sip_message_remove_header((belle_sip_message_t*)req,"Content-length");
+	belle_sip_message_set_body((belle_sip_message_t*)req,NULL,0);
 	if (body && body->type && body->subtype && body->data){
 		belle_sip_message_add_header((belle_sip_message_t*)req,
 			(belle_sip_header_t*)belle_sip_header_content_type_create(body->type,body->subtype));
