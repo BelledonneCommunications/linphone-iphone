@@ -497,7 +497,6 @@ typedef struct net_config
 	char *relay;
 	int download_bw;
 	int upload_bw;
-	int firewall_policy;
 	int mtu;
 	bool_t nat_sdp_only;
 }net_config_t;

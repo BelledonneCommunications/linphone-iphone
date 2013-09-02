@@ -490,14 +490,15 @@ static void net_config_read (LinphoneCore *lc)
 	tmpstr=lp_config_get_string(lc->config,"net","nat_address",NULL);
 	if (tmpstr!=NULL && (strlen(tmpstr)<1)) tmpstr=NULL;
 	linphone_core_set_nat_address(lc,tmpstr);
-	tmp=lp_config_get_int(lc->config,"net","firewall_policy",0);
-	linphone_core_set_firewall_policy(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","nat_sdp_only",0);
 	lc->net_conf.nat_sdp_only=tmp;
 	tmp=lp_config_get_int(lc->config,"net","mtu",1300);
 	linphone_core_set_mtu(lc,tmp);
 	tmp=lp_config_get_int(lc->config,"net","download_ptime",0);
 	linphone_core_set_download_ptime(lc,tmp);
+
+	/* This is to filter out unsupported firewall policies */
+	linphone_core_set_firewall_policy(lc, linphone_core_get_firewall_policy(lc));
 }
 
 static void build_sound_devices_table(LinphoneCore *lc){
@@ -4468,13 +4469,32 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 }
 
 void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol){
-#ifndef BUILD_UPNP
-	if(pol == LinphonePolicyUseUpnp) {
-		ms_warning("UPNP is not available, reset firewall policy to no firewall");
-		pol = LinphonePolicyNoFirewall;
-	}
+	const char *policy = "none";
+
+	switch (pol) {
+		default:
+		case LinphonePolicyNoFirewall:
+			policy = "none";
+			break;
+		case LinphonePolicyUseNatAddress:
+			policy = "nat_address";
+			break;
+		case LinphonePolicyUseStun:
+			policy = "stun";
+			break;
+		case LinphonePolicyUseIce:
+			policy = "ice";
+			break;
+		case LinphonePolicyUseUpnp:
+#ifdef BUILD_UPNP
+			policy = "upnp";
+#else
+			ms_warning("UPNP is not available, reset firewall policy to no firewall");
+			pol = LinphonePolicyNoFirewall;
+			policy = "none";
 #endif //BUILD_UPNP
-	lc->net_conf.firewall_policy=pol;
+			break;
+	}
 #ifdef BUILD_UPNP
 	if(pol == LinphonePolicyUseUpnp) {
 		if(lc->upnp == NULL) {
@@ -4502,11 +4522,24 @@ void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy 
 	}
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 	if (linphone_core_ready(lc))
-		lp_config_set_int(lc->config,"net","firewall_policy",pol);
+		lp_config_set_string(lc->config,"net","firewall_policy",policy);
 }
 
 LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc){
-	return lc->net_conf.firewall_policy;
+	const char *policy = lp_config_get_string(lc->config, "net", "firewall_policy", NULL);
+
+	if ((policy == NULL) || (strcmp(policy, "0") == 0))
+		return LinphonePolicyNoFirewall;
+	else if ((strcmp(policy, "nat_address") == 0) || (strcmp(policy, "1") == 0))
+		return LinphonePolicyUseNatAddress;
+	else if ((strcmp(policy, "stun") == 0) || (strcmp(policy, "2") == 0))
+		return LinphonePolicyUseStun;
+	else if ((strcmp(policy, "ice") == 0) || (strcmp(policy, "3") == 0))
+		return LinphonePolicyUseIce;
+	else if ((strcmp(policy, "upnp") == 0) || (strcmp(policy, "4") == 0))
+		return LinphonePolicyUseUpnp;
+	else
+		return LinphonePolicyNoFirewall;
 }
 
 /**
@@ -5586,11 +5619,11 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {
-		if(isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
+		if(isReachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
 			lc->upnp = linphone_upnp_context_new(lc);
 		}
 	} else {
-		if(!isReachable && lc->net_conf.firewall_policy == LinphonePolicyUseUpnp) {
+		if(!isReachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
 			linphone_upnp_context_destroy(lc->upnp);
 			lc->upnp = NULL;
 		}
