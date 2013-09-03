@@ -678,6 +678,8 @@ void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
 			linphone_proxy_config_get_addr(cfg));
 		tmp=linphone_proxy_config_get_route(cfg);
 		if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"route")),tmp);
+		tmp=linphone_proxy_config_get_contact_parameters(cfg);
+		if (tmp) gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"params")),tmp);
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod")),
 			linphone_proxy_config_get_expires(cfg));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register")),
@@ -710,6 +712,8 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"proxy"))));
 	linphone_proxy_config_set_route(cfg,
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"route"))));
+	linphone_proxy_config_set_contact_parameters(cfg,
+		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"params"))));
 	linphone_proxy_config_expires(cfg,
 		(int)gtk_spin_button_get_value(
 			GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod"))));

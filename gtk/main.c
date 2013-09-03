@@ -138,7 +138,7 @@ static GOptionEntry linphone_options[]={
 	{
 		.long_name = "config",
 		.short_name = '\0',
-		.arg = G_OPTION_ARG_STRING,
+		.arg = G_OPTION_ARG_FILENAME,
 		.arg_data = (gpointer) &custom_config_file,
 		.description = N_("Configuration file")
 	},
