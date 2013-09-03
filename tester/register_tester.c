@@ -59,7 +59,13 @@ void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *c
 
 }
 
-static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route,bool_t late_auth_info,LCSipTransports transport) {
+static void register_with_refresh_base_3(LinphoneCore* lc
+											, bool_t refresh
+											,const char* domain
+											,const char* route
+											,bool_t late_auth_info
+											,LCSipTransports transport
+											,LinphoneRegistrationState expected_final_state) {
 	int retry=0;
 	char* addr;
 	LinphoneProxyConfig* proxy_cfg;
@@ -98,22 +104,36 @@ static void register_with_refresh_base_2(LinphoneCore* lc, bool_t refresh,const 
 	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0) && retry++ <310) {
 		linphone_core_iterate(lc);
 		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
-			if (!linphone_core_get_auth_info_list(lc))
+			if (!linphone_core_get_auth_info_list(lc)) {
 				CU_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized);
-			info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
-			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
+			}
 		}
+		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials)
+			break; /*no need to continue*/
 		ms_usleep(100000);
 	}
-	CU_ASSERT_TRUE(linphone_proxy_config_is_registered(proxy_cfg));
+	CU_ASSERT_EQUAL(linphone_proxy_config_is_registered(proxy_cfg),(expected_final_state == LinphoneRegistrationOk));
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,1);
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
-	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,late_auth_info?1:0);
+	CU_ASSERT_TRUE(counters->number_of_LinphoneRegistrationProgress>=1);
+	if (expected_final_state == LinphoneRegistrationOk) {
+		CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationOk,1+(refresh!=0));
+		CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,late_auth_info?1:0);
+	} else
+		/*checking to be done outside this functions*/
 	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0);
 
 }
 
+static void register_with_refresh_base_2(LinphoneCore* lc
+											, bool_t refresh
+											,const char* domain
+											,const char* route
+											,bool_t late_auth_info
+											,LCSipTransports transport) {
+	register_with_refresh_base_3(lc, refresh, domain, route, late_auth_info, transport,LinphoneRegistrationOk );
+}
 static void register_with_refresh_base(LinphoneCore* lc, bool_t refresh,const char* domain,const char* route) {
 	LCSipTransports transport = {5070,5070,0,5071};
 	register_with_refresh_base_2(lc,refresh,domain,route,FALSE,transport);
@@ -275,6 +295,30 @@ static void authenticated_register_with_late_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
+static void authenticated_register_with_wrong_late_credentials(){
+	LinphoneCoreManager *mgr;
+	stats* counters;
+	LCSipTransports transport = {5070,5070,0,5071};
+	char route[256];
+	const char* saved_test_passwd=test_password;
+	char* wrong_passwd="mot de pass tout pourrit";
+
+	test_password=wrong_passwd;
+
+	sprintf(route,"sip:%s",test_route);
+
+	mgr =  linphone_core_manager_new(NULL);
+	mgr->lc->vtable.auth_info_requested=auth_info_requested2;
+	counters = get_stats(mgr->lc);
+	register_with_refresh_base_3(mgr->lc,FALSE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
+	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,2);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,2);
+	CU_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,2);
+	test_password=saved_test_passwd;
+
+	linphone_core_manager_destroy(mgr);
+}
+
 static void authenticated_register_with_wrong_credentials(){
 	LinphoneCoreManager *mgr;
 	stats* counters;
@@ -289,7 +333,7 @@ static void authenticated_register_with_wrong_credentials(){
 	
 	linphone_core_add_auth_info(mgr->lc,info); /*add wrong authentication info to LinphoneCore*/
 	counters = get_stats(mgr->lc);
-	register_with_refresh_base_2(mgr->lc,TRUE,auth_domain,route,TRUE,transport);
+	register_with_refresh_base_3(mgr->lc,TRUE,auth_domain,route,TRUE,transport,LinphoneRegistrationFailed);
 	CU_ASSERT_EQUAL(counters->number_of_auth_info_requested,1);
 	linphone_core_manager_destroy(mgr);
 }
@@ -569,6 +613,7 @@ test_t register_tests[] = {
 	{ "Ha1 authenticated register", ha1_authenticated_register },
 	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
 	{ "Digest auth with wrong credentials", authenticated_register_with_wrong_credentials },
+	{ "Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials},
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
 	{ "Register with refresh", simple_register_with_refresh },
 	{ "Authenticated register with refresh", simple_auth_register_with_refresh },

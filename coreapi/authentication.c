@@ -308,11 +308,19 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
 		if (ai){
 			SalAuthInfo sai;
+			MSList* proxy;
 			sai.username=ai->username;
 			sai.userid=ai->userid;
 			sai.realm=ai->realm;
 			sai.password=ai->passwd;
 			sai.ha1=ai->ha1;
+			/*proxy case*/
+			for (proxy=(MSList*)linphone_core_get_proxy_config_list(lc);proxy!=NULL;proxy=proxy->next) {
+				if (proxy->data == sal_op_get_user_pointer(op)) {
+					linphone_proxy_config_set_state((LinphoneProxyConfig*)(proxy->data),LinphoneRegistrationProgress,"Authentication...");
+					break;
+				}
+			}
 			sal_op_authenticate(op,&sai);
 			ai->usecount++;
 		}
