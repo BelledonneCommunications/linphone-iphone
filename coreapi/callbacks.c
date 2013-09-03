@@ -467,7 +467,6 @@ static void call_resumed(LinphoneCore *lc, LinphoneCall *call){
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("We have been resumed."));
 	linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
-	linphone_call_set_transfer_state(call, LinphoneCallIdle);
 }
 
 static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
@@ -569,6 +568,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	char *msg603=_("Call declined.");
 	const char *msg=details;
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	LinphoneCall *referer=call->referer;
 
 	if (call==NULL){
 		ms_warning("Call faillure reported on already terminated call.");
@@ -650,11 +650,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	}
 
 	linphone_core_stop_ringing(lc);
-	linphone_call_stop_media_streams (call);
-	if (call->referer && linphone_call_get_state(call->referer)==LinphoneCallPaused && call->referer->was_automatically_paused){
-		/*resume to the call that send us the refer automatically*/
-		linphone_core_resume_call(lc,call->referer);
-	}
+	linphone_call_stop_media_streams(call);
 
 #ifdef BUILD_UPNP
 	linphone_call_delete_upnp_session(call);
@@ -672,6 +668,22 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 		linphone_core_play_named_tone(lc,LinphoneToneBusy);
 	} else {
 		linphone_call_set_state(call,LinphoneCallError,msg);
+	}
+	
+	if (referer){
+		/*
+		 * 1- resume call automatically if we had to pause it before to execute the transfer
+		 * 2- notify other party of the transfer faillure
+		 * This must be done at the end because transferer call can't be resumed until transfer-target call is changed to error state.
+		 * This must be done in this order because if the notify transaction will prevent the resume transaction to take place.
+		 * On the contrary, the notify transaction is queued and then executed after the resume completes.
+		**/
+		if (linphone_call_get_state(referer)==LinphoneCallPaused && referer->was_automatically_paused){
+			/*resume to the call that send us the refer automatically*/
+			linphone_core_resume_call(lc,referer);
+			referer->was_automatically_paused=FALSE;
+		}
+		linphone_core_notify_refer_state(lc,referer,call);
 	}
 }
 

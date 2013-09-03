@@ -681,7 +681,7 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 	
-PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.1.0])
+PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.2.0])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
 SIPSTACK_LIBS="$BELLESIP_LIBS"

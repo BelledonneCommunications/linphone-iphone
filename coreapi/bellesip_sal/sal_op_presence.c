@@ -306,7 +306,7 @@ int sal_subscribe_presence(SalOp *op, const char *from, const char *to, int expi
 
 
 static belle_sip_request_t *create_presence_notify(SalOp *op){
-	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+	belle_sip_request_t* notify=belle_sip_dialog_create_queued_request(op->dialog,"NOTIFY");
 	if (!notify) return NULL;
 
 	belle_sip_message_add_header((belle_sip_message_t*)notify,belle_sip_header_create("Event","presence"));

@@ -133,18 +133,31 @@ SalOp *sal_call_get_replaces(SalOp *op){
 	return NULL;
 }
 
-static int send_notify_for_refer(SalOp* op, const char *sipfrag){
-	belle_sip_request_t* notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY");
+static int send_notify_for_refer(SalOp* op, int code, const char *reason){
+	belle_sip_request_t* notify=belle_sip_dialog_create_queued_request(op->dialog,"NOTIFY");
+	char *sipfrag=belle_sip_strdup_printf("SIP/2.0 %i %s\r\n",code,reason);
 	size_t content_length=strlen(sipfrag);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-									,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,-1)));
+		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_ACTIVE,-1)));
 
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),belle_sip_header_create("Event","refer"));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_HEADER(belle_sip_header_content_type_create("message","sipfrag")));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),sipfrag,content_length);
-
+	belle_sip_message_assign_body(BELLE_SIP_MESSAGE(notify),sipfrag,content_length);
 	return sal_op_send_request(op,notify);
+}
+
+static void notify_last_response(SalOp *op, SalOp *newcall){
+	belle_sip_client_transaction_t *tr=newcall->pending_client_trans;
+	belle_sip_response_t *resp=NULL;
+	if (tr){
+		resp=belle_sip_transaction_get_response((belle_sip_transaction_t*)tr);
+	}
+	if (resp==NULL){
+		send_notify_for_refer(op, 100, "Trying");
+	}else{
+		send_notify_for_refer(op, belle_sip_response_get_status_code(resp), belle_sip_response_get_reason_phrase(resp));
+	}
 }
 
 int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
@@ -153,19 +166,16 @@ int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
 	}
 	belle_sip_dialog_state_t state=newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
 	switch(state) {
-	case BELLE_SIP_DIALOG_NULL:
-	case BELLE_SIP_DIALOG_EARLY:
-		send_notify_for_refer(op,"SIP/2.0 100 Trying\r\n");
-		break;
-	case BELLE_SIP_DIALOG_CONFIRMED:
-		if(send_notify_for_refer(op,"SIP/2.0 200 Ok\r\n")) {
-			/* we need previous notify transaction to complete, so buffer the request for later*/
-			/*op->sipfrag_pending="SIP/2.0 200 Ok\r\n";*/
-			ms_error("Cannot notify 200 ok frag to [%p] for new  op [%p]",op,newcall);
-		}
-		break;
-	default:
-		break;
+		case BELLE_SIP_DIALOG_EARLY:
+			send_notify_for_refer(op, 100, "Trying");
+			break;
+		case BELLE_SIP_DIALOG_CONFIRMED:
+			send_notify_for_refer(op, 200, "Ok");
+			break;
+		case BELLE_SIP_DIALOG_TERMINATED:
+		case BELLE_SIP_DIALOG_NULL:
+			notify_last_response(op,newcall);
+			break;
 	}
 	return 0;
 }

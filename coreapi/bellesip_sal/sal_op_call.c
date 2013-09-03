@@ -710,7 +710,7 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h){
 
 int sal_call_send_dtmf(SalOp *h, char dtmf){
 	if (h->dialog){
-		belle_sip_request_t *req=belle_sip_dialog_create_request(h->dialog,"INFO");
+		belle_sip_request_t *req=belle_sip_dialog_create_queued_request(h->dialog,"INFO");
 		if (req){
 			int bodylen;
 			char dtmf_body[128]={0};
@@ -789,7 +789,7 @@ void sal_call_send_vfu_request(SalOp *op){
 	size_t content_lenth = sizeof(info_body) - 1;
 	belle_sip_dialog_state_t dialog_state=op->dialog?belle_sip_dialog_get_state(op->dialog):BELLE_SIP_DIALOG_NULL; /*no dialog = dialog in NULL state*/
 	if (dialog_state == BELLE_SIP_DIALOG_CONFIRMED) {
-		belle_sip_request_t* info =	belle_sip_dialog_create_request(op->dialog,"INFO");
+		belle_sip_request_t* info =	belle_sip_dialog_create_queued_request(op->dialog,"INFO");
 		int error=TRUE;
 		if (info) {
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(info),BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","media_control+xml")));

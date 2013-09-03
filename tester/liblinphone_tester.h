@@ -109,6 +109,7 @@ typedef struct _stats {
 	int number_of_LinphoneTransferCallOutgoingEarlyMedia;
 	int number_of_LinphoneTransferCallConnected;
 	int number_of_LinphoneTransferCallStreamsRunning;
+	int number_of_LinphoneTransferCallError;
 
 	int number_of_LinphoneMessageReceived;
 	int number_of_LinphoneMessageReceivedLegacy;

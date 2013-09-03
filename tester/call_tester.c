@@ -75,6 +75,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 	case LinphoneCallOutgoingEarlyMedia :counters->number_of_LinphoneTransferCallOutgoingEarlyMedia++;break;
 	case LinphoneCallConnected :counters->number_of_LinphoneTransferCallConnected++;break;
 	case LinphoneCallStreamsRunning :counters->number_of_LinphoneTransferCallStreamsRunning++;break;
+	case LinphoneCallError :counters->number_of_LinphoneTransferCallError++;break;
 	default:
 		CU_FAIL("unexpected event");break;
 	}
@@ -993,7 +994,7 @@ static void simple_call_transfer(void) {
 	ms_list_free(lcs);
 }
 
-static void mean_call_transfer(void) {
+static void unattended_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
@@ -1038,6 +1039,37 @@ static void mean_call_transfer(void) {
 	linphone_core_manager_destroy(laure);
 	ms_list_free(lcs);
 }
+
+static void unattended_call_transfer_with_error(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* pauline_called_by_marie;
+
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+	CU_ASSERT_TRUE(call(marie,pauline));
+	pauline_called_by_marie=linphone_core_get_current_call(marie->lc);
+
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+
+	linphone_core_transfer_call(marie->lc,pauline_called_by_marie,"unknown_user");
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallRefered,1,2000));
+	
+	/*Pauline starts the transfer*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingInit,1,2000));
+	/* and immediately get an error*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallError,1,2000));
+	
+	/*the error must be reported back to marie*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallError,1,2000));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_list_free(lcs);
+}
+
 
 static void call_transfer_existing_call_outgoing_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1143,7 +1175,8 @@ test_t call_tests[] = {
 	{ "Call with privacy", call_with_privacy },
 	{ "Simple conference", simple_conference },
 	{ "Simple call transfer", simple_call_transfer },
-	{ "Mean call transfer", mean_call_transfer },
+	{ "Unattended call transfer", unattended_call_transfer },
+	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
 	{ "Call with custom headers",call_with_custom_headers}

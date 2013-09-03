@@ -617,9 +617,6 @@ static void sip_config_read(LinphoneCore *lc)
 	}
 
 	sal_use_rport(lc->sal,lp_config_get_int(lc->config,"sip","use_rport",1));
-	sal_use_101(lc->sal,lp_config_get_int(lc->config,"sip","use_101",1));
-	sal_reuse_authorization(lc->sal, lp_config_get_int(lc->config,"sip","reuse_authorization",0));
-	sal_expire_old_registration_contacts(lc->sal,lp_config_get_int(lc->config,"sip","expire_old_registration_contacts",0));
 
 	ipv6=lp_config_get_int(lc->config,"sip","use_ipv6",-1);
 	if (ipv6==-1){
@@ -733,7 +730,6 @@ static void sip_config_read(LinphoneCore *lc)
 	lc->sip_conf.tcp_tls_keepalive=lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 	sal_use_one_matching_codec_policy(lc->sal,lp_config_get_int(lc->config,"sip","only_one_codec",0));
-	sal_use_double_registrations(lc->sal,lp_config_get_int(lc->config,"sip","use_double_registrations",1));
 	sal_use_dates(lc->sal,lp_config_get_int(lc->config,"sip","put_date",0));
 }
 
@@ -2328,7 +2324,7 @@ void linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call){
 	if (call->refer_pending){
 		LinphoneCallParams *cp=linphone_core_create_default_call_parameters(lc);
 		LinphoneCall *newcall;
-		cp->has_video &= !!lc->video_policy.automatically_initiate;
+		cp->has_video = call->current_params.has_video; /*start the call to refer-target with video enabled if original call had video*/
 		cp->referer=call;
 		ms_message("Starting new call to refered address %s",call->refer_to);
 		call->refer_pending=FALSE;
@@ -2680,9 +2676,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		ms_warning("we had a problem in adding the call into the invite ... weird");
 		linphone_call_unref(call);
 		return NULL;
-	}
-	if (params && params->referer){
-		call->transferer=linphone_call_ref(params->referer);
 	}
 	
 	/* this call becomes now the current one*/

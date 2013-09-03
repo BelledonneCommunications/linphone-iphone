@@ -248,6 +248,10 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 		belle_sip_transaction_t *last=belle_sip_dialog_get_last_transaction(op->dialog);
 		belle_sip_message_t *msg=BELLE_SIP_MESSAGE(belle_sip_transaction_get_request(last));
 		req=belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE");
+		if (!req) {
+			ms_error("Cannot create subscribe refresh.");
+			return -1;
+		}
 		if (expires==-1){
 			belle_sip_header_expires_t *eh=belle_sip_message_get_header_by_type(msg,belle_sip_header_expires_t);
 			expires=belle_sip_header_expires_get_expires(eh);
@@ -293,7 +297,7 @@ int sal_notify(SalOp *op, const SalBody *body){
 	
 	if (!op->dialog) return -1;
 	
-	if (!(notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY"))) return -1;
+	if (!(notify=belle_sip_dialog_create_queued_request(op->dialog,"NOTIFY"))) return -1;
 
 	if (set_event_name(op,(belle_sip_message_t*)notify)==-1){
 		belle_sip_object_unref(notify);
@@ -310,7 +314,7 @@ int sal_notify(SalOp *op, const SalBody *body){
 int sal_notify_close(SalOp *op){
 	belle_sip_request_t* notify;
 	if (!op->dialog) return -1;
-	if (!(notify=belle_sip_dialog_create_request(op->dialog,"NOTIFY"))) return -1;
+	if (!(notify=belle_sip_dialog_create_queued_request(op->dialog,"NOTIFY"))) return -1;
 	set_event_name(op,(belle_sip_message_t*)notify);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));

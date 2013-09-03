@@ -157,7 +157,6 @@ struct _LinphoneCall
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	LinphoneCallDir dir;
-	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
 	struct _LinphoneCallLog *log;
@@ -198,7 +197,7 @@ struct _LinphoneCall
 	int ping_time;
 	unsigned int remote_session_id;
 	unsigned int remote_session_ver;
-	LinphoneCall *transferer; /*if this call is the result of a transfer, transferer points to the call from which the transfer request was received.*/
+	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	bool_t refer_pending;
 	bool_t media_pending;

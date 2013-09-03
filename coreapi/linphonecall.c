@@ -642,10 +642,6 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
 	}
-	if (call->referer){
-		linphone_call_unref(call->referer);
-		call->referer=NULL;
-	}
 }
 
 void linphone_call_fix_call_parameters(LinphoneCall *call){
@@ -727,7 +723,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				default:
 				break;
 			}
-			linphone_call_set_terminated (call);
+			linphone_call_set_terminated(call);
 		}
 		if (cstate == LinphoneCallConnected) {
 			call->log->status=LinphoneCallSuccess;
@@ -744,9 +740,9 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				call->op=NULL;
 			}
 			/*it is necessary to reset pointers to other call to prevent circular references that would result in memory never freed.*/
-			if (call->transferer){
-				linphone_call_unref(call->transferer);
-				call->transferer=NULL;
+			if (call->referer){
+				linphone_call_unref(call->referer);
+				call->referer=NULL;
 			}
 			if (call->transfer_target){
 				linphone_call_unref(call->transfer_target);
@@ -782,8 +778,9 @@ static void linphone_call_destroy(LinphoneCall *obj)
 	if (obj->refer_to){
 		ms_free(obj->refer_to);
 	}
-	if (obj->transferer){
-		linphone_call_unref(obj->transferer);
+	if (obj->referer){
+		linphone_call_unref(obj->referer);
+		obj->referer=NULL;
 	}
 	if (obj->transfer_target){
 		linphone_call_unref(obj->transfer_target);
@@ -961,7 +958,7 @@ const char *linphone_call_get_refer_to(const LinphoneCall *call){
  * The call in which the transfer request was received is returned in this case.
 **/
 LinphoneCall *linphone_call_get_transferer_call(const LinphoneCall *call){
-	return call->transferer;
+	return call->referer;
 }
 
 /**

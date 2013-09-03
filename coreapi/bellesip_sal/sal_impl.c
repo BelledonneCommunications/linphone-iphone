@@ -565,24 +565,14 @@ void sal_use_session_timers(Sal *ctx, int expires){
 	ctx->session_expires=expires;
 	return ;
 }
-void sal_use_double_registrations(Sal *ctx, bool_t enabled){
-	ms_warning("sal_use_double_registrations is deprecated");
-	return ;
-}
-void sal_reuse_authorization(Sal *ctx, bool_t enabled){
-	ms_warning("sal_reuse_authorization is deprecated");
-	return ;
-}
+
 void sal_use_one_matching_codec_policy(Sal *ctx, bool_t one_matching_codec){
 	ctx->one_matching_codec=one_matching_codec;
 }
+
 void sal_use_rport(Sal *ctx, bool_t use_rports){
 	belle_sip_provider_enable_rport(ctx->prov,use_rports);
 	ms_message("Sal use rport [%s]",use_rports?"enabled":"disabled");
-	return ;
-}
-void sal_use_101(Sal *ctx, bool_t use_101){
-	ms_warning("sal_use_101 is deprecated");
 	return ;
 }
 
@@ -703,10 +693,6 @@ const char* sal_op_type_to_string(const SalOpType type) {
 	default:
 		return "SalOpUnknown";
 	}
-}
-
-void sal_expire_old_registration_contacts(Sal *ctx, bool_t enabled){
-	ms_warning("sal_expire_old_registration_contacts not implemented ");
 }
 
 void sal_use_dates(Sal *ctx, bool_t enabled){
