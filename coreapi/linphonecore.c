@@ -610,7 +610,6 @@ static void sip_config_read(LinphoneCore *lc)
 	LCSipTransports tr;
 	int i,tmp;
 	int ipv6;
-	int random_port;
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
 		sal_use_session_timers(lc->sal,200);
@@ -629,24 +628,6 @@ static void sip_config_read(LinphoneCore *lc)
 	tr.tcp_port=lp_config_get_int(lc->config,"sip","sip_tcp_port",0);
 	tr.tls_port=lp_config_get_int(lc->config,"sip","sip_tls_port",0);
 	
-	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1)
-		random_port=(0xDFFF&random())+1024;
-	else random_port=0;
-	
-	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
-		tr.udp_port=5060;
-	}	
-	
-	if (tr.udp_port>0 && random_port){
-		tr.udp_port=random_port;
-		tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-	}else if (tr.tcp_port>0 && random_port){
-		tr.tcp_port=random_port;
-		tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
-	}else if (tr.tls_port>0 && random_port){
-		tr.tls_port=random_port;
-		tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-	} 
 
 #ifdef __linux
 	sal_set_root_ca(lc->sal, lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs"));
@@ -1903,16 +1884,45 @@ static int apply_transports(LinphoneCore *lc){
  *
  * @ingroup network_parameters
 **/
-int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr){
+int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * tr_config /*config to be saved*/){
+	LCSipTransports tr=*tr_config;
+	int random_port=(0xDFFF&random())+1024;
 
-	if (transports_unchanged(tr,&lc->sip_conf.transports))
+	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
+		/*legacy random mode*/
+		if (tr.udp_port>0 && random_port){
+			tr.udp_port=random_port;
+			tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
+		}else if (tr.tcp_port>0 && random_port){
+			tr.tcp_port=random_port;
+			tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
+		}else if (tr.tls_port>0 && random_port){
+			tr.tls_port=random_port;
+			tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
+		}
+	}
+	if (tr.udp_port == LC_SIP_TRANSPORT_RANDOM) {
+		tr.udp_port=random_port;
+	}
+	if (tr.tcp_port == LC_SIP_TRANSPORT_RANDOM) {
+		tr.tcp_port=random_port;
+	}
+	if (tr.tls_port == LC_SIP_TRANSPORT_RANDOM) {
+		tr.tls_port=random_port+1;
+	}
+
+	if (tr.udp_port==0 && tr.tcp_port==0 && tr.tls_port==0){
+		tr.udp_port=5060;
+	}
+
+	if (transports_unchanged(&tr,&lc->sip_conf.transports))
 		return 0;
-	memcpy(&lc->sip_conf.transports,tr,sizeof(*tr));
+	memcpy(&lc->sip_conf.transports,&tr,sizeof(tr));
 
 	if (linphone_core_ready(lc)){
-		lp_config_set_int(lc->config,"sip","sip_port",tr->udp_port);
-		lp_config_set_int(lc->config,"sip","sip_tcp_port",tr->tcp_port);
-		lp_config_set_int(lc->config,"sip","sip_tls_port",tr->tls_port);
+		lp_config_set_int(lc->config,"sip","sip_port",tr_config->udp_port);
+		lp_config_set_int(lc->config,"sip","sip_tcp_port",tr_config->tcp_port);
+		lp_config_set_int(lc->config,"sip","sip_tls_port",tr_config->tls_port);
 	}
 
 	if (lc->sal==NULL) return 0;

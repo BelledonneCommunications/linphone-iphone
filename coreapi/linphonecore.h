@@ -52,6 +52,19 @@ struct _LpConfig;
 
 
 /**
+ * Disable a sip transport
+ * Use with #LCSipTransports
+ * @ingroup initializing
+ */
+#define LC_SIP_TRANSPORT_DISABLED 0
+/**
+ * Randomly chose a sip port for this transport
+ * Use with #LCSipTransports
+ * @ingroup initializing
+ */
+#define LC_SIP_TRANSPORT_RANDOM -1
+
+/**
  * Linphone core SIP transport ports.
  * Use with #linphone_core_set_sip_transports
  * @ingroup initializing
