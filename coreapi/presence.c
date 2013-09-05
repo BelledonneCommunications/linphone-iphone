@@ -306,51 +306,6 @@ static void presence_model_add_note(LinphonePresenceModel *model, struct _Linpho
 	model->notes = ms_list_append(model->notes, note);
 }
 
-static int presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
-	struct _LinphonePresenceService *service;
-	char *id;
-	if (ms_list_size(model->services) > 0) {
-		ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
-		ms_list_free(model->services);
-		model->services = NULL;
-	}
-	id = generate_presence_id();
-	service = presence_service_new(id, basic_status);
-	ms_free(id);
-	if (service == NULL) return -1;
-	presence_model_add_service(model, service);
-	return 0;
-}
-
-static void presence_model_clear_activities(LinphonePresenceModel *model) {
-	ms_list_for_each(model->persons, (MSIterateFunc)presence_person_clear_activities);
-}
-
-static int presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
-	char *id = NULL;
-	struct _LinphonePresencePerson *person = NULL;
-	struct _LinphonePresenceActivity *act = NULL;
-
-	if (ms_list_size(model->persons) == 0) {
-		/* There is no person in the presence model, add one. */
-		id = generate_presence_id();
-		person = presence_person_new(id, time(NULL));
-		if (id != NULL) ms_free(id);
-		if (person == NULL)
-			return -1;
-		presence_model_add_person(model, person);
-	} else {
-		/* Add the activity to the first person in the model. */
-		person = (struct _LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
-	}
-	act = presence_activity_new(acttype, description);
-	if (act == NULL)
-		return -1;
-	presence_person_add_activity(person, act);
-
-	return 0;
-}
-
 static void presence_model_find_open_basic_status(struct _LinphonePresenceService *service, LinphonePresenceBasicStatus *status) {
 	if (service->status == LinphonePresenceBasicStatusOpen) {
 		*status = LinphonePresenceBasicStatusOpen;
@@ -421,6 +376,26 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 		ms_list_for_each2(model->services, (MSIterate2Func)presence_model_find_open_basic_status, &status);
 	}
 	return status;
+}
+
+int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
+	struct _LinphonePresenceService *service;
+	char *id;
+
+	if (model == NULL) return -1;
+
+	if (ms_list_size(model->services) > 0) {
+		ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
+		ms_list_free(model->services);
+		model->services = NULL;
+	}
+	id = generate_presence_id();
+	service = presence_service_new(id, basic_status);
+	ms_free(id);
+	if (service == NULL) return -1;
+
+	presence_model_add_service(model, service);
+	return 0;
 }
 
 static void presence_service_find_newer_timestamp(struct _LinphonePresenceService *service, time_t *timestamp) {
@@ -532,12 +507,47 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 			basic_status = LinphonePresenceBasicStatusOpen;
 			break;
 	}
-	if (presence_model_set_basic_status(model, basic_status) < 0)
+	if (linphone_presence_model_set_basic_status(model, basic_status) < 0)
 		return -1;
-	presence_model_clear_activities(model);
-	if (presence_model_add_activity(model, acttype, description) < 0)
+	linphone_presence_model_clear_activities(model);
+	if (linphone_presence_model_add_activity(model, acttype, description) < 0)
 		return -1;
 
+	return 0;
+}
+
+int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
+	char *id = NULL;
+	struct _LinphonePresencePerson *person = NULL;
+	struct _LinphonePresenceActivity *act = NULL;
+
+	if (model == NULL) return -1;
+
+	if (ms_list_size(model->persons) == 0) {
+		/* There is no person in the presence model, add one. */
+		id = generate_presence_id();
+		person = presence_person_new(id, time(NULL));
+		if (id != NULL) ms_free(id);
+		if (person == NULL)
+			return -1;
+
+		presence_model_add_person(model, person);
+	} else {
+		/* Add the activity to the first person in the model. */
+		person = (struct _LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
+	}
+	act = presence_activity_new(acttype, description);
+	if (act == NULL)
+		return -1;
+
+	presence_person_add_activity(person, act);
+	return 0;
+}
+
+int linphone_presence_model_clear_activities(LinphonePresenceModel *model) {
+	if (model == NULL) return -1;
+
+	ms_list_for_each(model->persons, (MSIterateFunc)presence_person_clear_activities);
 	return 0;
 }
 
@@ -1292,7 +1302,7 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 					acttype = LinphonePresenceActivityOffline;
 					break;
 			}
-			presence_model_add_activity(model, acttype, NULL);
+			linphone_presence_model_add_activity(model, acttype, NULL);
 		}
 	}
 

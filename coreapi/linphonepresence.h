@@ -244,6 +244,14 @@ void * linphone_presence_model_get_user_data(LinphonePresenceModel *model);
 LINPHONE_PUBLIC LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const LinphonePresenceModel *model);
 
 /**
+ * @brief Sets the basic status of a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to set the basic status.
+ * @param[in] basic_status The #LinphonePresenceBasicStatus to set for the #LinphonePresenceModel object.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status);
+
+/**
  * @brief Gets the timestamp of a presence model.
  * @param[in] model The #LinphonePresenceModel object to get the timestamp from.
  * @return The timestamp of the #LinphonePresenceModel object or -1 on error.
@@ -294,8 +302,28 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_activity(
  * @param[in] activity The #LinphonePresenceActivityType to set for the model.
  * @param[in] description An additional description of the activity to set for the model. Can be NULL if no additional description is to be added.
  * @return 0 if successful, a value < 0 in case of error.
+ *
+ * WARNING: This function will modify the basic status of the model according to the activity being set.
+ * If you don't want the basic status to be modified automatically, you can use the combination of linphone_presence_model_set_basic_status(),
+ * linphone_presence_model_clear_activities() and linphone_presence_model_add_activity().
  */
 LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
+
+/**
+ * @brief Adds an activity to a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to add an activity.
+ * @param[in] activity The #LinphonePresenceActivityType to add to the model.
+ * @param[in] description An additional description of the activity to add to the model. Can be NULL if no additional description is to be added.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
+
+/**
+ * @brief Clears the activities of a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to clear the activities.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_clear_activities(LinphonePresenceModel *model);
 
 /**
  * @brief Gets the first note of a presence model (there is usually only one).
