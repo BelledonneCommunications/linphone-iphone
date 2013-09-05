@@ -114,12 +114,17 @@ void sal_process_authentication(SalOp *op) {
 	sal_add_pending_auth(op->base.root,op);
 	
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
-		request = belle_sip_dialog_create_request_from(op->dialog,(const belle_sip_request_t *)request);
+		request = belle_sip_dialog_create_queued_request_from(op->dialog,(const belle_sip_request_t *)request);
 		is_within_dialog=TRUE;
 	} else {
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION);
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION);
 	}
+	if (request==NULL) {
+		ms_error("sal_process_authentication() op=[%p] cannot obtain new request from dialog.",op);
+		return;
+	}
+	
 	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response,&auth_list)) {
 		if (is_within_dialog) {
 			sal_op_send_request(op,request);
