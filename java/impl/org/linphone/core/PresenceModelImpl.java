@@ -41,6 +41,12 @@ public class PresenceModelImpl implements PresenceModel {
 		return PresenceBasicStatus.fromInt(getBasicStatus(mNativePtr));
 	}
 
+	private native int setBasicStatus(long nativePtr, int basic_status);
+	@Override
+	public int setBasicStatus(PresenceBasicStatus basic_status) {
+		return setBasicStatus(mNativePtr, basic_status.toInt());
+	}
+
 	private native long getTimestamp(long nativePtr);
 	@Override
 	public long getTimestamp() {
@@ -81,6 +87,18 @@ public class PresenceModelImpl implements PresenceModel {
 	@Override
 	public int setActivity(PresenceActivityType activity, String description) {
 		return setActivity(mNativePtr, activity.toInt(), description);
+	}
+
+	private native int addActivity(long nativePtr, int activity, String description);
+	@Override
+	public int addActivity(PresenceActivityType activity, String description) {
+		return addActivity(mNativePtr, activity.toInt(), description);
+	}
+
+	private native int clearActivities(long nativePtr);
+	@Override
+	public int clearActivities() {
+		return clearActivities(mNativePtr);
 	}
 
 	private native Object getNote(long nativePtr, String lang);

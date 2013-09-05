@@ -3309,6 +3309,17 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_getBasicStatus(J
 
 /*
  * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    setBasicStatus
+ * Signature: (JI)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_setBasicStatus(JNIEnv *env, jobject jobj, jlong ptr, jint basic_status) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jint)linphone_presence_model_set_basic_status(model, (LinphonePresenceBasicStatus)basic_status);
+}
+
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
  * Method:    getTimestamp
  * Signature: (J)J
  */
@@ -3387,6 +3398,29 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_setActivity(JNIE
 	jint res = (jint)linphone_presence_model_set_activity(model, (LinphonePresenceActivityType)acttype, cdescription);
 	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
 	return res;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    addActivity
+ * Signature: (JILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_addActivity(JNIEnv *env, jobject jobj, jlong ptr, jint acttype, jstring description) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	const char *cdescription = description ? env->GetStringUTFChars(description, NULL) : NULL;
+	jint res = (jint)linphone_presence_model_add_activity(model, (LinphonePresenceActivityType)acttype, cdescription);
+	if (cdescription) env->ReleaseStringUTFChars(description, cdescription);
+	return res;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceModelImpl
+ * Method:    clearActivities
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_clearActivities(JNIEnv *env, jobject jobj, jlong ptr) {
+	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
+	return (jint)linphone_presence_model_clear_activities(model);
 }
 
 /*

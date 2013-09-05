@@ -28,6 +28,13 @@ public interface PresenceModel {
 	PresenceBasicStatus getBasicStatus();
 
 	/**
+	 * @brief Sets the basic status of a presence model.
+	 * @param[in] basic_status The #BasicStatus to set for the #PresenceModel object.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int setBasicStatus(PresenceBasicStatus basic_status);
+
+	/**
 	 * @brief Gets the timestamp of a presence model.
 	 * @return The timestamp of the #LinphonePresenceModel object or -1 on error.
 	 */
@@ -69,8 +76,25 @@ public interface PresenceModel {
 	 * @param[in] activity The #PresenceActivityType to set for the model.
 	 * @param[in] description An additional description of the activity to set for the model. Can be null if no additional description is to be added.
 	 * @return 0 if successful, a value < 0 in case of error.
+	 *
+	 * WARNING: This method will modify the basic status of the model according to the activity being set.
+	 * If you don't want the basic status to be modified automatically, you can use the combination of setBasicStatus(), clearActivities() and addActivity().
 	 */
 	int setActivity(PresenceActivityType activity, String description);
+
+	/**
+	 * @brief Adds an activity to a presence model.
+	 * @param[in] activity The #PresenceActivityType to add to the model.
+	 * @param[in] description An additional description of the activity to add to the model. Can be null if no additional description is to be added.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int addActivity(PresenceActivityType activity, String description);
+
+	/**
+	 * @brief Clears the activities of a presence model.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int clearActivities();
 
 	/**
 	 * @brief Gets the first note of a presence model (there is usually only one).
