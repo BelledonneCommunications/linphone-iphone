@@ -87,11 +87,19 @@ int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **userna
 
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	belle_sip_header_contact_t* contact_header;
+	belle_sip_uri_t* contact_uri;
 	if (sal_op_get_contact_address(op)) {
 		contact_header = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_contact_address(op)));
 	} else {
 		contact_header= belle_sip_header_contact_new();
 	}
+	if (!(contact_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header)))) {
+		/*no uri, just creating a new one*/
+		contact_uri=belle_sip_uri_new();
+		belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact_header),contact_uri);
+	}
+	belle_sip_uri_set_secure(contact_uri,sal_op_is_secure(op));
+
 	belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
 	if (op->base.root->uuid){
 		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
@@ -120,6 +128,9 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	}
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
 	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)to_header));
+
+
+	belle_sip_uri_set_secure(req_uri,sal_op_is_secure(op));
 
 	req=belle_sip_request_create(
 							req_uri,
@@ -240,7 +251,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 				belle_sip_message("Transport is not specified, using %s because UDP is not available.",transport);
 				belle_sip_uri_set_transport_param(next_hop_uri,transport);
 			}
-			belle_sip_uri_fix(next_hop_uri);
+			/* not really usefull belle_sip_uri_fix(next_hop_uri);*/
 		}
 		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport && 
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
@@ -553,4 +564,11 @@ void sal_op_set_privacy(SalOp* op,SalPrivacyMask privacy) {
 }
 SalPrivacyMask sal_op_get_privacy(const SalOp* op) {
 	return op->privacy;
+}
+
+bool_t sal_op_is_secure(const SalOp* op) {
+	const SalAddress* from = sal_op_get_from_address(op);
+	const SalAddress* to = sal_op_get_to_address(op);
+
+	return from && to && strcasecmp("sips",sal_address_get_scheme(from))==0 && strcasecmp("sips",sal_address_get_scheme(to))==0;
 }

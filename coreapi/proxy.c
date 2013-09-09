@@ -114,7 +114,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 	obj->reg_proxy=NULL;
 	
 	if (server_addr!=NULL && strlen(server_addr)>0){
-		if (strstr(server_addr,"sip:")==NULL){
+		if (strstr(server_addr,"sip:")==NULL && strstr(server_addr,"sips:")==NULL){
 			modified=ms_strdup_printf("sip:%s",server_addr);
 			addr=linphone_address_new(modified);
 			ms_free(modified);
@@ -182,11 +182,11 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 		ms_free(obj->reg_route);
 		obj->reg_route=NULL;
 	}
-	if (route!=NULL){
+	if (route!=NULL && route[0] !='\0'){
 		SalAddress *addr;
 		char *tmp;
 		/*try to prepend 'sip:' */
-		if (strstr(route,"sip:")==NULL){
+		if (strstr(route,"sip:")==NULL && strstr(route,"sips:")==NULL){
 			tmp=ms_strdup_printf("sip:%s",route);
 		}else tmp=ms_strdup(route);
 		addr=sal_address_new(tmp);
@@ -259,13 +259,8 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
 	obj->lc=lc;
 	linphone_proxy_config_done(obj);
 }
-#ifndef USE_BELLESIP
-static char *guess_contact_for_register(LinphoneProxyConfig *obj){
-	char *ret=NULL;
-	#else
 LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	LinphoneAddress *ret=NULL;
-#endif
 	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
 
 	const char *host;

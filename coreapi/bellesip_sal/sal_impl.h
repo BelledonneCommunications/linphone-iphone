@@ -119,6 +119,11 @@ void sal_op_resend_request(SalOp* op, belle_sip_request_t* request);
 int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener );
 belle_sip_response_t *sal_op_create_response_from_request(SalOp *op, belle_sip_request_t *req, int code);
 
+/*
+ * return true if both from and to uri are sips
+ * */
+bool_t sal_op_is_secure(const SalOp* op);
+
 void sal_process_authentication(SalOp *op);
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op) ;
 

@@ -612,7 +612,6 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h){
 	belle_sip_response_t *response;
-	belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(h);
 	belle_sip_header_contact_t* contact_header;
 
 	if (!h->pending_server_trans) {
@@ -634,7 +633,7 @@ int sal_call_accept(SalOp*h){
 		}
 	}
 
-	if (contact && (contact_header=belle_sip_header_contact_create(contact))) {
+	if ((contact_header=sal_op_create_contact(h))) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact_header));
 	}
 

@@ -466,7 +466,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 	GtkWidget *w;
 	gboolean send=TRUE;
 	/*GtkNotebook *notebook= ( GtkNotebook * ) linphone_gtk_get_widget ( main_window,"viewswitch" );*/
-	char *from=linphone_address_as_string ( linphone_chat_message_get_from ( msg ) );
+	char *from=linphone_address_as_string_uri_only( linphone_chat_message_get_from ( msg ) );
 
 	w= ( GtkWidget* ) g_object_get_data ( G_OBJECT ( friendlist ),"chatview" );
 	if ( w!=NULL ) {
