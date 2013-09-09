@@ -114,7 +114,9 @@ void sal_process_authentication(SalOp *op) {
 	sal_add_pending_auth(op->base.root,op);
 	
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
-		request = belle_sip_dialog_create_queued_request_from(op->dialog,(const belle_sip_request_t *)request);
+		request = belle_sip_dialog_create_request_from(op->dialog,request);
+		if (!request)
+			request = belle_sip_dialog_create_queued_request_from(op->dialog,request);
 		is_within_dialog=TRUE;
 	} else {
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION);
@@ -346,7 +348,7 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 	if (op && op->callbacks.process_transaction_terminated) {
 		op->callbacks.process_transaction_terminated(op,event);
 	} else {
-		ms_error("Unhandled transaction terminated [%p]",trans);
+		ms_message("Unhandled transaction terminated [%p]",trans);
 	}
 	if (op && client_transaction) sal_op_unref(op); /*because every client transaction ref op*/
 

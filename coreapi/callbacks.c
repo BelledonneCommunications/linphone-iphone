@@ -807,6 +807,12 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
+	if (cfg->publish_op){
+		/*prevent publish to be sent now until registration gets successful*/
+		sal_op_release(cfg->publish_op);
+		cfg->publish_op=NULL;
+		cfg->send_publish=cfg->publish;
+	}
 	if (error== SalErrorFailure && reason == SalReasonForbidden) {
 		const char *realm=NULL,*username=NULL;
 		if (sal_op_get_auth_requested(op,&realm,&username)==0){

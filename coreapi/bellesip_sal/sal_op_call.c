@@ -764,7 +764,7 @@ int sal_call_terminate(SalOp *op){
 			break;
 		}
 		default: {
-			ms_fatal("sal_call_terminate not implemented yet for dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
+			ms_error("sal_call_terminate not implemented yet for dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
 			return -1;
 		}
 	}
