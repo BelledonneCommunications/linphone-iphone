@@ -282,6 +282,36 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_activity(
 LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
 
 /**
+ * @brief Gets the number of activities included in the presence model.
+ * @param[in] model The #LinphonePresenceModel object to get the number of activities from.
+ * @return The number of activities included in the #LinphonePresenceModel object.
+ */
+LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *model);
+
+/**
+ * @brief Gets the nth activity of a presence model.
+ * @param[in] model The #LinphonePresenceModel object to get the activity from.
+ * @param[in] idx The index of the activity to get (the first activity having the index 0).
+ * @return A pointer to a #LinphonePresenceActivity object if successful, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx);
+
+/**
+ * @brief Adds an activity to a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to add an activity.
+ * @param[in] activity The #LinphonePresenceActivity object to add to the model.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity);
+
+/**
+ * @brief Clears the activities of a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to clear the activities.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_clear_activities(LinphonePresenceModel *model);
+
+/**
  * @brief Gets the first note of a presence model (there is usually only one).
  * @param[in] model The #LinphonePresenceModel object to get the note from.
  * @param[in] lang The language of the note to get. Can be NULL to get a note that has no language specified or to get the first note whatever language it is written into.
@@ -351,36 +381,6 @@ LINPHONE_PUBLIC int linphone_presence_model_add_service(LinphonePresenceModel *m
  * @return 0 if successful, a value < 0 in case of error.
  */
 LINPHONE_PUBLIC int linphone_presence_model_clear_services(LinphonePresenceModel *model);
-
-/**
- * @brief Gets the number of activities included in the presence model.
- * @param[in] model The #LinphonePresenceModel object to get the number of activities from.
- * @return The number of activities included in the #LinphonePresenceModel object.
- */
-LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *model);
-
-/**
- * @brief Gets the nth activity of a presence model.
- * @param[in] model The #LinphonePresenceModel object to get the activity from.
- * @param[in] idx The index of the activity to get (the first activity having the index 0).
- * @return A pointer to a #LinphonePresenceActivity object if successful, NULL otherwise.
- */
-LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx);
-
-/**
- * @brief Adds an activity to a presence model.
- * @param[in] model The #LinphonePresenceModel object for which to add an activity.
- * @param[in] activity The #LinphonePresenceActivity object to add to the model.
- * @return 0 if successful, a value < 0 in case of error.
- */
-LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity);
-
-/**
- * @brief Clears the activities of a presence model.
- * @param[in] model The #LinphonePresenceModel object for which to clear the activities.
- * @return 0 if successful, a value < 0 in case of error.
- */
-LINPHONE_PUBLIC int linphone_presence_model_clear_activities(LinphonePresenceModel *model);
 
 
 /*****************************************************************************
