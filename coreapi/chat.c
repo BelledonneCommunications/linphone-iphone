@@ -71,10 +71,11 @@ static int chat_room_compare(LinphoneChatRoom* room, const char* to) {
  * @return #LinphoneChatRoom where messaging can take place.
  */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-	if (ms_list_size(lc->chatrooms) == 0)
+	MSList* found;
+if (ms_list_size(lc->chatrooms) == 0)
 		return linphone_core_create_chat_room(lc, to);
 
-	MSList* found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) chat_room_compare, to);
+	found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) chat_room_compare, to);
 	if (found != NULL) {
 		return (LinphoneChatRoom*)found->data;
 	} else {

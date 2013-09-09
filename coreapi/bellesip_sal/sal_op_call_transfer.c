@@ -161,10 +161,11 @@ static void notify_last_response(SalOp *op, SalOp *newcall){
 }
 
 int sal_call_notify_refer_state(SalOp *op, SalOp *newcall){
+	belle_sip_dialog_state_t state;
 	if(belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_TERMINATED){
 		return 0;
 	}
-	belle_sip_dialog_state_t state=newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
+	state = newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
 	switch(state) {
 		case BELLE_SIP_DIALOG_EARLY:
 			send_notify_for_refer(op, 100, "Trying");
