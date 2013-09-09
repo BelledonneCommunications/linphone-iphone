@@ -68,14 +68,14 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		op->type=SalOpPublish;
 		req=sal_op_build_request(op,"PUBLISH");
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event",eventname));
-		if (body) sal_op_add_body(op,BELLE_SIP_MESSAGE(req),body);
+		sal_op_add_body(op,BELLE_SIP_MESSAGE(req),body);
 		return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
 	} else {
 		/*update status*/
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		/*update body*/
-		if (body) sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),body);
+		sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),body);
 		return belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
 	}
 }

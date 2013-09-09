@@ -2487,11 +2487,13 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_make_local_media_description(lc,call);
 	
 	if (lc->ringstream==NULL) {
-		/*give a chance a set card prefered sampling frequency*/
-		if (call->localdesc->streams[0].max_rate>0) {
-			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.play_sndcard, call->localdesc->streams[0].max_rate);
+		if (lc->sound_conf.play_sndcard && lc->sound_conf.capt_sndcard){
+			/*give a chance a set card prefered sampling frequency*/
+			if (call->localdesc->streams[0].max_rate>0) {
+				ms_snd_card_set_preferred_sample_rate(lc->sound_conf.play_sndcard, call->localdesc->streams[0].max_rate);
+			}
+			audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 		}
-		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
 	if (!lc->sip_conf.sdp_200_ack){
@@ -3241,8 +3243,10 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	/*give a chance a set card prefered sampling frequency*/
 	if (call->localdesc->streams[0].max_rate>0) {
 		ms_message ("configuring prefered card sampling rate to [%i]",call->localdesc->streams[0].max_rate);
-		ms_snd_card_set_preferred_sample_rate(lc->sound_conf.play_sndcard, call->localdesc->streams[0].max_rate);
-		ms_snd_card_set_preferred_sample_rate(lc->sound_conf.capt_sndcard, call->localdesc->streams[0].max_rate);
+		if (lc->sound_conf.play_sndcard)
+			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.play_sndcard, call->localdesc->streams[0].max_rate);
+		if (lc->sound_conf.capt_sndcard)
+			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.capt_sndcard, call->localdesc->streams[0].max_rate);
 	}
 	
 	if (!was_ringing && call->audiostream->ms.ticker==NULL){
