@@ -1,6 +1,7 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
 GITDESCRIBE=`git describe --always`
+GIT_TAG=`git describe --abbrev=0`
 GITREVISION=`git rev-parse HEAD`
 
 ECHO=/bin/echo
@@ -135,6 +136,10 @@ AM_CXXFLAGS=$(AM_CFLAGS)
 
 make_gitversion_h:
 	if test "$(GITDESCRIBE)" != "" ; then \
+		if test "$(GIT_TAG)" != $(PACKAGE_VERSION) ; then \
+			echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
+			exit 1; \
+		fi ; \
 		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(GITDESCRIBE)\"" > $(GITVERSION_FILE_TMP) ; \
 	elif test "$(GITREVISION)" != "" ; then \
 		$(ECHO) -n "#define LIBLINPHONE_GIT_VERSION \"$(LINPHONE_VERSION)_$(GITREVISION)\"" > $(GITVERSION_FILE_TMP) ; \
