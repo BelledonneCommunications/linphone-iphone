@@ -213,7 +213,7 @@ static void presence_service_add_note(LinphonePresenceService *service, Linphone
 	service->notes = ms_list_append(service->notes, note);
 }
 
-static LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
+LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceActivity *act = ms_new0(LinphonePresenceActivity, 1);
 	act->refcnt = 1;
 	act->type = acttype;
@@ -517,6 +517,7 @@ LinphonePresenceActivity * linphone_presence_model_get_activity(const LinphonePr
 
 int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
 	LinphonePresenceBasicStatus basic_status = LinphonePresenceBasicStatusOpen;
+	LinphonePresenceActivity *activity;
 
 	if (model == NULL) return -1;
 
@@ -533,21 +534,19 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 			basic_status = LinphonePresenceBasicStatusOpen;
 			break;
 	}
-	if (linphone_presence_model_set_basic_status(model, basic_status) < 0)
-		return -1;
+	if (linphone_presence_model_set_basic_status(model, basic_status) < 0) return -1;
 	linphone_presence_model_clear_activities(model);
-	if (linphone_presence_model_add_activity(model, acttype, description) < 0)
-		return -1;
+	activity = linphone_presence_activity_new(acttype, description);
+	if (activity == NULL) return -1;
+	return linphone_presence_model_add_activity(model, activity);
 
-	return 0;
 }
 
-int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
+int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity) {
 	char *id = NULL;
 	LinphonePresencePerson *person = NULL;
-	LinphonePresenceActivity *act = NULL;
 
-	if (model == NULL) return -1;
+	if ((model == NULL) || (activity == NULL)) return -1;
 
 	if (ms_list_size(model->persons) == 0) {
 		/* There is no person in the presence model, add one. */
@@ -562,11 +561,8 @@ int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphoneP
 		/* Add the activity to the first person in the model. */
 		person = (LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
 	}
-	act = presence_activity_new(acttype, description);
-	if (act == NULL)
-		return -1;
 
-	presence_person_add_activity(person, act);
+	presence_person_add_activity(person, activity);
 	return 0;
 }
 
@@ -1013,10 +1009,27 @@ LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphoneP
 	return activity->type;
 }
 
+int linphone_presence_activity_set_type(LinphonePresenceActivity *activity, LinphonePresenceActivityType acttype) {
+	if (activity == NULL) return -1;
+	activity->type = acttype;
+	return 0;
+}
+
 const char * linphone_presence_activity_get_description(const LinphonePresenceActivity *activity) {
 	if (activity == NULL)
 		return NULL;
 	return activity->description;
+}
+
+int linphone_presence_activity_set_description(LinphonePresenceActivity *activity, const char *description) {
+	if (activity == NULL) return -1;
+	if (activity->description != NULL)
+		ms_free(activity->description);
+	if (description != NULL)
+		activity->description = ms_strdup(description);
+	else
+		activity->description = NULL;
+	return 0;
 }
 
 LinphonePresenceNote * linphone_presence_note_ref(LinphonePresenceNote *note) {
@@ -1091,7 +1104,7 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 						}
 						err = activity_name_to_presence_activity_type((const char *)activity_node->name, &acttype);
 						if (err < 0) break;
-						activity = presence_activity_new(acttype, description);
+						activity = linphone_presence_activity_new(acttype, description);
 						presence_person_add_activity(person, activity);
 						if (description != NULL) free_xml_text_content(description);
 					}
@@ -1376,7 +1389,8 @@ void linphone_notify_parse_presence(SalOp *op, const char *content_type, const c
 					acttype = LinphonePresenceActivityOffline;
 					break;
 			}
-			linphone_presence_model_add_activity(model, acttype, NULL);
+			activity = linphone_presence_activity_new(acttype, NULL);
+			linphone_presence_model_add_activity(model, activity);
 		}
 	}
 

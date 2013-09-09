@@ -370,11 +370,10 @@ LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_model_get_nth_activ
 /**
  * @brief Adds an activity to a presence model.
  * @param[in] model The #LinphonePresenceModel object for which to add an activity.
- * @param[in] activity The #LinphonePresenceActivityType to add to the model.
- * @param[in] description An additional description of the activity to add to the model. Can be NULL if no additional description is to be added.
+ * @param[in] activity The #LinphonePresenceActivity object to add to the model.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType activity, const char *description);
+LINPHONE_PUBLIC int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivity *activity);
 
 /**
  * @brief Clears the activities of a presence model.
@@ -434,6 +433,14 @@ LINPHONE_PUBLIC int linphone_presence_service_set_contact(LinphonePresenceServic
  ****************************************************************************/
 
 /**
+ * @brief Creates a presence activity.
+ * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.
+ * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
+ * @returns The created presence activity, NULL on error.
+ */
+LINPHONE_PUBLIC LinphonePresenceActivity * linphone_presence_activity_new(LinphonePresenceActivityType acttype, const char *description);
+
+/**
  * @brief Gets the string representation of a presence activity.
  * @param[in] activity A pointer to the #LinphonePresenceActivity object for which to get a string representation.
  * @return A pointer a dynamically allocated string representing the given activity.
@@ -450,11 +457,27 @@ LINPHONE_PUBLIC char * linphone_presence_activity_to_string(const LinphonePresen
 LINPHONE_PUBLIC LinphonePresenceActivityType linphone_presence_activity_get_type(const LinphonePresenceActivity *activity);
 
 /**
+ * @brief Sets the type of activity of a presence activity.
+ * @param[in] activity The #LinphonePresenceActivity for which to set for the activity type.
+ * @param[in] acttype The activity type to set for the activity.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_activity_set_type(LinphonePresenceActivity *activity, LinphonePresenceActivityType acttype);
+
+/**
  * @brief Gets the description of a presence activity.
  * @param[in] activity A pointer to the #LinphonePresenceActivity for which to get the description.
  * @return A pointer to the description string of the presence activity, or NULL if no description is specified.
  */
 LINPHONE_PUBLIC const char * linphone_presence_activity_get_description(const LinphonePresenceActivity *activity);
+
+/**
+ * @brief Sets the description of a presence activity.
+ * @param[in] activity The #LinphonePresenceActivity object for which to set the description.
+ * @param[in] description An additional description of the activity. Can be NULL if no additional description is to be added.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_activity_set_description(LinphonePresenceActivity *activity, const char *description);
 
 
 /*****************************************************************************
