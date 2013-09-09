@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 #include "lpconfig.h"
+#include "linphonepresence.h"
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
@@ -44,6 +45,8 @@ struct _LinphonePresenceNote {
 };
 
 struct _LinphonePresenceService {
+	void *user_data;
+	int refcnt;
 	char *id;
 	LinphonePresenceBasicStatus status;
 	char *contact;
@@ -143,8 +146,8 @@ static const char * presence_basic_status_to_string(LinphonePresenceBasicStatus 
 	}
 }
 
-static struct _LinphonePresenceNote * presence_note_new(const char *content, const char *lang) {
-	struct _LinphonePresenceNote * note = ms_new0(struct _LinphonePresenceNote, 1);
+static LinphonePresenceNote * presence_note_new(const char *content, const char *lang) {
+	LinphonePresenceNote * note = ms_new0(LinphonePresenceNote, 1);
 	note->refcnt = 1;
 	note->content = ms_strdup(content);
 	if (lang != NULL) {
@@ -153,7 +156,7 @@ static struct _LinphonePresenceNote * presence_note_new(const char *content, con
 	return note;
 }
 
-static void presence_note_delete(struct _LinphonePresenceNote *note) {
+static void presence_note_delete(LinphonePresenceNote *note) {
 	ms_free(note->content);
 	if (note->lang != NULL) {
 		ms_free(note->lang);
@@ -161,15 +164,16 @@ static void presence_note_delete(struct _LinphonePresenceNote *note) {
 	ms_free(note);
 }
 
-static void presence_note_set_content(struct _LinphonePresenceNote *note, const char *content) {
+static void presence_note_set_content(LinphonePresenceNote *note, const char *content) {
 	if (note->content != NULL) {
 		ms_free(note->content);
 	}
 	note->content = ms_strdup(content);
 }
 
-static struct _LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
-	struct _LinphonePresenceService *service = ms_new0(struct _LinphonePresenceService, 1);
+static LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
+	LinphonePresenceService *service = ms_new0(LinphonePresenceService, 1);
+	service->refcnt = 1;
 	if (id != NULL) {
 		service->id = ms_strdup(id);
 	}
@@ -178,7 +182,7 @@ static struct _LinphonePresenceService * presence_service_new(const char *id, Li
 	return service;
 }
 
-static void presence_service_delete(struct _LinphonePresenceService *service) {
+static void presence_service_delete(LinphonePresenceService *service) {
 	if (service->id != NULL) {
 		ms_free(service->id);
 	}
@@ -190,20 +194,27 @@ static void presence_service_delete(struct _LinphonePresenceService *service) {
 	ms_free(service);
 };
 
-static void presence_service_set_timestamp(struct _LinphonePresenceService *service, time_t timestamp) {
+static void presence_service_set_timestamp(LinphonePresenceService *service, time_t timestamp) {
 	service->timestamp = timestamp;
 }
 
-static void presence_service_set_contact(struct _LinphonePresenceService *service, const char *contact) {
-	service->contact = ms_strdup(contact);
+int linphone_presence_service_set_contact(LinphonePresenceService *service, const char *contact) {
+	if (service == NULL) return -1;
+	if (service->contact != NULL)
+		ms_free(service->contact);
+	if (contact != NULL)
+		service->contact = ms_strdup(contact);
+	else
+		service->contact = NULL;
+	return 0;
 }
 
-static void presence_service_add_note(struct _LinphonePresenceService *service, struct _LinphonePresenceNote *note) {
+static void presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note) {
 	service->notes = ms_list_append(service->notes, note);
 }
 
-static struct _LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
-	struct _LinphonePresenceActivity *act = ms_new0(struct _LinphonePresenceActivity, 1);
+static LinphonePresenceActivity * presence_activity_new(LinphonePresenceActivityType acttype, const char *description) {
+	LinphonePresenceActivity *act = ms_new0(LinphonePresenceActivity, 1);
 	act->refcnt = 1;
 	act->type = acttype;
 	if (description != NULL) {
@@ -212,7 +223,7 @@ static struct _LinphonePresenceActivity * presence_activity_new(LinphonePresence
 	return act;
 }
 
-static void presence_activity_delete(struct _LinphonePresenceActivity *activity) {
+static void presence_activity_delete(LinphonePresenceActivity *activity) {
 	if (activity->description != NULL) {
 		ms_free(activity->description);
 	}
@@ -251,8 +262,8 @@ static char * timestamp_to_string(time_t timestamp) {
 	return ms_strdup(timestamp_str);
 }
 
-static struct _LinphonePresencePerson * presence_person_new(const char *id,  time_t timestamp) {
-	struct _LinphonePresencePerson *person = ms_new0(struct _LinphonePresencePerson, 1);
+static LinphonePresencePerson * presence_person_new(const char *id,  time_t timestamp) {
+	LinphonePresencePerson *person = ms_new0(LinphonePresencePerson, 1);
 	if (id != NULL) {
 		person->id = ms_strdup(id);
 	}
@@ -263,7 +274,7 @@ static struct _LinphonePresencePerson * presence_person_new(const char *id,  tim
 	return person;
 }
 
-static void presence_person_delete(struct _LinphonePresencePerson *person) {
+static void presence_person_delete(LinphonePresencePerson *person) {
 	if (person->id != NULL) {
 		ms_free(person->id);
 	}
@@ -276,37 +287,39 @@ static void presence_person_delete(struct _LinphonePresencePerson *person) {
 	ms_free(person);
 }
 
-static void presence_person_add_activity(struct _LinphonePresencePerson *person, struct _LinphonePresenceActivity *activity) {
+static void presence_person_add_activity(LinphonePresencePerson *person, LinphonePresenceActivity *activity) {
 	person->activities = ms_list_append(person->activities, activity);
 }
 
-static void presence_person_add_activities_note(struct _LinphonePresencePerson *person, struct _LinphonePresenceNote *note) {
+static void presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
 	person->activities_notes = ms_list_append(person->activities_notes, note);
 }
 
-static void presence_person_add_note(struct _LinphonePresencePerson *person, struct _LinphonePresenceNote *note) {
+static void presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
 	person->notes = ms_list_append(person->notes, note);
 }
 
-static void presence_person_clear_activities(struct _LinphonePresencePerson *person) {
+static void presence_person_clear_activities(LinphonePresencePerson *person) {
 	ms_list_for_each(person->activities, (MSIterateFunc)linphone_presence_activity_unref);
 	ms_list_free(person->activities);
 	person->activities = NULL;
 }
 
-static void presence_model_add_service(LinphonePresenceModel *model, struct _LinphonePresenceService *service) {
+int linphone_presence_model_add_service(LinphonePresenceModel *model, LinphonePresenceService *service) {
+	if ((model == NULL) || (service == NULL)) return -1;
 	model->services = ms_list_append(model->services, service);
+	return 0;
 }
 
-static void presence_model_add_person(LinphonePresenceModel *model, struct _LinphonePresencePerson *person) {
+static void presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person) {
 	model->persons = ms_list_append(model->persons, person);
 }
 
-static void presence_model_add_note(LinphonePresenceModel *model, struct _LinphonePresenceNote *note) {
+static void presence_model_add_note(LinphonePresenceModel *model, LinphonePresenceNote *note) {
 	model->notes = ms_list_append(model->notes, note);
 }
 
-static void presence_model_find_open_basic_status(struct _LinphonePresenceService *service, LinphonePresenceBasicStatus *status) {
+static void presence_model_find_open_basic_status(LinphonePresenceService *service, LinphonePresenceBasicStatus *status) {
 	if (service->status == LinphonePresenceBasicStatusOpen) {
 		*status = LinphonePresenceBasicStatusOpen;
 	}
@@ -338,7 +351,7 @@ LinphonePresenceModel * linphone_presence_model_new_with_activity_and_note(Linph
 static void presence_model_delete(LinphonePresenceModel *model) {
 	if (model == NULL) return;
 
-	ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
+	ms_list_for_each(model->services, (MSIterateFunc)linphone_presence_service_unref);
 	ms_list_free(model->services);
 	ms_list_for_each(model->persons, (MSIterateFunc)presence_person_delete);
 	ms_list_free(model->persons);
@@ -379,31 +392,25 @@ LinphonePresenceBasicStatus linphone_presence_model_get_basic_status(const Linph
 }
 
 int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, LinphonePresenceBasicStatus basic_status) {
-	struct _LinphonePresenceService *service;
-	char *id;
+	LinphonePresenceService *service;
 
 	if (model == NULL) return -1;
 
-	if (ms_list_size(model->services) > 0) {
-		ms_list_for_each(model->services, (MSIterateFunc)presence_service_delete);
-		ms_list_free(model->services);
-		model->services = NULL;
-	}
-	id = generate_presence_id();
-	service = presence_service_new(id, basic_status);
-	ms_free(id);
+	linphone_presence_model_clear_services(model);
+	service = linphone_presence_service_new();
 	if (service == NULL) return -1;
 
-	presence_model_add_service(model, service);
+	if (linphone_presence_service_set_basic_status(service, basic_status) < 0) return -1;
+	if (linphone_presence_model_add_service(model, service) < 0) return -1;
 	return 0;
 }
 
-static void presence_service_find_newer_timestamp(struct _LinphonePresenceService *service, time_t *timestamp) {
+static void presence_service_find_newer_timestamp(LinphonePresenceService *service, time_t *timestamp) {
 	if (service->timestamp > *timestamp)
 		*timestamp = service->timestamp;
 }
 
-static void presence_person_find_newer_timestamp(struct _LinphonePresencePerson *person, time_t *timestamp) {
+static void presence_person_find_newer_timestamp(LinphonePresencePerson *person, time_t *timestamp) {
 	if (person->timestamp > *timestamp)
 		*timestamp = person->timestamp;
 }
@@ -420,7 +427,7 @@ time_t linphone_presence_model_get_timestamp(const LinphonePresenceModel *model)
 	return timestamp;
 }
 
-static void presence_model_find_contact(struct _LinphonePresenceService *service, char **contact) {
+static void presence_model_find_contact(LinphonePresenceService *service, char **contact) {
 	if ((service->contact != NULL) && (*contact == NULL))
 		*contact = service->contact;
 }
@@ -432,22 +439,41 @@ char * linphone_presence_model_get_contact(const LinphonePresenceModel *model) {
 	return ms_strdup(contact);
 }
 
-void linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact) {
-	struct _LinphonePresenceService *service;
-	if (model != NULL) {
-		service = (struct _LinphonePresenceService *)ms_list_nth_data(model->services, 0);
-		if (service != NULL) {
-			if (service->contact != NULL)
-				ms_free(service->contact);
-			if (contact != NULL)
-				service->contact = ms_strdup(contact);
-			else
-				service->contact = NULL;
-		}
+int linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact) {
+	LinphonePresenceService *service;
+
+	if (model == NULL) return -1;
+
+	service = linphone_presence_model_get_nth_service(model, 0);
+	if (service == NULL) {
+		service = linphone_presence_service_new();
+		if (service == NULL) return -1;
+		linphone_presence_model_add_service(model, service);
 	}
+	return linphone_presence_service_set_contact(service, contact);
 }
 
-static void presence_model_count_activities(const struct _LinphonePresencePerson *person, unsigned int *nb) {
+unsigned int linphone_presence_model_nb_services(const LinphonePresenceModel *model) {
+	return ms_list_size(model->services);
+}
+
+LinphonePresenceService * linphone_presence_model_get_nth_service(const LinphonePresenceModel *model, unsigned int idx) {
+	if ((model == NULL) || (idx >= linphone_presence_model_nb_services(model)))
+		return NULL;
+
+	return (LinphonePresenceService *)ms_list_nth_data(model->services, idx);
+}
+
+int linphone_presence_model_clear_services(LinphonePresenceModel *model) {
+	if (model == NULL) return -1;
+
+	ms_list_for_each(model->services, (MSIterateFunc)linphone_presence_service_unref);
+	ms_list_free(model->services);
+	model->services = NULL;
+	return 0;
+}
+
+static void presence_model_count_activities(const LinphonePresencePerson *person, unsigned int *nb) {
 	*nb += ms_list_size(person->activities);
 }
 
@@ -460,13 +486,13 @@ unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *
 struct _get_activity_st {
 	unsigned int requested_idx;
 	unsigned int current_idx;
-	struct _LinphonePresenceActivity *activity;
+	LinphonePresenceActivity *activity;
 };
 
-static void presence_model_get_activity(const struct _LinphonePresencePerson *person, struct _get_activity_st *st) {
+static void presence_model_get_activity(const LinphonePresencePerson *person, struct _get_activity_st *st) {
 	unsigned int size = ms_list_size(person->activities);
 	if (st->requested_idx < (st->current_idx + size)) {
-		st->activity = (struct _LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
+		st->activity = (LinphonePresenceActivity *)ms_list_nth_data(person->activities, st->requested_idx - st->current_idx);
 	} else {
 		st->current_idx += size;
 	}
@@ -518,8 +544,8 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 
 int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphonePresenceActivityType acttype, const char *description) {
 	char *id = NULL;
-	struct _LinphonePresencePerson *person = NULL;
-	struct _LinphonePresenceActivity *act = NULL;
+	LinphonePresencePerson *person = NULL;
+	LinphonePresenceActivity *act = NULL;
 
 	if (model == NULL) return -1;
 
@@ -534,7 +560,7 @@ int linphone_presence_model_add_activity(LinphonePresenceModel *model, LinphoneP
 		presence_model_add_person(model, person);
 	} else {
 		/* Add the activity to the first person in the model. */
-		person = (struct _LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
+		person = (LinphonePresencePerson *)ms_list_nth_data(model->persons, 0);
 	}
 	act = presence_activity_new(acttype, description);
 	if (act == NULL)
@@ -553,16 +579,16 @@ int linphone_presence_model_clear_activities(LinphonePresenceModel *model) {
 
 struct _find_note_st {
 	const char *lang;
-	struct _LinphonePresenceNote *note;
+	LinphonePresenceNote *note;
 };
 
-static struct _LinphonePresenceNote * find_presence_note_in_list(MSList *list, const char *lang) {
+static LinphonePresenceNote * find_presence_note_in_list(MSList *list, const char *lang) {
 	int nb;
 	int i;
 
 	nb = ms_list_size(list);
 	for (i = 0; i < nb; i++) {
-		struct _LinphonePresenceNote *note = (struct _LinphonePresenceNote *)ms_list_nth_data(list, i);
+		LinphonePresenceNote *note = (LinphonePresenceNote *)ms_list_nth_data(list, i);
 		if (lang == NULL) {
 			if (note->lang == NULL) {
 				return note;
@@ -577,7 +603,7 @@ static struct _LinphonePresenceNote * find_presence_note_in_list(MSList *list, c
 	return NULL;
 }
 
-static void find_presence_person_note(struct _LinphonePresencePerson *person, struct _find_note_st *st) {
+static void find_presence_person_note(LinphonePresencePerson *person, struct _find_note_st *st) {
 	/* First look for the note in the activities notes... */
 	st->note = find_presence_note_in_list(person->activities_notes, st->lang);
 	if (st->note != NULL) return;
@@ -586,21 +612,21 @@ static void find_presence_person_note(struct _LinphonePresencePerson *person, st
 	st->note = find_presence_note_in_list(person->notes, st->lang);
 }
 
-static void find_presence_service_note(struct _LinphonePresenceService *service, struct _find_note_st *st) {
+static void find_presence_service_note(LinphonePresenceService *service, struct _find_note_st *st) {
 	st->note = find_presence_note_in_list(service->notes, st->lang);
 }
 
-static struct _LinphonePresenceNote * get_first_presence_note_in_list(MSList *list) {
-	return (struct _LinphonePresenceNote *)ms_list_nth_data(list, 0);
+static LinphonePresenceNote * get_first_presence_note_in_list(MSList *list) {
+	return (LinphonePresenceNote *)ms_list_nth_data(list, 0);
 }
 
-static void get_first_presence_person_note(struct _LinphonePresencePerson *person, struct _find_note_st *st) {
+static void get_first_presence_person_note(LinphonePresencePerson *person, struct _find_note_st *st) {
 	st->note = get_first_presence_note_in_list(person->activities_notes);
 	if (st->note != NULL) return;
 	st->note = get_first_presence_note_in_list(person->notes);
 }
 
-static void get_first_presence_service_note(struct _LinphonePresenceService *service, struct _find_note_st *st) {
+static void get_first_presence_service_note(LinphonePresenceService *service, struct _find_note_st *st) {
 	st->note = get_first_presence_note_in_list(service->notes);
 }
 
@@ -649,8 +675,8 @@ LinphonePresenceNote * linphone_presence_model_get_note(const LinphonePresenceMo
 }
 
 int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *note_content, const char *lang) {
-	struct _LinphonePresenceService *service;
-	struct _LinphonePresenceNote *note;
+	LinphonePresenceService *service;
+	LinphonePresenceNote *note;
 
 	if ((model == NULL) || (note_content == NULL))
 		return -1;
@@ -679,7 +705,7 @@ int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *n
 	return 0;
 }
 
-static void clear_presence_person_notes(struct _LinphonePresencePerson *person) {
+static void clear_presence_person_notes(LinphonePresencePerson *person) {
 	ms_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(person->activities_notes);
 	person->activities_notes = NULL;
@@ -688,7 +714,7 @@ static void clear_presence_person_notes(struct _LinphonePresencePerson *person) 
 	person->notes = NULL;
 }
 
-static void clear_presence_service_notes(struct _LinphonePresenceService *service) {
+static void clear_presence_service_notes(LinphonePresenceService *service) {
 	ms_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
 	ms_list_free(service->notes);
 	service->notes = NULL;
@@ -748,10 +774,10 @@ static xmlXPathObjectPtr get_xml_xpath_object_for_node_list(xmlparsing_context_t
 
 static const char *service_prefix = "/pidf:presence/pidf:tuple";
 
-static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx, struct _LinphonePresenceService *service, unsigned int service_idx) {
+static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx, LinphonePresenceService *service, unsigned int service_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
-	struct _LinphonePresenceNote *note;
+	LinphonePresenceNote *note;
 	const char *note_str;
 	const char *lang;
 	int i;
@@ -780,7 +806,7 @@ static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx
 static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, LinphonePresenceModel *model) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr service_object;
-	struct _LinphonePresenceService *service;
+	LinphonePresenceService *service;
 	const char *basic_status_str;
 	const char *service_id_str;
 	const char *timestamp_str;
@@ -821,11 +847,11 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 					free_xml_text_content(timestamp_str);
 				}
 				if (contact_str != NULL) {
-					presence_service_set_contact(service, contact_str);
+					linphone_presence_service_set_contact(service, contact_str);
 					free_xml_text_content(contact_str);
 				}
 				process_pidf_xml_presence_service_notes(xml_ctx, service, i);
-				presence_model_add_service(model, service);
+				linphone_presence_model_add_service(model, service);
 			}
 			free_xml_text_content(basic_status_str);
 			if (service_id_str != NULL) free_xml_text_content(service_id_str);
@@ -835,6 +861,54 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 
 	return 0;
 }
+
+
+LinphonePresenceService * linphone_presence_service_ref(LinphonePresenceService *service) {
+	service->refcnt++;
+	return service;
+}
+
+LinphonePresenceService * linphone_presence_service_unref(LinphonePresenceService *service) {
+	service->refcnt--;
+	if (service->refcnt == 0) {
+		presence_service_delete(service);
+		return NULL;
+	}
+	return service;
+}
+
+void linphone_presence_service_set_user_data(LinphonePresenceService *service, void *user_data) {
+	service->user_data = user_data;
+}
+
+void * linphone_presence_service_get_user_data(LinphonePresenceService *service) {
+	return service->user_data;
+}
+
+LinphonePresenceService * linphone_presence_service_new(void) {
+	LinphonePresenceService *service;
+	char *id = generate_presence_id();
+	service = presence_service_new(id, LinphonePresenceBasicStatusClosed);
+	ms_free(id);
+	return service;
+}
+
+LinphonePresenceBasicStatus linphone_presence_service_get_basic_status(const LinphonePresenceService *service) {
+	if (service == NULL) return LinphonePresenceBasicStatusClosed;
+	return service->status;
+}
+
+int linphone_presence_service_set_basic_status(LinphonePresenceService *service, LinphonePresenceBasicStatus basic_status) {
+	if (service == NULL) return -1;
+	service->status = basic_status;
+	return 0;
+}
+
+char * linphone_presence_service_get_contact(const LinphonePresenceService *service) {
+	if (service->contact == NULL) return NULL;
+	return ms_strdup(service->contact);
+}
+
 
 static const char *person_prefix = "/pidf:presence/dm:person";
 
@@ -989,12 +1063,12 @@ static bool_t is_valid_activity_name(const char *name) {
 	return FALSE;
 }
 
-static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml_ctx, struct _LinphonePresencePerson *person, unsigned int person_idx) {
+static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml_ctx, LinphonePresencePerson *person, unsigned int person_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr activities_nodes_object;
 	xmlXPathObjectPtr activities_object;
 	xmlNodePtr activity_node;
-	struct _LinphonePresenceActivity *activity;
+	LinphonePresenceActivity *activity;
 	const char *description;
 	int i, j;
 	int err = 0;
@@ -1032,10 +1106,10 @@ static int process_pidf_xml_presence_person_activities(xmlparsing_context_t *xml
 	return err;
 }
 
-static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx, struct _LinphonePresencePerson *person, unsigned int person_idx) {
+static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx, LinphonePresencePerson *person, unsigned int person_idx) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
-	struct _LinphonePresenceNote *note;
+	LinphonePresenceNote *note;
 	const char *note_str;
 	const char *lang;
 	int i;
@@ -1082,7 +1156,7 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, LinphonePresenceModel *model) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr person_object;
-	struct _LinphonePresencePerson *person;
+	LinphonePresencePerson *person;
 	const char *person_id_str;
 	const char *person_timestamp_str;
 	time_t timestamp;
@@ -1129,7 +1203,7 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 static int process_pidf_xml_presence_notes(xmlparsing_context_t *xml_ctx, LinphonePresenceModel *model) {
 	char xpath_str[MAX_XPATH_LENGTH];
 	xmlXPathObjectPtr note_object;
-	struct _LinphonePresenceNote *note;
+	LinphonePresenceNote *note;
 	const char *note_str;
 	const char *lang;
 	int i;
@@ -1331,7 +1405,7 @@ struct _presence_note_obj_st {
 	int *err;
 };
 
-static int write_xml_presence_note(xmlTextWriterPtr writer, struct _LinphonePresenceNote *note, const char *ns) {
+static int write_xml_presence_note(xmlTextWriterPtr writer, LinphonePresenceNote *note, const char *ns) {
 	int err;
 	if (ns == NULL) {
 		err = xmlTextWriterStartElement(writer, (const xmlChar *)"note");
@@ -1350,7 +1424,7 @@ static int write_xml_presence_note(xmlTextWriterPtr writer, struct _LinphonePres
 	return err;
 }
 
-static void write_xml_presence_note_obj(struct _LinphonePresenceNote *note, struct _presence_note_obj_st *st) {
+static void write_xml_presence_note_obj(LinphonePresenceNote *note, struct _presence_note_obj_st *st) {
 	int err = write_xml_presence_note(st->writer, note, st->ns);
 	if (err < 0) *st->err = err;
 }
@@ -1363,7 +1437,7 @@ static int write_xml_presence_timestamp(xmlTextWriterPtr writer, time_t timestam
 	return err;
 }
 
-static int write_xml_presence_service(xmlTextWriterPtr writer, struct _LinphonePresenceService *service, const char *contact) {
+static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceService *service, const char *contact) {
 	int err = xmlTextWriterStartElement(writer, (const xmlChar *)"tuple");
 	if (err >= 0) {
 		if ((service == NULL) || (service->id == NULL)) {
@@ -1419,13 +1493,13 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, struct _LinphoneP
 	return err;
 }
 
-static bool_t is_valid_activity(struct _LinphonePresenceActivity *activity) {
+static bool_t is_valid_activity(LinphonePresenceActivity *activity) {
 	if ((activity->type == LinphonePresenceActivityOffline) || (activity->type == LinphonePresenceActivityOnline))
 		return FALSE;
 	return TRUE;
 }
 
-static int write_xml_presence_activity(xmlTextWriterPtr writer, struct _LinphonePresenceActivity *activity) {
+static int write_xml_presence_activity(xmlTextWriterPtr writer, LinphonePresenceActivity *activity) {
 	int err;
 
 	if (is_valid_activity(activity) == FALSE) return 0;
@@ -1441,22 +1515,22 @@ static int write_xml_presence_activity(xmlTextWriterPtr writer, struct _Linphone
 	return err;
 }
 
-static void write_xml_presence_activity_obj(struct _LinphonePresenceActivity *activity, struct _presence_activity_obj_st *st) {
+static void write_xml_presence_activity_obj(LinphonePresenceActivity *activity, struct _presence_activity_obj_st *st) {
 	int err = write_xml_presence_activity(st->writer, activity);
 	if (err < 0) *st->err = err;
 }
 
-static void person_has_valid_activity(struct _LinphonePresenceActivity *activity, bool_t *has_valid_activities) {
+static void person_has_valid_activity(LinphonePresenceActivity *activity, bool_t *has_valid_activities) {
 	if (is_valid_activity(activity) == TRUE) *has_valid_activities = TRUE;
 }
 
-static bool_t person_has_valid_activities(struct _LinphonePresencePerson *person) {
+static bool_t person_has_valid_activities(LinphonePresencePerson *person) {
 	bool_t has_valid_activities = FALSE;
 	ms_list_for_each2(person->activities, (MSIterate2Func)person_has_valid_activity, &has_valid_activities);
 	return has_valid_activities;
 }
 
-static int write_xml_presence_person(xmlTextWriterPtr writer, struct _LinphonePresencePerson *person) {
+static int write_xml_presence_person(xmlTextWriterPtr writer, LinphonePresencePerson *person) {
 	int err;
 
 	if ((person_has_valid_activities(person) == FALSE) && (person->notes == NULL)) return 0;
@@ -1508,12 +1582,12 @@ static int write_xml_presence_person(xmlTextWriterPtr writer, struct _LinphonePr
 	return err;
 }
 
-static void write_xml_presence_service_obj(struct _LinphonePresenceService *service, struct _presence_service_obj_st *st) {
+static void write_xml_presence_service_obj(LinphonePresenceService *service, struct _presence_service_obj_st *st) {
 	int err = write_xml_presence_service(st->writer, service, st->contact);
 	if (err < 0) *st->err = err;
 }
 
-static void write_xml_presence_person_obj(struct _LinphonePresencePerson *person, struct _presence_person_obj_st *st) {
+static void write_xml_presence_person_obj(LinphonePresencePerson *person, struct _presence_person_obj_st *st) {
 	int err = write_xml_presence_person(st->writer, person);
 	if (err < 0) *st->err = err;
 }
