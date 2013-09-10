@@ -162,7 +162,7 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	if (obj==NULL || lp_config_get_int(config, "sip", "store_auth_info", 1) == 0){
 		return;
 	}
-	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username||obj->userid)) {
+	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username||obj->userid) && lp_config_get_int(config, "sip", "store_ha1_passwd", 1) == 1) {
 		/*compute ha1 to avoid storing clear text password*/
 		obj->ha1=ms_malloc(33);
 		sal_auth_compute_ha1(obj->userid?obj->userid:obj->username,obj->realm,obj->passwd,obj->ha1);
