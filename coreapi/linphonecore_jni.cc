@@ -3621,10 +3621,14 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceActivityImpl_setDescriptio
 /*
  * Class:     org_linphone_core_PresenceServiceImpl
  * Method:    newPresenceServiceImpl
- * Signature: ()J
+ * Signature: (Ljava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceServiceImpl_newPresenceServiceImpl(JNIEnv *env, jobject jobj) {
-	return (jlong)linphone_presence_service_new();
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceServiceImpl_newPresenceServiceImpl(JNIEnv *env, jobject jobj, jstring id) {
+	LinphonePresenceService *service;
+	const char *cid = id ? env->GetStringUTFChars(id, NULL) : NULL;
+	service = linphone_presence_service_new(cid);
+	if (cid) env->ReleaseStringUTFChars(id, cid);
+	return (jlong)service;
 }
 
 /*

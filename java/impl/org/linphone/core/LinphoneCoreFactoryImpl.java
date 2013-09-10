@@ -186,8 +186,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public PresenceService createPresenceService() {
-		return new PresenceServiceImpl();
+	public PresenceService createPresenceService(String id) {
+		return new PresenceServiceImpl(id);
 	}
 
 	@Override
