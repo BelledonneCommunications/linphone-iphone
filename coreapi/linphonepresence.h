@@ -389,11 +389,12 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_services(LinphonePresenceModel
 
 /**
  * @brief Creates a presence service.
+ * @param[in] id The id of the presence service to be created. Can be NULL to generate it automatically.
  * @returns The created presence service, NULL on error.
  *
  * The created presence service has the basic status 'closed'.
  */
-LINPHONE_PUBLIC LinphonePresenceService * linphone_presence_service_new(void);
+LINPHONE_PUBLIC LinphonePresenceService * linphone_presence_service_new(const char *id);
 
 /**
  * @brief Gets the basic status of a presence service.

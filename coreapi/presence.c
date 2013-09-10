@@ -354,7 +354,7 @@ int linphone_presence_model_set_basic_status(LinphonePresenceModel *model, Linph
 	if (model == NULL) return -1;
 
 	linphone_presence_model_clear_services(model);
-	service = linphone_presence_service_new();
+	service = linphone_presence_service_new(NULL);
 	if (service == NULL) return -1;
 
 	if (linphone_presence_service_set_basic_status(service, basic_status) < 0) return -1;
@@ -403,7 +403,7 @@ int linphone_presence_model_set_contact(LinphonePresenceModel *model, const char
 
 	service = linphone_presence_model_get_nth_service(model, 0);
 	if (service == NULL) {
-		service = linphone_presence_service_new();
+		service = linphone_presence_service_new(NULL);
 		if (service == NULL) return -1;
 		linphone_presence_model_add_service(model, service);
 	}
@@ -708,11 +708,16 @@ int linphone_presence_model_clear_services(LinphonePresenceModel *model) {
  * PRESENCE SERVICE FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES           *
  ****************************************************************************/
 
-LinphonePresenceService * linphone_presence_service_new(void) {
+LinphonePresenceService * linphone_presence_service_new(const char *id) {
 	LinphonePresenceService *service;
-	char *id = generate_presence_id();
-	service = presence_service_new(id, LinphonePresenceBasicStatusClosed);
-	ms_free(id);
+	char *service_id;
+	if (id == NULL)
+		service_id = generate_presence_id();
+	else
+		service_id = ms_strdup(id);
+	service = presence_service_new(service_id, LinphonePresenceBasicStatusClosed);
+	if (service_id != NULL)
+		ms_free(service_id);
 	return service;
 }
 
