@@ -120,9 +120,11 @@ abstract public class LinphoneCoreFactory {
 	/**
 	 * Create a PresenceService object.
 	 * @param id The id of the presence service. Can be null to generate it automatically.
+	 * @param status The PresenceBasicStatus to set for the PresenceService object.
+	 * @param contact The contact to set for the PresenceService object. Can be null.
 	 * @return A new PresenceService object.
 	 */
-	abstract public PresenceService createPresenceService(String id);
+	abstract public PresenceService createPresenceService(String id, PresenceBasicStatus status, String contact);
 
 	/**
 	 * Create a PresenceModel object.

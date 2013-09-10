@@ -26,9 +26,9 @@ public class PresenceServiceImpl implements PresenceService {
 		mNativePtr = nativePtr;
 	}
 
-	private native long newPresenceServiceImpl(String id);
-	protected PresenceServiceImpl(String id) {
-		mNativePtr = newPresenceServiceImpl(id);
+	private native long newPresenceServiceImpl(String id, int status, String contact);
+	protected PresenceServiceImpl(String id, PresenceBasicStatus status, String contact) {
+		mNativePtr = newPresenceServiceImpl(id, status.toInt(), contact);
 	}
 
 	private native void unref(long nativePtr);
