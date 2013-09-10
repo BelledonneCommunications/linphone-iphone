@@ -26,6 +26,11 @@ public class PresenceActivityImpl implements PresenceActivity {
 		mNativePtr = nativePtr;
 	}
 
+	private native long newPresenceActivityImpl(int type, String description);
+	protected PresenceActivityImpl(PresenceActivityType type, String description) {
+		mNativePtr = newPresenceActivityImpl(type.toInt(), description);
+	}
+
 	private native void unref(long nativePtr);
 	protected void finalize() {
 		unref(mNativePtr);
@@ -43,9 +48,25 @@ public class PresenceActivityImpl implements PresenceActivity {
 		return PresenceActivityType.fromInt(getType(mNativePtr));
 	}
 
+	private native int setType(long nativePtr, int type);
+	@Override
+	public int setType(PresenceActivityType type) {
+		return setType(mNativePtr, type.toInt());
+	}
+
 	private native String getDescription(long nativePtr);
 	@Override
 	public String getDescription() {
 		return getDescription(mNativePtr);
+	}
+
+	private native int setDescription(long nativePtr, String description);
+	@Override
+	public int setDescription(String description) {
+		return setDescription(mNativePtr, description);
+	}
+
+	public long getNativePtr() {
+		return mNativePtr;
 	}
 }

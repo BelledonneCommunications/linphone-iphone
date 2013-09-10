@@ -179,4 +179,30 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			String data) {
 		return new LinphoneContentImpl(type,subType,data);
 	}
+
+	@Override
+	public PresenceActivity createPresenceActivity(PresenceActivityType type, String description) {
+		return new PresenceActivityImpl(type, description);
+	}
+
+	@Override
+	public PresenceService createPresenceService() {
+		return new PresenceServiceImpl();
+	}
+
+	@Override
+	public PresenceModel createPresenceModel() {
+		return new PresenceModelImpl();
+	}
+
+	@Override
+	public PresenceModel createPresenceModel(PresenceActivityType type, String description) {
+		return new PresenceModelImpl(type, description);
+	}
+
+	@Override
+	public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang) {
+		return new PresenceModelImpl(type, description, note, lang);
+	}
+
 }

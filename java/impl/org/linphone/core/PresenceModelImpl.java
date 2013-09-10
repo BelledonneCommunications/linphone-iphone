@@ -26,13 +26,24 @@ public class PresenceModelImpl implements PresenceModel {
 		mNativePtr = nativePtr;
 	}
 
+	private native long newPresenceModelImpl();
+	protected PresenceModelImpl() {
+		mNativePtr = newPresenceModelImpl();
+	}
+
+	private native long newPresenceModelImpl(int type, String description);
+	protected PresenceModelImpl(PresenceActivityType type, String description) {
+		mNativePtr = newPresenceModelImpl(type.toInt(), description);
+	}
+
+	private native long newPresenceModelImpl(int type, String description, String note, String lang);
+	protected PresenceModelImpl(PresenceActivityType type, String description, String note, String lang) {
+		mNativePtr = newPresenceModelImpl(type.toInt(), description, note, lang);
+	}
+
 	private native void unref(long nativePtr);
 	protected void finalize() {
 		unref(mNativePtr);
-	}
-
-	public long getNativePtr() {
-		return mNativePtr;
 	}
 
 	private native int getBasicStatus(long nativePtr);
@@ -65,18 +76,6 @@ public class PresenceModelImpl implements PresenceModel {
 		setContact(mNativePtr, contact);
 	}
 
-	private native long nbActivities(long nativePtr);
-	@Override
-	public long nbActivities() {
-		return nbActivities(mNativePtr);
-	}
-
-	private native Object getNthActivity(long nativePtr, long idx);
-	@Override
-	public PresenceActivity getNthActivity(long idx) {
-		return (PresenceActivity)getNthActivity(mNativePtr, idx);
-	}
-
 	private native Object getActivity(long nativePtr);
 	@Override
 	public PresenceActivity getActivity() {
@@ -89,10 +88,22 @@ public class PresenceModelImpl implements PresenceModel {
 		return setActivity(mNativePtr, activity.toInt(), description);
 	}
 
-	private native int addActivity(long nativePtr, int activity, String description);
+	private native long nbActivities(long nativePtr);
 	@Override
-	public int addActivity(PresenceActivityType activity, String description) {
-		return addActivity(mNativePtr, activity.toInt(), description);
+	public long nbActivities() {
+		return nbActivities(mNativePtr);
+	}
+
+	private native Object getNthActivity(long nativePtr, long idx);
+	@Override
+	public PresenceActivity getNthActivity(long idx) {
+		return (PresenceActivity)getNthActivity(mNativePtr, idx);
+	}
+
+	private native int addActivity(long nativePtr, long activityPtr);
+	@Override
+	public int addActivity(PresenceActivity activity) {
+		return addActivity(mNativePtr, activity.getNativePtr());
 	}
 
 	private native int clearActivities(long nativePtr);
@@ -118,4 +129,33 @@ public class PresenceModelImpl implements PresenceModel {
 	public int clearNotes() {
 		return clearNotes(mNativePtr);
 	}
+
+	private native long nbServices(long nativePtr);
+	@Override
+	public long nbServices() {
+		return nbServices(mNativePtr);
+	}
+
+	private native Object getNthService(long nativePtr, long idx);
+	@Override
+	public PresenceService getNthService(long idx) {
+		return (PresenceService)getNthService(mNativePtr, idx);
+	}
+
+	private native int addService(long nativePtr, long servicePtr);
+	@Override
+	public int addService(PresenceService service) {
+		return addService(mNativePtr, service.getNativePtr());
+	}
+
+	private native int clearServices(long nativePtr);
+	@Override
+	public int clearServices() {
+		return clearServices(mNativePtr);
+	}
+
+	public long getNativePtr() {
+		return mNativePtr;
+	}
+
 }

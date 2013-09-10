@@ -111,4 +111,21 @@ abstract public class LinphoneCoreFactory {
 	 * Create a LinphoneContent object
 	 */
 	abstract public LinphoneContent createLinphoneContent(String type, String subType, String data);
+
+	/**
+	 * Create a PresenceActivity object.
+	 */
+	abstract public PresenceActivity createPresenceActivity(PresenceActivityType type, String description);
+
+	/**
+	 * Create a PresenceService object.
+	 */
+	abstract public PresenceService createPresenceService();
+
+	/**
+	 * Create a PresenceModel object.
+	 */
+	abstract public PresenceModel createPresenceModel();
+	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description);
+	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang);
 }

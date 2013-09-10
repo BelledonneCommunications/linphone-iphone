@@ -53,19 +53,6 @@ public interface PresenceModel {
 	void setContact(String contact);
 
 	/**
-	 * @brief Gets the number of activities included in the presence model.
-	 * @return The number of activities included in the #PresenceModel object.
-	 */
-	long nbActivities();
-
-	/**
-	 * @brief Gets the nth activity of a presence model.
-	 * @param idx The index of the activity to get (the first activity having the index 0).
-	 * @return A #PresenceActivity object if successful, null otherwise.
-	 */
-	PresenceActivity getNthActivity(long idx);
-
-	/**
 	 * @brief Gets the first activity of a presence model (there is usually only one).
 	 * @return A #PresenceActivity object if successful, null otherwise.
 	 */
@@ -83,12 +70,24 @@ public interface PresenceModel {
 	int setActivity(PresenceActivityType activity, String description);
 
 	/**
+	 * @brief Gets the number of activities included in the presence model.
+	 * @return The number of activities included in the #PresenceModel object.
+	 */
+	long nbActivities();
+
+	/**
+	 * @brief Gets the nth activity of a presence model.
+	 * @param idx The index of the activity to get (the first activity having the index 0).
+	 * @return A #PresenceActivity object if successful, null otherwise.
+	 */
+	PresenceActivity getNthActivity(long idx);
+
+	/**
 	 * @brief Adds an activity to a presence model.
-	 * @param[in] activity The #PresenceActivityType to add to the model.
-	 * @param[in] description An additional description of the activity to add to the model. Can be null if no additional description is to be added.
+	 * @param[in] activity The #PresenceActivity to add to the model.
 	 * @return 0 if successful, a value < 0 in case of error.
 	 */
-	int addActivity(PresenceActivityType activity, String description);
+	int addActivity(PresenceActivity activity);
 
 	/**
 	 * @brief Clears the activities of a presence model.
@@ -118,5 +117,31 @@ public interface PresenceModel {
 	 * @return 0 if successful, a value < 0 in case of error.
 	 */
 	int clearNotes();
+
+	/**
+	 * @brief Gets the number of services included in the presence model.
+	 * @return The number of services included in the #PresenceModel object.
+	 */
+	long nbServices();
+
+	/**
+	 * @brief Gets the nth service of a presence model.
+	 * @param[in] idx The index of the service to get (the first service having the index 0).
+	 * @return A #PresenceService object if successful, null otherwise.
+	 */
+	PresenceService getNthService(long idx);
+
+	/**
+	 * @brief Adds a service to a presence model.
+	 * @param[in] service The #PresenceService object to add to the model.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int addService(PresenceService service);
+
+	/**
+	 * @brief Clears the services of a presence model.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int clearServices();
 
 }

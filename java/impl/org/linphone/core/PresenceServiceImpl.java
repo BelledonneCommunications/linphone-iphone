@@ -1,5 +1,5 @@
 /*
-PresenceNoteImpl.java
+PresenceServiceImpl.java
 Copyright (C) 2010-2013  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -19,11 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package org.linphone.core;
 
-public class PresenceNoteImpl implements PresenceNote {
+public class PresenceServiceImpl implements PresenceService {
 	private long mNativePtr;
 
-	protected PresenceNoteImpl(long nativePtr) {
+	protected PresenceServiceImpl(long nativePtr) {
 		mNativePtr = nativePtr;
+	}
+
+	private native long newPresenceServiceImpl();
+	protected PresenceServiceImpl() {
+		mNativePtr = newPresenceServiceImpl();
 	}
 
 	private native void unref(long nativePtr);
@@ -31,16 +36,28 @@ public class PresenceNoteImpl implements PresenceNote {
 		unref(mNativePtr);
 	}
 
-	private native String getContent(long nativePtr);
+	private native int getBasicStatus(long nativePtr);
 	@Override
-	public String getContent() {
-		return getContent(mNativePtr);
+	public PresenceBasicStatus getBasicStatus() {
+		return PresenceBasicStatus.fromInt(getBasicStatus(mNativePtr));
 	}
 
-	private native String getLang(long nativePtr);
+	private native int setBasicStatus(long nativePtr, int status);
 	@Override
-	public String getLang() {
-		return getLang(mNativePtr);
+	public int setBasicStatus(PresenceBasicStatus status) {
+		return setBasicStatus(mNativePtr, status.toInt());
+	}
+
+	private native String getContact(long nativePtr);
+	@Override
+	public String getContact() {
+		return getContact(mNativePtr);
+	}
+
+	private native int setContact(long nativePtr, String contact);
+	@Override
+	public int setContact(String contact) {
+		return setContact(mNativePtr, contact);
 	}
 
 	public long getNativePtr() {

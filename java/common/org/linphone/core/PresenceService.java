@@ -1,5 +1,5 @@
 /*
-PresenceNote.java
+PresenceService.java
 Copyright (C) 2010-2013  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -19,19 +19,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package org.linphone.core;
 
-public interface PresenceNote {
+public interface PresenceService {
 
 	/**
-	 * @brief Gets the content of a presence note.
-	 * @return A String with the content of the presence note.
+	 * @brief Gets the basic status of a presence service.
+	 * @return The #PresenceBasicStatus of the #PresenceService object.
 	 */
-	String getContent();
+	PresenceBasicStatus getBasicStatus();
 
 	/**
-	 * @brief Gets the language of a presence note.
-	 * @return A String containing the language of the presence note, or null if no language is specified.
+	 * @brief Sets the basic status of a presence service.
+	 * @param[in] status The #PresenceBasicStatus to set for the #PresenceService object.
+	 * @return 0 if successful, a value < 0 in case of error.
 	 */
-	String getLang();
+	int setBasicStatus(PresenceBasicStatus status);
+
+	/**
+	 * @brief Gets the contact of a presence service.
+	 * @return A string containing the contact, or null if no contact is found.
+	 */
+	String getContact();
+
+	 /**
+	 * @brief Sets the contact of a presence model.
+	 * @param[in] contact The contact string to set.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int setContact(String contact);
 
 	/**
 	 * @brief Gets the native pointer for this object.
