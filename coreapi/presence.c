@@ -1528,7 +1528,9 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceS
 		err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"priority", (const xmlChar *)"0.8");
 	}
 	if (err >= 0) {
-		err = xmlTextWriterWriteString(writer, (const xmlChar *)contact);
+		const char *contact_str = service->contact;
+		if (contact_str == NULL) contact_str = contact;
+		err = xmlTextWriterWriteString(writer, (const xmlChar *)contact_str);
 	}
 	if (err >= 0) {
 		/* Close the "contact" element. */
