@@ -136,7 +136,7 @@ AM_CXXFLAGS=$(AM_CFLAGS)
 
 make_gitversion_h:
 	if test "$(GITDESCRIBE)" != "" ; then \
-		if test "$(GIT_TAG)" != $(PACKAGE_VERSION) ; then \
+		if test "$(GIT_TAG)" != "$(PACKAGE_VERSION)" ; then \
 			echo "*** PACKAGE_VERSION and git tag differ. Please put them identical."; \
 			exit 1; \
 		fi ; \
