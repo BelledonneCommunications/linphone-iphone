@@ -646,46 +646,24 @@ int sal_call_accept(SalOp*h){
 int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*optional*/){
 	belle_sip_response_t* response;
 	belle_sip_header_contact_t* contact=NULL;
-	int status;
-	switch(reason) {
-	case SalReasonBusy:
-		status=486;
-		break;
-	case SalReasonTemporarilyUnavailable:
-		status=480;
-		break;
-	case SalReasonDoNotDisturb:
-		status=600;
-		break;
-	case SalReasonMedia:
-		status=415;
-		break;
-	case SalReasonDeclined:
-		status=603;
-		break;
-	case SalReasonRedirect:
-		if(redirection!=NULL) {
+	int status=sal_reason_to_sip_code(reason);
+	
+	if (reason==SalReasonRedirect){
+		if (redirection!=NULL) {
 			if (strstr(redirection,"sip:")!=0) status=302;
 			status=380;
 			contact= belle_sip_header_contact_new();
 			belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact),belle_sip_uri_parse(redirection));
-			break;
 		} else {
 			ms_error("Cannot redirect to null");
 		}
-		/* no break */
-
-	default:
-		status=500;
-		ms_error("Unexpected decline reason [%i]",reason);
-		/* no break */
 	}
 	response = sal_op_create_response_from_request(op,belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(op->pending_server_trans)),status);
 	if (contact) belle_sip_message_add_header(BELLE_SIP_MESSAGE(response),BELLE_SIP_HEADER(contact));
 	belle_sip_server_transaction_send_response(op->pending_server_trans,response);
 	return 0;
-
 }
+
 int sal_call_update(SalOp *op, const char *subject){
 	belle_sip_request_t *reinvite=belle_sip_dialog_create_request(op->dialog,"INVITE");
 	if (reinvite){
