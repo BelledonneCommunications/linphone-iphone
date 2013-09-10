@@ -1,8 +1,8 @@
 GITVERSION_FILE=liblinphone_gitversion.h
 GITVERSION_FILE_TMP=liblinphone_gitversion.h.tmp
-GITDESCRIBE=`git describe --always`
-GIT_TAG=`git describe --abbrev=0`
-GITREVISION=`git rev-parse HEAD`
+GITDESCRIBE=`cd $(top_srcdir) && git describe --always`
+GIT_TAG=`cd $(top_srcdir) && git describe --abbrev=0`
+GITREVISION=`cd $(top_srcdir) && git rev-parse HEAD`
 
 ECHO=/bin/echo
 
