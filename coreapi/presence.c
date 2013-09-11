@@ -1528,8 +1528,11 @@ static int write_xml_presence_service(xmlTextWriterPtr writer, LinphonePresenceS
 		err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"priority", (const xmlChar *)"0.8");
 	}
 	if (err >= 0) {
-		const char *contact_str = service->contact;
-		if (contact_str == NULL) contact_str = contact;
+		const char *contact_str;
+		if ((service == NULL) || (service->contact == NULL))
+			contact_str = contact;
+		else
+			contact_str = service->contact;
 		err = xmlTextWriterWriteString(writer, (const xmlChar *)contact_str);
 	}
 	if (err >= 0) {
