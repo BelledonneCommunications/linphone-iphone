@@ -1890,15 +1890,17 @@ int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports * t
 
 	if (lp_config_get_int(lc->config,"sip","sip_random_port",0)==1) {
 		/*legacy random mode*/
-		if (tr.udp_port>0 && random_port){
+		if (tr.udp_port>0){
 			tr.udp_port=random_port;
 			tr.tls_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tcp_port>0 && random_port){
+		}else if (tr.tcp_port>0){
 			tr.tcp_port=random_port;
 			tr.tls_port=tr.udp_port=0; /*make sure only one transport is active at a time*/
-		}else if (tr.tls_port>0 && random_port){
+		}else if (tr.tls_port>0){
 			tr.tls_port=random_port;
 			tr.udp_port=tr.tcp_port=0; /*make sure only one transport is active at a time*/
+		} else {
+			tr.udp_port=random_port;
 		}
 	}
 	if (tr.udp_port == LC_SIP_TRANSPORT_RANDOM) {
