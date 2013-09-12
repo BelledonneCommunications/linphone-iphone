@@ -164,7 +164,9 @@ char *linphone_gtk_get_config_file(const char *filename){
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(config_file,path_max,"%s",filename);
-	}else{
+	} else if (g_path_is_absolute(filename)) {
+		snprintf(config_file,path_max,"%s",filename);
+	} else{
 #ifdef WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
@@ -1924,6 +1926,12 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 	if (config_file) free(config_file);
+	if (custom_config_file && !g_path_is_absolute(custom_config_file)) {
+		gchar *res = g_get_current_dir();
+		res = g_strjoin(G_DIR_SEPARATOR_S, res, custom_config_file, NULL);
+		free(custom_config_file);
+		custom_config_file = res;
+	}
 	config_file=linphone_gtk_get_config_file(custom_config_file);
 
 	settings=gtk_settings_get_default();
