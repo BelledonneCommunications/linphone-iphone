@@ -840,15 +840,22 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 }
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
-	int err;
+	int err=0;
 	
-	if (proxy->publish_op==NULL){
-		proxy->publish_op=sal_op_new(proxy->lc->sal);
-		sal_op_set_route(proxy->publish_op,proxy->reg_proxy);
-		sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
-		sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
-	}
-	err=sal_publish_presence(proxy->publish_op,NULL,NULL,proxy->expires,(SalPresenceModel *)presence);
+	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
+		if (proxy->publish_op==NULL){
+			proxy->publish_op=sal_op_new(proxy->lc->sal);
+			sal_op_set_route(proxy->publish_op,proxy->reg_proxy);
+			sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
+			sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
+			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
+				SalAddress *addr=sal_address_new(NULL);
+				sal_op_set_contact(proxy->publish_op,addr);
+				sal_address_unref(addr);
+			}
+		}
+		err=sal_publish_presence(proxy->publish_op,NULL,NULL,proxy->expires,(SalPresenceModel *)presence);
+	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }
 
@@ -1175,12 +1182,14 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		}
 		if (can_register(cfg)){
 			linphone_proxy_config_register(cfg);
+			ms_message("***Registering...(%p)",cfg);
 			cfg->commit=FALSE;
 			if (cfg->publish) cfg->send_publish=TRUE;
 		}
 	}
 	if (cfg->send_publish && (cfg->state==LinphoneRegistrationOk || cfg->state==LinphoneRegistrationCleared)){
 		linphone_proxy_config_send_publish(cfg,lc->presence_model);
+		ms_message("***Publishing...");
 		cfg->send_publish=FALSE;
 	}
 }
