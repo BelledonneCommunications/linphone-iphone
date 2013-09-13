@@ -92,6 +92,7 @@ struct SalOp{
 	int ref;
 	SalOpType type;
 	SalPrivacyMask privacy;
+	belle_sip_header_t *event; /*used by SalOpSubscribe kinds*/
 	bool_t auto_answer_asked;
 	bool_t sdp_offering;
 	bool_t call_released;

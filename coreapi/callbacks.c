@@ -1059,7 +1059,8 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	if (lc->vtable.notify_received){
-		lc->vtable.notify_received(lc,lev,eventname,linphone_content_from_sal_body(&content,body));
+		const LinphoneContent *ct=linphone_content_from_sal_body(&content,body);
+		if (ct) lc->vtable.notify_received(lc,lev,eventname,ct);
 	}
 	if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));

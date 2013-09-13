@@ -59,6 +59,7 @@ void sal_op_release_impl(SalOp *op){
 
 	if (op->pending_client_trans) belle_sip_object_unref(op->pending_client_trans);
 	if (op->pending_server_trans) belle_sip_object_unref(op->pending_server_trans);
+	if (op->event) belle_sip_object_unref(op->event);
 	__sal_op_free(op);
 	return ;
 }
