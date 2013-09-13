@@ -228,6 +228,17 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFr
  */
 LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
+
+/**
+ * Store user pointer to friend object.
+**/
+LINPHONE_PUBLIC void linphone_friend_set_user_data(LinphoneFriend *lf, void *data);
+
+/**
+ * Retrieve user data associated with friend.
+**/
+LINPHONE_PUBLIC void* linphone_friend_get_user_data(const LinphoneFriend *lf);
+
 LINPHONE_PUBLIC BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
 LINPHONE_PUBLIC void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
 LINPHONE_PUBLIC const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);

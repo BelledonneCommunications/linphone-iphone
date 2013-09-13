@@ -159,6 +159,14 @@ LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 	return fr;
 }
 
+void linphone_friend_set_user_data(LinphoneFriend *lf, void *data){
+	lf->up=data;
+}
+
+void* linphone_friend_get_user_data(const LinphoneFriend *lf){
+	return lf->up;
+}
+
 bool_t linphone_friend_in_list(const LinphoneFriend *lf){
 	return lf->lc!=NULL;
 }
