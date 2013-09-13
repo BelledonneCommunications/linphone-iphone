@@ -150,13 +150,6 @@ LINPHONE_PUBLIC int linphone_friend_set_addr(LinphoneFriend *fr, const LinphoneA
 LINPHONE_PUBLIC int linphone_friend_set_name(LinphoneFriend *lf, const char *name);
 
 /**
- * set the display name for this friend
- * @param lf #LinphoneFriend object
- * @param name 
- */
-int linphone_friend_set_name(LinphoneFriend *lf, const char *name);
-
-/**
  * get address of this friend
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
