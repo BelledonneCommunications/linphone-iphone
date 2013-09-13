@@ -451,11 +451,13 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 }
 
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
-	MSList *el=ms_list_find(lc->friends,(void *)fl);
+	MSList *el=ms_list_find(lc->friends,fl);
 	if (el!=NULL){
 		linphone_friend_destroy((LinphoneFriend*)el->data);
 		lc->friends=ms_list_remove_link(lc->friends,el);
 		linphone_core_write_friends_config(lc);
+	}else{
+		ms_error("linphone_core_remove_friend(): friend [%p] is not part of core's list.",fl);
 	}
 }
 
