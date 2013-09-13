@@ -91,7 +91,7 @@ const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, cons
 }
 
 SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
-	if (lc->type){
+	if (lc && lc->type){
 		body->type=lc->type;
 		body->subtype=lc->subtype;
 		body->data=lc->data;
