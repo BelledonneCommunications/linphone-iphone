@@ -849,7 +849,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			sal_op_set_from(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 			sal_op_set_to(proxy->publish_op,linphone_proxy_config_get_identity(proxy));
 			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
-				SalAddress *addr=sal_address_new(NULL);
+				SalAddress *addr=sal_address_new(linphone_proxy_config_get_identity(proxy));
 				sal_op_set_contact(proxy->publish_op,addr);
 				sal_address_unref(addr);
 			}
@@ -1182,14 +1182,12 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		}
 		if (can_register(cfg)){
 			linphone_proxy_config_register(cfg);
-			ms_message("***Registering...(%p)",cfg);
 			cfg->commit=FALSE;
 			if (cfg->publish) cfg->send_publish=TRUE;
 		}
 	}
 	if (cfg->send_publish && (cfg->state==LinphoneRegistrationOk || cfg->state==LinphoneRegistrationCleared)){
 		linphone_proxy_config_send_publish(cfg,lc->presence_model);
-		ms_message("***Publishing...");
 		cfg->send_publish=FALSE;
 	}
 }

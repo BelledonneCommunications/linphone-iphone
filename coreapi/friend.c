@@ -406,6 +406,8 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 	if (fr->subscribe && fr->subscribe_active==FALSE){
 		ms_message("Sending a new SUBSCRIBE");
 		__linphone_friend_do_subscribe(fr);
+	}else if (fr->subscribe_active && !fr->subscribe){
+		linphone_friend_unsubscribe(fr);
 	}
 	ms_message("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
