@@ -25,7 +25,7 @@ include $(CLEAR_VARS)
 
 include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
-ifeq ($(LINPHONE_VIDEO),1)
+ifeq ($(_BUILD_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
 	liblinavcodecnoneon \
 	liblinswscale \
