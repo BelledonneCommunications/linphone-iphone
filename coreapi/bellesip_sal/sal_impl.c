@@ -105,7 +105,8 @@ void sal_remove_pending_auth(Sal *sal, SalOp *op){
 }
 
 void sal_process_authentication(SalOp *op) {
-	belle_sip_request_t* request=belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_auth_transaction);
+	belle_sip_request_t* initial_request=belle_sip_transaction_get_request((belle_sip_transaction_t*)op->pending_auth_transaction);
+	belle_sip_request_t* new_request;
 	bool_t is_within_dialog=FALSE;
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
@@ -114,30 +115,31 @@ void sal_process_authentication(SalOp *op) {
 	sal_add_pending_auth(op->base.root,op);
 	
 	if (op->dialog && belle_sip_dialog_get_state(op->dialog)==BELLE_SIP_DIALOG_CONFIRMED) {
-		request = belle_sip_dialog_create_request_from(op->dialog,request);
-		if (!request)
-			request = belle_sip_dialog_create_queued_request_from(op->dialog,request);
+		new_request = belle_sip_dialog_create_request_from(op->dialog,initial_request);
+		if (!new_request)
+			new_request = belle_sip_dialog_create_queued_request_from(op->dialog,initial_request);
 		is_within_dialog=TRUE;
 	} else {
-		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION);
-		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION);
+		new_request=initial_request;
+		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(new_request),BELLE_SIP_AUTHORIZATION);
+		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(new_request),BELLE_SIP_PROXY_AUTHORIZATION);
 	}
-	if (request==NULL) {
+	if (new_request==NULL) {
 		ms_error("sal_process_authentication() op=[%p] cannot obtain new request from dialog.",op);
 		return;
 	}
 	
-	if (belle_sip_provider_add_authorization(op->base.root->prov,request,response,&auth_list)) {
+	if (belle_sip_provider_add_authorization(op->base.root->prov,new_request,response,&auth_list)) {
 		if (is_within_dialog) {
-			sal_op_send_request(op,request);
+			sal_op_send_request(op,new_request);
 		} else {
-			sal_op_resend_request(op,request);
+			sal_op_resend_request(op,new_request);
 		}
 		sal_remove_pending_auth(op->base.root,op);
 	}else {
 		ms_message("No auth info found for [%s]",sal_op_get_from(op));
 		if (is_within_dialog) {
-			belle_sip_object_unref(request);
+			belle_sip_object_unref(new_request);
 		}
 		if (op->auth_info) sal_auth_info_delete(op->auth_info);
 		auth_event=(belle_sip_auth_event_t*)(auth_list->data);
