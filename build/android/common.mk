@@ -226,6 +226,9 @@ LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/../../externals/sqlite3/
 endif
 
+ifeq ($(BUILD_SQLITE),1)
+LOCAL_STATIC_LIBRARIES += libopus
+endif
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) 
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS) 
 
