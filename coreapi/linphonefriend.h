@@ -184,14 +184,15 @@ LINPHONE_PUBLIC bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *
  */
 
 LINPHONE_PUBLIC	int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
-
 #define linphone_friend_send_subscribe linphone_friend_enable_subscribes
+
 /**
  * Configure incoming subscription policy for this friend.
  * @param fr #LinphoneFriend object
  * @param pol #LinphoneSubscribePolicy policy to apply.
  */
 LINPHONE_PUBLIC int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
+
 /**
  * get current subscription policy for this #LinphoneFriend
  * @param lf #LinphoneFriend object
@@ -205,19 +206,17 @@ LINPHONE_PUBLIC LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy
  *
  * Because friend configuration must be consistent, applications MUST
  * call linphone_friend_edit() before doing any attempts to modify
- * friend configuration (such as \link linphone_friend_set_addr() address \endlink  or \link linphone_friend_set_inc_subscribe_policy() subscription policy\endlink  and so on).
+ * friend configuration (such as \link linphone_friend_set_address() address \endlink  or \link linphone_friend_set_inc_subscribe_policy() subscription policy\endlink  and so on).
  * Once the modifications are done, then the application must call
  * linphone_friend_done() to commit the changes.
 **/
 LINPHONE_PUBLIC	void linphone_friend_edit(LinphoneFriend *fr);
+
 /**
  * Commits modification made to the friend configuration.
  * @param fr #LinphoneFriend object
 **/
 LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
-
-
-
 
 /**
  * @brief Get the status of a friend
@@ -234,7 +233,6 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFr
  */
 LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
-
 /**
  * Store user pointer to friend object.
 **/
@@ -250,7 +248,6 @@ LINPHONE_PUBLIC void linphone_friend_set_ref_key(LinphoneFriend *lf, const char 
 LINPHONE_PUBLIC const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
 LINPHONE_PUBLIC bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
-#define linphone_friend_url(lf) ((lf)->url)
 
 /**
  * Return humain readable presence status
@@ -293,35 +290,41 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_core_get_presence_info(const Linph
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
+
 /**
  * Add a friend to the current buddy list, if \link linphone_friend_enable_subscribes() subscription attribute \endlink is set, a SIP SUBSCRIBE message is sent.
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
  */
 LINPHONE_PUBLIC	void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
+
 /**
  * remove a friend from the buddy list
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
  */
 LINPHONE_PUBLIC void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
+
 /**
  * Black list a friend. same as linphone_friend_set_inc_subscribe_policy() with #LinphoneSPDeny policy;
  * @param lc #LinphoneCore object
  * @param lf #LinphoneFriend to add
  */
 LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
+
 /**
  * get Buddy list of LinphoneFriend
  * @param lc #LinphoneCore object
  * */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
+
 /**
  *  notify all friends that have subscribed
  * @param lc #LinphoneCore object
  * @param os #LinphoneOnlineStatus to notify
  *  */
 LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence);
+
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 
