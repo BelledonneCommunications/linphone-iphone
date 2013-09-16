@@ -25,6 +25,7 @@ SalOp * sal_op_new(Sal *sal){
 	__sal_op_init(op,sal);
 	op->type=SalOpUnknown;
 	op->privacy=SalPrivacyNone;
+	op->manual_refresher=FALSE;/*tells that requests with expiry (SUBSCRIBE, PUBLISH) will be automatically refreshed*/
 	sal_op_ref(op);
 	return op;
 }
@@ -478,6 +479,7 @@ int sal_op_send_and_create_refresher(SalOp* op,belle_sip_request_t* req, int exp
 		if ((op->refresher = belle_sip_client_transaction_create_refresher(op->pending_client_trans))) {
 			belle_sip_refresher_set_listener(op->refresher,listener,op);
 			belle_sip_refresher_set_retry_after(op->refresher,op->base.root->refresher_retry_after);
+			belle_sip_refresher_enable_manual_mode(op->refresher,op->manual_refresher);
 			return 0;
 		} else {
 			return -1;
@@ -572,4 +574,8 @@ bool_t sal_op_is_secure(const SalOp* op) {
 	const SalAddress* to = sal_op_get_to_address(op);
 
 	return from && to && strcasecmp("sips",sal_address_get_scheme(from))==0 && strcasecmp("sips",sal_address_get_scheme(to))==0;
+}
+
+void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled){
+	op->manual_refresher=enabled;
 }

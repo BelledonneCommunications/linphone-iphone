@@ -96,6 +96,7 @@ struct SalOp{
 	bool_t auto_answer_asked;
 	bool_t sdp_offering;
 	bool_t call_released;
+	bool_t manual_refresher;
 };
 
 

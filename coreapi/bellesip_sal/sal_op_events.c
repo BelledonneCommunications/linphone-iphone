@@ -84,6 +84,7 @@ static void subscribe_response_event(void *op_base, const belle_sip_response_eve
 				}
 				if (expires>0){
 					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
+					if (op->refresher) belle_sip_refresher_enable_manual_mode(op->refresher,op->manual_refresher);
 				}
 				if (sss==SalSubscribeNone) sss=SalSubscribeActive; /*without Subscription-state header, consider subscription is accepted.*/
 				op->base.root->callbacks.subscribe_response(op,sss,SalErrorNone,SalReasonUnknown);

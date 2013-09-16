@@ -157,6 +157,7 @@ LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *re
 	SalBody salbody;
 	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event);
 	linphone_configure_op(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0));
+	sal_op_set_manual_refresher_mode(lev->op,lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	sal_publish(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
 	return lev;
 }

@@ -499,6 +499,8 @@ const char* sal_op_get_call_id(const SalOp *op);
 const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);
 
+void sal_op_set_manual_refresher_mode(SalOp *op, bool_t enabled);
+
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
