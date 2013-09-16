@@ -207,7 +207,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 	}
 }
 
-int linphone_friend_set_addr(LinphoneFriend *lf, const LinphoneAddress *addr){
+int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr=linphone_address_clone(addr);
 	linphone_address_clean(fr);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
@@ -286,6 +286,12 @@ void linphone_friend_destroy(LinphoneFriend *lf){
 
 const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
 	return lf->uri;
+}
+
+const char * linphone_friend_get_name(const LinphoneFriend *lf) {
+	LinphoneAddress *fr = lf->uri;
+	if (fr == NULL) return NULL;
+	return linphone_address_get_display_name(fr);
 }
 
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf){

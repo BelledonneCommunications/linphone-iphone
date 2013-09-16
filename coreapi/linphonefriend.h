@@ -101,11 +101,10 @@ typedef enum _LinphoneOnlineStatus{
 	 * Pending
 	 */
 	LinphoneStatusPending,
-
-        /**
-         * Vacation
-         */
-        LinphoneStatusVacation,
+	/**
+	 * Vacation
+	 */
+	LinphoneStatusVacation,
 
 	LinphoneStatusEnd
 }LinphoneOnlineStatus;
@@ -136,25 +135,39 @@ LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
 LINPHONE_PUBLIC void linphone_friend_destroy(LinphoneFriend *lf);
 
 /**
- * set #LinphoneAddress for this friend
+ * Set #LinphoneAddress for this friend
  * @param fr #LinphoneFriend object
  * @param address #LinphoneAddress
  */
-LINPHONE_PUBLIC int linphone_friend_set_addr(LinphoneFriend *fr, const LinphoneAddress* address);
+LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const LinphoneAddress* address);
 
 /**
- * set the display name for this friend
+ * Set #LinphoneAddress for this friend
+ * @deprecated Use #linphone_friend_set_address instead
+ */
+#define linphone_friend_set_addr linphone_friend_set_address
+
+/**
+ * Get address of this friend
+ * @param lf #LinphoneFriend object
+ * @return #LinphoneAddress
+ */
+LINPHONE_PUBLIC	const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+
+/**
+ * Set the display name for this friend
  * @param lf #LinphoneFriend object
  * @param name 
  */
 LINPHONE_PUBLIC int linphone_friend_set_name(LinphoneFriend *lf, const char *name);
 
 /**
- * get address of this friend
+ * Get the display name for this friend
  * @param lf #LinphoneFriend object
- * @return #LinphoneAddress
+ * @return The display name of this friend
  */
-LINPHONE_PUBLIC	const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+LINPHONE_PUBLIC const char * linphone_friend_get_name(const LinphoneFriend *lf);
+
 /**
  * get subscription flag value
  * @param lf #LinphoneFriend object
