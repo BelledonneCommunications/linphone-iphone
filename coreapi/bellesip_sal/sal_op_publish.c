@@ -19,21 +19,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 
 
-static void publish_refresher_listener ( const belle_sip_refresher_t* refresher
+static void publish_refresher_listener (belle_sip_refresher_t* refresher
 		,void* user_pointer
 		,unsigned int status_code
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
 	/*belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));*/
-	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase,sal_op_get_proxy(op));
+	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase?reason_phrase:"none",sal_op_get_proxy(op));
 	if (status_code==412){
 		/*resubmit the request after removing the SIP-If-Match*/
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		belle_sip_message_remove_header((belle_sip_message_t*)last_publish,"SIP-If-Match");
 		belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
+	}else if (status_code==0){
+		op->base.root->callbacks.on_expire(op);
+	}else if (status_code>=200){
+		SalError err;
+		SalReason reason;
+		sal_compute_sal_errors_from_code(status_code,&err,&reason);
+		op->base.root->callbacks.on_publish_response(op,err,reason);
 	}
 }
+
+static void publish_response_event(void *userctx, const belle_sip_response_event_t *event){
+	SalOp *op=(SalOp*)userctx;
+	int code=belle_sip_response_get_status_code(belle_sip_response_event_get_response(event));
+	SalError err;
+	SalReason reason;
+	sal_compute_sal_errors_from_code(code,&err,&reason);
+	op->base.root->callbacks.on_publish_response(op,err,reason);
+}
+
+void sal_op_publish_fill_cbs(SalOp*op) {
+	op->callbacks.process_response_event=publish_response_event;
+	op->type=SalOpPublish;
+}
+
 /*presence publish */
 int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence){
 	belle_sip_request_t *req=NULL;
@@ -68,7 +90,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		if (to)
 			sal_op_set_to(op,to);
 
-		op->type=SalOpPublish;
+		sal_op_publish_fill_cbs(op);
 		req=sal_op_build_request(op,"PUBLISH");
 		if (sal_op_get_contact(op)){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
@@ -82,8 +104,6 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		/*update body*/
 		sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),body);
-		return belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
+		return belle_sip_refresher_refresh(op->refresher,expires==-1 ? BELLE_SIP_REFRESHER_REUSE_EXPIRES : expires);
 	}
 }
-
-

@@ -273,12 +273,17 @@ LINPHONE_PUBLIC	const rtp_stats_t *linphone_call_log_get_remote_stats(const Linp
 LINPHONE_PUBLIC	const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl);
 LINPHONE_PUBLIC	char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
+/**
+ * Private structure definition for LinphoneCallParams.
+ * @ingroup call_control
+**/
 struct _LinphoneCallParams;
 
 /**
  * The LinphoneCallParams is an object containing various call related parameters.
  * It can be used to retrieve parameters from a currently running call or modify the call's characteristics
  * dynamically.
+ * @ingroup call_control
 **/
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
@@ -1033,6 +1038,7 @@ typedef struct _LinphoneVTable{
 	LinphoneInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
 	LinphoneSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
 	LinphoneEventIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
+	LinphonePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */

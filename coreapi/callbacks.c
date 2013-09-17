@@ -1086,6 +1086,32 @@ static void subscribe_closed(SalOp *op){
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 }
 
+static void on_publish_response(SalOp* op, SalError err, SalReason reason){
+	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
+	
+	if (lev==NULL) return;
+	if (err==SalErrorNone){
+		if (!lev->terminating)
+			linphone_event_set_publish_state(lev,LinphonePublishOk);
+		else 
+			linphone_event_set_publish_state(lev,LinphonePublishCleared);
+		
+	}else{
+		linphone_event_set_reason(lev,linphone_reason_from_sal(reason));
+		linphone_event_set_publish_state(lev,LinphonePublishError);
+	}
+}
+
+static void on_expire(SalOp *op){
+	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
+	
+	if (lev==NULL) return;
+	
+	if (linphone_event_get_publish_state(lev)==LinphonePublishOk){
+		linphone_event_set_publish_state(lev,LinphonePublishExpiring);
+	}
+}
+
 SalCallbacks linphone_sal_callbacks={
 	call_received,
 	call_ringing,
@@ -1120,7 +1146,9 @@ SalCallbacks linphone_sal_callbacks={
 	notify_presence,
 	ping_reply,
 	auth_requested,
-	info_received
+	info_received,
+	on_publish_response,
+	on_expire
 };
 
 

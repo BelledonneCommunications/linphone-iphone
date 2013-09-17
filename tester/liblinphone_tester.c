@@ -106,7 +106,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
 
-	
+	sal_enable_test_features(lc->sal,TRUE);
 #ifndef ANDROID
 	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cacert.pem", path);
 #else
@@ -190,6 +190,7 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.info_received=info_message_received;
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
 	mgr->v_table.notify_received=linphone_notify_received;
+	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
 	mgr->lc=configure_lc_from(&mgr->v_table, liblinphone_tester_file_prefix, rc_file);
 	linphone_core_set_user_data(mgr->lc,mgr);
 	reset_counters(&mgr->stat);
@@ -311,7 +312,7 @@ void liblinphone_tester_init(void) {
 #ifdef UPNP
 	add_test_suite(&upnp_test_suite);
 #endif
-	add_test_suite(&subscribe_test_suite);
+	add_test_suite(&event_test_suite);
 }
 
 void liblinphone_tester_uninit(void) {

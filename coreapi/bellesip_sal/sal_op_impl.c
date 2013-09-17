@@ -407,10 +407,15 @@ void sal_compute_sal_errors_from_code(int code ,SalError* sal_err,SalReason* sal
 		*sal_reason=SalReasonServiceUnavailable;
 		break;
 	default:
-		if (code>0){
+		if (code>=300){
 			*sal_err=SalErrorFailure;
 			*sal_reason=SalReasonUnknown;
-		}else *sal_err=SalErrorNoResponse;
+		}else if (code>=100){
+			*sal_err=SalErrorNone;
+			*sal_reason=SalReasonUnknown;
+		}else if (code==0){
+			*sal_err=SalErrorNoResponse;
+		}
 		/* no break */
 	}
 }

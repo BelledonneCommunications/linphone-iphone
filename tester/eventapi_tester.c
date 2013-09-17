@@ -20,6 +20,7 @@
 #include "CUnit/Basic.h"
 #include "linphonecore.h"
 #include "private.h"
+#include "lpconfig.h"
 #include <event.h>
 #include "liblinphone_tester.h"
 
@@ -76,6 +77,20 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			mgr->lev=NULL;
 		break;
 	}
+}
+
+void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
+	stats* counters = get_stats(lc);
+	switch(state){
+		case LinphonePublishProgress: counters->number_of_LinphonePublishProgress++; break;
+		case LinphonePublishOk: counters->number_of_LinphonePublishOk++; break;
+		case LinphonePublishError: counters->number_of_LinphonePublishError++; break;
+		case LinphonePublishExpiring: counters->number_of_LinphonePublishExpiring++; break;
+		case LinphonePublishCleared: counters->number_of_LinphonePublishCleared++;break;
+		default:
+		break;
+	}
+	
 }
 
 static void subscribe_test_declined(void) {
@@ -151,17 +166,68 @@ static void subscribe_test_terminated_by_notifier(void){
 	subscribe_test_with_args(FALSE);
 }
 
-test_t subscribe_tests[] = {
+static void publish_test_with_args(bool_t refresh){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneContent content;
+	LinphoneEvent *lev;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+
+	content.type="application";
+	content.subtype="somexml";
+	content.data=(char*)subscribe_content;
+	content.size=strlen(subscribe_content);
+	
+	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",!refresh);
+
+	lev=linphone_core_publish(marie->lc,pauline->identity,"dodo",5,&content);
+	linphone_event_ref(lev);
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+	
+	if (!refresh){
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishExpiring,1,5000));
+		linphone_event_update_publish(lev,&content);
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
+		CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,1000));
+	}else{
+		
+	}
+
+	linphone_event_terminate(lev);
+	
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishCleared,1,1000));
+	
+	linphone_event_unref(lev);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void publish_test(){
+	publish_test_with_args(TRUE);
+}
+
+static void publish_no_auto_test(){
+	publish_test_with_args(FALSE);
+}
+
+test_t event_tests[] = {
 	{ "Subscribe declined"	,	subscribe_test_declined 	},
 	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
-	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier }
+	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
+	{ "Publish", publish_test },
+	{ "Publish without automatic refresh",publish_no_auto_test }
 };
 
-test_suite_t subscribe_test_suite = {
-	"Subscribe",
+test_suite_t event_test_suite = {
+	"Event",
 	NULL,
 	NULL,
-	sizeof(subscribe_tests) / sizeof(subscribe_tests[0]),
-	subscribe_tests
+	sizeof(event_tests) / sizeof(event_tests[0]),
+	event_tests
 };
 

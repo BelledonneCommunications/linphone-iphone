@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 
 
-static void register_refresher_listener ( const belle_sip_refresher_t* refresher
+static void register_refresher_listener (belle_sip_refresher_t* refresher
 		,void* user_pointer
 		,unsigned int status_code
 		,const char* reason_phrase) {

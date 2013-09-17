@@ -12,6 +12,8 @@ COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	$(LIBXML2_CFLAGS) 
 
+AM_CXXFLAGS=$(LIBXML2_CFLAGS) 
+
 EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
 if BUILD_TOOLS
@@ -39,7 +41,7 @@ liblpc2xml_la_LIBADD=\
 libxml2lpc_la_LDFLAGS=-no-undefined
 liblpc2xml_la_LDFLAGS=-no-undefined
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -55,7 +57,13 @@ xml2lpc_test_LDADD=\
 lpc2xml_test_CFLAGS=$(COMMON_CFLAGS)
 lpc2xml_test_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la \
-	liblpc2xml.la 
+	liblpc2xml.la
+
+lp_gen_wrappers_SOURCES=genwrappers.cc
+
+lp_gen_wrappers_LDADD= \
+		$(LIBXML2_LIBS)
+
 endif
 
 

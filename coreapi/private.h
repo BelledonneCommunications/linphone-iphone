@@ -652,6 +652,23 @@ struct _LinphoneCore
 #endif //BUILD_UPNP
 };
 
+
+struct _LinphoneEvent{
+	LinphoneSubscriptionDir dir;
+	LinphoneCore *lc;
+	SalOp *op;
+	LinphoneSubscriptionState subscription_state;
+	LinphonePublishState publish_state;
+	LinphoneReason reason;
+	void *userdata;
+	int refcnt;
+	char *name;
+	LinphoneAddress *from;
+	LinphoneAddress *resource_addr;
+	bool_t terminating;
+};
+
+
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
@@ -759,6 +776,7 @@ LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
+void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, const SalBody *ref);

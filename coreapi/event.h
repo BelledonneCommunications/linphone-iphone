@@ -26,6 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct _LinphoneEvent;
 
+/**
+ * Object representing an event state, which is subcribed or published.
+ * @see linphone_core_publish()
+ * @see linphone_core_subscribe()
+**/
 typedef struct _LinphoneEvent LinphoneEvent;
 
 /**
@@ -55,7 +60,31 @@ enum _LinphoneSubscriptionState{
 	LinphoneSubscriptionError /**<Subscription encountered an error, indicated by linphone_event_get_reason()*/
 };
 
+/**
+ * Typedef for subscription state enum.
+**/
 typedef enum _LinphoneSubscriptionState LinphoneSubscriptionState;
+
+LINPHONE_PUBLIC const char *linphone_subscription_state_to_string(LinphoneSubscriptionState state);
+
+/**
+ * Enum for publish states.
+**/
+enum _LinphonePublishState{
+	LinphonePublishNone, /**< Initial state, do not use**/
+	LinphonePublishProgress, /**<An outgoing subcription was created*/
+	LinphonePublishOk, /**<Publish is accepted.*/
+	LinphonePublishError, /**<Publish encoutered an error, linphone_event_get_reason() gives reason code*/
+	LinphonePublishExpiring, /**<Publish is about to expire, only sent if [sip]->refresh_generic_publish property is set to 0.*/
+	LinphonePublishCleared /**<Event has been un published*/
+};
+
+/**
+ * Typedef for publish state enum
+**/
+typedef enum _LinphonePublishState LinphonePublishState;
+
+LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishState state);
 
 /**
  * Callback prototype for notifying the application about notification received from the network.
@@ -66,6 +95,11 @@ typedef void (*LinphoneEventIncomingNotifyCb)(LinphoneCore *lc, LinphoneEvent *l
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
 **/ 
 typedef void (*LinphoneSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
+
+/**
+ * Callback prototype for notifying the application about changes of publish states.
+**/ 
+typedef void (*LinphonePublishStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 
 /**
  * Create an outgoing subscription, specifying the destination resource, the event name, and an optional content body.
@@ -105,7 +139,7 @@ LINPHONE_PUBLIC int linphone_event_notify(LinphoneEvent *lev, const LinphoneCont
 
 
 /**
- * Publish an event.
+ * Publish an event state.
  * After expiry, the publication is refreshed unless it is terminated before.
  * @param lc the #LinphoneCore
  * @param resource the resource uri for the event
@@ -135,6 +169,11 @@ LINPHONE_PUBLIC LinphoneReason linphone_event_get_reason(const LinphoneEvent *le
 LINPHONE_PUBLIC LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEvent *lev);
 
 /**
+ * Get publish state. If the event object was not created by a publish mechanism, #LinphonePublishNone is returned.
+**/
+LINPHONE_PUBLIC LinphonePublishState linphone_event_get_publish_state(const LinphoneEvent *lev);
+
+/**
  * Get subscription direction.
  * If the object wasn't created by a subscription mechanism, #LinphoneSubscriptionInvalidDir is returned.
 **/
@@ -152,17 +191,26 @@ LINPHONE_PUBLIC void *linphone_event_get_user_data(const LinphoneEvent *ev);
 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
+ * This function does not unref the object. The core will unref() if it does not need this object anymore.
+ * 
+ * For subscribed event, when the subscription is terminated normally or because of an error, the core will unref.
+ * For published events, no unref is performed. This is because it is allowed to re-publish an expired publish, as well as retry it in case of error.
 **/
 LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
 
 
 /**
- * Increase reference count.
+ * Increase reference count of LinphoneEvent.
+ * By default LinphoneEvents created by the core are owned by the core only.
+ * An application that wishes to retain a reference to it must call linphone_event_ref().
+ * When this reference is no longer needed, linphone_event_unref() must be called.
+ * 
 **/
 LINPHONE_PUBLIC LinphoneEvent *linphone_event_ref(LinphoneEvent *lev);
 
 /**
  * Decrease reference count.
+ * @see linphone_event_ref()
 **/
 LINPHONE_PUBLIC void linphone_event_unref(LinphoneEvent *lev);
 

@@ -46,6 +46,7 @@ struct Sal{
 	bool_t tls_verify_cn;
 	bool_t use_dates;
 	bool_t auto_contacts;
+	bool_t enable_test_features;
 };
 
 typedef enum SalOpState {

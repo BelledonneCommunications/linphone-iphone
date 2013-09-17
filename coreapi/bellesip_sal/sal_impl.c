@@ -174,7 +174,8 @@ static void process_io_error(void *user_ctx, const belle_sip_io_error_event_t *e
 	}
 }
 
-static void process_request_event(void *sal, const belle_sip_request_event_t *event) {
+static void process_request_event(void *ud, const belle_sip_request_event_t *event) {
+	Sal *sal=(Sal*)ud;
 	SalOp* op=NULL;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
@@ -195,36 +196,41 @@ static void process_request_event(void *sal, const belle_sip_request_event_t *ev
 			return;
 		}
 	}else if (strcmp("INVITE",method)==0) {
-		op=sal_op_new((Sal*)sal);
+		op=sal_op_new(sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
 	}else if ((strcmp("SUBSCRIBE",method)==0 || strcmp("NOTIFY",method)==0) && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
-		op=sal_op_new((Sal*)sal);
+		op=sal_op_new(sal);
 		op->dir=SalOpDirIncoming;
 		if (strncmp(belle_sip_header_get_unparsed_value(evh),"presence",strlen("presence"))==0){
 			sal_op_presence_fill_cbs(op);
 		}else
 			sal_op_subscribe_fill_cbs(op);
 	}else if (strcmp("MESSAGE",method)==0) {
-		op=sal_op_new((Sal*)sal);
+		op=sal_op_new(sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_message_fill_cbs(op);
 	}else if (strcmp("OPTIONS",method)==0) {
 		resp=belle_sip_response_create_from_request(req,200);
-		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		belle_sip_provider_send_response(sal->prov,resp);
 		return;
 	}else if (strcmp("INFO",method)==0) {
 		resp=belle_sip_response_create_from_request(req,481);/*INFO out of call dialogs are not allowed*/
-		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		belle_sip_provider_send_response(sal->prov,resp);
 		return;
 	}else if (strcmp("BYE",method)==0) {
 		resp=belle_sip_response_create_from_request(req,481);/*out of dialog BYE */
-		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		belle_sip_provider_send_response(sal->prov,resp);
+		return;
+	}else if (sal->enable_test_features && strcmp("PUBLISH",method)==0) {
+		resp=belle_sip_response_create_from_request(req,200);/*out of dialog BYE */
+		belle_sip_message_add_header((belle_sip_message_t*)resp,belle_sip_header_create("SIP-Etag","4441929FFFZQOA"));
+		belle_sip_provider_send_response(sal->prov,resp);
 		return;
 	}else {
 		ms_error("sal process_request_event not implemented yet for method [%s]",belle_sip_request_get_method(req));
 		resp=belle_sip_response_create_from_request(req,501);
-		belle_sip_provider_send_response(((Sal*)sal)->prov,resp);
+		belle_sip_provider_send_response(sal->prov,resp);
 		return;
 	}
 
@@ -460,6 +466,10 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.auth_requested=(SalOnAuthRequested)unimplemented_stub;
 	if (ctx->callbacks.info_received==NULL)
 		ctx->callbacks.info_received=(SalOnInfoReceived)unimplemented_stub;
+	if (ctx->callbacks.on_publish_response==NULL)
+		ctx->callbacks.on_publish_response=(SalOnPublishResponse)unimplemented_stub;
+	if (ctx->callbacks.on_expire==NULL)
+		ctx->callbacks.on_expire=(SalOnExpire)unimplemented_stub;
 }
 
 
@@ -825,3 +835,8 @@ int sal_get_refresher_retry_after(const Sal *sal) {
 void sal_enable_auto_contacts(Sal *ctx, bool_t enabled){
 	ctx->auto_contacts=enabled;
 }
+
+void sal_enable_test_features(Sal*ctx, bool_t enabled){
+	ctx->enable_test_features=enabled;
+}
+

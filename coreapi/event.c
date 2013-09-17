@@ -20,18 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "lpconfig.h"
 
-struct _LinphoneEvent{
-	LinphoneSubscriptionDir dir;
-	LinphoneCore *lc;
-	SalOp *op;
-	LinphoneSubscriptionState state;
-	LinphoneReason reason;
-	void *userdata;
-	int refcnt;
-	char *name;
-	LinphoneAddress *from;
-	LinphoneAddress *resource_addr;
-};
 
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss){
 	switch(ss){
@@ -41,6 +29,31 @@ LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatu
 		case SalSubscribeActive: return LinphoneSubscriptionActive;
 	}
 	return LinphoneSubscriptionNone;
+}
+
+const char *linphone_subscription_state_to_string(LinphoneSubscriptionState state){
+	switch(state){
+		case LinphoneSubscriptionNone: return "LinphoneSubscriptionNone";
+		case LinphoneSubscriptionIncomingReceived: return "LinphoneSubscriptionIncomingReceived";
+		case LinphoneSubscriptionOutoingInit: return "LinphoneSubscriptionOutoingInit";
+		case LinphoneSubscriptionPending: return "LinphoneSubscriptionPending";
+		case LinphoneSubscriptionActive: return "LinphoneSubscriptionActive";
+		case LinphoneSubscriptionTerminated: return "LinphoneSubscriptionTerminated";
+		case LinphoneSubscriptionError: return "LinphoneSubscriptionError";
+	}
+	return NULL;
+}
+
+LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishState state){
+	switch(state){
+		case LinphonePublishNone: return "LinphonePublishNone";
+		case LinphonePublishProgress: return "LinphonePublishProgress";
+		case LinphonePublishOk: return "LinphonePublishOk";
+		case LinphonePublishError: return "LinphonePublishError";
+		case LinphonePublishCleared: return "LinphonePublishCleared";
+		case LinphonePublishExpiring: return "LinphonePublishExpiring";
+	}
+	return NULL;
 }
 
 static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, SalOp *op){
@@ -72,8 +85,9 @@ LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneS
 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state){
 	LinphoneCore *lc=lev->lc;
-	if (lev->state!=state){
-		lev->state=state;
+	if (lev->subscription_state!=state){
+		ms_message("LinphoneEvent [%p] moving to subscription state %s",lev,linphone_subscription_state_to_string(state));
+		lev->subscription_state=state;
 		if (lc->vtable.subscription_state_changed){
 			lc->vtable.subscription_state_changed(lev->lc,lev,state);
 		}
@@ -81,6 +95,21 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 			linphone_event_unref(lev);
 		}
 	}
+}
+
+void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state){
+	LinphoneCore *lc=lev->lc;
+	if (lev->publish_state!=state){
+		ms_message("LinphoneEvent [%p] moving to publish state %s",lev,linphone_publish_state_to_string(state));
+		lev->publish_state=state;
+		if (lc->vtable.publish_state_changed){
+			lc->vtable.publish_state_changed(lev->lc,lev,state);
+		}
+	}
+}
+
+LinphonePublishState linphone_event_get_publish_state(const LinphoneEvent *lev){
+	return lev->publish_state;
 }
 
 void linphone_event_set_reason(LinphoneEvent *lev, LinphoneReason reason){
@@ -105,7 +134,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 
 int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
-	if (lev->state!=LinphoneSubscriptionActive){
+	if (lev->subscription_state!=LinphoneSubscriptionActive){
 		ms_error("linphone_event_update_subscribe(): cannot update subscription if subscription wasn't accepted.");
 		return -1;
 	}
@@ -118,7 +147,7 @@ int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *b
 
 int linphone_event_accept_subscription(LinphoneEvent *lev){
 	int err;
-	if (lev->state!=LinphoneSubscriptionIncomingReceived){
+	if (lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_accept_subscription(): cannot accept subscription if subscription wasn't just received.");
 		return -1;
 	}
@@ -131,7 +160,7 @@ int linphone_event_accept_subscription(LinphoneEvent *lev){
 
 int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 	int err;
-	if (lev->state!=LinphoneSubscriptionIncomingReceived){
+	if (lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
 		ms_error("linphone_event_deny_subscription(): cannot deny subscription if subscription wasn't just received.");
 		return -1;
 	}
@@ -142,7 +171,7 @@ int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 
 int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
-	if (lev->state!=LinphoneSubscriptionActive){
+	if (lev->subscription_state!=LinphoneSubscriptionActive){
 		ms_error("linphone_event_notify(): cannot notify if subscription is not active.");
 		return -1;
 	}
@@ -155,17 +184,30 @@ int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 
 LinphoneEvent *linphone_core_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires, const LinphoneContent *body){
 	SalBody salbody;
+	int err;
 	LinphoneEvent *lev=linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event);
 	linphone_configure_op(lc,lev->op,resource,NULL,lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0));
 	sal_op_set_manual_refresher_mode(lev->op,lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
-	sal_publish(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
+	err=sal_publish(lev->op,NULL,NULL,event,expires,sal_body_from_content(&salbody,body));
+	if (err==0){
+		linphone_event_set_publish_state(lev,LinphonePublishProgress);
+	}else{
+		linphone_event_unref(lev);
+		lev=NULL;
+	}
 	return lev;
 }
 
-
 int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
-	return sal_publish(lev->op,NULL,NULL,NULL,-1,sal_body_from_content(&salbody,body));
+	int err;
+	err=sal_publish(lev->op,NULL,NULL,NULL,-1,sal_body_from_content(&salbody,body));
+	if (err==0){
+		linphone_event_set_publish_state(lev,LinphonePublishProgress);
+	}else{
+		linphone_event_set_publish_state(lev,LinphonePublishError);
+	}
+	return err;
 }
 
 void linphone_event_set_user_data(LinphoneEvent *ev, void *up){
@@ -177,15 +219,25 @@ void *linphone_event_get_user_data(const LinphoneEvent *ev){
 }
 
 void linphone_event_terminate(LinphoneEvent *lev){
+	lev->terminating=TRUE;
 	if (lev->dir==LinphoneSubscriptionIncoming){
 		sal_notify_close(lev->op);
 	}else if (lev->dir==LinphoneSubscriptionOutgoing){
 		sal_unsubscribe(lev->op);
 	}
 	
-	if (lev->state!=LinphoneSubscriptionNone){
-		linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
+	if (lev->publish_state!=LinphonePublishNone){
+		if (lev->publish_state==LinphonePublishOk){
+			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
+		}
+		return;
 	}
+	
+	if (lev->subscription_state!=LinphoneSubscriptionNone){
+		linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
+		return;
+	}
+	
 }
 
 
@@ -213,7 +265,7 @@ LinphoneSubscriptionDir linphone_event_get_subscription_dir(LinphoneEvent *lev){
 }
 
 LinphoneSubscriptionState linphone_event_get_subscription_state(const LinphoneEvent *lev){
-	return lev->state;
+	return lev->subscription_state;
 }
 
 const char *linphone_event_get_name(const LinphoneEvent *lev){

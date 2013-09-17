@@ -369,6 +369,8 @@ typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
 typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
+typedef void (*SalOnPublishResponse)(SalOp *salop, SalError error, SalReason reason);
+typedef void (*SalOnExpire)(SalOp *salop);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
 
 
@@ -408,6 +410,8 @@ typedef struct SalCallbacks{
 	SalOnPingReply ping_reply;
 	SalOnAuthRequested auth_requested;
 	SalOnInfoReceived info_received;
+	SalOnPublishResponse on_publish_response;
+	SalOnExpire on_expire;
 }SalCallbacks;
 
 
@@ -446,6 +450,7 @@ void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 void sal_verify_server_cn(Sal *ctx, bool_t verify);
 void sal_set_uuid(Sal*ctx, const char *uuid);
 int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
+void sal_enable_test_features(Sal*ctx, bool_t enabled);
 
 int sal_iterate(Sal *sal);
 MSList * sal_get_pending_auths(Sal *sal);

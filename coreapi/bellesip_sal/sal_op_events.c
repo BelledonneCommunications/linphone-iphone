@@ -22,11 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
 	ms_error("subscribe_process_io_error not implemented yet");
 }
+
 static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
-		sal_op_unref(op);
 		op->dialog=NULL;
+		sal_op_unref(op);
 	}
 }
 

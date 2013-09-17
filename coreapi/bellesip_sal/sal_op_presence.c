@@ -56,7 +56,7 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 	}
 }
 
-static void presence_refresher_listener( const belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
+static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
 	SalOp* op = (SalOp*)user_pointer;
 	switch(status_code){
 		case 481: {
