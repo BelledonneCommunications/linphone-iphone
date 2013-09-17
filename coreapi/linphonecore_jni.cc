@@ -175,6 +175,7 @@ public:
 		vTable.info_received = infoReceived;
 		vTable.subscription_state_changed=subscriptionStateChanged;
 		vTable.notify_received=notifyReceived;
+		vTable.publish_state_changed=publishStateChanged;
 
 		listenerClass = (jclass)env->NewGlobalRef(env->GetObjectClass( alistener));
 
@@ -227,6 +228,8 @@ public:
 
 		subscriptionStateId = env->GetMethodID(listenerClass,"subscriptionStateChanged",
 										  "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Lorg/linphone/core/SubscriptionState;)V");
+		publishStateId = env->GetMethodID(listenerClass,"publishStateChanged",
+										  "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Lorg/linphone/core/PublishState;)V");
 		notifyRecvId = env->GetMethodID(listenerClass,"notifyReceived",
 										  "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneEvent;Ljava/lang/String;Lorg/linphone/core/LinphoneContent;)V");
 		
@@ -262,6 +265,9 @@ public:
 		
 		subscriptionStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionState"));
 		subscriptionStateFromIntId = env->GetStaticMethodID(subscriptionStateClass,"fromInt","(I)Lorg/linphone/core/SubscriptionState;");
+		
+		publishStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/PublishState"));
+		publishStateFromIntId = env->GetStaticMethodID(subscriptionStateClass,"fromInt","(I)Lorg/linphone/core/PublishState;");
 		
 		subscriptionDirClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionDir"));
 		subscriptionDirFromIntId = env->GetStaticMethodID(subscriptionDirClass,"fromInt","(I)Lorg/linphone/core/SubscriptionDir;");
@@ -303,6 +309,7 @@ public:
 	jmethodID transferStateId;
 	jmethodID infoReceivedId;
 	jmethodID subscriptionStateId;
+	jmethodID publishStateId;
 	jmethodID notifyRecvId;
 
 	jclass globalStateClass;
@@ -357,6 +364,9 @@ public:
 	
 	jclass subscriptionStateClass;
 	jmethodID subscriptionStateFromIntId;
+	
+	jclass publishStateClass;
+	jmethodID publishStateFromIntId;
 	
 	jclass subscriptionDirClass;
 	jmethodID subscriptionDirFromIntId;
@@ -641,6 +651,25 @@ public:
 			linphone_event_set_user_data(ev,NULL);
 			env->DeleteGlobalRef(jevent);
 		}
+	}
+	static void publishStateChanged(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		jobject jevent;
+		jobject jstate;
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_get_user_data(lc);
+		jevent=lcData->getEvent(env,ev);
+		jstate=env->CallStaticObjectMethod(lcData->publishStateClass,lcData->publishStateFromIntId,(jint)state);
+		env->CallVoidMethod(lcData->listener
+							,lcData->publishStateId
+							,lcData->core
+							,jevent
+							,jstate
+							);
 	}
 	static void notifyReceived(LinphoneCore *lc, LinphoneEvent *ev, const char *evname, const LinphoneContent *content){
 		JNIEnv *env = 0;

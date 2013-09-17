@@ -36,6 +36,7 @@ import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
 
@@ -225,6 +226,13 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			PublishState state) {
 		// TODO Auto-generated method stub
 		
 	}

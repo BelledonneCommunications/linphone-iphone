@@ -36,6 +36,7 @@ import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
 
@@ -190,6 +191,13 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			PublishState state) {
 		// TODO Auto-generated method stub
 		
 	}

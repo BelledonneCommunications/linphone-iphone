@@ -148,6 +148,13 @@ public interface LinphoneCoreListener {
 	 * @param content content of the NOTIFY request.
 	 */
 	void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content);
+	/**
+	 * Notifies about outgoing generic publish states.
+	 * @param lc the LinphoneCore
+	 * @param ev a LinphoneEvent representing the publish, typically created by {@link LinphoneCore#publish}
+	 * @param state the publish state
+	 */
+	void publishStateChanged(LinphoneCore lc, LinphoneEvent ev, PublishState state);
 	
 	/**< @Deprecated Notifies the application that it should show up
 	 * @return */
