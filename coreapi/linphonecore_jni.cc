@@ -267,7 +267,7 @@ public:
 		subscriptionStateFromIntId = env->GetStaticMethodID(subscriptionStateClass,"fromInt","(I)Lorg/linphone/core/SubscriptionState;");
 		
 		publishStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/PublishState"));
-		publishStateFromIntId = env->GetStaticMethodID(subscriptionStateClass,"fromInt","(I)Lorg/linphone/core/PublishState;");
+		publishStateFromIntId = env->GetStaticMethodID(publishStateClass,"fromInt","(I)Lorg/linphone/core/PublishState;");
 		
 		subscriptionDirClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionDir"));
 		subscriptionDirFromIntId = env->GetStaticMethodID(subscriptionDirClass,"fromInt","(I)Lorg/linphone/core/SubscriptionDir;");
