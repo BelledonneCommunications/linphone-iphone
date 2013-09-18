@@ -3724,8 +3724,10 @@ JNIEXPORT void JNICALL Java_org_linphone_core_PresenceServiceImpl_unref(JNIEnv *
  */
 JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceServiceImpl_getId(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceService *service = (LinphonePresenceService *)ptr;
-	const char *cid = linphone_presence_service_get_id(service);
-	return cid ? env->NewStringUTF(cid) : NULL;
+	char *cid = linphone_presence_service_get_id(service);
+	jstring jid = cid ? env->NewStringUTF(cid) : NULL;
+	if (cid) ms_free(cid);
+	return jid;
 }
 
 /*
@@ -3767,8 +3769,10 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceServiceImpl_setBasicStatus
  */
 JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceServiceImpl_getContact(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceService *service = (LinphonePresenceService *)ptr;
-	const char *ccontact = linphone_presence_service_get_contact(service);
-	return ccontact ? env->NewStringUTF(ccontact) : NULL;
+	char *ccontact = linphone_presence_service_get_contact(service);
+	jstring jcontact = ccontact ? env->NewStringUTF(ccontact) : NULL;
+	if (ccontact) ms_free(ccontact);
+	return jcontact;
 }
 
 /*
@@ -3854,8 +3858,10 @@ JNIEXPORT void JNICALL Java_org_linphone_core_PresencePersonImpl_unref(JNIEnv *e
  */
 JNIEXPORT jstring JNICALL Java_org_linphone_core_PresencePersonImpl_getId(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresencePerson *person = (LinphonePresencePerson *)ptr;
-	const char *cid = linphone_presence_person_get_id(person);
-	return cid ? env->NewStringUTF(cid) : NULL;
+	char *cid = linphone_presence_person_get_id(person);
+	jstring jid = cid ? env->NewStringUTF(cid) : NULL;
+	if (cid) ms_free(cid);
+	return jid;
 }
 
 /*
