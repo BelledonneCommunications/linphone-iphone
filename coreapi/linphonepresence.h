@@ -624,7 +624,7 @@ LINPHONE_PUBLIC int linphone_presence_person_add_activities_note(LinphonePresenc
  * @param[in] person The #LinphonePresencePerson object for which to clear the activities notes.
  * @return 0 if successful, a value < 0 in case of error.
  */
-LINPHONE_PUBLIC int linphone_presence_person_clear_activites_notes(LinphonePresencePerson *person);
+LINPHONE_PUBLIC int linphone_presence_person_clear_activities_notes(LinphonePresencePerson *person);
 
 
 /*****************************************************************************

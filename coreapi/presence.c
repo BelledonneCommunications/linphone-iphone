@@ -794,7 +794,7 @@ LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePres
 	return (LinphonePresenceNote *)ms_list_nth_data(service->notes, idx);
 }
 
-int linphone_presence_service_add_person(LinphonePresenceService *service, LinphonePresenceNote *note) {
+int linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note) {
 	if ((service == NULL) || (note == NULL)) return -1;
 	service->notes = ms_list_append(service->notes, note);
 	return 0;
