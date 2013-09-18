@@ -144,4 +144,30 @@ public interface PresenceModel {
 	 */
 	int clearServices();
 
+	/**
+	 * @brief Gets the number of persons included in the presence model.
+	 * @return The number of persons included in the #PresenceModel object.
+	 */
+	long nbPersons();
+
+	/**
+	 * @brief Gets the nth person of a presence model.
+	 * @param[in] idx The index of the person to get (the first person having the index 0).
+	 * @return A pointer to a #PresencePerson object if successful, null otherwise.
+	 */
+	PresencePerson getNthPerson(long idx);
+
+	/**
+	 * @brief Adds a person to a presence model.
+	 * @param[in] person The #PresencePerson object to add to the model.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int addPerson(PresencePerson person);
+
+	/**
+	 * @brief Clears the persons of a presence model.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int clearPersons();
+
 }

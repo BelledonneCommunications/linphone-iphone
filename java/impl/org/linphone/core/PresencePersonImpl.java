@@ -1,5 +1,5 @@
 /*
-PresenceServiceImpl.java
+PresencePersonImpl.java
 Copyright (C) 2010-2013  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -19,16 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package org.linphone.core;
 
-public class PresenceServiceImpl implements PresenceService {
+public class PresencePersonImpl implements PresencePerson {
 	private long mNativePtr;
 
-	protected PresenceServiceImpl(long nativePtr) {
+	protected PresencePersonImpl(long nativePtr) {
 		mNativePtr = nativePtr;
 	}
 
-	private native long newPresenceServiceImpl(String id, int status, String contact);
-	protected PresenceServiceImpl(String id, PresenceBasicStatus status, String contact) {
-		mNativePtr = newPresenceServiceImpl(id, status.toInt(), contact);
+	private native long newPresencePersonImpl(String id);
+	protected PresencePersonImpl(String id) {
+		mNativePtr = newPresencePersonImpl(id);
 	}
 
 	private native void unref(long nativePtr);
@@ -48,28 +48,28 @@ public class PresenceServiceImpl implements PresenceService {
 		return setId(mNativePtr, id);
 	}
 
-	private native int getBasicStatus(long nativePtr);
+	private native long nbActivities(long nativePtr);
 	@Override
-	public PresenceBasicStatus getBasicStatus() {
-		return PresenceBasicStatus.fromInt(getBasicStatus(mNativePtr));
+	public long nbActivities() {
+		return nbActivities(mNativePtr);
 	}
 
-	private native int setBasicStatus(long nativePtr, int status);
+	private native Object getNthActivity(long nativePtr, long idx);
 	@Override
-	public int setBasicStatus(PresenceBasicStatus status) {
-		return setBasicStatus(mNativePtr, status.toInt());
+	public PresenceActivity getNthActivity(long idx) {
+		return (PresenceActivity)getNthActivity(mNativePtr, idx);
 	}
 
-	private native String getContact(long nativePtr);
+	private native int addActivity(long nativePtr, long activityPtr);
 	@Override
-	public String getContact() {
-		return getContact(mNativePtr);
+	public int addActivity(PresenceActivity activity) {
+		return addActivity(mNativePtr, activity.getNativePtr());
 	}
 
-	private native int setContact(long nativePtr, String contact);
+	private native int clearActivities(long nativePtr);
 	@Override
-	public int setContact(String contact) {
-		return setContact(mNativePtr, contact);
+	public int clearActivities() {
+		return clearActivities(mNativePtr);
 	}
 
 	private native long nbNotes(long nativePtr);
@@ -94,6 +94,30 @@ public class PresenceServiceImpl implements PresenceService {
 	@Override
 	public int clearNotes() {
 		return clearNotes(mNativePtr);
+	}
+
+	private native long nbActivitiesNotes(long nativePtr);
+	@Override
+	public long nbActivitiesNotes() {
+		return nbActivitiesNotes(mNativePtr);
+	}
+
+	private native Object getNthActivitiesNote(long nativePtr, long idx);
+	@Override
+	public PresenceNote getNthActivitiesNote(long idx) {
+		return (PresenceNote)getNthActivitiesNote(mNativePtr, idx);
+	}
+
+	private native int addActivitiesNote(long nativePtr, long notePtr);
+	@Override
+	public int addActivitiesNote(PresenceNote note) {
+		return addActivitiesNote(mNativePtr, note.getNativePtr());
+	}
+
+	private native int clearActivitesNotes(long nativePtr);
+	@Override
+	public int clearActivitesNotes() {
+		return clearActivitesNotes(mNativePtr);
 	}
 
 	public long getNativePtr() {

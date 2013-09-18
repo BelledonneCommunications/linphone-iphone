@@ -154,6 +154,30 @@ public class PresenceModelImpl implements PresenceModel {
 		return clearServices(mNativePtr);
 	}
 
+	private native long nbPersons(long nativePtr);
+	@Override
+	public long nbPersons() {
+		return nbPersons(mNativePtr);
+	}
+
+	private native Object getNthPerson(long nativePtr, long idx);
+	@Override
+	public PresencePerson getNthPerson(long idx) {
+		return (PresencePerson)getNthPerson(mNativePtr, idx);
+	}
+
+	private native int addPerson(long nativePtr, long personPtr);
+	@Override
+	public int addPerson(PresencePerson person) {
+		return addPerson(mNativePtr, person.getNativePtr());
+	}
+
+	private native int clearPersons(long nativePtr);
+	@Override
+	public int clearPersons() {
+		return clearPersons(mNativePtr);
+	}
+
 	public long getNativePtr() {
 		return mNativePtr;
 	}
