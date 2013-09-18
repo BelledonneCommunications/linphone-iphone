@@ -477,6 +477,36 @@ LINPHONE_PUBLIC char * linphone_presence_service_get_contact(const LinphonePrese
  */
 LINPHONE_PUBLIC int linphone_presence_service_set_contact(LinphonePresenceService *service, const char *contact);
 
+/**
+ * @brief Gets the number of notes included in the presence service.
+ * @param[in] service The #LinphonePresenceService object to get the number of notes from.
+ * @return The number of notes included in the #LinphonePresenceService object.
+ */
+LINPHONE_PUBLIC unsigned int linphone_presence_service_nb_notes(const LinphonePresenceService *service);
+
+/**
+ * @brief Gets the nth note of a presence service.
+ * @param[in] service The #LinphonePresenceService object to get the note from.
+ * @param[in] idx The index of the note to get (the first note having the index 0).
+ * @return A pointer to a #LinphonePresenceNote object if successful, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePresenceService *service, unsigned int idx);
+
+/**
+ * @brief Adds a note to a presence service.
+ * @param[in] service The #LinphonePresenceService object for which to add a note.
+ * @param[in] note The #LinphonePresenceNote object to add to the service.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note);
+
+/**
+ * @brief Clears the notes of a presence service.
+ * @param[in] service The #LinphonePresenceService object for which to clear the notes.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_service_clear_notes(LinphonePresenceService *service);
+
 
 /*****************************************************************************
  * PRESENCE PERSON FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES            *
@@ -536,6 +566,65 @@ LINPHONE_PUBLIC int linphone_presence_person_add_activity(LinphonePresencePerson
  */
 LINPHONE_PUBLIC int linphone_presence_person_clear_activities(LinphonePresencePerson *person);
 
+/**
+ * @brief Gets the number of notes included in the presence person.
+ * @param[in] person The #LinphonePresencePerson object to get the number of notes from.
+ * @return The number of notes included in the #LinphonePresencePerson object.
+ */
+LINPHONE_PUBLIC unsigned int linphone_presence_person_nb_notes(const LinphonePresencePerson *person);
+
+/**
+ * @brief Gets the nth note of a presence person.
+ * @param[in] person The #LinphonePresencePerson object to get the note from.
+ * @param[in] idx The index of the note to get (the first note having the index 0).
+ * @return A pointer to a #LinphonePresenceNote object if successful, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePresencePerson *person, unsigned int idx);
+
+/**
+ * @brief Adds a note to a presence person.
+ * @param[in] person The #LinphonePresencePerson object for which to add a note.
+ * @param[in] note The #LinphonePresenceNote object to add to the person.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
+
+/**
+ * @brief Clears the notes of a presence person.
+ * @param[in] person The #LinphonePresencePerson object for which to clear the notes.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_person_clear_notes(LinphonePresencePerson *person);
+
+/**
+ * @brief Gets the number of activities notes included in the presence person.
+ * @param[in] person The #LinphonePresencePerson object to get the number of activities notes from.
+ * @return The number of activities notes included in the #LinphonePresencePerson object.
+ */
+LINPHONE_PUBLIC unsigned int linphone_presence_person_nb_activities_notes(const LinphonePresencePerson *person);
+
+/**
+ * @brief Gets the nth activities note of a presence person.
+ * @param[in] person The #LinphonePresencePerson object to get the activities note from.
+ * @param[in] idx The index of the activities note to get (the first note having the index 0).
+ * @return A pointer to a #LinphonePresenceNote object if successful, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const LinphonePresencePerson *person, unsigned int idx);
+
+/**
+ * @brief Adds an activities note to a presence person.
+ * @param[in] person The #LinphonePresencePerson object for which to add an activities note.
+ * @param[in] note The #LinphonePresenceNote object to add to the person.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note);
+
+/**
+ * @brief Clears the activities notes of a presence person.
+ * @param[in] person The #LinphonePresencePerson object for which to clear the activities notes.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_person_clear_activites_notes(LinphonePresencePerson *person);
 
 
 /*****************************************************************************

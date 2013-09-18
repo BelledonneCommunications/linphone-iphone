@@ -783,6 +783,32 @@ int linphone_presence_service_set_contact(LinphonePresenceService *service, cons
 	return 0;
 }
 
+unsigned int linphone_presence_service_nb_notes(const LinphonePresenceService *service) {
+	return ms_list_size(service->notes);
+}
+
+LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePresenceService *service, unsigned int idx) {
+	if ((service == NULL) || (idx >= linphone_presence_service_nb_notes(service)))
+		return NULL;
+
+	return (LinphonePresenceNote *)ms_list_nth_data(service->notes, idx);
+}
+
+int linphone_presence_service_add_person(LinphonePresenceService *service, LinphonePresenceNote *note) {
+	if ((service == NULL) || (note == NULL)) return -1;
+	service->notes = ms_list_append(service->notes, note);
+	return 0;
+}
+
+int linphone_presence_service_clear_notes(LinphonePresenceService *service) {
+	if (service == NULL) return -1;
+
+	ms_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
+	ms_list_free(service->notes);
+	service->notes = NULL;
+	return 0;
+}
+
 
 
 /*****************************************************************************
@@ -834,6 +860,55 @@ int linphone_presence_person_clear_activities(LinphonePresencePerson *person) {
 	return 0;
 }
 
+unsigned int linphone_presence_person_nb_notes(const LinphonePresencePerson *person) {
+	if (person == NULL) return 0;
+	return ms_list_size(person->notes);
+}
+
+LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePresencePerson *person, unsigned int idx) {
+	if ((person == NULL) || (idx >= linphone_presence_person_nb_notes(person)))
+		return NULL;
+	return (LinphonePresenceNote *)ms_list_nth_data(person->notes, idx);
+}
+
+int linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
+	if ((person == NULL) || (note == NULL)) return -1;
+	person->notes = ms_list_append(person->notes, note);
+	return 0;
+}
+
+int linphone_presence_person_clear_notes(LinphonePresencePerson *person) {
+	if (person == NULL) return -1;
+	ms_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
+	ms_list_free(person->notes);
+	person->notes = NULL;
+	return 0;
+}
+
+unsigned int linphone_presence_person_nb_activities_notes(const LinphonePresencePerson *person) {
+	if (person == NULL) return 0;
+	return ms_list_size(person->activities_notes);
+}
+
+LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const LinphonePresencePerson *person, unsigned int idx) {
+	if ((person == NULL) || (idx >= linphone_presence_person_nb_activities_notes(person)))
+		return NULL;
+	return (LinphonePresenceNote *)ms_list_nth_data(person->activities_notes, idx);
+}
+
+int linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
+	if ((person == NULL) || (note == NULL)) return -1;
+	person->notes = ms_list_append(person->activities_notes, note);
+	return 0;
+}
+
+int linphone_presence_person_clear_activities_notes(LinphonePresencePerson *person) {
+	if (person == NULL) return -1;
+	ms_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
+	ms_list_free(person->activities_notes);
+	person->activities_notes = NULL;
+	return 0;
+}
 
 
 /*****************************************************************************
