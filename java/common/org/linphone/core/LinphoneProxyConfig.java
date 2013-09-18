@@ -151,4 +151,10 @@ public interface LinphoneProxyConfig {
 	 * @param e164 phone number
 	 */
 	public int lookupCCCFromE164(String e164);
+	
+	/**
+	 * Return reason error code.
+	 * @return reason code.
+	 */
+	public Reason getError();
 }

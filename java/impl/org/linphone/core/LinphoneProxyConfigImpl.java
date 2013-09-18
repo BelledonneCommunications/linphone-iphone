@@ -158,4 +158,9 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public int lookupCCCFromE164(String e164) {
 		return lookupCCCFromE164(nativePtr, e164);
 	}
+	private native int getReason(long nativeptr);
+	@Override
+	public Reason getError() {
+		return Reason.fromInt(getReason(nativePtr));
+	}
 }
