@@ -331,7 +331,7 @@ LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore 
 /**
  *  notify all friends that have subscribed
  * @param lc #LinphoneCore object
- * @param os #LinphoneOnlineStatus to notify
+ * @param presence #LinphonePresenceModel to notify
  *  */
 LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence);
 
