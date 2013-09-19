@@ -684,6 +684,14 @@ LINPHONE_PUBLIC int linphone_presence_activity_set_description(LinphonePresenceA
  ****************************************************************************/
 
 /**
+ * @brief Creates a presence note.
+ * @param[in] content The content of the note to be created.
+ * @param[in] lang The language of the note to be created. Can be NULL if no language is to be specified for the note.
+ * @returns The created presence note, NULL on error.
+ */
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_presence_note_new(const char *content, const char *lang);
+
+/**
  * @brief Gets the content of a presence note.
  * @param[in] note A pointer to the #LinphonePresenceNote for which to get the content.
  * @return A pointer to the content of the presence note.
@@ -691,11 +699,27 @@ LINPHONE_PUBLIC int linphone_presence_activity_set_description(LinphonePresenceA
 LINPHONE_PUBLIC const char * linphone_presence_note_get_content(const LinphonePresenceNote *note);
 
 /**
+ * @brief Sets the content of a presence note.
+ * @param[in] note The #LinphonePresenceNote object for which to set the content.
+ * @param[in] content The content of the note.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_note_set_content(LinphonePresenceNote *note, const char *content);
+
+/**
  * @brief Gets the language of a presence note.
  * @param[in] note A pointer to the #LinphonePresenceNote for which to get the language.
  * @return A pointer to the language string of the presence note, or NULL if no language is specified.
  */
 LINPHONE_PUBLIC const char * linphone_presence_note_get_lang(const LinphonePresenceNote *note);
+
+/**
+ * @brief Sets the language of a presence note.
+ * @param[in] note The #LinphonePresenceNote object for which to set the language.
+ * @param[in] lang The language of the note.
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang);
 
 
 /*****************************************************************************

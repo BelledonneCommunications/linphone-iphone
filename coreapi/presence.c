@@ -154,29 +154,12 @@ static const char * presence_basic_status_to_string(LinphonePresenceBasicStatus 
 	}
 }
 
-static LinphonePresenceNote * presence_note_new(const char *content, const char *lang) {
-	LinphonePresenceNote * note = ms_new0(LinphonePresenceNote, 1);
-	note->refcnt = 1;
-	note->content = ms_strdup(content);
-	if (lang != NULL) {
-		note->lang = ms_strdup(lang);
-	}
-	return note;
-}
-
 static void presence_note_delete(LinphonePresenceNote *note) {
 	ms_free(note->content);
 	if (note->lang != NULL) {
 		ms_free(note->lang);
 	}
 	ms_free(note);
-}
-
-static void presence_note_set_content(LinphonePresenceNote *note, const char *content) {
-	if (note->content != NULL) {
-		ms_free(note->content);
-	}
-	note->content = ms_strdup(content);
 }
 
 static LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
@@ -618,9 +601,9 @@ int linphone_presence_model_add_note(LinphonePresenceModel *model, const char *n
 	/* Search for an existing note in the specified language. */
 	note = find_presence_note_in_list(service->notes, lang);
 	if (note == NULL) {
-		note = presence_note_new(note_content, lang);
+		note = linphone_presence_note_new(note_content, lang);
 	} else {
-		presence_note_set_content(note, note_content);
+		linphone_presence_note_set_content(note, note_content);
 	}
 	if (note == NULL)
 		return -1;
@@ -1033,16 +1016,49 @@ int linphone_presence_activity_set_description(LinphonePresenceActivity *activit
  * PRESENCE NOTE FUNCTIONS TO GET ACCESS TO ALL FUNCTIONALITIES              *
  ****************************************************************************/
 
+LinphonePresenceNote * linphone_presence_note_new(const char *content, const char *lang) {
+	LinphonePresenceNote *note;
+
+	if (content == NULL) return NULL;
+	note = ms_new0(LinphonePresenceNote, 1);
+	note->refcnt = 1;
+	note->content = ms_strdup(content);
+	if (lang != NULL) {
+		note->lang = ms_strdup(lang);
+	}
+	return note;
+}
+
 const char * linphone_presence_note_get_content(const LinphonePresenceNote *note) {
 	if (note == NULL)
 		return NULL;
 	return note->content;
 }
 
+int linphone_presence_note_set_content(LinphonePresenceNote *note, const char *content) {
+	if (content == NULL) return -1;
+	if (note->content != NULL) {
+		ms_free(note->content);
+	}
+	note->content = ms_strdup(content);
+	return 0;
+}
+
 const char * linphone_presence_note_get_lang(const LinphonePresenceNote *note) {
 	if (note == NULL)
 		return NULL;
 	return note->lang;
+}
+
+int linphone_presence_note_set_lang(LinphonePresenceNote *note, const char *lang) {
+	if (note->lang != NULL) {
+		ms_free(note->lang);
+		note->lang = NULL;
+	}
+	if (lang != NULL) {
+		note->lang = ms_strdup(lang);
+	}
+	return 0;
 }
 
 
@@ -1226,7 +1242,7 @@ static int process_pidf_xml_presence_service_notes(xmlparsing_context_t *xml_ctx
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/pidf:note[%i]/@xml:lang", service_prefix, service_idx, i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
-			note = presence_note_new(note_str, lang);
+			note = linphone_presence_note_new(note_str, lang);
 			presence_service_add_note(service, note);
 			if (lang != NULL) free_xml_text_content(lang);
 			free_xml_text_content(note_str);
@@ -1367,7 +1383,7 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/rpid:activities/rpid:note[%i]/@xml:lang", person_prefix, person_idx, i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
-			note = presence_note_new(note_str, lang);
+			note = linphone_presence_note_new(note_str, lang);
 			presence_person_add_activities_note(person, note);
 			if (lang != NULL) free_xml_text_content(lang);
 			free_xml_text_content(note_str);
@@ -1385,7 +1401,7 @@ static int process_pidf_xml_presence_person_notes(xmlparsing_context_t *xml_ctx,
 			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/dm:note[%i]/@xml:lang", person_prefix, person_idx, i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
-			note = presence_note_new(note_str, lang);
+			note = linphone_presence_note_new(note_str, lang);
 			presence_person_add_note(person, note);
 			if (lang != NULL) free_xml_text_content(lang);
 			free_xml_text_content(note_str);
@@ -1460,7 +1476,7 @@ static int process_pidf_xml_presence_notes(xmlparsing_context_t *xml_ctx, Linpho
 			snprintf(xpath_str, sizeof(xpath_str), "/pidf:presence/pidf:note[%i]/@xml:lang", i);
 			lang = get_xml_text_content(xml_ctx, xpath_str);
 
-			note = presence_note_new(note_str, lang);
+			note = linphone_presence_note_new(note_str, lang);
 			presence_model_add_note(model, note);
 			if (lang != NULL) free_xml_text_content(lang);
 			free_xml_text_content(note_str);
