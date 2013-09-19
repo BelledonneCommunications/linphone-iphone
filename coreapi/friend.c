@@ -78,7 +78,7 @@ static int friend_compare(const void * a, const void * b){
 }
 
 
-MSList *linphone_find_friend_by_addr(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf){
+MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf){
 	MSList *res=NULL;
 	LinphoneFriend dummy;
 	if (lf!=NULL) *lf=NULL;
@@ -145,7 +145,7 @@ LinphoneFriend * linphone_friend_new(){
 	return obj;	
 }
 
-LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
+LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 	LinphoneAddress* linphone_address = linphone_address_new(addr);
 	LinphoneFriend *fr;
 
@@ -154,7 +154,7 @@ LinphoneFriend *linphone_friend_new_with_addr(const char *addr){
 		return NULL;
 	}
 	fr=linphone_friend_new();
-	linphone_friend_set_addr(fr,linphone_address);
+	linphone_friend_set_address(fr,linphone_address);
 	linphone_address_destroy(linphone_address);
 	return fr;
 }
@@ -605,7 +605,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	if (tmp==NULL) {
 		return NULL;
 	}
-	lf=linphone_friend_new_with_addr(tmp);
+	lf=linphone_friend_new_with_address(tmp);
 	if (lf==NULL) {
 		return NULL;
 	}

@@ -450,7 +450,7 @@ static void icon_press_handler(GtkEntry *entry){
 		}
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
 		if (lf==NULL)
-			lf=linphone_friend_new_with_addr(uri);
+			lf=linphone_friend_new_with_address(uri);
 		if (lf!=NULL){
 			linphone_gtk_show_contact(lf);
 		}
@@ -886,7 +886,7 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	}
 	friend_address = linphone_address_new(fixed_uri);
 	linphone_address_set_display_name(friend_address,name);
-	linphone_friend_set_addr(lf,friend_address);
+	linphone_friend_set_address(lf,friend_address);
 	linphone_address_destroy(friend_address);
 
 	linphone_friend_send_subscribe(lf,show_presence);

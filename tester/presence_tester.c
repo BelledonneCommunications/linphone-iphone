@@ -146,7 +146,7 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	char* identity=linphone_address_as_string_uri_only(callee_mgr->identity);
 
 
-	LinphoneFriend* friend=linphone_friend_new_with_addr(identity);
+	LinphoneFriend* friend=linphone_friend_new_with_address(identity);
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);
@@ -211,7 +211,7 @@ static void simple_subscribe(void) {
 
 static void unsubscribe_while_subscribing(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneFriend* friend = linphone_friend_new_with_addr("sip:toto@git.linphone.org"); /*any unexisting address*/
+	LinphoneFriend* friend = linphone_friend_new_with_address("sip:toto@git.linphone.org"); /*any unexisting address*/
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);

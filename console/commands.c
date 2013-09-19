@@ -1022,7 +1022,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		linphonec_friend_add(lc, name, addr);
 #else
 		LinphoneFriend *new_friend;
-		new_friend = linphone_friend_new_with_addr(args);
+		new_friend = linphone_friend_new_with_address(args);
 		linphone_core_add_friend(lc, new_friend);
 #endif
 		return 1;
@@ -1852,7 +1852,7 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 	char url[PATH_MAX];
 
 	snprintf(url, PATH_MAX, "%s <%s>", name, addr);
-	newFriend = linphone_friend_new_with_addr(url);
+	newFriend = linphone_friend_new_with_address(url);
 	linphone_core_add_friend(lc, newFriend);
 	return 0;
 }

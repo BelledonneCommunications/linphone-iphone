@@ -82,7 +82,7 @@ void linphone_gtk_call_log_add_contact(GtkWidget *w){
 			la=(LinphoneAddress*)pla;
 			if (la!=NULL){
 				char *uri=linphone_address_as_string(la);
-				lf=linphone_friend_new_with_addr(uri);
+				lf=linphone_friend_new_with_address(uri);
 				linphone_gtk_show_contact(lf);
 				ms_free(uri);
 			}

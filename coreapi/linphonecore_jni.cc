@@ -2042,7 +2042,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNI
 
 	if (jFriendUri) {
 		const char* friendUri = env->GetStringUTFChars(jFriendUri, NULL);
-		lResult= linphone_friend_new_with_addr(friendUri);
+		lResult= linphone_friend_new_with_address(friendUri);
 		env->ReleaseStringUTFChars(jFriendUri, friendUri);
 	} else {
 		lResult = linphone_friend_new();
@@ -2053,7 +2053,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  en
 																		,jobject  thiz
 																		,jlong ptr
 																		,jlong linphoneAddress) {
-	linphone_friend_set_addr((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
+	linphone_friend_set_address((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
 }
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz

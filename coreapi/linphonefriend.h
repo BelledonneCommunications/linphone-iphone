@@ -121,12 +121,19 @@ typedef struct _LinphoneFriend LinphoneFriend;
  * @return a new empty #LinphoneFriend
  */
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new();
+
 /**
- * Contructor same as linphone_friend_new() + linphone_friend_set_addr()
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  */
-LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_address(const char *addr);
+
+/**
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
+ * @deprecated Use #linphone_friend_new_with_address instead
+ */
+#define linphone_friend_new_with_addr linphone_friend_new_with_address
 
 /**
  * Destructor
@@ -289,6 +296,9 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_core_get_presence_info(const Linph
  */
 LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
 
+/**
+ * @deprecated Use linphone_core_interpret_url() instead
+ */
 LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
 
 /**

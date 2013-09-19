@@ -155,7 +155,7 @@ int main(int argc, char *argv[]){
 	LinphoneFriend* my_friend=NULL;
 
 	if (dest_friend) {
-		my_friend = linphone_friend_new_with_addr(dest_friend); /*creates friend object from dest*/
+		my_friend = linphone_friend_new_with_address(dest_friend); /*creates friend object from dest*/
 		if (my_friend == NULL) {
 			printf("bad destination uri for friend [%s]\n",dest_friend);
 			goto end;

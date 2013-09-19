@@ -1502,7 +1502,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
-	LinphoneFriend *fl=linphone_friend_new_with_addr(subscriber);
+	LinphoneFriend *fl=linphone_friend_new_with_address(subscriber);
 	if (fl==NULL) return ;
 	fl->insub=op;
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
@@ -1555,14 +1555,14 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	}
 	
 	/* check if we answer to this subscription */
-	if (linphone_find_friend_by_addr(lc->friends,uri,&lf)!=NULL){
+	if (linphone_find_friend_by_address(lc->friends,uri,&lf)!=NULL){
 		lf->insub=op;
 		lf->inc_subscribe_pending=TRUE;
 		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
 	}else{
 		/* check if this subscriber is in our black list */
-		if (linphone_find_friend_by_addr(lc->subscribers,uri,&lf)){
+		if (linphone_find_friend_by_address(lc->subscribers,uri,&lf)){
 			if (lf->pol==LinphoneSPDeny){
 				ms_message("Rejecting %s because we already rejected it once.",from);
 				sal_subscribe_decline(op,SalReasonDeclined);
@@ -1926,7 +1926,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
 		const SalAddress *addr=sal_op_get_from_address(op);
 		lf=NULL;
-		linphone_find_friend_by_addr(lc->friends,(LinphoneAddress*)addr,&lf);
+		linphone_find_friend_by_address(lc->friends,(LinphoneAddress*)addr,&lf);
 	}
 	if (lf!=NULL){
 		LinphonePresenceActivity *activity = NULL;
