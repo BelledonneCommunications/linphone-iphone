@@ -28,10 +28,24 @@ public interface PresenceNote {
 	String getContent();
 
 	/**
+	 * @brief Sets the content of a presence note.
+	 * @param[in] content The content of the note.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int setContent(String content);
+
+	/**
 	 * @brief Gets the language of a presence note.
 	 * @return A String containing the language of the presence note, or null if no language is specified.
 	 */
 	String getLang();
+
+	/**
+	 * @brief Sets the language of a presence note.
+	 * @param[in] lang The language of the note.
+	 * @return 0 if successful, a value < 0 in case of error.
+	 */
+	int setLang(String lang);
 
 	/**
 	 * @brief Gets the native pointer for this object.

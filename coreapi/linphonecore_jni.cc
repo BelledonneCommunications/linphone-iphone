@@ -4001,6 +4001,21 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresencePersonImpl_clearActivitesN
 
 /*
  * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    newPresenceNoteImpl
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceNoteImpl_newPresenceNoteImpl(JNIEnv *env, jobject jobj, jstring content, jstring lang) {
+	LinphonePresenceNote *note;
+	const char *ccontent = content ? env->GetStringUTFChars(content, NULL) : NULL;
+	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
+	note = linphone_presence_note_new(ccontent, clang);
+	if (clang) env->ReleaseStringUTFChars(lang, clang);
+	if (ccontent) env->ReleaseStringUTFChars(content, ccontent);
+	return (jlong)note;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
  * Method:    unref
  * Signature: (J)V
  */
@@ -4022,6 +4037,18 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceNoteImpl_getContent(JNI
 
 /*
  * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    setContent
+ * Signature: (JLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceNoteImpl_setContent(JNIEnv *env, jobject jobj, jlong ptr, jstring content) {
+	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
+	const char *ccontent = content ? env->GetStringUTFChars(content, NULL) : NULL;
+	linphone_presence_note_set_content(note, ccontent);
+	if (ccontent) env->ReleaseStringUTFChars(content, ccontent);
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
  * Method:    getLang
  * Signature: (J)Ljava/lang/String;
  */
@@ -4029,6 +4056,18 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_PresenceNoteImpl_getLang(JNIEnv
 	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
 	const char *clang = linphone_presence_note_get_lang(note);
 	return clang ? env->NewStringUTF(clang) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_PresenceNoteImpl
+ * Method:    setLang
+ * Signature: (JLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceNoteImpl_setLang(JNIEnv *env, jobject jobj, jlong ptr, jstring lang) {
+	LinphonePresenceNote *note = (LinphonePresenceNote *)ptr;
+	const char *clang = lang ? env->GetStringUTFChars(lang, NULL) : NULL;
+	linphone_presence_note_set_lang(note, clang);
+	if (clang) env->ReleaseStringUTFChars(lang, clang);
 }
 
 /*

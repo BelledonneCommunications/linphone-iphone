@@ -26,6 +26,11 @@ public class PresenceNoteImpl implements PresenceNote {
 		mNativePtr = nativePtr;
 	}
 
+	private native long newPresenceNoteImpl(String content, String lang);
+	protected PresenceNoteImpl(String content, String lang) {
+		mNativePtr = newPresenceNoteImpl(content, lang);
+	}
+
 	private native void unref(long nativePtr);
 	protected void finalize() {
 		unref(mNativePtr);
@@ -37,10 +42,22 @@ public class PresenceNoteImpl implements PresenceNote {
 		return getContent(mNativePtr);
 	}
 
+	private native int setContent(long nativePtr, String content);
+	@Override
+	public int setContent(String content) {
+		return setContent(mNativePtr, content);
+	}
+
 	private native String getLang(long nativePtr);
 	@Override
 	public String getLang() {
 		return getLang(mNativePtr);
+	}
+
+	private native int setLang(long nativePtr, String lang);
+	@Override
+	public int setLang(String lang) {
+		return setLang(mNativePtr, lang);
 	}
 
 	public long getNativePtr() {
