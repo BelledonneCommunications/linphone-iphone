@@ -334,23 +334,24 @@ void display_history_message(GtkWidget *chat_view,MSList *messages,const Linphon
 
 void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
 	LinphoneFriend *lf=NULL;
+	LinphoneAddress *fixed_uri=NULL;
+	gboolean show_presence=FALSE;
 	char *uri=linphone_address_as_string(addr);
+
 	lf=linphone_friend_new_with_address(uri);
 	ms_free(uri);
-	char *fixed_uri=NULL;
-	gboolean show_presence=FALSE;
 
 	linphone_friend_set_inc_subscribe_policy(lf,LinphoneSPDeny);
 	linphone_friend_send_subscribe(lf,show_presence);
 
-	linphone_core_interpret_friend_uri(linphone_gtk_get_core(),uri,&fixed_uri);
+	fixed_uri = linphone_core_interpret_url(linphone_gtk_get_core(),uri);
 	if (fixed_uri==NULL){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
 		return ;
 	}
 	linphone_friend_set_address(lf,addr);
 	linphone_core_add_friend(linphone_gtk_get_core(),lf);
-	ms_free(fixed_uri);
+	linphone_address_destroy(fixed_uri);
 	linphone_gtk_show_friends();
 }
 

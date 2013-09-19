@@ -442,19 +442,23 @@ void linphone_gtk_my_presence_clicked(GtkWidget *button){
 static void icon_press_handler(GtkEntry *entry){
 	const char *text=gtk_entry_get_text(entry);
 	if (text && strlen(text)>0){
-		char *uri;
+		LinphoneAddress *addr;
 		LinphoneFriend *lf;
-		linphone_core_interpret_friend_uri(linphone_gtk_get_core(),text,&uri);
-		if (uri==NULL){
+		char *uri;
+		addr=linphone_core_interpret_url(linphone_gtk_get_core(),text);
+		if (addr==NULL){
 			return ;
 		}
+		uri=linphone_address_as_string_uri_only(addr);
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
+		ms_free(uri);
 		if (lf==NULL)
-			lf=linphone_friend_new_with_address(uri);
+			lf=linphone_friend_new();
 		if (lf!=NULL){
+			linphone_friend_set_address(lf,addr);
 			linphone_gtk_show_contact(lf);
 		}
-		ms_free(uri);
+		linphone_address_destroy(addr);
 	}
 }
 
@@ -476,11 +480,12 @@ static void check_contact(GtkEditable *editable, LinphoneCore *lc){
 	char *tmp=gtk_editable_get_chars(editable,0,-1);
 	if (tmp!=NULL){
 		if (strlen(tmp)>0){
-			char *uri=NULL;
-			linphone_core_interpret_friend_uri(lc,tmp,&uri);
-			if (uri){
+			LinphoneAddress *addr=linphone_core_interpret_url(lc,tmp);
+			if (addr){
+				char *uri=linphone_address_as_string_uri_only(addr);
 				LinphoneFriend *lf=linphone_core_get_friend_by_address(lc,uri);
 				ms_free(uri);
+				linphone_address_destroy(addr);
 				if (lf) {
 					update_star(GTK_ENTRY(editable),TRUE);
 					g_free(tmp);
@@ -862,7 +867,6 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	GtkWidget *w=gtk_widget_get_toplevel(button);
 	LinphoneFriend *lf=(LinphoneFriend*)g_object_get_data(G_OBJECT(w),"friend_ref");
 	LinphoneFriend *lf2;
-	char *fixed_uri=NULL;
 	gboolean show_presence=FALSE,allow_presence=FALSE;
 	const gchar *name,*uri;
 	LinphoneAddress* friend_address;
@@ -879,28 +883,28 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	uri=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")));
 	show_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")));
 	allow_presence=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")));
-	linphone_core_interpret_friend_uri(linphone_gtk_get_core(),uri,&fixed_uri);
-	if (fixed_uri==NULL){
+	friend_address=linphone_core_interpret_url(linphone_gtk_get_core(),uri);
+	if (friend_address==NULL){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,_("Invalid sip contact !"));
 		return ;
 	}
-	friend_address = linphone_address_new(fixed_uri);
 	linphone_address_set_display_name(friend_address,name);
 	linphone_friend_set_address(lf,friend_address);
-	linphone_address_destroy(friend_address);
 
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {
 		linphone_friend_done(lf);
 	} else {
-		lf2=linphone_core_get_friend_by_address(linphone_gtk_get_core(),fixed_uri);
+		char *uri=linphone_address_as_string_uri_only(friend_address);
+		lf2=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
+		ms_free(uri);
 		if(lf2==NULL){
 			linphone_friend_set_name(lf,name);
 			linphone_core_add_friend(linphone_gtk_get_core(),lf);
 		}
 	}
-	ms_free(fixed_uri);
+	linphone_address_destroy(friend_address);
 	linphone_gtk_show_friends();
 	gtk_widget_destroy(w);
 }
