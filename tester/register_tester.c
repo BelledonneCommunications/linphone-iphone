@@ -560,7 +560,7 @@ static void tls_with_non_tls_server(){
 	linphone_proxy_config_edit(proxy_cfg);
 	addr=linphone_address_new(linphone_proxy_config_get_addr(proxy_cfg));
 	snprintf(tmp,sizeof(tmp),"sip:%s:%i;transport=tls"	,linphone_address_get_domain(addr)
-			,(linphone_address_get_port_int(addr)>0?linphone_address_get_port_int(addr):5060));
+			,(linphone_address_get_port(addr)>0?linphone_address_get_port(addr):5060));
 	linphone_proxy_config_set_server_addr(proxy_cfg,tmp);
 	linphone_proxy_config_done(proxy_cfg);
 	linphone_address_destroy(addr);

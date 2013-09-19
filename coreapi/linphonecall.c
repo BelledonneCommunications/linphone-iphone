@@ -2607,7 +2607,7 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 		if (ctt!=NULL){
 			/*otherwise use supllied localip*/
 			linphone_address_set_domain(ctt,localip);
-			linphone_address_set_port_int(ctt,linphone_core_get_sip_port(lc));
+			linphone_address_set_port(ctt,linphone_core_get_sip_port(lc));
 			ms_message("Contact has been fixed using local ip"/* to %s",ret*/);
 #ifdef USE_BELLESIP
 			ret=ctt;

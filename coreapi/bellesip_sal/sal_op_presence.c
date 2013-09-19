@@ -72,7 +72,7 @@ static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* 
 			if (sal_op_get_contact_address(op)) {
 				/*contact is also probably not good*/
 				SalAddress* contact=sal_address_clone(sal_op_get_contact_address(op));
-				sal_address_set_port_int(contact,-1);
+				sal_address_set_port(contact,-1);
 				sal_address_set_domain(contact,NULL);
 				sal_op_set_contact_address(op,contact);
 				sal_address_destroy(contact);

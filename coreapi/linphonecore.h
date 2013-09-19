@@ -183,19 +183,13 @@ LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddr
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
 /**
- * Get port number as an integer value.
- *
+ * Get port number as an integer value, -1 if not set.
  */
-LINPHONE_PUBLIC int linphone_address_get_port_int(const LinphoneAddress *u);
-/**
- * Get port number, null if not present.
- */
-LINPHONE_PUBLIC	const char* linphone_address_get_port(const LinphoneAddress *u);
+LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
 LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
 LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
-LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, const char *port);
-LINPHONE_PUBLIC	void linphone_address_set_port_int(LinphoneAddress *uri, int port);
+LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);

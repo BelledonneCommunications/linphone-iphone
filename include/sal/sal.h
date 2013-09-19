@@ -83,16 +83,24 @@ const char *sal_address_get_display_name(const SalAddress* addr);
 const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
+#ifdef USE_BELLESIP
+int sal_address_get_port(const SalAddress *addr);
+#else
 const char * sal_address_get_port(const SalAddress *addr);
 int sal_address_get_port_int(const SalAddress *addr);
+#endif
 SalTransport sal_address_get_transport(const SalAddress* addr);
 const char* sal_address_get_transport_name(const SalAddress* addr);
 
 void sal_address_set_display_name(SalAddress *addr, const char *display_name);
 void sal_address_set_username(SalAddress *addr, const char *username);
 void sal_address_set_domain(SalAddress *addr, const char *host);
+#ifdef USE_BELLESIP
+void sal_address_set_port(SalAddress *uri, int port);
+#else
 void sal_address_set_port(SalAddress *addr, const char *port);
 void sal_address_set_port_int(SalAddress *uri, int port);
+#endif
 void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);

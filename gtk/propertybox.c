@@ -79,7 +79,7 @@ void linphone_gtk_update_my_contact(GtkWidget *w){
 
 	linphone_address_set_display_name(parsed,displayname);
 	linphone_address_set_username(parsed,username);
-	linphone_address_set_port_int(parsed,port);
+	linphone_address_set_port(parsed,port);
 	contact=linphone_address_as_string(parsed);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"sip_address")),contact);
 	linphone_core_set_primary_contact(linphone_gtk_get_core(),contact);

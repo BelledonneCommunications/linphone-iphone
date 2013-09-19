@@ -70,11 +70,7 @@ const char *sal_address_get_username(const SalAddress *addr){
 const char *sal_address_get_domain(const SalAddress *addr){
 	SAL_ADDRESS_GET(addr,host)
 }
-const char * sal_address_get_port(const SalAddress *addr){
-	ms_fatal("sal_address_get_port not implemented yet");
-	return NULL;
-}
-int sal_address_get_port_int(const SalAddress *addr){
+int sal_address_get_port(const SalAddress *addr){
 	belle_sip_header_address_t* header_addr = BELLE_SIP_HEADER_ADDRESS(addr);
 	belle_sip_uri_t* uri = belle_sip_header_address_get_uri(header_addr);
 	if (uri) {
@@ -112,11 +108,7 @@ void sal_address_set_domain(SalAddress *addr, const char *host){
 	SAL_ADDRESS_SET(addr,host,host);
 }
 
-void sal_address_set_port(SalAddress *addr, const char *port){
-	SAL_ADDRESS_SET(addr,port,atoi(port));
-}
-
-void sal_address_set_port_int(SalAddress *addr, int port){
+void sal_address_set_port(SalAddress *addr, int port){
 	SAL_ADDRESS_SET(addr,port,port);
 }
 

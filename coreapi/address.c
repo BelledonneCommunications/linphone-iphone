@@ -106,18 +106,16 @@ void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
 	sal_address_set_domain(uri,host);
 }
 
-/**
- * Sets the port number.
-**/
-void linphone_address_set_port(LinphoneAddress *uri, const char *port){
-	sal_address_set_port(uri,port);
-}
 
 /**
  * Sets the port number.
 **/
-void linphone_address_set_port_int(LinphoneAddress *uri, int port){
+void linphone_address_set_port(LinphoneAddress *uri, int port){
+#ifdef USE_BELLESIP
+	sal_address_set_port(uri,port);
+#else
 	sal_address_set_port_int(uri,port);
+#endif
 }
 
 /**
@@ -159,8 +157,8 @@ bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddr
 	int p1,p2;
 	u1=linphone_address_get_username(a1);
 	u2=linphone_address_get_username(a2);
-	p1=linphone_address_get_port_int(a1);
-	p2=linphone_address_get_port_int(a2);
+	p1=linphone_address_get_port(a1);
+	p2=linphone_address_get_port(a2);
 	h1=linphone_address_get_domain(a1);
 	h2=linphone_address_get_domain(a2);
 	return strings_equals(u1,u2) && strings_equals(h1,h2) && p1==p2;
@@ -173,12 +171,13 @@ void linphone_address_destroy(LinphoneAddress *u){
 	sal_address_unref(u);
 }
 
-int linphone_address_get_port_int(const LinphoneAddress *u) {
-	return sal_address_get_port_int(u);
-}
 
-const char* linphone_address_get_port(const LinphoneAddress *u) {
+int linphone_address_get_port(const LinphoneAddress *u) {
+#ifdef USE_BELLESIP
 	return sal_address_get_port(u);
+#else
+	return sal_address_get_port_int(u);
+#endif
 }
 
 /** @} */

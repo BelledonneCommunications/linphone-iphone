@@ -328,7 +328,7 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		}
 #endif
 
-		linphone_address_set_port_int(contact,localport);
+		linphone_address_set_port(contact,localport);
 		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
 

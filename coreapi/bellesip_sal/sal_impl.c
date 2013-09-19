@@ -488,7 +488,7 @@ int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	int result;
 	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack
 																			,sal_address_get_domain(addr)
-																			,sal_address_get_port_int(addr)
+																			,sal_address_get_port(addr)
 																			,sal_transport_to_string(sal_address_get_transport(addr)));
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
@@ -504,7 +504,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 	SalAddress* sal_addr = sal_address_new(NULL);
 	int result;
 	sal_address_set_domain(sal_addr,addr);
-	sal_address_set_port_int(sal_addr,port);
+	sal_address_set_port(sal_addr,port);
 	sal_address_set_transport(sal_addr,tr);
 	result = sal_add_listen_port(ctx,sal_addr);
 	sal_address_destroy(sal_addr);
