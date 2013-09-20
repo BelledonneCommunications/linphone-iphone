@@ -1203,16 +1203,31 @@ void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParam
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
 }
 
+/**
+ * @ingroup call_control
+ * Set requested level of privacy for the call.
+ * \xmlonly <language-tags>javascript</language-tags> \endxmlonly
+ * @param params the call parameters to be modified
+ * @param LinphonePrivacy to configure privacy
+ * */
 void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
 	params->privacy=privacy;
 }
+
+/**
+ * @ingroup call_control
+ * Get requested level of privacy for the call.
+ * @param params the call parameters
+ * @return Privacy mode
+ * */
 LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
 	return params->privacy;
 }
 
-
-
-
+/**
+ * @ingroup call_control
+ * @return string value of LinphonePrivacy enum
+ **/
 const char* linphone_privacy_to_string(LinphonePrivacy privacy) {
 	switch(privacy) {
 	case LinphonePrivacyDefault: return "LinphonePrivacyDefault";

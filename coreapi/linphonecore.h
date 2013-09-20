@@ -182,9 +182,6 @@ const char *linphone_address_get_scheme(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
-/**
- * Get port number as an integer value, -1 if not set.
- */
 LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
 LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
@@ -371,24 +368,9 @@ typedef enum _LinphonePrivacy {
  * */
 typedef unsigned int LinphonePrivacyMask;
 
-/**
- * @ingroup call_control
- * @return string value of LinphonePrivacy enum
- * */
-const char* linphone_privacy_to_string(LinphonePrivacy privacy);
-/**
- * @ingroup call_control
- * Set requested level of privacy for the call.
- * @param params the call parameters to be modified
- * @param LinphonePrivacy to configure privacy
- * */
+
+LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
-/**
- * @ingroup call_control
- * Get requested level of privacy for the call.
- * @param params the call parameters
- * @return Privacy mode
- * */
 LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params);
 
 
