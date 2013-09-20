@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/types.h>
 #include <sys/stat.h>
 
+
 using namespace::std;
 
 
@@ -44,15 +45,17 @@ public:
 		Float,
 		String,
 		Enum,
-		Class
+		Class,
+		Callback
 	};
+	static const char *sBasicTypeNames[];
 	static Type* addType(BasicType bt, const string &name){
 		Type* ret;
 		if ((ret=mTypes[name])==0){
-			cout<<"Adding new "<<(bt==Enum ? "enum" : "class")<<" type '"<<name<<"'"<<endl;
+			//cout<<"Adding new "<<sBasicTypeNames[(int)bt]<<" type '"<<name<<"'"<<endl;
 			ret=mTypes[name]=new Type(bt,name);
-		}else if (bt==Enum){
-			ret->mBasic=Enum;
+		}else if (bt!=Class){
+			ret->mBasic=bt;
 		}
 		return ret;
 	}
@@ -117,6 +120,19 @@ Type Type::sVoidType(Type::Void);
 Type Type::sBooleanType(Type::Boolean);
 Type Type::sFloatType(Type::Float);
 std::map<string,Type*> Type::mTypes;
+const char *Type::sBasicTypeNames[]={
+		"Void",
+		"Boolean",
+		"Integer",
+		"Float",
+		"String",
+		"Enum",
+		"Class",
+		"Callback",
+		"undef",
+		"undef"
+};
+	
 
 class Argument{
 public:
@@ -137,6 +153,9 @@ public:
 	}
 	const string &getHelp()const{
 		return mHelp;
+	}
+	void setHelp(const string &help){
+		mHelp=help;
 	}
 private:
 	
@@ -499,6 +518,7 @@ public:
 		list<Class*> classes=proj->getClasses();
 		mCurProj=proj;
 #ifndef WIN32
+		unlink(proj->getName().c_str());
 		mkdir(proj->getName().c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
 #else
 		_mkdir(proj->getName().c_str());
@@ -524,8 +544,8 @@ private:
 		//if (!mCurProj->getName().empty())
 		//	mOutfile<<"namespace "<<mCurProj->getName()<<"{"<<endl<<endl;
 		mOutfile<<"/**"<<endl;
-		mOutfile<<" * @external "<<klass->getName()<<endl;
 		mOutfile<<" * "<<klass->getHelp()<<endl;
+		mOutfile<<" * @external "<<klass->getName()<<endl;
 		mOutfile<<"**/"<<endl;
 		
 		list<Property*> properties=klass->getProperties();
@@ -555,6 +575,8 @@ private:
 			break;
 			case Type::Void:
 				mOutfile<<"void";
+			break;
+			case Type::Callback:
 			break;
 		}
 	}
@@ -607,7 +629,7 @@ private:
 		if (method->getName()=="ref" || method->getName()=="unref") return;
 		
 		mOutfile<<"/**"<<endl;
-		writeHelpComment(method->getHelp(),1);
+		writeHelpComment(method->getHelp(),0);
 		mOutfile<<endl;
 		mOutfile<<" * @function external:"<<mCurClass->getName()<<"#"<<method->getName()<<endl;
 		
@@ -623,17 +645,6 @@ private:
 	Class *mCurClass;
 };
 
-static xmlNode * findChild(xmlNode *a_node, const char *element_name){
-	xmlNode *cur_node;
-	
-	for (cur_node = a_node->children; cur_node != NULL ; cur_node = cur_node->next){
-		if (strcmp((const char*)cur_node->name,(const char*)element_name)==0){
-			return cur_node;
-		}
-	}
-	return NULL;
-}
-
 static bool isSpace(const char *str){
 	for(;*str!='\0';++str){
 		if (!isspace(*str)) return false;
@@ -641,35 +652,78 @@ static bool isSpace(const char *str){
 	return true;
 }
 
-static string findChildContent(xmlNode *a_node, const char *element_name){
-	xmlNode *node=findChild(a_node,element_name);
-	string res;
-	if (node) {
-		xmlChar *text=xmlNodeGetContent(node);
-		if (!isSpace((const char*)text))
-			res=(char*)text;
-		xmlFree(text);
+class XmlNode{
+public:
+	XmlNode(const xmlNode *node=NULL) : mNode(node){
 	}
-	return res;
-}
+	XmlNode getChild(const string &name)const{
+		if (mNode==NULL) return XmlNode();
+		xmlNode *it;
+		for(it=mNode->children;it!=NULL;it=it->next){
+			if (xmlStrcmp(it->name,(const xmlChar*)name.c_str())==0)
+				return XmlNode(it);
+		}
+		return XmlNode();
+	}
+	XmlNode getChildRecursive(const string &name)const{
+		if (mNode==NULL) return XmlNode();
+		xmlNode *it;
+		//find in direct children
+		for(it=mNode->children;it!=NULL;it=it->next){
+			if (xmlStrcmp(it->name,(const xmlChar*)name.c_str())==0)
+				return XmlNode(it);
+		}
+		//recurse into children
+		for(it=mNode->children;it!=NULL;it=it->next){
+			XmlNode res=XmlNode(it).getChildRecursive(name);
+			if (!res.isNull()) return res;
+		}
+		return XmlNode();
+	}
+	list<XmlNode> getChildren(const string &name)const{
+		xmlNode *it;
+		list<XmlNode> nodes;
+		
+		if (mNode==NULL) return nodes;
+		for(it=mNode->children;it!=NULL;it=it->next){
+			if (xmlStrcmp(it->name,(const xmlChar*)name.c_str())==0)
+				nodes.push_back(XmlNode(it));
+		}
+		if (nodes.empty()) cerr<<"getChildren() no "<<name<<" found"<<endl;
+		return nodes;
+	}
+	string getText()const{
+		if (mNode==NULL) return "";
+		XmlNode node=getChild("text");
+		if (!node.isNull()) {
+			const char *text=(const char*)node.mNode->content;
+			if (!isSpace(text)) return string(text);
+		}
+		return "";
+	}
+	string getProp(const string &propname)const{
+		if (mNode==NULL) return "";
+		xmlChar *value;
+		value=xmlGetProp((xmlNode*)mNode,(const xmlChar*)propname.c_str());
+		if (value) return string((const char*)value);
+		return "";
+	}
+	bool isNull()const{
+		return mNode==NULL;
+	}
+private:
+	const xmlNode *mNode;
+};
 
-#define nullOrEmpty(p)	(p==NULL || *p=='\0')
-
-static Argument *parseArgument(xmlNode *node, bool isReturn){
-	string name=findChildContent(node,"declname");
+static Argument *parseArgument(XmlNode node, bool isReturn){
+	string name=node.getChild("declname").getText();
 	Type *type=NULL;
-	xmlNode *typenode=findChild(node,"type");
-	string typecontent=findChildContent(node,"type");
+	string typecontent=node.getChild("type").getText();
 	bool isConst=false;
 	bool isPointer=false;
 	
-	if (!typenode) {
-		cout<<"Cannot find type from node."<<endl;
-		return NULL;
-	}
-	
 	//find documented type if any
-	string tname=findChildContent(typenode,"ref");
+	string tname=node.getChild("type").getChild("ref").getText();
 	if (!tname.empty()){
 		type=Type::getType(tname);
 	}else type=Type::getType(typecontent);
@@ -684,7 +738,7 @@ static Argument *parseArgument(xmlNode *node, bool isReturn){
 	if (type==NULL) {
 		return NULL;
 	}
-	cout<<"Parsed argument "<<name<<" with type "<<type->getBasicType()<<" "<<type->getName()<<endl;
+	//cout<<"Parsed argument "<<name<<" with type "<<type->getBasicType()<<" "<<type->getName()<<endl;
 	return new Argument(type,!isReturn ? name : "",isConst,isPointer);
 }
 
@@ -738,30 +792,55 @@ static string extractMethodName(const string &c_name, const std::string& class_n
 	return "";
 }
 
+static string getHelpBody(XmlNode myNode){
+	ostringstream result;
+	XmlNode brief=myNode.getChild("briefdescription");
+	XmlNode detailed=myNode.getChild("detaileddescription");
+	
+	result<<brief.getText();
+	result<<detailed.getChild("para").getText();
+	//cout<<"getHelpBody():"<<result.str();
+	return result.str();
+}
+
 static void parseFunction(Project *proj, xmlNode *node){
 	string name;
 	Argument *first_arg=NULL;
-	xmlNode *cur_node;
 	string className;
 	string methodName;
 	Argument *retarg=NULL;
 	list<Argument*> args;
 	string help;
+	XmlNode funcnode(node);
+	XmlNode parameterlist;
+	list<XmlNode> params;
+	list<XmlNode> paramsHelp;
+	list<XmlNode>::iterator it,helpit;
 	
-	for (cur_node = node->children; cur_node != NULL ; cur_node = cur_node->next){
-		if (strcmp((const char*)cur_node->name,"name")==0){
-			xmlChar *content=xmlNodeGetContent(cur_node);
-			name=(const char*)content;
-			xmlFree(content);
-		}else if (strcmp((const char*)cur_node->name,"param")==0){
-			Argument *a=parseArgument(cur_node,false);
-			if (a) args.push_back(a);
-			else return;
-		}else if (strcmp((const char*)cur_node->name,"detaileddescription")==0){
-			help=findChildContent(cur_node,"para");
+	name=funcnode.getChild("name").getText();
+	params=funcnode.getChildren("param");
+	parameterlist=funcnode.getChild("detaileddescription").getChildRecursive("parameterlist");
+	if (parameterlist.isNull()) cerr<<"parameterlist not found"<<endl;
+	paramsHelp=parameterlist.getChildren("parameteritem");
+	
+	for (it=params.begin(),helpit=paramsHelp.begin();it!=params.end();++it){
+		Argument *a=parseArgument(*it,false);
+		if (a){
+			//add argument help
+			if (!args.empty()){
+				if (helpit!=paramsHelp.end()){
+					XmlNode item=*helpit;
+					a->setHelp(item.getChild("parameterdescription").getChild("para").getText());
+				}else cerr<<"Undocumented parameter "<<a->getName()<<" in function "<<name<<endl;
+			}
+			args.push_back(a);
+			if (helpit!=paramsHelp.end()) ++helpit;
 		}
+		else return;
 	}
-	retarg=parseArgument(node,true);
+	help=getHelpBody(funcnode);
+
+	retarg=parseArgument(funcnode,true);
 	if (!retarg){
 		cerr<<"Could not parse return argument of function "<<name<<endl;
 		return;
@@ -776,7 +855,7 @@ static void parseFunction(Project *proj, xmlNode *node){
 	className=first_arg->getType()->getName();
 	methodName=extractMethodName(name,className);
 	if (!methodName.empty() && methodName!="destroy"){
-		cout<<"Found "<<className<<"."<<methodName<<"()"<<endl;
+		//cout<<"Found "<<className<<"."<<methodName<<"()"<<endl;
 		args.pop_front();
 		Method *method=new Method("",retarg,methodName,args,first_arg->isConst(),false);
 		method->setHelp(help);
@@ -786,32 +865,33 @@ static void parseFunction(Project *proj, xmlNode *node){
 }
 
 static void parseTypedef(Project *proj, xmlNode *node){
-	string typecontent=findChildContent(node,"type");
-	string name=findChildContent(node,"name");
+	XmlNode tdef(node);
+	string typecontent=tdef.getChild("type").getText();
+	string name=tdef.getChild("name").getText();
 	if (typecontent.find("enum")==0){
 		Type::addType(Type::Enum,name);
-	}
+	}else if (typecontent.find("void(*")==0){
+		// callbacks function, not really well parsed by doxygen
+		Type::addType(Type::Callback,name);
+	}else
+		proj->getClass(name)->setHelp(getHelpBody(node));
 }
 
 static void parseMemberDef(Project *proj, xmlNode *node){
+	XmlNode member(node);
 	string brief;
 	string detailed;
-	const xmlChar *kind;
+	string kind;
 	
-	brief=findChildContent(node,"briefdescription");
-	detailed=findChildContent(node,"detaileddescription");
-	
-	if (brief.empty() && detailed.empty())
+	if (member.getChild("briefdescription").getText().empty() && 
+		member.getChild("detaileddescription").getChild("para").getText().empty())
 		return;
 	
-	kind=xmlGetProp(node,(const xmlChar*)"kind");
-	if (kind){
-		//cout<<"Kind="<<(const char*)kind<<endl;
-		if (xmlStrcmp(kind,(const xmlChar*)"function")==0){
-			parseFunction(proj,node);
-		}else if (xmlStrcmp(kind,(const xmlChar*)"typedef")==0){
-			parseTypedef(proj,node);
-		}
+	kind=member.getProp("kind");
+	if (kind=="function"){
+		parseFunction(proj,node);
+	}else if (kind=="typedef"){
+		parseTypedef(proj,node);
 	}
 }
 
