@@ -37,6 +37,9 @@ LOCAL_MODULE := liblinphone
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_MODULE_FILENAME := liblinphonearmv7
 endif
+ifeq ($(TARGET_ARCH_ABI),x86)
+LOCAL_MODULE_FILENAME := liblinphonex86
+endif
 
 include $(BUILD_SHARED_LIBRARY)
 
