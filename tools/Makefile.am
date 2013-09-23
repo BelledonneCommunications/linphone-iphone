@@ -59,7 +59,9 @@ lpc2xml_test_LDADD=\
 	$(top_builddir)/coreapi/liblinphone.la \
 	liblpc2xml.la
 
-lp_gen_wrappers_SOURCES=genwrappers.cc
+lp_gen_wrappers_SOURCES=genwrappers.cc \
+			software-desc.cc software-desc.hh \
+			generator.cc generator.hh
 
 lp_gen_wrappers_LDADD= \
 		$(LIBXML2_LIBS)
