@@ -120,12 +120,15 @@ static void subscribe_test_declined(void) {
 }
 
 
-static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
+static void subscribe_test_with_args(bool_t terminated_by_subscriber, bool_t test_refreshing) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneContent content;
 	LinphoneEvent *lev;
+	int expires= test_refreshing ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
+	
+	
 	lcs=ms_list_append(lcs,pauline->lc);
 
 
@@ -134,7 +137,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
 	content.data=(char*)subscribe_content;
 	content.size=strlen(subscribe_content);
 	
-	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",600,&content);
+	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,&content);
 	
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,1000));
@@ -143,6 +146,11 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
 
 	/*make sure marie receives first notification before terminating*/
 	CU_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,1000));
+	
+	if (test_refreshing){
+		wait_for_list(lcs,NULL,0,6000);
+		CU_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+	}
 
 	if (terminated_by_subscriber){
 		linphone_event_terminate(lev);
@@ -159,11 +167,18 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber) {
 }
 
 static void subscribe_test_terminated_by_subscriber(void){
-	subscribe_test_with_args(TRUE);
+	subscribe_test_with_args(TRUE,FALSE);
 }
 
 static void subscribe_test_terminated_by_notifier(void){
-	subscribe_test_with_args(FALSE);
+	subscribe_test_with_args(FALSE,FALSE);
+}
+
+/* Caution: this test does not really check that the subscribe are refreshed, because the core is not managing the expiration of 
+ * unrefreshed subscribe dialogs. So it is just checking that it is not crashing.
+ */
+static void subscribe_test_refreshed(void){
+	subscribe_test_with_args(TRUE,TRUE);
 }
 
 static void publish_test_with_args(bool_t refresh){
@@ -218,6 +233,7 @@ static void publish_no_auto_test(){
 test_t event_tests[] = {
 	{ "Subscribe declined"	,	subscribe_test_declined 	},
 	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
+	{ "Subscribe refreshed", subscribe_test_refreshed },
 	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
 	{ "Publish", publish_test },
 	{ "Publish without automatic refresh",publish_no_auto_test }

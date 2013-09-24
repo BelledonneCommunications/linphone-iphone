@@ -143,13 +143,13 @@ bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	int retry=0;
 	MSList* iterator;
-	while (*counter<value && retry++ <timeout_ms/100) {
+	while ((counter==NULL || *counter<value) && retry++ <timeout_ms/100) {
 		 for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
 			 linphone_core_iterate((LinphoneCore*)(iterator->data));
 		 }
 		ms_usleep(100000);
 	}
-	if(*counter<value) return FALSE;
+	if(counter && *counter<value) return FALSE;
 	else return TRUE;
 }
 

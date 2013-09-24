@@ -18,19 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "sal_impl.h"
 
-
-static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	ms_error("subscribe_process_io_error not implemented yet");
-}
-
-static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
-	SalOp* op= (SalOp*)ctx;
-	if (op->dialog) {
-		op->dialog=NULL;
-		sal_op_unref(op);
-	}
-}
-
 SalSubscribeStatus get_subscription_state(belle_sip_message_t *msg){
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(msg,belle_sip_header_subscription_state_t);
 	SalSubscribeStatus sss=SalSubscribeNone;
@@ -45,73 +32,49 @@ SalSubscribeStatus get_subscription_state(belle_sip_message_t *msg){
 	return sss;
 }
 
-static void subscribe_response_event(void *op_base, const belle_sip_response_event_t *event){
-	SalOp* op = (SalOp*)op_base;
-	belle_sip_dialog_state_t dialog_state;
-	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
-	belle_sip_response_t* response=belle_sip_response_event_get_response(event);
-	belle_sip_request_t* request=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
-	int code = belle_sip_response_get_status_code(response);
-	char reason[256]={0};
+static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
+		,void* user_pointer
+		,unsigned int status_code
+		,const char* reason_phrase) {
+	SalOp* op = (SalOp*)user_pointer;
 	SalError error=SalErrorUnknown;
 	SalReason sr=SalReasonUnknown;
-	belle_sip_header_expires_t* expires;
-	SalSubscribeStatus sss=get_subscription_state(BELLE_SIP_MESSAGE(response));
+	belle_sip_transaction_t *tr=BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher));
+	/*belle_sip_response_t* response=belle_sip_transaction_get_response(tr);*/
+	SalSubscribeStatus sss=SalSubscribeTerminated;
 	
-	if (sal_compute_sal_errors(response,&error,&sr,reason, sizeof(reason))) {
-		ms_error("subscription to [%s] rejected reason [%s]",sal_op_get_to(op),reason[0]!=0?reason:sal_reason_to_string(sr));
-		op->base.root->callbacks.subscribe_response(op,SalSubscribeTerminated,error,sr);
-		return;
+	ms_message("Subscribe refresher  [%i] reason [%s] ",status_code,reason_phrase?reason_phrase:"none");
+	if (status_code>=200 && status_code<300){
+		if (status_code==200) sss=SalSubscribeActive;
+		else if (status_code==202) sss=SalSubscribePending;
+		set_or_update_dialog(op,belle_sip_transaction_get_dialog(tr));
 	}
-	set_or_update_dialog(op_base,belle_sip_response_event_get_dialog(event));
-	if (!op->dialog) {
-		ms_message("subscribe op [%p] received out of dialog answer [%i]",op,code);
-		return;
+	if (status_code>=200){
+		sal_compute_sal_errors_from_code(status_code,&error,&sr);
+		op->base.root->callbacks.subscribe_response(op,sss,error,sr);
 	}
-	dialog_state=belle_sip_dialog_get_state(op->dialog);
-	switch(dialog_state) {
-		case BELLE_SIP_DIALOG_NULL:
-		case BELLE_SIP_DIALOG_EARLY: {
-			ms_error("subscribe op [%p] receive an unexpected answer [%i]",op,code);
-			break;
-		}
-		case BELLE_SIP_DIALOG_CONFIRMED: {
-			if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0) {
-				expires=belle_sip_message_get_header_by_type(request,belle_sip_header_expires_t);
-				if(op->refresher) {
-					belle_sip_refresher_stop(op->refresher);
-					belle_sip_object_unref(op->refresher);
-					op->refresher=NULL;
-				}
-				if (expires>0){
-					op->refresher=belle_sip_client_transaction_create_refresher(client_transaction);
-					if (op->refresher) belle_sip_refresher_enable_manual_mode(op->refresher,op->manual_refresher);
-				}
-				if (sss==SalSubscribeNone) sss=SalSubscribeActive; /*without Subscription-state header, consider subscription is accepted.*/
-				op->base.root->callbacks.subscribe_response(op,sss,SalErrorNone,SalReasonUnknown);
-			}
-			break;
-		}
-		case BELLE_SIP_DIALOG_TERMINATED:
-			if (op->refresher) {
-				belle_sip_refresher_stop(op->refresher);
-				belle_sip_object_unref(op->refresher);
-				op->refresher=NULL;
-			}
-		break;
-		default: {
-			ms_error("subscribe op [%p] receive answer [%i] not implemented",op,code);
-		}
-		/* no break */
+	
+}
+
+static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
+	ms_error("subscribe_process_io_error not implemented yet");
+}
+
+static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
+	SalOp* op= (SalOp*)ctx;
+	if (op->dialog) {
+		op->dialog=NULL;
+		sal_op_unref(op);
 	}
+}
+
+static void subscribe_response_event(void *op_base, const belle_sip_response_event_t *event){
 }
 
 static void subscribe_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
-	ms_message("subscribe_process_timeout not implemented yet");
 }
 
 static void subscribe_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
-	ms_message("subscribe_process_transaction_terminated not implemented yet");
 }
 
 static void handle_notify(SalOp *op, belle_sip_request_t *req, const char *eventname, SalBody * body){
@@ -191,7 +154,8 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 		} else if (strcmp("SUBSCRIBE",method)==0) {
 			/*either a refresh of an unsubscribe*/
 			if (expires && belle_sip_header_expires_get_expires(expires)>0) {
-
+				resp=sal_op_create_response_from_request(op,req,200);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
 			} else if(expires) {
 				ms_message("Unsubscribe received from [%s]",sal_op_get_from(op));
 				resp=sal_op_create_response_from_request(op,req,200);
@@ -235,36 +199,29 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 			belle_sip_object_ref(op->event);
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->event);
-	}else{
-		req=belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE");
-		if (!req) {
-			ms_error("Cannot create subscribe refresh.");
-			return -1;
-		}
-		if (expires==-1){
-			belle_sip_transaction_t *last=(belle_sip_transaction_t*)op->pending_client_trans;
-			belle_sip_message_t *msg=BELLE_SIP_MESSAGE(belle_sip_transaction_get_request(last));
-			belle_sip_header_expires_t *eh=belle_sip_message_get_header_by_type(msg,belle_sip_header_expires_t);
-			expires=belle_sip_header_expires_get_expires(eh);
-		}
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->event);
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
+		sal_op_add_body(op,(belle_sip_message_t*)req,body);
+		return sal_op_send_and_create_refresher(op,req,expires,subscribe_refresher_listener);
+	}else if (op->refresher){
+		const belle_sip_transaction_t *tr=(const belle_sip_transaction_t*) belle_sip_refresher_get_transaction(op->refresher);
+		belle_sip_request_t *last_req=belle_sip_transaction_get_request(tr);
+		/* modify last request to update body*/
+		sal_op_add_body(op,(belle_sip_message_t*)last_req,body);
+		return belle_sip_refresher_refresh(op->refresher,expires);
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(expires)));
-	sal_op_add_body(op,(belle_sip_message_t*)req,body);
-	return sal_op_send_request(op,req);
+	ms_warning("sal_subscribe(): no dialog and no refresher ?");
+	return -1;
 }
 
 int sal_unsubscribe(SalOp *op){
-	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"SUBSCRIBE"):NULL; /*cannot create request if dialog not set yet*/
-	if (!req) {
-		ms_error("Cannot unsubscribe to [%s]",sal_op_get_to(op));
-		return -1;
+	if (op->refresher){
+		const belle_sip_transaction_t *tr=(const belle_sip_transaction_t*) belle_sip_refresher_get_transaction(op->refresher);
+		belle_sip_request_t *last_req=belle_sip_transaction_get_request(tr);
+		sal_op_add_body(op,(belle_sip_message_t*)last_req,NULL);
+		belle_sip_refresher_refresh(op->refresher,0);
+		return 0;
 	}
-	if (op->refresher)
-		belle_sip_refresher_stop(op->refresher);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),op->event);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_expires_create(0)));
-	return sal_op_send_request(op,req);
+	return -1;
 }
 
 int sal_subscribe_accept(SalOp *op){

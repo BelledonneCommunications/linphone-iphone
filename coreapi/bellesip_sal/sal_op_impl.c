@@ -435,7 +435,7 @@ bool_t sal_compute_sal_errors(belle_sip_response_t* response,SalError* sal_err,S
 	} else {
 		strncpy(reason,belle_sip_response_get_reason_phrase(response),reason_size);
 	}
-	if (code>400) {
+	if (code>=400) {
 		sal_compute_sal_errors_from_code(code,sal_err,sal_reason);
 		return TRUE;
 	} else {

@@ -91,7 +91,7 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 		if (lc->vtable.subscription_state_changed){
 			lc->vtable.subscription_state_changed(lev->lc,lev,state);
 		}
-		if (state==LinphoneSubscriptionError || state==LinphoneSubscriptionTerminated){
+		if (state==LinphoneSubscriptionTerminated){
 			linphone_event_unref(lev);
 		}
 	}

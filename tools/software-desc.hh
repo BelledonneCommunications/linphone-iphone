@@ -204,6 +204,7 @@ private:
 			mPropertyName=mName.substr(6,string::npos);
 			if (!mPropertyName.empty()){
 				mPropertyName[0]=tolower(mPropertyName[0]);
+				mPropertyName+="Enabled";
 				mPropertyBehaviour=Write;
 			}
 		}else if (mName.find("set")==0 && mArgs.size()==1){
@@ -217,6 +218,7 @@ private:
 			if (enabled_pos==goodpos){
 				mPropertyName=mName.substr(0,goodpos);
 				if (!mPropertyName.empty()){
+					mPropertyName+="Enabled";
 					mPropertyBehaviour=Read;
 				}
 			}
