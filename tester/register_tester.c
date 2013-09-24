@@ -29,8 +29,6 @@ static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 		mgr->lc->vtable.auth_info_requested=auth_info_requested;
 	}
 	
-	/* until we have good certificates on our test server... */
-	linphone_core_verify_server_certificates(mgr->lc,FALSE);
 	/*to allow testing with 127.0.0.1*/
 	linphone_core_set_network_reachable(mgr->lc,TRUE);
 	return mgr;
@@ -595,7 +593,7 @@ static void tls_wildcard_register(){
 	snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cacert.pem", liblinphone_tester_file_prefix);
 	linphone_core_set_root_ca(mgr->lc,rootcapath);
 	linphone_core_refresh_registers(mgr->lc);
-	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,1));
+	CU_ASSERT_TRUE(wait_for(lc,lc,&mgr->stat.number_of_LinphoneRegistrationOk,2));
 	CU_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationFailed,0);
 	linphone_core_destroy(mgr->lc);
 }

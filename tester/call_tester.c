@@ -95,6 +95,35 @@ static void linphone_call_cb(LinphoneCall *call,void * user_data) {
 }
 #endif
 
+static void check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
+	LinphoneCall *c1,*c2;
+	int i;
+	int dummy=0;
+
+	c1=linphone_core_get_current_call(caller->lc);
+	c2=linphone_core_get_current_call(callee->lc);
+
+	for (i=0; i<3; i++) {
+		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
+				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
+				&& (!linphone_call_get_video_stats(c1) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
+				&& (!linphone_call_get_video_stats(c1) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)) {
+			break;
+		}
+		wait_for(caller->lc,callee->lc,&dummy,1);
+
+	}
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(c2)->round_trip_delay>0.0);
+	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
+		CU_ASSERT_TRUE(linphone_call_get_video_stats(c1)->round_trip_delay>0.0);
+	}
+	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
+		CU_ASSERT_TRUE(linphone_call_get_video_stats(c2)->round_trip_delay>0.0);
+	}
+
+}
+
 bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						,LinphoneCoreManager* callee_mgr
 						, const LinphoneCallParams *caller_params
@@ -205,6 +234,9 @@ static void simple_call(void) {
 		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
 		/*just to sleep*/
 		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
+
+		check_rtcp(marie,pauline);
+
 		linphone_core_terminate_all_calls(lc_pauline);
 		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
 		CU_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallEnd,1));
@@ -325,9 +357,9 @@ static void call_with_dns_time_out(void) {
 
 static void early_cancelled_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_alt_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( "empty_rc",FALSE);
 
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"sip:marie@sip.example.org");
+	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 	linphone_core_terminate_call(pauline->lc,out_call);
@@ -398,7 +430,7 @@ static void call_declined(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 	LinphoneCall* in_call;
-	LinphoneCall* out_call = linphone_core_invite(pauline->lc,"marie");
+	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_call_ref(out_call);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 	CU_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(marie->lc));
@@ -471,6 +503,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	}
 	return success;
 }
+
 static void call_with_ice(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -487,6 +520,9 @@ static void call_with_ice(void) {
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 	
+	check_rtcp(marie,pauline);
+
+
 	/*then close the call*/
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -645,6 +681,29 @@ static void call_with_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_media_relay(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	CU_ASSERT_TRUE(call(pauline,marie));
+	check_rtcp(pauline,marie);
+
+#ifdef VIDEO_ENABLED
+	CU_ASSERT_TRUE(add_video(pauline,marie));
+	check_rtcp(pauline,marie);
+#endif
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+}
+
 static void call_with_declined_video(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -702,6 +761,8 @@ static void video_call(void) {
 	linphone_call_set_next_video_frame_decoded_callback(marie_call,linphone_call_cb,marie->lc);
 	linphone_call_send_vfu_request(marie_call);
 	CU_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
+
+	check_rtcp(marie,pauline);
 
 	linphone_core_terminate_all_calls(pauline->lc);
 	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -901,6 +962,7 @@ static void srtp_ice_call(void) {
 		add_video(pauline,marie);
 
 		CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		check_rtcp(marie,pauline);
 #endif
 		/*wait for ice to found the direct path*/
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
@@ -1156,6 +1218,7 @@ test_t call_tests[] = {
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Simple call", simple_call },
+	{ "Call with media relay", call_with_media_relay},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
 	{ "Call terminated by caller", call_terminated_by_caller },
