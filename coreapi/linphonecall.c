@@ -2368,17 +2368,14 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	bool_t disconnected=FALSE;
 
 	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed){
-		RtpSession *as=NULL,*vs=NULL;
 		float audio_load=0, video_load=0;
 		if (call->audiostream!=NULL){
-			as=call->audiostream->ms.session;
 			if (call->audiostream->ms.ticker)
 				audio_load=ms_ticker_get_average_load(call->audiostream->ms.ticker);
 		}
 		if (call->videostream!=NULL){
 			if (call->videostream->ms.ticker)
 				video_load=ms_ticker_get_average_load(call->videostream->ms.ticker);
-			vs=call->videostream->ms.session;
 		}
 		report_bandwidth(call,(MediaStream*)call->audiostream,(MediaStream*)call->videostream);
 		ms_message("Thread processing load: audio=%f\tvideo=%f",audio_load,video_load);
