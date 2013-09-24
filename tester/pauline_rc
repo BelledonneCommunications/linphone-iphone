@@ -29,7 +29,7 @@ dial_escape_plus=0
 
 [rtp]
 audio_rtp_port=8090
-video_rtp_port=8092
+video_rtp_port=9092
 
 [video]
 display=0
