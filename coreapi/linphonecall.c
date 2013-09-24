@@ -1203,16 +1203,31 @@ void _linphone_call_params_copy(LinphoneCallParams *ncp, const LinphoneCallParam
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
 }
 
+/**
+ * @ingroup call_control
+ * Set requested level of privacy for the call.
+ * \xmlonly <language-tags>javascript</language-tags> \endxmlonly
+ * @param params the call parameters to be modified
+ * @param LinphonePrivacy to configure privacy
+ * */
 void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy) {
 	params->privacy=privacy;
 }
+
+/**
+ * @ingroup call_control
+ * Get requested level of privacy for the call.
+ * @param params the call parameters
+ * @return Privacy mode
+ * */
 LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params) {
 	return params->privacy;
 }
 
-
-
-
+/**
+ * @ingroup call_control
+ * @return string value of LinphonePrivacy enum
+ **/
 const char* linphone_privacy_to_string(LinphonePrivacy privacy) {
 	switch(privacy) {
 	case LinphonePrivacyDefault: return "LinphonePrivacyDefault";
@@ -1669,7 +1684,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cna
 				stream->rtp_addr[0]!='\0' ? stream->rtp_addr : call->resultdesc->addr,
 				stream->rtp_port,
 				stream->rtcp_addr[0]!='\0' ? stream->rtcp_addr : call->resultdesc->addr,
-				linphone_core_rtcp_enabled(lc) ? (stream->rtcp_port) : 0,
+				linphone_core_rtcp_enabled(lc) ? (stream->rtcp_port ? stream->rtcp_port : stream->rtp_port+1) : 0,
 				used_pt,
 				linphone_core_get_audio_jittcomp(lc),
 				playfile,
@@ -1791,7 +1806,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, const char *cna
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
 				video_stream_start(call->videostream,
 					call->video_profile, rtp_addr, vstream->rtp_port,
-					rtcp_addr, linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port) : 0,
+					rtcp_addr,
+					linphone_core_rtcp_enabled(lc) ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
 					used_pt, linphone_core_get_video_jittcomp(lc), cam);
 				video_stream_set_rtcp_information(call->videostream, cname,rtcp_tool);
 			}

@@ -4891,26 +4891,58 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
  * @ingroup media_parameters
 **/
 unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
+	if (lc->video_window_id) {
+		/* case where the video id was previously set by the app*/
+		return lc->video_window_id;
+	}else{
 #ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call (lc);
-	if (call && call->videostream)
-		return video_stream_get_native_window_id(call->videostream);
-	if (lc->previewstream)
-		return video_stream_get_native_window_id(lc->previewstream);
+		/*case where it was not set but we want to get the one automatically created by mediastreamer2 (desktop versions only)*/
+		LinphoneCall *call=linphone_core_get_current_call (lc);
+		if (call && call->videostream)
+			return video_stream_get_native_window_id(call->videostream);
 #endif
-	return lc->video_window_id;
+	}
+	return 0;
 }
 
-/**@ingroup media_parameters
+/* unsets the video id for all calls (indeed it may be kept by filters or videostream object itself by paused calls)*/
+static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned long id){
+	LinphoneCall *call;
+	MSList *elem;
+	
+	if (id!=0 && id!=-1) {
+		ms_error("Invalid use of unset_video_window_id()");
+		return;
+	}
+#ifdef VIDEO_ENABLED
+	for(elem=lc->calls;elem!=NULL;elem=elem->next){
+		call=(LinphoneCall *) elem->data;
+		if (call->videostream){
+			if (preview)
+				video_stream_set_native_preview_window_id(call->videostream,id);
+			else
+				video_stream_set_native_window_id(call->videostream,id);
+		}
+	}
+#endif
+}
+
+/**
+ * @ingroup media_parameters
  * Set the native video window id where the video is to be displayed.
- * If not set the core will create its own window.
+ * For MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
 void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
-#ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (id==0 || id==(unsigned long)-1){
+		unset_video_window_id(lc,FALSE,id);
+	}
 	lc->video_window_id=id;
-	if (call!=NULL && call->videostream){
-		video_stream_set_native_window_id(call->videostream,id);
+#ifdef VIDEO_ENABLED
+	{
+		LinphoneCall *call=linphone_core_get_current_call(lc);
+		if (call!=NULL && call->videostream){
+			video_stream_set_native_window_id(call->videostream,id);
+		}
 	}
 #endif
 }
@@ -4921,30 +4953,41 @@ void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id
  * @ingroup media_parameters
 **/
 unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
+	if (lc->preview_window_id){
+		/*case where the id was set by the app previously*/
+		return lc->preview_window_id;
+	}else{
+		/*case where we want the id automatically created by mediastreamer2 (desktop versions only)*/
 #ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call (lc);
-	if (call && call->videostream)
-		return video_stream_get_native_preview_window_id(call->videostream);
-	if (lc->previewstream)
-		return video_preview_get_native_window_id(lc->previewstream);
+		LinphoneCall *call=linphone_core_get_current_call(lc);
+		if (call && call->videostream)
+			return video_stream_get_native_preview_window_id(call->videostream);
+		if (lc->previewstream)
+			return video_preview_get_native_window_id(lc->previewstream);
 #endif
-	return lc->preview_window_id;
+	}
+	return 0;
 }
 
 /**
  * @ingroup media_parameters
  * Set the native window id where the preview video (local camera) is to be displayed.
  * This has to be used in conjonction with linphone_core_use_preview_window().
- * If not set the core will create its own window.
+ * MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-#ifdef VIDEO_ENABLED
-	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (id==0 || id==(unsigned long)-1){
+		unset_video_window_id(lc,TRUE,id);
+	}
 	lc->preview_window_id=id;
-	if (call!=NULL && call->videostream){
-		video_stream_set_native_preview_window_id(call->videostream,id);
-	}else if (lc->previewstream){
-		video_preview_set_native_window_id(lc->previewstream,id);
+#ifdef VIDEO_ENABLED
+	{
+		LinphoneCall *call=linphone_core_get_current_call(lc);
+		if (call!=NULL && call->videostream){
+			video_stream_set_native_preview_window_id(call->videostream,id);
+		}else if (lc->previewstream){
+			video_preview_set_native_window_id(lc->previewstream,id);
+		}
 	}
 #endif
 }

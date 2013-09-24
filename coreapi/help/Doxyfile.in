@@ -190,7 +190,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = .
 INCLUDE_FILE_PATTERNS  = *.h
-PREDEFINED             = DOXYGEN
+PREDEFINED             = DOXYGEN MS2_PUBLIC= LINPHONE_PUBLIC=
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

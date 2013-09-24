@@ -171,13 +171,15 @@ void linphone_address_destroy(LinphoneAddress *u){
 	sal_address_unref(u);
 }
 
+/**
+ * Get port number as an integer value.
+ */
 
+/**
+ * Get port number, 0 if not present.
+ */
 int linphone_address_get_port(const LinphoneAddress *u) {
-#ifdef USE_BELLESIP
 	return sal_address_get_port(u);
-#else
-	return sal_address_get_port_int(u);
-#endif
 }
 
 /** @} */

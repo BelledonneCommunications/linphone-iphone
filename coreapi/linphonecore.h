@@ -182,9 +182,6 @@ const char *linphone_address_get_scheme(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddress* u);
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
-/**
- * Get port number as an integer value, -1 if not set.
- */
 LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
 LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
 LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
@@ -371,24 +368,9 @@ typedef enum _LinphonePrivacy {
  * */
 typedef unsigned int LinphonePrivacyMask;
 
-/**
- * @ingroup call_control
- * @return string value of LinphonePrivacy enum
- * */
-const char* linphone_privacy_to_string(LinphonePrivacy privacy);
-/**
- * @ingroup call_control
- * Set requested level of privacy for the call.
- * @param params the call parameters to be modified
- * @param LinphonePrivacy to configure privacy
- * */
+
+LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 LINPHONE_PUBLIC void linphone_call_params_set_privacy(LinphoneCallParams *params, LinphonePrivacyMask privacy);
-/**
- * @ingroup call_control
- * Get requested level of privacy for the call.
- * @param params the call parameters
- * @return Privacy mode
- * */
 LINPHONE_PUBLIC LinphonePrivacyMask linphone_call_params_get_privacy(const LinphoneCallParams *params);
 
 
@@ -975,9 +957,9 @@ typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFrien
  *  */
 typedef void (*NewSubscribtionRequestCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** Callback prototype */
-typedef void (*AuthInfoRequested)(struct _LinphoneCore *lc, const char *realm, const char *username);
+typedef void (*AuthInfoRequestedCb)(struct _LinphoneCore *lc, const char *realm, const char *username);
 /** Callback prototype */
-typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
+typedef void (*CallLogUpdatedCb)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
 /**
  * Callback prototype
  * @deprecated use #MessageReceived instead.
@@ -987,7 +969,7 @@ typedef void (*CallLogUpdated)(struct _LinphoneCore *lc, struct _LinphoneCallLog
  * @param from #LinphoneAddress from
  * @param message incoming message
  *  */
-typedef void (*TextMessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+typedef void (*TextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 /**
  * Chat message callback prototype
  *
@@ -995,18 +977,18 @@ typedef void (*TextMessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, co
  * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
  * @param LinphoneChatMessage incoming message
  * */
-typedef void (*MessageReceived)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+typedef void (*MessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 	
 /** Callback prototype */
-typedef void (*DtmfReceived)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
+typedef void (*DtmfReceivedCb)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
-typedef void (*ReferReceived)(struct _LinphoneCore *lc, const char *refer_to);
+typedef void (*ReferReceivedCb)(struct _LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
-typedef void (*BuddyInfoUpdated)(struct _LinphoneCore *lc, LinphoneFriend *lf);
+typedef void (*BuddyInfoUpdatedCb)(struct _LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
-typedef void (*LinphoneTransferStateChanged)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+typedef void (*LinphoneTransferStateChangedCb)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 /** Callback prototype for receiving quality statistics for calls*/
-typedef void (*CallStatsUpdated)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
+typedef void (*CallStatsUpdatedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /** Callback prototype for receiving info messages*/
 typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
@@ -1020,15 +1002,15 @@ typedef struct _LinphoneVTable{
 	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
 	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
-	AuthInfoRequested auth_info_requested; /**< Ask the application some authentication information */
-	CallLogUpdated call_log_updated; /**< Notifies that call log list has been updated */
-	MessageReceived message_received; /** a message is received, can be text or external body*/
-	DtmfReceived dtmf_received; /**< A dtmf has been received received */
-	ReferReceived refer_received; /**< An out of call refer was received */
+	AuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
+	CallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
+	MessageReceivedCb message_received; /** a message is received, can be text or external body*/
+	DtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
+	ReferReceivedCb refer_received; /**< An out of call refer was received */
 	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
-	LinphoneTransferStateChanged transfer_state_changed; /**<Notifies when a transfer is in progress */
-	BuddyInfoUpdated buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
-	CallStatsUpdated call_stats_updated; /**<Notifies on refreshing of call's statistics. */
+	LinphoneTransferStateChangedCb transfer_state_changed; /**<Notifies when a transfer is in progress */
+	BuddyInfoUpdatedCb buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
+	CallStatsUpdatedCb call_stats_updated; /**<Notifies on refreshing of call's statistics. */
 	LinphoneInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
 	LinphoneSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
 	LinphoneEventIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
@@ -1038,7 +1020,7 @@ typedef struct _LinphoneVTable{
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
 	DisplayUrlCb display_url; /**< @deprecated */
 	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
-	TextMessageReceived text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
+	TextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
 } LinphoneCoreVTable;
 
 /**

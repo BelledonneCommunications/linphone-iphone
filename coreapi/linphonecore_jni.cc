@@ -2379,9 +2379,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id((LinphoneCore*)lc);
 	if (obj != NULL) {
 		obj = env->NewGlobalRef(obj);
-	}
+		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): NewGlobalRef(%p)",obj);
+	}else ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): setting to NULL");
 	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(unsigned long)obj);
 	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): DeleteGlobalRef(%p)",oldWindow);
 		env->DeleteGlobalRef(oldWindow);
 	}
 }
@@ -2393,9 +2395,11 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(JNIEn
 	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id((LinphoneCore*)lc);
 	if (obj != NULL) {
 		obj = env->NewGlobalRef(obj);
-	}
+		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): NewGlobalRef(%p)",obj);
+	}else ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): setting to NULL");
 	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(unsigned long)obj);
 	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): DeleteGlobalRef(%p)",oldWindow);
 		env->DeleteGlobalRef(oldWindow);
 	}
 }
