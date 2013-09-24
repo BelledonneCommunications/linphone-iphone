@@ -125,18 +125,21 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	return lc;
 }
 
-bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
+
+bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value,int timout) {
 	MSList* lcs=NULL;
 	bool_t result;
 	if (lc_1)
 		lcs=ms_list_append(lcs,lc_1);
 	if (lc_2)
 		lcs=ms_list_append(lcs,lc_2);
-	result=wait_for_list(lcs,counter,value,2000);
+	result=wait_for_list(lcs,counter,value,timout);
 	ms_list_free(lcs);
 	return result;
 }
-
+bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value) {
+	return wait_for_until(lc_1, lc_2,counter,value,2000);
+}
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	int retry=0;
 	MSList* iterator;

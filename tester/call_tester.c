@@ -103,14 +103,15 @@ static void check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee)
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
 
-	for (i=0; i<3; i++) {
+	for (i=0; i<12 /*=6s*/; i++) {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
 				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
-				&& (!linphone_call_get_video_stats(c1) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
-				&& (!linphone_call_get_video_stats(c1) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)) {
+				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
+				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || linphone_call_get_video_stats(c2)->round_trip_delay>0.0)) {
 			break;
+
 		}
-		wait_for(caller->lc,callee->lc,&dummy,1);
+		wait_for_until(caller->lc,callee->lc,&dummy,1,500); /*just to sleep while iterating*/
 
 	}
 	CU_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
