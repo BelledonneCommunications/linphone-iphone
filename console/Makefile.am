@@ -3,20 +3,17 @@
 AM_CPPFLAGS=\
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/coreapi \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/exosip
+	-I$(top_srcdir)/include 
 
 COMMON_CFLAGS=\
 	-DIN_LINPHONE \
-	-DENABLE_TRACE \
 	-D_ORTP_SOURCE \
 	$(STRICT_OPTIONS) \
+	$(ORTP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
 	$(VIDEO_CFLAGS) \
 	$(READLINE_CFLAGS) \
-	$(OSIP_CFLAGS) \
-	$(ORTP_CFLAGS) \
-	$(SQLITE3_CFLAGS) \
-	$(MEDIASTREAMER_CFLAGS)
+	$(SQLITE3_CFLAGS) 
 
 if BUILD_CONSOLE
 
