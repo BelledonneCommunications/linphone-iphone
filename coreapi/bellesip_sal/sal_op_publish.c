@@ -56,6 +56,11 @@ void sal_op_publish_fill_cbs(SalOp*op) {
 	op->type=SalOpPublish;
 }
 
+/*
+ * Sending a publish with 0 expires removes the event state and such request shall not contain a body.
+ * See RFC3903, section 4.5
+ */
+
 /*presence publish */
 int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence){
 	belle_sip_request_t *req=NULL;
@@ -77,7 +82,7 @@ int sal_publish_presence(SalOp *op, const char *from, const char *to, int expire
 		/*update presence status*/
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
-		sal_add_presence_info(op,BELLE_SIP_MESSAGE(last_publish),presence);
+		sal_add_presence_info(op,BELLE_SIP_MESSAGE(last_publish),expires!=0 ? presence : NULL);
 		return belle_sip_refresher_refresh(op->refresher,expires);
 	}
 }
@@ -103,7 +108,7 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		/*update body*/
-		sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),body);
+		sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),expires!=0 ? body : NULL);
 		return belle_sip_refresher_refresh(op->refresher,expires==-1 ? BELLE_SIP_REFRESHER_REUSE_EXPIRES : expires);
 	}
 }

@@ -24,24 +24,28 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 	char *content = NULL;
 	size_t content_length;
 
-	belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(notify,belle_sip_header_from_t);
-
-	contact_info=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
-	op->base.root->callbacks.convert_presence_to_xml_requested(op, presence, contact_info, &content);
-	if (content == NULL) {
+	if (presence){
+		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(notify,belle_sip_header_from_t);
+		contact_info=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(from)));
+		op->base.root->callbacks.convert_presence_to_xml_requested(op, presence, contact_info, &content);
 		ms_free(contact_info);
-		return;
+		if (content == NULL) return;
 	}
 
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_TYPE);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
-								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","pidf+xml")));
 	belle_sip_message_remove_header(BELLE_SIP_MESSAGE(notify),BELLE_SIP_CONTENT_LENGTH);
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
+	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),NULL,0);
+	
+	if (content){
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
+								,BELLE_SIP_HEADER(belle_sip_header_content_type_create("application","pidf+xml")));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 								,BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length=strlen(content))));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),content,content_length);
-	ms_free(contact_info);
-	ms_free(content);
+		belle_sip_message_set_body(BELLE_SIP_MESSAGE(notify),content,content_length);
+		ms_free(content);
+	}
+	
+	
 }
 
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
