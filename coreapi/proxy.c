@@ -245,6 +245,12 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
  * linphone_proxy_config_done() to commit the changes.
 **/
 void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
+	if (obj->publish && obj->publish_op){
+		/*unpublish*/
+		sal_publish_presence(obj->publish_op,NULL,NULL,0,(SalPresenceModel *)NULL);
+		sal_op_release(obj->publish_op);
+		obj->publish_op=NULL;
+	}
 	if (obj->reg_sendregister){
 		/* unregister */
 		if (obj->state == LinphoneRegistrationOk

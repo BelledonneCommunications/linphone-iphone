@@ -89,29 +89,29 @@ void linphone_gtk_update_my_contact(GtkWidget *w){
 }
 
 void linphone_gtk_update_my_port(GtkWidget *w){
-    GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(w));
+	GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(w));
 	LCSipTransports tr;
 	LinphoneCore *lc=linphone_gtk_get_core();
-    GtkComboBox *combo = GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"));
+	GtkComboBox *combo = GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"));
 
 	gint port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
-    if (port == 1) { // We use default port if not specified
-        if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (UDP)") == 0) {
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
-				5060);
-        }
-        else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TCP)") == 0) {
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
-				5060);
-        }
-        else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TLS)") == 0) {
-            gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
-				5061);
-        }
-    }
+	if (port == 1) { // We use default port if not specified
+		if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (UDP)") == 0) {
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+					5060);
+		}
+		else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TCP)") == 0) {
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+					5060);
+		}
+		else if (strcmp(gtk_combo_box_get_active_text(combo), "SIP (TLS)") == 0) {
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(w),
+					5061);
+		}
+	}
 
 	linphone_core_get_sip_transports(lc,&tr);
-    gchar *selected = gtk_combo_box_get_active_text(combo);
+	gchar *selected = gtk_combo_box_get_active_text(combo);
 	if (strcmp(selected, "SIP (TCP)") == 0) {
 		tr.tcp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
 		tr.udp_port = 0;
@@ -119,12 +119,12 @@ void linphone_gtk_update_my_port(GtkWidget *w){
 	}
 	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (UDP)") == 0) {
 		tr.udp_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
-        tr.tcp_port = 0;
+	tr.tcp_port = 0;
 		tr.tls_port = 0;
 	}
 	else if (strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "proto_combo"))), "SIP (TLS)") == 0){
 		tr.udp_port = 0;
-        tr.tcp_port = 0;
+	tr.tcp_port = 0;
 		tr.tls_port = (gint)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w));
 	}
 
@@ -878,11 +878,11 @@ void linphone_gtk_lang_changed(GtkComboBox *combo){
 }
 
 void linphone_gtk_proto_changed(GtkComboBox *combo){
-    GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(combo));
+	GtkWidget *pb=gtk_widget_get_toplevel(GTK_WIDGET(combo));
 
-    GtkWidget *proto_port = linphone_gtk_get_widget(pb, "proto_port");
-    // When we change the network protocol, we call update_my_port to move the port number from the old protocol to the new one
-    linphone_gtk_update_my_port(proto_port);
+	GtkWidget *proto_port = linphone_gtk_get_widget(pb, "proto_port");
+	// When we change the network protocol, we call update_my_port to move the port number from the old protocol to the new one
+	linphone_gtk_update_my_port(proto_port);
 }
 
 static void linphone_gtk_ui_level_adapt(GtkWidget *top) {
@@ -1001,7 +1001,6 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 
 void linphone_gtk_parameters_destroyed(GtkWidget *pb){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	ms_error("linphone_gtk_paramters_destroyed");
 	g_object_set_data(G_OBJECT(mw),"parameters",NULL);
 }
 
@@ -1206,8 +1205,8 @@ void linphone_gtk_fixed_video_port_toggle(void) {
 
 
 void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
-        GtkWidget *pb=gtk_widget_get_toplevel(button);
-        gtk_widget_destroy(pb);
+	GtkWidget *pb=gtk_widget_get_toplevel(button);
+	gtk_widget_destroy(pb);
 }
 
 void linphone_gtk_edit_tunnel(GtkButton *button){
