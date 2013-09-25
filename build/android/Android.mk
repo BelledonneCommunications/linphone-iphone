@@ -27,19 +27,12 @@ include $(linphone-root-dir)/submodules/linphone/build/android/common.mk
 
 ifeq ($(_BUILD_VIDEO),1)
 LOCAL_SHARED_LIBRARIES += \
-	liblinavcodec \
-	liblinswscale \
-	liblinavcore \
-	liblinavutil
+	libavcodec-linphone \
+	libswscale-linphone \
+	libavutil-linphone
 endif
 
 LOCAL_MODULE := liblinphone
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-LOCAL_MODULE_FILENAME := liblinphonearmv7
-endif
-ifeq ($(TARGET_ARCH_ABI),x86)
-LOCAL_MODULE_FILENAME := liblinphonex86
-endif
 
 include $(BUILD_SHARED_LIBRARY)
 

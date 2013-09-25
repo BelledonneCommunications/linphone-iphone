@@ -39,22 +39,13 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	static {
-		// FFMPEG (audio/video)
-		loadOptionalLibrary("linavutil");
-		loadOptionalLibrary("linswscale");
-		loadOptionalLibrary("linavcore");
-
 		System.loadLibrary("neon");
-		
-		if (!hasNeonInCpuFeatures()) {
-			boolean noNeonLibrariesLoaded = loadOptionalLibrary("linavcodecnoneon");
-			if (!noNeonLibrariesLoaded) {
-				loadOptionalLibrary("linavcodec");
-			}
-		} else {
-			loadOptionalLibrary("linavcodec");
-		}
- 
+
+		// FFMPEG (audio/video)
+		loadOptionalLibrary("avutil-linphone");
+		loadOptionalLibrary("swscale-linphone");
+		loadOptionalLibrary("avcodec-linphone");
+
 		// OPENSSL (cryptography)
 		// lin prefix avoids collision with libs in /system/lib
 		loadOptionalLibrary("lincrypto");
@@ -71,21 +62,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("bcg729");
 
 		//Main library
-		if (isArmv7()) {
-			if (hasNeonInCpuFeatures()) {
-				Log.d("linphone", "armv7 liblinphone loaded");
-				System.loadLibrary("linphonearmv7"); 
-			} else {
-				Log.w("linphone", "No-neon armv7 liblinphone loaded");
-				System.loadLibrary("linphonearmv7noneon"); 
-			}
-		} else if (Version.isX86()) {
-			Log.d("linphone", "No-neon x86 liblinphone loaded");
-			System.loadLibrary("linphonex86"); 
-		} else {
-			Log.d("linphone", "No-neon armv5 liblinphone loaded");
-			System.loadLibrary("linphonearmv5noneon"); 
-		}
+		System.loadLibrary("linphone");
 
 		Version.dumpCapabilities();
 	}
