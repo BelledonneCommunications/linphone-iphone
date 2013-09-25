@@ -646,7 +646,7 @@ public:
 							,jevent
 							,jstate
 							);
-		if (state==LinphoneSubscriptionTerminated || state==LinphoneSubscriptionError){
+		if (state==LinphoneSubscriptionTerminated){
 			/*loose the java reference */
 			linphone_event_set_user_data(ev,NULL);
 			env->DeleteGlobalRef(jevent);
