@@ -634,6 +634,7 @@ static void call_paused_resumed_from_callee(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+
 #ifdef VIDEO_ENABLED
 static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee) {
 	LinphoneVideoPolicy  caller_policy;
@@ -682,28 +683,7 @@ static void call_with_video_added(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_media_relay(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
-	CU_ASSERT_TRUE(call(pauline,marie));
-	check_rtcp(pauline,marie);
 
-#ifdef VIDEO_ENABLED
-	CU_ASSERT_TRUE(add_video(pauline,marie));
-	check_rtcp(pauline,marie);
-#endif
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(pauline->lc);
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-
-}
 
 static void call_with_declined_video(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -772,7 +752,30 @@ static void video_call(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif /*VIDEO_ENABLED*/
+
+static void call_with_media_relay(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	CU_ASSERT_TRUE(call(pauline,marie));
+	check_rtcp(pauline,marie);
+
+#ifdef VIDEO_ENABLED
+	CU_ASSERT_TRUE(add_video(pauline,marie));
+	check_rtcp(pauline,marie);
 #endif
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+}
 
 static void call_with_privacy(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
