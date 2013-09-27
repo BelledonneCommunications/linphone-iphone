@@ -255,7 +255,7 @@ LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 
-int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen);
+int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 int set_lock_file();
 int get_lock_file();
 int remove_lock_file();
@@ -307,6 +307,8 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc);
 void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt);
 
 int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call);
+void linphone_core_resolve_stun_server(LinphoneCore *lc);
+const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc);
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
@@ -492,6 +494,8 @@ typedef struct net_config
 	char *nat_address; /* may be IP or host name */
 	char *nat_address_ip; /* ip translated from nat_address */
 	char *stun_server;
+	struct addrinfo *stun_addrinfo;
+	unsigned long stun_res_id;
 	char *relay;
 	int download_bw;
 	int upload_bw;

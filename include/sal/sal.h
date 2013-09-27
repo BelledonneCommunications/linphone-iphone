@@ -58,6 +58,8 @@ struct SalCustomHeader;
 
 typedef struct SalCustomHeader SalCustomHeader;
 
+struct addrinfo;
+
 typedef enum {
 	SalTransportUDP, /*UDP*/
 	SalTransportTCP, /*TCP*/
@@ -596,6 +598,10 @@ SalPrivacy sal_op_get_privacy(const SalOp* op);
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);
 
+typedef void (*SalResolverCallback)(void *data, const char *name, struct addrinfo *ai_list);
+
+unsigned long sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data);
+void sal_resolve_cancel(Sal *sal, unsigned long id);
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);

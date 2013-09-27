@@ -4396,6 +4396,17 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
 	if (server)
 		lc->net_conf.stun_server=ms_strdup(server);
 	else lc->net_conf.stun_server=NULL;
+	
+	/* each time the stun server is changed, we must clean the resolved cached addrinfo*/
+	if (lc->net_conf.stun_addrinfo){
+		freeaddrinfo(lc->net_conf.stun_addrinfo);
+		lc->net_conf.stun_addrinfo=NULL;
+	}
+	/*if a stun server is set, we must request asynchronous resolution immediately to be ready for call*/
+	if (lc->net_conf.stun_server){
+		linphone_core_resolve_stun_server(lc);
+	}
+	
 	if (linphone_core_ready(lc))
 		lp_config_set_string(lc->config,"net","stun_server",lc->net_conf.stun_server);
 }
@@ -4403,6 +4414,7 @@ void linphone_core_set_stun_server(LinphoneCore *lc, const char *server){
 const char * linphone_core_get_stun_server(const LinphoneCore *lc){
 	return lc->net_conf.stun_server;
 }
+
 
 bool_t linphone_core_upnp_available(){
 #ifdef BUILD_UPNP
@@ -4467,7 +4479,7 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc)
 
 	if (lc->net_conf.nat_address==NULL) return NULL;
 	
-	if (parse_hostname_to_addr (lc->net_conf.nat_address, &ss, &ss_len)<0) {
+	if (parse_hostname_to_addr (lc->net_conf.nat_address, &ss, &ss_len, 5060)<0) {
 		return lc->net_conf.nat_address;
 	}
 
@@ -5399,7 +5411,11 @@ void net_config_uninit(LinphoneCore *lc)
 	net_config_t *config=&lc->net_conf;
 
 	if (config->stun_server!=NULL){
-		ms_free(lc->net_conf.stun_server);
+		ms_free(config->stun_server);
+	}
+	if (config->stun_addrinfo){
+		freeaddrinfo(config->stun_addrinfo);
+		config->stun_addrinfo=NULL;
 	}
 	if (config->nat_address!=NULL){
 		lp_config_set_string(lc->config,"net","nat_address",config->nat_address);
@@ -5677,6 +5693,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	if (!lc->network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
 		sal_reset_transports(lc->sal);
+	}else{
+		linphone_core_resolve_stun_server(lc);
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {
