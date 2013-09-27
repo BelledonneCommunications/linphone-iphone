@@ -40,6 +40,7 @@ private:
 	void writeTabs(int ntabs);
 	void writeHelpComment(const std::string &comment, int ntabs);
 	void writeMethod(Method *method);
+	void writeEnumMember(ConstField *cf, bool isLast);
 	ofstream mOutfile;
 	Project *mCurProj;
 	Class *mCurClass;
@@ -51,6 +52,7 @@ public:
 	virtual void generate(Project *proj);
 private:
 	void writeClass(Class *klass);
+	void writeEnum(Class *klass);
 	void writeType(Type *type);
 	void writeArgument(Argument *arg, bool isReturn=false);
 	void writeTabs(int ntabs);
@@ -62,5 +64,6 @@ private:
 	Class *mCurClass;
 };
 
+string to_lower(const string &str);
 
 #endif

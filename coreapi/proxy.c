@@ -260,11 +260,11 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
 	}
 }
 
-void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
-{
+void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc){
 	obj->lc=lc;
 	linphone_proxy_config_done(obj);
 }
+
 LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	LinphoneAddress *ret=NULL;
 	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
@@ -312,38 +312,13 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 		}
 #endif //BUILD_UPNP
 
-#ifndef USE_BELLESIP
-		if(localip == NULL) {
-			char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
-			localip = localip_tmp;
-			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
-		}
-		if(localport == -1) {
-			localport = linphone_core_get_sip_port(obj->lc);
-		}
-		{
-			LCSipTransports tr;
-			linphone_core_get_sip_transports(obj->lc,&tr);
-			if (tr.udp_port <= 0) {
-				if (tr.tcp_port>0) {
-					sal_address_set_param(contact,"transport","tcp");
-				} else if (tr.tls_port>0) {
-					sal_address_set_param(contact,"transport","tls");
-				}
-			}
-		}
-#endif
 
 		linphone_address_set_port(contact,localport);
 		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
 
-#ifndef USE_BELLESIP
-		ret = linphone_address_as_string(contact);
-		linphone_address_destroy(contact);
-#else
 		ret=contact;
-#endif /*USE_BELLESIP*/
+
 		linphone_address_destroy (proxy);
 		ms_free(tmp);
 	}

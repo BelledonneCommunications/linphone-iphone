@@ -535,7 +535,7 @@ LINPHONE_PUBLIC	const char *linphone_call_state_to_string(LinphoneCallState cs);
 LINPHONE_PUBLIC LinphoneCore *linphone_call_get_core(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallState linphone_call_get_state(const LinphoneCall *call);
 bool_t linphone_call_asked_to_autoanswer(LinphoneCall *call);
-LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(struct _LinphoneCore *lc);
+LINPHONE_PUBLIC	const LinphoneAddress * linphone_core_get_current_call_remote_address(LinphoneCore *lc);
 LINPHONE_PUBLIC	const LinphoneAddress * linphone_call_get_remote_address(const LinphoneCall *call);
 LINPHONE_PUBLIC	char *linphone_call_get_remote_address_as_string(const LinphoneCall *call);
 LINPHONE_PUBLIC	LinphoneCallDir linphone_call_get_dir(const LinphoneCall *call);
@@ -694,7 +694,7 @@ LINPHONE_PUBLIC	bool_t linphone_proxy_config_register_enabled(const LinphoneProx
 LINPHONE_PUBLIC	void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
-struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
+LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
@@ -744,7 +744,7 @@ LINPHONE_PUBLIC LinphonePrivacyMask linphone_proxy_config_get_privacy(const Linp
 **/
 
 typedef struct _LinphoneAccountCreator{
-	struct _LinphoneCore *lc;
+	LinphoneCore *lc;
 	struct _SipSetupContext *ssctx;
 	char *username;
 	char *password;
@@ -755,7 +755,7 @@ typedef struct _LinphoneAccountCreator{
 	bool_t succeeded;
 }LinphoneAccountCreator;
 
-LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core, const char *type);
+LinphoneAccountCreator *linphone_account_creator_new(LinphoneCore *core, const char *type);
 void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username);
 void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password);
 void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain);
@@ -920,33 +920,38 @@ typedef enum _LinphoneGlobalState{
 const char *linphone_global_state_to_string(LinphoneGlobalState gs);
 
 
+/**
+ * Global state notification callback.
+ * @param lc
+ * @param gstate the global state
+ * @param message informational message.
+ */
+typedef void (*LinphoneGlobalStateCb)(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 /**Call state notification callback prototype*/
-typedef void (*LinphoneGlobalStateCb)(struct _LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
-/**Call state notification callback prototype*/
-typedef void (*LinphoneCallStateCb)(struct _LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+typedef void (*LinphoneCallStateCb)(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
 /**Call encryption changed callback prototype*/
-typedef void (*CallEncryptionChangedCb)(struct _LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
+typedef void (*CallEncryptionChangedCb)(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 
 /** @ingroup Proxies
  * Registration state notification callback prototype
  * */
-typedef void (*LinphoneRegistrationStateCb)(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
+typedef void (*LinphoneRegistrationStateCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
 /** Callback prototype */
-typedef void (*ShowInterfaceCb)(struct _LinphoneCore *lc);
+typedef void (*ShowInterfaceCb)(LinphoneCore *lc);
 /** Callback prototype */
-typedef void (*DisplayStatusCb)(struct _LinphoneCore *lc, const char *message);
+typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message);
 /** Callback prototype */
-typedef void (*DisplayMessageCb)(struct _LinphoneCore *lc, const char *message);
+typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message);
 /** Callback prototype */
-typedef void (*DisplayUrlCb)(struct _LinphoneCore *lc, const char *message, const char *url);
+typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url);
 /** Callback prototype */
-typedef void (*LinphoneCoreCbFunc)(struct _LinphoneCore *lc,void * user_data);
+typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
 /**
  * Report status change for a friend previously \link linphone_core_add_friend() added \endlink to #LinphoneCore.
  * @param lc #LinphoneCore object .
  * @param lf Updated #LinphoneFriend .
  */
-typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFriend * lf);
+typedef void (*NotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneFriend * lf);
 /**
  *  Reports that a new subscription request has been received and wait for a decision.
  *  <br> Status on this subscription request is notified by \link linphone_friend_set_inc_subscribe_policy() changing policy \endlink for this friend
@@ -955,11 +960,11 @@ typedef void (*NotifyPresenceReceivedCb)(struct _LinphoneCore *lc, LinphoneFrien
  *	@param url of the subscriber
  *  Callback prototype
  *  */
-typedef void (*NewSubscribtionRequestCb)(struct _LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+typedef void (*NewSubscribtionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** Callback prototype */
-typedef void (*AuthInfoRequestedCb)(struct _LinphoneCore *lc, const char *realm, const char *username);
+typedef void (*AuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username);
 /** Callback prototype */
-typedef void (*CallLogUpdatedCb)(struct _LinphoneCore *lc, struct _LinphoneCallLog *newcl);
+typedef void (*CallLogUpdatedCb)(LinphoneCore *lc, struct _LinphoneCallLog *newcl);
 /**
  * Callback prototype
  * @deprecated use #MessageReceived instead.
@@ -980,24 +985,24 @@ typedef void (*TextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, 
 typedef void (*MessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 	
 /** Callback prototype */
-typedef void (*DtmfReceivedCb)(struct _LinphoneCore* lc, LinphoneCall *call, int dtmf);
+typedef void (*DtmfReceivedCb)(LinphoneCore* lc, LinphoneCall *call, int dtmf);
 /** Callback prototype */
-typedef void (*ReferReceivedCb)(struct _LinphoneCore *lc, const char *refer_to);
+typedef void (*ReferReceivedCb)(LinphoneCore *lc, const char *refer_to);
 /** Callback prototype */
-typedef void (*BuddyInfoUpdatedCb)(struct _LinphoneCore *lc, LinphoneFriend *lf);
+typedef void (*BuddyInfoUpdatedCb)(LinphoneCore *lc, LinphoneFriend *lf);
 /** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
-typedef void (*LinphoneTransferStateChangedCb)(struct _LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+typedef void (*LinphoneTransferStateChangedCb)(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 /** Callback prototype for receiving quality statistics for calls*/
-typedef void (*CallStatsUpdatedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
+typedef void (*CallStatsUpdatedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 /** Callback prototype for receiving info messages*/
-typedef void (*LinphoneInfoReceivedCb)(struct _LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
+typedef void (*LinphoneInfoReceivedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
-typedef struct _LinphoneVTable{
-	LinphoneGlobalStateCb global_state_changed; /**<Notifies globlal state changes*/
+typedef struct _LinphoneCoreVTable{
+	LinphoneGlobalStateCb global_state_changed; /**<Notifies global state changes*/
 	LinphoneRegistrationStateCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
 	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
@@ -1048,7 +1053,7 @@ typedef enum _LinphoneWaitingState{
 	LinphoneWaitingProgress,
 	LinphoneWaitingFinished
 } LinphoneWaitingState;
-typedef void * (*LinphoneWaitingCallback)(struct _LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
+typedef void * (*LinphoneWaitingCallback)(LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
 
 /* THE main API */

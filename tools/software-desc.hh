@@ -270,6 +270,65 @@ private:
 	string mHelp;
 };
 
+class ConstField{
+public:
+	ConstField(Type *type, const string &name, const string &value="") : mType(type), mName(name), mValue(value){
+	}
+	void setHelp(const string & help){
+		mHelp=help;
+	}
+	const string &getHelp()const{
+		return mHelp;
+	}
+	const string & getName()const{
+		return mName;
+	}
+	Type *getType()const{
+		return mType;
+	}
+	const string &getValue()const{
+		return mValue;
+	}
+	static string getCommonPrefix(list<ConstField *> fields){
+		if (fields.size()<2) return "";
+		list<ConstField*>::iterator it;
+		string prefix=fields.front()->getName();
+		int prefixsize;
+		
+		for (prefixsize=prefix.size();prefixsize>0;prefixsize--){
+			bool isMatching=true;
+			prefix=prefix.substr(0,prefixsize);
+			
+			for(it=fields.begin();it!=fields.end();++it){
+				ConstField *cf=*it;
+				if (prefix != cf->getName().substr(0,prefixsize)){
+					isMatching=false;
+					break;
+				}
+			}
+			if (isMatching){
+				cout<<"enum prefix: "<<prefix<<endl;
+				return prefix;
+			}
+		}
+		return "";
+	}
+private:
+	Type *mType;
+	string mName;
+	string mValue;
+	string mHelp;
+};
+
+template <typename _type>
+struct name_matcher{
+	name_matcher(const string &name) : mName(name){}
+	bool operator()(_type *cf){
+		return cf->getName()==mName;
+	}
+	string mName;
+};
+
 /*actually a class or an enum*/
 class Class{
 public:
@@ -282,10 +341,15 @@ public:
 		if (mMethods.find(method->getName())==mMethods.end())
 			mMethods.insert(make_pair(method->getName(),method));
 	}
+	void addConstField(ConstField *field){
+		list<ConstField*>::iterator it=find_if(mConstFields.begin(),mConstFields.end(),name_matcher<ConstField>(field->getName()));
+		if (it==mConstFields.end())
+			mConstFields.push_back(field);
+	}
 	void setHelp(const std::string &help){
 		mHelp=help;
 	}
-	const list<Method*> getMethods()const{
+	list<Method*> getMethods()const{
 		list<Method*> ret;
 		map<string,Method*>::const_iterator it;
 		for(it=mMethods.begin();it!=mMethods.end();++it){
@@ -293,13 +357,16 @@ public:
 		}
 		return ret;
 	}
+	const list<ConstField*> &getConstFields()const{
+		return mConstFields;
+	}
 	const string &getName()const{
 		return mName;
 	}
 	const string &getHelp()const{
 		return mHelp;
 	}
-	const list<Property*> getProperties(){
+	list<Property*> getProperties(){
 		list<Property*> ret;
 		map<string,Property*>::const_iterator it;
 		for(it=mProperties.begin();it!=mProperties.end();++it){
@@ -333,6 +400,7 @@ public:
 private:
 	map<string,Method*> mMethods;
 	map<string,Property*> mProperties;
+	list<ConstField*> mConstFields;
 	string mName;
 	string mHelp;
 };
