@@ -28,21 +28,35 @@ typedef enum {
 
 static void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
-	int i=0,active=0;
-	/* glade creates a combo box without list model and text renderer,
-	unless we fill it with a dummy text.
-	This dummy text needs to be removed first*/
-	gtk_combo_box_remove_text(GTK_COMBO_BOX(combo),0);
+	int i=0,active=-1;
+	GtkTreeModel *model;
+	
+	
+	if ((model=gtk_combo_box_get_model(GTK_COMBO_BOX(combo)))==NULL){
+		/*case where combo box is created with no model*/
+		GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
+		model=GTK_TREE_MODEL(gtk_list_store_new(1,G_TYPE_STRING));
+		gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
+		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
+		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"text",0,NULL);
+	}else{
+		gtk_list_store_clear(GTK_LIST_STORE(model));
+		/* glade creates a combo box without list model and text renderer,
+		unless we fill it with a dummy text.
+		This dummy text needs to be removed first*/
+	}
+	
 	for(;*p!=NULL;++p){
 		if ( cap==CAP_IGNORE
 			|| (cap==CAP_CAPTURE && linphone_core_sound_device_can_capture(linphone_gtk_get_core(),*p))
 			|| (cap==CAP_PLAYBACK && linphone_core_sound_device_can_playback(linphone_gtk_get_core(),*p)) ){
 			gtk_combo_box_append_text(GTK_COMBO_BOX(combo),*p);
-			if (strcmp(selected,*p)==0) active=i;
+			if (selected && strcmp(selected,*p)==0) active=i;
 			i++;
 		}
 	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
+	if (active!=-1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
 }
 
 void linphone_gtk_fill_video_sizes(GtkWidget *combo){
@@ -315,6 +329,16 @@ void linphone_gtk_video_size_changed(GtkWidget *w){
 	if (sel<0) return;
 	linphone_core_set_preferred_video_size(linphone_gtk_get_core(),
 					defs[sel].vsize);
+}
+
+void linphone_gtk_video_renderer_changed(GtkWidget *w){
+	GtkTreeIter iter;
+	if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w),&iter)){
+		GtkTreeModel *model=gtk_combo_box_get_model(GTK_COMBO_BOX(w));
+		gchar *name;
+		gtk_tree_model_get(model,&iter,0,&name,-1);
+		linphone_core_set_video_display_filter(linphone_gtk_get_core(),name);
+	}
 }
 
 void linphone_gtk_ring_file_set(GtkWidget *w){
@@ -1021,6 +1045,34 @@ void linphone_gtk_fill_webcams(GtkWidget *pb){
 					linphone_core_get_video_device(lc),CAP_IGNORE);
 }
 
+void linphone_gtk_fill_video_renderers(GtkWidget *pb){
+	LinphoneCore *lc=linphone_gtk_get_core();
+	GtkWidget *combo=linphone_gtk_get_widget(pb,"renderers");
+	MSList *l=ms_filter_lookup_by_interface(MSFilterVideoDisplayInterface);
+	MSList *elem;
+	int i;
+	const char *current_renderer=linphone_core_get_video_display_filter(lc);
+	GtkListStore *store;
+	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
+	GtkTreeModel *model=GTK_TREE_MODEL(store=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_STRING));
+	
+	gtk_combo_box_set_model(GTK_COMBO_BOX(combo),model);
+	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"text",1,NULL);
+	
+	for(i=0,elem=l;elem!=NULL && i<4 ;elem=elem->next,++i){
+		MSFilterDesc *desc=(MSFilterDesc *)elem->data;
+		GtkTreeIter iter;
+		gtk_list_store_append(store,&iter);
+		gtk_list_store_set(store,&iter,0,desc->name,1,desc->text,-1);
+		if (current_renderer && strcmp(current_renderer,desc->name)==0)
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo),i);
+	}
+	ms_list_free(l);
+	
+}
+
 void linphone_gtk_show_parameters(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
@@ -1122,7 +1174,7 @@ void linphone_gtk_show_parameters(void){
 	/* MUTIMEDIA CONFIG */
 	linphone_gtk_fill_soundcards(pb);
 	linphone_gtk_fill_webcams(pb);
-
+	linphone_gtk_fill_video_renderers(pb);
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancellation_enabled(lc));

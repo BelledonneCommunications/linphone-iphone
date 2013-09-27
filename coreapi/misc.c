@@ -1283,3 +1283,22 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 	return ret;
 }
 
+/**
+ * Set the name of the mediastreamer2 filter to be used for rendering video.
+ * This is for advanced users of the library, mainly to workaround hardware/driver bugs.
+ * @ingroup media_parameters
+**/
+void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filter_name){
+	lp_config_set_string(lc->config,"video","displaytype",filter_name);
+}
+
+/**
+ * Get the name of the mediastreamer2 filter used for rendering video.
+ * @ingroup media_parameters
+**/
+const char *linphone_core_get_video_display_filter(LinphoneCore *lc){
+	return lp_config_get_string(lc->config,"video","displaytype",NULL);
+}
+
+
+

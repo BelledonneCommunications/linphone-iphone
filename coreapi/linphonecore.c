@@ -956,10 +956,6 @@ static void video_config_read(LinphoneCore *lc){
 	self_view=lp_config_get_int(lc->config,"video","self_view",1);
 	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",1);
 	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",1);
-	lc->video_conf.displaytype=lp_config_get_string(lc->config,"video","displaytype",NULL);
-	if(lc->video_conf.displaytype)
-		ms_message("we are using a specific display:%s\n",lc->video_conf.displaytype);
-
 	linphone_core_enable_video(lc,capture,display);
 	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
 	linphone_core_enable_self_view(lc,self_view);
@@ -4622,10 +4618,11 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #ifdef VIDEO_ENABLED
 	if (val){
 		if (lc->previewstream==NULL){
+			const char *display_filter=linphone_core_get_video_display_filter(lc);
 			lc->previewstream=video_preview_new();
 			video_preview_set_size(lc->previewstream,lc->video_conf.vsize);
-			if (lc->video_conf.displaytype)
-				video_preview_set_display_filter_name(lc->previewstream,lc->video_conf.displaytype);
+			if (display_filter)
+				video_preview_set_display_filter_name(lc->previewstream,display_filter);
 			if (lc->preview_window_id!=0)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_start(lc->previewstream,lc->video_conf.device);

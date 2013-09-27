@@ -540,7 +540,6 @@ typedef struct video_config{
 	bool_t show_local;
 	bool_t display;
 	bool_t selfview; /*during calls*/
-	const char *displaytype;
 }video_config_t;
 
 typedef struct ui_config

@@ -1716,6 +1716,9 @@ LINPHONE_PUBLIC int linphone_core_get_audio_dscp(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_video_dscp(LinphoneCore *lc, int dscp);
 LINPHONE_PUBLIC int linphone_core_get_video_dscp(const LinphoneCore *lc);
 
+LINPHONE_PUBLIC const char *linphone_core_get_video_display_filter(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, const char *filtername);
+
 
 #ifdef __cplusplus
 }

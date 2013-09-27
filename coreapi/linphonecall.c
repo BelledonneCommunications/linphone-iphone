@@ -1372,6 +1372,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 	if ((lc->video_conf.display || lc->video_conf.capture) && call->params.has_video){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
 		int dscp=linphone_core_get_video_dscp(lc);
+		const char *display_filter=linphone_core_get_video_display_filter(lc);
 		
 		call->videostream=video_stream_new(call->video_port,call->video_port+1,linphone_core_ipv6_enabled(lc));
 		if (dscp!=-1)
@@ -1379,8 +1380,8 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 		video_stream_enable_display_filter_auto_rotate(call->videostream, lp_config_get_int(lc->config,"video","display_filter_auto_rotate",0));
 		if (video_recv_buf_size>0) rtp_session_set_recv_buf_size(call->videostream->ms.session,video_recv_buf_size);
 
-		if( lc->video_conf.displaytype != NULL)
-			video_stream_set_display_filter_name(call->videostream,lc->video_conf.displaytype);
+		if (display_filter != NULL)
+			video_stream_set_display_filter_name(call->videostream,display_filter);
 		video_stream_set_event_callback(call->videostream,video_stream_event_cb, call);
 		if (lc->rtptf){
 			RtpTransport *vrtp=lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->video_port);
