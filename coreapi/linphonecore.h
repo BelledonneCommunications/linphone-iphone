@@ -654,7 +654,6 @@ typedef enum _LinphoneRegistrationState{
  * @param cs sate
  */
 LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
-
 LINPHONE_PUBLIC	LinphoneProxyConfig *linphone_proxy_config_new(void);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);

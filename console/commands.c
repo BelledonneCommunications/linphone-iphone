@@ -1082,6 +1082,7 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 	}
 	else if (strcmp(arg1,"remove")==0)
 	{
+		if (arg2==NULL) return 0;
 		linphonec_proxy_remove(lc,atoi(arg2));
 	}
 	else if (strcmp(arg1,"use")==0)
@@ -1109,16 +1110,16 @@ lpc_cmd_proxy(LinphoneCore *lc, char *args)
 		{
 			if (strstr(arg2,"default"))
 			{
-		proxynum=linphone_core_get_default_proxy(lc, NULL);
-		if ( proxynum < 0 ) {
-			linphonec_out("No default proxy defined\n");
-			return 1;
-		}
-		linphonec_proxy_show(lc,proxynum);
+				proxynum=linphone_core_get_default_proxy(lc, NULL);
+				if ( proxynum < 0 ) {
+					linphonec_out("No default proxy defined\n");
+					return 1;
+				}
+				linphonec_proxy_show(lc,proxynum);
 			}
 			else
 			{
-		linphonec_proxy_show(lc, atoi(arg2));
+				linphonec_proxy_show(lc, atoi(arg2));
 			}
 		}
 		else return 0; /* syntax error */
@@ -1942,7 +1943,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		cfg=(LinphoneProxyConfig*)elem->data;
 		linphone_proxy_config_edit(cfg);
 	}
-	else cfg=linphone_proxy_config_new();
+	else cfg=linphone_core_create_proxy_config(lc);
 	linphone_proxy_config_set_identity(cfg,identity);
 	linphone_proxy_config_set_server_addr(cfg,proxy);
 	linphone_proxy_config_enable_register(cfg,TRUE);
