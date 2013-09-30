@@ -82,7 +82,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (addr){
 			const char *proxy=linphone_proxy_config_get_addr(cfg);
 			LinphoneAddress *proxy_addr=linphone_address_new(proxy);
-			int port=linphone_address_get_port_int(proxy_addr);
+			int port=linphone_address_get_port(proxy_addr);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
