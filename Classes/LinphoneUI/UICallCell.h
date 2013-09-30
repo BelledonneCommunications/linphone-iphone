@@ -21,6 +21,7 @@
 
 #include "linphonecore.h"
 #include "UIPauseButton.h"
+#import "UITransparentTVCell.h"
 
 typedef enum _UICallCellOtherView {
     UICallCellOtherView_Avatar = 0,
@@ -43,7 +44,7 @@ typedef enum _UICallCellOtherView {
 
 @end
 
-@interface UICallCell : UITableViewCell {
+@interface UICallCell : UITransparentTVCell {
 }
 
 @property (nonatomic, retain) UICallCellData *data;

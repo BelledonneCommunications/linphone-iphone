@@ -22,9 +22,10 @@
 #import "ChatModel.h"
 #import "ChatRoomTableViewController.h"
 #import "UILoadingImageView.h"
+#import "UITransparentTVCell.h"
 
 
-@interface UIChatRoomCell : UITableViewCell {
+@interface UIChatRoomCell : UITransparentTVCell {
 }
 
 @property (nonatomic, retain) ChatModel *chat;
