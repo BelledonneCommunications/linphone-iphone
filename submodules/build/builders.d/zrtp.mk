@@ -4,7 +4,7 @@ $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/Makefile:
 	cd $(BUILDER_BUILD_DIR)/$(zrtpcpp_dir)/\
         && host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
         && cmake $(BUILDER_SRC_DIR)/$(zrtpcpp_dir) -Denable-ccrtp=false -DCMAKE_TOOLCHAIN_FILE=$(BUILDER_SRC_DIR)build/iphone-toolchain.cmake  \
-	-LH -Wdev -DCMAKE_C_COMPILER=$$SDK_BIN_PATH/gcc -DCMAKE_CXX_COMPILER=$$SDK_BIN_PATH/g++ \
+	-LH -Wdev -DCMAKE_C_COMPILER=`xcrun --find gcc` -DCMAKE_CXX_COMPILER=`xcrun --find g++` \
 	-DCMAKE_SYSTEM_PROCESSOR=$$ARCH -DCMAKE_C_FLAGS="$$COMMON_FLAGS" -DCMAKE_CXX_FLAGS="$$COMMON_FLAGS" \
 	-DCMAKE_INSTALL_PREFIX=$(prefix) -DCMAKE_FIND_ROOT_PATH="$(prefix) -DBUILD_STATIC=ON "
 # Used toolchain: $(TC)

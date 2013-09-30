@@ -30,7 +30,7 @@ $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile: $(BUILDER_SRC_DIR)/$(mssilk_dir)/co
 	echo -e "\033[01;32m Running configure in $(BUILDER_BUILD_DIR)/$(mssilk_dir) \033[0m"
 	mkdir -p $(BUILDER_BUILD_DIR)/$(mssilk_dir)
 	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir)/ \
-		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site_gcc) \
+		&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 		$(BUILDER_SRC_DIR)/$(mssilk_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
 		--enable-static
 
@@ -40,7 +40,7 @@ build-mssilk: $(BUILDER_BUILD_DIR)/$(mssilk_dir)/Makefile
 	echo -e "\033[01;32m building silk \033[0m"
 	cd $(BUILDER_BUILD_DIR)/$(mssilk_dir) \
 		&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig \
-		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site_gcc) \
+		CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 		make -j1 && make install
 
 

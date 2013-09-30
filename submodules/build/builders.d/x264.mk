@@ -26,21 +26,17 @@ x264-configure-option= \
 			--host=$(host)\
 			--enable-static \
 			--cross-prefix=$$SDK_BIN_PATH/ \
-			--extra-ldflags="-arch $$ARCH -isysroot $$SYSROOT_PATH"
+			--extra-ldflags="$$COMMON_FLAGS"
 
 
+XCFLAGS:=$$COMMON_FLAGS 
 
-ifneq (,$(findstring i386,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -isysroot $$SYSROOT_PATH"
-endif
-ifneq (,$(findstring armv6,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -mcpu=arm1176jzf-s  -marm -isysroot $$SYSROOT_PATH"
-       x264-configure-option+=  --disable-asm
-endif
 
 ifneq (,$(findstring armv7,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -isysroot $$SYSROOT_PATH"
+       XCFLAGS+= -mfpu=neon -mfloat-abi=softfp
 endif
+
+x264-configure-option+= --extra-cflags="${XCFLAGS}"
 
 x264_dir?=externals/x264
 #$(BUILDER_SRC_DIR)/$(x264_dir)/patched :
@@ -56,10 +52,12 @@ $(BUILDER_BUILD_DIR)/$(x264_dir)/configure:
 $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/configure
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& ./configure --prefix=$(prefix)  ${x264-configure-option} 
+	&& CC="$$CC" ./configure --prefix=$(prefix)  $(x264-configure-option)
 
 build-x264: $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(x264_dir) \
+	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& make STRIP="$$STRIP" AR="$$AR -r " RANLIB="$$RANLIB" CC="$$CC" && make STRIP="$$STRIP" AR="$$AR"  RANLIB="$$RANLIB" install
 
 clean-x264:
 	cd  $(BUILDER_BUILD_DIR)/$(x264_dir) && make clean

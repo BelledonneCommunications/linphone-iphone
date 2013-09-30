@@ -8,9 +8,12 @@ ffmpeg_configure_options=\
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
 	--enable-static   --disable-shared --target-os=darwin \
-	--extra-cflags="-arch $$ARCH " --extra-ldflags="-arch $$ARCH -Wl,-syslibroot,$$SYSROOT_PATH " \
+	--extra-cflags="$$COMMON_FLAGS" --extra-ldflags="$$COMMON_FLAGS" \
 	--disable-iconv \
-	--disable-armv5te
+	--disable-armv5te \
+	--ar="$$AR" \
+	--nm="$$NM" \
+	--cc="$$CC"
 
 #	--as=$(BUILDER_SRC_DIR)/externals/x264/extras/gas-preprocessor.pl
 
@@ -32,10 +35,12 @@ $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure --prefix=$(prefix) 	$(ffmpeg_configure_options)
+	&& $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/configure --prefix=$(prefix) $(ffmpeg_configure_options)
 
 build-ffmpeg: $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) \
+	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig make RANLIB="$$RANLIB" && make RANLIB="$$RANLIB" install
 
 clean-ffmpeg:
 	cd  $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make clean
