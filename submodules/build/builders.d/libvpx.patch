@@ -13,10 +13,10 @@ index c99a01c..f7f54c6 100755
 -            AS=${TOOLCHAIN_PATH}/as
 -            STRIP=${TOOLCHAIN_PATH}/strip
 -            NM=${TOOLCHAIN_PATH}/nm
-+            CXX=`xcrun --find g++`
-+            CC=`xcrun --find gcc`
++            CXX=`xcrun --find clang++`
++            CC=`xcrun --find clang`
 +            AR=`xcrun --find ar`
-+            LD=`xcrun --find ld`
++            LD=`xcrun --find clang`
 +            AS=`xcrun --find as`
 +            STRIP=`xcrun --find strip`
 +            NM=`xcrun --find nm`

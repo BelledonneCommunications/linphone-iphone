@@ -44,7 +44,7 @@ $(BUILDER_SRC_DIR)/$(x264_dir)/patched:
 	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
 	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 
-$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: 
+$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
@@ -52,12 +52,12 @@ $(BUILDER_BUILD_DIR)/$(x264_dir)/configure:
 $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/configure
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& CC="$$CC" ./configure --prefix=$(prefix)  $(x264-configure-option)
+	&& CC="$$CC" STRINGS="$$STRINGS" ./configure --prefix=$(prefix)  $(x264-configure-option)
 
 build-x264: $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir) \
 	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& make STRIP="$$STRIP" AR="$$AR -r " RANLIB="$$RANLIB" CC="$$CC" && make STRIP="$$STRIP" AR="$$AR"  RANLIB="$$RANLIB" install
+	&& make STRIP="$$STRIP" AR="$$AR -r " RANLIB="$$RANLIB" CC="$$CC" STRINGS="$$STRINGS" && make STRIP="$$STRIP" AR="$$AR"  RANLIB="$$RANLIB"  STRINGS="$$STRINGS" install
 
 clean-x264:
 	cd  $(BUILDER_BUILD_DIR)/$(x264_dir) && make clean
@@ -65,7 +65,7 @@ clean-x264:
 veryclean-x264:
 	-cd $(BUILDER_BUILD_DIR)/$(x264_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(x264_dir)/ \
-	&& git checkout common/arm/asm.S \
+	&& git clean -f && git reset --hard \
 	&& rm -f patched
 	rm -rf $(BUILDER_BUILD_DIR)/$(x264_dir)
 
