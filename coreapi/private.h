@@ -131,7 +131,7 @@ struct _LinphoneChatMessage {
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessageDir dir;
 	char* message;
-	LinphoneChatMessageStateChangeCb cb;
+	LinphoneChatMessageStateChangedCb cb;
 	void* cb_ud;
 	void* message_userdata;
 	char* external_body_url;
@@ -614,7 +614,7 @@ struct _LinphoneCore
 	char *rec_file;
 	time_t prevtime;
 	int audio_bw;
-	LinphoneWaitingCallback wait_cb;
+	LinphoneCoreWaitingCallback wait_cb;
 	void *wait_ctx;
 	unsigned long video_window_id;
 	unsigned long preview_window_id;

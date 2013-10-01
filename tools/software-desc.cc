@@ -25,6 +25,8 @@ Type Type::sIntegerType(Type::Integer);
 Type Type::sVoidType(Type::Void);
 Type Type::sBooleanType(Type::Boolean);
 Type Type::sFloatType(Type::Float);
+Type Type::sArrayType(Type::Array);
+
 std::map<string,Type*> Type::mTypes;
 const char *Type::sBasicTypeNames[]={
 		"Void",
@@ -35,6 +37,7 @@ const char *Type::sBasicTypeNames[]={
 		"Enum",
 		"Class",
 		"Callback",
+		"Array",
 		"undef",
 		"undef"
 };

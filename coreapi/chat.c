@@ -314,7 +314,7 @@ LinphoneChatMessage* linphone_chat_room_create_message_2(
  * @param ud user data for the status cb.
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
  */
-void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb, void* ud) {
+void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb, void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
 	msg->state=LinphoneChatMessageStateInProgress;
@@ -329,7 +329,7 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle"; 
 		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
 		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
-		case  LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
+		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
 		default: return "Unknown state";
 	}
 	

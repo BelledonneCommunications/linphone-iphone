@@ -54,11 +54,15 @@ private:
 	void writeClass(Class *klass);
 	void writeEnum(Class *klass);
 	void writeType(Type *type);
-	void writeArgument(Argument *arg, bool isReturn=false);
+	enum ArgKind { Normal, Return, PropertyArg};
+	void writeArgument(Argument *arg, ArgKind kind=Normal);
 	void writeTabs(int ntabs);
 	void writeHelpComment(const std::string &comment, int ntabs);
 	void writeProperty(Property *prop);
 	void writeMethod(Method *method);
+	void writeEvent(Method *event);
+	string getEventHelp(const string &ref);
+	string getEnumName(Class *klass);
 	ofstream mOutfile;
 	Project *mCurProj;
 	Class *mCurClass;

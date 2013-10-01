@@ -251,7 +251,7 @@ LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_to(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_remote_address(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	LinphoneCallDir linphone_call_log_get_dir(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	LinphoneCallStatus linphone_call_log_get_status(LinphoneCallLog *cl);
-LINPHONE_PUBLIC	LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl);
+LINPHONE_PUBLIC	bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	time_t linphone_call_log_get_start_date(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	int linphone_call_log_get_duration(LinphoneCallLog *cl);
 LINPHONE_PUBLIC	float linphone_call_log_get_quality(LinphoneCallLog *cl);
@@ -501,7 +501,7 @@ LINPHONE_PUBLIC const LinphoneCallStats *linphone_call_get_video_stats(LinphoneC
 
 
 /** Callback prototype */
-typedef void (*LinphoneCallCbFunc)(struct _LinphoneCall *call,void * user_data);
+typedef void (*LinphoneCallCbFunc)(LinphoneCall *call,void * user_data);
 
 /**
  * LinphoneCallState enum represents the different state a call can reach into.
@@ -849,7 +849,7 @@ typedef enum _LinphoneChatMessageStates {
  *@param status LinphoneChatMessageState
  *@param ud application user data
  */
-typedef void (*LinphoneChatMessageStateChangeCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
@@ -860,7 +860,7 @@ LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message(LinphoneC
 LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
-LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangeCb status_cb,void* ud);
+LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
 LINPHONE_PUBLIC void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 LINPHONE_PUBLIC void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr);
@@ -925,106 +925,165 @@ const char *linphone_global_state_to_string(LinphoneGlobalState gs);
  * @param gstate the global state
  * @param message informational message.
  */
-typedef void (*LinphoneGlobalStateCb)(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
-/**Call state notification callback prototype*/
-typedef void (*LinphoneCallStateCb)(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
-/**Call encryption changed callback prototype*/
-typedef void (*CallEncryptionChangedCb)(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
+typedef void (*LinphoneCoreGlobalStateChangedCb )(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+/**
+ * Call state notification callback.
+ * @param lc the LinphoneCore
+ * @param call the call object whose state is changed.
+ * @param cstate the new state of the call
+ * @param message an informational message about the state.
+ */
+typedef void (*LinphoneCoreCallStateChangedCb)(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+
+/**
+ * Call encryption changed callback.
+ * @param lc the LinphoneCore
+ * @param call the call on which encryption is changed.
+ * @param on whether encryption is activated.
+ * @param authentication_token an authentication_token, currently set for ZRTP kind of encryption only.
+ */
+typedef void (*LinphoneCoreCallEncryptionChangedCb)(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token);
 
 /** @ingroup Proxies
  * Registration state notification callback prototype
  * */
-typedef void (*LinphoneRegistrationStateCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
-/** Callback prototype */
+typedef void (*LinphoneCoreRegistrationStateChangedCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
+/** Callback prototype 
+ * @deprecated 
+ */
 typedef void (*ShowInterfaceCb)(LinphoneCore *lc);
-/** Callback prototype */
+/** Callback prototype 
+ * @deprecated 
+ */
 typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message);
-/** Callback prototype */
+/** Callback prototype 
+ * @deprecated 
+ */
 typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message);
-/** Callback prototype */
+/** Callback prototype 
+ * @deprecated 
+ */
 typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url);
-/** Callback prototype */
+/** Callback prototype 
+ */
 typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
 /**
  * Report status change for a friend previously \link linphone_core_add_friend() added \endlink to #LinphoneCore.
  * @param lc #LinphoneCore object .
  * @param lf Updated #LinphoneFriend .
  */
-typedef void (*NotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneFriend * lf);
+typedef void (*LinphoneCoreNotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneFriend * lf);
 /**
  *  Reports that a new subscription request has been received and wait for a decision.
- *  <br> Status on this subscription request is notified by \link linphone_friend_set_inc_subscribe_policy() changing policy \endlink for this friend
- *	@param lc #LinphoneCore object
- *	@param lf #LinphoneFriend corresponding to the subscriber
- *	@param url of the subscriber
+ *  Status on this subscription request is notified by \link linphone_friend_set_inc_subscribe_policy() changing policy \endlink for this friend
+ * @param lc #LinphoneCore object
+ * @param lf #LinphoneFriend corresponding to the subscriber
+ * @param url of the subscriber
  *  Callback prototype
- *  */
-typedef void (*NewSubscribtionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-/** Callback prototype */
-typedef void (*AuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username);
-/** Callback prototype */
-typedef void (*CallLogUpdatedCb)(LinphoneCore *lc, struct _LinphoneCallLog *newcl);
+ */
+typedef void (*LinphoneCoreNewSubscribtionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+/** 
+ * Callback for requesting authentication information to application or user.
+ * @param lc the LinphoneCore
+ * @param realm the realm (domain) on which authentication is required.
+ * @param username the username that needs to be authenticated.
+ * Application shall reply to this callback using linphone_core_add_auth_info().
+ */
+typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username);
+
+/** 
+ * Callback to notify a new call-log entry has been added.
+ * This is done typically when a call terminates.
+ * @param lc the LinphoneCore
+ * @param newcl the new call log entry added.
+ */
+typedef void (*LinphoneCoreCallLogUpdatedCb)(LinphoneCore *lc, LinphoneCallLog *newcl);
+
 /**
  * Callback prototype
- * @deprecated use #MessageReceived instead.
+ * @deprecated use #LinphoneMessageReceived instead.
  *
  * @param lc #LinphoneCore object
  * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
  * @param from #LinphoneAddress from
  * @param message incoming message
- *  */
-typedef void (*TextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+ */
+typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+
 /**
  * Chat message callback prototype
  *
  * @param lc #LinphoneCore object
  * @param room #LinphoneChatRoom involved in this conversation. Can be be created by the framework in case \link #LinphoneAddress the from \endlink is not present in any chat room.
  * @param LinphoneChatMessage incoming message
- * */
-typedef void (*MessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
+ */
+typedef void (*LinphoneCoreMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message);
 	
-/** Callback prototype */
-typedef void (*DtmfReceivedCb)(LinphoneCore* lc, LinphoneCall *call, int dtmf);
-/** Callback prototype */
-typedef void (*ReferReceivedCb)(LinphoneCore *lc, const char *refer_to);
-/** Callback prototype */
-typedef void (*BuddyInfoUpdatedCb)(LinphoneCore *lc, LinphoneFriend *lf);
-/** Callback prototype for in progress transfers. The new_call_state is the state of the call resulting of the transfer, at the other party. */
-typedef void (*LinphoneTransferStateChangedCb)(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
-/** Callback prototype for receiving quality statistics for calls*/
-typedef void (*CallStatsUpdatedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
+/** 
+ * Callback for being notified of DTMFs received.
+ * @param lc the linphone core
+ * @param call the call that received the dtmf
+ * @param dtmf the ascii code of the dtmf
+ */
+typedef void (*LinphoneCoreDtmfReceivedCb)(LinphoneCore* lc, LinphoneCall *call, int dtmf);
 
-/** Callback prototype for receiving info messages*/
-typedef void (*LinphoneInfoReceivedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
+/** Callback prototype */
+typedef void (*LinphoneCoreReferReceivedCb)(LinphoneCore *lc, const char *refer_to);
+/** Callback prototype */
+typedef void (*LinphoneCoreBuddyInfoUpdatedCb)(LinphoneCore *lc, LinphoneFriend *lf);
+/**
+ * Callback for notifying progresses of transfers.
+ * @param lc the LinphoneCore
+ * @param transfered the call that was transfered
+ * @param new_call_state the state of the call to transfer target at the far end.
+ */
+typedef void (*LinphoneCoreTransferStateChangedCb)(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+
+/** 
+ * Callback for receiving quality statistics for calls.
+ * @param lc the LinphoneCore
+ * @param call the call
+ * @param stats the call statistics.
+ */
+typedef void (*LinphoneCoreCallStatsUpdatedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
+
+/** 
+ * Callback prototype for receiving info messages.
+ * @param lc the LinphoneCore
+ * @param call the call whose info message belongs to.
+ * @param msg the info message. 
+ */
+typedef void (*LinphoneCoreInfoReceivedCb)(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
+
 /**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
 typedef struct _LinphoneCoreVTable{
-	LinphoneGlobalStateCb global_state_changed; /**<Notifies global state changes*/
-	LinphoneRegistrationStateCb registration_state_changed;/**<Notifies registration state changes*/
-	LinphoneCallStateCb call_state_changed;/**<Notifies call state changes*/
-	NotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
-	NewSubscribtionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
-	AuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
-	CallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
-	MessageReceivedCb message_received; /** a message is received, can be text or external body*/
-	DtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
-	ReferReceivedCb refer_received; /**< An out of call refer was received */
-	CallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
-	LinphoneTransferStateChangedCb transfer_state_changed; /**<Notifies when a transfer is in progress */
-	BuddyInfoUpdatedCb buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
-	CallStatsUpdatedCb call_stats_updated; /**<Notifies on refreshing of call's statistics. */
-	LinphoneInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
-	LinphoneSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
-	LinphoneEventIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
-	LinphonePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
+	LinphoneCoreGlobalStateChangedCb global_state_changed; /**<Notifies global state changes*/
+	LinphoneCoreRegistrationStateChangedCb registration_state_changed;/**<Notifies registration state changes*/
+	LinphoneCoreCallStateChangedCb call_state_changed;/**<Notifies call state changes*/
+	LinphoneCoreNotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
+	LinphoneCoreNewSubscribtionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
+	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
+	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
+	LinphoneCoreMessageReceivedCb message_received; /** a message is received, can be text or external body*/
+	LinphoneCoreDtmfReceivedCb dtmf_received; /**< A dtmf has been received received */
+	LinphoneCoreReferReceivedCb refer_received; /**< An out of call refer was received */
+	LinphoneCoreCallEncryptionChangedCb call_encryption_changed; /**<Notifies on change in the encryption of call streams */
+	LinphoneCoreTransferStateChangedCb transfer_state_changed; /**<Notifies when a transfer is in progress */
+	LinphoneCoreBuddyInfoUpdatedCb buddy_info_updated; /**< a LinphoneFriend's BuddyInfo has changed*/
+	LinphoneCoreCallStatsUpdatedCb call_stats_updated; /**<Notifies on refreshing of call's statistics. */
+	LinphoneCoreInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
+	LinphoneCoreSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
+	LinphoneCoreIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
+	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
 	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
 	DisplayUrlCb display_url; /**< @deprecated */
 	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
-	TextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
+	LinphoneCoreTextMessageReceivedCb text_received; /** @deprecated, use #message_received instead <br> A text message has been received */
 } LinphoneCoreVTable;
 
 /**
@@ -1052,7 +1111,7 @@ typedef enum _LinphoneWaitingState{
 	LinphoneWaitingProgress,
 	LinphoneWaitingFinished
 } LinphoneWaitingState;
-typedef void * (*LinphoneWaitingCallback)(LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
+typedef void * (*LinphoneCoreWaitingCallback)(LinphoneCore *lc, void *context, LinphoneWaitingState ws, const char *purpose, float progress);
 
 
 /* THE main API */
@@ -1598,7 +1657,7 @@ the config file with your own sections */
 LINPHONE_PUBLIC struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
 
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
-void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context);
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context);
 
 /*returns the list of registered SipSetup (linphonecore plugins) */
 const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
@@ -1606,15 +1665,15 @@ const MSList * linphone_core_get_sip_setups(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_destroy(LinphoneCore *lc);
 
 /*for advanced users:*/
-typedef RtpTransport * (*LinphoneRtpTransportFactoryFunc)(void *data, int port);
+typedef RtpTransport * (*LinphoneCoreRtpTransportFactoryFunc)(void *data, int port);
 struct _LinphoneRtpTransportFactories{
-	LinphoneRtpTransportFactoryFunc audio_rtp_func;
+	LinphoneCoreRtpTransportFactoryFunc audio_rtp_func;
 	void *audio_rtp_func_data;
-	LinphoneRtpTransportFactoryFunc audio_rtcp_func;
+	LinphoneCoreRtpTransportFactoryFunc audio_rtcp_func;
 	void *audio_rtcp_func_data;
-	LinphoneRtpTransportFactoryFunc video_rtp_func;
+	LinphoneCoreRtpTransportFactoryFunc video_rtp_func;
 	void *video_rtp_func_data;
-	LinphoneRtpTransportFactoryFunc video_rtcp_func;
+	LinphoneCoreRtpTransportFactoryFunc video_rtcp_func;
 	void *video_rtcp_func_data;
 };
 typedef struct _LinphoneRtpTransportFactories LinphoneRtpTransportFactories;

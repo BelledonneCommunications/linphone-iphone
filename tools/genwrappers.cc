@@ -234,7 +234,7 @@ static void parseFunction(Project *proj, xmlNode *node){
 	
 	if (!args.empty()) first_arg=args.front();
 	if (!first_arg){
-		cout<<"Could not determine first argument of "<<name<<endl;
+		cerr<<"Could not determine first argument of "<<name<<endl;
 		return;
 	}
 	if (first_arg->getType()->getBasicType()!=Type::Class) return;
@@ -248,6 +248,84 @@ static void parseFunction(Project *proj, xmlNode *node){
 		proj->getClass(className)->addMethod(method);
 		delete first_arg;
 	}
+}
+
+static string findCommon(const string &c1, const string & c2){
+	size_t i;
+	ostringstream res;
+	for(i=0;i<c1.size() && i<c2.size();++i){
+		if (tolower(c1[i])==tolower(c2[i]))
+			res<<(char)c1[i];
+		else break;
+	}
+	return res.str();
+}
+
+static string extractCallbackName(const string &c_name, const string & classname){
+	string prefix=findCommon(c_name,classname);
+	string res=c_name.substr(prefix.size(),string::npos);
+	res[0]=tolower(res[0]);
+	size_t pos=res.find("Cb");
+	if (pos!=string::npos) res=res.substr(0,pos);
+	return res;
+}
+
+
+static void parseCallback(Project *proj, XmlNode node){
+	string argsstring=node.getChild("argsstring").getText();
+	string name=node.getChild("name").getText();
+	list<XmlNode> params=node.getChildRecursive("parameterlist").getChildren("parameteritem");
+	list<XmlNode>::iterator it=params.begin();
+	string rettype=node.getChild("type").getText();
+	argsstring=argsstring.substr(argsstring.find('(')+1,string::npos);
+	bool cont=true;
+	list<Argument*> args;
+	Type *firstArgType=NULL;
+	
+	rettype=rettype.substr(0,rettype.find('('));
+	Argument *retarg=new Argument(Type::getType(rettype),"",false,rettype.find('*')!=string::npos);
+	
+	do{
+		size_t comma=argsstring.find(',');
+		size_t end=argsstring.find(')');
+		if (comma!=string::npos && comma<end) end=comma;
+		else cont=false;
+		string arg=argsstring.substr(0,end);
+		bool isConst=false;
+		bool isPointer=false;
+		
+		size_t endtype=arg.find('*');
+		if (endtype==string::npos) endtype=arg.rfind(' ');
+		else isPointer=true;
+		string typestring=arg.substr(0,endtype+1);
+		Type *type=Type::getType(typestring);
+		
+		if (type==NULL) return;
+		
+		if (firstArgType==NULL) firstArgType=type;
+		
+		//find const attribute if any
+		if (typestring.find("const")!=string::npos)
+			isConst=true;
+		
+		string argname=arg.substr(endtype+1,end);
+		argsstring=argsstring.substr(end+1,string::npos);
+		Argument *argobj=new Argument(type,makeMethodName(argname),isConst,isPointer);
+		if (it!=params.end()){
+			argobj->setHelp((*it).getChild("parameterdescription").getChild("para").getText());
+			++it;
+		}
+		args.push_back(argobj);
+	}while(cont);
+	
+	if (firstArgType->getBasicType()!=Type::Class) return;
+	Class *klass=proj->getClass(firstArgType->getName());
+	Method *callback=new Method("", retarg, extractCallbackName(name,klass->getName()), args, false, false, true);
+	//cout<<"Found callback "<<callback->getName()<<" with "<<args.size()<<" arguments."<<endl;
+	callback->setHelp(node.getChild("detaileddescription").getChild("para").getText());
+	klass->addMethod(callback);
+	
+	
 }
 
 static void parseEnum(Project *proj, XmlNode node){
@@ -272,9 +350,8 @@ static void parseTypedef(Project *proj, xmlNode *node){
 	string name=tdef.getChild("name").getText();
 	if (typecontent.find("enum")==0){
 		Type::addType(Type::Enum,name);
-	}else if (typecontent.find("void(*")==0){
-		// callbacks function, not really well parsed by doxygen
-		Type::addType(Type::Callback,name);
+	}else if (typecontent.find("(*")!=string::npos){
+		parseCallback(proj,node);
 	}else
 		proj->getClass(name)->setHelp(getHelpBody(node));
 }
@@ -287,6 +364,10 @@ static void parseMemberDef(Project *proj, xmlNode *node){
 	
 	if (member.getChild("briefdescription").getText().empty() && 
 		member.getChild("detaileddescription").getChild("para").getText().empty())
+		return;
+	if (member.getProp("id").find("group__")!=0)
+		return;
+	if (member.getChild("detaileddescription").getChildRecursive("xreftitle").getText()=="Deprecated")
 		return;
 	
 	kind=member.getProp("kind");

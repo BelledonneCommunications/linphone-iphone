@@ -44,7 +44,8 @@ public:
 		String,
 		Enum,
 		Class,
-		Callback
+		Callback,
+		Array
 	};
 	static const char *sBasicTypeNames[];
 	static Type* addType(BasicType bt, const string &name){
@@ -58,18 +59,23 @@ public:
 		return ret;
 	}
 	static Type *getType(const std::string &tname){
+		if (tname.find("(")!=string::npos) return NULL; //arrives when parsing function pointer declared inside function prototype
 		if (strstr(tname.c_str(),"char")!=0 && strchr(tname.c_str(),'*')!=0){
 			return &sStringType;
-		}else if (tname.find("int")==0){
+		}else if (tname.find("int")!=string::npos){
 			return &sIntegerType;
-		}else if (tname.find("float")==0){
+		}else if (tname.find("size_t")!=string::npos){
+			return &sIntegerType;
+		}else if (tname.find("float")!=string::npos){
 			return &sFloatType;
-		}else if (tname.find("bool_t")==0){
+		}else if (tname.find("bool_t")!=string::npos){
 			return &sBooleanType;
 		}else if (tname.find("void")!=string::npos){
 			return &sVoidType;
-		}else if (tname.find("enum")==0){
+		}else if (tname.find("enum")!=string::npos){
 			return addType(Enum,tname.c_str()+strlen("enum "));
+		}else if (tname.find("MSList")!=string::npos){
+			return &sArrayType;
 		}else{/*an object?*/
 			
 			string tmp=tname;
@@ -109,6 +115,7 @@ private:
 	static Type sVoidType;
 	static Type sBooleanType;
 	static Type sFloatType;
+	static Type sArrayType;
 	static std::map<string,Type*> mTypes;
 };
 
@@ -153,13 +160,14 @@ public:
 		Read,
 		Write
 	};
-	Method(const std::string &uid, Argument* return_arg, const std::string &name, const list<Argument*> &args, bool isConst, bool isStatic){
+	Method(const std::string &uid, Argument* return_arg, const std::string &name, const list<Argument*> &args, bool isConst, bool isStatic, bool isCallback=false){
 		mUid=uid;
 		mReturn=return_arg;
 		mName=name;
 		mArgs=args;
 		mConst=isConst;
 		mStatic=isStatic;
+		mIsCallback=isCallback;
 		analyseProperties();
 	}
 	void setHelp(const std::string &help){
@@ -179,6 +187,9 @@ public:
 	}
 	bool isStatic()const{
 		return mStatic;
+	}
+	bool isCallback()const{
+		return mIsCallback;
 	}
 	const string &getHelp(){
 		return mHelp;
@@ -235,6 +246,7 @@ private:
 	PropertyBehaviour mPropertyBehaviour;
 	bool mConst;
 	bool mStatic;
+	bool mIsCallback;
 };
 
 class Property{
@@ -307,7 +319,7 @@ public:
 				}
 			}
 			if (isMatching){
-				cout<<"enum prefix: "<<prefix<<endl;
+				//cout<<"enum prefix: "<<prefix<<endl;
 				return prefix;
 			}
 		}
@@ -431,8 +443,17 @@ public:
 		list<Class*> classes=getClasses();
 		for_each(classes.begin(),classes.end(),mem_fun(&Class::computeProperties));
 	}
+	void addCallback(Method *callback){
+		list<Method*>::iterator it=find_if(mCallbacks.begin(),mCallbacks.end(),name_matcher<Method>(callback->getName()));
+		if (it==mCallbacks.end())
+			mCallbacks.push_back(callback);
+	}
+	const list<Method*> &getCallbacks()const{
+		return mCallbacks;
+	}
 private:
 	map<string,Class*> mClasses;
+	list<Method*> mCallbacks;
 	string mName;
 };
 

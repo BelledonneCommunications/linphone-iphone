@@ -376,7 +376,7 @@ float linphone_call_log_get_quality(LinphoneCallLog *cl){
 /**
  * return true if video was enabled at the end of the call
  */
-LinphoneCallStatus linphone_call_log_video_enabled(LinphoneCallLog *cl) {
+bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
 	return cl->video_enabled;
 }
 /** @} */
@@ -5352,7 +5352,7 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 	}else ms_set_mtu(0);//use mediastreamer2 default value
 }
 
-void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneWaitingCallback cb, void *user_context){
+void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context){
 	lc->wait_cb=cb;
 	lc->wait_ctx=user_context;
 }
