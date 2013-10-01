@@ -1,15 +1,3 @@
-diff --git a/common/arm/asm.S b/common/arm/asm.S
-index 8e70403..259bb92 100644
---- a/common/arm/asm.S
-+++ b/common/arm/asm.S
-@@ -47,6 +47,7 @@ ELF     .eabi_attribute 25, \val
-         .endm
- 
-         .macro function name
-+	.align 2
-         .global EXTERN_ASM\name
- EXTERN_ASM\name:
- ELF     .hidden \name
 diff --git a/common/arm/cpu-a.S b/common/arm/cpu-a.S
 index a459553..bc91505 100644
 --- a/common/arm/cpu-a.S

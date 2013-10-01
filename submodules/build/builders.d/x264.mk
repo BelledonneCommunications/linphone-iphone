@@ -39,10 +39,10 @@ endif
 x264-configure-option+= --extra-cflags="${XCFLAGS}"
 
 x264_dir?=externals/x264
-#$(BUILDER_SRC_DIR)/$(x264_dir)/patched :
-#	cd $(BUILDER_SRC_DIR)/$(x264_dir) \
-#	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
-#	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
+$(BUILDER_SRC_DIR)/$(x264_dir)/patched:
+	cd $(BUILDER_SRC_DIR)/$(x264_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
+	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 
 $(BUILDER_BUILD_DIR)/$(x264_dir)/configure: 
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
