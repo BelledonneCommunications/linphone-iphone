@@ -108,16 +108,7 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 }
 
 void __linphone_friend_do_subscribe(LinphoneFriend *fr){
-	char *friend=NULL;
-	const char *from=NULL;
-	LinphoneProxyConfig *cfg;
 	LinphoneCore *lc=fr->lc;
-	
-	friend=linphone_address_as_string(fr->uri);
-	cfg=linphone_core_lookup_known_proxy(fr->lc,linphone_friend_get_address(fr));
-	if (cfg!=NULL){
-		from=linphone_proxy_config_get_identity(cfg);
-	}else from=linphone_core_get_primary_contact(fr->lc);
 	
 	if (fr->outsub==NULL){
 		/* people for which we don't have yet an answer should appear as offline */
@@ -132,9 +123,8 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	}
 	fr->outsub=sal_op_new(lc->sal);
 	linphone_configure_op(lc,fr->outsub,fr->uri,NULL,TRUE);
-	sal_subscribe_presence(fr->outsub,from,friend,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
+	sal_subscribe_presence(fr->outsub,NULL,NULL,lp_config_get_int(lc->config,"sip","subscribe_expires",600));
 	fr->subscribe_active=TRUE;
-	ms_free(friend);
 }
 
 LinphoneFriend * linphone_friend_new(){
