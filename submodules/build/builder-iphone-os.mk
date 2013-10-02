@@ -22,7 +22,6 @@
  
 host?=armv7-apple-darwin
 config_site:=iphone-config.site
-config_site_gcc:=iphone-config-gcc.site
 library_mode:= --disable-shared --enable-static
 linphone_configure_controls=  \
 			      --disable-strict \
