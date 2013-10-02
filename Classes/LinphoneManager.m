@@ -778,7 +778,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
-	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
+	.call_state_changed =(LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
 	.notify_presence_recv=NULL,
 	.new_subscription_request = NULL,
