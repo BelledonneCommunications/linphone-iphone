@@ -21,6 +21,23 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
+				<string>linphone_icon_120</string>
+				<string>linphone_icon_57.png</string>
+				<string>linphone_icon_72.png</string>
+				<string>linphone_icon_57@2x.png</string>
+				<string>linphone_icon_72@2x.png</string>
+			</array>
+		</dict>
+	</dict>
+	<key>CFBundleIcons~ipad</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>linphone_icon_152</string>
+				<string>linphone_icon_76</string>
+				<string>linphone_icon_120</string>
 				<string>linphone_icon_57.png</string>
 				<string>linphone_icon_72.png</string>
 				<string>linphone_icon_57@2x.png</string>

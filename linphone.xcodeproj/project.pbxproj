@@ -1342,6 +1342,10 @@
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F066515617F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
+		F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
+		F0818E7F17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
+		F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
+		F0818E8117FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 /* End PBXBuildFile section */
 
@@ -2489,6 +2493,9 @@
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
 		F066515317F9A02E0064280C /* UITransparentTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentTVCell.h; sourceTree = "<group>"; };
 		F066515417F9A02E0064280C /* UITransparentTVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentTVCell.m; sourceTree = "<group>"; };
+		F0818E7B17FC5160005A3330 /* linphone_icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_120.png; path = Resources/linphone_icon_120.png; sourceTree = "<group>"; };
+		F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_76.png; path = Resources/linphone_icon_76.png; sourceTree = "<group>"; };
+		F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_152.png; path = Resources/linphone_icon_152.png; sourceTree = "<group>"; };
 		FD61C851169EAC63001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ChatRoomViewController.xib; sourceTree = "<group>"; };
 		FD61C853169FBBB6001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ChatViewController.xib; sourceTree = "<group>"; };
 		FD61C855169FBD1C001AA2D6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ru; path = ru.lproj/ContactDetailsLabelViewController.xib; sourceTree = "<group>"; };
@@ -3582,10 +3589,13 @@
 				D37E3ECF1619DCC50087659A /* licenses.html */,
 				225CB2F911ABB76400628906 /* linphone-banner.png */,
 				8D1107310486CEB800E47090 /* linphone-Info.plist */,
+				F0818E7B17FC5160005A3330 /* linphone_icon_120.png */,
+				F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */,
 				22058C70116E305000B08DDD /* linphone_icon_57.png */,
 				D33CF34815D3A03400CD4B85 /* linphone_icon_57@2x.png */,
 				34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */,
 				D33CF34915D3A03400CD4B85 /* linphone_icon_72@2x.png */,
+				F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */,
 				D3012CC31610467D007CD926 /* linphone_logo.png */,
 				D38F46F1160C5CC8002D4C4A /* linphone_splashscreen-568h@2x.png */,
 				D3103920162C3C5100C00C18 /* linphone_splashscreen-Landscape.png */,
@@ -4322,6 +4332,7 @@
 				D377BBFA15A19DA6002B696B /* video_on_disabled.png in Resources */,
 				D37B96B715A1A6F20005CCD2 /* call_state_delete_default.png in Resources */,
 				D37B96B915A1A6F20005CCD2 /* call_state_delete_over.png in Resources */,
+				F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */,
 				D3C2814B15A2D38D0098AA42 /* dialer_selected.png in Resources */,
 				D3C2815215A2D64A0098AA42 /* numpad_star_over.png in Resources */,
 				D365AA7B15A2DE7500CAFE3F /* speaker_off_disabled.png in Resources */,
@@ -4464,6 +4475,7 @@
 				D3A74EDC15C69392001500B9 /* chat_selected~ipad.png in Resources */,
 				D3A74EDE15C69392001500B9 /* conference_default~ipad.png in Resources */,
 				D3A74EE015C69392001500B9 /* conference_over~ipad.png in Resources */,
+				F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */,
 				D3A74EE215C69392001500B9 /* contacts_default_landscape~ipad.png in Resources */,
 				D3A74EE415C69392001500B9 /* contacts_default~ipad.png in Resources */,
 				D3A74EE615C69392001500B9 /* contacts_over_landscape~ipad.png in Resources */,
@@ -4858,6 +4870,7 @@
 				D34BD6AB15C13DB70070C209 /* list_details_over.png in Resources */,
 				D34BD6AC15C13DB70070C209 /* micro_off_default.png in Resources */,
 				D34BD6AD15C13DB70070C209 /* micro_off_default_landscape.png in Resources */,
+				F0818E8117FC51D8005A3330 /* linphone_icon_152.png in Resources */,
 				D34BD6AE15C13DB70070C209 /* micro_off_disabled.png in Resources */,
 				D34BD6AF15C13DB70070C209 /* micro_off_disabled_landscape.png in Resources */,
 				D34BD6B015C13DB70070C209 /* micro_off_over.png in Resources */,
@@ -5000,6 +5013,7 @@
 				D3A74EDD15C69392001500B9 /* chat_selected~ipad.png in Resources */,
 				D3A74EDF15C69392001500B9 /* conference_default~ipad.png in Resources */,
 				D3A74EE115C69392001500B9 /* conference_over~ipad.png in Resources */,
+				F0818E7F17FC51D8005A3330 /* linphone_icon_76.png in Resources */,
 				D3A74EE315C69392001500B9 /* contacts_default_landscape~ipad.png in Resources */,
 				D3A74EE515C69392001500B9 /* contacts_default~ipad.png in Resources */,
 				D3A74EE715C69392001500B9 /* contacts_over_landscape~ipad.png in Resources */,
