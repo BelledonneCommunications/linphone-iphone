@@ -64,6 +64,13 @@ static UIFont *CELL_FONT = nil;
         [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
+        
+        // shift message box, otherwise it will collide with the bubble
+        CGRect messageCoords = [messageText frame];
+        messageCoords.origin.x   += 5;
+        messageCoords.origin.y   += 2;
+        messageCoords.size.width -= 5;
+        [messageText setFrame:messageCoords];
     }
     return self;
 }
