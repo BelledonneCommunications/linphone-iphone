@@ -144,6 +144,12 @@
 		[LinphoneLogger log:LinphoneLoggerLog format:@"PushNotification from launch received."];
 		[self processRemoteNotification:remoteNotif];
 	}
+    
+    // fix status bar color in iOS7
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        [application setStatusBarStyle:UIStatusBarStyleLightContent];
+    }
+
     return YES;
 }
 
