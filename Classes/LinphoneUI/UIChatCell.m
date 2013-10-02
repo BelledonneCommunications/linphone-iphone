@@ -116,7 +116,12 @@
     if([chat isExternalImage] || [chat isInternalImage]) {
         [chatContentLabel setText:@""];
     } else {
-        [chatContentLabel setText:[chat message]];
+        NSString *message = [chat message];
+        // shorten long messages
+        if([message length] > 50)
+            message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
+        
+        [chatContentLabel setText:message];
     }
     
     int count = [ChatModel unreadMessages:[chat remoteContact]];
