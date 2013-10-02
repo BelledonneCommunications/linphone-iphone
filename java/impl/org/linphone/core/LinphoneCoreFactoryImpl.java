@@ -21,7 +21,6 @@ package org.linphone.core;
 import java.io.File;
 import java.io.IOException;
 
-import org.linphone.mediastream.CpuUtils;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
@@ -134,12 +133,6 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		return createLinphoneFriend(null);
 	}
 
-	public static boolean hasNeonInCpuFeatures()
-	{
-		CpuUtils cpu = new CpuUtils();
-		return cpu.isCpuNeon();
-	}
-	
 	public static boolean isArmv7()
 	{
 		return System.getProperty("os.arch").contains("armv7");
