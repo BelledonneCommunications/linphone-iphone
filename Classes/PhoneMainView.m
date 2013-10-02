@@ -372,20 +372,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     if([old equal:[ChatViewController compositeViewDescription]]) {
         if([new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[DialerViewController compositeViewDescription]] ||
-           [new equal:[SettingsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+           [new equal:[DialerViewController   compositeViewDescription]] ||
+           [new equal:[HistoryViewController  compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[SettingsViewController compositeViewDescription]]) {
-        if([new equal:[DialerViewController compositeViewDescription]] ||
+        if([new equal:[DialerViewController   compositeViewDescription]] ||
            [new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+           [new equal:[HistoryViewController  compositeViewDescription]] ||
+           [new equal:[ChatViewController     compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[DialerViewController compositeViewDescription]]) {
-        if([new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController  compositeViewDescription]] ||
+           [new equal:[HistoryViewController   compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[ContactsViewController compositeViewDescription]]) {
