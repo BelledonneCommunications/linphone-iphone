@@ -401,7 +401,7 @@ static int parse_file(Project *proj, const char *filename){
 
 
 	/*parse the file and get the DOM */
-	doc = xmlReadFile(filename, NULL, 0);
+	doc = xmlReadFile(filename, NULL, XML_PARSE_RECOVER);
 
 	if (doc == NULL) {
 		cerr<<"xmlReadFile failed."<<endl;
