@@ -63,7 +63,7 @@
 	
 	//uitextview properties
 	NSObject <HPGrowingTextViewDelegate> *__unsafe_unretained delegate;
-	UITextAlignment textAlignment; 
+	NSTextAlignment textAlignment; 
 	NSRange selectedRange;
 	BOOL editable;
 	UIDataDetectorTypes dataDetectorTypes;
@@ -84,7 +84,7 @@
 @property(nonatomic,strong) NSString *text;
 @property(nonatomic,strong) UIFont *font;
 @property(nonatomic,strong) UIColor *textColor;
-@property(nonatomic) UITextAlignment textAlignment;    // default is UITextAlignmentLeft
+@property(nonatomic) NSTextAlignment textAlignment;    // default is UITextAlignmentLeft
 @property(nonatomic) NSRange selectedRange;            // only ranges of length 0 are supported
 @property(nonatomic,getter=isEditable) BOOL editable;
 @property(nonatomic) UIDataDetectorTypes dataDetectorTypes __OSX_AVAILABLE_STARTING(__MAC_NA, __IPHONE_3_0);

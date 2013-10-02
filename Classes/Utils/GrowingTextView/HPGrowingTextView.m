@@ -377,12 +377,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
--(void)setTextAlignment:(UITextAlignment)aligment
+-(void)setTextAlignment:(NSTextAlignment)aligment
 {
 	internalTextView.textAlignment = aligment;
 }
 
--(UITextAlignment)textAlignment
+-(NSTextAlignment)textAlignment
 {
 	return internalTextView.textAlignment;
 }

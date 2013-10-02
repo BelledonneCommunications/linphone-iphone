@@ -204,7 +204,7 @@ static UIFont *CELL_FONT = nil;
         }
         messageSize = [[chat message] sizeWithFont: CELL_FONT
                                         constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
-                                            lineBreakMode: UILineBreakModeTailTruncation];
+                                            lineBreakMode: NSLineBreakByTruncatingTail];
     } else {
         messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
     }
