@@ -261,7 +261,7 @@ static UIFont *CELL_FONT = nil;
     if(chat != NULL) {
         UIView *view = [self superview]; 
         // Find TableViewCell
-        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        while(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
         if(view != nil) {
             UITableView *tableView = (UITableView*) view;
             NSIndexPath *indexPath = [tableView indexPathForCell:self];

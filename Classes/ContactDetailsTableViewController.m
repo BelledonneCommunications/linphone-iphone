@@ -870,7 +870,7 @@ static const int contactSections[ContactSections_MAX] = {ContactSections_None, C
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     UIView *view = [textField superview]; 
     // Find TableViewCell
-    if(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
+    while(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
     if(view != nil) {
         UIEditableTableViewCell *cell = (UIEditableTableViewCell*)view;
         NSIndexPath *path = [self.tableView indexPathForCell:cell];

@@ -83,16 +83,16 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     // Auto found position
     //
     
-    UIView *view = [self superview]; 
     // Find TableViewCell
-    if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+    UIView *view = [self superview];
+    while( view != nil && ![view isKindOfClass:[UITableView class]] ) view = [view superview];
     
-    UIView *cellView = [self superview]; 
     // Find TableViewCell
-    if(cellView != nil && ![cellView isKindOfClass:[UITableViewCell class]]) cellView = [cellView superview];
+    UIView *cellView = [self superview];
+    while( cellView != nil && ![cellView isKindOfClass:[UITableViewCell class]] ) cellView = [cellView superview];
     
     if(view != nil && cellView != nil) {
-        UITableViewCell *cell = (UITableViewCell*)cellView;
+        UITableViewCell *cell  = (UITableViewCell*)cellView;
         UITableView *tableView = (UITableView*)view;
         
         if([tableView style] == UITableViewStyleGrouped) {

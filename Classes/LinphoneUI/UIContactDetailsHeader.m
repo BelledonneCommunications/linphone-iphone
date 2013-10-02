@@ -340,7 +340,8 @@
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     UIView *view = [textField superview]; 
     // Find TableViewCell
-    if(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
+    while(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
+    
     if(view != nil) {
         UIEditableTableViewCell *cell = (UIEditableTableViewCell*)view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
