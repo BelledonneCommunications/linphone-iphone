@@ -111,11 +111,7 @@ ifeq ($(BUILD_TUNNEL),1)
 LOCAL_CFLAGS +=-DTUNNEL_ENABLED
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../tunnel/include $(LOCAL_PATH)/../../tunnel/src
 LOCAL_SRC_FILES +=  linphone_tunnel.cc TunnelManager.cc
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-LOCAL_SHARED_LIBRARIES += libtunnelclient
-else
 LOCAL_STATIC_LIBRARIES += libtunnelclient
-endif
 else
 LOCAL_SRC_FILES += linphone_tunnel_stubs.c
 endif
@@ -150,8 +146,7 @@ endif
 
 ifeq ($(BUILD_G729),1)
 LOCAL_CFLAGS += -DHAVE_G729
-LOCAL_SHARED_LIBRARIES += libbcg729
-LOCAL_STATIC_LIBRARIES += libmsbcg729
+LOCAL_STATIC_LIBRARIES += libbcg729 libmsbcg729
 endif
 
 ifeq ($(_BUILD_VIDEO),1)
