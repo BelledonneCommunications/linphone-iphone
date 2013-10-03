@@ -48,6 +48,7 @@ LD="xcrun ld -arch ${ARCH}"
 AR="xcrun ar"
 RANLIB="xcrun ranlib"
 STRIP="xcrun strip"
+NM="xcrun nm"
 
 CPPFLAGS="-Dasm=__asm"
 OBJCFLAGS="-x objective-c -fexceptions -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"

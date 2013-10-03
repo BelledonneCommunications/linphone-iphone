@@ -4,13 +4,12 @@ ffmpeg_configure_options=\
 	--disable-ffprobe --disable-ffserver  --disable-avdevice \
 	--disable-avfilter  --disable-network \
 	--disable-everything  --enable-decoder=mjpeg --enable-encoder=mjpeg --enable-decoder=mpeg4 --enable-encoder=mpeg4 \
-	--enable-decoder=h264 --disable-avformat --enable-armv6 --enable-armv6t2 \
+	--enable-decoder=h264 --disable-avformat \
 	--cross-prefix=$$SDK_BIN_PATH/ \
 	--sysroot=$$SYSROOT_PATH --arch=$$ARCH \
-	--enable-static   --disable-shared --target-os=darwin \
+	--enable-static --disable-shared --target-os=darwin \
 	--extra-cflags="$$COMMON_FLAGS" --extra-ldflags="$$COMMON_FLAGS" \
 	--disable-iconv \
-	--disable-armv5te \
 	--ar="$$AR" \
 	--nm="$$NM" \
 	--cc="$$CC"
@@ -19,12 +18,13 @@ ffmpeg_configure_options=\
 
 #--sysinclude=PATH        location of cross-build system headers
 ifneq (,$(findstring armv6,$(host)))
-	ffmpeg_configure_options+= --cpu=arm1176jzf-s
+	ffmpeg_configure_options+= --cpu=arm1176jzf-s --disable-armv5te  --enable-armv6 --enable-armv6t2 
 endif
 
 ifneq (,$(findstring armv7,$(host)))
-	ffmpeg_configure_options+= --enable-neon --cpu=cortex-a8 
+	ffmpeg_configure_options+= --enable-neon --cpu=cortex-a8 --disable-armv5te  --enable-armv6 --enable-armv6t2 
 endif
+
 ffmpeg_dir?=externals/ffmpeg
 $(BUILDER_SRC_DIR)/$(ffmpeg_dir)/patched :
 	cd $(BUILDER_SRC_DIR)/$(ffmpeg_dir) \
