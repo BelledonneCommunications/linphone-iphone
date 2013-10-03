@@ -57,13 +57,13 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		}
 
 		// OPENSSL (cryptography)
-		// lin prefix avoids collision with libs in /system/lib
-		loadOptionalLibrary("lincrypto");
-		loadOptionalLibrary("linssl");
+		// linphone suffix avoids collision with libs in /system/lib
+		loadOptionalLibrary("crypto-linphone-" + eabi);
+		loadOptionalLibrary("ssl-linphone-" + eabi);
 
 		// Secure RTP and key negotiation
-		loadOptionalLibrary("srtp");
-		loadOptionalLibrary("zrtpcpp"); // GPLv3+
+		loadOptionalLibrary("srtp-" + eabi);
+		loadOptionalLibrary("zrtpcpp" + eabi); // GPLv3+
 
 		// Tunnel
 		loadOptionalLibrary("tunnelclient");

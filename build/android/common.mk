@@ -184,40 +184,13 @@ LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES)
 LOCAL_WHOLE_STATIC_LIBRARIES += $(LIBLINPHONE_EXTENDED_STATIC_LIBS)
 LOCAL_SRC_FILES  += $(LIBLINPHONE_EXTENDED_SRC_FILES)
 
-ifeq ($(TARGET_ARCH), arm)
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-	ifeq ($(BUILD_GPLV3_ZRTP),1)
-		LOCAL_SHARED_LIBRARIES += liblinssl liblincrypto
-		LOCAL_SHARED_LIBRARIES += libzrtpcpp
-	endif
-
-	ifeq ($(BUILD_SRTP),1)
-	LOCAL_SHARED_LIBRARIES += libsrtp
-	endif
-else
-	LOCAL_LDLIBS += -lz
-	#LOCAL_STATIC_LIBRARIES += libz libdl
-	
-	ifeq ($(BUILD_GPLV3_ZRTP),1)
-		LOCAL_STATIC_LIBRARIES += libzrtpcpp-static
-		LOCAL_STATIC_LIBRARIES += \
-		libssl-static libcrypto-static
-	endif
-
-	ifeq ($(BUILD_SRTP),1)
-		LOCAL_STATIC_LIBRARIES += libsrtp-static
-	endif
+ifeq ($(BUILD_GPLV3_ZRTP),1)
+	LOCAL_SHARED_LIBRARIES += libssl-linphone libcrypto-linphone
+	LOCAL_SHARED_LIBRARIES += libzrtpcpp
 endif
-endif
-ifeq ($(TARGET_ARCH), x86)
-	ifeq ($(BUILD_GPLV3_ZRTP),1)
-		LOCAL_SHARED_LIBRARIES += liblinssl liblincrypto
-		LOCAL_SHARED_LIBRARIES += libzrtpcpp
-	endif
 
-	ifeq ($(BUILD_SRTP),1)
+ifeq ($(BUILD_SRTP),1)
 	LOCAL_SHARED_LIBRARIES += libsrtp
-	endif
 endif
 
 ifeq ($(BUILD_REMOTE_PROVISIONING),1)
