@@ -38,7 +38,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	static {
-		String eabi = "arm";
+		String eabi = "armeabi";
 		if (Version.isX86()) {
 			eabi = "x86";
 		} else if (Version.isArmv7()) {
