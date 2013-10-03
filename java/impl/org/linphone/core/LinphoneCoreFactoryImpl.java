@@ -38,12 +38,23 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	static {
-		System.loadLibrary("neon");
+		String eabi = "arm";
+		if (Version.isX86()) {
+			eabi = "x86";
+		} else if (Version.isArmv7()) {
+			eabi = "armeabi-v7a";
+		}
 
 		// FFMPEG (audio/video)
-		loadOptionalLibrary("avutil-linphone");
-		loadOptionalLibrary("swscale-linphone");
-		loadOptionalLibrary("avcodec-linphone");
+		if (Version.isX86()) {
+			loadOptionalLibrary("avutil-linphone-x86");
+			loadOptionalLibrary("swscale-linphone-x86");
+			loadOptionalLibrary("avcodec-linphone-x86");
+		} else if (Version.isArmv7()) {
+			loadOptionalLibrary("avutil-linphone-arm");
+			loadOptionalLibrary("swscale-linphone-arm");
+			loadOptionalLibrary("avcodec-linphone-arm");
+		}
 
 		// OPENSSL (cryptography)
 		// lin prefix avoids collision with libs in /system/lib
@@ -61,7 +72,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		loadOptionalLibrary("bcg729");
 
 		//Main library
-		System.loadLibrary("linphone");
+		System.loadLibrary("linphone-" + eabi);
 
 		Version.dumpCapabilities();
 	}
