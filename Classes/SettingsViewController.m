@@ -335,7 +335,12 @@
 }
 
 + (void)removeBackground:(UIView*)view {
-    [view setBackgroundColor:[UIColor clearColor]];
+    // iOS7 transparent background is *really* transparent: with an alpha != 0
+    // it messes up the transitions. Use non-transparent BG for iOS7
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7)
+        [view setBackgroundColor:LINPHONE_SETTINGS_BG_IOS7];
+    else
+        [view setBackgroundColor:[UIColor clearColor]];
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
