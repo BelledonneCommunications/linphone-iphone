@@ -416,7 +416,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		linphone_proxy_config_set_identity(cfg, creator->username);
 		linphone_proxy_config_set_server_addr(cfg, creator->domain);
 		linphone_proxy_config_set_route(cfg, creator->route);
-		linphone_proxy_config_expires(cfg, 3600);
+		linphone_proxy_config_set_expires(cfg, 3600);
 		linphone_proxy_config_enable_publish(cfg, FALSE);
 		linphone_proxy_config_enable_register(cfg, TRUE);
 

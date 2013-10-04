@@ -87,7 +87,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	server_addr = linphone_address_get_domain(from);
 
 	linphone_proxy_config_enable_register(proxy_cfg,TRUE);
-	linphone_proxy_config_expires(proxy_cfg,1);
+	linphone_proxy_config_set_expires(proxy_cfg,1);
 	if (route) {
 		linphone_proxy_config_set_route(proxy_cfg,route);
 		linphone_proxy_config_set_server_addr(proxy_cfg,route);

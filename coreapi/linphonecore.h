@@ -658,7 +658,8 @@ LINPHONE_PUBLIC	LinphoneProxyConfig *linphone_proxy_config_new(void);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity);
 LINPHONE_PUBLIC	int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route);
-LINPHONE_PUBLIC	void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int expires);
+LINPHONE_PUBLIC	void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int expires);
+#define linphone_proxy_config_expires linphone_proxy_config_set_expires
 /**
  * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
  * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.

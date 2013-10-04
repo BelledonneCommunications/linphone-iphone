@@ -738,7 +738,7 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"route"))));
 	linphone_proxy_config_set_contact_parameters(cfg,
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"params"))));
-	linphone_proxy_config_expires(cfg,
+	linphone_proxy_config_set_expires(cfg,
 		(int)gtk_spin_button_get_value(
 			GTK_SPIN_BUTTON(linphone_gtk_get_widget(w,"regperiod"))));
 	linphone_proxy_config_enable_publish(cfg,

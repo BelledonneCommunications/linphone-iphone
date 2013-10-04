@@ -1616,7 +1616,7 @@ linphonec_proxy_add(LinphoneCore *lc)
 				continue;
 			}
 
-			linphone_proxy_config_expires(cfg, expires);
+			linphone_proxy_config_set_expires(cfg, expires);
 			linphonec_out("Expiration: %d seconds\n", linphone_proxy_config_get_expires (cfg));
 
 			free(input);
