@@ -3034,7 +3034,7 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_publish(JNIEnv
 	return jev;
 }
 
-
+// LpConfig
 extern "C" jlong Java_org_linphone_core_LpConfigImpl_newLpConfigImpl(JNIEnv *env, jobject thiz, jstring file) {
         const char *cfile = env->GetStringUTFChars(file, NULL);
         LpConfig *lp = lp_config_new(cfile);
@@ -3059,6 +3059,99 @@ extern "C" void Java_org_linphone_core_LpConfigImpl_setInt(JNIEnv *env, jobject 
         lp_config_set_int((LpConfig *)lpc, csection, ckey, (int) value);
         env->ReleaseStringUTFChars(section, csection);
         env->ReleaseStringUTFChars(key, ckey);
+}
+
+extern "C" jint Java_org_linphone_core_LpConfigImpl_getInt(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jint defaultValue) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        int returnValue = lp_config_get_int((LpConfig *)lpc, csection, ckey, (int) defaultValue);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        return (jint) returnValue;
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_setFloat(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jfloat value) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        lp_config_set_float((LpConfig *)lpc, csection, ckey, (float) value);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+}
+
+extern "C" jfloat Java_org_linphone_core_LpConfigImpl_getFloat(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jfloat defaultValue) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        float returnValue = lp_config_get_float((LpConfig *)lpc, csection, ckey, (float) defaultValue);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        return (jfloat) returnValue;
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_setBool(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jboolean value) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        lp_config_set_int((LpConfig *)lpc, csection, ckey, value ? 1 : 0);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+}
+
+extern "C" jboolean Java_org_linphone_core_LpConfigImpl_getBool(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jboolean defaultValue) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        int returnValue = lp_config_get_int((LpConfig *)lpc, csection, ckey, defaultValue ? 1 : 0);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        return (jboolean) returnValue == 1;
+}
+
+extern "C" void Java_org_linphone_core_LpConfigImpl_setString(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jstring value) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        const char *cvalue = env->GetStringUTFChars(value, NULL);
+        lp_config_set_string((LpConfig *)lpc, csection, ckey, cvalue);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        env->ReleaseStringUTFChars(value, cvalue);
+}
+
+extern "C" jstring Java_org_linphone_core_LpConfigImpl_getString(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jstring defaultValue) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        const char *cvalue = env->GetStringUTFChars(defaultValue, NULL);
+        const char *returnValue = lp_config_get_string((LpConfig *)lpc, csection, ckey, cvalue);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        env->ReleaseStringUTFChars(defaultValue, cvalue);
+        return returnValue ? env->NewStringUTF(returnValue) : NULL;
+}
+extern "C" void Java_org_linphone_core_LpConfigImpl_setIntRange(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jint min, jint max) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        lp_config_set_range((LpConfig *)lpc, csection, ckey, min, max);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+}
+
+extern "C" jintArray Java_org_linphone_core_LpConfigImpl_getIntRange(JNIEnv *env, jobject thiz, jlong lpc,
+        jstring section, jstring key, jint defaultmin, jint defaultmax) {
+        const char *csection = env->GetStringUTFChars(section, NULL);
+        const char *ckey = env->GetStringUTFChars(key, NULL);
+        int *values = (int*)calloc(2, sizeof(int));
+        lp_config_get_range((LpConfig *)lpc, csection, ckey, &values[0], &values[1], defaultmin, defaultmax);
+        jintArray returnValues = env->NewIntArray(2);
+        env->SetIntArrayRegion(returnValues, 0, 2, values);
+        ms_free(values);
+        env->ReleaseStringUTFChars(section, csection);
+        env->ReleaseStringUTFChars(key, ckey);
+        return returnValues;
 }
 
 static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content){
