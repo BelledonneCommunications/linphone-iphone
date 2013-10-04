@@ -24,7 +24,7 @@
 
 x264-configure-option= \
 			--host=$(host)\
-			--enable-static \
+			--enable-static --enable-pic \
 			--cross-prefix=$$SDK_BIN_PATH/ \
 			--extra-ldflags="$$COMMON_FLAGS"
 
