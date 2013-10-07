@@ -54,20 +54,16 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];	
-    
+
     CGRect fieldframe;
     fieldframe.origin.x = 15;
     fieldframe.origin.y = 0;
     fieldframe.size.height = 44;
     if([[self.textLabel text] length] != 0)
-        fieldframe.origin.x += [self.textLabel frame].size.width;
-    CGRect superframe = [[self.detailTextField superview]frame];
+        fieldframe.origin.x += [self.textLabel frame].size.width + 5;
+    CGRect superframe = [[self.detailTextField superview] frame];
     fieldframe.size.width = superframe.size.width - fieldframe.origin.x;
     [self.detailTextField setFrame:fieldframe];
-    
-    CGRect labelFrame = [self.detailTextLabel frame];
-    labelFrame.origin.x = fieldframe.origin.x;
-    [self.detailTextLabel setFrame:labelFrame];
 }
 
 
