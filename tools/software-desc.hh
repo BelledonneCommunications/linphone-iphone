@@ -211,6 +211,12 @@ private:
 				mPropertyName[0]=tolower(mPropertyName[0]);
 				mPropertyBehaviour=Read;
 			}
+		}else if (mName.find("is")==0 && mArgs.size()==0){
+			mPropertyName=mName.substr(2,string::npos);
+			if (!mPropertyName.empty()){
+				mPropertyName[0]=tolower(mPropertyName[0]);
+				mPropertyBehaviour=Read;
+			}
 		}else if (mName.find("enable")==0 && mArgs.size()==1){
 			mPropertyName=mName.substr(6,string::npos);
 			if (!mPropertyName.empty()){
