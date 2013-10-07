@@ -300,7 +300,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 
 	if (lf->presence != NULL) {
 		basic_status = linphone_presence_model_get_basic_status(lf->presence);
-		nb_activities = linphone_presence_model_nb_activities(lf->presence);
+		nb_activities = linphone_presence_model_get_nb_activities(lf->presence);
 		online_status = (basic_status == LinphonePresenceBasicStatusOpen) ? LinphoneStatusOnline : LinphoneStatusOffline;
 		if (nb_activities > 1) {
 			char *tmp = NULL;

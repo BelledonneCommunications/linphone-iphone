@@ -64,7 +64,7 @@ public interface PresenceService {
 	 * @brief Gets the number of notes included in the presence service.
 	 * @return The number of notes included in the #PresenceService object.
 	 */
-	long nbNotes();
+	long getNbNotes();
 
 	/**
 	 * @brief Gets the nth note of a presence service.

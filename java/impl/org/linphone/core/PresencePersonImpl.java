@@ -48,10 +48,10 @@ public class PresencePersonImpl implements PresencePerson {
 		return setId(mNativePtr, id);
 	}
 
-	private native long nbActivities(long nativePtr);
+	private native long getNbActivities(long nativePtr);
 	@Override
-	public long nbActivities() {
-		return nbActivities(mNativePtr);
+	public long getNbActivities() {
+		return getNbActivities(mNativePtr);
 	}
 
 	private native Object getNthActivity(long nativePtr, long idx);
@@ -72,10 +72,10 @@ public class PresencePersonImpl implements PresencePerson {
 		return clearActivities(mNativePtr);
 	}
 
-	private native long nbNotes(long nativePtr);
+	private native long getNbNotes(long nativePtr);
 	@Override
-	public long nbNotes() {
-		return nbNotes(mNativePtr);
+	public long getNbNotes() {
+		return getNbNotes(mNativePtr);
 	}
 
 	private native Object getNthNote(long nativePtr, long idx);
@@ -96,10 +96,10 @@ public class PresencePersonImpl implements PresencePerson {
 		return clearNotes(mNativePtr);
 	}
 
-	private native long nbActivitiesNotes(long nativePtr);
+	private native long getNbActivitiesNotes(long nativePtr);
 	@Override
-	public long nbActivitiesNotes() {
-		return nbActivitiesNotes(mNativePtr);
+	public long getNbActivitiesNotes() {
+		return getNbActivitiesNotes(mNativePtr);
 	}
 
 	private native Object getNthActivitiesNote(long nativePtr, long idx);

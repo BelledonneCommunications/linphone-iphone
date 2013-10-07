@@ -72,10 +72,10 @@ public class PresenceServiceImpl implements PresenceService {
 		return setContact(mNativePtr, contact);
 	}
 
-	private native long nbNotes(long nativePtr);
+	private native long getNbNotes(long nativePtr);
 	@Override
-	public long nbNotes() {
-		return nbNotes(mNativePtr);
+	public long getNbNotes() {
+		return getNbNotes(mNativePtr);
 	}
 
 	private native Object getNthNote(long nativePtr, long idx);

@@ -38,7 +38,7 @@ public interface PresencePerson {
 	 * @brief Gets the number of activities included in the presence person.
 	 * @return The number of activities included in the #PresencePerson object.
 	 */
-	long nbActivities();
+	long getNbActivities();
 
 	/**
 	 * @brief Gets the nth activity of a presence person.
@@ -64,7 +64,7 @@ public interface PresencePerson {
 	 * @brief Gets the number of notes included in the presence person.
 	 * @return The number of notes included in the #PresencePerson object.
 	 */
-	long nbNotes();
+	long getNbNotes();
 
 	/**
 	 * @brief Gets the nth note of a presence person.
@@ -90,7 +90,7 @@ public interface PresencePerson {
 	 * @brief Gets the number of activities notes included in the presence person.
 	 * @return The number of activities notes included in the #PresencePerson object.
 	 */
-	long nbActivitiesNotes();
+	long getNbActivitiesNotes();
 
 	/**
 	 * @brief Gets the nth activities note of a presence person.

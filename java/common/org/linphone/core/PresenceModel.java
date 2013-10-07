@@ -73,7 +73,7 @@ public interface PresenceModel {
 	 * @brief Gets the number of activities included in the presence model.
 	 * @return The number of activities included in the #PresenceModel object.
 	 */
-	long nbActivities();
+	long getNbActivities();
 
 	/**
 	 * @brief Gets the nth activity of a presence model.
@@ -122,7 +122,7 @@ public interface PresenceModel {
 	 * @brief Gets the number of services included in the presence model.
 	 * @return The number of services included in the #PresenceModel object.
 	 */
-	long nbServices();
+	long getNbServices();
 
 	/**
 	 * @brief Gets the nth service of a presence model.
@@ -148,7 +148,7 @@ public interface PresenceModel {
 	 * @brief Gets the number of persons included in the presence model.
 	 * @return The number of persons included in the #PresenceModel object.
 	 */
-	long nbPersons();
+	long getNbPersons();
 
 	/**
 	 * @brief Gets the nth person of a presence model.

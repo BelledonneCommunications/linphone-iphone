@@ -88,10 +88,10 @@ public class PresenceModelImpl implements PresenceModel {
 		return setActivity(mNativePtr, activity.toInt(), description);
 	}
 
-	private native long nbActivities(long nativePtr);
+	private native long getNbActivities(long nativePtr);
 	@Override
-	public long nbActivities() {
-		return nbActivities(mNativePtr);
+	public long getNbActivities() {
+		return getNbActivities(mNativePtr);
 	}
 
 	private native Object getNthActivity(long nativePtr, long idx);
@@ -130,10 +130,10 @@ public class PresenceModelImpl implements PresenceModel {
 		return clearNotes(mNativePtr);
 	}
 
-	private native long nbServices(long nativePtr);
+	private native long getNbServices(long nativePtr);
 	@Override
-	public long nbServices() {
-		return nbServices(mNativePtr);
+	public long getNbServices() {
+		return getNbServices(mNativePtr);
 	}
 
 	private native Object getNthService(long nativePtr, long idx);
@@ -154,10 +154,10 @@ public class PresenceModelImpl implements PresenceModel {
 		return clearServices(mNativePtr);
 	}
 
-	private native long nbPersons(long nativePtr);
+	private native long getNbPersons(long nativePtr);
 	@Override
-	public long nbPersons() {
-		return nbPersons(mNativePtr);
+	public long getNbPersons() {
+		return getNbPersons(mNativePtr);
 	}
 
 	private native Object getNthPerson(long nativePtr, long idx);

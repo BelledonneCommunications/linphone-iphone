@@ -3550,12 +3550,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_setActivity(JNIE
 
 /*
  * Class:     org_linphone_core_PresenceModelImpl
- * Method:    nbActivities
+ * Method:    getNbActivities
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_nbActivities(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_getNbActivities(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
-	return (jlong)linphone_presence_model_nb_activities(model);
+	return (jlong)linphone_presence_model_get_nb_activities(model);
 }
 
 /*
@@ -3630,12 +3630,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_clearNotes(JNIEn
 
 /*
  * Class:     org_linphone_core_PresenceModelImpl
- * Method:    nbServices
+ * Method:    getNbServices
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_nbServices(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_getNbServices(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
-	return (jlong)linphone_presence_model_nb_services(model);
+	return (jlong)linphone_presence_model_get_nb_services(model);
 }
 
 /*
@@ -3671,12 +3671,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceModelImpl_clearServices(JN
 
 /*
  * Class:     org_linphone_core_PresenceModelImpl
- * Method:    nbPersons
+ * Method:    getNbPersons
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_nbPersons(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceModelImpl_getNbPersons(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceModel *model = (LinphonePresenceModel *)ptr;
-	return (jlong)linphone_presence_model_nb_persons(model);
+	return (jlong)linphone_presence_model_get_nb_persons(model);
 }
 
 /*
@@ -3886,12 +3886,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresenceServiceImpl_setContact(JNI
 
 /*
  * Class:     org_linphone_core_PresenceServiceImpl
- * Method:    nbNotes
+ * Method:    getNbNotes
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceServiceImpl_nbNotes(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresenceServiceImpl_getNbNotes(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresenceService *service = (LinphonePresenceService *)ptr;
-	return (jlong)linphone_presence_service_nb_notes(service);
+	return (jlong)linphone_presence_service_get_nb_notes(service);
 }
 
 /*
@@ -3975,12 +3975,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresencePersonImpl_setId(JNIEnv *e
 
 /*
  * Class:     org_linphone_core_PresencePersonImpl
- * Method:    nbActivities
+ * Method:    getNbActivities
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_nbActivities(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_getNbActivities(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresencePerson *person = (LinphonePresencePerson *)ptr;
-	return (jlong)linphone_presence_person_nb_activities(person);
+	return (jlong)linphone_presence_person_get_nb_activities(person);
 }
 
 /*
@@ -4016,12 +4016,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresencePersonImpl_clearActivities
 
 /*
  * Class:     org_linphone_core_PresencePersonImpl
- * Method:    nbNotes
+ * Method:    getNbNotes
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_nbNotes(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_getNbNotes(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresencePerson *person = (LinphonePresencePerson *)ptr;
-	return (jlong)linphone_presence_person_nb_notes(person);
+	return (jlong)linphone_presence_person_get_nb_notes(person);
 }
 
 /*
@@ -4057,12 +4057,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_PresencePersonImpl_clearNotes(JNIE
 
 /*
  * Class:     org_linphone_core_PresencePersonImpl
- * Method:    nbActivitiesNotes
+ * Method:    getNbActivitiesNotes
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_nbActivitiesNotes(JNIEnv *env, jobject jobj, jlong ptr) {
+JNIEXPORT jlong JNICALL Java_org_linphone_core_PresencePersonImpl_getNbActivitiesNotes(JNIEnv *env, jobject jobj, jlong ptr) {
 	LinphonePresencePerson *person = (LinphonePresencePerson *)ptr;
-	return (jlong)linphone_presence_person_nb_activities_notes(person);
+	return (jlong)linphone_presence_person_get_nb_activities_notes(person);
 }
 
 /*

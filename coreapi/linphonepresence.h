@@ -286,7 +286,7 @@ LINPHONE_PUBLIC int linphone_presence_model_set_activity(LinphonePresenceModel *
  * @param[in] model The #LinphonePresenceModel object to get the number of activities from.
  * @return The number of activities included in the #LinphonePresenceModel object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *model);
+LINPHONE_PUBLIC unsigned int linphone_presence_model_get_nb_activities(const LinphonePresenceModel *model);
 
 /**
  * Gets the nth activity of a presence model.
@@ -357,7 +357,7 @@ LINPHONE_PUBLIC LinphonePresenceModel * linphone_presence_model_new(void);
  * @param[in] model The #LinphonePresenceModel object to get the number of services from.
  * @return The number of services included in the #LinphonePresenceModel object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_services(const LinphonePresenceModel *model);
+LINPHONE_PUBLIC unsigned int linphone_presence_model_get_nb_services(const LinphonePresenceModel *model);
 
 /**
  * Gets the nth service of a presence model.
@@ -387,7 +387,7 @@ LINPHONE_PUBLIC int linphone_presence_model_clear_services(LinphonePresenceModel
  * @param[in] model The #LinphonePresenceModel object to get the number of persons from.
  * @return The number of persons included in the #LinphonePresenceModel object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_model_nb_persons(const LinphonePresenceModel *model);
+LINPHONE_PUBLIC unsigned int linphone_presence_model_get_nb_persons(const LinphonePresenceModel *model);
 
 /**
  * Gets the nth person of a presence model.
@@ -482,7 +482,7 @@ LINPHONE_PUBLIC int linphone_presence_service_set_contact(LinphonePresenceServic
  * @param[in] service The #LinphonePresenceService object to get the number of notes from.
  * @return The number of notes included in the #LinphonePresenceService object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_service_nb_notes(const LinphonePresenceService *service);
+LINPHONE_PUBLIC unsigned int linphone_presence_service_get_nb_notes(const LinphonePresenceService *service);
 
 /**
  * Gets the nth note of a presence service.
@@ -541,7 +541,7 @@ LINPHONE_PUBLIC int linphone_presence_person_set_id(LinphonePresencePerson *pers
  * @param[in] person The #LinphonePresencePerson object to get the number of activities from.
  * @return The number of activities included in the #LinphonePresencePerson object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_person_nb_activities(const LinphonePresencePerson *person);
+LINPHONE_PUBLIC unsigned int linphone_presence_person_get_nb_activities(const LinphonePresencePerson *person);
 
 /**
  * Gets the nth activity of a presence person.
@@ -571,7 +571,7 @@ LINPHONE_PUBLIC int linphone_presence_person_clear_activities(LinphonePresencePe
  * @param[in] person The #LinphonePresencePerson object to get the number of notes from.
  * @return The number of notes included in the #LinphonePresencePerson object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_person_nb_notes(const LinphonePresencePerson *person);
+LINPHONE_PUBLIC unsigned int linphone_presence_person_get_nb_notes(const LinphonePresencePerson *person);
 
 /**
  * Gets the nth note of a presence person.
@@ -601,7 +601,7 @@ LINPHONE_PUBLIC int linphone_presence_person_clear_notes(LinphonePresencePerson 
  * @param[in] person The #LinphonePresencePerson object to get the number of activities notes from.
  * @return The number of activities notes included in the #LinphonePresencePerson object.
  */
-LINPHONE_PUBLIC unsigned int linphone_presence_person_nb_activities_notes(const LinphonePresencePerson *person);
+LINPHONE_PUBLIC unsigned int linphone_presence_person_get_nb_activities_notes(const LinphonePresencePerson *person);
 
 /**
  * Gets the nth activities note of a presence person.

@@ -435,7 +435,7 @@ int linphone_presence_model_set_activity(LinphonePresenceModel *model, LinphoneP
 
 }
 
-unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *model) {
+unsigned int linphone_presence_model_get_nb_activities(const LinphonePresenceModel *model) {
 	unsigned int nb = 0;
 	ms_list_for_each2(model->persons, (MSIterate2Func)presence_model_count_activities, &nb);
 	return nb;
@@ -444,7 +444,7 @@ unsigned int linphone_presence_model_nb_activities(const LinphonePresenceModel *
 LinphonePresenceActivity * linphone_presence_model_get_nth_activity(const LinphonePresenceModel *model, unsigned int idx) {
 	struct _get_activity_st st;
 
-	if ((model == NULL) || (idx >= linphone_presence_model_nb_activities(model)))
+	if ((model == NULL) || (idx >= linphone_presence_model_get_nb_activities(model)))
 		return NULL;
 
 	memset(&st, 0, sizeof(st));
@@ -651,12 +651,12 @@ LinphonePresenceModel * linphone_presence_model_new(void) {
 	return model;
 }
 
-unsigned int linphone_presence_model_nb_services(const LinphonePresenceModel *model) {
+unsigned int linphone_presence_model_get_nb_services(const LinphonePresenceModel *model) {
 	return ms_list_size(model->services);
 }
 
 LinphonePresenceService * linphone_presence_model_get_nth_service(const LinphonePresenceModel *model, unsigned int idx) {
-	if ((model == NULL) || (idx >= linphone_presence_model_nb_services(model)))
+	if ((model == NULL) || (idx >= linphone_presence_model_get_nb_services(model)))
 		return NULL;
 
 	return (LinphonePresenceService *)ms_list_nth_data(model->services, idx);
@@ -677,12 +677,12 @@ int linphone_presence_model_clear_services(LinphonePresenceModel *model) {
 	return 0;
 }
 
-unsigned int linphone_presence_model_nb_persons(const LinphonePresenceModel *model) {
+unsigned int linphone_presence_model_get_nb_persons(const LinphonePresenceModel *model) {
 	return ms_list_size(model->persons);
 }
 
 LinphonePresencePerson * linphone_presence_model_get_nth_person(const LinphonePresenceModel *model, unsigned int idx) {
-	if ((model == NULL) || (idx >= linphone_presence_model_nb_persons(model)))
+	if ((model == NULL) || (idx >= linphone_presence_model_get_nb_persons(model)))
 		return NULL;
 
 	return (LinphonePresencePerson *)ms_list_nth_data(model->persons, idx);
@@ -766,12 +766,12 @@ int linphone_presence_service_set_contact(LinphonePresenceService *service, cons
 	return 0;
 }
 
-unsigned int linphone_presence_service_nb_notes(const LinphonePresenceService *service) {
+unsigned int linphone_presence_service_get_nb_notes(const LinphonePresenceService *service) {
 	return ms_list_size(service->notes);
 }
 
 LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePresenceService *service, unsigned int idx) {
-	if ((service == NULL) || (idx >= linphone_presence_service_nb_notes(service)))
+	if ((service == NULL) || (idx >= linphone_presence_service_get_nb_notes(service)))
 		return NULL;
 
 	return (LinphonePresenceNote *)ms_list_nth_data(service->notes, idx);
@@ -818,13 +818,13 @@ int linphone_presence_person_set_id(LinphonePresencePerson *person, const char *
 	return 0;
 }
 
-unsigned int linphone_presence_person_nb_activities(const LinphonePresencePerson *person) {
+unsigned int linphone_presence_person_get_nb_activities(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
 	return ms_list_size(person->activities);
 }
 
 LinphonePresenceActivity * linphone_presence_person_get_nth_activity(const LinphonePresencePerson *person, unsigned int idx) {
-	if ((person == NULL) || (idx >= linphone_presence_person_nb_activities(person)))
+	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_activities(person)))
 		return NULL;
 	return (LinphonePresenceActivity *)ms_list_nth_data(person->activities, idx);
 }
@@ -843,13 +843,13 @@ int linphone_presence_person_clear_activities(LinphonePresencePerson *person) {
 	return 0;
 }
 
-unsigned int linphone_presence_person_nb_notes(const LinphonePresencePerson *person) {
+unsigned int linphone_presence_person_get_nb_notes(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
 	return ms_list_size(person->notes);
 }
 
 LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePresencePerson *person, unsigned int idx) {
-	if ((person == NULL) || (idx >= linphone_presence_person_nb_notes(person)))
+	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_notes(person)))
 		return NULL;
 	return (LinphonePresenceNote *)ms_list_nth_data(person->notes, idx);
 }
@@ -868,13 +868,13 @@ int linphone_presence_person_clear_notes(LinphonePresencePerson *person) {
 	return 0;
 }
 
-unsigned int linphone_presence_person_nb_activities_notes(const LinphonePresencePerson *person) {
+unsigned int linphone_presence_person_get_nb_activities_notes(const LinphonePresencePerson *person) {
 	if (person == NULL) return 0;
 	return ms_list_size(person->activities_notes);
 }
 
 LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const LinphonePresencePerson *person, unsigned int idx) {
-	if ((person == NULL) || (idx >= linphone_presence_person_nb_activities_notes(person)))
+	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_activities_notes(person)))
 		return NULL;
 	return (LinphonePresenceNote *)ms_list_nth_data(person->activities_notes, idx);
 }
