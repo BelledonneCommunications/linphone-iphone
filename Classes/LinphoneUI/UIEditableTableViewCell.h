@@ -23,6 +23,7 @@
 @interface UIEditableTableViewCell : UITransparentTVCell {
 }
 
+@property (nonatomic, retain) IBOutlet UIView *verticalSep;
 @property (nonatomic, retain) IBOutlet UITextField *detailTextField;
 
 @end
