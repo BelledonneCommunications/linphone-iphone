@@ -88,7 +88,13 @@ LINPHONE_PUBLIC LpConfig * lp_config_new(const char *filename);
  */
 LINPHONE_PUBLIC LpConfig * lp_config_new_with_factory(const char *config_filename, const char *factory_config_filename);
 
-int lp_config_read_file(LpConfig *lpconfig, const char *filename);
+/**
+ * Reads a user config file and fill the LpConfig with the read config values.
+ * @ingroup misc
+ * @param lpconfig The LpConfig object to fill with the content of the file
+ * @param filename The filename of the config file to read to fill the LpConfig
+ */
+LINPHONE_PUBLIC int lp_config_read_file(LpConfig *lpconfig, const char *filename);
 
 /**
  * Retrieves a configuration item as a string, given its section, key, and default value.
@@ -178,21 +184,21 @@ LINPHONE_PUBLIC void lp_config_set_float(LpConfig *lpconfig,const char *section,
  * 
  * @ingroup misc
 **/
-int lp_config_sync(LpConfig *lpconfig);
+LINPHONE_PUBLIC int lp_config_sync(LpConfig *lpconfig);
 
 /**
  * Returns 1 if a given section is present in the configuration.
  *
  * @ingroup misc
 **/
-int lp_config_has_section(const LpConfig *lpconfig, const char *section);
+LINPHONE_PUBLIC int lp_config_has_section(const LpConfig *lpconfig, const char *section);
 
 /**
  * Removes every pair of key,value in a section and remove the section.
  *
  * @ingroup misc
 **/
-void lp_config_clean_section(LpConfig *lpconfig, const char *section);
+LINPHONE_PUBLIC void lp_config_clean_section(LpConfig *lpconfig, const char *section);
 
 /**
  * Call a function for each section present in the configuration.
