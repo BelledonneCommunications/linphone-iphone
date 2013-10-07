@@ -734,6 +734,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect headerFrame = [headerView frame];
         headerFrame.origin.y = 0;
         [headerView setFrame:headerFrame];
+        [headerView setAlpha:1.0];
     }
     
     // Resize & Move table view
@@ -790,6 +791,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect headerFrame = [headerView frame];
         headerFrame.origin.y = -headerFrame.size.height;
         [headerView setFrame:headerFrame];
+        [headerView setAlpha:0.0];
     }
     
     // Resize & Move table view
