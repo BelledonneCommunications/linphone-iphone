@@ -664,7 +664,7 @@ LinphonePresenceService * linphone_presence_model_get_nth_service(const Linphone
 
 int linphone_presence_model_add_service(LinphonePresenceModel *model, LinphonePresenceService *service) {
 	if ((model == NULL) || (service == NULL)) return -1;
-	model->services = ms_list_append(model->services, service);
+	model->services = ms_list_append(model->services, linphone_presence_service_ref(service));
 	return 0;
 }
 
@@ -690,7 +690,7 @@ LinphonePresencePerson * linphone_presence_model_get_nth_person(const LinphonePr
 
 int linphone_presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person) {
 	if ((model == NULL) || (person == NULL)) return -1;
-	model->persons = ms_list_append(model->persons, person);
+	model->persons = ms_list_append(model->persons, linphone_presence_person_ref(person));
 	return 0;
 }
 
@@ -779,7 +779,7 @@ LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePres
 
 int linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note) {
 	if ((service == NULL) || (note == NULL)) return -1;
-	service->notes = ms_list_append(service->notes, note);
+	service->notes = ms_list_append(service->notes, linphone_presence_note_ref(note));
 	return 0;
 }
 
@@ -831,7 +831,7 @@ LinphonePresenceActivity * linphone_presence_person_get_nth_activity(const Linph
 
 int linphone_presence_person_add_activity(LinphonePresencePerson *person, LinphonePresenceActivity *activity) {
 	if ((person == NULL) || (activity == NULL)) return -1;
-	person->activities = ms_list_append(person->activities, activity);
+	person->activities = ms_list_append(person->activities, linphone_presence_activity_ref(activity));
 	return 0;
 }
 
@@ -856,7 +856,7 @@ LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePrese
 
 int linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
 	if ((person == NULL) || (note == NULL)) return -1;
-	person->notes = ms_list_append(person->notes, note);
+	person->notes = ms_list_append(person->notes, linphone_presence_note_ref(note));
 	return 0;
 }
 
@@ -881,7 +881,7 @@ LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const Li
 
 int linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
 	if ((person == NULL) || (note == NULL)) return -1;
-	person->notes = ms_list_append(person->activities_notes, note);
+	person->notes = ms_list_append(person->activities_notes, linphone_presence_note_ref(note));
 	return 0;
 }
 
