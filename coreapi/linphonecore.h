@@ -983,7 +983,7 @@ typedef void (*LinphoneCoreNotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneF
  * @param url of the subscriber
  *  Callback prototype
  */
-typedef void (*LinphoneCoreNewSubscribtionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+typedef void (*LinphoneCoreNewSubscriptionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** 
  * Callback for requesting authentication information to application or user.
  * @param lc the LinphoneCore
@@ -1066,7 +1066,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreRegistrationStateChangedCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCoreCallStateChangedCb call_state_changed;/**<Notifies call state changes*/
 	LinphoneCoreNotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
-	LinphoneCoreNewSubscribtionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
+	LinphoneCoreNewSubscriptionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
 	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /** a message is received, can be text or external body*/
