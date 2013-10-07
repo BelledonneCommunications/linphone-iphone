@@ -962,6 +962,12 @@ void linphone_core_update_ice_from_remote_media_description(LinphoneCall *call, 
 				ice_check_list_set_state(cl, ICL_Failed);
 			} else if (stream->rtp_port == 0) {
 				ice_session_remove_check_list(call->ice_session, cl);
+#ifdef VIDEO_ENABLED
+				if (stream->type==SalVideo && call->videostream){
+					video_stream_stop(call->videostream);
+					call->videostream=NULL;
+				}
+#endif
 			} else {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);

@@ -1051,6 +1051,7 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 	MSList *l=ms_filter_lookup_by_interface(MSFilterVideoDisplayInterface);
 	MSList *elem;
 	int i;
+	int active=-1;
 	const char *current_renderer=linphone_core_get_video_display_filter(lc);
 	GtkListStore *store;
 	GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
@@ -1067,10 +1068,10 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,desc->name,1,desc->text,-1);
 		if (current_renderer && strcmp(current_renderer,desc->name)==0)
-			gtk_combo_box_set_active(GTK_COMBO_BOX(combo),i);
+			active=i;
 	}
 	ms_list_free(l);
-	
+	if (active!=-1) gtk_combo_box_set_active(GTK_COMBO_BOX(combo),active);
 }
 
 void linphone_gtk_show_parameters(void){

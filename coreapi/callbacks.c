@@ -121,8 +121,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 					}
 					ms_message("No need to restart streams, SDP is unchanged.");
 					return;
-				}
-				else {
+				}else {
 					if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) {
 						ms_message("Network parameters have changed, update them.");
 						linphone_core_update_streams_destinations(lc, call, oldmd, new_md);
