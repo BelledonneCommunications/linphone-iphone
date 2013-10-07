@@ -145,12 +145,7 @@
 		[self processRemoteNotification:remoteNotif];
 	}
     
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-    // fix status bar color in iOS7
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-        [application setStatusBarStyle:UIStatusBarStyleLightContent];
-    }
-#endif
+    [[PhoneMainView instance] updateStatusBar:nil];
 
     return YES;
 }

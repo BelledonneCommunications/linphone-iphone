@@ -413,6 +413,23 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setStateBarHidden:!show];
 }
 
+- (void)updateStatusBar:(UICompositeViewDescription*)to_view {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    if ([LinphoneManager runningOnIpad]) {
+        // In iOS7, the ipad has a black background on dialer, so we have to adjust the
+        // status bar style for each transition to/from this view
+        BOOL toLightStatus   = [to_view     equal:[DialerViewController compositeViewDescription]];
+        BOOL fromLightStatus = [currentView equal:[DialerViewController compositeViewDescription]];
+        if( (!to_view && fromLightStatus) || // this case happens at app launch
+            toLightStatus )
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        else if(fromLightStatus)
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    }
+#endif
+}
+
+
 - (void)fullScreen:(BOOL)enabled {
     [mainViewController setFullScreen:enabled];
 }
@@ -442,9 +459,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
         } else {
             [mainViewController setViewTransition:nil];
         }
+        [self updateStatusBar:view];
         [mainViewController changeView:view];
         currentView = view;
-    } 
+    }
     
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
