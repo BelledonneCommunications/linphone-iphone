@@ -2530,10 +2530,6 @@ void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState stat
 	}
 }
 
-/**
- * Returns true if the call is part of the conference.
- * @ingroup conferencing
-**/
 bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params.in_conference;
 }

@@ -93,6 +93,7 @@ void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
 
 /**
  * Returns a boolean indicating that the user is sucessfully registered on the proxy.
+ * @deprecated Use linphone_proxy_config_get_state() instead.
 **/
 bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
 	return obj->state == LinphoneRegistrationOk;

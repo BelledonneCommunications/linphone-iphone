@@ -573,10 +573,11 @@ LINPHONE_PUBLIC	void linphone_call_start_recording(LinphoneCall *call);
 LINPHONE_PUBLIC	void linphone_call_stop_recording(LinphoneCall *call);
 /**
  * Return TRUE if this call is currently part of a conference
- *@param call #LinphoneCall
- *@return TRUE if part of a conference.
+ * @param call #LinphoneCall
+ * @return TRUE if part of a conference.
  *
- @ingroup call_control
+ * @deprecated
+ * @ingroup call_control
  */
 LINPHONE_PUBLIC	bool_t linphone_call_is_in_conference(const LinphoneCall *call);
 /**
