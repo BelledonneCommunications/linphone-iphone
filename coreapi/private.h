@@ -496,7 +496,6 @@ typedef struct net_config
 	char *stun_server;
 	struct addrinfo *stun_addrinfo;
 	unsigned long stun_res_id;
-	char *relay;
 	int download_bw;
 	int upload_bw;
 	int mtu;

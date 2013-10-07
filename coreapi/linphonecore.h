@@ -1476,10 +1476,6 @@ LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, Linphon
 
 LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
 
-const char * linphone_core_get_relay_addr(const LinphoneCore *lc);
-
-int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr);
-
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc);

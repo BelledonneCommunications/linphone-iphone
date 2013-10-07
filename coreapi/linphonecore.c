@@ -4437,21 +4437,6 @@ const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc){
 }
 
 
-const char * linphone_core_get_relay_addr(const LinphoneCore *lc){
-	return lc->net_conf.relay;
-}
-
-int linphone_core_set_relay_addr(LinphoneCore *lc, const char *addr){
-	if (lc->net_conf.relay!=NULL){
-		ms_free(lc->net_conf.relay);
-		lc->net_conf.relay=NULL;
-	}
-	if (addr){
-		lc->net_conf.relay=ms_strdup(addr);
-	}
-	return 0;
-}
-
 void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr)
 {
 	if (lc->net_conf.nat_address!=NULL){
