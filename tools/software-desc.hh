@@ -240,8 +240,12 @@ private:
 				}
 			}
 		}
-		if (mPropertyBehaviour==None)
+		if (mPropertyBehaviour==None) {
 			mPropertyName="";
+			if (mName.find("create")==0) {
+				mName="new"+mName.substr(6,string::npos);
+			}
+		}
 	}
 	string mUid;
 	Argument *mReturn;
