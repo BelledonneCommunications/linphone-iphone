@@ -1618,7 +1618,7 @@ int linphone_core_get_device_rotation(LinphoneCore *lc );
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
 /**
- * @brief Get the camera sensor rotation.
+ * Get the camera sensor rotation.
  *
  * This is needed on some mobile platforms to get the number of degrees the camera sensor
  * is rotated relative to the screen.
