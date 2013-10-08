@@ -11,12 +11,21 @@ common_SRC_FILES := \
 	eventapi_tester.c
  
 # neon
+common_C_INCLUDES += \
+        $(LOCAL_PATH) \
+        $(LOCAL_PATH)/../include \
+        $(LOCAL_PATH)/../coreapi \
+        $(LOCAL_PATH)/../oRTP/include \
+        $(LOCAL_PATH)/../mediastreamer2/include 
+
 
 include $(CLEAR_VARS)
 
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
 LOCAL_MODULE := liblinphone_tester 
 LOCAL_SRC_FILES += $(common_SRC_FILES) 
+LOCAL_C_INCLUDES = $(common_C_INCLUDES)
+LOCAL_CFLAGS = -DIN_LINPHONE
 LOCAL_LDLIBS := -llog
 
 LOCAL_SHARED_LIBRARIES := cunit liblinphone
@@ -32,9 +41,11 @@ ifeq ($(TARGET_ARCH_ABI),armeabi)
 LOCAL_MODULE_FILENAME := liblinphone_testerarmv5
 endif
 LOCAL_SRC_FILES += $(common_SRC_FILES) 
+LOCAL_C_INCLUDES = $(common_C_INCLUDES)
+LOCAL_CFLAGS = -DIN_LINPHONE
 LOCAL_LDLIBS := -llog
 
-LOCAL_SHARED_LIBRARIES := cunit liblinphonenoneon
+LOCAL_SHARED_LIBRARIES := cunit liblinphone
 include $(BUILD_SHARED_LIBRARY)
 
 #end
