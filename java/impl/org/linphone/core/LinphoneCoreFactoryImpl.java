@@ -63,7 +63,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 		// Secure RTP and key negotiation
 		loadOptionalLibrary("srtp-" + eabi);
-		loadOptionalLibrary("zrtpcpp" + eabi); // GPLv3+
+		loadOptionalLibrary("zrtpcpp-" + eabi); // GPLv3+
 
 		//Main library
 		System.loadLibrary("linphone-" + eabi);
