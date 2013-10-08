@@ -50,6 +50,8 @@ typedef struct _LinphoneCore LinphoneCore;
 
 struct _LpConfig;
 
+typedef struct _LpConfig LpConfig;
+
 
 /**
  * Disable a sip transport
@@ -193,6 +195,15 @@ LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
 LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
 LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
+
+/**
+ * Create a #LinphoneAddress object by parsing the user supplied address, given as a string.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] address String containing the user supplied address
+ * @return The create #LinphoneAddress object
+ * @ingroup linphone_address
+ */
+LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address);
 
 struct _SipSetupContext;
 
@@ -814,7 +825,7 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i
 
 /* you don't need those function*/
 void linphone_auth_info_destroy(LinphoneAuthInfo *info);
-LinphoneAuthInfo * linphone_auth_info_new_from_config_file(struct _LpConfig *config, int pos);
+LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
 
 
 struct _LinphoneChatRoom;
@@ -1169,7 +1180,7 @@ LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable
  *        callbacks) using linphone_core_get_user_data().
  * @see linphone_core_new
 **/
-LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata);
+LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, LpConfig *config, void *userdata);
 
 /* function to be periodically called in a main loop */
 /* For ICE to work properly it should be called every 20ms */
@@ -1331,10 +1342,10 @@ LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneC
 LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, PayloadType *pt);
 
 /**
- * @ingroup proxy 
- *Create a proxy config with default value from Linphone core.
- *@param lc #LinphoneCore object
- *@return #LinphoneProxyConfig with defualt value set 
+ * Create a proxy config with default values from Linphone core.
+ * @param[in] lc #LinphoneCore object
+ * @return #LinphoneProxyConfig with default values set
+ * @ingroup proxy
  */
 LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
 	
@@ -1351,6 +1362,19 @@ LINPHONE_PUBLIC	void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneP
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index);
 
 LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
+
+/**
+ * Create an authentication information with default values from Linphone core.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] username String containing the username part of the authentication credentials
+ * @param[in] userid String containing the username to use to calculate the authentication digest
+ * @param[in] passwd String containing the password part of the authentication credentials
+ * @param[in] ha1 String containing a hash of the password
+ * @param[in] realm String used to discriminate different SIP domains
+ * @return #LinphoneAuthInfo with default values set
+ * @ingroup authentication
+ */
+LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm);
 
 LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
@@ -1652,7 +1676,15 @@ LINPHONE_PUBLIC	void linphone_core_set_user_data(LinphoneCore *lc, void *userdat
 
 /* returns LpConfig object to read/write to the config file: usefull if you wish to extend
 the config file with your own sections */
-LINPHONE_PUBLIC struct _LpConfig *linphone_core_get_config(LinphoneCore *lc);
+LINPHONE_PUBLIC LpConfig * linphone_core_get_config(LinphoneCore *lc);
+
+/**
+ * Create a LpConfig object from a user config file.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] filename The filename of the config file to read to fill the instantiated LpConfig
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename);
 
 /*set a callback for some blocking operations, it takes you informed of the progress of the operation*/
 void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context);

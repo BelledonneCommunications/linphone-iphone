@@ -1984,3 +1984,31 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 		ms_warning("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
 	}
 }
+
+LinphonePresenceActivity * linphone_core_create_presence_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description) {
+	return linphone_presence_activity_new(acttype, description);
+}
+
+LinphonePresenceModel * linphone_core_create_presence_model(LinphoneCore *lc) {
+	return linphone_presence_model_new();
+}
+
+LinphonePresenceModel * linphone_core_create_presence_model_with_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description) {
+	return linphone_presence_model_new_with_activity(acttype, description);
+}
+
+LinphonePresenceModel * linphone_core_create_presence_model_with_activity_and_note(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang) {
+	return linphone_presence_model_new_with_activity_and_note(acttype, description, note, lang);
+}
+
+LinphonePresenceNote * linphone_core_create_presence_note(LinphoneCore *lc, const char *content, const char *lang) {
+	return linphone_presence_note_new(content, lang);
+}
+
+LinphonePresencePerson * linphone_core_create_presence_person(LinphoneCore *lc, const char *id) {
+	return linphone_presence_person_new(id);
+}
+
+LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact) {
+	return linphone_presence_service_new(id, basic_status, contact);
+}

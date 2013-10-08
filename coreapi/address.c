@@ -182,4 +182,8 @@ int linphone_address_get_port(const LinphoneAddress *u) {
 	return sal_address_get_port(u);
 }
 
+LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address) {
+	return linphone_address_new(address);
+}
+
 /** @} */

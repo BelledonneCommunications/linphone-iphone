@@ -281,6 +281,10 @@ static void write_auth_infos(LinphoneCore *lc){
 	linphone_auth_info_write_config(lc->config,NULL,i); /* mark the end */
 }
 
+LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm) {
+	return linphone_auth_info_new(username, userid, passwd, ha1, realm);
+}
+
 /**
  * Adds authentication information to the LinphoneCore.
  * 

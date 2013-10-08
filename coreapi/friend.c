@@ -427,6 +427,14 @@ void linphone_friend_done(LinphoneFriend *fr){
 	linphone_friend_apply(fr,fr->lc);
 }
 
+LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {
+	return linphone_friend_new();
+}
+
+LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, const char *address) {
+	return linphone_friend_new_with_address(address);
+}
+
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 {
 	ms_return_if_fail(lf->lc==NULL);

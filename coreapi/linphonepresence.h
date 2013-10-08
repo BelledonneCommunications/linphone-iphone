@@ -867,6 +867,73 @@ void linphone_presence_note_set_user_data(LinphonePresenceNote *note, void *user
 void * linphone_presence_note_get_user_data(LinphonePresenceNote *note);
 
 
+/*****************************************************************************
+ * LINPHONE CORE FUNCTIONS RELATED TO PRESENCE                               *
+ ****************************************************************************/
+
+/**
+ * Create a LinphonePresenceActivity with the given type and description.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] acttype The #LinphonePresenceActivityType to set for the activity.
+ * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
+ * @returns The created #LinphonePresenceActivity object.
+ */
+LINPHONE_PUBLIC LinphonePresenceActivity * linphone_core_create_presence_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
+
+/**
+ * Create a default LinphonePresenceModel.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The created #LinphonePresenceModel object.
+ */
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model(LinphoneCore *lc);
+
+/**
+ * Create a LinphonePresenceModel with the given activity type and activity description.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] acttype The #LinphonePresenceActivityType to set for the activity of the created model.
+ * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
+ * @returns The created #LinphonePresenceModel object.
+ */
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description);
+
+/**
+ * Create a LinphonePresenceModel with the given activity type, activity description, note content and note language.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] acttype The #LinphonePresenceActivityType to set for the activity of the created model.
+ * @param[in] description An additional description of the activity to set for the activity. Can be NULL if no additional description is to be added.
+ * @param[in] note The content of the note to be added to the created model.
+ * @param[in] lang The language of the note to be added to the created model.
+ * @returns The created #LinphonePresenceModel object.
+ */
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_create_presence_model_with_activity_and_note(LinphoneCore *lc, LinphonePresenceActivityType acttype, const char *description, const char *note, const char *lang);
+
+/**
+ * Create a LinphonePresenceNote with the given content and language.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] content The content of the note to be created.
+ * @param[in] lang The language of the note to be created.
+ * @returns The created #LinphonePresenceNote object.
+ */
+LINPHONE_PUBLIC LinphonePresenceNote * linphone_core_create_presence_note(LinphoneCore *lc, const char *content, const char *lang);
+
+/**
+ * Create a LinphonePresencePerson with the given id.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] id The id of the person to be created.
+ * @returns The created #LinphonePresencePerson object.
+ */
+LINPHONE_PUBLIC LinphonePresencePerson * linphone_core_create_presence_person(LinphoneCore *lc, const char *id);
+
+/**
+ * Create a LinphonePresenceService with the given id, basic status and contact.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] id The id of the service to be created.
+ * @param[in] basic_status The basic status of the service to be created.
+ * @param[in] contact A string containing a contact information corresponding to the service to be created.
+ * @returns The created #LinphonePresenceService object.
+ */
+LINPHONE_PUBLIC LinphonePresenceService * linphone_core_create_presence_service(LinphoneCore *lc, const char *id, LinphonePresenceBasicStatus basic_status, const char *contact);
+
 /**
  * @}
  */

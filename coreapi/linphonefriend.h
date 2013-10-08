@@ -265,7 +265,22 @@ LINPHONE_PUBLIC const char *linphone_online_status_to_string(LinphoneOnlineStatu
 
 
 /**
- * @brief Set my presence status
+ * Create a default LinphoneFriend.
+ * @param[in] lc #LinphoneCore object
+ * @return The created #LinphoneFriend object
+ */
+LINPHONE_PUBLIC LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc);
+
+/**
+ * Create a LinphoneFriend from the given address.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] address A string containing the address to create the LinphoneFriend from
+ * @return The created #LinphoneFriend object
+ */
+LINPHONE_PUBLIC LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, const char *address);
+
+/**
+ * Set my presence status
  * @param[in] lc #LinphoneCore object
  * @param[in] minutes_away how long in away
  * @param[in] alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
@@ -275,14 +290,14 @@ LINPHONE_PUBLIC const char *linphone_online_status_to_string(LinphoneOnlineStatu
 LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
 
 /**
- * @brief Set my presence status
+ * Set my presence model
  * @param[in] lc #LinphoneCore object
  * @param[in] presence #LinphonePresenceModel
  */
 LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence);
 
 /**
- * @brief Get my presence status
+ * Get my presence status
  * @param[in] lc #LinphoneCore object
  * @return #LinphoneOnlineStatus
  * @deprecated Use linphone_core_get_presence_model() instead
@@ -290,7 +305,7 @@ LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, Linphone
 LINPHONE_PUBLIC LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
 
 /**
- * @brief Get my presence status
+ * Get my presence model
  * @param[in] lc #LinphoneCore object
  * @return A #LinphonePresenceModel object, or NULL if no presence model has been set.
  */

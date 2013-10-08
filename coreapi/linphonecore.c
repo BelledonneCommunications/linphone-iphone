@@ -5570,8 +5570,12 @@ void ui_config_uninit(LinphoneCore* lc)
  * sections and pairs of key=value in the configuration file.
  *
 **/
-LpConfig *linphone_core_get_config(LinphoneCore *lc){
+LpConfig * linphone_core_get_config(LinphoneCore *lc){
 	return lc->config;
+}
+
+LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename) {
+	return lp_config_new(filename);
 }
 
 static void linphone_core_uninit(LinphoneCore *lc)
