@@ -24,8 +24,12 @@
  
 #ifndef LPCONFIG_H
 #define LPCONFIG_H
-#include "linphonecore.h" /*to get LINPHONE_PUBLIC, maybe we can include less stuff*/
+#include <mediastreamer2/mscommon.h>
 #include <ortp/port.h>
+
+#ifndef LINPHONE_PUBLIC
+	#define LINPHONE_PUBLIC MS2_PUBLIC
+#endif
 
 /**
  * The LpConfig object is used to manipulate a configuration file.

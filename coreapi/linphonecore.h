@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone/sipsetup.h"
 #endif
 
+#include "lpconfig.h"
+
 #define LINPHONE_IPADDR_SIZE 64
 #define LINPHONE_HOSTNAME_SIZE 128
 
@@ -47,10 +49,6 @@ struct _LinphoneCore;
  * @ingroup initializing
  */
 typedef struct _LinphoneCore LinphoneCore;
-
-struct _LpConfig;
-
-typedef struct _LpConfig LpConfig;
 
 
 /**
