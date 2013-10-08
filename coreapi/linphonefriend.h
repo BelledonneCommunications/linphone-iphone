@@ -338,19 +338,32 @@ LINPHONE_PUBLIC void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFrien
 LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
 
 /**
- * get Buddy list of LinphoneFriend
+ * Get Buddy list of LinphoneFriend
  * @param lc #LinphoneCore object
- * */
+ */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 
 /**
- *  notify all friends that have subscribed
+ * Notify all friends that have subscribed
  * @param lc #LinphoneCore object
  * @param presence #LinphonePresenceModel to notify
- *  */
+ */
 LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence);
 
+/**
+ * Search a LinphoneFriend by its address.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] addr The address to use to search the friend.
+ * @returns The #LinphoneFriend object corresponding to the given address.
+ */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
+
+/**
+ * Search a LinphoneFriend by its reference key.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] key The reference key to use to search the friend.
+ * @returns The #LinphoneFriend object corresponding to the given reference key.
+ */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
 
 /**

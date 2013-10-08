@@ -1541,7 +1541,20 @@ LINPHONE_PUBLIC int linphone_core_preview_ring(LinphoneCore *lc, const char *rin
 LINPHONE_PUBLIC	void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC	bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);
 
+/**
+ * Enables or disable echo limiter.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] val TRUE to enable echo limiter, FALSE to disable it.
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	void linphone_core_enable_echo_limiter(LinphoneCore *lc, bool_t val);
+
+/**
+ * Tells whether echo limiter is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @returns TRUE if the echo limiter is enabled, FALSE otherwise.
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc);
 
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
@@ -1599,11 +1612,36 @@ LINPHONE_PUBLIC int linphone_core_set_video_device(LinphoneCore *lc, const char 
 LINPHONE_PUBLIC const char *linphone_core_get_video_device(const LinphoneCore *lc);
 
 /* Set and get static picture to be used when "Static picture" is the video device */
+/**
+ * Set the path to the image file to stream when "Static picture" is set as the video device.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] path The path to the image file to use.
+ * @ingroup media_parameters
+ */
 int linphone_core_set_static_picture(LinphoneCore *lc, const char *path);
+
+/**
+ * Get the path to the image file streamed when "Static picture" is set as the video device.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The path to the image file streamed when "Static picture" is set as the video device.
+ * @ingroup media_parameters
+ */
 const char *linphone_core_get_static_picture(LinphoneCore *lc);
 
-/* Set and get frame rate for static picture */
+/**
+ * Set the frame rate for static picture.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] fps The new frame rate to use for static picture.
+ * @ingroup media_parameters
+ */
 int linphone_core_set_static_picture_fps(LinphoneCore *lc, float fps);
+
+/**
+ * Get the frame rate for static picture
+ * @param[in] lc #LinphoneCore object.
+ * @return The frame rate used for static picture.
+ * @ingroup media_parameters
+ */
 float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
@@ -1721,9 +1759,22 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc);
  */
 LINPHONE_PUBLIC void linphone_core_refresh_registers(LinphoneCore* lc);
 
-/* Path to the file storing secrets cache */
+/**
+ * Set the path to the file storing the zrtp secrets cache.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] file The path to the file to use to store the zrtp secrets cache.
+ * @ingroup initializing
+ */
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file);
+
+/**
+ * Get the path to the file storing the zrtp secrets cache.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The path to the file storing the zrtp secrets cache.
+ * @ingroup initializing
+ */
 const char *linphone_core_get_zrtp_secrets_file(LinphoneCore *lc);
+
 /**
  * Search from the list of current calls if a remote address match uri
  * @ingroup call_control
@@ -1765,15 +1816,35 @@ LINPHONE_PUBLIC	bool_t linphone_core_sound_resources_locked(LinphoneCore *lc);
 LINPHONE_PUBLIC	bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, LinphoneMediaEncryption menc);
 
 /**
- * Choose media encryption policy to be used for RTP packets
+ * Choose the media encryption policy to be used for RTP packets.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] menc The media encryption policy to be used.
+ * @returns 0 if successful, any other value otherwise.
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+
+/**
+ * Get the media encryption policy being used for RTP packets.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The media encryption policy being used.
+ * @ingroup media_parameters
+ */
 LINPHONE_PUBLIC	LinphoneMediaEncryption linphone_core_get_media_encryption(LinphoneCore *lc);
 
-LINPHONE_PUBLIC	bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
 /**
- * Defines Linphone behaviour when encryption parameters negociation fails on outoing call.
- * If set to TRUE call will fail; if set to FALSE will resend an INVITE with encryption disabled
+ * Get behaviour when encryption parameters negociation fails on outgoing call.
+ * @param[in] lc #LinphoneCore object.
+ * @returns TRUE means the call will fail; FALSE means an INVITE will be resent with encryption disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC	bool_t linphone_core_is_media_encryption_mandatory(LinphoneCore *lc);
+
+/**
+ * Define behaviour when encryption parameters negociation fails on outgoing call.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] m If set to TRUE call will fail; if set to FALSE will resend an INVITE with encryption disabled.
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m);
 
