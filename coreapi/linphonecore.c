@@ -6085,7 +6085,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 	return FALSE;
 }
 
-int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc) {
+int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc) {
 	const char *type="none";
 	int ret=0;
 	if (menc == LinphoneMediaEncryptionSRTP){

@@ -242,17 +242,19 @@ typedef struct _LinphoneCallLog LinphoneCallLog;
 
 /**
  * Enum describing type of media encryption types.
+ * @ingroup media_parameters
 **/
-enum LinphoneMediaEncryption {
-	LinphoneMediaEncryptionNone,
-	LinphoneMediaEncryptionSRTP,
-	LinphoneMediaEncryptionZRTP
+enum _LinphoneMediaEncryption {
+	LinphoneMediaEncryptionNone, /**< No media encryption is used */
+	LinphoneMediaEncryptionSRTP, /**< Use SRTP media encryption */
+	LinphoneMediaEncryptionZRTP /**< Use ZRTP media encryption */
 };
 
 /**
  * Enum describing type of media encryption types.
+ * @ingroup media_parameters
 **/
-typedef enum LinphoneMediaEncryption LinphoneMediaEncryption;
+typedef enum _LinphoneMediaEncryption LinphoneMediaEncryption;
 
 /*public: */
 LINPHONE_PUBLIC	LinphoneAddress *linphone_call_log_get_from(LinphoneCallLog *cl);
@@ -845,14 +847,14 @@ typedef struct _LinphoneChatMessage LinphoneChatMessage;
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 /**
- *LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
+ * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  */
-typedef enum _LinphoneChatMessageStates {
-	LinphoneChatMessageStateIdle, /**<initial state*/
-	LinphoneChatMessageStateInProgress, /**<delivery in progress**/
-	LinphoneChatMessageStateDelivered, /**<message succesffully delivered an acknoleged by remote end point*/
-	LinphoneChatMessageStateNotDelivered /**<message was not delivered*/
-}LinphoneChatMessageState;
+typedef enum _LinphoneChatMessageState {
+	LinphoneChatMessageStateIdle, /**< Initial state */
+	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
+	LinphoneChatMessageStateDelivered, /**< Message succesffully delivered an acknoleged by remote end point */
+	LinphoneChatMessageStateNotDelivered /**< Message was not delivered */
+} LinphoneChatMessageState;
 
 /**
  * Call back used to notify message delivery status
@@ -1108,13 +1110,16 @@ typedef struct _LCCallbackObj
 }LCCallbackObj;
 
 
-
-typedef enum _LinphoneFirewallPolicy{
-	LinphonePolicyNoFirewall,
-	LinphonePolicyUseNatAddress,
-	LinphonePolicyUseStun,
-	LinphonePolicyUseIce,
-	LinphonePolicyUseUpnp,
+/**
+ * Policy to use to pass through firewalls.
+ * @ingroup network_parameters
+**/
+typedef enum _LinphoneFirewallPolicy {
+	LinphonePolicyNoFirewall, /**< Do not use any mechanism to pass through firewalls */
+	LinphonePolicyUseNatAddress, /**< Use the specified public adress */
+	LinphonePolicyUseStun, /**< Use a STUN server to get the public address */
+	LinphonePolicyUseIce, /**< Use the ICE protocol */
+	LinphonePolicyUseUpnp, /**< Use the uPnP protocol */
 } LinphoneFirewallPolicy;
 
 typedef enum _LinphoneWaitingState{
@@ -1822,7 +1827,7 @@ LINPHONE_PUBLIC	bool_t linphone_core_media_encryption_supported(const LinphoneCo
  * @returns 0 if successful, any other value otherwise.
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, enum LinphoneMediaEncryption menc);
+LINPHONE_PUBLIC	int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc);
 
 /**
  * Get the media encryption policy being used for RTP packets.

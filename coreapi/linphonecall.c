@@ -1144,14 +1144,14 @@ bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 /**
  * Returns kind of media encryption selected for the call.
 **/
-enum LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp) {
+LinphoneMediaEncryption linphone_call_params_get_media_encryption(const LinphoneCallParams *cp) {
 	return cp->media_encryption;
 }
 
 /**
  * Set requested media encryption for a call.
 **/
-void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, enum LinphoneMediaEncryption e) {
+void linphone_call_params_set_media_encryption(LinphoneCallParams *cp, LinphoneMediaEncryption e) {
 	cp->media_encryption = e;
 }
 

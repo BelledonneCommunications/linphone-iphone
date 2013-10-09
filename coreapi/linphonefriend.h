@@ -31,11 +31,10 @@ extern "C" {
  * @{
  */
 /**
- * @ingroup buddy_list
  * Enum controlling behavior for incoming subscription request.
  * <br> Use by linphone_friend_set_inc_subscribe_policy()
  */
-typedef  enum {
+typedef enum _LinphoneSubscribePolicy {
 	/**
 	 * Does not automatically accept an incoming subscription request.
 	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_request
@@ -50,7 +49,7 @@ typedef  enum {
 	 * Automatically accepts a subscription request.
 	 */
 	LinphoneSPAccept
-}LinphoneSubscribePolicy;
+} LinphoneSubscribePolicy;
 
 /**
  * Enum describing remote friend status
