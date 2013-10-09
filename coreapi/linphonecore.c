@@ -4092,12 +4092,6 @@ const char**  linphone_core_get_video_devices(const LinphoneCore *lc){
 	return lc->video_conf.cams;
 }
 
-/**
- * Update detection of sound devices.
- * 
- * Use this function when the application is notified of USB plug events, so that
- * list of available hardwares for sound playback and capture is updated.
- **/
 void linphone_core_reload_sound_devices(LinphoneCore *lc){
 	const char *ringer,*playback,*capture;
 	ringer=linphone_core_get_ringer_device(lc);
@@ -4110,12 +4104,6 @@ void linphone_core_reload_sound_devices(LinphoneCore *lc){
 	linphone_core_set_capture_device(lc,capture);
 }
 
-/**
- * Update detection of camera devices.
- * 
- * Use this function when the application is notified of USB plug events, so that
- * list of available hardwares for video capture is updated.
- **/
 void linphone_core_reload_video_devices(LinphoneCore *lc){
 	const char *devid;
 	devid=linphone_core_get_video_device(lc);
@@ -4572,27 +4560,14 @@ void linphone_core_clear_call_logs(LinphoneCore *lc){
 	call_logs_write_to_config_file(lc);
 }
 
-/**
- * Returns number of missed calls.
- * Once checked, this counter can be reset with linphone_core_reset_missed_calls_count().
-**/
 int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
 	return lc->missed_calls;
 }
 
-/**
- * Resets the counter of missed calls.
-**/
 void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 	lc->missed_calls=0;
 }
 
-/**
- * Remove a specific call log from call history list.
- * This function destroys the call log object. It must not be accessed anymore by the application after calling this function.
- * @param lc the linphone core object
- * @param a LinphoneCallLog object.
-**/
 void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
 	lc->call_logs = ms_list_remove(lc->call_logs, cl);
 	call_logs_write_to_config_file(lc);
@@ -4999,11 +4974,6 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show){
 #endif
 }
 
-/**
- * Tells the core to use a separate window for local camera preview video, instead of
- * inserting local view within the remote video window.
- *
-**/
 void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno){
 	lc->use_preview_window=yesno;
 }

@@ -1236,6 +1236,14 @@ LINPHONE_PUBLIC	int linphone_core_accept_call_with_params(LinphoneCore *lc, Linp
 
 LINPHONE_PUBLIC	int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *call);
 
+/**
+ * Redirect the specified call to the given redirect URI.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] call The #LinphoneCall to redirect.
+ * @param[in] redirect_uri The URI to redirect the call to.
+ * @returns 0 if successful, -1 on error.
+ * @ingroup call_control
+ */
 LINPHONE_PUBLIC int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri);
 
 LINPHONE_PUBLIC	int linphone_core_decline_call(LinphoneCore *lc, LinphoneCall * call, LinphoneReason reason);
@@ -1305,14 +1313,22 @@ LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore 
 
 int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
-LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
 /**
- * Enable payload type
- * @param linphone core
- * @param pt payload type to enable, can be retrieve from #linphone_core_find_payload_type
- * @param TRUE if enabled
- * @return 0 if succed
- *
+ * Tells whether the specified payload type is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] pt The #PayloadType we want to know is enabled or not.
+ * @returns TRUE if the payload type is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * Enable or disable the use of the specified payload type.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] pt The #PayloadType to enable or disable. It can be retrieved using #linphone_core_find_payload_type
+ * @param[in] enable TRUE to enable the payload type, FALSE to disable it.
+ * @return 0 if successful, any other value otherwise.
+ * @ingroup media_parameters
  */
 LINPHONE_PUBLIC	int linphone_core_enable_payload_type(LinphoneCore *lc, PayloadType *pt, bool_t enable);
 
@@ -1391,16 +1407,40 @@ void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *inf
 
 LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 
+/**
+ * Enable or disable the audio adaptive jitter compensation.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] enable TRUE to enable the audio adaptive jitter compensation, FALSE to disable it.
+ * @ingroup media_parameters
+ */
 void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
 
+/**
+ * Tells whether the audio adaptive jitter compensation is enabled.
+ * @param[in] lc #LinphoneCore object
+ * @returns TRUE if the audio adaptive jitter compensation is enabled, FALSE otherwise.
+ * @ingroup media_parameters
+ */
 bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCore *lc);
 
 int linphone_core_get_audio_jittcomp(LinphoneCore *lc);
 
 void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
 
+/**
+ * Enable or disable the video adaptive jitter compensation.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] enable TRUE to enable the video adaptive jitter compensation, FALSE to disable it.
+ * @ingroup media_parameters
+ */
 void linphone_core_enable_video_adaptive_jittcomp(LinphoneCore *lc, bool_t enable);
 
+/**
+ * Tells whether the video adaptive jitter compensation is enabled.
+ * @param[in] lc #LinphoneCore object
+ * @returns TRUE if the video adaptive jitter compensation is enabled, FALSE otherwise.
+ * @ingroup media_parameters
+ */
 bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCore *lc);
 
 int linphone_core_get_video_jittcomp(LinphoneCore *lc);
@@ -1462,8 +1502,20 @@ LINPHONE_PUBLIC	void linphone_core_set_delayed_timeout(LinphoneCore *lc, int sec
 
 LINPHONE_PUBLIC	int linphone_core_get_delayed_timeout(LinphoneCore *lc);
 
+/**
+ * Set the STUN server address to use when the firewall policy is set to STUN.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] server The STUN server address to use.
+ * @ingroup network_parameters
+ */
 LINPHONE_PUBLIC	void linphone_core_set_stun_server(LinphoneCore *lc, const char *server);
 
+/**
+ * Get the STUN server address being used.
+ * @param[in] lc #LinphoneCore object
+ * @returns The STUN server address being used.
+ * @ingroup network_parameters
+ */
 LINPHONE_PUBLIC	const char * linphone_core_get_stun_server(const LinphoneCore *lc);
 
 /**
@@ -1495,18 +1547,52 @@ LinphoneUpnpState linphone_core_get_upnp_state(const LinphoneCore *lc);
  */
 const char * linphone_core_get_upnp_external_ipaddress(const LinphoneCore *lc);
 
+/**
+ * Set the public IP address of NAT when using the firewall policy is set to use NAT.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] addr The public IP address of NAT to use.
+ * @ingroup network_parameters
+ */
 void linphone_core_set_nat_address(LinphoneCore *lc, const char *addr);
 
+/**
+ * Get the public IP address of NAT being used.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The public IP address of NAT being used.
+ * @ingroup network_parameters
+ */
 const char *linphone_core_get_nat_address(const LinphoneCore *lc);
 
+/**
+ * Set the policy to use to pass through firewalls.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] pol The #LinphoneFirewallPolicy to use.
+ * @ingroup network_parameters
+ */
 LINPHONE_PUBLIC	void linphone_core_set_firewall_policy(LinphoneCore *lc, LinphoneFirewallPolicy pol);
 
+/**
+ * Get the policy that is used to pass through firewalls.
+ * @param[in] lc #LinphoneCore object.
+ * @returns The #LinphoneFirewallPolicy that is being used.
+ * @ingroup network_parameters
+ */
 LINPHONE_PUBLIC	LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc);
 
 /* sound functions */
 /* returns a null terminated static array of string describing the sound devices */
 const char**  linphone_core_get_sound_devices(LinphoneCore *lc);
+
+/**
+ * Update detection of sound devices.
+ *
+ * Use this function when the application is notified of USB plug events, so that
+ * list of available hardwares for sound playback and capture is updated.
+ * @param[in] lc #LinphoneCore object.
+ * @ingroup media_parameters
+ **/
 void linphone_core_reload_sound_devices(LinphoneCore *lc);
+
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
 LINPHONE_PUBLIC	int linphone_core_get_ring_level(LinphoneCore *lc);
@@ -1582,8 +1668,30 @@ void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, bool_t val);
 /* returns a list of LinphoneCallLog */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_clear_call_logs(LinphoneCore *lc);
+
+/**
+ * Get the number of missed calls.
+ * Once checked, this counter can be reset with linphone_core_reset_missed_calls_count().
+ * @param[in] lc #LinphoneCore object.
+ * @returns The number of missed calls.
+ * @ingroup call_logs
+**/
 LINPHONE_PUBLIC	int linphone_core_get_missed_calls_count(LinphoneCore *lc);
+
+/**
+ * Reset the counter of missed calls.
+ * @param[in] lc #LinphoneCore object.
+ * @ingroup call_logs
+**/
 LINPHONE_PUBLIC	void linphone_core_reset_missed_calls_count(LinphoneCore *lc);
+
+/**
+ * Remove a specific call log from call history list.
+ * This function destroys the call log object. It must not be accessed anymore by the application after calling this function.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] call_log #LinphoneCallLog object to remove.
+ * @ingroup call_logs
+**/
 LINPHONE_PUBLIC	void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
 
 /* video support */
@@ -1610,8 +1718,17 @@ LINPHONE_PUBLIC void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val
 LINPHONE_PUBLIC bool_t linphone_core_self_view_enabled(const LinphoneCore *lc);
 
 
-/* returns a null terminated static array of string describing the webcams */
+/**
+ * Update detection of camera devices.
+ *
+ * Use this function when the application is notified of USB plug events, so that
+ * list of available hardwares for video capture is updated.
+ * @param[in] lc #LinphoneCore object.
+ * @ingroup media_parameters
+ **/
 void linphone_core_reload_video_devices(LinphoneCore *lc);
+
+/* returns a null terminated static array of string describing the webcams */
 LINPHONE_PUBLIC const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
 LINPHONE_PUBLIC int linphone_core_set_video_device(LinphoneCore *lc, const char *id);
 LINPHONE_PUBLIC const char *linphone_core_get_video_device(const LinphoneCore *lc);
@@ -1656,7 +1773,15 @@ LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, 
 LINPHONE_PUBLIC unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
 
-void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
+/**
+ * Tells the core to use a separate window for local camera preview video, instead of
+ * inserting local view within the remote video window.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] yesno TRUE to use a separate window, FALSE to insert the preview in the remote video window.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_use_preview_window(LinphoneCore *lc, bool_t yesno);
+
 int linphone_core_get_device_rotation(LinphoneCore *lc );
 void linphone_core_set_device_rotation(LinphoneCore *lc, int rotation);
 
