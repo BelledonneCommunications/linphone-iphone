@@ -250,8 +250,26 @@ LINPHONE_PUBLIC void linphone_friend_set_user_data(LinphoneFriend *lf, void *dat
 LINPHONE_PUBLIC void* linphone_friend_get_user_data(const LinphoneFriend *lf);
 
 LINPHONE_PUBLIC BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
+
+/**
+ * Set the reference key of a friend.
+ * @param[in] lf #LinphoneFriend object.
+ * @param[in] key The reference key to use for the friend.
+**/
 LINPHONE_PUBLIC void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
+
+/**
+ * Get the reference key of a friend.
+ * @param[in] lf #LinphoneFriend object.
+ * @returns The reference key of the friend.
+**/
 LINPHONE_PUBLIC const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
+
+/**
+ * Check that the given friend is in a friend list.
+ * @param[in] lf #LinphoneFriend object.
+ * @returns TRUE if the friend is in a friend list, FALSE otherwise.
+**/
 LINPHONE_PUBLIC bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
 

@@ -305,7 +305,23 @@ LINPHONE_PUBLIC	bool_t linphone_call_params_low_bandwidth_enabled(const Linphone
 LINPHONE_PUBLIC	void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
 LINPHONE_PUBLIC	void linphone_call_params_set_record_file(LinphoneCallParams *cp, const char *path);
 LINPHONE_PUBLIC	const char *linphone_call_params_get_record_file(const LinphoneCallParams *cp);
+
+/**
+ * Add a custom SIP header in the INVITE for a call.
+ * @param[in] params The #LinphoneCallParams to add a custom SIP header to.
+ * @param[in] header_name The name of the header to add.
+ * @param[in] header_value The content of the header to add.
+ * @ingroup call_control
+**/
 LINPHONE_PUBLIC	void linphone_call_params_add_custom_header(LinphoneCallParams *params, const char *header_name, const char *header_value);
+
+/**
+ * Get a custom SIP header.
+ * @param[in] params The #LinphoneCallParams to get the custom SIP header from.
+ * @param[in] header_name The name of the header to get.
+ * @returns The content of the header or NULL if not found.
+ * @ingroup call_control
+**/
 LINPHONE_PUBLIC	const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name);
 
 /**
@@ -693,8 +709,20 @@ LINPHONE_PUBLIC	void linphone_proxy_config_enable_publish(LinphoneProxyConfig *o
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix);
 
+/**
+ * Get the registration state of the given proxy config.
+ * @param[in] obj #LinphoneProxyConfig object.
+ * @returns The registration state of the proxy config.
+**/
 LINPHONE_PUBLIC	LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyConfig *obj);
+
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj);
+
+/**
+ * Get the domain name of the given proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @returns The domain name of the proxy config.
+**/
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg);
 
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj);
@@ -706,12 +734,24 @@ LINPHONE_PUBLIC	bool_t linphone_proxy_config_register_enabled(const LinphoneProx
 LINPHONE_PUBLIC	void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj);
 LINPHONE_PUBLIC	void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params);
+
+/**
+ * Get the #LinphoneCore object to which is associated the #LinphoneProxyConfig.
+ * @param[in] obj #LinphoneProxyConfig object.
+ * @returns The #LinphoneCore object to which is associated the #LinphoneProxyConfig.
+**/
 LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj);
 
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC	const char * linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg);
 
+/**
+ * Get the reason why registration failed when the proxy config state is LinphoneRegistrationFailed.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @returns The reason why registration failed for this proxy config.
+**/
 LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg);
+
 /*
  * return the transport from either : service route, route, or addr
  * @returns cfg object
