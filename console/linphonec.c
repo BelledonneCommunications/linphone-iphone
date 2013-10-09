@@ -735,7 +735,8 @@ linphonec_init(int argc, char **argv)
 	 */
 	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
 	linphone_core_set_zrtp_secrets_file(linphonec,zrtpsecrets);
-	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
+	linphone_core_enable_video_capture(linphonec, vcap_enabled);
+	linphone_core_enable_video_display(linphonec, display_enabled);
 	if (display_enabled && window_id != 0) 
 	{
 		printf ("Setting window_id: 0x%x\n", window_id);

@@ -642,8 +642,10 @@ static bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee)
 	LinphoneCall* call_obj;
 	caller_policy.automatically_accept=TRUE;
 	caller_policy.automatically_initiate=TRUE;
-	linphone_core_enable_video(callee->lc,TRUE,TRUE);
-	linphone_core_enable_video(caller->lc,TRUE,FALSE);
+	linphone_core_enable_video_capture(callee->lc, TRUE);
+	linphone_core_enable_video_display(callee->lc, TRUE);
+	linphone_core_enable_video_capture(caller->lc, TRUE);
+	linphone_core_enable_video_display(caller->lc, FALSE);
 	linphone_core_set_video_policy(caller->lc,&caller_policy);
 	stats initial_caller_stat=caller->stat;
 	stats initial_callee_stat=callee->stat;
@@ -693,8 +695,10 @@ static void call_with_declined_video(void) {
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
 
-	linphone_core_enable_video(marie->lc,TRUE,TRUE);
-	linphone_core_enable_video(pauline->lc,TRUE,FALSE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
 
 	caller_params=linphone_core_create_default_call_parameters(marie->lc);
 	linphone_call_params_enable_video(caller_params,TRUE);
@@ -724,8 +728,10 @@ static void video_call(void) {
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
 
-	linphone_core_enable_video(marie->lc,TRUE,TRUE);
-	linphone_core_enable_video(pauline->lc,TRUE,FALSE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
 
 	caller_params=linphone_core_create_default_call_parameters(marie->lc);
 	linphone_call_params_enable_video(caller_params,TRUE);

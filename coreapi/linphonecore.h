@@ -1715,8 +1715,67 @@ LINPHONE_PUBLIC	void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCal
 
 /* video support */
 LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
+
+/**
+ * Enables video globally.
+ *
+ * This function does not have any effect during calls. It just indicates LinphoneCore to
+ * initiate future calls with video or not. The two boolean parameters indicate in which
+ * direction video is enabled. Setting both to false disables video entirely.
+ *
+ * @param lc The LinphoneCore object
+ * @param vcap_enabled indicates whether video capture is enabled
+ * @param display_enabled indicates whether video display should be shown
+ * @ingroup media_parameters
+ * @deprecated Use #linphone_core_enable_video_capture and #linphone_core_enable_video_display instead.
+**/
 LINPHONE_PUBLIC	void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
+
+/**
+ * Returns TRUE if video is enabled, FALSE otherwise.
+ * @ingroup media_parameters
+ * @deprecated Use #linphone_core_video_capture_enabled and #linphone_core_video_display_enabled instead.
+**/
 LINPHONE_PUBLIC bool_t linphone_core_video_enabled(LinphoneCore *lc);
+
+/**
+ * Enable or disable video capture.
+ *
+ * This function does not have any effect during calls. It just indicates the #LinphoneCore to
+ * initiate future calls with video capture or not.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] enable TRUE to enable video capture, FALSE to disable it.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_video_capture(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Enable or disable video display.
+ *
+ * This function does not have any effect during calls. It just indicates the #LinphoneCore to
+ * initiate future calls with video display or not.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] enable TRUE to enable video display, FALSE to disable it.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_video_display(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether video capture is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @returns TRUE if video capture is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_video_capture_enabled(LinphoneCore *lc);
+
+/**
+ * Tells whether video display is enabled.
+ * @param[in] lc #LinphoneCore object.
+ * @returns TRUE if video display is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
+
 LINPHONE_PUBLIC	void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
 LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
 

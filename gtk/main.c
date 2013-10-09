@@ -259,7 +259,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	linphone_core_set_waiting_callback(the_core,linphone_gtk_wait,NULL);
 	linphone_core_set_zrtp_secrets_file(the_core,secrets_file);
 	g_free(secrets_file);
-	linphone_core_enable_video(the_core,TRUE,TRUE);
+	linphone_core_enable_video_capture(the_core, TRUE);
+	linphone_core_enable_video_display(the_core, TRUE);
 	if (no_video) {
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
@@ -886,7 +887,8 @@ void linphone_gtk_answer_clicked(GtkWidget *button){
 void _linphone_gtk_enable_video(gboolean val){
 	LinphoneVideoPolicy policy={0};
 	policy.automatically_initiate=policy.automatically_accept=val;
-	linphone_core_enable_video(linphone_gtk_get_core(),TRUE,TRUE);
+	linphone_core_enable_video_capture(linphone_gtk_get_core(), TRUE);
+	linphone_core_enable_video_display(linphone_gtk_get_core(), TRUE);
 	linphone_core_set_video_policy(linphone_gtk_get_core(),&policy);
 
 	if (val){

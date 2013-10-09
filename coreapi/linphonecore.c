@@ -956,7 +956,8 @@ static void video_config_read(LinphoneCore *lc){
 	self_view=lp_config_get_int(lc->config,"video","self_view",1);
 	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",1);
 	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",1);
-	linphone_core_enable_video(lc,capture,display);
+	linphone_core_enable_video_capture(lc, capture);
+	linphone_core_enable_video_display(lc, display);
 	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
 	linphone_core_enable_self_view(lc,self_view);
 	linphone_core_set_video_policy(lc,&vpol);
@@ -4597,37 +4598,6 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 #endif
 }
 
-/**
- * Enables video globally.
- *
- * @ingroup media_parameters
- * This function does not have any effect during calls. It just indicates LinphoneCore to
- * initiate future calls with video or not. The two boolean parameters indicate in which
- * direction video is enabled. Setting both to false disables video entirely.
- *
- * @param lc The LinphoneCore object
- * @param vcap_enabled indicates whether video capture is enabled
- * @param display_enabled indicates whether video display should be shown
- *
-**/
-void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled){
-#ifndef VIDEO_ENABLED
-	if (vcap_enabled || display_enabled)
-		ms_warning("This version of linphone was built without video support.");
-#endif
-	lc->video_conf.capture=vcap_enabled;
-	lc->video_conf.display=display_enabled;
-	if (linphone_core_ready(lc)){
-		lp_config_set_int(lc->config,"video","display",lc->video_conf.display);
-		lp_config_set_int(lc->config,"video","capture",lc->video_conf.capture);
-	}
-	/* need to re-apply network bandwidth settings*/
-	linphone_core_set_download_bandwidth(lc,
-		linphone_core_get_download_bandwidth(lc));
-	linphone_core_set_upload_bandwidth(lc,
-		linphone_core_get_upload_bandwidth(lc));
-}
-
 bool_t linphone_core_video_supported(LinphoneCore *lc){
 #ifdef VIDEO_ENABLED
 	return TRUE;
@@ -4636,12 +4606,54 @@ bool_t linphone_core_video_supported(LinphoneCore *lc){
 #endif
 }
 
-/**
- * Returns TRUE if video is enabled, FALSE otherwise.
- * @ingroup media_parameters
-**/
+void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled) {
+	linphone_core_enable_video_capture(lc, vcap_enabled);
+	linphone_core_enable_video_display(lc, display_enabled);
+}
+
 bool_t linphone_core_video_enabled(LinphoneCore *lc){
 	return (lc->video_conf.display || lc->video_conf.capture);
+}
+
+static void reapply_network_bandwidth_settings(LinphoneCore *lc) {
+	linphone_core_set_download_bandwidth(lc, linphone_core_get_download_bandwidth(lc));
+	linphone_core_set_upload_bandwidth(lc, linphone_core_get_upload_bandwidth(lc));
+}
+
+void linphone_core_enable_video_capture(LinphoneCore *lc, bool_t enable) {
+#ifndef VIDEO_ENABLED
+	if (enable == TRUE) {
+		ms_warning("Cannot enable video capture, this version of linphone was built without video support.");
+	}
+#endif
+	lc->video_conf.capture = enable;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config, "video", "capture", lc->video_conf.capture);
+	}
+	/* Need to re-apply network bandwidth settings. */
+	reapply_network_bandwidth_settings(lc);
+}
+
+void linphone_core_enable_video_display(LinphoneCore *lc, bool_t enable) {
+#ifndef VIDEO_ENABLED
+	if (enable == TRUE) {
+		ms_warning("Cannot enable video display, this version of linphone was built without video support.");
+	}
+#endif
+	lc->video_conf.display = enable;
+	if (linphone_core_ready(lc)) {
+		lp_config_set_int(lc->config, "video", "display", lc->video_conf.display);
+	}
+	/* Need to re-apply network bandwidth settings. */
+	reapply_network_bandwidth_settings(lc);
+}
+
+bool_t linphone_core_video_capture_enabled(LinphoneCore *lc) {
+	return lc->video_conf.capture;
+}
+
+bool_t linphone_core_video_display_enabled(LinphoneCore *lc) {
+	return lc->video_conf.display;
 }
 
 /**
