@@ -59,7 +59,7 @@ static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *fri
 				,activity_str
 				,linphone_address_as_string (friend_address));
 }
-static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
+static void new_subscription_requested (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	printf(" [%s] wants to see your status, accepting\n"
 				,linphone_address_as_string (friend_address));
@@ -106,11 +106,11 @@ int main(int argc, char *argv[]){
 #endif
 	/* 
 	 Fill the LinphoneCoreVTable with application callbacks.
-	 All are optional. Here we only use the both notify_presence_recv and new_subscription_request callbacks
+	 All are optional. Here we only use the both notify_presence_received and new_subscription_requested callbacks
 	 in order to get notifications about friend status.
 	 */
-	vtable.notify_presence_recv=notify_presence_recv_updated;
-	vtable.new_subscription_request=new_subscription_request;
+	vtable.notify_presence_received=notify_presence_recv_updated;
+	vtable.new_subscription_requested=new_subscription_requested;
 	vtable.registration_state_changed=registration_state_changed; /*just in case sip proxy is used*/
 
 	/*

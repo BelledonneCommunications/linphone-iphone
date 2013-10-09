@@ -194,7 +194,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf);
 void text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from_address, const char *message);
 void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* message);
 void info_message_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg);
-void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *ev, LinphoneSubscriptionState state);
 void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state);

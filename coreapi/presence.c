@@ -1524,9 +1524,9 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
-	if (lc->vtable.new_subscription_request!=NULL) {
+	if (lc->vtable.new_subscription_requested!=NULL) {
 		char *tmp=linphone_address_as_string(fl->uri);
-		lc->vtable.new_subscription_request(lc,fl,tmp);
+		lc->vtable.new_subscription_requested(lc,fl,tmp);
 		ms_free(tmp);
 	}
 }
@@ -1958,8 +1958,8 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		}
 		lf->presence = presence;
 		lf->subscribe_active=TRUE;
-		if (lc->vtable.notify_presence_recv)
-			lc->vtable.notify_presence_recv(lc,(LinphoneFriend*)lf);
+		if (lc->vtable.notify_presence_received)
+			lc->vtable.notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");

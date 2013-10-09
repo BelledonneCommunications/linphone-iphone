@@ -37,7 +37,7 @@ extern "C" {
 typedef enum _LinphoneSubscribePolicy {
 	/**
 	 * Does not automatically accept an incoming subscription request.
-	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_request
+	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_requested
 	 *
 	 */
 	LinphoneSPWait,

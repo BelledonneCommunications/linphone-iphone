@@ -31,7 +31,7 @@ static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
 	linphone_core_set_primary_contact(mgr->lc,identity_char);
 	return mgr;
 }
-void new_subscribtion_request(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
+void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	stats* counters;
 	ms_message("New subscription request  from [%s]  url [%s]",from,url);

@@ -168,8 +168,8 @@ public:
 		vTable.text_received = text_received;
 		vTable.message_received = message_received;
 		vTable.dtmf_received = dtmf_received;
-		vTable.new_subscription_request = new_subscription_request;
-		vTable.notify_presence_recv = notify_presence_recv;
+		vTable.new_subscription_requested = new_subscription_requested;
+		vTable.notify_presence_received = notify_presence_received;
 		vTable.call_stats_updated = callStatsUpdated;
 		vTable.transfer_state_changed = transferStateChanged;
 		vTable.info_received = infoReceived;
@@ -477,7 +477,7 @@ public:
 							,encrypted
 							,authentication_token ? env->NewStringUTF(authentication_token) : NULL);
 	}
-	static void notify_presence_recv (LinphoneCore *lc,  LinphoneFriend *my_friend) {
+	static void notify_presence_received(LinphoneCore *lc,  LinphoneFriend *my_friend) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
@@ -490,7 +490,7 @@ public:
 							,lcData->core
 							,env->NewObject(lcData->friendClass,lcData->friendCtrId,(jlong)my_friend));
 	}
-	static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *my_friend, const char* url) {
+	static void new_subscription_requested(LinphoneCore *lc,  LinphoneFriend *my_friend, const char* url) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {

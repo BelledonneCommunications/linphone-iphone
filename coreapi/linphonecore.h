@@ -994,7 +994,7 @@ typedef void (*LinphoneCoreNotifyPresenceReceivedCb)(LinphoneCore *lc, LinphoneF
  * @param url of the subscriber
  *  Callback prototype
  */
-typedef void (*LinphoneCoreNewSubscriptionRequestCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
+typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 /** 
  * Callback for requesting authentication information to application or user.
  * @param lc the LinphoneCore
@@ -1076,8 +1076,8 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreGlobalStateChangedCb global_state_changed; /**<Notifies global state changes*/
 	LinphoneCoreRegistrationStateChangedCb registration_state_changed;/**<Notifies registration state changes*/
 	LinphoneCoreCallStateChangedCb call_state_changed;/**<Notifies call state changes*/
-	LinphoneCoreNotifyPresenceReceivedCb notify_presence_recv; /**< Notify received presence events*/
-	LinphoneCoreNewSubscriptionRequestCb new_subscription_request; /**< Notify about pending presence subscription request */
+	LinphoneCoreNotifyPresenceReceivedCb notify_presence_received; /**< Notify received presence events*/
+	LinphoneCoreNewSubscriptionRequestedCb new_subscription_requested; /**< Notify about pending presence subscription request */
 	LinphoneCoreAuthInfoRequestedCb auth_info_requested; /**< Ask the application some authentication information */
 	LinphoneCoreCallLogUpdatedCb call_log_updated; /**< Notifies that call log list has been updated */
 	LinphoneCoreMessageReceivedCb message_received; /** a message is received, can be text or external body*/
@@ -1089,7 +1089,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreCallStatsUpdatedCb call_stats_updated; /**<Notifies on refreshing of call's statistics. */
 	LinphoneCoreInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
 	LinphoneCoreSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
-	LinphoneCoreIncomingNotifyCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
+	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
 	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */

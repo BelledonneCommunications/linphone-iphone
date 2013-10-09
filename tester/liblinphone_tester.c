@@ -187,8 +187,8 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	mgr->v_table.call_state_changed=call_state_changed;
 	mgr->v_table.text_received=text_message_received;
 	mgr->v_table.message_received=message_received;
-	mgr->v_table.new_subscription_request=new_subscribtion_request;
-	mgr->v_table.notify_presence_recv=notify_presence_received;
+	mgr->v_table.new_subscription_requested=new_subscription_requested;
+	mgr->v_table.notify_presence_received=notify_presence_received;
 	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
 	mgr->v_table.info_received=info_message_received;
 	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
