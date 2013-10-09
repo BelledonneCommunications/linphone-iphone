@@ -4276,11 +4276,6 @@ bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc){
 	return lc->sound_conf.ea;
 }
 
-/**
- * Mutes or unmutes the local microphone.
- *
- * @ingroup media_parameters
-**/
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	AudioStream *st=NULL;
@@ -4303,9 +4298,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 		
 	}
 }
-/**
- * Returns whether microphone is muted.
-**/
+
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc)){
@@ -4317,13 +4310,21 @@ bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	return call->audio_muted;
 }
 
+void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
+	linphone_core_mute_mic(lc, (enable == TRUE) ? FALSE : TRUE);
+}
+
+bool_t linphone_core_mic_enabled(LinphoneCore *lc) {
+	return (linphone_core_is_mic_muted(lc) == TRUE) ? FALSE : TRUE;
+}
+
 // returns rtp transmission status for an active stream
 // if audio is muted and config parameter rtp_no_xmit_on_audio_mute
 // was set on then rtp transmission is also muted
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (call==NULL){
-		ms_warning("linphone_core_is_mic_muted(): No current call !");
+		ms_warning("linphone_core_is_rtp_muted(): No current call !");
 		return FALSE;
 	}
 	if( linphone_core_get_rtp_no_xmit_on_audio_mute(lc)){

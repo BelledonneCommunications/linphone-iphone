@@ -2031,7 +2031,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 				if (linphone_call_get_dir(call)==LinphoneCallOutgoing){
 					linphonec_out("Call out, hook=%s duration=%i, muted=%s rtp-xmit-muted=%s\n", linphonec_get_callee(),
 					      linphone_core_get_current_call_duration(lc),
-					      linphone_core_is_mic_muted (lc) ? "yes" : "no",
+					      linphone_core_mic_enabled(lc) ? "no" : "yes",
 					      linphone_core_is_rtp_muted(lc) ? "yes"  : "no");
 				}else{
 					linphonec_out("hook=answered duration=%i %s\n" ,

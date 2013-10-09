@@ -1651,13 +1651,32 @@ LINPHONE_PUBLIC	bool_t linphone_core_echo_limiter_enabled(const LinphoneCore *lc
 void linphone_core_enable_agc(LinphoneCore *lc, bool_t val);
 bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 
-LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
 /**
- * return mic state.
- *
- * @ingroup media_parameters
+ * @deprecated Use #linphone_core_enable_mic instead.
+**/
+LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
+
+/**
+ * Get mic state.
+ * @deprecated Use #linphone_core_is_mic_enabled instead
 **/
 LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
+
+/**
+ * Enable or disable the microphone.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] enable TRUE to enable the microphone, FALSE to disable it.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether the microphone is enabled.
+ * @param[in] lc #LinphoneCore object
+ * @returns TRUE if the microphone is enabled, FALSE if disabled.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_mic_enabled(LinphoneCore *lc);
 
 bool_t linphone_core_is_rtp_muted(LinphoneCore *lc);
 
