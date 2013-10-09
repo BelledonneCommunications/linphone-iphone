@@ -21,18 +21,32 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=no
+enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
 .NOTPARALLEL all: check_options build warning
+
+# check that the selected options are correct
+CHECKOPT_MSG := ""
+
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
+	CHECKOPT_MSG += "ZRTP is not available in non-gpl build.\n"
+endif
+
+ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
+	CHECKOPT_MSG += "FFMPEG is not available in non-gpl build.\n"
+endif
+
+ifneq ($(CHECKOPT_MSG),"")
 check_options:
-	@echo "ZRTP is not available in non-gpl build."
+	@echo $(CHECKOPT_MSG)
 	@exit -1
 else
 check_options:
-
 endif
+
+# setup footer
 
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
@@ -59,7 +73,9 @@ warning:
 	@echo "*****************************************************************"
 endif
 
-LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp) enable_opus=$(enable_opus) enable_debug=$(enable_debug)
+LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
+                 enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
+                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg)
 
 build:
 	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \

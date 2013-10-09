@@ -65,29 +65,47 @@ LINPHONE_BUILD_DIR=$(BUILDER_BUILD_DIR)/linphone
 
 all: build-linphone build-msilbc build-msamr build-msx264 build-mssilk build-msbcg729
 
-$(LINPHONE_BUILD_DIR)/enable_gpl_third_parties: 
-	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
-	rm -f $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
-	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
-
-$(LINPHONE_BUILD_DIR)/disable_gpl_third_parties: 
-	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
-	rm -f $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
-	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
+# setup the switches that might trigger a linphone reconfiguration
 
 enable_gpl_third_parties?=yes
+enable_ffmpeg?=yes
+
+SWITCHES:=
 
 ifeq ($(enable_gpl_third_parties),yes) 
-linphone_configure_controls+= --enable-ffmpeg 
-detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/enable_gpl_third_parties
+	SWITCHES+= enable_gpl_third_parties
 	
-else
-linphone_configure_controls+= --disable-ffmpeg 
-detect_gpl_mode_switch: $(LINPHONE_BUILD_DIR)/disable_gpl_third_parties
-	
+	ifeq ($(enable_ffmpeg), yes)
+		linphone_configure_controls+= --enable-ffmpeg 
+		SWITCHES += enable_ffmpeg
+	else
+		linphone_configure_controls+= --disable-ffmpeg 
+		SWITCHES += disable_ffmpeg
+	endif
+
+else # !enable gpl
+	linphone_configure_controls+= --disable-ffmpeg 
+	SWITCHES += disable_gpl_third_parties disable_ffmpeg
 endif
+
+SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
+
+mode_switch_check: $(SWITCHES)
+
+
+$(LINPHONE_BUILD_DIR)/disable_%:
+	mkdir -p $(LINPHONE_BUILD_DIR)
+	touch $(LINPHONE_BUILD_DIR)/disable_$*
+	rm -f $(LINPHONE_BUILD_DIR)/enable_$*
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 	
+
+$(LINPHONE_BUILD_DIR)/enable_%:
+	mkdir -p $(LINPHONE_BUILD_DIR)
+	touch $(LINPHONE_BUILD_DIR)/enable_$*
+	rm -f $(LINPHONE_BUILD_DIR)/disable_$*
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 	
+
+# end of switches parsing
 
 osip_dir=externals/osip
 eXosip_dir=externals/exosip
@@ -110,8 +128,6 @@ ifneq (,$(findstring armv7,$(host)))
 	SPEEX_CONFIGURE_OPTION += --enable-armv7neon-asm 
 endif
 
-
-
 clean-makefile: clean-makefile-linphone clean-makefile-msbcg729
 clean: clean-linphone clean-msbcg729
 init:
@@ -121,19 +137,22 @@ init:
 veryclean: veryclean-linphone veryclean-msbcg729
 	rm -rf $(BUILDER_BUILD_DIR)
 
+# list of the submodules to build
+MS_MODULES      := msilbc libilbc msamr mssilk msx264
+SUBMODULES_LIST := polarssl libantlr belle-sip srtp zrtpcpp speex libgsm libvpx libxml2 ffmpeg opus
 
-.NOTPARALLEL build-linphone: init build-polarssl build-libantlr build-belle-sip build-srtp build-zrtpcpp  build-speex build-libgsm build-ffmpeg build-libvpx build-opus build-libxml2 detect_gpl_mode_switch $(LINPHONE_BUILD_DIR)/Makefile
+.NOTPARALLEL build-linphone: init $(addprefix build-,$(SUBMODULES_LIST)) mode_switch_check $(LINPHONE_BUILD_DIR)/Makefile
 	cd $(LINPHONE_BUILD_DIR)  && export PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig export CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) make newdate && make && make install
 	mkdir -p $(prefix)/share/linphone/tutorials && cp -f $(LINPHONE_SRC_DIR)/coreapi/help/*.c $(prefix)/share/linphone/tutorials/
 
-clean-linphone: clean-libantlr clean-polarssl clean-belle-sip clean-speex clean-libgsm  clean-srtp clean-zrtpcpp clean-msilbc clean-libilbc clean-msamr clean-mssilk clean-ffmpeg clean-libvpx clean-msx264 clean-opus clean-libxml2
+clean-linphone: $(addprefix clean-,$(SUBMODULES_LIST)) $(addprefix clean-,$(MS_MODULES))
 	cd  $(LINPHONE_BUILD_DIR) && make clean
 
-veryclean-linphone: veryclean-libantlr veryclean-polarssl veryclean-belle-sip veryclean-speex veryclean-srtp veryclean-zrtpcpp veryclean-libgsm veryclean-msilbc veryclean-libilbc veryclean-openssl veryclean-msamr veryclean-mssilk veryclean-msx264  veryclean-libvpx veryclean-opus veryclean-libxml2
+veryclean-linphone: $(addprefix veryclean-,$(SUBMODULES_LIST)) $(addprefix veryclean-,$(MS_MODULES))
 #-cd $(LINPHONE_BUILD_DIR) && make distclean
 	-cd $(LINPHONE_SRC_DIR) && rm -f configure
 
-clean-makefile-linphone: clean-makefile-libantlr clean-makefile-polarssl clean-makefile-belle-sip clean-makefile-speex clean-makefile-srtp clean-makefile-zrtpcpp clean-makefile-libilbc clean-makefile-msilbc clean-makefile-msamr clean-makefile-ffmpeg clean-makefile-libvpx clean-makefile-mssilk clean-makefile-opus clean-makefile-libxml2
+clean-makefile-linphone: $(addprefix clean-makefile-,$(SUBMODULES_LIST)) $(addprefix clean-makefile-,$(MS_MODULES))
 	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile
 
 
@@ -142,7 +161,7 @@ $(LINPHONE_SRC_DIR)/configure:
 
 $(LINPHONE_BUILD_DIR)/Makefile: $(LINPHONE_SRC_DIR)/configure
 	mkdir -p $(LINPHONE_BUILD_DIR)
-	echo -e "\033[1mPKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	@echo -e "\033[1mPKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
         $(LINPHONE_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) ${library_mode} \
         ${linphone_configure_controls}\033[0m"
 	cd $(LINPHONE_BUILD_DIR) && \
