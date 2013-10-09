@@ -259,6 +259,24 @@ void JavascriptGenerator::writeEnum(Class *klass){
 		mOutfile<<endl;
 	}
 	mOutfile<<"};"<<endl;
+
+	mOutfile << "/**" << endl;
+	mOutfile << " * Get the name of a value of the " << enum_name << " enum as a string." << endl;
+	mOutfile << " * @function linphone#get" << enum_name << "Text" << endl;
+	mOutfile << " * @param { number } value - One of the values of the " << enum_name << " enum." << endl;
+	mOutfile << "**/" << endl;
+	mOutfile << mCurProj->getName() << ".get" << enum_name << "Text = function(value) {" << endl;
+	mOutfile << "\tswitch (value) {" << endl;
+	for (it = members.begin(); it != members.end(); it++) {
+		ConstField *cf = *it;
+		mOutfile << "\tcase " << mCurProj->getName() << "." << enum_name << "." << cf->getName().substr(prefix_size, string::npos) << ":" << endl;
+		mOutfile << "\t\treturn \"" << cf->getName().substr(prefix_size, string::npos) << "\";" << endl;
+	}
+	mOutfile << "\tdefault:" << endl;
+	mOutfile << "\t\treturn \"?\";" << endl;
+	mOutfile << "\t}" << endl;
+	mOutfile << "};" << endl;
+
 	mOutfile.close();
 }
 
