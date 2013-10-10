@@ -278,14 +278,14 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 
 		const char *localip = NULL;
 		char *tmp;
-
+		LinphoneAddress *contact;
 
 		if (obj->contact_params)
 			tmp = ms_strdup_printf("%s;%s", obj->reg_identity, obj->contact_params);
 		else
 			tmp = strdup(obj->reg_identity);
 		
-		LinphoneAddress *contact = linphone_address_new(tmp);
+		contact = linphone_address_new(tmp);
 		if (!contact) {
 			ms_error("No valid contact_params for [%s]",linphone_address_get_domain(proxy));
 			return NULL;
