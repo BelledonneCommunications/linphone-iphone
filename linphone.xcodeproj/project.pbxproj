@@ -1340,6 +1340,7 @@
 		D3F9A9DB15AEEB940045320F /* history_notification.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9DA15AEEB940045320F /* history_notification.png */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
+		F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
 		F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F066515617F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F0818E7E17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
@@ -1814,7 +1815,6 @@
 		340751E6150F38FD00B89C47 /* UIVideoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIVideoButton.m; sourceTree = "<group>"; };
 		34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoZoomHandler.h; path = LinphoneUI/VideoZoomHandler.h; sourceTree = "<group>"; };
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
-		344ABDE71484E723007420B6 /* libzrtpcpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzrtpcpp.a; path = "liblinphone-sdk/apple-darwin/lib/libzrtpcpp.a"; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		34A6ECEA14CF13CB00460C04 /* linphone_icon_72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_72.png; path = Resources/linphone_icon_72.png; sourceTree = "<group>"; };
@@ -2589,6 +2589,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */,
 				15017E71177357C500784ACB /* libxml2.a in Frameworks */,
 				2200C2DC174BBB24002E9A70 /* MobileCoreServices.framework in Frameworks */,
 				2200C2DB174BB87A002E9A70 /* AssetsLibrary.framework in Frameworks */,
@@ -3313,7 +3314,6 @@
 				22276E8213C73D3100210156 /* libswscale.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
-				344ABDE71484E723007420B6 /* libzrtpcpp.a */,
 				344ABDEF14850AE9007420B6 /* libc++.1.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
 				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
@@ -5879,14 +5879,7 @@
 					DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					liblinphone-sdk/apple-darwin/include,
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5921,14 +5914,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					liblinphone-sdk/apple-darwin/include,
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5964,14 +5950,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					liblinphone-sdk/apple-darwin/include,
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -6007,14 +5986,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					submodules/linphone/coreapi,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/mediastreamer2/include,
-					submodules/linphone/oRTP/include,
-					submodules/externals/gsm/,
-					submodules/externals/osip/include,
-					submodules/externals/exosip/include,
-					submodules/externals/speex/include,
+					liblinphone-sdk/apple-darwin/include,
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -6071,7 +6043,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					IN_LINPHONE,
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
@@ -6136,7 +6107,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					IN_LINPHONE,
 					VIDEO_ENABLED,
-					HAVE_X264,
 					HAVE_SILK,
 					HAVE_SSL,
 				);
