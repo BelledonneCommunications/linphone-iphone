@@ -33,6 +33,7 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 	private native String getUserId(long ptr);
 	private native String getHa1(long ptr);
 	
+	boolean ownPtr = false;
 	protected LinphoneAuthInfoImpl(String username,String password, String realm)  {
 		this(username,null,password,null,null);
 	}
@@ -42,9 +43,14 @@ class LinphoneAuthInfoImpl implements LinphoneAuthInfo {
 		this.setUserId(userid);
 		this.setPassword(passwd);
 		this.setHa1(ha1);
+		ownPtr = true;
+	}
+	protected LinphoneAuthInfoImpl(long aNativePtr)  {
+		nativePtr = aNativePtr;
+		ownPtr = false;
 	}
 	protected void finalize() throws Throwable {
-		delete(nativePtr);
+		if (ownPtr) delete(nativePtr);
 	}
 	public String getPassword() {
 		return getPassword (nativePtr);

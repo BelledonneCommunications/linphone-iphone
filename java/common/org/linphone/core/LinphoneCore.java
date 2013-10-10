@@ -385,6 +385,11 @@ public interface LinphoneCore {
 	public LinphoneProxyConfig getDefaultProxyConfig() ;
 	
 	/**
+	 * Returns an array with all the auth infos stored in LinphoneCore
+	 */
+	LinphoneAuthInfo[] getAuthInfosList();
+	
+	/**
 	 * clear all the added auth info
 	 */
 	void clearAuthInfos();

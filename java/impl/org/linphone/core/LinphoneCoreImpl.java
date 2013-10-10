@@ -103,6 +103,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setRootCA(long nativePtr, String path);
 	private native long[] listVideoPayloadTypes(long nativePtr);
 	private native long[] getProxyConfigList(long nativePtr);
+	private native long[] getAuthInfosList(long nativePtr);
 	private native long[] listAudioPayloadTypes(long nativePtr);
 	private native void enableKeepAlive(long nativePtr,boolean enable);
 	private native boolean isKeepAliveEnabled(long nativePtr);
@@ -1006,5 +1007,18 @@ class LinphoneCoreImpl implements LinphoneCore {
 		}
 
 		return proxies;
+	}
+	@Override
+	public LinphoneAuthInfo[] getAuthInfosList() {
+		long[] typesPtr = getAuthInfosList(nativePtr);
+		if (typesPtr == null) return null;
+		
+		LinphoneAuthInfo[] authInfos = new LinphoneAuthInfo[typesPtr.length];
+
+		for (int i=0; i < authInfos.length; i++) {
+			authInfos[i] = new LinphoneAuthInfoImpl(typesPtr[i]);
+		}
+
+		return authInfos;
 	}
 }

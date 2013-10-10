@@ -814,6 +814,22 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_addProxyConfig(	JNIEnv* 
 	return (jint)linphone_core_add_proxy_config((LinphoneCore*)lc,(LinphoneProxyConfig*)pc);
 }
 
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getAuthInfosList(JNIEnv* env, jobject thiz,jlong lc) {
+	const MSList* authInfos = linphone_core_get_auth_info_list((LinphoneCore*)lc);
+	int listCount = ms_list_size(authInfos);
+	jlongArray jAuthInfos = env->NewLongArray(listCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jAuthInfos, NULL);
+
+	for (int i = 0; i < listCount; i++ ) {
+		jInternalArray[i] = (unsigned long) (authInfos->data);
+		authInfos = authInfos->next;
+	}
+
+	env->ReleaseLongArrayElements(jAuthInfos, jInternalArray, 0);
+
+	return jAuthInfos;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearAuthInfos(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_all_auth_info((LinphoneCore*)lc);
 }
