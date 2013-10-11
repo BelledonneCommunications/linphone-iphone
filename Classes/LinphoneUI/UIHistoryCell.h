@@ -19,9 +19,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UITransparentTVCell.h"
 #include "linphonecore.h"
 
-@interface UIHistoryCell : UITableViewCell {
+@interface UIHistoryCell : UITransparentTVCell {
 }
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;

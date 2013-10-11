@@ -30,6 +30,10 @@
 
 @implementation HPTextViewInternal
 
+@synthesize placeholder;
+@synthesize placeholderColor;
+@synthesize displayPlaceHolder;
+
 -(void)setText:(NSString *)text
 {
     BOOL originalValue = self.scrollEnabled;
@@ -39,6 +43,11 @@
     [self setScrollEnabled:YES];
     [super setText:text];
     [self setScrollEnabled:originalValue];
+}
+
+- (void)setScrollable:(BOOL)isScrollable
+{
+    [super setScrollEnabled:isScrollable];
 }
 
 -(void)setContentOffset:(CGPoint)s
@@ -89,7 +98,13 @@
     [super setContentSize:contentSize];
 }
 
-
-
+- (void)drawRect:(CGRect)rect
+{
+    [super drawRect:rect];
+    if (displayPlaceHolder && placeholder && placeholderColor) {
+        [placeholderColor set];
+        [placeholder drawInRect:CGRectMake(8.0f, 8.0f, self.frame.size.width - 16.0f, self.frame.size.height - 16.0f) withFont:self.font];
+    }
+}
 
 @end

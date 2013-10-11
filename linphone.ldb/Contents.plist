@@ -3741,17 +3741,17 @@
 					<dict>
 						<key>backup</key>
 						<dict>
-							<key>5</key>
+							<key>6</key>
 							<dict>
 								<key>class</key>
 								<string>BLWrapperHandle</string>
 								<key>name</key>
-								<string>Classes/InCallViewController/5/InCallViewController.xib</string>
+								<string>Classes/InCallViewController/6/InCallViewController.xib</string>
 							</dict>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-25T09:16:20Z</date>
+					<date>2013-07-22T11:10:50Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -3761,7 +3761,7 @@
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>7f214a2ef7edff45568215c89af0ece4
+					<string>8c081a9b0433d4932659d8da7064bcbe
 </string>
 					<key>name</key>
 					<string>InCallViewController.xib</string>
@@ -3802,11 +3802,11 @@
 					<key>versions</key>
 					<dict>
 						<key>en</key>
-						<string>5</string>
+						<string>6</string>
 						<key>fr</key>
-						<string>5</string>
+						<string>6</string>
 						<key>ru</key>
-						<string>5</string>
+						<string>6</string>
 					</dict>
 				</dict>
 				<dict>
@@ -17902,7 +17902,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-11-06T09:45:46Z</date>
+					<date>2013-06-28T12:59:59Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -17912,7 +17912,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>d8b4f45bf8fca397a7f791bd55a61e1c
+					<string>a03adeb7710ae8986354684bdcd69764
 </string>
 					<key>name</key>
 					<string>Audio.strings</string>
@@ -18279,6 +18279,56 @@ Raison: %2$s</string>
 							<key>snapshots</key>
 							<dict/>
 						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Adaptive rate control</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Adaptive rate control</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Adaptive rate control</string>
+								<key>fr</key>
+								<string>Contrôle de débit</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Codec bitrate limit</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Codec bitrate limit</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Codec bitrate limit</string>
+								<key>fr</key>
+								<string>Limite de débit du codec</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
 					</array>
 					<key>old objects</key>
 					<array/>
@@ -18561,7 +18611,7 @@ Raison: %2$s</string>
 						</dict>
 					</dict>
 					<key>change date</key>
-					<date>2012-09-17T13:29:57Z</date>
+					<date>2013-07-22T11:22:00Z</date>
 					<key>changed values</key>
 					<array/>
 					<key>class</key>
@@ -18571,7 +18621,7 @@ Raison: %2$s</string>
 					<key>flags</key>
 					<integer>0</integer>
 					<key>hash</key>
-					<string>b7297749603f255583f59fcea3174690
+					<string>9da839864b9c883ec66e9863c5d94ced
 </string>
 					<key>name</key>
 					<string>Video.strings</string>
@@ -18681,6 +18731,31 @@ Raison: %2$s</string>
 								<string>Activer la prévisualisation</string>
 								<key>ru</key>
 								<string>Предварительный просмотр</string>
+							</dict>
+							<key>snapshots</key>
+							<dict/>
+						</dict>
+						<dict>
+							<key>change date</key>
+							<date>2001-01-01T00:00:00Z</date>
+							<key>changed values</key>
+							<array/>
+							<key>class</key>
+							<string>BLStringKeyObject</string>
+							<key>comment</key>
+							<string>Preferred video size</string>
+							<key>errors</key>
+							<array/>
+							<key>flags</key>
+							<integer>0</integer>
+							<key>key</key>
+							<string>Preferred video size</string>
+							<key>localizations</key>
+							<dict>
+								<key>en</key>
+								<string>Preferred video size</string>
+								<key>fr</key>
+								<string>Taille de vidéo préférée</string>
 							</dict>
 							<key>snapshots</key>
 							<dict/>

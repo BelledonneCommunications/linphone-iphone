@@ -1,12 +1,6 @@
 [submodule "submodules/linphone"]
 	path = submodules/linphone
-	url = git://git.linphone.org/linphone.git
-[submodule "submodules/externals/osip"]
-	path = submodules/externals/osip
-	url = git://git.linphone.org/osip.git
-[submodule "submodules/externals/exosip"]
-	path = submodules/externals/exosip
-	url = git://git.linphone.org/exosip.git
+	url = git://git.linphone.org/linphone
 [submodule "submodules/externals/gsm"]
 	path = submodules/externals/gsm
 	url = git://git.linphone.org/gsm.git
@@ -21,7 +15,7 @@
 	url = git://git.linphone.org/libilbc-rfc3951.git
 [submodule "submodules/externals/opencore-amr"]
 	path = submodules/externals/opencore-amr
-	url = git://opencore-amr.git.sourceforge.net/gitroot/opencore-amr/opencore-amr
+	url = git://git.code.sf.net/p/opencore-amr/code
 [submodule "submodules/msamr"]
 	path = submodules/msamr
 	url = git://git.linphone.org/msamr.git
@@ -49,3 +43,18 @@
 [submodule "submodules/bcg729"]
 	path = submodules/bcg729
 	url = git://git.linphone.org/bcg729.git
+[submodule "submodules/belle-sip"]
+	path = submodules/belle-sip
+	url = git://git.linphone.org/belle-sip
+[submodule "submodules/externals/antlr3"]
+	path = submodules/externals/antlr3
+	url = git://git.linphone.org/antlr3.git
+[submodule "submodules/externals/polarssl"]
+	path = submodules/externals/polarssl
+	url = git://git.linphone.org/polarssl.git
+[submodule "submodules/externals/opus"]
+	path = submodules/externals/opus
+	url = git://git.opus-codec.org/opus.git
+[submodule "submodules/externals/libxml2"]
+	path = submodules/externals/libxml2
+	url = git://git.gnome.org/libxml2

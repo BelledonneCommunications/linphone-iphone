@@ -22,6 +22,7 @@
 @implementation UIEditableTableViewCell
 
 @synthesize detailTextField;
+@synthesize verticalSep;
 
 
 #pragma mark - Lifecycle Functions
@@ -30,7 +31,6 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        UIView *parent = [self.detailTextLabel superview];
         self.detailTextField = [[UITextField alloc] init];
         [self.detailTextField setHidden:TRUE];
         [self.detailTextField setClearButtonMode: UITextFieldViewModeWhileEditing];
@@ -39,7 +39,13 @@
         UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:[UIFont systemFontSize]];
         [self.detailTextLabel setFont:font];
         [self.detailTextField setFont:font];
-        [parent addSubview:detailTextField];
+        [self.contentView addSubview:detailTextField];
+
+        // a vertical separator that will come between the text and detailed text
+        self.verticalSep = [[UIView alloc] initWithFrame:CGRectMake(80, 5, 1, 34)];
+        verticalSep.backgroundColor = [UIColor lightGrayColor];
+        [self.verticalSep setHidden:TRUE];
+        [self.contentView addSubview:verticalSep];
     }
     return self;
 }
@@ -53,21 +59,32 @@
 #pragma mark - View Functions
 
 - (void)layoutSubviews {
-    [super layoutSubviews];	
-    
-    CGRect fieldframe;
-    fieldframe.origin.x = 15;
-    fieldframe.origin.y = 0;
-    fieldframe.size.height = 44;
-    if([[self.textLabel text] length] != 0)
-        fieldframe.origin.x += [self.textLabel frame].size.width;
-    CGRect superframe = [[self.detailTextField superview]frame];
-    fieldframe.size.width = superframe.size.width - fieldframe.origin.x;
-    [self.detailTextField setFrame:fieldframe];
-    
-    CGRect labelFrame = [self.detailTextLabel frame];
-    labelFrame.origin.x = fieldframe.origin.x;
-    [self.detailTextLabel setFrame:labelFrame];
+    [super layoutSubviews];
+
+    CGRect detailEditFrame;
+    detailEditFrame.origin.x = 15;
+    detailEditFrame.origin.y = 0;
+    detailEditFrame.size.height = 44;
+
+    if([[self.textLabel text] length] != 0) {
+        detailEditFrame.origin.x += [self.textLabel frame].size.width + 8;
+
+        // shrink left text width by 10px
+        CGRect leftLabelFrame = [self.textLabel frame];
+        leftLabelFrame.size.width -= 10;
+        [self.textLabel setFrame:leftLabelFrame];
+
+        // place separator between left text and detailed text
+        CGRect separatorFrame = [self.verticalSep frame];
+        separatorFrame.origin.x = leftLabelFrame.size.width + leftLabelFrame.origin.x + 5;
+        [self.verticalSep setFrame:separatorFrame];
+        [self.verticalSep setHidden:FALSE];
+    }
+
+    // put the detailed text edit view at the correct position
+    CGRect superframe = [[self.detailTextField superview] frame];
+    detailEditFrame.size.width = superframe.size.width - detailEditFrame.origin.x;
+    [self.detailTextField setFrame:detailEditFrame];
 }
 
 

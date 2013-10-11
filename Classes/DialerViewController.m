@@ -153,6 +153,17 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [videoCameraSwitch setHidden:TRUE];
             }
         }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 // attributed string only available since iOS6
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+            // fix placeholder bar color in iOS7
+            UIColor *color = [UIColor grayColor];
+            addressField.attributedPlaceholder = [[NSAttributedString alloc]
+                                                  initWithString:addressField.placeholder
+                                                  attributes:@{NSForegroundColorAttributeName: color}];
+        }
+#endif
+
     }
 } 
 
@@ -317,7 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddContactClick: (id) event {
     [ContactSelection setSelectionMode:ContactSelectionModeEdit];
     [ContactSelection setAddAddress:[addressField text]];
-    [ContactSelection setSipFilter:FALSE];
+    [ContactSelection setSipFilter:nil];
     [ContactSelection setEmailFilter:FALSE];
     ContactsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription] push:TRUE], ContactsViewController);
     if(controller != nil) {

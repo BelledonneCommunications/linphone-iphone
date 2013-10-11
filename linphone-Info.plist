@@ -21,6 +21,23 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
+				<string>linphone_icon_120</string>
+				<string>linphone_icon_57.png</string>
+				<string>linphone_icon_72.png</string>
+				<string>linphone_icon_57@2x.png</string>
+				<string>linphone_icon_72@2x.png</string>
+			</array>
+		</dict>
+	</dict>
+	<key>CFBundleIcons~ipad</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>linphone_icon_152</string>
+				<string>linphone_icon_76</string>
+				<string>linphone_icon_120</string>
 				<string>linphone_icon_57.png</string>
 				<string>linphone_icon_72.png</string>
 				<string>linphone_icon_57@2x.png</string>
@@ -59,7 +76,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.0.4</string>
+	<string>2.1</string>
 	<key>NSMainNibFile</key>
 	<string>LinphoneApp</string>
 	<key>NSMainNibFile~ipad</key>
@@ -68,8 +85,9 @@
 	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>voip</string>
 		<string>audio</string>
+		<string>remote-notification</string>
+		<string>voip</string>
 	</array>
 	<key>UILaunchImageFile~ipad</key>
 	<string>linphone_splashscreen</string>
@@ -98,5 +116,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

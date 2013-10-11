@@ -82,17 +82,17 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		if (addr){
 			const char *proxy=linphone_proxy_config_get_addr(cfg);
 			LinphoneAddress *proxy_addr=linphone_address_new(proxy);
-			const char *port=linphone_address_get_port(proxy_addr);
+			int port=linphone_address_get_port(proxy_addr);
 			
 			[self setString: linphone_address_get_username(addr) forKey:@"username_preference"];
 			[self setString: linphone_address_get_domain(addr) forKey:@"domain_preference"];
             [self setInteger: linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
 			[self setString: linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
 			if (strcmp(linphone_address_get_domain(addr),linphone_address_get_domain(proxy_addr))!=0
-				|| port!=NULL){
+				|| port>0){
 				char tmp[256]={0};
-				if (port!=NULL) {
-					snprintf(tmp,sizeof(tmp)-1,"%s:%s",linphone_address_get_domain(proxy_addr),port);
+				if (port>0) {
+					snprintf(tmp,sizeof(tmp)-1,"%s:%i",linphone_address_get_domain(proxy_addr),port);
 				}else snprintf(tmp,sizeof(tmp)-1,"%s",linphone_address_get_domain(proxy_addr));
 				[self setString: tmp forKey:@"proxy_preference"];
 			}
@@ -182,7 +182,19 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	
 	{
 		[self transformCodecsToKeys: linphone_core_get_audio_codecs(lc)];
-		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)]; 
+		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)];
+        [self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
+        LpConfig *config = linphone_core_get_config(lc);
+        [self setInteger:lp_config_get_int(config, "audio", "codec_bitrate_limit", 32) forKey:@"audio_codec_bitrate_limit_preference"];
+
+        PayloadType *pt;
+        const MSList *elem;
+        for (elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
+            pt=(PayloadType*)elem->data;
+            if ((strcmp(pt->mime_type, "opus") == 0) || (strcmp(pt->mime_type, "mpeg4-generic") == 0)) {
+                pt->normal_bitrate = [self integerForKey:@"audio_codec_bitrate_limit_preference"] * 1000;
+            }
+        }
 	}
 	
 	{	
@@ -233,6 +245,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
         [self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
         [self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
         [self setBool:linphone_core_video_preview_enabled(lc) forKey:@"preview_preference"];
+		MSVideoSize vsize = linphone_core_get_preferred_video_size(lc);
+		int index;
+		if ((vsize.width == MS_VIDEO_SIZE_720P_W) && (vsize.height == MS_VIDEO_SIZE_720P_H)) {
+			index = 0;
+		} else if ((vsize.width == MS_VIDEO_SIZE_VGA_W) && (vsize.height == MS_VIDEO_SIZE_VGA_H)) {
+			index = 1;
+		} else {
+			index = 2;
+		}
+		[self setInteger:index forKey:@"video_preferred_size_preference"];
 	}
     {
         [self setBool:linphone_core_get_use_info_for_dtmf(lc) forKey:@"sipinfo_dtmf_preference"];
@@ -486,12 +508,19 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		pt=(PayloadType*)elem->data;
 		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
+        if ((strcmp(pt->mime_type, "opus") == 0) || (strcmp(pt->mime_type, "mpeg4-generic") == 0)) {
+            pt->normal_bitrate = [self integerForKey:@"audio_codec_bitrate_limit_preference"] * 1000;
+        }
 	}
 	for (elem=linphone_core_get_video_codecs(lc);elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		NSString *pref=[LinphoneManager getPreferenceForCodec:pt->mime_type withRate:pt->clock_rate];
 		linphone_core_enable_payload_type(lc,pt,[self boolForKey: pref]);
 	}
+
+    LpConfig *config = linphone_core_get_config(lc);
+    lp_config_set_int(config, "audio", "codec_bitrate_limit", [self integerForKey:@"audio_codec_bitrate_limit_preference"]);
+    linphone_core_enable_adaptive_rate_control(lc, [self boolForKey:@"adaptive_rate_control_preference"]);
 	
     linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
     linphone_core_set_use_rfc2833_for_dtmf(lc, [self boolForKey:@"rfc_dtmf_preference"]);
@@ -529,6 +558,26 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
     linphone_core_set_video_policy(lc, &policy);
     linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
     linphone_core_enable_video_preview(lc, [self boolForKey:@"preview_preference"]);
+	MSVideoSize vsize;
+	int bw;
+	switch ([self integerForKey:@"video_preferred_size_preference"]) {
+		case 0:
+			MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
+			bw = 1024 * 1024;
+			break;
+		case 1:
+			MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
+			bw = 512 * 1024;
+			break;
+		case 2:
+		default:
+			MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
+			bw = 380 * 1024;
+			break;
+	}
+	linphone_core_set_preferred_video_size(lc, vsize);
+	[self setInteger: bw forKey:@"upload_bandwidth_preference"];
+	[self setInteger: bw forKey:@"download_bandwidth_preference"];
     
     // Primary contact
     NSString* displayname = [self stringForKey:@"primary_displayname_preference"];

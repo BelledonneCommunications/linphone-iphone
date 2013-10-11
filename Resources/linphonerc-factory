@@ -1,6 +1,4 @@
 [net]
-download_bw=380
-upload_bw=380
 mtu=1300
 activate_edge_workarounds=0
 edge_ping_time=10
@@ -35,15 +33,19 @@ max_calls=3
 [wizard]
 service_url=https://www.linphone.org/wizard.php
 domain=sip.linphone.org
-proxy=sip.linphone.org:5228
+proxy=sip.linphone.org:5223
 password_length=6
 username_length=4
 expires=604800
 push_notification=1
-transport=tcp
+transport=tls
 sharing_server=https://www.linphone.org:444/upload.php
 ice=1
 stun=stun.linphone.org
 
 [video]
 display_filter_auto_rotate=0
+
+[app]
+#contact_display_username_only=1
+#contact_filter_on_default_domain=1

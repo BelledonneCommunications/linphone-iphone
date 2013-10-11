@@ -185,11 +185,8 @@
         }
         if(useLinphoneAddress) {
             const char* lDisplayName = linphone_address_get_display_name(addr);
-            const char* lUserName = linphone_address_get_username(addr);
-            if (lDisplayName) 
+            if (lDisplayName)
                 displayName = [NSString stringWithUTF8String:lDisplayName];
-            else if(lUserName) 
-                displayName = [NSString stringWithUTF8String:lUserName];
         }
     }
     

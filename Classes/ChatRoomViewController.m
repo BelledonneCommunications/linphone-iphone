@@ -320,8 +320,10 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[chat setState:[NSNumber numberWithInt:state]];
 	[chat update];
 	[thiz.tableController updateChatEntry:chat];
-	linphone_chat_message_set_user_data(msg, NULL);
-	[chat release]; // no longuer need to keep reference
+	if (state != LinphoneChatMessageStateInProgress) {
+		linphone_chat_message_set_user_data(msg, NULL);
+		[chat release]; // no longuer need to keep reference
+	}
 	
 }
 
@@ -732,6 +734,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect headerFrame = [headerView frame];
         headerFrame.origin.y = 0;
         [headerView setFrame:headerFrame];
+        [headerView setAlpha:1.0];
     }
     
     // Resize & Move table view
@@ -788,6 +791,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         CGRect headerFrame = [headerView frame];
         headerFrame.origin.y = -headerFrame.size.height;
         [headerView setFrame:headerFrame];
+        [headerView setAlpha:0.0];
     }
     
     // Resize & Move table view

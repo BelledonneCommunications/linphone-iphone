@@ -31,7 +31,7 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "ChatModel.h"
 
-#include "linphonecore_utils.h"
+#include "linphone/linphonecore_utils.h"
 #include "lpconfig.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
@@ -57,7 +57,7 @@ NSString *const kLinphoneMainViewChange = @"LinphoneMainViewChange";
 NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvailabilityUpdate";
-NSString *const kContactSipField = @"SIP";
+
 
 
 extern void libmsilbc_init();
@@ -131,6 +131,9 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "mp4v-es", 90000, @"mp4v-es_preference"},
 	{ "h264", 90000, @"h264_preference"},
 	{ "vp8", 90000, @"vp8_preference"},
+	{ "mpeg4-generic", 44100, @"aaceld_44k_preference"},
+	{ "mpeg4-generic", 22050, @"aaceld_22k_preference"},
+	{ "opus", 48000, @"opus_preference"},
 	{ NULL,0,Nil }
 };
 
@@ -243,6 +246,7 @@ struct codec_name_pref_table codec_pref_table[]={
         [self copyDefaultSettings];
         pendindCallIdFromRemoteNotif = [[NSMutableArray alloc] init ];
         photoLibrary = [[ALAssetsLibrary alloc] init];
+
     }
     return self;
 }
@@ -490,7 +494,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
             if(log == NULL || linphone_call_log_get_status(log) == LinphoneCallMissed) {
                 UILocalNotification *notification = [[UILocalNotification alloc] init];
                 notification.repeatInterval = 0;
-                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"You miss %@ call", nil), address];
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"You missed a call from %@", nil), address];
                 notification.alertAction = NSLocalizedString(@"Show", nil);
                 notification.userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)] forKey:@"callLog"];
                 [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
@@ -578,7 +582,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		[chat setMessage:[NSString stringWithUTF8String:linphone_chat_message_get_text(msg)]];
     }
 	[chat setDirection:[NSNumber numberWithInt:1]];
-    [chat setTime:[NSDate date]];
+    [chat setTime:[NSDate dateWithTimeIntervalSince1970:linphone_chat_message_get_time(msg)]];
     [chat setRead:[NSNumber numberWithInt:0]];
     [chat create];
     
@@ -774,9 +778,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
-	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
+	.call_state_changed =(LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_recv = NULL,
+	.notify_presence_recv=NULL,
 	.new_subscription_request = NULL,
 	.auth_info_requested = NULL,
 	.display_status = linphone_iphone_display_status,
@@ -838,6 +842,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 										 ,self);
 	linphone_core_set_user_agent(theLinphoneCore,"LinphoneIPhone",
                                  [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String]);
+	[_contactSipField release];
+	_contactSipField = [[self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"] retain];
+	
+
 	fastAddressBook = [[FastAddressBook alloc] init];
 	
     linphone_core_set_root_ca(theLinphoneCore, lRootCa);
@@ -937,6 +945,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		//go directly to bg mode
 		[self resignActive];
 	}
+		
     
     // Post event
     NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
@@ -969,6 +978,10 @@ static LinphoneCoreVTable linphonec_vtable = {
 }
 
 static int comp_call_id(const LinphoneCall* call , const char *callid) {
+	if (linphone_call_log_get_call_id(linphone_call_get_call_log(call)) == nil) {
+		ms_error ("no callid for call [%p]", call);
+		return 1;
+	}
 	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
@@ -1288,6 +1301,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress,[displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         } else {
@@ -1310,6 +1325,8 @@ static void audioRouteChangeListenerCallback (
         if(displayName!=nil) {
             linphone_address_set_display_name(linphoneAddress, [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
+        if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
+            linphone_address_set_domain(linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         if(transfer) {
             linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), linphone_address_as_string_uri_only(linphoneAddress));
         } else {
@@ -1426,6 +1443,10 @@ static void audioRouteChangeListenerCallback (
 - (NSString*)lpConfigStringForKey:(NSString*)key {
     return [self lpConfigStringForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
 }
+- (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)defaultValue {
+	NSString* value = [self lpConfigStringForKey:key];
+	return value?value:defaultValue;
+}
 
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString *)section {
     if (!key) return nil;
@@ -1509,5 +1530,17 @@ static void audioRouteChangeListenerCallback (
 			[self startCallPausedLongRunningTask];
 		}
 	} //else nop, keep call in paused state
+}
+-(NSString*) contactFilter {
+	NSString* filter=@"*";
+	if ( [self lpConfigBoolForKey:@"contact_filter_on_default_domain"]) {
+		LinphoneProxyConfig* proxy_cfg;
+		linphone_core_get_default_proxy(theLinphoneCore, &proxy_cfg);
+		if (proxy_cfg && linphone_proxy_config_get_addr(proxy_cfg)) {
+			return [NSString stringWithCString:linphone_proxy_config_get_domain(proxy_cfg)
+									  encoding:[NSString defaultCStringEncoding]];
+		}
+	}
+	return filter;
 }
 @end

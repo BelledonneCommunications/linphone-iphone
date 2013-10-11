@@ -19,9 +19,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UITransparentTVCell.h"
 #import "ChatModel.h"
 
-@interface UIChatCell : UITableViewCell {
+
+@interface UIChatCell : UITransparentTVCell {
 }
 
 @property (nonatomic, retain) ChatModel *chat;

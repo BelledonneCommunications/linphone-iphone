@@ -21,37 +21,61 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=no
+enable_ffmpeg=yes
+enable_opus=yes
+enable_debug=no
 
 .NOTPARALLEL all: check_options build warning
+
+# check that the selected options are correct
+CHECKOPT_MSG := ""
+
 ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
+	CHECKOPT_MSG += "ZRTP is not available in non-gpl build.\n"
+endif
+
+ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
+	CHECKOPT_MSG += "FFMPEG is not available in non-gpl build.\n"
+endif
+
+ifneq ($(CHECKOPT_MSG),"")
 check_options:
-	@echo "ZRTP is not available in non-gpl build."
+	@echo $(CHECKOPT_MSG)
 	@exit -1
 else
 check_options:
-
 endif
+
+# setup footer
 
 ifeq ($(enable_gpl_third_parties),yes)
 warning:
 	@echo 
-	@echo "*****************************************************************"
-	@echo "*****************************************************************"
-	@echo "*****CAUTION, this liblinphone SDK is built using GPL code ******"
-	@echo "*****To disable gpl code, use make enable_gpl_third_parties=no***"
-	@echo "*****************************************************************"
-	@echo "*****************************************************************"
+	@echo "***************************************************************************"
+	@echo "***************************************************************************"
+	@echo "*****CAUTION, this liblinphone SDK is built using 3rd party GPL code ******"
+	@echo "*****Even if you acquired a proprietary license from Belledonne      ******"
+	@echo "*****Communications, this SDK is GPL and GPL only.                   ******"
+	@echo "*****To disable 3rd party gpl code, please use:                      ******"
+	@echo "*****$ make enable_gpl_third_parties=no                              ******"
+	@echo "***************************************************************************"
+	@echo "***************************************************************************"
 else
 warning:
 	@echo 
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
-	@echo "*****linphone SDK without GPL code                         ******"
+	@echo "*****Linphone SDK without 3rd party GPL software           ******"
+	@echo "*****If you acquired a proprietary license from Belledonne ******"
+	@echo "*****Communications, this SDK can be used to create        ******"
+	@echo "*****a proprietary linphone-based application.             ******"
 	@echo "*****************************************************************"
 	@echo "*****************************************************************"
 endif
 
-LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) enable_zrtp=$(enable_zrtp)
+LINPHONE_OPTIONS=enable_gpl_third_parties=$(enable_gpl_third_parties) \
+                 enable_zrtp=$(enable_zrtp)   enable_opus=$(enable_opus) \
+                 enable_debug=$(enable_debug) enable_ffmpeg=$(enable_ffmpeg)
 
 build:
 	make -f  builder-iphone-simulator.mk $(LINPHONE_OPTIONS) all  \

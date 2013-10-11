@@ -26,11 +26,11 @@ $(BUILDER_SRC_DIR)/$(msamr_dir)/configure:
 $(BUILDER_BUILD_DIR)/$(msamr_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msamr_dir)/configure
 	mkdir -p $(BUILDER_BUILD_DIR)/$(msamr_dir)
 	cd $(BUILDER_BUILD_DIR)/$(msamr_dir)/ \
-	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(BUILDER_SRC_DIR)/$(msamr_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
 
 build-msamr: build-opencore-amr $(BUILDER_BUILD_DIR)/$(msamr_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(msamr_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-msamr: clean-opencore-amr
 	cd  $(BUILDER_BUILD_DIR)/$(msamr_dir) && make clean

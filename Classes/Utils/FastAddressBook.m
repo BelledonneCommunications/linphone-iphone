@@ -179,7 +179,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                         CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                         BOOL add = false;
                         if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-                            if(CFStringCompare((CFStringRef)kContactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
+                            if(CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey), kCFCompareCaseInsensitive) == 0) {
                                 add = true;
                             }
                         } else {

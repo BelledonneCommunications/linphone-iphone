@@ -83,16 +83,16 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     // Auto found position
     //
     
-    UIView *view = [self superview]; 
     // Find TableViewCell
-    if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+    UIView *view = [self superview];
+    while( view != nil && ![view isKindOfClass:[UITableView class]] ) view = [view superview];
     
-    UIView *cellView = [self superview]; 
     // Find TableViewCell
-    if(cellView != nil && ![cellView isKindOfClass:[UITableViewCell class]]) cellView = [cellView superview];
+    UIView *cellView = [self superview];
+    while( cellView != nil && ![cellView isKindOfClass:[UITableViewCell class]] ) cellView = [cellView superview];
     
     if(view != nil && cellView != nil) {
-        UITableViewCell *cell = (UITableViewCell*)cellView;
+        UITableViewCell *cell  = (UITableViewCell*)cellView;
         UITableView *tableView = (UITableView*)view;
         
         if([tableView style] == UITableViewStyleGrouped) {
@@ -122,7 +122,9 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
 - (void)drawRect:(CGRect)aRect {
     // Drawing code
     
-    CGContextRef c = UIGraphicsGetCurrentContext();	
+    CGContextRef c = UIGraphicsGetCurrentContext();
+    // don't use arcs on iOS >= 7
+    BOOL use_arcs = [[[UIDevice currentDevice] systemVersion] floatValue] < 7;
     
     int lineWidth = 1;
 	
@@ -140,8 +142,8 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
     CGContextSetLineWidth(c, lineWidth);
     CGContextSetAllowsAntialiasing(c, YES);
     CGContextSetShouldAntialias(c, YES);
-    
-    if (position == UACellBackgroundViewPositionTop) {
+
+    if (position == UACellBackgroundViewPositionTop && use_arcs) {
 		
         miny += 1;
 		
@@ -166,7 +168,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
         CGContextStrokePath(c);
         CGContextRestoreGState(c);		
         
-    } else if (position == UACellBackgroundViewPositionBottom) {
+    } else if (position == UACellBackgroundViewPositionBottom && use_arcs) {
         
         CGMutablePathRef path = CGPathCreateMutable();
         CGPathMoveToPoint(path, NULL, minx, miny);
@@ -190,8 +192,8 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect, float ovalWi
         CGContextRestoreGState(c);
         
 		
-    } else if (position == UACellBackgroundViewPositionMiddle) {
-		
+    } else if (position == UACellBackgroundViewPositionMiddle || !use_arcs) {
+		// in iOS7, this will be the default handling
         CGMutablePathRef path = CGPathCreateMutable();
         CGPathMoveToPoint(path, NULL, minx, miny);
         CGPathAddLineToPoint(path, NULL, maxx, miny);

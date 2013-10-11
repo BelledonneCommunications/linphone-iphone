@@ -103,7 +103,7 @@
 
 - (void)initUICompositeViewController {
     viewControllerCache = [[NSMutableDictionary alloc] init];
-    currentOrientation = UIDeviceOrientationUnknown;
+    currentOrientation = (UIInterfaceOrientation)UIDeviceOrientationUnknown;
 }
 
 - (id)init{
@@ -416,18 +416,18 @@
                 if(currentOrientation == UIDeviceOrientationUnknown) {
                     return [UIApplication sharedApplication].statusBarOrientation;
                 }
-                deviceOrientation = currentOrientation;
+                deviceOrientation = (UIDeviceOrientation)currentOrientation;
             }
             if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
                 if ([currentViewDescription portraitMode]) {
-                    return deviceOrientation;
+                    return (UIInterfaceOrientation)deviceOrientation;
                 } else {
                     return UIInterfaceOrientationLandscapeLeft;
                 }
             }
             if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
                 if ([currentViewDescription landscapeMode]) {
-                    return deviceOrientation;
+                    return (UIInterfaceOrientation)deviceOrientation;
                 } else {
                     return UIInterfaceOrientationPortrait;
                 }
@@ -435,7 +435,7 @@
         } else if([rotationPreference isEqualToString:@"portrait"]) {
             if ([currentViewDescription portraitMode]) {
                 if (UIDeviceOrientationIsPortrait(deviceOrientation)) {
-                    return deviceOrientation;
+                    return (UIInterfaceOrientation)deviceOrientation;
                 } else {
                     if(UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
                         return [UIApplication sharedApplication].statusBarOrientation;
@@ -449,7 +449,7 @@
         } else if([rotationPreference isEqualToString:@"landscape"]) {
             if ([currentViewDescription landscapeMode]) {
                 if (UIDeviceOrientationIsLandscape(deviceOrientation)) {
-                    return deviceOrientation;
+                    return (UIInterfaceOrientation)deviceOrientation;
                 } else {
                     if(UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
                         return [UIApplication sharedApplication].statusBarOrientation;

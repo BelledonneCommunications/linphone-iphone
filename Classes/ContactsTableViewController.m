@@ -87,13 +87,26 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
                     CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
                     if(CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
                         CFStringRef serviceKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey);
-                        if(CFStringCompare((CFStringRef)@"SIP", serviceKey, kCFCompareCaseInsensitive) == 0) {
+						CFStringRef username = username=CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
+                        if(CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, serviceKey, kCFCompareCaseInsensitive) == 0) {
                             add = true;
-                        }
-                    } else {
-                        NSString* usernameKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
-                        if([usernameKey hasPrefix:@"sip:"]) {
-                            add = true;
+                        }  else {
+							add=false;
+						}
+                    }  else {
+						//check domain
+						LinphoneAddress* address = linphone_address_new([(NSString*)CFDictionaryGetValue(lDict,kABPersonInstantMessageUsernameKey) UTF8String]);
+						if (address) {
+							if ([[ContactSelection getSipFilter] compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+								add = true;
+							} else {
+								NSString* domain = [NSString stringWithCString:linphone_address_get_domain(address)
+																	  encoding:[NSString defaultCStringEncoding]];
+								add = [domain compare:[ContactSelection getSipFilter] options:NSCaseInsensitiveSearch] == NSOrderedSame;
+							}
+							linphone_address_destroy(address);
+						} else {
+                            add = false;
                         }
                     }
                     CFRelease(lDict);

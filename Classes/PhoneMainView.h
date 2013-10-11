@@ -60,6 +60,7 @@
 - (void)showStateBar:(BOOL)show;
 - (void)showTabBar:(BOOL)show;
 - (void)fullScreen:(BOOL)enabled;
+- (void)updateStatusBar:(UICompositeViewDescription*)to_view;
 - (void)startUp;
 
 - (void)addInhibitedEvent:(id)event;
