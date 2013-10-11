@@ -369,6 +369,13 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException
 	 */
 	public void addProxyConfig(LinphoneProxyConfig proxyCfg) throws LinphoneCoreException;
+	
+	/**
+	 * Removes a proxy configuration.
+	 * @param proxyCfg
+	 */
+	public void removeProxyConfig(LinphoneProxyConfig proxyCfg);
+	
 	/**
 	 * Sets the default proxy.
 	 *<br>
@@ -388,6 +395,12 @@ public interface LinphoneCore {
 	 * Returns an array with all the auth infos stored in LinphoneCore
 	 */
 	LinphoneAuthInfo[] getAuthInfosList();
+	
+	/**
+	 * Removes a auth info.
+	 * @param authInfo
+	 */
+	public void removeAuthInfo(LinphoneAuthInfo authInfo);
 	
 	/**
 	 * clear all the added auth info

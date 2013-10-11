@@ -44,10 +44,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	private native void setDefaultProxyConfig(long nativePtr,long proxyCfgNativePtr);
 	private native int addProxyConfig(LinphoneProxyConfig jprtoxyCfg,long nativePtr,long proxyCfgNativePtr);
+	private native void removeProxyConfig(long nativePtr, long proxyCfg);
 	private native void clearAuthInfos(long nativePtr);
 	
 	private native void clearProxyConfigs(long nativePtr);
 	private native void addAuthInfo(long nativePtr,long authInfoNativePtr);
+	private native void removeAuthInfo(long nativePtr, long authInfoNativePtr);
 	private native Object invite(long nativePtr,String uri);
 	private native void terminateCall(long nativePtr, long call);
 	private native long getRemoteAddress(long nativePtr);
@@ -168,6 +170,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 		addAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
 	}
 
+	public synchronized void removeAuthInfo(LinphoneAuthInfo info) {
+		isValid();
+		removeAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
+	}
+
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
 		isValid();
 		long lNativePtr = getDefaultProxyConfig(nativePtr);
@@ -198,10 +205,13 @@ class LinphoneCoreImpl implements LinphoneCore {
 			throw new LinphoneCoreException("bad proxy config");
 		}
 	}
+	public synchronized void removeProxyConfig(LinphoneProxyConfig proxyCfg) {
+		isValid();
+		removeProxyConfig(nativePtr, ((LinphoneProxyConfigImpl)proxyCfg).nativePtr);
+	}
 	public synchronized void clearAuthInfos() {
 		isValid();
 		clearAuthInfos(nativePtr);
-		
 	}
 	public synchronized void clearProxyConfigs() {
 		isValid();
