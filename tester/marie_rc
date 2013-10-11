@@ -10,7 +10,7 @@ register_only_when_network_is_up=0
 username=marie
 userid=marie
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 
 [proxy_0]

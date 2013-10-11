@@ -705,8 +705,10 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				return;
 			}
 		}
+
 		ms_message("Call %p: moving from state %s to %s",call,linphone_call_state_to_string(call->state),
-		           linphone_call_state_to_string(cstate));
+					           linphone_call_state_to_string(cstate));
+
 		if (cstate!=LinphoneCallRefered){
 			/*LinphoneCallRefered is rather an event, not a state.
 			 Indeed it does not change the state of the call (still paused or running)*/

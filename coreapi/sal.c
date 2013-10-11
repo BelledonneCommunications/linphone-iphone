@@ -526,6 +526,7 @@ const char* sal_reason_to_string(const SalReason reason) {
 	case SalReasonForbidden: return "SalReasonForbidden";
 	case SalReasonUnknown: return "SalReasonUnknown";
 	case SalReasonServiceUnavailable: return "SalReasonServiceUnavailable";
+	case SalReasonNotAcceptable: return "SalReasonNotAcceptable";
 	default: return "Unkown reason";
 	}
 }

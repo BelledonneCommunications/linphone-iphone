@@ -155,7 +155,7 @@ typedef struct _stats {
 	const LinphonePresenceModel *last_received_presence;
 	
 	int number_of_inforeceived;
-	int number_of_inforeceived_with_body;
+	LinphoneInfoMessage* last_received_info_message;
 
 	int number_of_LinphoneSubscriptionIncomingReceived;
 	int number_of_LinphoneSubscriptionOutgoingInit;

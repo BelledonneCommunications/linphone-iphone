@@ -11,7 +11,7 @@ incoming_calls_early_media=1
 username=marie
 userid=marie
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 
 [proxy_0]

@@ -477,6 +477,16 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 }
 
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	/*first check if media capabilities are compatible*/
+	SalMediaDescription* md;
+	linphone_call_make_local_media_description(lc,call);
+	sal_call_set_local_media_description(call->op,call->localdesc);
+	md=sal_call_get_final_media_description(call->op);
+	if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
+		sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
+		return;
+	}
+
 	if(lc->vtable.display_status)
 		lc->vtable.display_status(lc,_("Call is updated by remote."));
 	call->defer_update=FALSE;
@@ -637,8 +647,10 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
+			case SalReasonNotAcceptable:
 			case SalReasonRequestPending:
 				/*restore previous state, the application will decide to resubmit the action if relevant*/
+				call->reason=linphone_reason_from_sal(sr);
 				linphone_call_set_state(call,call->prevstate,msg);
 				return;
 			break;
@@ -646,6 +658,19 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,_("Call failed."));
 		}
+	}
+
+	/*some call error are not fatal*/
+	switch (call->state) {
+	case LinphoneCallUpdating:
+	case LinphoneCallPausing:
+	case LinphoneCallResuming:
+		ms_message("Call error on state [%s], restoring previous state",linphone_call_state_to_string(call->prevstate));
+		call->reason=linphone_reason_from_sal(sr);
+		linphone_call_set_state(call, call->prevstate,msg);
+		return;
+	default:
+		break; /*nothing to do*/
 	}
 
 	linphone_core_stop_ringing(lc);

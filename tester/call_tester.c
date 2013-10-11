@@ -1217,6 +1217,107 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	ms_list_free(lcs);
 }
 
+static void check_call_state(LinphoneCoreManager* mgr,LinphoneCallState state) {
+	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(mgr->lc));
+	if (linphone_core_get_current_call(mgr->lc))
+		CU_ASSERT_EQUAL(linphone_call_get_state(linphone_core_get_current_call(mgr->lc)),state);
+}
+static void call_established_with_rejected_info(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	int dummy=0;
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+	linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),linphone_core_create_info_message(pauline->lc));
+
+	wait_for_until(marie->lc,pauline->lc,&dummy,1,1000); /*just to sleep while iterating 1s*/
+
+	sal_enable_unconditional_answer(marie->lc->sal,FALSE);
+
+	linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),linphone_core_create_info_message(pauline->lc));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_inforeceived,1));
+	CU_ASSERT_EQUAL(marie->stat.number_of_inforeceived,1);
+
+	check_call_state(pauline,LinphoneCallStreamsRunning);
+	check_call_state(marie,LinphoneCallStreamsRunning);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
+static void call_established_with_rejected_reinvite(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMU",8000,1),FALSE); /*disable PCMU*/
+	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
+
+
+	linphone_core_update_call(	pauline->lc
+								,linphone_core_get_current_call(pauline->lc)
+								,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonNotAcceptable);
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
+	check_call_state(pauline,LinphoneCallStreamsRunning);
+	check_call_state(marie,LinphoneCallStreamsRunning);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_established_with_rejected_reinvite_with_error(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+
+	CU_ASSERT_TRUE(call(pauline,marie));
+
+	linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*add PCMA*/
+
+
+	sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+
+	linphone_core_update_call(	pauline->lc
+								,linphone_core_get_current_call(pauline->lc)
+								,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+
+
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	CU_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonNone); /*might be change later*/
+
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallStreamsRunning,1);
+	check_call_state(pauline,LinphoneCallStreamsRunning);
+	check_call_state(marie,LinphoneCallStreamsRunning);
+
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 #ifdef VIDEO_ENABLED
 #endif
 
@@ -1252,7 +1353,10 @@ test_t call_tests[] = {
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Call with ICE", call_with_ice },
-	{ "Call with custom headers",call_with_custom_headers}
+	{ "Call with custom headers",call_with_custom_headers},
+	{ "Call established with rejected INFO",call_established_with_rejected_info},
+	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
+	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error}
 };
 
 test_suite_t call_test_suite = {

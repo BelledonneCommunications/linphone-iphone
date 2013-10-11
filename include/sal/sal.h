@@ -287,7 +287,8 @@ typedef enum SalReason{
 	SalReasonUnknown,
 	SalReasonServiceUnavailable,
 	SalReasonRequestPending,
-	SalReasonUnauthorized
+	SalReasonUnauthorized,
+	SalReasonNotAcceptable
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);
@@ -303,7 +304,7 @@ typedef enum SalPresenceStatus{
 	SalPresenceDonotdisturb,
 	SalPresenceMoved,
 	SalPresenceAltService,
-        SalPresenceOnVacation
+	SalPresenceOnVacation
 }SalPresenceStatus;
 
 struct _SalPresenceModel;
@@ -627,6 +628,10 @@ void __sal_op_free(SalOp *b);
 LINPHONE_PUBLIC	void sal_set_send_error(Sal *sal,int value);
 /*1 for no error*/
 LINPHONE_PUBLIC	void sal_set_recv_error(Sal *sal,int value);
+
+/*always answer 480 if value=true*/
+LINPHONE_PUBLIC	void sal_enable_unconditional_answer(Sal *sal,int value);
+
 /*refresher retry after value in ms*/
 LINPHONE_PUBLIC	void sal_set_refresher_retry_after(Sal *sal,int value);
 LINPHONE_PUBLIC	int sal_get_refresher_retry_after(const Sal *sal);

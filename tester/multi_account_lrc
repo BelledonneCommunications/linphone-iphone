@@ -8,25 +8,25 @@ default_proxy=0
 username=liblinphone_tester
 userid=liblinphone_tester
 passwd=secret
-realm="auth.example.org"
+realm=auth.example.org
 
 [auth_info_1]
 username=pauline
 userid=pauline
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 [auth_info_2]
 username=liblinphone_tester
 userid=liblinphone_tester
 passwd=secret
-realm="auth1.example.org"
+realm=auth1.example.org
 
 [auth_info_3]
 username=marie
 userid=marie
 passwd=secret
-realm="sip.example.org"
+realm=sip.example.org
 
 [proxy_0]
 reg_proxy=sip2.linphone.org;transport=tls

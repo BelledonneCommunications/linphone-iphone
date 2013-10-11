@@ -848,3 +848,6 @@ void sal_resolve_cancel(Sal *sal, unsigned long id){
 	belle_sip_stack_resolve_cancel(sal->stack,id);
 }
 
+void sal_enable_unconditional_answer(Sal *sal,int value) {
+	belle_sip_provider_enable_unconditional_answer(sal->prov,value);
+}

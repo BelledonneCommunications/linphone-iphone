@@ -150,7 +150,8 @@ enum _LinphoneReason{
 	LinphoneReasonMedia, /**<Incompatible media */
 	LinphoneReasonIOError, /**<Transport error: connection failures, disconnections etc...*/
 	LinphoneReasonDoNotDisturb, /**<Do not disturb reason*/
-	LinphoneReasonUnauthorized /**<Operation is unauthorized because missing credential*/
+	LinphoneReasonUnauthorized, /**<Operation is unauthorized because missing credential*/
+	LinphoneReasonNotAcceptable /**<Operation like call update rejected by peer*/
 
 };
 
