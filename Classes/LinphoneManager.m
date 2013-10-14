@@ -149,12 +149,28 @@ struct codec_name_pref_table codec_pref_table[]={
 + (NSSet *)unsupportedCodecs {
     NSMutableSet *set = [NSMutableSet set];
 	for(int i=0;codec_pref_table[i].name!=NULL;++i) {
-        if(linphone_core_find_payload_type(theLinphoneCore,codec_pref_table[i].name
-										   , codec_pref_table[i].rate,LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS) == NULL) {
+        PayloadType* available = linphone_core_find_payload_type(theLinphoneCore,
+                                                                 codec_pref_table[i].name,
+                                                                 codec_pref_table[i].rate,
+                                                                 LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS);
+
+        if( (available == NULL)
+           // these two codecs should not be hidden, even if not supported
+           && [codec_pref_table[i].prefname isEqualToString:@"h264_preference"]
+           && [codec_pref_table[i].prefname isEqualToString:@"mp4v-es_preference"]
+           )
+        {
             [set addObject:codec_pref_table[i].prefname];
 		}
 	}
 	return set;
+}
+
++ (BOOL)isCodecSupported: (const char *)codecName {
+    return (codecName != NULL) &&
+    (NULL != linphone_core_find_payload_type(theLinphoneCore, codecName,
+                                             LINPHONE_FIND_PAYLOAD_IGNORE_RATE,
+                                             LINPHONE_FIND_PAYLOAD_IGNORE_CHANNELS));
 }
 
 + (BOOL)runningOnIpad {
