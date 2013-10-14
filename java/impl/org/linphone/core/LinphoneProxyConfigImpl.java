@@ -30,6 +30,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	
 	private native int getState(long nativePtr);
 	private native void setExpires(long nativePtr, int delay);
+	private native int getExpires(long nativePtr);
 
 	boolean ownPtr = false;
 	protected LinphoneProxyConfigImpl(String identity,String proxy,String route, boolean enableRegister) throws LinphoneCoreException {
@@ -142,6 +143,9 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 	public void setExpires(int delay) {
 		setExpires(nativePtr, delay);
+	}
+	public int getExpires() {
+		return getExpires(nativePtr);
 	}
 	public boolean publishEnabled() {
 		return publishEnabled(nativePtr); 

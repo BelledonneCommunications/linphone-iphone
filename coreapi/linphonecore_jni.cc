@@ -2623,8 +2623,13 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadPtime(JNIEnv *e
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getState(JNIEnv*  env,jobject thiz,jlong ptr) {
 	return (jint) linphone_proxy_config_get_state((const LinphoneProxyConfig *) ptr);
 }
+
 extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setExpires(JNIEnv*  env,jobject thiz,jlong ptr,jint delay) {
 	linphone_proxy_config_set_expires((LinphoneProxyConfig *) ptr, (int) delay);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getExpires(JNIEnv*  env,jobject thiz,jlong ptr) {
+	return linphone_proxy_config_get_expires((LinphoneProxyConfig *) ptr);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCallImpl_getDuration(JNIEnv*  env,jobject thiz,jlong ptr) {

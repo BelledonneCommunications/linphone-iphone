@@ -135,6 +135,12 @@ public interface LinphoneProxyConfig {
 	void setExpires(int delay);
 	
 	/**
+	 * Gets the registration expiration time.
+	 * @return delay expiration time in seconds.
+	 */
+	int getExpires();
+	
+	/**
 	 * Sets parameters for the contact
 	 * @param parameters to add
 	 */
