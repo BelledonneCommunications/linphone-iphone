@@ -1340,6 +1340,8 @@
 		D3F9A9DB15AEEB940045320F /* history_notification.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9DA15AEEB940045320F /* history_notification.png */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
 		D3F9A9EF15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
+		F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
+		F0489300180C3296002FED35 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = F04892FE180C3296002FED35 /* ImageOptim.sh */; };
 		F04F1E9D1806A41800D080F2 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57B0E35F173C010400A476B8 /* libpolarssl.a */; };
 		F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
 		F066515617F9A02E0064280C /* UITransparentTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UITransparentTVCell.m */; };
@@ -2491,6 +2493,7 @@
 		D3F9A9DA15AEEB940045320F /* history_notification.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_notification.png; path = Resources/history_notification.png; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
+		F04892FE180C3296002FED35 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ImageOptim.sh; sourceTree = "<group>"; };
 		F066515317F9A02E0064280C /* UITransparentTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransparentTVCell.h; sourceTree = "<group>"; };
 		F066515417F9A02E0064280C /* UITransparentTVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentTVCell.m; sourceTree = "<group>"; };
 		F0818E7B17FC5160005A3330 /* linphone_icon_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_icon_120.png; path = Resources/linphone_icon_120.png; sourceTree = "<group>"; };
@@ -3284,6 +3287,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				F04892FE180C3296002FED35 /* ImageOptim.sh */,
 				154227D017BA81CE005E686A /* libzrtpcppcore.a */,
 				15017E6F1773578400784ACB /* libxml2.a */,
 				57B0E35F173C010400A476B8 /* libpolarssl.a */,
@@ -4594,6 +4598,7 @@
 				2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
 				2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
 				2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
+				F04892FF180C3296002FED35 /* ImageOptim.sh in Resources */,
 				D37EE10D16035793003608A6 /* ImageViewController.xib in Resources */,
 				D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
@@ -5132,6 +5137,7 @@
 				2234C8EA15EE2F7F00E18E83 /* chat_message_delivered.png in Resources */,
 				2234C8EC15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */,
 				2234C8EF15EE744200E18E83 /* chat_message_inprogress.png in Resources */,
+				F0489300180C3296002FED35 /* ImageOptim.sh in Resources */,
 				D37EE10E16035793003608A6 /* ImageViewController.xib in Resources */,
 				D381881215FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				D381881A15FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
@@ -5250,7 +5256,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\ncommand -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n    fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+			shellScript = $SRCROOT/ImageOptim.sh;
 		};
 		D33CF35115D3AC9800CD4B85 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -5263,7 +5269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    exit 0\nfi\n\nCONVERT=/opt/local/bin/convert\nCONVERTFILTER=\"-sharpen 1x0.0 -filter Catrom\"\nOPTIPNG=/opt/local/bin/optipng\nCMDS=\"${CONVERT} ${OPTIPNG}\"\nfor i in $CMDS; do\n    command -v $i > /dev/null && continue || { echo \"$i command not found\"; exit 1; }\ndone\n\nDIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\nPNGS=$(find $DIR -type f -name *.png)\nfor PNG in $PNGS; do\n    BASENAME=$(basename $PNG \".png\")\n    PROCESS=true\n    if [ -f $DIR/$BASENAME\"@2x.png\" ]; then\n        echo \"Ignoring $BASENAME\";\n        PROCESS=false\n        fi\n    case $BASENAME in *@2x)\n        echo \"Ignoring $BASENAME\";\n        continue\n    esac\n\n    if $PROCESS ; then\n        echo \"Processing ${BASENAME} (${CONVERTFILTER})...\"\n        mv $DIR/$BASENAME\".png\" $DIR/$BASENAME\"@2x.png\"\n        $CONVERT $DIR/$BASENAME\"@2x.png\" $CONVERTFILTER -resize \"50%\" $DIR/$BASENAME\".png\" > /dev/null\n    fi\n\n    echo \"Optimizing ${BASENAME} and ${BASENAME}@2x ...\"\n    $OPTIPNG -quiet $DIR/$BASENAME\"@2x.png\" > /dev/null\n    $OPTIPNG -quiet $DIR/$BASENAME\".png\" > /dev/null\n\ndone";
+			shellScript = $SRCROOT/ImageOptim.sh;
 		};
 /* End PBXShellScriptBuildPhase section */
 

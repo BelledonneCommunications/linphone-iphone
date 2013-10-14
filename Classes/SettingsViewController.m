@@ -547,13 +547,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (IASKSpecifier*)disableCodecSpecifier:(IASKSpecifier *)specifier {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-    NSMutableString *type = [NSMutableString stringWithString:[dict objectForKey:@"Type"]];
-    [type setString:@"PSTitleValueSpecifier"];
-    [dict setObject:type forKey:@"Type"];
-    NSMutableArray *values = [NSMutableArray arrayWithObject:[NSNumber numberWithInt:0]];
-    [dict setObject:values forKey:@"Values"];
-    NSMutableArray *titles = [NSMutableArray arrayWithObject:NSLocalizedString(@"Disabled, build from sources to enable", nil)];
-    [dict setObject:titles forKey:@"Titles"];
+
+    NSMutableString *type = [NSMutableString stringWithString:[dict objectForKey:kIASKType]];
+    [type setString:kIASKPSTitleValueSpecifier];
+    [dict setObject:type forKey:kIASKType];
+
+    NSMutableArray *values = [NSMutableArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:1], nil ];
+    [dict setObject:values forKey:kIASKValues];
+
+    NSString* title = NSLocalizedString(@"Disabled, build from sources to enable", nil);
+    NSMutableArray *titles = [NSMutableArray arrayWithObjects:title, title, nil];
+    [dict setObject:titles forKey:kIASKTitles];
+
     return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
 }
 
@@ -594,13 +599,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 #endif //HAVE_SSL
     
-    // Disable H264
-    if ([[specifier key] isEqualToString:@"h264_preference"]) {
+
+    // Add "build from source" if MPEG4 or H264 disabled
+    if ([[specifier key] isEqualToString:@"h264_preference"] && ![LinphoneManager isCodecSupported:"h264"]) {
         return [SettingsViewController disableCodecSpecifier:specifier];
     }
-
-    // Disable MPEG4
-    if ([[specifier key] isEqualToString:@"mp4v-es_preference"]) {
+    if ([[specifier key] isEqualToString:@"mp4v-es_preference"] && ![LinphoneManager isCodecSupported:"mp4v-es"]) {
         return [SettingsViewController disableCodecSpecifier:specifier];
     }
 

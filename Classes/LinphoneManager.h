@@ -112,6 +112,7 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
++ (BOOL)isCodecSupported: (const char*)codecName;
 + (NSSet *)unsupportedCodecs;
 + (NSString *)getUserAgent;
 

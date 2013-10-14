@@ -92,18 +92,11 @@ SWITCHES := $(addprefix $(LINPHONE_BUILD_DIR)/,$(SWITCHES))
 
 mode_switch_check: $(SWITCHES)
 
-
-$(LINPHONE_BUILD_DIR)/disable_%:
+$(LINPHONE_BUILD_DIR)/enable_% $(LINPHONE_BUILD_DIR)/disable_%:
 	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/disable_$*
-	rm -f $(LINPHONE_BUILD_DIR)/enable_$*
-	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 	
-
-$(LINPHONE_BUILD_DIR)/enable_%:
-	mkdir -p $(LINPHONE_BUILD_DIR)
-	touch $(LINPHONE_BUILD_DIR)/enable_$*
-	rm -f $(LINPHONE_BUILD_DIR)/disable_$*
-	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 	
+	cd $(LINPHONE_BUILD_DIR) && rm -f *able_$*
+	touch $@
+	cd $(LINPHONE_BUILD_DIR) && rm -f Makefile && rm -f oRTP/Makefile && rm -f mediastreamer2/Makefile 
 
 # end of switches parsing
 
