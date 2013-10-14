@@ -138,6 +138,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setIncomingTimeout(long nativePtr, int timeout);
 	private native void setInCallTimeout(long nativePtr, int timeout);
 	private native void setPrimaryContact(long nativePtr, String displayName, String username);
+	private native String getPrimaryContactUsername(long nativePtr);
+	private native String getPrimaryContactDisplayName(long nativePtr);
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
 	
@@ -892,6 +894,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	
 	public synchronized void setPrimaryContact(String displayName, String username) {
 		setPrimaryContact(nativePtr, displayName, username);
+	}
+	
+	public synchronized String getPrimaryContactUsername() {
+		return getPrimaryContactUsername(nativePtr);
+	}
+	
+	public synchronized String getPrimaryContactDisplayName() {
+		return getPrimaryContactDisplayName(nativePtr);
 	}
 	
 	private native void setUseSipInfoForDtmfs(long ptr, boolean use);

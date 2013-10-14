@@ -1281,6 +1281,16 @@ public interface LinphoneCore {
 	void setPrimaryContact(String displayName, String username);
 	
 	/**
+	 * Returns the username used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContactUsername();
+	
+	/**
+	 * Returns the display name used if no LinphoneProxyConfig configured
+	 */
+	String getPrimaryContactDisplayName();
+	
+	/**
 	 * Enable/Disable the use of SIP INFO for DTMFs
 	 */
 	void setUseSipInfoForDtmfs(boolean use);

@@ -769,6 +769,18 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact(JNIEnv
 	env->ReleaseStringUTFChars(jusername, username);
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getPrimaryContactUsername(JNIEnv* env, jobject  thiz, jlong lc) {
+	LinphoneAddress* identity = linphone_core_get_primary_contact_parsed((LinphoneCore*)lc);
+	const char * username = linphone_address_get_username(identity);	
+	return username ? env->NewStringUTF(username) : NULL;
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getPrimaryContactDisplayName(JNIEnv* env, jobject  thiz, jlong lc) {
+	LinphoneAddress* identity = linphone_core_get_primary_contact_parsed((LinphoneCore*)lc);
+	const char * displayname = linphone_address_get_display_name(identity);
+	return displayname ? env->NewStringUTF(displayname) : NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearProxyConfigs(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_proxy_config((LinphoneCore*)lc);
 }
