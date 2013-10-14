@@ -60,8 +60,8 @@ LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *
 	return NULL;
 }
 
-static int chat_room_compare(LinphoneChatRoom* room, const char* to) {
-        return strcmp(linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room)), to); /*return 0 if equals*/
+bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
+	return linphone_address_weak_equal(cr->peer_url,from);
 }
 
 /**
@@ -72,10 +72,8 @@ static int chat_room_compare(LinphoneChatRoom* room, const char* to) {
  */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
 	MSList* found;
-if (ms_list_size(lc->chatrooms) == 0)
-		return linphone_core_create_chat_room(lc, to);
 
-	found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) chat_room_compare, to);
+	found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) linphone_chat_room_matches, to);
 	if (found != NULL) {
 		return (LinphoneChatRoom*)found->data;
 	} else {
@@ -148,12 +146,6 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
 	_linphone_chat_room_send_message(cr,linphone_chat_room_create_message(cr,msg));
-}
-
-bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
-	if (linphone_address_get_username(cr->peer_url) && linphone_address_get_username(from) && 
-		strcmp(linphone_address_get_username(cr->peer_url),linphone_address_get_username(from))==0) return TRUE;
-	return FALSE;
 }
 
 void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){

@@ -1595,6 +1595,7 @@ static bool_t linphone_call_sound_resources_available(LinphoneCall *call){
 	return !linphone_core_is_in_conference(lc) && 
 		(current==NULL || current==call);
 }
+
 static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned char tag) {
     int i;
     for(i=0; i<SAL_CRYPTO_ALGO_MAX; i++) {
@@ -1604,6 +1605,7 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
     }
     return -1;
 }
+
 static void linphone_call_start_audio_stream(LinphoneCall *call, const char *cname, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
@@ -2370,7 +2372,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 	int disconnect_timeout = linphone_core_get_nortp_timeout(call->core);
 	bool_t disconnected=FALSE;
 
-	if (call->state==LinphoneCallStreamsRunning && one_second_elapsed){
+	if ((call->state==LinphoneCallStreamsRunning || call->state==LinphoneCallOutgoingEarlyMedia || call->state==LinphoneCallIncomingEarlyMedia) && one_second_elapsed){
 		float audio_load=0, video_load=0;
 		if (call->audiostream!=NULL){
 			if (call->audiostream->ms.ticker)

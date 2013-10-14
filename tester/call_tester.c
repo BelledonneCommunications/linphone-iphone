@@ -196,6 +196,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 bool_t call_with_caller_params(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr, const LinphoneCallParams *params) {
 	return call_with_params(caller_mgr,callee_mgr,params,NULL);
 }
+
 bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
 	return call_with_params(caller_mgr,callee_mgr,NULL,NULL);
 }
@@ -1006,6 +1007,82 @@ static void early_media_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_forking(void) {
+	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	MSList *lcs=NULL;
+	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneVideoPolicy pol;
+	LinphoneCall *marie1_call;
+	LinphoneCall *marie2_call;
+	LinphoneCall *pauline_call;
+	int dummy=0;
+	
+	pol.automatically_accept=1;
+	pol.automatically_initiate=1;
+	
+	linphone_core_set_user_agent(marie1->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	
+	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
+	
+	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
+	linphone_core_set_video_policy(marie1->lc,&pol);
+	
+	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
+	linphone_core_set_video_policy(marie2->lc,&pol);
+	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
+	linphone_core_set_video_port_range(marie2->lc,40400,40500);
+	
+	
+	lcs=ms_list_append(lcs,marie1->lc);
+	lcs=ms_list_append(lcs,marie2->lc);
+	lcs=ms_list_append(lcs,pauline->lc);
+
+	linphone_call_params_enable_early_media_sending(params,TRUE);
+	linphone_call_params_enable_video(params,TRUE);
+	
+	linphone_core_invite_address_with_params(pauline->lc,marie1->identity,params);
+	linphone_call_params_destroy(params);
+
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
+	
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	marie1_call=linphone_core_get_current_call(marie1->lc);
+	marie2_call=linphone_core_get_current_call(marie2->lc);
+	
+	/*wait a bit that streams are established*/
+	wait_for_list(lcs,&dummy,1,3000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
+	
+	linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	
+	/*marie2 should get her call terminated*/
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+	
+	/*wait a bit that streams are established*/
+	wait_for_list(lcs,&dummy,1,1000);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
+	CU_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
+	
+	linphone_core_terminate_all_calls(pauline->lc);
+	CU_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	CU_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallEnd,1,1000));
+
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void simple_call_transfer(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -1332,6 +1409,7 @@ test_t call_tests[] = {
 	{ "Call with media relay", call_with_media_relay},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
 	{ "Early-media call", early_media_call },
+	{ "Early-media call forking", early_media_call_forking },
 	{ "Call terminated by caller", call_terminated_by_caller },
 	{ "Call without SDP", call_with_no_sdp},
 	{ "Call paused resumed", call_paused_resumed },
