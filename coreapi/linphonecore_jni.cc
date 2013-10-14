@@ -2674,6 +2674,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableIpv6(JNIEnv* env,j
               linphone_core_enable_ipv6((LinphoneCore*)lc,enable);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isIpv6Enabled(JNIEnv* env,jobject thiz, jlong lc) {
+	return (jboolean)linphone_core_ipv6_enabled((LinphoneCore*)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_adjustSoftwareVolume(JNIEnv* env,jobject  thiz
               ,jlong ptr, jint db) {
 	linphone_core_set_playback_gain_db((LinphoneCore *) ptr, db);

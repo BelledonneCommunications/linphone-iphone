@@ -937,6 +937,9 @@ public interface LinphoneCore {
 	boolean needsEchoCalibration();
 	
 	void enableIpv6(boolean enable);
+	
+	boolean isIpv6Enabled();
+	
 	/**
 	 * @deprecated
 	 * @param i
