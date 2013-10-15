@@ -833,6 +833,13 @@ static codec_desc_t codec_pref_order[]={
 
 static int find_codec_rank(const char *mime, int clock_rate){
 	int i;
+
+#ifdef __arm__
+	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
+	if (strcasecmp(mime,"opus")==0){
+		if (ms_get_cpu_count()==1) return RANK_END;
+	}
+#endif
 	for(i=0;codec_pref_order[i].name!=NULL;++i){
 		if (strcasecmp(codec_pref_order[i].name,mime)==0 && clock_rate==codec_pref_order[i].rate)
 			return i;
@@ -1137,6 +1144,14 @@ const char * linphone_core_get_version(void){
 
 static void linphone_core_assign_payload_type(LinphoneCore *lc, PayloadType *const_pt, int number, const char *recv_fmtp){
 	PayloadType *pt;
+	
+#ifdef ANDROID
+	if (const_pt->channels==2){
+		ms_message("Stereo %s codec not supported on this platform.",const_pt->mime_type);
+		return;
+	}
+#endif
+	
 	pt=payload_type_clone(const_pt);
 	if (number==-1){
 		/*look for a free number */
@@ -1259,12 +1274,17 @@ static void linphone_core_init (LinphoneCore * lc, const LinphoneCoreVTable *vta
 #endif
 
 #ifdef VIDEO_ENABLED
+/* we disable H263 on mobiles because this codec only supports CIF family sizes, and number of cameras don't support it. */
+#if !defined(ANDROID) && !defined(__ios) 
 	linphone_core_assign_payload_type(lc,&payload_type_h263,34,NULL);
-	linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_h263_1998,98,"CIF=1;QCIF=1");
+#endif
+	
 	linphone_core_assign_payload_type(lc,&payload_type_mp4v,99,"profile-level-id=3");
 	linphone_core_assign_payload_type(lc,&payload_type_h264,102,"profile-level-id=42801F");
 	linphone_core_assign_payload_type(lc,&payload_type_vp8,103,NULL);
+	
+	linphone_core_assign_payload_type(lc,&payload_type_theora,97,NULL);
 	linphone_core_assign_payload_type(lc,&payload_type_x_snow,-1,NULL);
 	/* due to limited space in SDP, we have to disable this h264 line which is normally no more necessary */
 	/* linphone_core_assign_payload_type(&payload_type_h264,-1,"packetization-mode=1;profile-level-id=428014");*/
