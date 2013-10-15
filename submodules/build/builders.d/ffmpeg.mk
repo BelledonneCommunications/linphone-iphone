@@ -43,10 +43,11 @@ build-ffmpeg: $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)/config.mak
 	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig make RANLIB="$$RANLIB" && make RANLIB="$$RANLIB" install
 
 clean-ffmpeg:
-	cd  $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make clean
+	-cd  $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make clean
 
 veryclean-ffmpeg:
-	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make distclean
+	-cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && make distclean
+	rm -rf $(BUILDER_BUILD_DIR)/$(ffmpeg_dir)
 
 clean-makefile-ffmpeg:
 	cd $(BUILDER_BUILD_DIR)/$(ffmpeg_dir) && rm -f config.mak
