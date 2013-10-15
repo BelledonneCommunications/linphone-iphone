@@ -1110,6 +1110,12 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_enablePayloadType(JNIEnv
 																			,jboolean enable) {
 	return (jint)linphone_core_enable_payload_type((LinphoneCore*)lc,(PayloadType*)pt,enable);
 }
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isPayloadTypeEnabled(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong pt) {
+	return (jboolean) linphone_core_payload_type_enabled((LinphoneCore*)lc, (PayloadType*)pt);
+}
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableEchoCancellation(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -2936,6 +2942,16 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoPolicy(JNIEnv *e
 	vpol.automatically_initiate = autoInitiate;
 	vpol.automatically_accept = autoAccept;
 	linphone_core_set_video_policy((LinphoneCore *)lc, &vpol);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getVideoAutoInitiatePolicy(JNIEnv *env, jobject thiz, jlong lc){
+	const LinphoneVideoPolicy *vpol = linphone_core_get_video_policy((LinphoneCore *)lc);
+	return (jboolean) vpol->automatically_initiate;
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getVideoAutoAcceptPolicy(JNIEnv *env, jobject thiz, jlong lc){
+	const LinphoneVideoPolicy *vpol = linphone_core_get_video_policy((LinphoneCore *)lc);
+	return (jboolean) vpol->automatically_accept;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStaticPicture(JNIEnv *env, jobject thiz, jlong lc, jstring path) {

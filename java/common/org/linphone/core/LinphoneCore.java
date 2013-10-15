@@ -638,6 +638,12 @@ public interface LinphoneCore {
 	 *
 	 */
 	void enablePayloadType(PayloadType pt, boolean enable) throws LinphoneCoreException;
+	
+	/**
+	 * Returns whether or not the payload is enabled in linphonecore.
+	 */
+	boolean isPayloadTypeEnabled(PayloadType pt);
+	
 	/**
 	 * Enables or disable echo cancellation.
 	 * @param enable
@@ -1162,6 +1168,17 @@ public interface LinphoneCore {
 	 * @param autoAccept video shall be accepter by default for incoming calls
 	**/
 	void setVideoPolicy(boolean autoInitiate, boolean autoAccept);
+	
+	/**
+	 * Gets the policy for the autoInitiate video
+	 */
+	boolean getVideoAutoInitiatePolicy();
+	
+	/**
+	 * Gets the policy for the autoAccept video
+	 */
+	boolean getVideoAutoAcceptPolicy();
+	
 	/** Set static picture to be used when "Static picture" is the video device 
 	 * @param path to the static picture file
 	 * */

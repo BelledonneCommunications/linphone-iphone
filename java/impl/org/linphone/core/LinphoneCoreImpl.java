@@ -72,6 +72,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isMicMuted(long nativePtr);
 	private native long findPayloadType(long nativePtr, String mime, int clockRate, int channels);
 	private native int enablePayloadType(long nativePtr, long payloadType,	boolean enable);
+	private native boolean isPayloadTypeEnabled(long nativePtr, long payloadType);
 	private native void enableEchoCancellation(long nativePtr,boolean enable);
 	private native boolean isEchoCancellationEnabled(long nativePtr);
 	private native Object getCurrentCall(long nativePtr) ;
@@ -320,6 +321,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 			throw new LinphoneCoreException("cannot enable payload type ["+pt+"]");
 		}
 		
+	}
+	public synchronized boolean isPayloadTypeEnabled(PayloadType pt) {
+		isValid();
+		return isPayloadTypeEnabled(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
 	}
 	public synchronized void enableEchoCancellation(boolean enable) {
 		isValid();
@@ -788,6 +793,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized void setVideoPolicy(boolean autoInitiate, boolean autoAccept) {
 		setVideoPolicy(nativePtr, autoInitiate, autoAccept);
 	}
+	private native boolean getVideoAutoInitiatePolicy(long nativePtr);
+	public synchronized boolean getVideoAutoInitiatePolicy() {
+		return getVideoAutoInitiatePolicy(nativePtr);
+	}
+	private native boolean getVideoAutoAcceptPolicy(long nativePtr);
+	public synchronized boolean getVideoAutoAcceptPolicy() {
+		return getVideoAutoAcceptPolicy(nativePtr);
+	}
+	
 	private native void setStaticPicture(long nativePtr, String path);
 	public synchronized void setStaticPicture(String path) {
 		setStaticPicture(nativePtr, path);
