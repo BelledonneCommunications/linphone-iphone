@@ -2638,8 +2638,16 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseSipInfoForDtmfs(JN
 	linphone_core_set_use_info_for_dtmf((LinphoneCore *)lc, (bool) use);
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getUseSipInfoForDtmfs(JNIEnv *env, jobject thiz, jlong lc){
+	return linphone_core_get_use_info_for_dtmf((LinphoneCore *)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUseRfc2833ForDtmfs(JNIEnv *env, jobject thiz, jlong lc, jboolean use){
 	linphone_core_set_use_rfc2833_for_dtmf((LinphoneCore *)lc, (bool) use);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_getUseRfc2833ForDtmfs(JNIEnv *env, jobject thiz, jlong lc){
+	return (jboolean) linphone_core_get_use_rfc2833_for_dtmf((LinphoneCore *)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadPtime(JNIEnv *env, jobject thiz, jlong lc, jint ptime){

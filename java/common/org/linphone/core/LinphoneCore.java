@@ -1317,9 +1317,19 @@ public interface LinphoneCore {
 	void setUseSipInfoForDtmfs(boolean use);
 	
 	/**
+	 * Returns the state of use of SIP INFO for DTMFs
+	 */
+	boolean getUseSipInfoForDtmfs();
+	
+	/**
 	 * Enable/Disable the use of inband DTMFs
 	 */
 	void setUseRfc2833ForDtmfs(boolean use);
+	
+	/**
+	 * Returns the state of use of inband DTMFs
+	 */
+	boolean getUseRfc2833ForDtmfs();
 
 	/**
 	 * @return returns LpConfig object to read/write to the config file: usefull if you wish to extend

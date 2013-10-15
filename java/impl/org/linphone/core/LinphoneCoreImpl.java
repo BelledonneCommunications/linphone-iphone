@@ -924,9 +924,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setUseSipInfoForDtmfs(nativePtr, use);
 	}
 	
+	private native boolean getUseSipInfoForDtmfs(long ptr);
+	public synchronized boolean getUseSipInfoForDtmfs() {
+		return getUseSipInfoForDtmfs(nativePtr);
+	}
+	
 	private native void setUseRfc2833ForDtmfs(long ptr, boolean use);
 	public synchronized void setUseRfc2833ForDtmfs(boolean use) {
 		setUseRfc2833ForDtmfs(nativePtr, use);
+	}
+	
+	private native boolean getUseRfc2833ForDtmfs(long ptr);
+	public synchronized boolean getUseRfc2833ForDtmfs() {
+		return getUseRfc2833ForDtmfs(nativePtr);
 	}
 
 	private native long getConfig(long ptr);
