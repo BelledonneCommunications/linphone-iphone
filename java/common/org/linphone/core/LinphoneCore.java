@@ -397,6 +397,10 @@ public interface LinphoneCore {
 	LinphoneAuthInfo[] getAuthInfosList();
 	
 	/**
+	 * Returns a matching auth info or null if no match found
+	 */
+	LinphoneAuthInfo findAuthInfo(String username, String realm);
+	/**
 	 * Removes a auth info.
 	 * @param authInfo
 	 */

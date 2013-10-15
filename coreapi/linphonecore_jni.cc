@@ -850,6 +850,18 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getAuthInfosList(J
 	return jAuthInfos;
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findAuthInfos(JNIEnv* env, jobject thiz, jlong lc, jstring jusername, jstring jrealm) {
+	const char* username = env->GetStringUTFChars(jusername, NULL);
+	const char* realm = jrealm ? env->GetStringUTFChars(jrealm, NULL) : NULL;	
+	const LinphoneAuthInfo *authInfo = linphone_core_find_auth_info((LinphoneCore*)lc, realm, username);
+	
+	if (realm) 
+		env->ReleaseStringUTFChars(jrealm, realm);
+	env->ReleaseStringUTFChars(jusername, username);
+
+	return (jlong) authInfo;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_clearAuthInfos(JNIEnv* env, jobject thiz,jlong lc) {
 	linphone_core_clear_all_auth_info((LinphoneCore*)lc);
 }
