@@ -23,29 +23,55 @@ PNGS=$(find $DIR -type f -name *.png)
 
 echo "Running PNG optimization in $DIR"
 
+if [[ -f $DIR/optimized ]]; then
+    echo "Resources already optimized, exit"
+    exit 0
+fi
+
 for PNG in $PNGS; do
 
     BASENAME=$(basename $PNG ".png")
-    PROCESS=false # put true here when the resizing is fixed
+    SUFFIX=
+    PROCESS=true
 
-    if [ -f $DIR/$BASENAME"@2x.png" ]; then
+    # detect images for iPad, in which case basename has to be stripped
+    case $BASENAME in
+         *~ipad)
+            SUFFIX="~ipad"
+            BASENAME=$(echo ${BASENAME} |cut -f1 -d~)
+            ;;
+    esac
+
+    STANDARDFILE=${BASENAME}${SUFFIX}.png
+    RETINAFILE=${BASENAME}@2x${SUFFIX}.png
+
+
+    # skip resize if the retina version already exist, which means the asset was optimized manually
+    if [ -f $DIR/$BASENAME"@2x"$SUFFIX".png" ]; then
         echo "Don't process $BASENAME";
         PROCESS=false
     fi
 
-    case $BASENAME in *@2x)
-    	echo "Skip $BASENAME";
-    	continue
+    case $BASENAME in 
+        *@2x$SUFFIX)
+            continue
+            ;;
     esac
 
+    # for all resources that don't have retina versions, consider the normal version as retina and resize to 50%
     if $PROCESS ; then
-        echo -n "Processing ${BASENAME} (${CONVERTFILTER})..."
-        mv $DIR/$BASENAME".png" $DIR/$BASENAME"@2x.png"
-        $CONVERT $DIR/$BASENAME"@2x.png" $CONVERTFILTER -resize "50%" $DIR/$BASENAME".png" > /dev/null
+
+        echo -n "Processing ${STANDARDFILE} (${CONVERTFILTER})..."
+
+        mv ${DIR}/$STANDARDFILE ${DIR}/$RETINAFILE
+        $CONVERT ${DIR}/$RETINAFILE $CONVERTFILTER -resize "50%" -strip ${DIR}/$STANDARDFILE > /dev/null
     fi
 
     echo "Optimizing ${BASENAME} and ${BASENAME}@2x ..."
-    $OPTIPNG -quiet $DIR/$BASENAME"@2x.png" > /dev/null
-    $OPTIPNG -quiet $DIR/$BASENAME".png" > /dev/null
+    $OPTIPNG -quiet $DIR/$RETINAFILE > /dev/null
+    $OPTIPNG -quiet $DIR/$STANDARDFILE > /dev/null
 
 done
+
+# make sure we dont over-optimize
+touch $DIR/optimized

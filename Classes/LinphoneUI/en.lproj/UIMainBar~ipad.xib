@@ -245,15 +245,15 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 						<reference key="IBUINormalTitleShadowColor" ref="540119952"/>
-						<object class="NSCustomResource" key="IBUIHighlightedImage" id="40179686">
+						<object class="NSCustomResource" key="IBUIHighlightedBackgroundImage" id="40179686">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">dialer_over.png</string>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedImage" id="190908631">
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="190908631">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">dialer_selected</string>
 						</object>
-						<object class="NSCustomResource" key="IBUINormalImage" id="797612768">
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage" id="797612768">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">dialer_default.png</string>
 						</object>
@@ -589,9 +589,9 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
 						<reference key="IBUINormalTitleShadowColor" ref="540119952"/>
-						<reference key="IBUIHighlightedImage" ref="40179686"/>
-						<reference key="IBUISelectedImage" ref="190908631"/>
-						<reference key="IBUINormalImage" ref="797612768"/>
+						<reference key="IBUIHighlightedBackgroundImage" ref="40179686"/>
+						<reference key="IBUISelectedBackgroundImage" ref="190908631"/>
+						<reference key="IBUINormalBackgroundImage" ref="797612768"/>
 						<reference key="IBUIFontDescription" ref="754816492"/>
 						<reference key="IBUIFont" ref="89777223"/>
 					</object>
