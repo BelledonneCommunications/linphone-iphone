@@ -32,7 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 **/
 LinphoneAddress * linphone_address_new(const char *addr){
 	SalAddress *saddr=sal_address_new(addr);
-	if (saddr==NULL) ms_error("Cannot create LinphoneAddress, bad uri [%s]",addr);
+	if (saddr==NULL)
+		ms_error("Cannot create LinphoneAddress, bad uri [%s]",addr);
 	return saddr;
 }
 

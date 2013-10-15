@@ -201,8 +201,9 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 			} else {
 				sub_state=SalSubscribeActive;
 			}
+			resp = sal_op_create_response_from_request(op, req, 200); /*answer first because the op may be destroyed by notify_presence */
 			op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
-			resp = sal_op_create_response_from_request(op, req, 200);
+
 		} else {
 			/* Formatting error in presence notification body. */
 			ms_error("Wrongly formatted presence notification received");
