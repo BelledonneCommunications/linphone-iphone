@@ -18,8 +18,6 @@ for i in $CMDS; do
     command -v $i > /dev/null && continue || { echo "$i command not found"; exit 1; }
 done
 
-exit 0
-
 DIR=${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 PNGS=$(find $DIR -type f -name *.png)
 
