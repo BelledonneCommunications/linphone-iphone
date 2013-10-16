@@ -26,6 +26,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include "mediastreamer2/mscommon.h"
 
 struct jni_xml2lpc_ctx {
 	JNIEnv *env;
@@ -52,9 +53,13 @@ extern "C" void Java_org_linphone_tools_Xml2Lpc_callback (void *ctx, xml2lpc_log
 		
 		char buffer[XML2LPC_CALLBACK_BUFFER_SIZE];
 		vsnprintf(buffer, XML2LPC_CALLBACK_BUFFER_SIZE, fmt, list);
-		jstring javaString = env->NewStringUTF(buffer);
-		jint javaLevel = level;
-		my_jni::callVoidMethod<void>(env, obj, "Xml2Lpc", "printLog", "(ILjava/lang/String;)V", javaLevel, javaString);
+
+		if (level == XML2LPC_ERROR)
+			ms_error("%s", buffer);
+		else if (level == XML2LPC_WARNING)
+			ms_warning("%s", buffer);
+		else
+			ms_message("%s", buffer);
 	}		
 }
 
