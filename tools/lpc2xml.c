@@ -93,12 +93,6 @@ static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 */
 
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
-	const char *comment = "#";
-	if (strncmp(comment, entry, strlen(comment)) == 0) {
-		lpc2xml_log(ctx, LPC2XML_WARNING, "Skipped commented entry %s", entry);
-		return 0;
-	}
-
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
 	if (content == NULL) {
 		lpc2xml_log(ctx, LPC2XML_ERROR, "Issue when reading the lpc");
@@ -119,6 +113,13 @@ struct __processSectionCtx {
 
 static void processSection_cb(const char *entry, struct __processSectionCtx *ctx) {
 	if(ctx->ret == 0) {
+		const char *comment = "#";
+		if (strncmp(comment, entry, strlen(comment)) == 0) {
+			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped commented entry %s", entry);
+			ctx->ret = 0;
+			return;
+		}
+
 		xmlNode *node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"entry", NULL);
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"entry\" element");
