@@ -65,12 +65,14 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	
 	private native boolean isRegistered(long ptr);
 	private native void setDialPrefix(long ptr, String prefix);
+	private native String getDialPrefix(long ptr);
 	
 	private native String normalizePhoneNumber(long ptr,String number);
 	
 	private native String getDomain(long ptr);
 	
 	private native void setDialEscapePlus(long ptr, boolean value);
+	private native boolean getDialEscapePlus(long ptr);
 	
 	private native String getRoute(long ptr);
 	private native int setRoute(long ptr,String uri);
@@ -108,11 +110,17 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public void setDialPrefix(String prefix) {
 		setDialPrefix(nativePtr, prefix);
 	}
+	public String getDialPrefix() {
+		return getDialPrefix(nativePtr);
+	}
 	public String getDomain() {
 		return getDomain(nativePtr);
 	}
 	public void setDialEscapePlus(boolean value) {
 		 setDialEscapePlus(nativePtr,value);
+	}
+	public boolean getDialEscapePlus() {
+		return getDialEscapePlus(nativePtr);
 	}
 	public String getIdentity() {
 		return getIdentity(nativePtr);

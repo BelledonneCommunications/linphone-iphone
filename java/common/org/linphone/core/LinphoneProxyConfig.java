@@ -84,12 +84,24 @@ public interface LinphoneProxyConfig {
 	 * @param prefix
 	 */
 	public void setDialPrefix(String prefix);
+	
+	/**
+	 * Returns the automatically added international prefix to e164 phone numbers
+	 */
+	public String getDialPrefix();
+	
 	/**
 	 * * Sets whether liblinphone should replace "+" by "00" in dialed numbers (passed to
 	 * {@link LinphoneCore#invite(String)}).
 	 * @param value default value is false
 	 */
 	public void setDialEscapePlus(boolean value);
+	
+	/**
+	 * Whether liblinphone should replace "+" by "00" in dialed numbers (passed to
+	 * {@link LinphoneCore#invite(String)}).
+	 */
+	public boolean getDialEscapePlus();
 	
 	/**
 	 * get domain host name or ip
