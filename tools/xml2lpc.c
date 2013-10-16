@@ -114,15 +114,18 @@ static void dumpNodes(int level, xmlNode * a_node, xml2lpc_context *ctx) {
 
 
 static void dumpNode(xmlNode *node, xml2lpc_context *ctx) {
-        xml2lpc_log(ctx, XML2LPC_DEBUG, "node type: %d, name: %s", node->type, node->name);
+	xml2lpc_log(ctx, XML2LPC_DEBUG, "node type: %d, name: %s", node->type, node->name);
 }
 
 static void dumpAttr(xmlNode *node, xml2lpc_context *ctx) {
-        xml2lpc_log(ctx, XML2LPC_DEBUG, "attr name: %s value:%s", node->name, node->children->content);
+	xml2lpc_log(ctx, XML2LPC_DEBUG, "attr name: %s value:%s", node->name, node->children->content);
 }
 
 static void dumpContent(xmlNode *node, xml2lpc_context *ctx) {
-        xml2lpc_log(ctx, XML2LPC_DEBUG, "content: %s", node->children->content);
+	if (node->children)
+		xml2lpc_log(ctx, XML2LPC_DEBUG, "content: %s", node->children->content);
+	else
+		xml2lpc_log(ctx, XML2LPC_DEBUG, "content: ");
 }
 
 static int processEntry(xmlElement *element, const char *sectionName, xml2lpc_context *ctx) {
@@ -142,8 +145,11 @@ static int processEntry(xmlElement *element, const char *sectionName, xml2lpc_co
 		}
 	}
 
-	value = (const char *)element->children->content;
 	dumpContent((xmlNode *)element, ctx);
+	if (element->children)
+		value = (const char *)element->children->content;
+	else
+		value = "";
 
 	if(name != NULL) {
 		const char *str = lp_config_get_string(ctx->lpc, sectionName, name, NULL);
