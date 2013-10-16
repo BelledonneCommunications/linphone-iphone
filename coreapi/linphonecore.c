@@ -2315,10 +2315,7 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 	if (uri!=NULL){
 		return uri;
 	}
-	/* else we could not do anything with url given by user, so display an error */
-	if (lc->vtable.display_warning!=NULL){
-		lc->vtable.display_warning(lc,_("Could not parse given sip address. A sip url usually looks like sip:user@domain"));
-	}
+	
 	return NULL;
 }
 
