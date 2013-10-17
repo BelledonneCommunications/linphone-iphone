@@ -275,15 +275,28 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	host=linphone_address_get_domain (proxy);
 	if (host!=NULL){
 		int localport = -1;
-
 		const char *localip = NULL;
 		char *tmp;
+		char *tmp2;
+		LinphoneAddress *identity;
 		LinphoneAddress *contact;
 
-		if (obj->contact_params)
-			tmp = ms_strdup_printf("%s;%s", obj->reg_identity, obj->contact_params);
-		else
+		if (obj->contact_params) {
+			// We want to add a list of contacts params to the linphone address
+			// We remove the display name in the identity (if present) to prevent a failure in the parsing of the address due to the quotes
+			identity = linphone_address_new(obj->reg_identity);
+			if (identity) {
+				tmp2 = linphone_address_as_string_uri_only(identity);
+				tmp = ms_strdup_printf("%s;%s", tmp2, obj->contact_params);
+				linphone_address_destroy(identity);
+				ms_free(tmp2);
+			} else {
+				tmp = ms_strdup_printf("%s;%s", obj->reg_identity, obj->contact_params);
+			}
+		}
+		else {
 			tmp = strdup(obj->reg_identity);
+		}
 		
 		contact = linphone_address_new(tmp);
 		if (!contact) {
