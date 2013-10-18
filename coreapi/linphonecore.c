@@ -5797,7 +5797,7 @@ int linphone_core_del_call( LinphoneCore *lc, LinphoneCall *call)
 }
 
 /**
- * Specifiies a ring back tone to be played to far end during incoming calls.
+ * Specifies a ring back tone to be played to far end during incoming calls.
 **/
 void linphone_core_set_remote_ringback_tone(LinphoneCore *lc, const char *file){
 	if (lc->sound_conf.ringback_tone){

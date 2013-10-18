@@ -71,14 +71,19 @@ bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *f
  * @return #LinphoneChatRoom where messaging can take place.
  */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-	MSList* found;
-
-	found = ms_list_find_custom(lc->chatrooms, (MSCompareFunc) linphone_chat_room_matches, to);
-	if (found != NULL) {
-		return (LinphoneChatRoom*)found->data;
-	} else {
-		return linphone_core_create_chat_room(lc, to);
+	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
+	LinphoneChatRoom *ret;
+	
+	if (to_addr==NULL){
+		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
+		return NULL;
 	}
+	ret=linphone_core_get_chat_room(lc,to_addr);
+	linphone_address_destroy(to_addr);
+	if (!ret){
+		ret=linphone_core_create_chat_room(lc,to);
+	}
+	return ret;
 }
  
 /**
