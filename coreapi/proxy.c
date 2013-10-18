@@ -266,6 +266,17 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc){
 	linphone_proxy_config_done(obj);
 }
 
+void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj){
+	if (obj->publish_op){
+		sal_op_release(obj->publish_op);
+		obj->publish_op=NULL;
+	}
+	if (obj->op){
+		sal_op_release(obj->op);
+		obj->op=NULL;
+	}
+}
+
 LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *obj){
 	LinphoneAddress *ret=NULL;
 	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);

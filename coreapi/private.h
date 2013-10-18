@@ -240,6 +240,7 @@ const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *cfg, LinphonePresenceModel *presence);
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState rstate, const char *message);
+void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj);
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
