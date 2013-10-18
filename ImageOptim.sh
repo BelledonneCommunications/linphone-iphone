@@ -40,6 +40,10 @@ for PNG in $PNGS; do
             SUFFIX="~ipad"
             BASENAME=$(echo ${BASENAME} |cut -f1 -d~)
             ;;
+    # don't ever resize 9Patch assets, otherwise it can't handle the resizing
+        *9)
+            PROCESS=false
+            ;;
     esac
 
     STANDARDFILE=${BASENAME}${SUFFIX}.png
