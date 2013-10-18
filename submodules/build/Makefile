@@ -21,7 +21,7 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=no
-enable_ffmpeg=no
+enable_ffmpeg=yes
 enable_opus=yes
 enable_debug=no
 
@@ -101,5 +101,5 @@ clean-makefile:
 veryclean:
 	make -f  builder-iphone-simulator.mk  veryclean \
 	&&  make -f  builder-iphone-os.mk  veryclean \
-	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin veryclean \
+	&&  make -f  builder-iphone-os.mk  host=armv7s-apple-darwin veryclean
 
