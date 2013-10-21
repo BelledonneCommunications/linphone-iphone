@@ -355,9 +355,9 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 	[chat setState:[NSNumber numberWithInt:1]]; //INPROGRESS
     [chat create];
     [tableController addChatEntry:chat];
-    [tableController scrollToBottom:TRUE];
+    [tableController scrollToBottom:true];
     [chat release];
-    
+
     LinphoneChatMessage* msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
 	linphone_chat_message_set_user_data(msg, [chat retain]);
     if(externalUrl) {
