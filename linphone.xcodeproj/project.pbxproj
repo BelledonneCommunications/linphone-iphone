@@ -1349,6 +1349,8 @@
 		F0818E7F17FC51D8005A3330 /* linphone_icon_76.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7C17FC51D8005A3330 /* linphone_icon_76.png */; };
 		F0818E8017FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
 		F0818E8117FC51D8005A3330 /* linphone_icon_152.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7D17FC51D8005A3330 /* linphone_icon_152.png */; };
+		F0A2759C18157A6000B6D61A /* linphone_icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7B17FC5160005A3330 /* linphone_icon_120.png */; };
+		F0A2759D18157A6100B6D61A /* linphone_icon_120.png in Resources */ = {isa = PBXBuildFile; fileRef = F0818E7B17FC5160005A3330 /* linphone_icon_120.png */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 /* End PBXBuildFile section */
 
@@ -4666,6 +4668,7 @@
 				D3103926162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */,
 				D3103928162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */,
 				D310392A162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
+				F0A2759C18157A6000B6D61A /* linphone_icon_120.png in Resources */,
 				D33E1F08164CF35100CFA363 /* callbar_left_padding.png in Resources */,
 				D33E1F0A164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 				15AF3C5416F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */,
@@ -5205,6 +5208,7 @@
 				D3103927162C3C5200C00C18 /* linphone_splashscreen-Landscape@2x.png in Resources */,
 				D3103929162C3C5200C00C18 /* linphone_splashscreen-Portrait.png in Resources */,
 				D310392B162C3C5200C00C18 /* linphone_splashscreen-Portrait@2x.png in Resources */,
+				F0A2759D18157A6100B6D61A /* linphone_icon_120.png in Resources */,
 				D33E1F09164CF35100CFA363 /* callbar_left_padding.png in Resources */,
 				D33E1F0B164CF35100CFA363 /* callbar_right_padding.png in Resources */,
 				15AF3C5516F37A3E00FC52EC /* route_bluetooth_off_default.png in Resources */,
