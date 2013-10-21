@@ -35,7 +35,8 @@ ifeq ($(enable_gpl_third_parties)$(enable_zrtp),noyes)
 endif
 
 ifeq ($(enable_gpl_third_parties)$(enable_ffmpeg),noyes)
-	CHECKOPT_MSG += "FFMPEG is not available in non-gpl build.\n"
+# ffmpeg is not compatible with no GPL.
+	enable_ffmpeg:=no
 endif
 
 ifneq ($(CHECKOPT_MSG),"")
