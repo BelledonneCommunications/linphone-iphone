@@ -166,12 +166,16 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 	CU_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(callee_mgr->lc));
 	if (!linphone_core_get_current_call_remote_address(callee_mgr->lc))
 		return 0;
-	if (linphone_call_params_get_privacy(linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc))) == LinphonePrivacyNone) {
-		CU_ASSERT_TRUE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
-	} else {
-		CU_ASSERT_FALSE(linphone_address_weak_equal(caller_mgr->identity,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+	else {
+		LinphoneAddress* callee_from=linphone_address_clone(caller_mgr->identity);
+		linphone_address_set_port(callee_from,0); /*remove port because port is never present in from header*/
+		if (linphone_call_params_get_privacy(linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc))) == LinphonePrivacyNone) {
+			CU_ASSERT_TRUE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+		} else {
+			CU_ASSERT_FALSE(linphone_address_weak_equal(callee_from,linphone_core_get_current_call_remote_address(callee_mgr->lc)));
+		}
+		linphone_address_destroy(callee_from);
 	}
-
 	if (callee_params)
 		linphone_core_accept_call_with_params(callee_mgr->lc,linphone_core_get_current_call(callee_mgr->lc),callee_params);
 	else
@@ -541,6 +545,13 @@ static void call_with_custom_headers(void) {
 	LinphoneCallParams *params;
 	const LinphoneCallParams *remote_params;
 	const char *hvalue;
+	char* tmp=linphone_address_as_string_uri_only(marie->identity);
+	char tmp2[256];
+	snprintf(tmp2,sizeof(tmp2),"%s?uriHeader=myUriHeader",tmp);
+	LinphoneAddress* marie_identity=linphone_address_new(tmp2);
+	ms_free(tmp);
+	linphone_address_destroy(marie->identity);
+	marie->identity=marie_identity;
 	
 	params=linphone_core_create_default_call_parameters(marie->lc);
 	linphone_call_params_add_custom_header(params,"Weather","bad");
@@ -558,8 +569,11 @@ static void call_with_custom_headers(void) {
 	remote_params=linphone_call_get_remote_params(c1);
 	hvalue=linphone_call_params_get_custom_header(remote_params,"Weather");
 	CU_ASSERT_PTR_NOT_NULL(hvalue);
-	CU_ASSERT_TRUE(strcmp(hvalue,"bad")==0);
-	
+	CU_ASSERT_STRING_EQUAL(hvalue,"bad");
+	hvalue=linphone_call_params_get_custom_header(remote_params,"uriHeader");
+	CU_ASSERT_PTR_NOT_NULL(hvalue);
+	CU_ASSERT_STRING_EQUAL(hvalue,"myUriHeader");
+
 	CU_ASSERT_PTR_NOT_NULL(linphone_call_get_remote_contact(c1));
 	
 	/*just to sleep*/

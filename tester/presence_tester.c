@@ -153,12 +153,17 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 
 	linphone_core_add_friend(caller_mgr->lc,friend);
 
-	result=wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_callee.number_of_LinphonePresenceActivityOnline+1);
-	result&=wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_caller.number_of_LinphonePresenceActivityOnline+1);
+	result=wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_caller.number_of_LinphonePresenceActivityOnline+1);
+	/*without proxy, callee cannot subscribe to caller
+	result&=wait_for(caller_mgr->lc,callee_mgr->lc,&callee_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_callee.number_of_LinphonePresenceActivityOnline+1);
+	*/
 
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NewSubscriptionRequest,initial_callee.number_of_NewSubscriptionRequest+1);
+	/*without proxy, callee cannot subscribe to caller
 	CU_ASSERT_EQUAL(callee_mgr->stat.number_of_NotifyReceived,initial_callee.number_of_NotifyReceived+1);
+	*/
 	CU_ASSERT_EQUAL(caller_mgr->stat.number_of_NotifyReceived,initial_caller.number_of_NotifyReceived+1);
+
 	ms_free(identity);
 	return result;
 
@@ -204,6 +209,7 @@ static void simple_subscribe(void) {
 
 
 	linphone_core_manager_destroy(marie);
+	/*unsubscribe is not reported ?*/
 	CU_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
 
 	linphone_core_manager_destroy(pauline);
@@ -226,6 +232,7 @@ static void call_with_presence(void) {
 	LinphoneVideoPolicy pol={0};
 	linphone_core_set_video_policy(marie->lc,&pol);
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
+	CU_ASSERT_TRUE(subscribe_to_callee_presence(pauline,marie));
 
 	CU_ASSERT_TRUE(call(marie,pauline));
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone,1);

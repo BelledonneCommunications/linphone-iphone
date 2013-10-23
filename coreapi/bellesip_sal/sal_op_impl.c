@@ -128,11 +128,11 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	} else {
 		from_header=belle_sip_header_from_create2("Anonymous <sip:anonymous@anonymous.invalid>",belle_sip_random_token(token,sizeof(token)));
 	}
-	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
-	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri((belle_sip_header_address_t*)to_header));
-
-
+	/*make sure to preserve components like headers or port*/
+	req_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op))));
 	belle_sip_uri_set_secure(req_uri,sal_op_is_secure(op));
+
+	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(sal_op_get_to_address(op)),NULL);
 
 	req=belle_sip_request_create(
 							req_uri,

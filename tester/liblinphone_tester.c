@@ -108,7 +108,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 
 	sal_enable_test_features(lc->sal,TRUE);
 #ifndef ANDROID
-	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cacert.pem", path);
+	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cacert.pem", path);
 #else
 	snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
 #endif

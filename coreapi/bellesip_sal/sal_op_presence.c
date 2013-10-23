@@ -201,7 +201,7 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req){
 			} else {
 				sub_state=SalSubscribeActive;
 			}
-			resp = sal_op_create_response_from_request(op, req, 200); /*answer first because the op may be destroyed by notify_presence */
+			resp = sal_op_create_response_from_request(op, req, 200); /*create first because the op may be destroyed by notify_presence */
 			op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
 
 		} else {
