@@ -397,8 +397,12 @@ void TunnelManager::sOnIterate(TunnelManager *zis){
 }
 
 #ifdef ANDROID
-extern void linphone_android_log_handler(int prio, const char *fmt, va_list args);
+extern void linphone_android_log_handler(int prio, char *str);
 static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_list args) {
+	char str[4096];
+	vsnprintf(str, sizeof(str) - 1, fmt, args);
+	str[sizeof(str) - 1] = '\0';
+
 	int prio;
 	switch(lev){
 	case TUNNEL_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
@@ -408,7 +412,7 @@ static void linphone_android_tunnel_log_handler(int lev, const char *fmt, va_lis
 	case TUNNEL_ERROR:	prio = ANDROID_LOG_ERROR;	break;
 	default:		prio = ANDROID_LOG_DEFAULT;	break;
 	}
-	linphone_android_log_handler(prio, fmt, args);
+	linphone_android_log_handler(prio, str);
 }
 #endif /*ANDROID*/
 
