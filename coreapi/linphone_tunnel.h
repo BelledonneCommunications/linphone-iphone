@@ -196,6 +196,13 @@ LINPHONE_PUBLIC void linphone_tunnel_reconnect(LinphoneTunnel *tunnel);
 LINPHONE_PUBLIC void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel);
 
 /**
+ * Tells whether tunnel auto detection is enabled.
+ * @param[in] tunnel LinphoneTunnel object.
+ * @return TRUE if auto detection is enabled, FALSE otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel);
+
+/**
  * Set an optional http proxy to go through when connecting to tunnel server.
  * @param tunnel LinphoneTunnel object
  * @param host Http proxy host.

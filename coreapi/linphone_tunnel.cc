@@ -36,6 +36,7 @@ LinphoneTunnel* linphone_core_get_tunnel(LinphoneCore *lc){
 struct _LinphoneTunnel {
 	belledonnecomm::TunnelManager *manager;
 	MSList *config_list;
+	bool_t auto_detect_enabled;
 };
 
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
@@ -225,6 +226,7 @@ void linphone_tunnel_clean_servers(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_enable(LinphoneTunnel *tunnel, bool_t enabled){
+	tunnel->auto_detect_enabled = FALSE;
 	lp_config_set_int(config(tunnel),"tunnel","enabled",(int)enabled);
 	bcTunnel(tunnel)->enable(enabled);
 }
@@ -311,7 +313,12 @@ void linphone_tunnel_reconnect(LinphoneTunnel *tunnel){
 }
 
 void linphone_tunnel_auto_detect(LinphoneTunnel *tunnel){
+	tunnel->auto_detect_enabled = TRUE;
 	bcTunnel(tunnel)->autoDetect();
+}
+
+bool_t linphone_tunnel_auto_detect_enabled(LinphoneTunnel *tunnel) {
+	return tunnel->auto_detect_enabled;
 }
 
 static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
