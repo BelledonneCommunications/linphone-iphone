@@ -77,7 +77,7 @@ The softwares below need to be compiled manually. To ensure compatibility with m
 
  Then or otherwise, do:
 	
- $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp && make
+ $ ./configure --prefix=/opt/local --with-readline=/opt/local --disable-x11 --with-srtp=/opt/local --with-gsm=/opt/local --enable-zrtp --disable-strict && make
 
  Install to /opt/local
 
