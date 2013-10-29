@@ -296,6 +296,7 @@ static inline void set_string(char **dest, const char *src){
 void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from);
+void linphone_core_send_presence(LinphoneCore *lc, LinphonePresenceModel *presence);
 void linphone_notify_parse_presence(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result);
 void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presence, const char *contact, char **content);
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);

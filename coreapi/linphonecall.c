@@ -425,9 +425,12 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
-	model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
-	linphone_core_notify_all_friends(call->core,model);
-	linphone_presence_model_unref(model);
+	if (call->core->calls==NULL){
+		/*there were no call, and now there is a call, send an on-the-phone presence notification automatically*/
+		model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
+		linphone_core_send_presence(call->core,model);
+		linphone_presence_model_unref(model);
+	}
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	if (min_port == max_port) {
 		/* Used fixed RTP audio port. */
@@ -635,7 +638,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	}
 
 	if (ms_list_size(lc->calls)==0)
-		linphone_core_notify_all_friends(lc,lc->presence_model);
+		linphone_core_send_presence(lc,lc->presence_model);
 
 	linphone_core_conference_check_uninit(lc);
 	if (call->ringing_beep){

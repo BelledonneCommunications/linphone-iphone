@@ -3747,15 +3747,13 @@ void linphone_core_set_presence_info(LinphoneCore *lc, int minutes_away, const c
 	linphone_core_set_presence_model(lc, presence);
 }
 
-void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence) {
-	// TODO: Check that the presence timestamp is newer than the last sent presence.
+void linphone_core_send_presence(LinphoneCore *lc, LinphonePresenceModel *presence){
 	linphone_core_notify_all_friends(lc,presence);
-	/*
-	   Improve the use of all LINPHONE_STATUS available.
-	   !TODO Do not mix "presence status" with "answer status code"..
-	   Use correct parameter to follow sip_if_match/sip_etag.
-	 */
 	linphone_core_send_publish(lc,presence);
+}
+
+void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence) {
+	linphone_core_send_presence(lc,presence);
 
 	if ((lc->presence_model != NULL) && (lc->presence_model != presence)) {
 		linphone_presence_model_unref(lc->presence_model);
