@@ -222,6 +222,10 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 		resp=belle_sip_response_create_from_request(req,481);/*out of dialog BYE */
 		belle_sip_provider_send_response(sal->prov,resp);
 		return;
+	}else if (strcmp("CANCEL",method)==0) {
+		resp=belle_sip_response_create_from_request(req,481);/*out of dialog CANCEL */
+		belle_sip_provider_send_response(sal->prov,resp);
+		return;
 	}else if (sal->enable_test_features && strcmp("PUBLISH",method)==0) {
 		resp=belle_sip_response_create_from_request(req,200);/*out of dialog BYE */
 		belle_sip_message_add_header((belle_sip_message_t*)resp,belle_sip_header_create("SIP-Etag","4441929FFFZQOA"));
