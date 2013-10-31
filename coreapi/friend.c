@@ -516,40 +516,22 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf){
 	return lf->refkey;
 }
 
-static bool_t username_match(const char *u1, const char *u2){
-	if (u1==NULL && u2==NULL) return TRUE;
-	if (u1 && u2 && strcasecmp(u1,u2)==0) return TRUE;
-	return FALSE;
+LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr){
+	LinphoneFriend *lf=NULL;
+	MSList *elem;
+	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
+		lf=(LinphoneFriend*)elem->data;
+		if (linphone_address_weak_equal(lf->uri,addr))
+			break;
+		lf=NULL;
+	}
+	return lf;
 }
 
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
 	LinphoneAddress *puri=linphone_address_new(uri);
-	const MSList *elem;
-	const char *username;
-	const char *domain;
-	const char *it_username;
-	const char *it_host;
-	LinphoneFriend *lf=NULL;
-		
-	if (puri==NULL){
-		return NULL;
-	}
-	username=linphone_address_get_username(puri);
-	domain=linphone_address_get_domain(puri);
-	if (domain==NULL) {
-		linphone_address_destroy(puri);
-		return NULL;
-	}
-	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
-		lf=(LinphoneFriend*)elem->data;
-		it_username=linphone_address_get_username(lf->uri);
-		it_host=linphone_address_get_domain(lf->uri);;
-		if (strcasecmp(domain,it_host)==0 && username_match(username,it_username)){
-			break;
-		}
-		lf=NULL;
-	}
-	linphone_address_destroy(puri);
+	LinphoneFriend *lf=puri ? linphone_core_find_friend(lc,puri) : NULL;
+	if (puri) linphone_address_unref(puri);
 	return lf;
 }
 

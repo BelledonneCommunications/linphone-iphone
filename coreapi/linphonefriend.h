@@ -372,8 +372,17 @@ LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, Linphone
  * @param[in] lc #LinphoneCore object.
  * @param[in] addr The address to use to search the friend.
  * @returns The #LinphoneFriend object corresponding to the given address.
+ * @deprecated use linphone_core_find_friend() instead.
  */
 LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
+
+/**
+ * Search a LinphoneFriend by its address.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] addr The address to use to search the friend.
+ * @returns The #LinphoneFriend object corresponding to the given address.
+ */
+LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr);
 
 /**
  * Search a LinphoneFriend by its reference key.
