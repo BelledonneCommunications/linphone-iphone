@@ -76,7 +76,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	}
 	g_hash_table_destroy(table);
 	g_object_set_data(G_OBJECT(w),"cr",NULL);
-	g_object_set_data(G_OBJECT(friendlist),"from",NULL);
+	linphone_gtk_friend_list_set_active_address(NULL);
 	gtk_widget_destroy(w);
 }
 
@@ -467,12 +467,12 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 	GtkWidget *w;
 	gboolean send=TRUE;
 	/*GtkNotebook *notebook= ( GtkNotebook * ) linphone_gtk_get_widget ( main_window,"viewswitch" );*/
-	char *from=linphone_address_as_string_uri_only( linphone_chat_message_get_from ( msg ) );
+	const LinphoneAddress *from= linphone_chat_message_get_from ( msg );
 
 	w= ( GtkWidget* ) g_object_get_data ( G_OBJECT ( friendlist ),"chatview" );
 	if ( w!=NULL ) {
-		char *from_chatview= ( char * ) g_object_get_data ( G_OBJECT ( friendlist ),"from" );
-		if ( g_strcmp0 ( from,from_chatview ) ==0 ) {
+		const LinphoneAddress *from_chatview=linphone_gtk_friend_list_get_active_address();
+		if (linphone_address_weak_equal(from,from_chatview)) {
 			send=TRUE;
 		} else {
 			if ( !linphone_gtk_friend_list_is_contact ( linphone_chat_message_get_from ( msg ) ) ) {
@@ -487,7 +487,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 		}
 		w=linphone_gtk_init_chatroom ( room,linphone_chat_message_get_from ( msg ) );
 		g_object_set_data ( G_OBJECT ( friendlist ),"chatview", ( gpointer ) w );
-		g_object_set_data ( G_OBJECT ( friendlist ),"from",from );
+		linphone_gtk_friend_list_set_active_address(from);
 	}
 
 #ifdef HAVE_GTK_OSX
