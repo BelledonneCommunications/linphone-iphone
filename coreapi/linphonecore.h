@@ -856,12 +856,14 @@ LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
 LINPHONE_PUBLIC void linphone_auth_info_set_realm(LinphoneAuthInfo *info, const char *realm);
+LINPHONE_PUBLIC void linphone_auth_info_set_domain(LinphoneAuthInfo *info, const char *domain);
 LINPHONE_PUBLIC void linphone_auth_info_set_ha1(LinphoneAuthInfo *info, const char *ha1);
 
 LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i);
 LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i);
 LINPHONE_PUBLIC const char *linphone_auth_info_get_userid(const LinphoneAuthInfo *i);
 LINPHONE_PUBLIC const char *linphone_auth_info_get_realm(const LinphoneAuthInfo *i);
+LINPHONE_PUBLIC const char *linphone_auth_info_get_domain(const LinphoneAuthInfo *i);
 LINPHONE_PUBLIC const char *linphone_auth_info_get_ha1(const LinphoneAuthInfo *i);
 
 /* you don't need those function*/
@@ -1043,7 +1045,7 @@ typedef void (*LinphoneCoreNewSubscriptionRequestedCb)(LinphoneCore *lc, Linphon
  * @param username the username that needs to be authenticated.
  * Application shall reply to this callback using linphone_core_add_auth_info().
  */
-typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username);
+typedef void (*LinphoneCoreAuthInfoRequestedCb)(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 
 /** 
  * Callback to notify a new call-log entry has been added.
@@ -1427,10 +1429,10 @@ LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphonePr
  * Create an authentication information with default values from Linphone core.
  * @param[in] lc #LinphoneCore object
  * @param[in] username String containing the username part of the authentication credentials
- * @param[in] userid String containing the username to use to calculate the authentication digest
- * @param[in] passwd String containing the password part of the authentication credentials
- * @param[in] ha1 String containing a hash of the password
- * @param[in] realm String used to discriminate different SIP domains
+ * @param[in] userid String containing the username to use to calculate the authentication digest (optional)
+ * @param[in] passwd String containing the password of the authentication credentials (optional, either passwd or ha1 must be set)
+ * @param[in] ha1 String containing a ha1 hash of the password (optional, either passwd or ha1 must be set)
+ * @param[in] realm String used to discriminate different SIP authentication domains (optional)
  * @return #LinphoneAuthInfo with default values set
  * @ingroup authentication
  */
@@ -1438,13 +1440,13 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *
 
 LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
-void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
+LINPHONE_PUBLIC void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 
 LINPHONE_PUBLIC const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
-const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username);
+LINPHONE_PUBLIC const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *sip_domain);
 
-void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
+LINPHONE_PUBLIC void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
 
 LINPHONE_PUBLIC	void linphone_core_clear_all_auth_info(LinphoneCore *lc);
 

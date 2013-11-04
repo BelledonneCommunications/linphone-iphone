@@ -117,8 +117,7 @@ static char **linephonec_readline_completion(const char *text,
 #endif
 
 /* These are callback for linphone core */
-static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
-	const char *username);
+static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
@@ -256,7 +255,7 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
  * Linphone core callback
  */
 static void
-linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
+linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain)
 {
 	/* no prompt possible when using pipes or tcp mode*/
 	if (unix_socket){

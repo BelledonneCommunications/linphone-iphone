@@ -336,6 +336,7 @@ typedef struct SalAuthInfo{
 	char *userid;
 	char *password;
 	char *realm;
+	char *domain;
 	char *ha1;
 }SalAuthInfo;
 
@@ -356,11 +357,7 @@ typedef void (*SalOnCallFailure)(SalOp *op, SalError error, SalReason reason, co
 typedef void (*SalOnCallReleased)(SalOp *salop);
 typedef void (*SalOnAuthRequestedLegacy)(SalOp *op, const char *realm, const char *username);
 typedef bool_t (*SalOnAuthRequested)(Sal *sal,SalAuthInfo* info);
-#ifndef USE_BELLESIP
-typedef void (*SalOnAuthSuccess)(SalOp *op, const char *realm, const char *username);
-#else
 typedef void (*SalOnAuthFailure)(SalOp *op, SalAuthInfo* info);
-#endif
 typedef void (*SalOnRegisterSuccess)(SalOp *op, bool_t registered);
 typedef void (*SalOnRegisterFailure)(SalOp *op, SalError error, SalReason reason, const char *details);
 typedef void (*SalOnVfuRequest)(SalOp *op);
@@ -395,12 +392,7 @@ typedef struct SalCallbacks{
 	SalOnCallTerminated call_terminated;
 	SalOnCallFailure call_failure;
 	SalOnCallReleased call_released;
-	SalOnAuthRequestedLegacy auth_requested_legacy;
-#ifdef USE_BELLESIP
 	SalOnAuthFailure auth_failure;
-#else
-	SalOnAuthSuccess auth_success;
-#endif
 	SalOnRegisterSuccess register_success;
 	SalOnRegisterFailure register_failure;
 	SalOnVfuRequest vfu_request;
@@ -429,7 +421,7 @@ typedef struct SalCallbacks{
 
 SalAuthInfo* sal_auth_info_new();
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
-void sal_auth_info_delete(const SalAuthInfo* auth_info);
+void sal_auth_info_delete(SalAuthInfo* auth_info);
 LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);

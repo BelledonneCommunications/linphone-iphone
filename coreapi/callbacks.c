@@ -718,68 +718,17 @@ static void call_released(SalOp *op){
 	}else ms_error("call_released() for already destroyed call ?");
 }
 
-static void auth_requested_legacy(SalOp *h, const char *realm, const char *username){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
-	LinphoneCall *call=is_a_linphone_call(sal_op_get_user_pointer(h));
-
-	if (call && call->ping_op==h){
-		/*don't request authentication for ping requests. Their purpose is just to get any
-		 * answer to get the Via's received and rport parameters.
-		 */
-		ms_message("auth_requested(): ignored for ping request.");
-		return;
-	}
-	
-	ms_message("auth_requested() for realm=%s, username=%s",realm,username);
-
-	if (ai && ai->works==FALSE && ai->usecount>=3){
-		/*case we tried 3 times to authenticate, without success */
-		/*Better is to stop (implemeted below in else statement), and retry later*/
-		if (ms_time(NULL)-ai->last_use_time>30){
-			ai->usecount=0; /*so that we can allow to retry */
-		}
-	}
-	
-	if (ai && (ai->works || ai->usecount<3)){
-		SalAuthInfo sai;
-		sai.username=ai->username;
-		sai.userid=ai->userid;
-		sai.realm=ai->realm;
-		sai.password=ai->passwd;
-		ms_message("auth_requested(): authenticating realm=%s, username=%s",realm,username);
-		sal_op_authenticate(h,&sai);
-		ai->usecount++;
-		ai->last_use_time=ms_time(NULL);
-	}else{
-		if (ai && ai->works==FALSE) {
-			sal_op_cancel_authentication(h);
-		} 
-		if (lc->vtable.auth_info_requested)
-			lc->vtable.auth_info_requested(lc,realm,username);
-	}
-}
-#ifdef USE_BELLESIP
 static void auth_failure(SalOp *op, SalAuthInfo* info) {
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username);
+	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
 	if (ai){
-		ms_message("%s/%s authentication fails.",info->realm,info->username);
+		ms_message("%s/%s/%s authentication fails.",info->realm,info->username,info->domain);
 	}
 	if (lc->vtable.auth_info_requested) {
-				lc->vtable.auth_info_requested(lc,info->realm,info->username);
+		lc->vtable.auth_info_requested(lc,info->realm,info->username,info->domain);
 	}
 }
-#else
-static void auth_success(SalOp *h, const char *realm, const char *username){
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(h));
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username);
-	if (ai){
-		ms_message("%s/%s authentication works.",realm,username);
-		ai->works=TRUE;
-	}
-}
-#endif
+
 static void register_success(SalOp *op, bool_t registered){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)sal_op_get_user_pointer(op);
@@ -836,13 +785,6 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 		sal_op_release(cfg->publish_op);
 		cfg->publish_op=NULL;
 		cfg->send_publish=cfg->publish;
-	}
-	if (error== SalErrorFailure && reason == SalReasonForbidden) {
-		const char *realm=NULL,*username=NULL;
-		if (sal_op_get_auth_requested(op,&realm,&username)==0){
-			if (lc->vtable.auth_info_requested)
-				lc->vtable.auth_info_requested(lc,realm,username);
-		}
 	}
 }
 
@@ -961,7 +903,7 @@ static void ping_reply(SalOp *op){
 }
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username);
+	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain);
 	if (ai) {
 		sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
 		sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
@@ -979,7 +921,7 @@ static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 		return TRUE;
 	} else {
 		if (lc->vtable.auth_info_requested) {
-			lc->vtable.auth_info_requested(lc,sai->realm,sai->username);
+			lc->vtable.auth_info_requested(lc,sai->realm,sai->username,sai->domain);
 			if (fill_auth_info(lc,sai)) {
 				return TRUE;
 			}
@@ -1145,12 +1087,7 @@ SalCallbacks linphone_sal_callbacks={
 	call_terminated,
 	call_failure,
 	call_released,
-	auth_requested_legacy,
-#ifdef USE_BELLESIP
 	auth_failure,
-#else
-	auth_success,
-#endif
 	register_success,
 	register_failure,
 	vfu_request,

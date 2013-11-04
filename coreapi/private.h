@@ -417,6 +417,7 @@ struct _LinphoneAuthInfo
 	char *userid;
 	char *passwd;
 	char *ha1;
+	char *domain;
 	int usecount;
 	time_t last_use_time;
 	bool_t works;

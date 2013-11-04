@@ -268,7 +268,7 @@ static void authenticated_register_with_no_initial_credentials(){
 	linphone_core_manager_destroy(mgr);
 }
 
-static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username) {
+static void auth_info_requested2(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
 	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
 					,username

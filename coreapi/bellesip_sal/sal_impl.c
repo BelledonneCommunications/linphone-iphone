@@ -433,15 +433,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.call_released=(SalOnCallReleased)unimplemented_stub;
 	if (ctx->callbacks.call_updating==NULL)
 		ctx->callbacks.call_updating=(SalOnCallUpdating)unimplemented_stub;
-	if (ctx->callbacks.auth_requested_legacy==NULL)
-		ctx->callbacks.auth_requested_legacy=(SalOnAuthRequestedLegacy)unimplemented_stub;
-#ifdef USE_BELLESIP
 	if (ctx->callbacks.auth_failure==NULL)
 		ctx->callbacks.auth_failure=(SalOnAuthFailure)unimplemented_stub;
-#else
-	if (ctx->callbacks.auth_success==NULL)
-		ctx->callbacks.auth_success=(SalOnAuthSuccess)unimplemented_stub;
-#endif
 	if (ctx->callbacks.register_success==NULL)
 		ctx->callbacks.register_success=(SalOnRegisterSuccess)unimplemented_stub;
 	if (ctx->callbacks.register_failure==NULL)
@@ -702,8 +695,9 @@ const char * sal_get_dns_user_hosts_file(const Sal *sal) {
 
 SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	SalAuthInfo* auth_info = sal_auth_info_new();
-	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event)) ;
-	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event)) ;
+	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event));
+	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event));
+	auth_info->domain = ms_strdup(belle_sip_auth_event_get_domain(event));
 	return auth_info;
 }
 

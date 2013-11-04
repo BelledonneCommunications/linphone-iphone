@@ -55,7 +55,7 @@ static GtkWidget *the_ui=NULL;
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
-static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username);
+static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
@@ -1021,7 +1021,7 @@ void linphone_gtk_password_ok(GtkWidget *w){
 	gtk_widget_destroy(window);
 }
 
-static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username){
+static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
 	GtkWidget *w=linphone_gtk_create_window("password");
 	GtkWidget *label=linphone_gtk_get_widget(w,"message");
 	LinphoneAuthInfo *info;
@@ -1034,12 +1034,13 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 		return;
 	}
 
-	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at domain <i>%s</i>:"),
+	msg=g_strdup_printf(_("Please enter your password for username <i>%s</i>\n at realm <i>%s</i>:"),
 		username,realm);
 	gtk_label_set_markup(GTK_LABEL(label),msg);
 	g_free(msg);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"userid_entry")),username);
 	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm);
+	linphone_auth_info_set_domain(info,domain);
 	g_object_set_data(G_OBJECT(w),"auth_info",info);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_auth_info_destroy,info);
 	gtk_widget_show(w);
