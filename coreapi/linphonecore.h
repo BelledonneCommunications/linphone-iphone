@@ -851,7 +851,7 @@ struct _LinphoneAuthInfo;
 typedef struct _LinphoneAuthInfo LinphoneAuthInfo;
 
 LINPHONE_PUBLIC	LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid,
-		const char *passwd, const char *ha1,const char *realm);
+		const char *passwd, const char *ha1,const char *realm, const char *domain);
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 LINPHONE_PUBLIC void linphone_auth_info_set_username(LinphoneAuthInfo *info, const char *username);
 LINPHONE_PUBLIC void linphone_auth_info_set_userid(LinphoneAuthInfo *info, const char *userid);
@@ -1436,7 +1436,7 @@ LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphonePr
  * @return #LinphoneAuthInfo with default values set
  * @ingroup authentication
  */
-LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm);
+LINPHONE_PUBLIC LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain);
 
 LINPHONE_PUBLIC	void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info);
 

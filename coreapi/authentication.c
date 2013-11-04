@@ -37,13 +37,14 @@
  * The object can be created empty, that is with all arguments set to NULL.
  * Username, userid, password and realm can be set later using specific methods.
 **/
-LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1,const char *realm){
+LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
 	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
 	if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
 	if (userid!=NULL && (strlen(userid)>0)) obj->userid=ms_strdup(userid);
 	if (passwd!=NULL && (strlen(passwd)>0)) obj->passwd=ms_strdup(passwd);
 	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
 	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
+	if (domain!=NULL && (strlen(domain)>0)) obj->domain=ms_strdup(domain);
 	obj->works=FALSE;
 	return obj;
 }
@@ -221,8 +222,7 @@ LinphoneAuthInfo *linphone_auth_info_new_from_config_file(LpConfig * config, int
 	ha1=lp_config_get_string(config,key,"ha1",NULL);
 	realm=lp_config_get_string(config,key,"realm",NULL);
 	domain=lp_config_get_string(config,key,"domain",NULL);
-	ret=linphone_auth_info_new(username,userid,passwd,ha1,realm);
-	linphone_auth_info_set_domain(ret,domain);
+	ret=linphone_auth_info_new(username,userid,passwd,ha1,realm,domain);
 	return ret;
 }
 
@@ -264,7 +264,7 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 					&& pinfo->domain && strcmp(domain,pinfo->domain)==0){
 					return pinfo;
 				}
-			}else if (realm){
+			} else if (realm){
 				if (pinfo->realm && realm_match(realm,pinfo->realm)){
 					if (ret!=NULL){
 						ms_warning("Non unique realm found for %s",username);
@@ -272,7 +272,9 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 					}
 					ret=pinfo;
 				}
-			}else return pinfo;
+			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0){
+				return pinfo;
+			} else return pinfo;
 		}
 	}
 	return ret;
@@ -289,12 +291,14 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 **/
 const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
 	const LinphoneAuthInfo *ai=NULL;
-	if (realm){
-		ai=find_auth_info(lc,username,realm,NULL);
-		if (ai==NULL && domain){
-			ai=find_auth_info(lc,username,realm,domain);
-			
+	if (domain){
+		ai=find_auth_info(lc,username,realm,domain);
+		if (ai==NULL){
+			ai=find_auth_info(lc,username,NULL,domain);
 		}
+	}
+	if (ai==NULL && realm) {
+		ai=find_auth_info(lc,username,realm,NULL);
 	}
 	if (ai==NULL){
 		ai=find_auth_info(lc,username,NULL,NULL);
@@ -314,8 +318,8 @@ static void write_auth_infos(LinphoneCore *lc){
 	linphone_auth_info_write_config(lc->config,NULL,i); /* mark the end */
 }
 
-LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm) {
-	return linphone_auth_info_new(username, userid, passwd, ha1, realm);
+LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain) {
+	return linphone_auth_info_new(username, userid, passwd, ha1, realm, domain);
 }
 
 /**
@@ -331,7 +335,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
-	if (ai!=NULL){
+	if (ai!=NULL && ai->domain && strcmp(ai->domain, info->domain)==0){
 		lc->auth_info=ms_list_remove(lc->auth_info,ai);
 		linphone_auth_info_destroy(ai);
 	}

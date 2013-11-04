@@ -1506,7 +1506,7 @@ extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_getError(JNIEnv* 
 
 extern "C" jlong Java_org_linphone_core_LinphoneAuthInfoImpl_newLinphoneAuthInfo(JNIEnv* env
 		, jobject thiz ) {
-	return (jlong)linphone_auth_info_new(NULL,NULL,NULL,NULL,NULL);
+	return (jlong)linphone_auth_info_new(NULL,NULL,NULL,NULL,NULL,NULL);
 }
 extern "C" void Java_org_linphone_core_LinphoneAuthInfoImpl_delete(JNIEnv* env
 		, jobject thiz
