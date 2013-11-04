@@ -261,8 +261,7 @@ clean-libilbc:
 	cd  $(LIBILBC_BUILD_DIR) && make clean
 
 veryclean-libilbc:
-#	-cd $(LIBILBC_BUILD_DIR) && make distclean
-	-cd $(LIBILBC_SRC_DIR) && rm -f configure
+	-cd $(LIBILBC_BUILD_DIR) && make distclean
 
 clean-makefile-libilbc:
 	cd $(LIBILBC_BUILD_DIR) && rm -f Makefile
