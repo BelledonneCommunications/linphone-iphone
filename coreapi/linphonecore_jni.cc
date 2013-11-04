@@ -392,7 +392,7 @@ public:
 	static void displayMessageCb(LinphoneCore *lc, const char *message) {
 
 	}
-	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username) {
+	static void authInfoRequested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 
 	}
 	static void globalStateChange(LinphoneCore *lc, LinphoneGlobalState gstate,const char* message) {
@@ -850,13 +850,16 @@ extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getAuthInfosList(J
 	return jAuthInfos;
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findAuthInfos(JNIEnv* env, jobject thiz, jlong lc, jstring jusername, jstring jrealm) {
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_findAuthInfos(JNIEnv* env, jobject thiz, jlong lc, jstring jusername, jstring jrealm, jstring jdomain) {
 	const char* username = env->GetStringUTFChars(jusername, NULL);
 	const char* realm = jrealm ? env->GetStringUTFChars(jrealm, NULL) : NULL;	
-	const LinphoneAuthInfo *authInfo = linphone_core_find_auth_info((LinphoneCore*)lc, realm, username);
+    const char* domain = jdomain ? env->GetStringUTFChars(jdomain, NULL) : NULL;
+    const LinphoneAuthInfo *authInfo = linphone_core_find_auth_info((LinphoneCore*)lc, realm, username, domain);
 	
 	if (realm) 
 		env->ReleaseStringUTFChars(jrealm, realm);
+    if (domain)
+        env->ReleaseStringUTFChars(jdomain, domain);
 	env->ReleaseStringUTFChars(jusername, username);
 
 	return (jlong) authInfo;
@@ -870,18 +873,18 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_refreshRegisters(JNIEnv*
 	linphone_core_refresh_registers((LinphoneCore*)lc);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAuthInfo(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addAuthInfo(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jlong pc) {
 	linphone_core_add_auth_info((LinphoneCore*)lc,(LinphoneAuthInfo*)pc);
 }
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_iterate(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_iterate(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {
 	linphone_core_iterate((LinphoneCore*)lc);
 }
-extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_invite(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jstring juri) {
@@ -891,7 +894,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_invite(	JNIEnv*  env
 	env->ReleaseStringUTFChars(juri, uri);
 	return lcd->getCall(env,lCall);
 }
-extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jlong to) {
@@ -899,38 +902,38 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_inviteAddress(	JNIEnv
 	return lcd->getCall(env, linphone_core_invite_address((LinphoneCore*)lc,(LinphoneAddress*)to));
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateCall(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jlong call) {
 	linphone_core_terminate_call((LinphoneCore*)lc,(LinphoneCall*)call);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_declineCall(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_declineCall(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jlong call, jint reason) {
 	linphone_core_decline_call((LinphoneCore*)lc,(LinphoneCall*)call,(LinphoneReason)reason);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(	JNIEnv*  env
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getRemoteAddress(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {
 	return (jlong)linphone_core_get_current_call_remote_address((LinphoneCore*)lc);
 }
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(	JNIEnv*  env
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInCall(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {
 
 	return (jboolean)linphone_core_in_call((LinphoneCore*)lc);
 }
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInComingInvitePending(	JNIEnv*  env
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_isInComingInvitePending(JNIEnv* env
 		,jobject  thiz
 		,jlong lc) {
 
 	return (jboolean)linphone_core_inc_invite_pending((LinphoneCore*)lc);
 }
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCall(	JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_acceptCall(JNIEnv* env
 		,jobject  thiz
 		,jlong lc
 		,jlong call) {
@@ -1523,7 +1526,6 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getPasswor
 	} else {
 		return NULL;
 	}
-
 }
 /*
  * Class:     org_linphone_core_LinphoneAuthInfoImpl
@@ -1538,7 +1540,21 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getRealm
 	} else {
 		return NULL;
 	}
+}
 
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    getDomain
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_getDomain
+(JNIEnv *env , jobject, jlong auth_info) {
+    const char* domain = linphone_auth_info_get_domain((LinphoneAuthInfo*)auth_info);
+    if (domain) {
+        return env->NewStringUTF(domain);
+    } else {
+        return NULL;
+    }
 }
 
 /*
@@ -1579,6 +1595,20 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setRealm
 	linphone_auth_info_set_realm((LinphoneAuthInfo*)auth_info,realm);
 	if (realm) env->ReleaseStringUTFChars(jrealm, realm);
 }
+
+/*
+ * Class:     org_linphone_core_LinphoneAuthInfoImpl
+ * Method:    setDomain
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneAuthInfoImpl_setDomain
+(JNIEnv *env, jobject, jlong auth_info, jstring jdomain) {
+    const char* domain = jdomain ? env->GetStringUTFChars(jdomain, NULL) : NULL;
+    linphone_auth_info_set_domain((LinphoneAuthInfo*)auth_info, domain);
+    if (domain)
+        env->ReleaseStringUTFChars(jdomain, domain);
+}
+
 /*
  * Class:     org_linphone_core_LinphoneAuthInfoImpl
  * Method:    setUsername

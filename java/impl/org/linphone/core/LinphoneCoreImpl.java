@@ -107,7 +107,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native long[] listVideoPayloadTypes(long nativePtr);
 	private native long[] getProxyConfigList(long nativePtr);
 	private native long[] getAuthInfosList(long nativePtr);
-	private native long findAuthInfos(long nativePtr, String username, String realm);
+	private native long findAuthInfos(long nativePtr, String username, String realm, String domain);
 	private native long[] listAudioPayloadTypes(long nativePtr);
 	private native void enableKeepAlive(long nativePtr,boolean enable);
 	private native boolean isKeepAliveEnabled(long nativePtr);
@@ -1070,8 +1070,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return authInfos;
 	}
 	
-	public LinphoneAuthInfo findAuthInfo(String username, String realm) {
-		long ptr = findAuthInfos(nativePtr, username, realm);
+	public LinphoneAuthInfo findAuthInfo(String username, String realm, String domain) {
+		long ptr = findAuthInfos(nativePtr, username, realm, domain);
 		if (ptr == 0)
 			return null;
 		

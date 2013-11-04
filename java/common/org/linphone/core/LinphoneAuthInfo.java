@@ -83,6 +83,23 @@ public interface LinphoneAuthInfo {
 	 */
 	void setHa1(String ha1);
 	
+	/**
+	 * Sets the domain
+	 * @param domain
+	 */
+	void setDomain(String domain);
+	
+	/**
+	 * Gets the domain
+	 * @return the domain
+	 */
+	String getDomain();
+	
+	/**
+	 * Clones a current auth info
+	 * @return the clone auth info
+	 */
+	LinphoneAuthInfo clone();
 }
 
 

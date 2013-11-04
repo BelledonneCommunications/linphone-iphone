@@ -161,7 +161,7 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 
 				if (mySipPassword != null) {
 					// create authentication structure from identity and add to linphone
-					lc.addAuthInfo(lcFactory.createAuthInfo(username, mySipPassword, null));
+					lc.addAuthInfo(lcFactory.createAuthInfo(username, mySipPassword, null, domain));
 				}
 
 				// create proxy config

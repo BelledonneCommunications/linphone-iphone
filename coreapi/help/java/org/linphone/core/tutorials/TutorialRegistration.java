@@ -131,7 +131,7 @@ public class TutorialRegistration implements LinphoneCoreListener {
 
 			if (password != null) {
 				// create authentication structure from identity and add to linphone
-				lc.addAuthInfo(lcFactory.createAuthInfo(username, password, null));
+				lc.addAuthInfo(lcFactory.createAuthInfo(username, password, null, domain));
 			}
 
 			// create proxy config

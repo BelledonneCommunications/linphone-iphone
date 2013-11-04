@@ -54,7 +54,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param userid user id as set in auth header
 	 * @param passwd
 	 * */
-	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm);
+	abstract public LinphoneAuthInfo createAuthInfo(String username,String password, String realm, String domain);
 	/**
 	 * create  {@link LinphoneAuthInfo}
 	 * @param username
@@ -63,7 +63,7 @@ abstract public class LinphoneCoreFactory {
 	 * @param ha1
 	 * @param realm
 	 * */
-	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1,String realm);
+	abstract public LinphoneAuthInfo createAuthInfo(String username, String userid, String passwd, String ha1, String realm, String domain);
 	
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, String userConfig,String factoryConfig,Object  userdata) throws LinphoneCoreException;
 	abstract public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException;

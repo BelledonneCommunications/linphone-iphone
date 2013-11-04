@@ -72,8 +72,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 	@Override
 	public LinphoneAuthInfo createAuthInfo(String username, String password,
-			String realm) {
-		return new LinphoneAuthInfoImpl(username,password,realm);
+			String realm, String domain) {
+		return new LinphoneAuthInfoImpl(username, password, realm, domain);
 	}
 
 	@Override
@@ -145,8 +145,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	@Override
 	public LinphoneAuthInfo createAuthInfo(String username, String userid,
-			String passwd, String ha1, String realm) {
-		return new LinphoneAuthInfoImpl(username,userid,passwd,ha1,realm);
+			String passwd, String ha1, String realm, String domain) {
+		return new LinphoneAuthInfoImpl(username, userid, passwd, ha1, realm, domain);
 	}
 
 	@Override

@@ -399,7 +399,7 @@ public interface LinphoneCore {
 	/**
 	 * Returns a matching auth info or null if no match found
 	 */
-	LinphoneAuthInfo findAuthInfo(String username, String realm);
+	LinphoneAuthInfo findAuthInfo(String username, String realm, String domain);
 	/**
 	 * Removes a auth info.
 	 * @param authInfo
