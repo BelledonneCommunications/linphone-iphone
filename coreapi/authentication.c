@@ -298,7 +298,8 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 		if (ai==NULL && domain){
 			ai=find_auth_info(lc,username,realm,domain);
 		}
-	} else if (domain != NULL) {
+	} 
+	if (ai == NULL && domain != NULL) {
 		ai=find_auth_info(lc,username,NULL,domain);
 	}
 	if (ai==NULL){
