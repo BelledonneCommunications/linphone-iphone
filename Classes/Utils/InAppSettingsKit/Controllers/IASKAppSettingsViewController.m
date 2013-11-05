@@ -155,7 +155,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 - (void) viewDidLoad {
   [super viewDidLoad];
   if ([self isPad]) {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
+      // patch for iOS7 from https://github.com/futuretap/InAppSettingsKit/commit/66d95030cfac84f17f800056140523742b49957e
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+      if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)	// don't use etched style on iOS 7
+#endif
+          self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLineEtched;
   }
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapToEndEdit:)];   
     tapGesture.cancelsTouchesInView = NO;
@@ -446,7 +450,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	if ((title = [self tableView:tableView titleForHeaderInSection:section])) {
 		CGSize size = [title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] 
 						constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
-							lineBreakMode:UILineBreakModeWordWrap];
+							lineBreakMode:NSLineBreakByWordWrapping];
 		return size.height+kIASKVerticalPaddingGroupTitles;
 	}
 	return 0;

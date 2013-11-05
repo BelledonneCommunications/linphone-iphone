@@ -18,10 +18,12 @@
  */  
 
 #import <UIKit/UIKit.h>
+#import "UITransparentTVCell.h"
 
-@interface UIEditableTableViewCell : UITableViewCell {
+@interface UIEditableTableViewCell : UITransparentTVCell {
 }
 
+@property (nonatomic, retain) IBOutlet UIView *verticalSep;
 @property (nonatomic, retain) IBOutlet UITextField *detailTextField;
 
 @end

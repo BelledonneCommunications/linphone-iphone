@@ -1,6 +1,4 @@
 [net]
-download_bw=380
-upload_bw=380
 mtu=1300
 activate_edge_workarounds=0
 edge_ping_time=10
@@ -47,3 +45,7 @@ stun=stun.linphone.org
 
 [video]
 display_filter_auto_rotate=0
+
+[app]
+#contact_display_username_only=1
+#contact_filter_on_default_domain=1

@@ -495,7 +495,10 @@
 
 - (void)selfUpdate {
     UITableView *parentTable = (UITableView *)self.superview;
-    if(parentTable) {
+    
+    while( parentTable != nil && ![parentTable isKindOfClass:[UITableView class]] ) parentTable = (UITableView *)[parentTable superview];
+
+    if(parentTable != nil) {
        NSIndexPath *index= [parentTable indexPathForCell:self];
         if(index != nil) {
             [parentTable reloadRowsAtIndexPaths:[[NSArray alloc] initWithObjects:index, nil] withRowAnimation:false];

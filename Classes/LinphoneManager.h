@@ -48,8 +48,6 @@ extern NSString *const kLinphoneLogsUpdate;
 extern NSString *const kLinphoneSettingsUpdate;
 extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 
-extern NSString *const kContactSipField;
-
 typedef enum _NetworkType {
     network_none = 0,
     network_2g,
@@ -122,8 +120,10 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
++ (BOOL)isCodecSupported: (const char*)codecName;
 + (NSSet *)unsupportedCodecs;
 + (NSString *)getUserAgent;
+
 
 - (void)startLibLinphone;
 - (void)destroyLibLinphone;
@@ -152,6 +152,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
 - (NSString*)lpConfigStringForKey:(NSString*)key;
+- (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)value;
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString*)section;
 - (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key;
@@ -162,6 +163,7 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)lpConfigBoolForKey:(NSString*)key;
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
+
 
 @property (readonly) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;
@@ -177,6 +179,8 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL bluetoothEnabled;
 @property (readonly) ALAssetsLibrary *photoLibrary;
 @property (nonatomic, assign) TunnelMode tunnelMode;
+@property (readonly) NSString* contactSipField;
+@property (readonly,copy) NSString* contactFilter;
 
 @end
 

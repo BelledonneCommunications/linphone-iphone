@@ -211,42 +211,24 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [self updateApplicationBadgeNumber];
 }
 
-- (void)registrationUpdate:(NSNotification*)notif { 
+- (void)registrationUpdate:(NSNotification*)notif {
     LinphoneRegistrationState state = [[notif.userInfo objectForKey: @"state"] intValue];
     LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey: @"cfg"] pointerValue];
-    // Show error
-    if (state == LinphoneRegistrationFailed) {
-		NSString* lErrorMessage = nil;
-        LinphoneReason reason = linphone_proxy_config_get_error(cfg);
-		if (reason == LinphoneReasonBadCredentials) {
-			lErrorMessage = NSLocalizedString(@"Bad credentials, check your account settings", nil);
-		} else if (reason == LinphoneReasonNoResponse) {
-			lErrorMessage = NSLocalizedString(@"SIP server unreachable", nil);
-		} else {
-            lErrorMessage = NSLocalizedString(@"Unknown error", nil);
-        }
-		
-		if (lErrorMessage != nil && linphone_proxy_config_get_error(cfg) != LinphoneReasonNoResponse) { 
-            //do not report network connection issue on registration
-			//default behavior if no registration delegates
-			UIApplicationState s = [UIApplication sharedApplication].applicationState;
-            
-            // do not stack error message when going to backgroud
-            if (s != UIApplicationStateBackground) {
-                UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
-                                                                message:lErrorMessage
-                                                               delegate:nil 
-                                                      cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
-                                                      otherButtonTitles:nil,nil];
-                [error show];
-                [error release];
-            }
-		}
-		
+	//Only report bad credential issue
+    if (state == LinphoneRegistrationFailed
+		&&[UIApplication sharedApplication].applicationState != UIApplicationStateBackground
+		&& linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials ) {
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure",nil)
+														message:NSLocalizedString(@"Bad credentials, check your account settings", nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil,nil];
+		[error show];
+		[error release];
 	}
 }
 
-- (void)callUpdate:(NSNotification*)notif {  
+- (void)callUpdate:(NSNotification*)notif {
     LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
     LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
     NSString *message = [notif.userInfo objectForKey: @"message"];
@@ -390,20 +372,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
     
     if([old equal:[ChatViewController compositeViewDescription]]) {
         if([new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[DialerViewController compositeViewDescription]] ||
-           [new equal:[SettingsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+           [new equal:[DialerViewController   compositeViewDescription]] ||
+           [new equal:[HistoryViewController  compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[SettingsViewController compositeViewDescription]]) {
-        if([new equal:[DialerViewController compositeViewDescription]] ||
+        if([new equal:[DialerViewController   compositeViewDescription]] ||
            [new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+           [new equal:[HistoryViewController  compositeViewDescription]] ||
+           [new equal:[ChatViewController     compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[DialerViewController compositeViewDescription]]) {
-        if([new equal:[ContactsViewController compositeViewDescription]] ||
-           [new equal:[HistoryViewController compositeViewDescription]]) {
+        if([new equal:[ContactsViewController  compositeViewDescription]] ||
+           [new equal:[HistoryViewController   compositeViewDescription]]) {
             left = true;
         }
     } else if([old equal:[ContactsViewController compositeViewDescription]]) {
@@ -430,6 +412,23 @@ static PhoneMainView* phoneMainViewInstance=nil;
 - (void) showStateBar:(BOOL)show {
     [mainViewController setStateBarHidden:!show];
 }
+
+- (void)updateStatusBar:(UICompositeViewDescription*)to_view {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    if ([LinphoneManager runningOnIpad]) {
+        // In iOS7, the ipad has a black background on dialer, so we have to adjust the
+        // status bar style for each transition to/from this view
+        BOOL toLightStatus   = [to_view     equal:[DialerViewController compositeViewDescription]];
+        BOOL fromLightStatus = [currentView equal:[DialerViewController compositeViewDescription]];
+        if( (!to_view && fromLightStatus) || // this case happens at app launch
+            toLightStatus )
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        else if(fromLightStatus)
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    }
+#endif
+}
+
 
 - (void)fullScreen:(BOOL)enabled {
     [mainViewController setFullScreen:enabled];
@@ -460,9 +459,10 @@ static PhoneMainView* phoneMainViewInstance=nil;
         } else {
             [mainViewController setViewTransition:nil];
         }
+        [self updateStatusBar:view];
         [mainViewController changeView:view];
         currentView = view;
-    } 
+    }
     
     NSDictionary* mdict = [NSMutableDictionary dictionaryWithObject:currentView forKey:@"view"];
     [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];

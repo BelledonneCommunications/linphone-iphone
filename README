@@ -12,10 +12,10 @@ Make sure that /opt/local/bin (macport tools) arrives first in your PATH env var
 
 Once xcode and macports are installed, open a terminal and install the required build-time tools with:
 
-	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen ImageMagick optipng
+	$ sudo port install coreutils automake autoconf libtool intltool wget pkgconfig cmake gmake yasm grep doxygen ImageMagick optipng antlr3
 
 
-Install gas-preprosessor.pl  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
+Install gas-preprosessor.pl version above Jully 2013  (http://github.com/yuvi/gas-preprocessor/ ) to be copied into /opt/local/bin :
 
 	$ wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
 	$ sudo mv gas-preprocessor.pl /opt/local/bin/.
@@ -45,8 +45,8 @@ BUILDING THE SDK
 	$ cd submodules/build
 	$ make all 
 
- ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastremer2, ortp, exosip, osip.
- If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastremer2, ortp, exosip, osip.
+ ALTERNATIVELY, you can force liblinphone to use only non GPL code except for liblinphone, mediastremer2, ortp, belle-sip.
+ If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastremer2, ortp, belle-sip.
 
  To generate the liblinphone multi arch sdkin non GPL mode, do:
 	$ cd submodules/build
@@ -89,7 +89,19 @@ LIMITATIONS, KNOWN BUGS
 ***********************
 
 * Video capture does not work in simulator (not implemented by simulator ?).
-* Sound does not work well (or at all) in simulator
 
 
+DEBUGING THE SDK
+****************
 
+Sometime it can be usefull to step into liblinphone SDK funtions. To allow xcode to enable breakpoint whithin liblinphone, SDK must be built with debug symbols.
+To add debug symbol to liblinphone SDK, add make option "enable_debug=yes".
+	$ make make all enable_gpl_third_parties=no enable_debug=yes
+
+
+DEBUGING MEDIASTREMMER2
+***********************
+For IOS specicific media development like audio video capture/playback it may be interresting to use mediastream test tool.
+The project submodule/liblinphone.xcodeproj can be used for this purpose.
+
+****************

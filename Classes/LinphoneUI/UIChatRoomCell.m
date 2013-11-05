@@ -64,6 +64,13 @@ static UIFont *CELL_FONT = nil;
         [messageImageView addGestureRecognizer:imageTapGestureRecognizer];
         [self addSubview:innerView];
         [deleteButton setAlpha:0.0f];
+        
+        // shift message box, otherwise it will collide with the bubble
+        CGRect messageCoords = [messageText frame];
+        messageCoords.origin.x   += 5;
+        messageCoords.origin.y   += 2;
+        messageCoords.size.width -= 5;
+        [messageText setFrame:messageCoords];
     }
     return self;
 }
@@ -93,19 +100,18 @@ static UIFont *CELL_FONT = nil;
 #pragma mark - 
 
 - (void)setChat:(ChatModel *)achat {
-    if(chat == achat) {
-        return;
-    }
-    
-    if(chat != nil) {
-        [chat release];
-        chat = nil;
-    }
-    
-    if(achat != nil) {
-        chat = [achat retain];
-        [self update];
-    }
+    if(chat != achat) {
+		if(chat != nil) {
+			[chat release];
+			chat = nil;
+		}
+		
+		if(achat != nil) {
+			chat = [achat retain];
+		}
+	}
+	[self update];
+	
 }
 
 - (void)update {
@@ -205,7 +211,7 @@ static UIFont *CELL_FONT = nil;
         }
         messageSize = [[chat message] sizeWithFont: CELL_FONT
                                         constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
-                                            lineBreakMode: UILineBreakModeTailTruncation];
+                                            lineBreakMode: NSLineBreakByTruncatingTail];
     } else {
         messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
     }
@@ -262,7 +268,7 @@ static UIFont *CELL_FONT = nil;
     if(chat != NULL) {
         UIView *view = [self superview]; 
         // Find TableViewCell
-        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        while(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
         if(view != nil) {
             UITableView *tableView = (UITableView*) view;
             NSIndexPath *indexPath = [tableView indexPathForCell:self];

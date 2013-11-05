@@ -27,6 +27,7 @@
 
 #import "IASKSpecifierValuesViewController.h"
 #import "IASKPSTextFieldSpecifierViewCell.h"
+#import "IASKPSTitleValueSpecifierViewCell.h"
 #import "IASKSpecifier.h"
 #import "IASKTextField.h"
 #include "lpconfig.h"
@@ -256,8 +257,12 @@
         UITextField *field = ((IASKPSTextFieldSpecifierViewCell*)cell).textField;
         [field setTextColor:LINPHONE_MAIN_COLOR];
     }
-    
-    cell.detailTextLabel.textColor = LINPHONE_MAIN_COLOR;
+
+    if([cell isKindOfClass:[IASKPSTitleValueSpecifierViewCell class]]) {
+        cell.detailTextLabel.textColor = [UIColor grayColor];
+    } else {
+        cell.detailTextLabel.textColor = LINPHONE_MAIN_COLOR;
+    }
     
     // Background View
     UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
@@ -335,7 +340,12 @@
 }
 
 + (void)removeBackground:(UIView*)view {
-    [view setBackgroundColor:[UIColor clearColor]];
+    // iOS7 transparent background is *really* transparent: with an alpha != 0
+    // it messes up the transitions. Use non-transparent BG for iOS7
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7)
+        [view setBackgroundColor:LINPHONE_SETTINGS_BG_IOS7];
+    else
+        [view setBackgroundColor:[UIColor clearColor]];
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -535,6 +545,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - 
 
++ (IASKSpecifier*)disableCodecSpecifier:(IASKSpecifier *)specifier {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+
+    NSMutableString *type = [NSMutableString stringWithString:[dict objectForKey:kIASKType]];
+    [type setString:kIASKPSTitleValueSpecifier];
+    [dict setObject:type forKey:kIASKType];
+
+    NSMutableArray *values = [NSMutableArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:1], nil ];
+    [dict setObject:values forKey:kIASKValues];
+
+    NSString* title = NSLocalizedString(@"Disabled, build from sources to enable", nil);
+    NSMutableArray *titles = [NSMutableArray arrayWithObjects:title, title, nil];
+    [dict setObject:titles forKey:kIASKTitles];
+
+    return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+}
+
 + (IASKSpecifier*)filterSpecifier:(IASKSpecifier *)specifier {
 #ifndef HAVE_SSL
     if ([[specifier key] isEqualToString:@"transport_preference"]) {
@@ -571,6 +598,16 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
     }
 #endif //HAVE_SSL
+    
+
+    // Add "build from source" if MPEG4 or H264 disabled
+    if ([[specifier key] isEqualToString:@"h264_preference"] && ![LinphoneManager isCodecSupported:"h264"]) {
+        return [SettingsViewController disableCodecSpecifier:specifier];
+    }
+    if ([[specifier key] isEqualToString:@"mp4v-es_preference"] && ![LinphoneManager isCodecSupported:"mp4v-es"]) {
+        return [SettingsViewController disableCodecSpecifier:specifier];
+    }
+
     return specifier;
 }
 
@@ -586,7 +623,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [hiddenKeys addObject:@"battery_alert_button"];
 #endif
     
-    [hiddenKeys addObject:@"audio_advanced_group"];
     [hiddenKeys addObject:@"playback_gain_preference"];
     [hiddenKeys addObject:@"microphone_gain_preference"];
     

@@ -140,7 +140,7 @@
 
 + (CGFloat)height:(BOOL)editing {
     if(editing) {
-        return 160.0f;
+        return 170.0f;
     } else {
         return 80.0f;
     }
@@ -206,15 +206,22 @@
         [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
         [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
         [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
+        [cell setBackgroundColor:[UIColor whiteColor]];
     }
-   
+
+    // setup placeholder
     ABPropertyID property = [[propertyList objectAtIndex:[indexPath row]] intValue];
     if(property == kABPersonFirstNameProperty) {
         [cell.detailTextField setPlaceholder:NSLocalizedString(@"First name", nil)];
     } else if (property == kABPersonLastNameProperty) {
         [cell.detailTextField setPlaceholder:NSLocalizedString(@"Last name", nil)];
+    } else if (property == kABPersonOrganizationProperty) {
+        [cell.detailTextField setPlaceholder:NSLocalizedString(@"Company name", nil)];
     }
+
     [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
+
+    // setup values, if they exist
     if(contact) {
         CFStringRef lValue = ABRecordCopyValue(contact, property);
         if(lValue != NULL) {
@@ -340,7 +347,8 @@
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     UIView *view = [textField superview]; 
     // Find TableViewCell
-    if(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
+    while(view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]]) view = [view superview];
+    
     if(view != nil) {
         UIEditableTableViewCell *cell = (UIEditableTableViewCell*)view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];

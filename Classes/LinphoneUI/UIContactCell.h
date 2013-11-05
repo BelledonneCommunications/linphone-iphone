@@ -19,8 +19,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
+#import "UITransparentTVCell.h"
 
-@interface UIContactCell : UITableViewCell {
+@interface UIContactCell : UITransparentTVCell {
 }
 
 @property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;

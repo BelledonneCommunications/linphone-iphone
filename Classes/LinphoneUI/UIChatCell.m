@@ -116,7 +116,12 @@
     if([chat isExternalImage] || [chat isInternalImage]) {
         [chatContentLabel setText:@""];
     } else {
-        [chatContentLabel setText:[chat message]];
+        NSString *message = [chat message];
+        // shorten long messages
+        if([message length] > 50)
+            message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
+        
+        [chatContentLabel setText:message];
     }
     
     int count = [ChatModel unreadMessages:[chat remoteContact]];
@@ -156,7 +161,7 @@
     if(chat != NULL) {
         UIView *view = [self superview]; 
         // Find TableViewCell
-        if(view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
+        while( view != nil && ![view isKindOfClass:[UITableView class]]) view = [view superview];
         if(view != nil) {
             UITableView *tableView = (UITableView*) view;
             NSIndexPath *indexPath = [tableView indexPathForCell:self];

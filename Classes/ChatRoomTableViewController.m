@@ -93,12 +93,10 @@
 }
 
 - (void)scrollToBottom:(BOOL)animated {
-    CGSize size = [self.tableView contentSize];
-    CGRect bounds = [self.tableView bounds];
-    bounds.origin.y = size.height - bounds.size.height;
-    
-    [self.tableView.layer removeAllAnimations];
-    [self.tableView scrollRectToVisible:bounds animated:animated];
+    [self.tableView reloadData];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:([data count] - 1) inSection:0]
+                          atScrollPosition:UITableViewScrollPositionBottom
+                                  animated:YES];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {

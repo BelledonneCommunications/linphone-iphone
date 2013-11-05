@@ -26,11 +26,11 @@ $(BUILDER_SRC_DIR)/$(msx264_dir)/configure:
 $(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile: $(BUILDER_SRC_DIR)/$(msx264_dir)/configure
 	mkdir -p $(BUILDER_BUILD_DIR)/$(msx264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(msx264_dir)/ \
-	&& PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site) \
 	$(BUILDER_SRC_DIR)/$(msx264_dir)/configure -prefix=$(prefix) --host=$(host) ${library_mode}  
 
 build-msx264: build-x264 $(BUILDER_BUILD_DIR)/$(msx264_dir)/Makefile
-	cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && PKG_CONFIG_PATH=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(msx264_dir) && PKG_CONFIG_LIBDIR=$(prefix)/lib/pkgconfig CONFIG_SITE=$(BUILDER_SRC_DIR)/build/$(config_site)  make && make install
 
 clean-msx264: clean-x264
 	cd  $(BUILDER_BUILD_DIR)/$(msx264_dir) && make clean

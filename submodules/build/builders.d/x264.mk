@@ -24,42 +24,40 @@
 
 x264-configure-option= \
 			--host=$(host)\
-			--enable-static \
+			--enable-static --enable-pic \
 			--cross-prefix=$$SDK_BIN_PATH/ \
-			--extra-ldflags="-arch $$ARCH -isysroot $$SYSROOT_PATH"
+			--extra-ldflags="$$COMMON_FLAGS"
 
 
+XCFLAGS:=$$COMMON_FLAGS 
 
-ifneq (,$(findstring i386,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -isysroot $$SYSROOT_PATH"
-endif
-ifneq (,$(findstring armv6,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -mcpu=arm1176jzf-s  -marm -isysroot $$SYSROOT_PATH"
-       x264-configure-option+=  --disable-asm
-endif
 
 ifneq (,$(findstring armv7,$(host)))
-       x264-configure-option+=  --extra-cflags="-arch $$ARCH -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -isysroot $$SYSROOT_PATH"
+       XCFLAGS+= -mfpu=neon -mfloat-abi=softfp
 endif
 
-x264_dir?=externals/x264
-#$(BUILDER_SRC_DIR)/$(x264_dir)/patched :
-#	cd $(BUILDER_SRC_DIR)/$(x264_dir) \
-#	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
-#	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
+x264-configure-option+= --extra-cflags="${XCFLAGS}"
 
-$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: 
+x264_dir?=externals/x264
+$(BUILDER_SRC_DIR)/$(x264_dir)/patched:
+	cd $(BUILDER_SRC_DIR)/$(x264_dir) \
+	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/x264.patch \
+	&& touch $(BUILDER_SRC_DIR)/$(x264_dir)/patched
+
+$(BUILDER_BUILD_DIR)/$(x264_dir)/configure: $(BUILDER_SRC_DIR)/$(x264_dir)/patched
 	mkdir -p $(BUILDER_BUILD_DIR)/$(x264_dir)
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
-	&& rsync -av --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
+	&& rsync -rvLpgoc --exclude ".git"  $(BUILDER_SRC_DIR)/$(x264_dir)/* . 
 
 $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak: $(BUILDER_BUILD_DIR)/$(x264_dir)/configure
 	cd $(BUILDER_BUILD_DIR)/$(x264_dir)/ \
 	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
-	&& ./configure --prefix=$(prefix)  ${x264-configure-option} 
+	&& CC="$$CC" STRINGS="$$STRINGS" ./configure --prefix=$(prefix)  $(x264-configure-option)
 
 build-x264: $(BUILDER_BUILD_DIR)/$(x264_dir)/config.mak
-	cd $(BUILDER_BUILD_DIR)/$(x264_dir)  make && make install
+	cd $(BUILDER_BUILD_DIR)/$(x264_dir) \
+	&& host_alias=$(host) . $(BUILDER_SRC_DIR)/build/$(config_site) \
+	&& make STRIP="$$STRIP" AR="$$AR -r " RANLIB="$$RANLIB" CC="$$CC" STRINGS="$$STRINGS" && make STRIP="$$STRIP" AR="$$AR"  RANLIB="$$RANLIB"  STRINGS="$$STRINGS" install
 
 clean-x264:
 	cd  $(BUILDER_BUILD_DIR)/$(x264_dir) && make clean
@@ -67,7 +65,7 @@ clean-x264:
 veryclean-x264:
 	-cd $(BUILDER_BUILD_DIR)/$(x264_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(x264_dir)/ \
-	&& git checkout common/arm/asm.S \
+	&& git clean -f && git reset --hard \
 	&& rm -f patched
 	rm -rf $(BUILDER_BUILD_DIR)/$(x264_dir)
 
