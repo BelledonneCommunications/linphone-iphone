@@ -23,7 +23,7 @@ elif test "${host_alias}" = "armv7s-apple-darwin" ; then
 	PLATFORM=OS
 	CMAKE_OPTS="-DCMAKE_SYSTEM_PROCESSOR=arm"
 else 
-	echo "bad host ${host_alias} must be either i386-apple-darwin or armv6-apple-darwin"
+	echo "bad host ${host_alias} must be either i386-apple-darwin or armv[6,7,7s]-apple-darwin"
 	exit
 fi
 echo "Loading config.site for iPhone platform=${PLATFORM} version=${SDK_VERSION}"
