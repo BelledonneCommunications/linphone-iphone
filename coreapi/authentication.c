@@ -256,25 +256,27 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 	MSList *elem;
 	const LinphoneAuthInfo *ret=NULL;
 	
-	for (elem=lc->auth_info;elem!=NULL;elem=elem->next){
-		LinphoneAuthInfo *pinfo=(LinphoneAuthInfo*)elem->data;
-		if (username && pinfo->username && strcmp(username,pinfo->username)==0){
+	for (elem=lc->auth_info;elem!=NULL;elem=elem->next) {
+		LinphoneAuthInfo *pinfo = (LinphoneAuthInfo*)elem->data;
+		if (username && pinfo->username && strcmp(username,pinfo->username)==0) {
 			if (realm && domain){
 				if (pinfo->realm && strcmp(realm,pinfo->realm)==0
-					&& pinfo->domain && strcmp(domain,pinfo->domain)==0){
+					&& pinfo->domain && strcmp(domain,pinfo->domain)==0) {
 					return pinfo;
 				}
-			} else if (realm){
-				if (pinfo->realm && realm_match(realm,pinfo->realm)){
-					if (ret!=NULL){
+			} else if (realm) {
+				if (pinfo->realm && realm_match(realm,pinfo->realm)) {
+					if (ret!=NULL) {
 						ms_warning("Non unique realm found for %s",username);
 						return NULL;
 					}
 					ret=pinfo;
 				}
-			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0){
+			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0) {
 				return pinfo;
-			} else return pinfo;
+			} else if (!domain) { 
+				return pinfo;
+			}
 		}
 	}
 	return ret;
@@ -291,14 +293,13 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 **/
 const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
 	const LinphoneAuthInfo *ai=NULL;
-	if (domain){
-		ai=find_auth_info(lc,username,realm,domain);
-		if (ai==NULL){
-			ai=find_auth_info(lc,username,NULL,domain);
-		}
-	}
-	if (ai==NULL && realm) {
+	if (realm){
 		ai=find_auth_info(lc,username,realm,NULL);
+		if (ai==NULL && domain){
+			ai=find_auth_info(lc,username,realm,domain);
+		}
+	} else if (domain != NULL) {
+		ai=find_auth_info(lc,username,NULL,domain);
 	}
 	if (ai==NULL){
 		ai=find_auth_info(lc,username,NULL,NULL);
