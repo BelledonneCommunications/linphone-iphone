@@ -145,12 +145,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setChatDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
 	
-	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig,File factoryConfig,Object  userdata) throws IOException {
-		mListener=listener;
-		nativePtr = newLinphoneCore(listener,userConfig.getCanonicalPath(),factoryConfig.getCanonicalPath(),userdata);
+	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
+		mListener = listener;
+		String user = userConfig == null ? null : userConfig.getCanonicalPath();
+		String factory = factoryConfig == null ? null : factoryConfig.getCanonicalPath();
+		nativePtr = newLinphoneCore(listener, user, factory, userdata);
 	}
 	LinphoneCoreImpl(LinphoneCoreListener listener) throws IOException {
-		mListener=listener;
+		mListener = listener;
 		nativePtr = newLinphoneCore(listener,null,null,null);
 	}
 	

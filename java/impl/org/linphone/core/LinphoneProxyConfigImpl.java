@@ -37,6 +37,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		nativePtr = newLinphoneProxyConfig();
 		setIdentity(identity);
 		setProxy(proxy);
+		setRoute(route);
 		enableRegister(enableRegister);
 		ownPtr=true;
 	}

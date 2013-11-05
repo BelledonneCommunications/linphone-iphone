@@ -97,7 +97,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			String userConfig, String factoryConfig, Object userdata)
 			throws LinphoneCoreException {
 		try {
-			return new LinphoneCoreImpl(listener,new File(userConfig),new File(factoryConfig),userdata);
+			File user = userConfig == null ? null : new File(userConfig);
+			File factory = factoryConfig == null ? null : new File(factoryConfig);
+			return new LinphoneCoreImpl(listener, user, factory, userdata);
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
 		}
