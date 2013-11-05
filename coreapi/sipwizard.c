@@ -214,7 +214,7 @@ static int sip_wizard_do_login(SipSetupContext * ctx, const char *uri, const cha
 	tmp=linphone_address_as_string(parsed_uri);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	if (passwd) {
-		auth=linphone_auth_info_new(linphone_address_get_username(parsed_uri),NULL,passwd,NULL,NULL);
+		auth=linphone_auth_info_new(linphone_address_get_username(parsed_uri),NULL,passwd,NULL,NULL,NULL);
 		linphone_core_add_auth_info(lc,auth);
 	}
 	linphone_proxy_config_enable_register(cfg,TRUE);

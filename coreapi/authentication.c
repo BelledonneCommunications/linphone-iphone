@@ -335,7 +335,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	
 	/* find if we are attempting to modify an existing auth info */
 	ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
-	if (ai!=NULL && ai->domain && strcmp(ai->domain, info->domain)==0){
+	if (ai!=NULL && ai->domain && info->domain && strcmp(ai->domain, info->domain)==0){
 		lc->auth_info=ms_list_remove(lc->auth_info,ai);
 		linphone_auth_info_destroy(ai);
 	}
