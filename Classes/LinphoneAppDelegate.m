@@ -185,6 +185,15 @@
 	return YES;
 }
 
+- (void)fixRing{
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+        // iOS7 fix for notification sound not stopping.
+        // see http://stackoverflow.com/questions/19124882/stopping-ios-7-remote-notification-sound
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+    }
+}
+
 - (void)processRemoteNotification:(NSDictionary*)userInfo{
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if(aps != nil) {
@@ -208,13 +217,7 @@
 					else
 						[LinphoneLogger log:LinphoneLoggerError format:@"PushNotification: does not have call-id yet, fix it !"];
 
-                    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-                        // iOS7 fix for notification sound not stopping.
-                        // see http://stackoverflow.com/questions/19124882/stopping-ios-7-remote-notification-sound
-                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 1];
-                        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
-                    }
-
+                    [self fixRing];
                 }
             }
         }
@@ -227,6 +230,7 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    [[UIApplication sharedApplication] cancelLocalNotification:notification];
     if([notification.userInfo objectForKey:@"callId"] != nil) {
         [[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
     } else if([notification.userInfo objectForKey:@"chat"] != nil) {
