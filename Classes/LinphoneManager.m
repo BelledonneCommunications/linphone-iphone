@@ -156,8 +156,8 @@ struct codec_name_pref_table codec_pref_table[]={
 
         if( (available == NULL)
            // these two codecs should not be hidden, even if not supported
-           && [codec_pref_table[i].prefname isEqualToString:@"h264_preference"]
-           && [codec_pref_table[i].prefname isEqualToString:@"mp4v-es_preference"]
+           && ![codec_pref_table[i].prefname isEqualToString:@"h264_preference"]
+           && ![codec_pref_table[i].prefname isEqualToString:@"mp4v-es_preference"]
            )
         {
             [set addObject:codec_pref_table[i].prefname];
