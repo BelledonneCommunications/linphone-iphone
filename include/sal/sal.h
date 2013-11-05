@@ -481,7 +481,7 @@ void sal_op_release(SalOp *h);
 void sal_op_authenticate(SalOp *h, const SalAuthInfo *info);
 void sal_op_cancel_authentication(SalOp *h);
 void sal_op_set_user_pointer(SalOp *h, void *up);
-int sal_op_get_auth_requested(SalOp *h, const char **realm, const char **username);
+SalAuthInfo * sal_op_get_auth_requested(SalOp *h);
 const char *sal_op_get_from(const SalOp *op);
 const SalAddress *sal_op_get_from_address(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);

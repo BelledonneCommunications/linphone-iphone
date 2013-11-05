@@ -33,9 +33,17 @@
 
 /**
  * Create a LinphoneAuthInfo object with supplied information.
- *
  * The object can be created empty, that is with all arguments set to NULL.
- * Username, userid, password and realm can be set later using specific methods.
+ * Username, userid, password, realm and domain can be set later using specific methods.
+ * At the end, username and passwd (or ha1) are required.
+ * @param username the username that needs to be authenticated
+ * @param userid the userid used for authenticating (use NULL if you don't know what it is)
+ * @param passwd the password in clear text
+ * @param ha1 the ha1-encrypted password if password is not given in clear text.
+ * @param realm the authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
+ * @param domain the SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
+ * @return a #LinphoneAuthInfo. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
+ * passed through linphone_core_add_auth_info().
 **/
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
 	LinphoneAuthInfo *obj=ms_new0(LinphoneAuthInfo,1);
@@ -344,11 +352,10 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	lc->auth_info=ms_list_append(lc->auth_info,linphone_auth_info_clone(info));
 	/* retry pending authentication operations */
 	for(l=elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
-		const char *username,*realm;
 		SalOp *op=(SalOp*)elem->data;
 		LinphoneAuthInfo *ai;
-		sal_op_get_auth_requested(op,&realm,&username);
-		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,realm,username,info->domain);
+		const SalAuthInfo *req_sai=sal_op_get_auth_requested(op);
+		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain);
 		if (ai){
 			SalAuthInfo sai;
 			MSList* proxy;

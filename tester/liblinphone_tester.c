@@ -78,7 +78,7 @@ void auth_info_requested(LinphoneCore *lc, const char *realm, const char *userna
 					,realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
-	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+	info=linphone_auth_info_new(test_username,NULL,test_password,NULL,realm,domain); /*create authentication structure from identity*/
 	linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 
 }

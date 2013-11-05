@@ -1930,9 +1930,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 		LinphoneAddress *from;
 		LinphoneAuthInfo *info;
 		if ((from=linphone_address_new(identity))!=NULL){
-			char realm[128];
-			snprintf(realm,sizeof(realm)-1,"\"%s\"",linphone_address_get_domain(from));
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,passwd,NULL,NULL);
+			info=linphone_auth_info_new(NULL,NULL,passwd,NULL,NULL,linphone_address_get_username(from));
 			linphone_core_add_auth_info(lc,info);
 			linphone_address_destroy(from);
 			linphone_auth_info_destroy(info);

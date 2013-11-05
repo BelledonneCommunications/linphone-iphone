@@ -963,9 +963,9 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig %p is not known by LinphoneCore (programming error?)",cfg);
 		return;
 	}
-	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
+	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
-	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,(void *)cfg);
+	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,cfg);
 	cfg->deletion_date=ms_time(NULL);
 	if (cfg->state==LinphoneRegistrationOk){
 		/* this will unREGISTER */

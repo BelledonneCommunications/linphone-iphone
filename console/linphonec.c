@@ -271,7 +271,7 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
 			return;
 		}
 
-		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
+		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm,domain);
 		auth_stack.elem[auth_stack.nitems++]=pending_auth;
 	}
 }

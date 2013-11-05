@@ -430,7 +430,7 @@ static void linphone_gtk_assistant_prepare(GtkWidget *assistant, GtkWidget *page
 		}
 		gchar domain[128];
 		g_snprintf(domain, sizeof(domain), "\"%s\"", creator->domain + 4);
-		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, domain);
+		LinphoneAuthInfo *info=linphone_auth_info_new(username, username, creator->password, NULL, NULL, domain);
 		linphone_core_add_auth_info(linphone_gtk_get_core(),info);
 		g_free(username);
 

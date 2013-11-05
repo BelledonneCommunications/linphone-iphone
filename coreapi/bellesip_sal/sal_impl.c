@@ -284,6 +284,7 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 	belle_sip_client_transaction_t* client_transaction = belle_sip_response_event_get_client_transaction(event);
 	belle_sip_response_t* response = belle_sip_response_event_get_response(event);
 	int response_code = belle_sip_response_get_status_code(response);
+	
 	if (!client_transaction) {
 		ms_warning("Discarding stateless response [%i]",response_code);
 		return;
@@ -305,15 +306,12 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		
 		if (op->callbacks.process_response_event) {
-			
 			/*handle authorization*/
 			switch (response_code) {
-				case 200: {
+				case 200: 
 					break;
-				}
 				case 401:
-				case 407:{
-					
+				case 407:
 					/*belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),NULL);*//*remove op from trans*/
 					if (op->state == SalOpStateTerminating && strcmp("BYE",belle_sip_request_get_method(request))!=0) {
 						/*only bye are completed*/
@@ -327,7 +325,10 @@ static void process_response_event(void *user_ctx, const belle_sip_response_even
 						sal_process_authentication(op);
 						return;
 					}
-				}
+					break;
+				case 403:
+					if (op->auth_info) op->base.root->callbacks.auth_failure(op,op->auth_info);
+					break;
 			}
 			op->callbacks.process_response_event(op,event);
 		} else {

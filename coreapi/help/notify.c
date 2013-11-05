@@ -129,7 +129,7 @@ int main(int argc, char *argv[]){
 	}
 		LinphoneAuthInfo *info;
 		if (password!=NULL){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL); /*create authentication structure from identity*/
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
 			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 		}
 

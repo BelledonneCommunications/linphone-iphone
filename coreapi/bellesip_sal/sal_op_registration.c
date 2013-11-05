@@ -63,6 +63,8 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		if (op->auth_info) {
 			/*add pending auth*/
 			sal_add_pending_auth(op->base.root,op);
+			if (status_code==403)
+				op->base.root->callbacks.auth_failure(op,op->auth_info);
 		}
 	}
 }

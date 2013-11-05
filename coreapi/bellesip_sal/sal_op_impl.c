@@ -81,10 +81,8 @@ void sal_op_cancel_authentication(SalOp *h){
 	return ;
 }
 
-int sal_op_get_auth_requested(SalOp *op, const char **realm, const char **username){
-	*realm=op->auth_info?op->auth_info->realm:NULL;
-	*username=op->auth_info?op->auth_info->username:NULL;
-	return 0;
+SalAuthInfo * sal_op_get_auth_requested(SalOp *op){
+	return op->auth_info;
 }
 
 belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){

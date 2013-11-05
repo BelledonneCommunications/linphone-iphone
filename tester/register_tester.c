@@ -104,7 +104,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
 			if (!linphone_core_get_auth_info_list(lc)) {
 				CU_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized);
-				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 			}
 		}
@@ -148,7 +148,7 @@ static void register_with_refresh_with_send_error() {
 	int retry=0;
 	LinphoneCoreManager* lcm = create_lcm_with_auth(1);
 	stats* counters = &lcm->stat;
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
@@ -228,7 +228,7 @@ static void simple_tls_register(){
 static void simple_authenticated_register(){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain); /*create authentication structure from identity*/
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
@@ -244,7 +244,7 @@ static void ha1_authenticated_register(){
 	LinphoneAuthInfo *info;
 	char route[256];
 	sal_auth_compute_ha1(test_username,auth_domain,test_password,ha1);
-	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain); /*create authentication structure from identity*/
+	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain,NULL); /*create authentication structure from identity*/
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
 	counters = &lcm->stat;
@@ -321,7 +321,7 @@ static void authenticated_register_with_wrong_credentials(){
 	LinphoneCoreManager *mgr;
 	stats* counters;
 	LCSipTransports transport = {5070,5070,0,5071};
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,"wrong passwd",NULL,auth_domain); /*create authentication structure from identity*/
+	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,"wrong passwd",NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	char route[256];
 	
 	sprintf(route,"sip:%s",test_route);

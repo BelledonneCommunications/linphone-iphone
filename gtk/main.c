@@ -1039,8 +1039,7 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 	gtk_label_set_markup(GTK_LABEL(label),msg);
 	g_free(msg);
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"userid_entry")),username);
-	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm);
-	linphone_auth_info_set_domain(info,domain);
+	info=linphone_auth_info_new(username, NULL, NULL, NULL,realm,domain);
 	g_object_set_data(G_OBJECT(w),"auth_info",info);
 	g_object_weak_ref(G_OBJECT(w),(GWeakNotify)linphone_auth_info_destroy,info);
 	gtk_widget_show(w);
