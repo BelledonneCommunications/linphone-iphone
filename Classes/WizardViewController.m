@@ -395,10 +395,15 @@ static UICompositeViewDescription *compositeDescription = nil;
     linphone_address_set_username(linphoneAddress, normalizedUserName);
     linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
     const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
-	LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL);
 	linphone_proxy_config_set_identity(proxyCfg, identity);
 	linphone_proxy_config_set_server_addr(proxyCfg, [server UTF8String]);
-    if([server compare:domain options:NSCaseInsensitiveSearch] != NSOrderedSame) {
+    LinphoneAuthInfo* info = linphone_auth_info_new([username UTF8String]
+													, NULL, [password UTF8String]
+													, NULL
+													, NULL
+													,linphone_proxy_config_get_domain(proxyCfg));
+	
+	if([server compare:domain options:NSCaseInsensitiveSearch] != NSOrderedSame) {
         linphone_proxy_config_set_route(proxyCfg, [server UTF8String]);
     }
     int defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];

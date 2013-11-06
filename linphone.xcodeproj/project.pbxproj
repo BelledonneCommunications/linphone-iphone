@@ -4114,6 +4114,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = Z2V957B3D6;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "linphone" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -5770,6 +5775,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = armv7;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5801,6 +5808,7 @@
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -5835,6 +5843,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -5866,6 +5876,7 @@
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -5889,7 +5900,7 @@
 					DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
-					liblinphone-sdk/apple-darwin/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5924,7 +5935,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					liblinphone-sdk/apple-darwin/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5960,7 +5971,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					liblinphone-sdk/apple-darwin/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5996,7 +6007,7 @@
 					VIDEO_ENABLED,
 				);
 				HEADER_SEARCH_PATHS = (
-					liblinphone-sdk/apple-darwin/include,
+					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -6042,6 +6053,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -6072,6 +6085,7 @@
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -6106,6 +6120,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -6136,6 +6152,7 @@
 				ORDER_FILE = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = linphone;
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

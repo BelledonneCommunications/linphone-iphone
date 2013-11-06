@@ -383,19 +383,21 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		const char* identity = linphone_address_as_string_uri_only(linphoneAddress);
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-		// add username password
-		LinphoneAddress *from = linphone_address_new(identity);
-		LinphoneAuthInfo *info;
-		if (from != 0){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL);
-			linphone_core_add_auth_info(lc,info);
-            linphone_address_destroy(from);
-		}
-		
 		// configure proxy entries
 		linphone_proxy_config_set_identity(proxyCfg, identity);
 		linphone_proxy_config_set_server_addr(proxyCfg, proxy);
 		linphone_proxy_config_enable_register(proxyCfg, true);
+		
+		// add username password
+		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAuthInfo *info;
+		if (from != 0){
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,linphone_proxy_config_get_domain(proxyCfg));
+			linphone_core_add_auth_info(lc,info);
+            linphone_address_destroy(from);
+		}
+		
+
 		
 
 		int expire = [self integerForKey:@"expire_preference"];
