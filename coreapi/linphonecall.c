@@ -413,7 +413,6 @@ static int select_random_port(LinphoneCore *lc, SalStreamType type) {
 }
 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
-	LinphonePresenceModel *model;
 	int port_offset;
 	int min_port, max_port;
 
@@ -425,12 +424,7 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	call->media_start_time=0;
 	call->log=linphone_call_log_new(call, from, to);
 	call->owns_call_log=TRUE;
-	if (call->core->calls==NULL){
-		/*there were no call, and now there is a call, send an on-the-phone presence notification automatically*/
-		model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
-		linphone_core_send_presence(call->core,model);
-		linphone_presence_model_unref(model);
-	}
+	
 	linphone_core_get_audio_port_range(call->core, &min_port, &max_port);
 	if (min_port == max_port) {
 		/* Used fixed RTP audio port. */
@@ -731,6 +725,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			linphone_call_set_terminated(call);
 		}
 		if (cstate == LinphoneCallConnected) {
+			if (ms_list_size(lc->calls)==1){
+				LinphonePresenceModel *model;
+				/*there were no call, and now there is a call, send an on-the-phone presence notification automatically*/
+				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOnThePhone, NULL);
+				linphone_core_send_presence(call->core,model);
+				linphone_presence_model_unref(model);
+			}
 			call->log->status=LinphoneCallSuccess;
 			call->media_start_time=time(NULL);
 		}

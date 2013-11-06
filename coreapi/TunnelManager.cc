@@ -274,20 +274,9 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 		ms_message("Tunnel is up, registering now");
 		linphone_core_set_firewall_policy(mCore,LinphonePolicyNoFirewall);
 		linphone_core_set_rtp_transport_factories(mCore,&mTransportFactories);
-#ifdef USE_BELLESIP
+
 		sal_enable_tunnel(mCore->sal, mTunnelClient);
-#else
-		eXosip_transport_hook_register(&mExosipTransport);
-		//force transport to udp
-		LCSipTransports lTransport;
-		
-		lTransport.udp_port=(0xDFFF&random())+1024;
-		lTransport.tcp_port=0;
-		lTransport.tls_port=0;
-		lTransport.dtls_port=0;
-		
-		linphone_core_set_sip_transports(mCore, &lTransport);
-#endif
+
 		//register
 		if (lProxy) {
 			linphone_proxy_config_done(lProxy);
@@ -343,7 +332,6 @@ void TunnelManager::enable(bool isEnable) {
 		mReady=false;
 		linphone_core_set_rtp_transport_factories(mCore,NULL);
 
-#ifdef USE_BELLESIP
 		sal_disable_tunnel(mCore->sal);
 		// Set empty transports to force the setting of regular transport, otherwise it is not applied
 		LCSipTransports lTransport;
@@ -352,9 +340,7 @@ void TunnelManager::enable(bool isEnable) {
 		lTransport.tls_port = 0;
 		lTransport.dtls_port = 0;
 		linphone_core_set_sip_transports(mCore, &lTransport);
-#else
-		eXosip_transport_hook_register(NULL);
-#endif
+
 		//Restore transport and firewall policy
 		linphone_core_set_sip_transports(mCore, &mRegularTransport);
 		linphone_core_set_firewall_policy(mCore, mPreviousFirewallPolicy);

@@ -5423,12 +5423,13 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 
-	
 
 	for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 		linphone_proxy_config_edit(cfg);	/* to unregister */
 	}
+	
+	ms_message("Unregistration started.");
 
 	for (i=0;i<20&&still_registered;i++){
 		still_registered=FALSE;
@@ -5450,6 +5451,15 @@ void sip_config_uninit(LinphoneCore *lc)
 	ms_list_free(lc->auth_info);
 	lc->auth_info=NULL;
 
+	/*now that we are unregisted, we no longer need the tunnel.*/
+#ifdef TUNNEL_ENABLED
+	if (lc->tunnel) {
+		linphone_tunnel_destroy(lc->tunnel);
+		lc->tunnel=NULL;
+		ms_message("Tunnel destroyed.");
+	}
+#endif
+	
 	sal_reset_transports(lc->sal);
 	sal_unlisten_ports(lc->sal); /*to make sure no new messages are received*/
 	sal_iterate(lc->sal); /*make sure event are purged*/
@@ -5550,6 +5560,7 @@ static void codecs_config_uninit(LinphoneCore *lc)
 
 void ui_config_uninit(LinphoneCore* lc)
 {
+	ms_message("Destroying friends.");
 	if (lc->friends){
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_destroy);
 		ms_list_free(lc->friends);
@@ -5559,6 +5570,7 @@ void ui_config_uninit(LinphoneCore* lc)
 		linphone_presence_model_unref(lc->presence_model);
 		lc->presence_model = NULL;
 	}
+	ms_message("Destroying friends done.");
 }
 
 /**
@@ -5590,8 +5602,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		ms_usleep(50000);
 	}
 
-
-
 	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
@@ -5601,9 +5611,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		lc->previewstream=NULL;
 	}
 #endif
-#ifdef TUNNEL_ENABLED
-	if (lc->tunnel) linphone_tunnel_destroy(lc->tunnel);
-#endif
+
 	ms_event_queue_destroy(lc->msevq);
 	lc->msevq=NULL;
 	/* save all config */
