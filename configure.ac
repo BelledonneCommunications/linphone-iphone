@@ -601,7 +601,7 @@ AC_ARG_ENABLE(strict,
 STRICT_OPTIONS="-Wall "
 
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Qunused-arguments"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
