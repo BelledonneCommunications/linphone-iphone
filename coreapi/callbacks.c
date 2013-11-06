@@ -647,7 +647,6 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (lc->vtable.display_status)
 					lc->vtable.display_status(lc,msg);
 			break;
-			case SalReasonNotAcceptable:
 			case SalReasonRequestPending:
 				/*restore previous state, the application will decide to resubmit the action if relevant*/
 				call->reason=linphone_reason_from_sal(sr);
