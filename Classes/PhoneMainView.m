@@ -31,6 +31,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
 @synthesize mainViewController;
 @synthesize currentView;
+@synthesize statusBarBG;
 
 
 #pragma mark - Lifecycle Functions
@@ -413,24 +414,32 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setStateBarHidden:!show];
 }
 
++ (BOOL)isLightBackgroundView:(UICompositeViewDescription*)view {
+    return ( [view equal:[DialerViewController compositeViewDescription]]       ||
+             [view equal:[IncomingCallViewController compositeViewDescription]] ||
+             [view equal:[InCallViewController compositeViewDescription]] );
+}
+
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-    if ([LinphoneManager runningOnIpad]) {
-        // In iOS7, the ipad has a black background on dialer, so we have to adjust the
-        // status bar style for each transition to/from this view
-        BOOL toLightStatus   = [to_view     equal:[DialerViewController compositeViewDescription]];
-        BOOL fromLightStatus = [currentView equal:[DialerViewController compositeViewDescription]];
-        if( (!to_view && fromLightStatus) || // this case happens at app launch
-            toLightStatus )
-            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-        else if(fromLightStatus)
-            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    // In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
+    // status bar style for each transition to/from these views
+    BOOL toLightStatus   = (to_view != NULL) && [PhoneMainView isLightBackgroundView:to_view];
+    BOOL fromLightStatus = [PhoneMainView isLightBackgroundView:currentView];
+
+    if( (!to_view && fromLightStatus) || toLightStatus ) {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        [statusBarBG setHidden:NO];
+    } else if(fromLightStatus) {
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+        [statusBarBG setHidden:YES];
     }
 #endif
 }
 
 
 - (void)fullScreen:(BOOL)enabled {
+    [statusBarBG setHidden:enabled];
     [mainViewController setFullScreen:enabled];
 }
 

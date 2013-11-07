@@ -50,8 +50,11 @@
     NSTimer *batteryTimer;
 }
 
+@property (nonatomic, retain) IBOutlet UIView *statusBarBG;
 @property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
+
 @property (readonly) UICompositeViewDescription *currentView;
+
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
 - (UIViewController*)popCurrentView;
