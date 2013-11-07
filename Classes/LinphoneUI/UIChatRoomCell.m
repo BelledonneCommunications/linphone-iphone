@@ -46,7 +46,9 @@
 static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
-static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f;
+// adding 10 px margin, because the line breaking algorithm in ios seems to need some margin...
+// TODO: maybe simplify the view layout to ease the manipulations
+static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
@@ -209,9 +211,22 @@ static UIFont *CELL_FONT = nil;
         if(CELL_FONT == nil) {
             CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
         }
-        messageSize = [[chat message] sizeWithFont: CELL_FONT
-                                        constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
-                                            lineBreakMode: NSLineBreakByTruncatingTail];
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+
+        if( [[[UIDevice currentDevice] systemVersion] doubleValue] >= 7){
+            NSDictionary *stringAttributes = [NSDictionary dictionaryWithObject:CELL_FONT forKey: NSFontAttributeName];
+            messageSize = [[chat message] boundingRectWithSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
+                                                       options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesFontLeading)
+                                                    attributes:stringAttributes
+                                                       context:nil].size;
+        } else
+#endif
+        {
+            messageSize = [[chat message] sizeWithFont: CELL_FONT
+                                     constrainedToSize: CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
+                                         lineBreakMode: NSLineBreakByTruncatingTail];
+        }
     } else {
         messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
     }
