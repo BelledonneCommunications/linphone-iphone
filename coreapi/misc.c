@@ -528,7 +528,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		}
 		got_audio=FALSE;
 		got_video=FALSE;
-		gettimeofday(&init,NULL);
+		ortp_gettimeofday(&init,NULL);
 		do{
 			
 			int id;
@@ -561,7 +561,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 					cone_video=TRUE;
 				got_video=TRUE;
 			}
-			gettimeofday(&cur,NULL);
+			ortp_gettimeofday(&cur,NULL);
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  {
 				ms_message("Stun responses timeout, going ahead.");
