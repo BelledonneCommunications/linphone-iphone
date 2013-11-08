@@ -48,6 +48,9 @@ extern "C" void libmssilk_init();
 #ifdef HAVE_G729
 extern "C" void libmsbcg729_init();
 #endif
+#ifdef HAVE_ISAC
+extern "C" void libmsisac_init();
+#endif
 #endif /*ANDROID*/
 
 
@@ -717,10 +720,15 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #ifdef HAVE_G729
 	libmsbcg729_init();
 #endif
+#ifdef HAVE_ISAC
+    libmsisac_init();
+#endif
+
 	jlong nativePtr = (jlong)linphone_core_new(	&ldata->vTable
 			,userConfig
 			,factoryConfig
 			,ldata);
+
 
 	if (userConfig) env->ReleaseStringUTFChars(juserConfig, userConfig);
 	if (factoryConfig) env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
@@ -4342,6 +4350,8 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_PayloadTypeImpl_getSendFmtp(JNI
 	const char *fmtp=pt->send_fmtp;
 	return fmtp ? env->NewStringUTF(fmtp) : NULL;
 }
+
+
   
   
 

@@ -148,6 +148,12 @@ LOCAL_CFLAGS += -DHAVE_SILK
 LOCAL_STATIC_LIBRARIES += libmssilk
 endif
 
+ifeq ($(BUILD_WEBRTC_ISAC),1)
+LOCAL_CFLAGS += -DHAVE_ISAC
+LOCAL_STATIC_LIBRARIES += libwebrtc_isacfix_neon
+LOCAL_STATIC_LIBRARIES += libwebrtc_spl libwebrtc_isacfix libmsisac
+endif
+
 ifeq ($(BUILD_G729),1)
 LOCAL_CFLAGS += -DHAVE_G729
 LOCAL_STATIC_LIBRARIES += libbcg729 libmsbcg729
