@@ -666,7 +666,7 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 	case LinphoneCallResuming:
 		ms_message("Call error on state [%s], restoring previous state",linphone_call_state_to_string(call->prevstate));
 		call->reason=linphone_reason_from_sal(sr);
-		linphone_call_set_state(call, call->prevstate,msg);
+		linphone_call_set_state(call, call->prevstate,details);
 		return;
 	default:
 		break; /*nothing to do*/
@@ -678,19 +678,14 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 #ifdef BUILD_UPNP
 	linphone_call_delete_upnp_session(call);
 #endif //BUILD_UPNP
-
-	if (sr == SalReasonDeclined) {
-		call->reason=LinphoneReasonDeclined;
+	
+	call->reason=linphone_reason_from_sal(sr);
+	if (sr==SalReasonDeclined){
 		linphone_call_set_state(call,LinphoneCallEnd,"Call declined.");
-	} else if (sr == SalReasonNotFound) {
-		call->reason=LinphoneReasonNotFound;
-		linphone_call_set_state(call,LinphoneCallError,"User not found.");
-	} else if (sr == SalReasonBusy) {
-		call->reason=LinphoneReasonBusy;
-		linphone_call_set_state(call,LinphoneCallError,"User is busy.");
-		linphone_core_play_named_tone(lc,LinphoneToneBusy);
-	} else {
-		linphone_call_set_state(call,LinphoneCallError,msg);
+	}else{
+		linphone_call_set_state(call,LinphoneCallError,details);
+		if (sr==SalReasonBusy)
+			linphone_core_play_named_tone(lc,LinphoneToneBusy);
 	}
 	
 	if (referer){

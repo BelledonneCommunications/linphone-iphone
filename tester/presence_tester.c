@@ -336,7 +336,7 @@ static void presence_information(void) {
 test_t presence_tests[] = {
 	{ "Simple Subscribe", simple_subscribe },
 	{ "Simple Publish", simple_publish },
-	{ "Call with Presence", call_with_presence },
+	{ "Call with presence", call_with_presence },
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },
 	{ "App managed presence failure", subscribe_failure_handle_by_app },

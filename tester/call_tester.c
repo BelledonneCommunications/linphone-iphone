@@ -345,6 +345,40 @@ static void cancelled_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void disable_all_codecs_except_one(LinphoneCore *lc, const char *mime){
+	const MSList *elem=linphone_core_get_audio_codecs(lc);
+	PayloadType *pt;
+	
+	for(;elem!=NULL;elem=elem->next){
+		pt=(PayloadType*)elem->data;
+		linphone_core_enable_payload_type(lc,pt,FALSE);
+	}
+	pt=linphone_core_find_payload_type(lc,mime,-1,-1);
+	CU_ASSERT_PTR_NOT_NULL_FATAL(pt);
+	linphone_core_enable_payload_type(lc,pt,TRUE);
+}
+
+static void call_failed_because_of_codecs(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCall* out_call;
+
+	disable_all_codecs_except_one(marie->lc,"pcmu");
+	disable_all_codecs_except_one(pauline->lc,"pcma");
+	out_call = linphone_core_invite(pauline->lc,"marie");
+	linphone_call_ref(out_call);
+	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
+
+	/*flexisip will retain the 415 until the "urgent reply" timeout arrives.*/
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,6000));
+	CU_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonMedia);
+	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0);
+
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_dns_time_out(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
 	LCSipTransports transport = {9773,0,0,0};
@@ -416,7 +450,8 @@ static void early_declined_call(void) {
 	out_call = linphone_core_invite(pauline->lc,"marie");
 	linphone_call_ref(out_call);
 
-	CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1));
+	/*wait until flexisip transfers the busy...*/
+	CU_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,33000));
 	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallError,1);
 	/* FIXME http://git.linphone.org/mantis/view.php?id=757
 	
@@ -1419,6 +1454,7 @@ test_t call_tests[] = {
 	{ "Early cancelled call", early_cancelled_call},
 	{ "Call with DNS timeout", call_with_dns_time_out },
 	{ "Cancelled ringing call", cancelled_ringing_call },
+	{ "Call failed because of codecs", call_failed_because_of_codecs },
 	{ "Simple call", simple_call },
 	{ "Call with media relay", call_with_media_relay},
 	{ "Simple call compatibility mode", simple_call_compatibility_mode },
