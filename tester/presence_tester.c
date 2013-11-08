@@ -235,8 +235,8 @@ static void call_with_presence(void) {
 	CU_ASSERT_TRUE(subscribe_to_callee_presence(pauline,marie));
 
 	CU_ASSERT_TRUE(call(marie,pauline));
-	CU_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityOnThePhone,1);
-	CU_ASSERT_EQUAL(pauline->stat.number_of_LinphonePresenceActivityOnThePhone,1);
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnThePhone,1));
+	CU_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphonePresenceActivityOnThePhone,1));
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);

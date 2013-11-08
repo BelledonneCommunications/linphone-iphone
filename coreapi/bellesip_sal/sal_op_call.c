@@ -475,6 +475,11 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 		} else if (strcmp("OPTIONS",belle_sip_request_get_method(req))==0) {
 			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
+		} else if (strcmp("CANCEL",belle_sip_request_get_method(req))==0) {
+			/*call leg does not exist because 200ok already sent*/
+			belle_sip_server_transaction_send_response(	server_transaction
+														,sal_op_create_response_from_request(op,req,481));
+
 		} else{
 			ms_error("unexpected method [%s] for dialog [%p]",belle_sip_request_get_method(req),op->dialog);
 			unsupported_method(server_transaction,req);
