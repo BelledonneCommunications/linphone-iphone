@@ -83,6 +83,7 @@
 					<bool key="IBUIClipsSubviews">YES</bool>
 					<bool key="IBUIMultipleTouchEnabled">YES</bool>
 					<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+					<int key="IBUIBarStyle">1</int>
 					<bool key="IBUITranslucent">NO</bool>
 				</object>
 				<array class="NSMutableArray" key="IBUIViewControllers"/>
