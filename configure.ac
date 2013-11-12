@@ -35,16 +35,10 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
-case $target in
-	*apple-darwin*)
-		AC_PROG_CXX(["xcrun clang++" g++])
-		AC_PROG_CC(["xcrun clang" gcc])
-	;;
-	*)
-		AC_PROG_CC
-		AC_PROG_CXX
-	;;
-esac
+
+AC_PROG_CXX(["xcrun clang++" g++])
+AC_PROG_CC(["xcrun clang" gcc])
+
 AC_ISC_POSIX
 AC_C_INLINE
 AC_HEADER_STDC
