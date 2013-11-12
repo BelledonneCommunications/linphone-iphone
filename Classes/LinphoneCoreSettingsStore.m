@@ -565,10 +565,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	switch ([self integerForKey:@"video_preferred_size_preference"]) {
 		case 0:
 			MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
-			bw = 1024;
-			break;
+            // 128 = margin for audio, the BW includes both video and audio
+			bw = 1024 + 128;
+            break;
 		case 1:
 			MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
+            // no margin for VGA or QVGA, because video encoders can encode the
+            // target resulution in less than the asked bandwidth
 			bw = 512;
 			break;
 		case 2:
