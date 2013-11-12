@@ -35,9 +35,17 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
+case $target in
+	*apple-darwin*)
+		AC_PROG_CXX(["xcrun clang++" g++])
+		AC_PROG_CC(["xcrun clang" gcc])
+	;;
+	*)
+		AC_PROG_CC
+		AC_PROG_CXX
+	;;
+esac
 AC_ISC_POSIX
-AC_PROG_CC
-AC_PROG_CXX
 AC_C_INLINE
 AC_HEADER_STDC
 AM_PROG_CC_C_O
@@ -72,6 +80,9 @@ case $target in
 	;;
 
 esac
+
+
+
 
 AC_SUBST(ACLOCAL_MACOS_FLAGS)
 AC_SUBST(CONSOLE_FLAGS)
@@ -598,8 +609,20 @@ AC_ARG_ENABLE(strict,
 	[strictness=yes]
 )
 
-STRICT_OPTIONS="-Wall "
+STRICT_OPTIONS="-Wall"
 
+#for clang
+
+LDFLAGS_SAV=$LDFLAGS
+LDFLAGS="$LDFLAGS -Qunused-arguments -Wall -Werror"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
+                      [[]])]
+		, [cc_option_q_allowed=yes]
+		, [cc_option_q_allowed=no])
+LD_FLAGS=$LDFLAGS_SAV
+if test $cc_option_q_allowed = "yes"; then
+	STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments"
+fi
 if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"

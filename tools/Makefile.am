@@ -2,8 +2,7 @@
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/coreapi \
-	-I$(top_srcdir)/exosip
+	-I$(top_srcdir)/coreapi 
 
 COMMON_CFLAGS=\
 	-DIN_LINPHONE \
