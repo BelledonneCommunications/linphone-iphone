@@ -565,16 +565,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	switch ([self integerForKey:@"video_preferred_size_preference"]) {
 		case 0:
 			MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
-			bw = 1024 * 1024;
+			bw = 1024;
 			break;
 		case 1:
 			MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
-			bw = 512 * 1024;
+			bw = 512;
 			break;
 		case 2:
 		default:
 			MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
-			bw = 380 * 1024;
+			bw = 380;
 			break;
 	}
 	linphone_core_set_preferred_video_size(lc, vsize);
