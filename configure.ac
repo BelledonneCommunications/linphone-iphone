@@ -607,16 +607,12 @@ STRICT_OPTIONS="-Wall"
 
 #for clang
 
-LDFLAGS_SAV=$LDFLAGS
-LDFLAGS="$LDFLAGS -Qunused-arguments -Wall -Werror"
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
-                      [[]])]
-		, [cc_option_q_allowed=yes]
-		, [cc_option_q_allowed=no])
-LD_FLAGS=$LDFLAGS_SAV
-if test $cc_option_q_allowed = "yes"; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments"
-fi
+case $CC in 
+	*clang*)
+		STRICT_OPTIONS="$STRICT_OPTIONS -Qunused-arguments"
+	;;
+esac
+
 if test "$strictness" = "yes" ; then
 	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
