@@ -46,8 +46,6 @@
 static const CGFloat CELL_MIN_HEIGHT = 50.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MAX_WIDTH = 320.0f;
-// adding 10 px margin, because the line breaking algorithm in ios seems to need some margin...
-// TODO: maybe simplify the view layout to ease the manipulations
 static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
 static const CGFloat CELL_FONT_SIZE = 17.0f;
@@ -69,7 +67,7 @@ static UIFont *CELL_FONT = nil;
         
         // shift message box, otherwise it will collide with the bubble
         CGRect messageCoords = [messageText frame];
-        messageCoords.origin.x   += 5;
+        messageCoords.origin.x   += 2;
         messageCoords.origin.y   += 2;
         messageCoords.size.width -= 5;
         [messageText setFrame:messageCoords];
