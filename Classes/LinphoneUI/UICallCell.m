@@ -407,7 +407,7 @@
     }
     
     int duration = linphone_call_get_duration(call);
-    [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
+    [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), (duration%60), nil]];
     
     if(!data->minimize) {
         CGRect frame = [self frame];
