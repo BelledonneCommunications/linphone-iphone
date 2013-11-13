@@ -272,11 +272,13 @@
 #pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
-    return 280;
+    int height = [LinphoneManager runningOnIpad] ? 300 : 280;
+    return height;
 }
 
 + (int)getMinimizedHeight {
-    return 54;
+    int height = [LinphoneManager runningOnIpad] ? 63 : 54;
+    return height;
 }
 
 + (void)adaptSize:(UILabel*)label field:(UIView*)field {
