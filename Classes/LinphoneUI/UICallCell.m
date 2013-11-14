@@ -272,11 +272,13 @@
 #pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
-    return 280;
+    int height = [LinphoneManager runningOnIpad] ? 300 : 280;
+    return height;
 }
 
 + (int)getMinimizedHeight {
-    return 54;
+    int height = [LinphoneManager runningOnIpad] ? 63 : 54;
+    return height;
 }
 
 + (void)adaptSize:(UILabel*)label field:(UIView*)field {
@@ -405,7 +407,7 @@
     }
     
     int duration = linphone_call_get_duration(call);
-    [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), duration - 60 * (duration / 60), nil]];
+    [stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration/60), (duration%60), nil]];
     
     if(!data->minimize) {
         CGRect frame = [self frame];
