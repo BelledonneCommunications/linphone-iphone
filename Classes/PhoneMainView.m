@@ -430,10 +430,23 @@ static PhoneMainView* phoneMainViewInstance=nil;
 
     if( (!to_view && fromLightStatus) || toLightStatus ) {
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-        [statusBarBG setHidden:NO];
+
+        if( !fromLightStatus ) {
+            statusBarBG.alpha = 0;
+            statusBarBG.hidden = NO;
+
+            [UIView animateWithDuration:0.3f animations:^{
+                statusBarBG.alpha = 1;
+            }];
+        }
     } else if(fromLightStatus) {
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-        [statusBarBG setHidden:YES];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             statusBarBG.alpha = 0;
+                         } completion:^(BOOL finished) {
+                             statusBarBG.hidden = YES;
+                         }];
     }
 #endif
 }
