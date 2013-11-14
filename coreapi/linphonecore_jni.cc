@@ -3254,20 +3254,20 @@ extern "C" jstring Java_org_linphone_core_LpConfigImpl_getString(JNIEnv *env, jo
         jstring section, jstring key, jstring defaultValue) {
 		const char *csection = env->GetStringUTFChars(section, NULL);
         const char *ckey = env->GetStringUTFChars(key, NULL);
-		const char *cvalue;	
-		if (defaultValue == NULL) {
-			cvalue = NULL;
-		} else {
-        	cvalue = env->GetStringUTFChars(defaultValue, NULL);
-        }
+        const char *cvalue = defaultValue ? env->GetStringUTFChars(defaultValue, NULL) : NULL;
 
 		const char *returnValue = lp_config_get_string((LpConfig *)lpc, csection, ckey, cvalue);
+
+        jstring jreturnValue = NULL;
+        if (returnValue)
+            jreturnValue = env->NewStringUTF(returnValue);
 
         env->ReleaseStringUTFChars(section, csection);
         env->ReleaseStringUTFChars(key, ckey);
 		if (cvalue)
         	env->ReleaseStringUTFChars(defaultValue, cvalue);
-        return returnValue ? env->NewStringUTF(returnValue) : NULL;
+
+        return jreturnValue;
 }
 extern "C" void Java_org_linphone_core_LpConfigImpl_setIntRange(JNIEnv *env, jobject thiz, jlong lpc,
         jstring section, jstring key, jint min, jint max) {
