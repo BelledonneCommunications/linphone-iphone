@@ -33,7 +33,8 @@ typedef enum _ViewElement {
     ViewElement_Email = 103,
     ViewElement_Domain = 104,
     ViewElement_Label = 200,
-    ViewElement_Error = 201
+    ViewElement_Error = 201,
+    ViewElement_Username_Error = 404
 } ViewElement;
 
 @implementation WizardViewController
@@ -509,6 +510,49 @@ static UICompositeViewDescription *compositeDescription = nil;
     activeTextField = textField;
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    // only validate the username when creating a new account
+    if( (textField.tag == ViewElement_Username) && (currentView == createAccountView) ){
+        NSRegularExpression *regex = [NSRegularExpression
+                                      regularExpressionWithPattern:@"^[a-z0-9-_\\.]*$"
+                                      options:NSRegularExpressionCaseInsensitive
+                                      error:nil];
+        NSArray* matches = [regex matchesInString:string options:0 range:NSMakeRange(0, [string length])];
+        if ([matches count] == 0) {
+            UILabel* error = [WizardViewController findLabel:ViewElement_Username_Error view:contentView];
+
+            // show error with fade animation
+            [error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in username: %@", nil), string]];
+            error.alpha = 0;
+            error.hidden = NO;
+            [UIView animateWithDuration:0.3 animations:^{
+                error.alpha = 1;
+            }];
+
+            // hide again in 2s
+            [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(hideError:) userInfo:nil repeats:NO];
+
+
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (void)hideError:(NSTimer*)timer {
+    UILabel* error_label =[WizardViewController findLabel:ViewElement_Username_Error view:contentView];
+    if( error_label ) {
+        [UIView animateWithDuration:0.3
+                         animations:^{
+                             error_label.alpha = 0;
+                         }
+                         completion: ^(BOOL finished) {
+                             error_label.hidden = YES;
+                         }
+         ];
+    }
+}
 
 #pragma mark - Action Functions
 
@@ -530,6 +574,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCreateAccountClick:(id)sender {
     [self changeView:createAccountView back:FALSE animation:TRUE];
+
 }
 
 - (IBAction)onConnectAccountClick:(id)sender {
@@ -608,12 +653,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
     NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
     NSMutableString *errors = [NSMutableString string];
-    
+
     int username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
     int password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
     
     if ([username length] < username_length) {
-        
         [errors appendString:[NSString stringWithFormat:NSLocalizedString(@"The username is too short (minimum %d characters).\n", nil), username_length]];
     }
     
@@ -629,7 +673,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if(![emailTest evaluateWithObject:email]) {
         [errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
     }
-    
+
     if([errors length]) {
         UIAlertView* errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)",nil)
                                                         message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
@@ -638,7 +682,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                               otherButtonTitles:nil,nil];
         [errorView show];
         [errorView release];
+
     } else {
+        username = [username lowercaseString];
         NSString *identity = [self identityFromUsername:username];
         [self checkUserExist:identity];
     }
