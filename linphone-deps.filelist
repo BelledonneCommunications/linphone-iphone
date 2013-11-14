@@ -16,3 +16,4 @@
 ./bin/libtasn1-3.dll
 ./bin/libsqlite3-0.dll
 ./bin/libzrtpcpp.dll
+./bin/libopus-0.dll
