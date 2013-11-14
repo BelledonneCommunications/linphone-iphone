@@ -417,7 +417,8 @@ static PhoneMainView* phoneMainViewInstance=nil;
 + (BOOL)isLightBackgroundView:(UICompositeViewDescription*)view {
     return ( [view equal:[DialerViewController compositeViewDescription]]       ||
              [view equal:[IncomingCallViewController compositeViewDescription]] ||
-             [view equal:[InCallViewController compositeViewDescription]] );
+             [view equal:[InCallViewController compositeViewDescription]]       ||
+             [view equal:[WizardViewController compositeViewDescription]]);
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view {
