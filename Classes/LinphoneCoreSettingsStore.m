@@ -185,7 +185,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self transformCodecsToKeys: linphone_core_get_video_codecs(lc)];
         [self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
         LpConfig *config = linphone_core_get_config(lc);
-        [self setInteger:lp_config_get_int(config, "audio", "codec_bitrate_limit", 32) forKey:@"audio_codec_bitrate_limit_preference"];
+        [self setInteger:lp_config_get_int(config, "audio", "codec_bitrate_limit", 36) forKey:@"audio_codec_bitrate_limit_preference"];
 
         PayloadType *pt;
         const MSList *elem;
