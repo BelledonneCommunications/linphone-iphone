@@ -114,6 +114,7 @@ struct _LinphoneContent{
 	char *subtype; /**<mime subtype for the data, for example "html"*/
 	void *data; /**<the actual data buffer, usually a string */
 	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.*/
+	char *encoding; /**<The encoding of the data buffer, for example "gzip"*/
 };
 
 /**

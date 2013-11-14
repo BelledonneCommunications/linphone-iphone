@@ -45,6 +45,7 @@ struct _LinphoneInfoMessage{
 static void linphone_content_copy(LinphoneContent *obj, const LinphoneContent *ref){
 	SET_STRING(obj,type,ref->type);
 	SET_STRING(obj,subtype,ref->subtype);
+	SET_STRING(obj,encoding,ref->encoding);
 	if (obj->data) {
 		ms_free(obj->data);
 		obj->data=NULL;
@@ -61,11 +62,13 @@ void linphone_content_uninit(LinphoneContent * obj){
 	if (obj->type) ms_free(obj->type);
 	if (obj->subtype) ms_free(obj->subtype);
 	if (obj->data) ms_free(obj->data);
+	if (obj->encoding) ms_free(obj->encoding);
 }
 
 LinphoneContent *linphone_content_copy_from_sal_body(LinphoneContent *obj, const SalBody *ref){
 	SET_STRING(obj,type,ref->type);
 	SET_STRING(obj,subtype,ref->subtype);
+	SET_STRING(obj,encoding,ref->encoding);
 	if (obj->data) {
 		ms_free(obj->data);
 		obj->data=NULL;
@@ -84,6 +87,7 @@ const LinphoneContent *linphone_content_from_sal_body(LinphoneContent *obj, cons
 		obj->type=(char*)ref->type;
 		obj->subtype=(char*)ref->subtype;
 		obj->data=(void*)ref->data;
+		obj->encoding=(char*)ref->encoding;
 		obj->size=ref->size;
 		return obj;
 	}
@@ -96,6 +100,7 @@ SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *lc){
 		body->subtype=lc->subtype;
 		body->data=lc->data;
 		body->size=lc->size;
+		body->encoding=lc->encoding;
 		return body;
 	}
 	return NULL;

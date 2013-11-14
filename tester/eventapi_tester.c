@@ -38,7 +38,7 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	stats* counters = get_stats(lc);
 	LinphoneCoreManager *mgr=get_manager(lc);
-	LinphoneContent content;
+	LinphoneContent content={0};
 	
 	content.type="application";
 	content.subtype="somexml2";
@@ -96,7 +96,7 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content;
+	LinphoneContent content={0};
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 
@@ -123,7 +123,7 @@ static void subscribe_test_declined(void) {
 static void subscribe_test_with_args(bool_t terminated_by_subscriber, bool_t test_refreshing) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content;
+	LinphoneContent content={0};
 	LinphoneEvent *lev;
 	int expires= test_refreshing ? 4 : 600;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -184,7 +184,7 @@ static void subscribe_test_refreshed(void){
 static void publish_test_with_args(bool_t refresh){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-	LinphoneContent content;
+	LinphoneContent content={0};
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);

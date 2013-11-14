@@ -345,6 +345,7 @@ typedef struct SalBody{
 	const char *subtype;
 	const void *data;
 	size_t size;
+	const char *encoding;
 }SalBody;
 
 typedef void (*SalOnCallReceived)(SalOp *op);
