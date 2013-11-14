@@ -1033,14 +1033,13 @@ bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc){
 
 /**
  * Sets maximum available download bandwidth
- *
- * @ingroup media_parameters
- *
  * This is IP bandwidth, in kbit/s.
  * This information is used signaled to other parties during
  * calls (within SDP messages) so that the remote end can have
  * sufficient knowledge to properly configure its audio & video
  * codec output bitrate to not overflow available bandwidth.
+ * 
+ * @ingroup media_parameters
  *
  * @param lc the LinphoneCore object
  * @param bw the bandwidth in kbits/s, 0 for infinite
@@ -1052,9 +1051,6 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
 
 /**
  * Sets maximum available upload bandwidth
- *
- * @ingroup media_parameters
- *
  * This is IP bandwidth, in kbit/s.
  * This information is used by liblinphone together with remote
  * side available bandwidth signaled in SDP messages to properly
@@ -1062,6 +1058,7 @@ void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw){
  *
  * @param lc the LinphoneCore object
  * @param bw the bandwidth in kbits/s, 0 for infinite
+ * @ingroup media_parameters
  */
 void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 	lc->net_conf.upload_bw=bw;
@@ -1070,11 +1067,8 @@ void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw){
 
 /**
  * Retrieve the maximum available download bandwidth.
- *
- * @ingroup media_parameters
- *
  * This value was set by linphone_core_set_download_bandwidth().
- *
+ * @ingroup media_parameters
 **/
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.download_bw;
@@ -1082,11 +1076,8 @@ int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
 
 /**
  * Retrieve the maximum available upload bandwidth.
- *
- * @ingroup media_parameters
- *
  * This value was set by linphone_core_set_upload_bandwidth().
- *
+ * @ingroup media_parameters
 **/
 int linphone_core_get_upload_bandwidth(const LinphoneCore *lc){
 	return lc->net_conf.upload_bw;
