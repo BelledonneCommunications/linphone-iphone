@@ -630,9 +630,13 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 				if (call->params.media_encryption == LinphoneMediaEncryptionSRTP && 
 					!linphone_core_is_media_encryption_mandatory(lc)) {
 					int i;
-					ms_message("Outgoing call failed with SRTP (SAVP) enabled - retrying with AVP");
+					ms_message("Outgoing call [%p] failed with SRTP (SAVP) enabled",call);
 					linphone_call_stop_media_streams(call);
-					if (call->state==LinphoneCallOutgoingInit || call->state==LinphoneCallOutgoingProgress){
+					if (	call->state==LinphoneCallOutgoingInit
+							|| call->state==LinphoneCallOutgoingProgress
+							|| call->state==LinphoneCallOutgoingRinging /*push case*/
+							|| call->state==LinphoneCallOutgoingEarlyMedia){
+						ms_message("Retrying call [%p] with AVP",call);
 						/* clear SRTP local params */
 						call->params.media_encryption = LinphoneMediaEncryptionNone;
 						for(i=0; i<call->localdesc->n_active_streams; i++) {
@@ -640,8 +644,9 @@ static void call_failure(SalOp *op, SalError error, SalReason sr, const char *de
 							memset(call->localdesc->streams[i].crypto, 0, sizeof(call->localdesc->streams[i].crypto));
 						}
 						linphone_core_restart_invite(lc, call);
+						return;
 					}
-					return;
+
 				}
 				msg=_("Incompatible media parameters.");
 				if (lc->vtable.display_status)
