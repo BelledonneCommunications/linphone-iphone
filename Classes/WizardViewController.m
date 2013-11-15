@@ -256,6 +256,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)changeView:(UIView *)view back:(BOOL)back animation:(BOOL)animation {
+
+    static BOOL placement_done = NO; // indicates if the button placement has been done in the wizard choice view
+
     // Change toolbar buttons following view
     if (view == welcomeView) {
         [startButton setHidden:false];
@@ -278,17 +281,37 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 
     if (view == choiceView) {
-        if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
-            [choiceViewLogoImageView setHidden:FALSE];
-        }
-        if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account_button_preference"] == true) {
-            [externalAccountButton setHidden:TRUE];
-            if ([externalAccountButton center].y != [connectAccountButton center].y) {
-                if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"] == true) {
-                    [createAccountButton setCenter: [connectAccountButton center]];
-                }
-                [connectAccountButton setCenter: [externalAccountButton center]];
+        // layout is this:
+        // [ Logo         ]
+        // [ Create Btn   ]
+        // [ Connect Btn  ]
+        // [ External Btn ]
+
+        BOOL show_logo   =  [[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"];
+        BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account"];
+        BOOL show_new    = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_create_account"];
+
+        if( !placement_done ) {
+            // visibility
+            choiceViewLogoImageView.hidden = !show_logo;
+            externalAccountButton.hidden   = !show_extern;
+            createAccountButton.hidden     = !show_new;
+
+            // placement
+            if (show_logo && show_new && !show_extern) {
+                // lower both remaining buttons
+                [createAccountButton  setCenter:[connectAccountButton  center]];
+                [connectAccountButton setCenter:[externalAccountButton center]];
+
+            } else if (!show_logo && !show_new && show_extern ) {
+                // move up the extern button
+                [externalAccountButton setCenter:[createAccountButton center]];
             }
+            placement_done = YES;
+        }
+        if (!show_extern && !show_logo) {
+            // no option to create or specify a custom account: go to
+            view = connectAccountView;
         }
     }
     
