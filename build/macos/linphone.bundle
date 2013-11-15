@@ -15,7 +15,8 @@
     <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="ms2plugins">${env:MS2_PLUGINS_INSTALL_PREFIX}</prefix>
-    <prefix name="macports">/opt/local</prefix>
+    <!-- This prefix definition is necessary if some dependencies are to be taken from /usr/local/lib -->
+    <prefix name="local">/usr/local</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
@@ -55,11 +56,11 @@
   <main-binary>${prefix:linphone}/bin/linphone</main-binary>
 
   <binary >
-    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.so
+    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
   </binary>
   
   <binary >
-    ${prefix:linphone}/lib/*.dylib
+    ${prefix:linphone}/lib/*.*.dylib
   </binary>
 
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands
