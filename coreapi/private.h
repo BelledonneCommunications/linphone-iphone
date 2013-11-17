@@ -498,7 +498,7 @@ typedef struct net_config
 	char *nat_address_ip; /* ip translated from nat_address */
 	char *stun_server;
 	struct addrinfo *stun_addrinfo;
-	unsigned long stun_res_id;
+	SalResolverContext * stun_res;
 	int download_bw;
 	int upload_bw;
 	int mtu;

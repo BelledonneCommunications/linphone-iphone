@@ -839,13 +839,15 @@ void sal_enable_test_features(Sal*ctx, bool_t enabled){
 	ctx->enable_test_features=enabled;
 }
 
-unsigned long sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data){
-	return belle_sip_stack_resolve_a(sal->stack,name,port,family,(belle_sip_resolver_callback_t)cb,data);
+SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data){
+	return (SalResolverContext*)belle_sip_stack_resolve_a(sal->stack,name,port,family,(belle_sip_resolver_callback_t)cb,data);
 }
 
-void sal_resolve_cancel(Sal *sal, unsigned long id){
-	belle_sip_stack_resolve_cancel(sal->stack,id);
+/*
+void sal_resolve_cancel(Sal *sal, SalResolverContext* ctx){
+	belle_sip_stack_resolve_cancel(sal->stack,ctx);
 }
+*/
 
 void sal_enable_unconditional_answer(Sal *sal,int value) {
 	belle_sip_provider_enable_unconditional_answer(sal->prov,value);
