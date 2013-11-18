@@ -737,10 +737,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             if(contactSections[section] == ContactSections_Number ||
                contactSections[section] == ContactSections_Sip    ||
                (showEmails && contactSections[section] == ContactSections_Email)) {
+
                 [self removeEmptyEntry:self.tableView section:section animated:animated];
-                if( [[self getSectionData:section] count] == 0 ) // the section is empty -> remove titles
+                if( [[self getSectionData:section] count] == 0 && animated ) { // the section is empty -> remove titles
                     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
-                                    withRowAnimation:animated?UITableViewRowAnimationFade:UITableViewRowAnimationNone];
+                                  withRowAnimation:UITableViewRowAnimationFade];
+                }
             }
         }
     }
