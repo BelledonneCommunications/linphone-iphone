@@ -1028,19 +1028,21 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return new LinphoneInfoMessageImpl(createInfoMessage(nativePtr));
 	}
 	
-	private native Object subscribe(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, String data);
+	private native Object subscribe(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, byte data [], String encoding);
 	@Override
 	public LinphoneEvent subscribe(LinphoneAddress resource, String eventname,
 			int expires, LinphoneContent content) {
 		return (LinphoneEvent)subscribe(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
-				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getDataAsString() : null);
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getData() : null,
+						content!=null ? content.getEncoding() : null);
 	}
-	private native Object publish(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, String data);
+	private native Object publish(long coreptr, long addrptr, String eventname, int expires, String type, String subtype, byte data [], String encoding);
 	@Override
 	public LinphoneEvent publish(LinphoneAddress resource, String eventname,
 			int expires, LinphoneContent content) {
 		return (LinphoneEvent)publish(nativePtr, ((LinphoneAddressImpl)resource).nativePtr, eventname, expires, 
-				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getDataAsString() : null);
+				content!=null ? content.getType() : null, content!=null ? content.getSubtype() : null, content!=null ? content.getData() : null,
+						content!=null ? content.getEncoding() : null);
 	}
 	
 	public void setChatDatabasePath(String path) {
