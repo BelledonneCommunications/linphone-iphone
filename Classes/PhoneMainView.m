@@ -345,6 +345,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     int count = 0;
     count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
     count += [ChatModel unreadMessages];
+    count += linphone_core_get_calls_nb([LinphoneManager getLc]);
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
 
