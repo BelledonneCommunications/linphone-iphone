@@ -65,6 +65,7 @@
 - (void)fullScreen:(BOOL)enabled;
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view;
 - (void)startUp;
+- (void)displayIncomingCall:(LinphoneCall*) call;
 
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;

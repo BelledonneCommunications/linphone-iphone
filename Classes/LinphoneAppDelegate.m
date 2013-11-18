@@ -92,15 +92,15 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[LinphoneLogger logc:LinphoneLoggerLog format:"applicationDidBecomeActive"];
     [self startApplication];
-    
-	[[LinphoneManager instance] becomeActive];
+    LinphoneManager* instance = [LinphoneManager instance];
+
+	[instance becomeActive];
     
     
     LinphoneCore* lc = [LinphoneManager getLc];
     LinphoneCall* call = linphone_core_get_current_call(lc);
     
 	if (call){
-		LinphoneManager* instance = [LinphoneManager instance];
 		if (call == instance->currentCallContextBeforeGoingBackground.call) {
 			const LinphoneCallParams* params = linphone_call_get_current_params(call);
 			if (linphone_call_params_video_enabled(params)) {
@@ -109,7 +109,9 @@
                                         instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
-		}
+		} else {
+            [[PhoneMainView  instance ] displayIncomingCall:call];
+        }
 	}
 }
 
@@ -175,7 +177,7 @@
     [self startApplication];
     if([LinphoneManager isLcReady]) {
         if([[url scheme] isEqualToString:@"sip"]) {
-            // Go to ChatRoom view
+            // Go to Dialer view
             DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
             if(controller != nil) {
                 [controller setAddress:[url absoluteString]];
