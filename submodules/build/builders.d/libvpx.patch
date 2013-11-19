@@ -1,5 +1,5 @@
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index c99a01c..f7f54c6 100755
+index c99a01c..7fdf10d 100755
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
 @@ -889,13 +889,13 @@ process_common_toolchain() {
@@ -32,16 +32,3 @@ index c99a01c..f7f54c6 100755
  
              if [ -z "${alt_libc}" ]; then
                  alt_libc=${SDK_PATH}/SDKs/iPhoneOS5.1.sdk
-diff --git a/vp8/decoder/decodframe.c b/vp8/decoder/decodframe.c
-index a4a00f6..72d0b6d 100644
---- a/vp8/decoder/decodframe.c
-+++ b/vp8/decoder/decodframe.c
-@@ -92,7 +92,7 @@ void vp8_mb_init_dequantizer(VP8D_COMP *pbi, MACROBLOCKD *xd)
-     }
- }
- 
--static void decode_macroblock(VP8D_COMP *pbi, MACROBLOCKD *xd,
-+void decode_macroblock(VP8D_COMP *pbi, MACROBLOCKD *xd,
-                               unsigned int mb_idx)
- {
-     MB_PREDICTION_MODE mode;
