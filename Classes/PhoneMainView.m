@@ -415,7 +415,7 @@ static PhoneMainView* phoneMainViewInstance=nil;
     [mainViewController setStateBarHidden:!show];
 }
 
-+ (BOOL)isLightBackgroundView:(UICompositeViewDescription*)view {
++ (BOOL)isDarkBackgroundView:(UICompositeViewDescription*)view {
     return ( [view equal:[DialerViewController compositeViewDescription]]       ||
              [view equal:[IncomingCallViewController compositeViewDescription]] ||
              [view equal:[InCallViewController compositeViewDescription]]       ||
@@ -426,28 +426,23 @@ static PhoneMainView* phoneMainViewInstance=nil;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
     // In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
     // status bar style for each transition to/from these views
-    BOOL toLightStatus   = (to_view != NULL) && [PhoneMainView isLightBackgroundView:to_view];
-    BOOL fromLightStatus = [PhoneMainView isLightBackgroundView:currentView];
+    BOOL toLightStatus   = (to_view != NULL) && ![PhoneMainView isDarkBackgroundView:to_view];
+    BOOL fromLightStatus = ![PhoneMainView isDarkBackgroundView:currentView];
 
-    if( (!to_view && fromLightStatus) || toLightStatus ) {
+    if( !toLightStatus ) {
+        // black bg: white text on black background
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-        if( !fromLightStatus ) {
-            statusBarBG.alpha = 0;
-            statusBarBG.hidden = NO;
-
-            [UIView animateWithDuration:0.3f animations:^{
-                statusBarBG.alpha = 1;
-            }];
-        }
-    } else if(fromLightStatus) {
+        statusBarBG.alpha = 0;
+        statusBarBG.hidden = NO;
+        [UIView animateWithDuration:0.3f
+                         animations:^{statusBarBG.alpha = 1;} ];
+    } else if(!fromLightStatus && toLightStatus) {
+        // light bg: black text on white bg
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
         [UIView animateWithDuration:0.3f
-                         animations:^{
-                             statusBarBG.alpha = 0;
-                         } completion:^(BOOL finished) {
-                             statusBarBG.hidden = YES;
-                         }];
+                         animations:^{ statusBarBG.alpha = 0; }
+                         completion:^(BOOL finished) {statusBarBG.hidden = YES;}];
     }
 #endif
 }
