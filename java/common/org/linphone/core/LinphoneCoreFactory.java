@@ -108,10 +108,15 @@ abstract public class LinphoneCoreFactory {
 	abstract public LinphoneFriend createLinphoneFriend();
 	
 	/**
-	 * Create a LinphoneContent object
+	 * Create a LinphoneContent object from string data.
 	 */
 	abstract public LinphoneContent createLinphoneContent(String type, String subType, String data);
 
+	/**
+	 * Create a LinphoneContent object from byte array.
+	 */
+	abstract public LinphoneContent createLinphoneContent(String type, String subType,byte [] data, String encoding);
+	
 	/**
 	 * Create a PresenceActivity object.
 	 */

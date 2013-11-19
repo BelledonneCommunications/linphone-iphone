@@ -633,7 +633,7 @@ static void stun_server_resolved(LinphoneCore *lc, const char *name, struct addr
 		ms_warning("Stun server resolution failed.");
 	}
 	lc->net_conf.stun_addrinfo=addrinfo;
-	lc->net_conf.stun_res_id=0;
+	lc->net_conf.stun_res=NULL;
 }
 
 void linphone_core_resolve_stun_server(LinphoneCore *lc){
@@ -642,7 +642,7 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc){
 		char host[NI_MAXHOST];
 		int port=3478;
 		linphone_parse_host_port(server,host,sizeof(host),&port);
-		lc->net_conf.stun_res_id=sal_resolve_a(lc->sal,host,port,AF_UNSPEC,(SalResolverCallback)stun_server_resolved,lc);
+		lc->net_conf.stun_res=sal_resolve_a(lc->sal,host,port,AF_UNSPEC,(SalResolverCallback)stun_server_resolved,lc);
 	}
 }
 
@@ -663,7 +663,7 @@ const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
 		int wait_ms=0;
 		int wait_limit=1000;
 		linphone_core_resolve_stun_server(lc);
-		while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res_id!=0 && wait_ms<wait_limit){
+		while (!lc->net_conf.stun_addrinfo && lc->net_conf.stun_res!=NULL && wait_ms<wait_limit){
 			sal_iterate(lc->sal);
 			ms_usleep(50000);
 			wait_ms+=50;

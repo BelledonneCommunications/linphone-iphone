@@ -2852,6 +2852,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
 			sal_call_decline(call->op,SalReasonMedia,NULL);
+			linphone_call_stop_media_streams(call);
 			linphone_core_del_call(lc,call);
 			linphone_call_unref(call);
 			return;
