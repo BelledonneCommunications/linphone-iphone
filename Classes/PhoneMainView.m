@@ -433,16 +433,20 @@ static PhoneMainView* phoneMainViewInstance=nil;
         // black bg: white text on black background
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-        statusBarBG.alpha = 0;
-        statusBarBG.hidden = NO;
-        [UIView animateWithDuration:0.3f
-                         animations:^{statusBarBG.alpha = 1;} ];
+        if(statusBarBG.hidden == YES){
+            statusBarBG.alpha = 0;
+            statusBarBG.hidden = NO;
+            [UIView animateWithDuration:0.3f
+                             animations:^{statusBarBG.alpha = 1;} ];
+        }
     } else if(!fromLightStatus && toLightStatus) {
         // light bg: black text on white bg
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-        [UIView animateWithDuration:0.3f
-                         animations:^{ statusBarBG.alpha = 0; }
-                         completion:^(BOOL finished) {statusBarBG.hidden = YES;}];
+        if( statusBarBG.hidden == NO ){
+            [UIView animateWithDuration:0.3f
+                             animations:^{ statusBarBG.alpha = 0; }
+                             completion:^(BOOL finished) {statusBarBG.hidden = YES;}];
+        }
     }
 #endif
 }
