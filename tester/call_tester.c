@@ -382,12 +382,16 @@ static void call_failed_because_of_codecs(void) {
 static void call_with_dns_time_out(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2( "empty_rc", FALSE);
 	LCSipTransports transport = {9773,0,0,0};
+	int i;
+	
 	linphone_core_set_sip_transports(marie->lc,&transport);
 	linphone_core_iterate(marie->lc);
 	sal_set_dns_timeout(marie->lc->sal,0);
 	linphone_core_invite(marie->lc,"sip:toto@toto.com");
-	linphone_core_iterate(marie->lc);
-	linphone_core_iterate(marie->lc);
+	for(i=0;i<10;i++){
+		ms_usleep(200000);
+		linphone_core_iterate(marie->lc);
+	}	
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingInit,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallOutgoingProgress,1);
 	CU_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallError,1);
