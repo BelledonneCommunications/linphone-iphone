@@ -671,7 +671,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onRegisterClick:(id)sender {
-    NSString *username = [WizardViewController findTextField:ViewElement_Username  view:contentView].text;
+    UITextField* username_tf = [WizardViewController findTextField:ViewElement_Username  view:contentView];
+    NSString *username = username_tf.text;
     NSString *password = [WizardViewController findTextField:ViewElement_Password  view:contentView].text;
     NSString *password2 = [WizardViewController findTextField:ViewElement_Password2  view:contentView].text;
     NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
@@ -708,6 +709,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     } else {
         username = [username lowercaseString];
+        [username_tf setText:username];
         NSString *identity = [self identityFromUsername:username];
         [self checkUserExist:identity];
     }
