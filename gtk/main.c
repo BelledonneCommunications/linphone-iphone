@@ -797,6 +797,9 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 			date,
 			id);
 	}
+	if (!dir) {
+		ms_message ("No directory for music, using [%s] instead",dir=getenv("HOME"));
+	}
 	return g_build_filename(dir,filename,NULL);
 }
 
