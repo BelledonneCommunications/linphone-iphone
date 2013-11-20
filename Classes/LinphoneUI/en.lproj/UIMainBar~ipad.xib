@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1072" identifier="iOS"/>
+        <deployment defaultVersion="1280" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <objects>
@@ -26,7 +26,7 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="77"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view hidden="YES" opaque="NO" autoresizesSubviews="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="6" userLabel="mask">
+                <view hidden="YES" autoresizesSubviews="NO" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="6" userLabel="mask">
                     <rect key="frame" x="0.0" y="11" width="768" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="0.0" green="1" blue="0.090924573910000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -179,7 +179,7 @@
             <rect key="frame" x="0.0" y="0.0" width="1024" height="86"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view hidden="YES" opaque="NO" autoresizesSubviews="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="34" userLabel="mask">
+                <view hidden="YES" autoresizesSubviews="NO" opaque="NO" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="34" userLabel="mask">
                     <rect key="frame" x="0.0" y="19" width="1024" height="67"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="0.0" green="1" blue="0.090924573910000001" alpha="1" colorSpace="calibratedRGB"/>
