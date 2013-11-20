@@ -942,6 +942,7 @@ static void build_video_devices_table(LinphoneCore *lc){
 static void video_config_read(LinphoneCore *lc){
 #ifdef VIDEO_ENABLED
 	int capture, display, self_view;
+	int automatic_video=1;
 #endif
 	const char *str;	
 #ifdef VIDEO_ENABLED	
@@ -958,11 +959,14 @@ static void video_config_read(LinphoneCore *lc){
 		lp_config_get_string(lc->config,"video","size","cif"));
 
 #ifdef VIDEO_ENABLED
+#if defined(ANDROID) || defined(__ios)
+	automatic_video=0;
+#endif
 	capture=lp_config_get_int(lc->config,"video","capture",1);
 	display=lp_config_get_int(lc->config,"video","display",1);
 	self_view=lp_config_get_int(lc->config,"video","self_view",1);
-	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",1);
-	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",1);
+	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",automatic_video);
+	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",automatic_video);
 	linphone_core_enable_video_capture(lc, capture);
 	linphone_core_enable_video_display(lc, display);
 	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
