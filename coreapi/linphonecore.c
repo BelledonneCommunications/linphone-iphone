@@ -4901,8 +4901,10 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 
 /* unsets the video id for all calls (indeed it may be kept by filters or videostream object itself by paused calls)*/
 static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned long id){
+#ifdef VIDEO_ENABLED
 	LinphoneCall *call;
 	MSList *elem;
+#endif
 	
 	if (id!=0 && id!=-1) {
 		ms_error("Invalid use of unset_video_window_id()");
