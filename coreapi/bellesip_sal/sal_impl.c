@@ -705,7 +705,7 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event));
 	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event));
 	auth_info->domain = ms_strdup(belle_sip_auth_event_get_domain(event));
-	auth_info->mode = belle_sip_auth_event_get_mode(event);
+	auth_info->mode = (SalAuthMode)belle_sip_auth_event_get_mode(event);
 	return auth_info;
 }
 
@@ -877,7 +877,7 @@ void sal_enable_unconditional_answer(Sal *sal,int value) {
  * @param format either PEM or DER
  */
 void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path, SalCertificateRawFormat format) {
-	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse_file(path, format); // 
+	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse_file(path, (belle_sip_certificate_raw_format_t)format); //
 	if (auth_info->certificates) belle_sip_object_ref((belle_sip_object_t *) auth_info->certificates);
 }
 

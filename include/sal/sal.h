@@ -334,7 +334,7 @@ typedef enum SalTextDeliveryStatus{
 /**
  * auth event mode
  * */
-typedef enum SalAuthMode {
+typedef enum SalAuthMode { /*this enum must be same as belle_sip_auth_mode_t*/
 	SalAuthModeHttpDigest, /** Digest authentication requested*/
 	SalAuthModeTls /** Client certificate requested*/
 }SalAuthMode;
@@ -347,7 +347,7 @@ typedef struct _SalSigningKey SalSigningKey;
 /**
  * Format of certificate buffer
  * */
-typedef enum SalCertificateRawFormat {
+typedef enum SalCertificateRawFormat {/*this enum must be same as belle_sip_certificate_raw_format_t*/
 	SAL_CERTIFICATE_RAW_FORMAT_PEM, /** PEM format*/
 	SAL_CERTIFICATE_RAW_FORMAT_DER /** ASN.1 raw format*/
 }SalCertificateRawFormat;
