@@ -331,6 +331,29 @@ typedef enum SalTextDeliveryStatus{
 	SalTextDeliveryFailed
 }SalTextDeliveryStatus;
 
+/**
+ * auth event mode
+ * */
+typedef enum SalAuthMode {
+	SalAuthModeHttpDigest, /** Digest authentication requested*/
+	SalAuthModeTls /** Client certificate requested*/
+}SalAuthMode;
+
+struct _SalCertificatesChain;
+typedef struct _SalCertificatesChain SalCertificatesChain;
+struct _SalSigningKey;
+typedef struct _SalSigningKey SalSigningKey;
+
+/**
+ * Format of certificate buffer
+ * */
+typedef enum SalCertificateRawFormat {
+	SAL_CERTIFICATE_RAW_FORMAT_PEM, /** PEM format*/
+	SAL_CERTIFICATE_RAW_FORMAT_DER /** ASN.1 raw format*/
+}SalCertificateRawFormat;
+
+
+
 typedef struct SalAuthInfo{
 	char *username;
 	char *userid;
@@ -338,6 +361,9 @@ typedef struct SalAuthInfo{
 	char *realm;
 	char *domain;
 	char *ha1;
+	SalAuthMode mode;
+	SalSigningKey *key;
+	SalCertificatesChain *certificates;
 }SalAuthInfo;
 
 typedef struct SalBody{
@@ -424,6 +450,29 @@ SalAuthInfo* sal_auth_info_new();
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(SalAuthInfo* auth_info);
 LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
+SalAuthMode sal_auth_info_get_mode(const SalAuthInfo* auth_info);
+SalSigningKey *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info);
+SalCertificatesChain *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info);
+void sal_auth_info_set_mode(SalAuthInfo* auth_info, SalAuthMode mode);
+
+/** Parse a file containing either a certificate chain order in PEM format or a single DER cert
+ * @param auth_info structure where to store the result of parsing
+ * @param path path to certificate chain file
+ * @param format either PEM or DER
+ */
+void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path, SalCertificateRawFormat format);
+
+/**
+ * Parse a file containing either a private or public rsa key
+ * @param auth_info structure where to store the result of parsing
+ * @param passwd password (optionnal)
+ */
+void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd);
+
+void sal_certificates_chain_delete(SalCertificatesChain *chain);
+void sal_signing_key_delete(SalSigningKey *key);
+
+
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);

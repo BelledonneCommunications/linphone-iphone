@@ -25,6 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "lpconfig.h"
 
+// stat
+#ifndef WIN32
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
@@ -901,6 +908,46 @@ static void ping_reply(SalOp *op){
 	}
 }
 
+static const char *get_client_cert_path(LinphoneCore *lc) {
+	static char cldir[200] = {0};
+	#ifdef HAVE_GETENV
+	if (!cldir[0]) {
+		static char default_path[200] = {0};
+		snprintf(default_path, sizeof(default_path), "%s%s", getenv("HOME"), "/linphone_certs");
+		snprintf(cldir, sizeof(cldir), "%s", lp_config_get_string(lc->config,"sip","client_certificates_dir", default_path));
+	}
+	#endif
+	return cldir;
+}
+static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
+		char chain_file[200];
+		char key_file[200];
+		const char *path = get_client_cert_path(lc);
+
+		snprintf(chain_file, sizeof(chain_file), "%s%s", path, "/chain.pem");
+
+		snprintf(key_file, sizeof(key_file), "%s%s", path, "/key.pem");
+
+#ifndef WIN32
+		{
+		// optinal check for files
+		struct stat st;
+		if (stat(key_file,&st)) {
+			ms_warning("No client certificate key found in %s", key_file);
+			return FALSE;
+		}
+		if (stat(chain_file,&st)) {
+			ms_warning("No client certificate chain found in %s", chain_file);
+			return FALSE;
+		}
+		}
+#endif
+
+		sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM );
+		sal_signing_key_parse_file(sai, key_file, "");
+		return sai->certificates && sai->key;
+}
+
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain);
 	if (ai) {
@@ -916,18 +963,25 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 }
 static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if (fill_auth_info(lc,sai)) {
-		return TRUE;
-	} else {
-		if (lc->vtable.auth_info_requested) {
-			lc->vtable.auth_info_requested(lc,sai->realm,sai->username,sai->domain);
-			if (fill_auth_info(lc,sai)) {
-				return TRUE;
+	if (sai->mode == SalAuthModeHttpDigest) {
+		if (fill_auth_info(lc,sai)) {
+			return TRUE;
+		} else {
+			if (lc->vtable.auth_info_requested) {
+				lc->vtable.auth_info_requested(lc,sai->realm,sai->username,sai->domain);
+				if (fill_auth_info(lc,sai)) {
+					return TRUE;
+				}
 			}
+			return FALSE;
 		}
+	} else if (sai->mode == SalAuthModeTls) {
+		return fill_auth_info_with_client_certificate(lc,sai);
+	} else {
 		return FALSE;
 	}
 }
+
 static void notify_refer(SalOp *op, SalReferStatus status){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);

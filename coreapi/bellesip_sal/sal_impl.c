@@ -22,6 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+typedef struct belle_sip_certificates_chain_t _SalCertificatesChain;
+typedef struct belle_sip_signing_key_t _SalSigningKey;
+
 /*
 rfc3323
 4.2 Expressing Privacy Preferences
@@ -367,14 +371,16 @@ static void process_transaction_terminated(void *user_ctx, const belle_sip_trans
 
 }
 
-static void process_auth_requested(void *sal, belle_sip_auth_event_t *auth_event) {
-	SalAuthInfo* auth_info = sal_auth_info_create(auth_event);
+
+static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
+	SalAuthInfo* auth_info = sal_auth_info_create(event);
 	((Sal*)sal)->callbacks.auth_requested(sal,auth_info);
-	belle_sip_auth_event_set_passwd(auth_event,(const char*)auth_info->password);
-	belle_sip_auth_event_set_ha1(auth_event,(const char*)auth_info->ha1);
-	belle_sip_auth_event_set_userid(auth_event,(const char*)auth_info->userid);
+	belle_sip_auth_event_set_passwd(event,(const char*)auth_info->password);
+	belle_sip_auth_event_set_ha1(event,(const char*)auth_info->ha1);
+	belle_sip_auth_event_set_userid(event,(const char*)auth_info->userid);
+	belle_sip_auth_event_set_signing_key(event,(belle_sip_signing_key_t *)auth_info->key);
+	belle_sip_auth_event_set_client_certificates_chain(event,(belle_sip_certificates_chain_t* )auth_info->certificates);
 	sal_auth_info_delete(auth_info);
-	return;
 }
 
 Sal * sal_init(){
@@ -699,7 +705,19 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	auth_info->realm = ms_strdup(belle_sip_auth_event_get_realm(event));
 	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event));
 	auth_info->domain = ms_strdup(belle_sip_auth_event_get_domain(event));
+	auth_info->mode = belle_sip_auth_event_get_mode(event);
 	return auth_info;
+}
+
+SalAuthMode sal_auth_info_get_mode(const SalAuthInfo* auth_info) { return auth_info->mode; }
+SalSigningKey *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info) { return auth_info->key; }
+SalCertificatesChain *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info) { return auth_info->certificates; }
+void sal_auth_info_set_mode(SalAuthInfo* auth_info, SalAuthMode mode) { auth_info->mode = mode; }
+void sal_certificates_chain_delete(SalCertificatesChain *chain) {
+	belle_sip_object_unref((belle_sip_object_t *)chain);
+}
+void sal_signing_key_delete(SalSigningKey *key) { 
+	belle_sip_object_unref((belle_sip_object_t *)key);
 }
 
 const char* sal_op_type_to_string(const SalOpType type) {
@@ -851,4 +869,24 @@ void sal_resolve_cancel(Sal *sal, SalResolverContext* ctx){
 
 void sal_enable_unconditional_answer(Sal *sal,int value) {
 	belle_sip_provider_enable_unconditional_answer(sal->prov,value);
+}
+
+/** Parse a file containing either a certificate chain order in PEM format or a single DER cert
+ * @param auth_info structure where to store the result of parsing
+ * @param path path to certificate chain file
+ * @param format either PEM or DER
+ */
+void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path, SalCertificateRawFormat format) {
+	auth_info->certificates = (SalCertificatesChain*) belle_sip_certificates_chain_parse_file(path, format); // 
+	if (auth_info->certificates) belle_sip_object_ref((belle_sip_object_t *) auth_info->certificates);
+}
+
+/**
+ * Parse a file containing either a private or public rsa key
+ * @param auth_info structure where to store the result of parsing
+ * @param passwd password (optionnal)
+ */
+void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd) {
+	auth_info->key = (SalSigningKey *) belle_sip_signing_key_parse_file(path, passwd);
+	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
 }
