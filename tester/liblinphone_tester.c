@@ -108,9 +108,9 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 
 	sal_enable_test_features(lc->sal,TRUE);
 #ifndef ANDROID
-	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cacert.pem", path);
+	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cafile.pem", path);
 #else
-	snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
+	snprintf(rootcapath, sizeof(rootcapath), "%s/cafile.pem", path);
 #endif
 	linphone_core_set_root_ca(lc,rootcapath);
 
@@ -182,7 +182,7 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	LinphoneProxyConfig* proxy;
-	int proxy_count=check_for_proxies?(rc_file?1:0):0;
+	int proxy_count;
 	int retry=0;
 	
 	mgr->v_table.registration_state_changed=registration_state_changed;
@@ -201,8 +201,12 @@ LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_f
 	linphone_core_set_user_data(mgr->lc,mgr);
 	reset_counters(&mgr->stat);
 	/*CU_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count);*/
+	if (check_for_proxies && rc_file) /**/
+		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
+	else
+		proxy_count=0;
 
-	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <20) {
+	while (mgr->stat.number_of_LinphoneRegistrationOk<proxy_count && retry++ <(20+ (proxy_count>2?(proxy_count-2)*10:0))) {
 		linphone_core_iterate(mgr->lc);
 		ms_usleep(100000);
 	}
