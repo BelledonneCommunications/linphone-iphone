@@ -483,9 +483,9 @@ void sal_uninit(Sal* sal){
 	belle_sip_object_unref(sal->prov);
 	belle_sip_object_unref(sal->stack);
 	belle_sip_object_unref(sal->listener);
+	if (sal->uuid) ms_free(sal->uuid);
 	if (sal->root_ca) ms_free(sal->root_ca);
 	ms_free(sal);
-	return ;
 };
 
 int sal_add_listen_port(Sal *ctx, SalAddress* addr){

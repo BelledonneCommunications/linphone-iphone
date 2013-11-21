@@ -483,6 +483,7 @@ void sal_auth_info_delete(SalAuthInfo* auth_info) {
 	if (auth_info->realm) ms_free(auth_info->realm);
 	if (auth_info->domain) ms_free(auth_info->domain);
 	if (auth_info->password) ms_free(auth_info->password);
+	if (auth_info->ha1) ms_free(auth_info->ha1);
 	if (auth_info->certificates) sal_certificates_chain_delete(auth_info->certificates);
 	if (auth_info->key) sal_signing_key_delete(auth_info->key);
 	ms_free(auth_info);
