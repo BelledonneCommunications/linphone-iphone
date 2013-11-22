@@ -95,6 +95,7 @@ void linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	lc->chatrooms=ms_list_remove(lc->chatrooms,(void *) cr);
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
+	ms_free(cr);
 }
 
 
