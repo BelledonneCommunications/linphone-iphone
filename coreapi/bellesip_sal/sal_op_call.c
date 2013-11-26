@@ -603,10 +603,17 @@ int sal_call_notify_ringing(SalOp *op, bool_t early_media){
 	if (require) tags=belle_sip_header_get_unparsed_value(require);
 	/* if client requires 100rel, then add necessary stuff*/
 	if (tags && strstr(tags,"100rel")!=0) {
-		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
-		belle_sip_header_contact_t* contact_header;
+		
 		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("Require","100rel")));
 		belle_sip_message_add_header((belle_sip_message_t*)ringing_response,BELLE_SIP_HEADER(belle_sip_header_extension_create("RSeq","1")));
+	}
+
+#ifndef SAL_OP_CALL_FORCE_CONTACT_IN_RINGING
+	if (tags && strstr(tags,"100rel")!=0) 
+#endif
+	{
+		belle_sip_header_address_t* contact= (belle_sip_header_address_t*)sal_op_get_contact_address(op);
+		belle_sip_header_contact_t* contact_header;
 		if (contact && (contact_header=belle_sip_header_contact_create(contact))) {
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(ringing_response),BELLE_SIP_HEADER(contact_header));
 		}
