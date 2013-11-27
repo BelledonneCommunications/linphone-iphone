@@ -890,3 +890,8 @@ void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const 
 	auth_info->key = (SalSigningKey *) belle_sip_signing_key_parse_file(path, passwd);
 	if (auth_info->key) belle_sip_object_ref((belle_sip_object_t *) auth_info->key);
 }
+
+unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size){
+	return belle_sip_random_bytes(ret,size);
+}
+

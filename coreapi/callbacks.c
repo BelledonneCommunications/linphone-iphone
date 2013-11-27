@@ -37,24 +37,16 @@ static void register_failure(SalOp *op, SalError error, SalReason reason, const 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
 	if (call->params.in_conference != call->current_params.in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
 	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_CHANGED;
-	return sal_media_description_equals(oldmd, newmd);
+	if (call->localdesc_changed) ms_message("Local description has changed: %i", call->localdesc_changed);
+	return call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
 }
 
 void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
-	SalStreamDescription *old_audiodesc = NULL;
-	SalStreamDescription *old_videodesc = NULL;
 	SalStreamDescription *new_audiodesc = NULL;
 	SalStreamDescription *new_videodesc = NULL;
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < old_md->n_active_streams; i++) {
-		if (old_md->streams[i].type == SalAudio) {
-			old_audiodesc = &old_md->streams[i];
-		} else if (old_md->streams[i].type == SalVideo) {
-			old_videodesc = &old_md->streams[i];
-		}
-	}
 	for (i = 0; i < new_md->n_active_streams; i++) {
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
@@ -76,21 +68,6 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 		rtp_session_set_remote_addr_full(call->videostream->ms.session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 	}
 #endif
-
-	/* Copy address and port values from new_md to old_md since we will keep old_md as resultdesc */
-	strcpy(old_md->addr, new_md->addr);
-	if (old_audiodesc && new_audiodesc) {
-		strcpy(old_audiodesc->rtp_addr, new_audiodesc->rtp_addr);
-		strcpy(old_audiodesc->rtcp_addr, new_audiodesc->rtcp_addr);
-		old_audiodesc->rtp_port = new_audiodesc->rtp_port;
-		old_audiodesc->rtcp_port = new_audiodesc->rtcp_port;
-	}
-	if (old_videodesc && new_videodesc) {
-		strcpy(old_videodesc->rtp_addr, new_videodesc->rtp_addr);
-		strcpy(old_videodesc->rtcp_addr, new_videodesc->rtcp_addr);
-		old_videodesc->rtp_port = new_videodesc->rtp_port;
-		old_videodesc->rtcp_port = new_videodesc->rtcp_port;
-	}
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -112,9 +89,6 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else {
 				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
-					/*as nothing has changed, keep the oldmd */
-					call->resultdesc=oldmd;
-					sal_media_description_unref(new_md);
 					if (call->all_muted){
 						ms_message("Early media finished, unmuting inputs...");
 						/*we were in early media, now we want to enable real media */
@@ -127,7 +101,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 #endif
 					}
 					ms_message("No need to restart streams, SDP is unchanged.");
-					return;
+					goto end;
 				}else {
 					if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) {
 						ms_message("Network parameters have changed, update them.");
@@ -137,17 +111,13 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 						ms_message("Crypto parameters have changed, update them.");
 						linphone_call_update_crypto_parameters(call, oldmd, new_md);
 					}
-					call->resultdesc = oldmd;
-					sal_media_description_unref(new_md);
-					return;
+					goto end;
 				}
 			}
 		}
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
 	}
-	if (oldmd) 
-		sal_media_description_unref(oldmd);
 	
 	if (new_md) {
 		bool_t all_muted=FALSE;
@@ -169,6 +139,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
+	end:
+	if (oldmd) 
+		sal_media_description_unref(oldmd);
+	
 }
 #if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){

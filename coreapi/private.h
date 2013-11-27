@@ -199,6 +199,8 @@ struct _LinphoneCall
 	unsigned int remote_session_ver;
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
+	int localdesc_changed;
+	
 	bool_t refer_pending;
 	bool_t media_pending;
 	bool_t audio_muted;

@@ -169,11 +169,13 @@ typedef struct SalIceRemoteCandidate {
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
+#define SAL_SRTP_KEY_SIZE 41
+
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
 	enum ortp_srtp_crypto_suite_t algo;
 	/* 41= 40 max(key_length for all algo) + '\0' */
-	char master_key[41];
+	char master_key[SAL_SRTP_KEY_SIZE];
 } SalSrtpCryptoAlgo;
 
 #define SAL_CRYPTO_ALGO_MAX 4
@@ -687,4 +689,6 @@ LINPHONE_PUBLIC	void sal_set_dns_timeout(Sal* sal,int timeout);
 LINPHONE_PUBLIC int sal_get_dns_timeout(const Sal* sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
+unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
+
 #endif
