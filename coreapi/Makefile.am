@@ -48,10 +48,15 @@ liblinphone_la_SOURCES=\
 	message_storage.c \
 	info.c \
 	event.c event.h \
+	contactprovider.c contactprovider.h \
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
 liblinphone_la_SOURCES+=upnp.c upnp.h
+endif
+
+if BUILD_LDAP
+liblinphone_la_SOURCES+= ldap/ldapprovider.c ldap/ldapprovider.h
 endif
 	
 liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
@@ -89,7 +94,8 @@ liblinphone_la_LIBADD= \
 		$(TUNNEL_LIBS) \
 		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
-		$(LIBXML2_LIBS) 
+		$(LIBXML2_LIBS) \
+		$(LDAP_LIBS)
 
 
 if ENABLE_TESTS

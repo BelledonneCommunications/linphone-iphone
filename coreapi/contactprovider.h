@@ -17,10 +17,50 @@
 #include <belle-sip/object.h>
 #include "linphonecore.h"
 
+/* LinphoneContactSearchRequest */
 
-typedef struct linphone_contact_provider linphone_contact_provider_t;
-#define LINPHONE_CONTACT_PROVIDER(obj) BELLE_SIP_CAST(obj,linphone_contact_provider_t)
+typedef unsigned int ContactSearchID;
+
+typedef void (*ContactSearchCallback)( ContactSearchID id, MSList* friends, void* data );
+
+typedef struct {
+	ContactSearchID id;
+	char* predicate;
+	ContactSearchCallback cb;
+	void* data;
+} LinphoneContactSearch;
+
+#define LINPHONE_CONTACT_SEARCH(obj) BELLE_SIP_CAST(obj,LinphoneContactSearch)
+BELLE_SIP_DECLARE_VPTR(LinphoneContactSearch)
 
 
+void linphone_contact_search_init(LinphoneContactSearch* obj, const char* predicate, ContactSearchCallback cb, void* cb_data);
+ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj);
+const char* linphone_contact_search_get_predicate(LinphoneContactSearch* obj);
+void linphone_contact_search_invoke_cb(LinphoneContactSearch* req, MSList* friends);
 
-linphone_contact_provider_t* linphone_contact_provider_create();
+
+/* LinphoneContactProvider */
+
+struct _LinphoneContactProvider {
+	belle_sip_object_t base;
+	LinphoneCore* lc;
+};
+
+typedef struct _LinphoneContactProvider LinphoneContactProvider;
+typedef LinphoneContactSearch* (*LinphoneContactProviderStartSearchMethod)( LinphoneContactProvider* thiz, const char* predicate, ContactSearchCallback cb, void* data );
+typedef unsigned int           (*LinphoneContactProviderCancelSearchMethod)( LinphoneContactProvider* thiz, LinphoneContactSearch *request );
+#define LINPHONE_CONTACT_PROVIDER(obj) BELLE_SIP_CAST(obj,LinphoneContactProvider)
+
+BELLE_SIP_DECLARE_CUSTOM_VPTR_BEGIN(LinphoneContactProvider,belle_sip_object_t)
+	const char* name; /*!< Name of the contact provider (LDAP, Google, ...) */
+
+	/* pure virtual methods: inheriting objects must implement these */
+	LinphoneContactProviderStartSearchMethod  begin_search;
+	LinphoneContactProviderCancelSearchMethod cancel_search;
+BELLE_SIP_DECLARE_CUSTOM_VPTR_END
+
+
+void          linphone_contact_provider_init(LinphoneContactProvider* obj, LinphoneCore* lc);
+LinphoneCore* linphone_contact_provider_get_core(LinphoneContactProvider* obj);
+const char*   linphone_contact_provider_get_name(LinphoneContactProvider* obj);

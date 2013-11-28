@@ -2152,10 +2152,12 @@ LINPHONE_PUBLIC void linphone_core_set_video_display_filter(LinphoneCore *lc, co
 /** Contact Providers
   */
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
-BELLE_SIP_TYPE_ID(linphone_contact_provider_t)
+BELLE_SIP_TYPE_ID(LinphoneContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
+BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
 BELLE_SIP_DECLARE_TYPES_END
 
-BELLE_SIP_DECLARE_VPTR(linphone_contact_provider_t)
 
 #ifdef __cplusplus
 }

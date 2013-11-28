@@ -15,23 +15,85 @@
  */
 
 #include "contactprovider.h"
+#include <linphonecore.h>
 
-struct linphone_contact_provider {
-	belle_sip_object_t base;
+/* LinphoneContactSearchRequest
+ */
+
+void linphone_contact_search_init(LinphoneContactSearch* obj,
+								const char* predicate,
+								ContactSearchCallback cb,
+								void* cb_data)
+{
+	static unsigned int request_id_counter = 1;
+	obj->id = request_id_counter++; // unique id
+	obj->predicate = ms_strdup(predicate?predicate:"");
+	obj->cb   = cb;
+	obj->data = cb_data;
+}
+
+static void linphone_contact_search_destroy( LinphoneContactSearch* req) {
+	if( req->predicate ) ms_free(req->predicate);
+	ms_free(req);
+}
+
+ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj)
+{
+	return obj->id;
+}
+
+const char*linphone_contact_search_get_predicate(LinphoneContactSearch* obj)
+{
+	return obj->predicate;
+}
+
+void linphone_contact_search_invoke_cb(LinphoneContactSearch* req, MSList* friends)
+{
+	if( req->cb ) req->cb(req->id, friends, req->data);
+}
+
+int linphone_contact_search_compare(const void* a, const void* b) {
+	LinphoneContactSearch *ra=((LinphoneContactSearch*)a);
+	LinphoneContactSearch *rb=((LinphoneContactSearch*)b);
+	return !(ra->id == rb->id); // return 0 if id is equal, 1 otherwise
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneContactSearch);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneContactSearch,belle_sip_object_t,
+	(belle_sip_object_destroy_t)linphone_contact_search_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+/*
+ * LinphoneContactProvider
+ */
+
+
+void linphone_contact_provider_init(LinphoneContactProvider* obj, LinphoneCore* lc){
+	obj->lc = lc;
+}
+
+static void contact_provider_destroy(LinphoneContactProvider* obj){
+	(void)obj;
+}
+
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneContactProvider);
+BELLE_SIP_INSTANCIATE_CUSTOM_VPTR(LinphoneContactProvider)=
+{
+	{
+		BELLE_SIP_VPTR_INIT(LinphoneContactProvider,belle_sip_object_t,TRUE),
+		(belle_sip_object_destroy_t) contact_provider_destroy,
+		NULL,/*no clone*/
+		NULL,/*no marshal*/
+	},
+	"",
+	// Pure virtual
+	NULL, /* begin_search -> pure virtual */
+	NULL  /* cancel_search -> pure virtual */
 };
 
-linphone_contact_provider_t* linphone_contact_provider_create()
-{
-	linphone_contact_provider_t* obj = belle_sip_object_new(linphone_contact_provider_t);
-	return obj;
-}
-
-static void linphone_contact_provider_destroy()
-{
-
-}
-
-BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(linphone_contact_provider_t);
-BELLE_SIP_INSTANCIATE_VPTR(linphone_contact_provider_t, belle_sip_object_t,
-						   linphone_contact_provider_destroy, NULL, NULL,FALSE);
 
