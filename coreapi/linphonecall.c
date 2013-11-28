@@ -2038,6 +2038,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		}
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
+		call->current_params.audio_codec = NULL;
 	}
 }
 
@@ -2051,6 +2052,7 @@ void linphone_call_stop_video_stream(LinphoneCall *call) {
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		call->current_params.video_codec = NULL;
 	}
 #endif
 }
@@ -2555,7 +2557,7 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
  * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * 
- * cx and cy are updated in return in case their coordinates were to excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
+ * cx and cy are updated in return in case their coordinates were too excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
 **/
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
 	VideoStream* vstream = call->videostream;
