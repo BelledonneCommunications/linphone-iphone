@@ -64,6 +64,7 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
 static void linphone_gtk_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate);
+static void linphone_gtk_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data);
 static gboolean linphone_gtk_auto_answer(LinphoneCall *call);
 void linphone_gtk_status_icon_set_blinking(gboolean val);
@@ -251,6 +252,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.buddy_info_updated=linphone_gtk_buddy_info_updated;
 	vtable.call_encryption_changed=linphone_gtk_call_encryption_changed;
 	vtable.transfer_state_changed=linphone_gtk_transfer_state_changed;
+	vtable.dtmf_received=linphone_gtk_dtmf_received;
 
 	the_core=linphone_core_new(&vtable,config_file,factory_config_file,NULL);
 	//lp_config_set_int(linphone_core_get_config(the_core), "sip", "store_auth_info", 0);
@@ -1049,6 +1051,10 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 	auth_timeout_new(w);
 }
 
+static void linphone_gtk_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf){
+	ms_message("Dtmf %c received.",dtmf);
+}
+
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GtkWidget *status_bar=linphone_gtk_get_widget(w,"status_bar");
@@ -1713,6 +1719,40 @@ void linphone_gtk_init_dtmf_table(GtkWidget *mw){
 	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_0")),"label","0");
 	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_#")),"label","#");
 	g_object_set_data(G_OBJECT(linphone_gtk_get_widget(mw,"dtmf_*")),"label","*");
+}
+
+static gboolean key_allowed(guint32 code){
+	static const char *allowed="1234567890#*ABCD";
+	return code!=0 && strchr(allowed,(char)code)!=NULL;
+}
+
+static GtkButton *get_button_from_key(GtkWidget *w, GdkEvent *event){
+	guint keyval=event->key.keyval;
+	guint32 code=gdk_keyval_to_unicode(keyval);
+	code=g_unichar_toupper(code);
+	if (key_allowed(code)){
+		char widgetname[16];
+		w=gtk_widget_get_toplevel(w);
+		snprintf(widgetname,sizeof(widgetname),"dtmf_%c",code);
+		return GTK_BUTTON(linphone_gtk_get_widget(w,widgetname));
+	}
+	return NULL;
+}
+
+void linphone_gtk_keypad_key_pressed(GtkWidget *w, GdkEvent *event, gpointer userdata){
+	GtkButton *button=get_button_from_key(w,event);
+	if (button) {
+		linphone_gtk_dtmf_pressed(button);
+		/*g_signal_emit_by_name(button, "button-press-event");*/
+	}
+}
+
+void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer userdata){
+	GtkButton *button=get_button_from_key(w,event);
+	if (button) {
+		linphone_gtk_dtmf_released(button);
+		/*g_signal_emit_by_name(button, "button-release-event");*/
+	}
 }
 
 void linphone_gtk_create_keypad(GtkWidget *button){

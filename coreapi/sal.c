@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 #include "sal/sal.h"
+
+#include <ctype.h>
+
 const char* sal_transport_to_string(SalTransport transport) {
 	switch (transport) {
 		case SalTransportUDP:return "udp";
@@ -572,3 +575,55 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 	default: return NULL;
 	}
 }
+
+static void remove_trailing_spaces(char *line){
+	int i;
+	for(i=strlen(line)-1;i>=0;--i){
+		if (isspace(line[i])) line[i]='\0';
+		else break;
+	}
+}
+
+static int line_get_value(const char *input, const char *key, char *value, size_t value_size, int *read){
+	const char *end=strchr(input,'\n');
+	char line[256]={0};
+	char key_candidate[256];
+	char *equal;
+	size_t len;
+	if (!end) len=strlen(input);
+	else len=end +1 -input;
+	*read=len;
+	strncpy(line,input,MIN(len,sizeof(line)));
+	equal=strchr(line,'=');
+	if (!equal) return FALSE;
+	*equal='\0';
+	if (sscanf(line,"%s",key_candidate)!=1) return FALSE;
+	if (strcasecmp(key,key_candidate)==0){
+		equal++;
+		remove_trailing_spaces(equal);
+		strncpy(value,equal,value_size-1);
+		value[value_size-1]='\0';
+		return TRUE;
+	}
+	return FALSE;
+}
+
+int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
+	int read=0;
+	
+	do{
+		if (line_get_value(data,key,value,value_size,&read))
+			return TRUE;
+		data+=read;
+	}while(read!=0);
+	return FALSE;
+}
+
+int sal_body_has_type(const SalBody *body, const char *type, const char *subtype){
+	return body->type && body->subtype 
+		&& strcmp(body->type,type)==0
+		&& strcmp(body->subtype,subtype)==0;
+}
+
+
+

@@ -362,7 +362,6 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	}
 	dialog_state=belle_sip_dialog_get_state(op->dialog);
 	switch(dialog_state) {
-
 	case BELLE_SIP_DIALOG_NULL: {
 		if (strcmp("INVITE",belle_sip_request_get_method(req))==0) {
 			if (!op->replaces && (op->replaces=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_replaces_t))) {
@@ -461,7 +460,13 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			}else{
 				SalBody salbody;
 				if (sal_op_get_body(op,(belle_sip_message_t*)req,&salbody)) {
-					op->base.root->callbacks.info_received(op,&salbody);
+					if (sal_body_has_type(&salbody,"application","dtmf-relay")){
+						char tmp[10];
+						if (sal_lines_get_value(salbody.data, "Signal",tmp, sizeof(tmp))){
+							op->base.root->callbacks.dtmf_received(op,tmp[0]);
+						}
+					}else
+						op->base.root->callbacks.info_received(op,&salbody);
 				} else {
 					op->base.root->callbacks.info_received(op,NULL);
 				}
@@ -485,10 +490,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 			unsupported_method(server_transaction,req);
 		}
 		break;
-	default: {
+	default:
 		ms_error("unexpected dialog state [%s]",belle_sip_dialog_state_to_string(dialog_state));
-	}
-	/* no break */
+		break;
 	}
 
 	if (server_transaction) belle_sip_object_unref(server_transaction);

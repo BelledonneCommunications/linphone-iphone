@@ -67,6 +67,8 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 		ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 		rtp_session_set_remote_addr_full(call->videostream->ms.session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 	}
+#else
+	(void)new_videodesc;
 #endif
 }
 

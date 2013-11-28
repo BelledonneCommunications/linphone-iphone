@@ -691,4 +691,8 @@ LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_fil
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
 unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
 
+int sal_body_has_type(const SalBody *body, const char *type, const char *subtype);
+/*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
+int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
+
 #endif

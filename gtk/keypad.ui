@@ -8,8 +8,11 @@
       <object class="GtkFrame" id="frame3">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="events">GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
         <property name="label_xalign">0.5</property>
         <property name="shadow_type">none</property>
+        <signal name="key-release-event" handler="linphone_gtk_keypad_key_released" swapped="no"/>
+        <signal name="key-press-event" handler="linphone_gtk_keypad_key_pressed" swapped="no"/>
         <child>
           <object class="GtkAspectFrame" id="aspectframe1">
             <property name="visible">True</property>
