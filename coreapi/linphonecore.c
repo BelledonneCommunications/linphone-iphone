@@ -2279,8 +2279,8 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 		enum_lookup_res_free(enumres);
 		return uri;
 	}
-	/* check if we have a "sip:" */
-	if (strstr(url,"sip:")==NULL){
+	/* check if we have a "sip:" or a "sips:" */
+	if ( (strstr(url,"sip:")==NULL) && (strstr(url,"sips:")==NULL) ){
 		/* this doesn't look like a true sip uri */
 		if (strchr(url,'@')!=NULL){
 			/* seems like sip: is missing !*/
