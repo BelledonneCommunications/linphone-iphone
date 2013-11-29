@@ -212,6 +212,17 @@ static unsigned int linphone_ldap_cancel_search(LinphoneContactProvider* obj, Li
 	return ret;
 }
 
+static int linphone_ldap_parse_bind_results( LinphoneContactProvider* obj, LDAPMessage* results )
+{
+	LinphoneLDAPContactProvider* cp = LINPHONE_LDAP_CONTACT_PROVIDER(obj);
+	struct berval *servercreds;
+	int ret = ldap_parse_sasl_bind_result(cp->ld, results, &servercreds, 1);
+	if( ret != LDAP_SUCCESS ){
+		ms_error("ldap_parse_sasl_bind_result failed")
+	}
+	return ret;
+}
+
 static bool_t linphone_ldap_contact_provider_iterate(void *data)
 {
 	LinphoneLDAPContactProvider* obj = LINPHONE_LDAP_CONTACT_PROVIDER(data);
@@ -235,6 +246,9 @@ static bool_t linphone_ldap_contact_provider_iterate(void *data)
 			ms_message("iterate: LDAP_RES_BIND");
 			if( ldap_msgid( results ) != obj->bind_msgid ) {
 				ms_error("Bad msgid");
+			} else {
+				linphone_ldap_parse_bind_results( obj, results );
+				obj->bind_msgid = 0;
 			}
 			break;
 		}
@@ -320,7 +334,8 @@ static int linphone_ldap_contact_provider_bind( LinphoneLDAPContactProvider* obj
 	case ANONYMOUS:
 	default:
 	{
-		ret = ldap_sasl_bind( obj->ld, obj->base_object, NULL, &password, NULL, NULL, &bind_msgid);
+		char *auth = NULL;
+		ret = ldap_sasl_bind( obj->ld, obj->base_object, auth, &password, NULL, NULL, &bind_msgid);
 		if( ret == LDAP_SUCCESS ) {
 			obj->bind_msgid = bind_msgid;
 		} else {
@@ -360,7 +375,7 @@ LinphoneLDAPContactProvider*linphone_ldap_contact_provider_create(LinphoneCore* 
 		belle_sip_object_unref(obj);
 		return NULL;
 	} else {
-		// register our hook into iterate so that LDAP can do its magic asynchronously
+		// register our hook into iterate so that LDAP can do its magic asynchronously.
 		linphone_ldap_contact_provider_bind(obj);
 		linphone_core_add_iterate_hook(lc, linphone_ldap_contact_provider_iterate, obj);
 	}
