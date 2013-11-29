@@ -488,6 +488,19 @@ void sal_uninit(Sal* sal){
 	ms_free(sal);
 };
 
+int sal_transport_available(Sal *sal, SalTransport t){
+	switch(t){
+		case SalTransportUDP:
+		case SalTransportTCP:
+			return TRUE;
+		case SalTransportTLS:
+			return belle_sip_stack_tls_available(sal->stack);
+		case SalTransportDTLS:
+			return FALSE;
+	}
+	return FALSE;
+}
+
 int sal_add_listen_port(Sal *ctx, SalAddress* addr){
 	int result;
 	belle_sip_listening_point_t* lp = belle_sip_stack_create_listening_point(ctx->stack
