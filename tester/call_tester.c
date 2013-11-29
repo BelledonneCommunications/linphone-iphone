@@ -1027,9 +1027,10 @@ static void srtp_ice_call(void) {
 
 		CU_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 		check_rtcp(marie,pauline);
-#endif
 		/*wait for ice to found the direct path*/
 		CU_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
+#endif
+		
 
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(marie->lc);
