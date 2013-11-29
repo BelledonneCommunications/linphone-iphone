@@ -5502,7 +5502,7 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
-	ms_snd_card_manager_destroy();
+
 }
 
 static void video_config_uninit(LinphoneCore *lc)
@@ -5657,7 +5657,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_free_payload_types(lc);
 	
 	linphone_core_message_storage_close(lc);
-	ortp_exit();
+	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 }
 
