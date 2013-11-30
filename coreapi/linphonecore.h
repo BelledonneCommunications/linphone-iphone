@@ -90,6 +90,19 @@ typedef struct _LCSipTransports{
 
 
 /**
+ * Enum describing transport type for LinphoneAddress.
+**/
+enum _LinphoneTransportType{
+	LinphoneTransportUdp,
+	LinphoneTransportTcp,
+	LinphoneTransportTls,
+	LinphoneTransportDtls
+};
+/*this enum MUST be kept in sync with the SalTransport from sal.h*/
+
+typedef enum _LinphoneTransportType LinphoneTransportType;
+
+/**
  * Object that represents a SIP address.
  *
  * The LinphoneAddress is an opaque object to represents SIP addresses, ie
@@ -191,6 +204,9 @@ LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const cha
 LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
+LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *uri);
+LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
+LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
 LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
@@ -1526,6 +1542,8 @@ LINPHONE_PUBLIC	int linphone_core_get_sip_port(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_set_sip_transports(LinphoneCore *lc, const LCSipTransports *transports);
 
 LINPHONE_PUBLIC	int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTransports *transports);
+
+LINPHONE_PUBLIC	bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp);
 /**
  *
  * Give access to the UDP sip socket. Can be useful to configure this socket as persistent I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP)

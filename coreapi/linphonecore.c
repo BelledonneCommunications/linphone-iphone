@@ -1893,6 +1893,13 @@ static int apply_transports(LinphoneCore *lc){
 }
 
 /**
+ * Returns TRUE if given transport type is supported by the library, FALSE otherwise.
+**/
+bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp){
+	return sal_transport_available(lc->sal,(SalTransport)tp);
+}
+
+/**
  * Sets the ports to be used for each of transport (UDP or TCP)
  *
  * A zero value port for a given transport means the transport

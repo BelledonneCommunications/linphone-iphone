@@ -85,12 +85,9 @@ const char *sal_address_get_display_name(const SalAddress* addr);
 const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
-#ifdef USE_BELLESIP
 int sal_address_get_port(const SalAddress *addr);
-#else
-const char * sal_address_get_port(const SalAddress *addr);
-int sal_address_get_port_int(const SalAddress *addr);
-#endif
+bool_t sal_address_is_secure(const SalAddress *addr);
+
 SalTransport sal_address_get_transport(const SalAddress* addr);
 const char* sal_address_get_transport_name(const SalAddress* addr);
 
@@ -479,6 +476,7 @@ void sal_signing_key_delete(SalSigningKey *key);
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
+int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);
 int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
