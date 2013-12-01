@@ -652,6 +652,8 @@ static void fill_transport_combo_box(GtkWidget *combo, LinphoneTransportType cho
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	
+	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(combo),"combo-updating"))) return;
+	
 	if ((model=gtk_combo_box_get_model(GTK_COMBO_BOX(combo)))==NULL){
 		/*case where combo box is created with no model*/
 		GtkCellRenderer *renderer=gtk_cell_renderer_text_new();
@@ -660,13 +662,15 @@ static void fill_transport_combo_box(GtkWidget *combo, LinphoneTransportType cho
 		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo),renderer,TRUE);
 		gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo),renderer,"markup",0,NULL);
 	}
-	gtk_list_store_append(GTK_LIST_STORE(model),&iter);
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"UDP",-1);
-	gtk_list_store_append(GTK_LIST_STORE(model),&iter);
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"TCP",-1);
-	if (linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)){
+	if (!gtk_tree_model_get_iter_first(model,&iter)){
 		gtk_list_store_append(GTK_LIST_STORE(model),&iter);
-		gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"TLS",-1);
+		gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"UDP",-1);
+		gtk_list_store_append(GTK_LIST_STORE(model),&iter);
+		gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"TCP",-1);
+		if (linphone_core_sip_transport_supported(linphone_gtk_get_core(),LinphoneTransportTls)){
+			gtk_list_store_append(GTK_LIST_STORE(model),&iter);
+			gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,"TLS",-1);
+		}
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo),(int)choice);
 	gtk_widget_set_sensitive(combo,is_sensitive);
@@ -684,6 +688,31 @@ static void update_proxy_transport(GtkWidget *w){
 		}
 		linphone_address_destroy(laddr);
 	}
+}
+
+void linphone_gtk_proxy_transport_changed(GtkWidget *combo){
+	GtkWidget *w=gtk_widget_get_toplevel(combo);
+	int index=gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+	GtkWidget *proxy=linphone_gtk_get_widget(w,"proxy");
+	const char *addr=gtk_entry_get_text(GTK_ENTRY(proxy));
+	LinphoneAddress *laddr;
+	LinphoneTransportType new_transport=(LinphoneTransportType)index;
+	
+	if (index==-1) return;
+	
+	g_object_set_data(G_OBJECT(w),"combo-updating",GINT_TO_POINTER(1));
+	laddr=linphone_address_new(addr);
+	if (laddr){
+		if (linphone_address_get_transport(laddr)!=new_transport){
+			char *newaddr;
+			linphone_address_set_transport(laddr,new_transport);
+			newaddr=linphone_address_as_string(laddr);
+			gtk_entry_set_text(GTK_ENTRY(proxy),newaddr);
+			ms_free(newaddr);
+		}
+		linphone_address_destroy(laddr);
+	}
+	g_object_set_data(G_OBJECT(w),"combo-updating",GINT_TO_POINTER(0));
 }
 
 void linphone_gtk_proxy_address_changed(GtkEditable *editable){
@@ -723,15 +752,33 @@ void linphone_gtk_proxy_cancel(GtkButton *button){
 void linphone_gtk_proxy_ok(GtkButton *button){
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(w),"config");
+	int index=gtk_combo_box_get_active(GTK_COMBO_BOX(linphone_gtk_get_widget(w,"transport")));
 	gboolean was_editing=TRUE;
+	
 	if (!cfg){
 		was_editing=FALSE;
 		cfg=linphone_proxy_config_new();
 	}
 	linphone_proxy_config_set_identity(cfg,
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"identity"))));
-	linphone_proxy_config_set_server_addr(cfg,
-		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"proxy"))));
+	if (linphone_proxy_config_set_server_addr(cfg,
+		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"proxy"))))==0){
+		if (index!=-1){
+			/*make sure transport was added to proxy address*/
+			LinphoneTransportType tport=(LinphoneTransportType)index;
+			LinphoneAddress *laddr=linphone_address_new(linphone_proxy_config_get_addr(cfg));
+			if (laddr){
+				if (linphone_address_get_transport(laddr)!=tport){
+					char *tmp;
+					linphone_address_set_transport(laddr,tport);
+					tmp=linphone_address_as_string(laddr);
+					linphone_proxy_config_set_server_addr(cfg,tmp);
+					ms_free(tmp);
+				}
+				linphone_address_destroy(laddr);
+			}
+		}
+	}
 	linphone_proxy_config_set_route(cfg,
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"route"))));
 	linphone_proxy_config_set_contact_parameters(cfg,
