@@ -750,9 +750,11 @@ void linphone_gtk_proxy_cancel(GtkButton *button){
 }
 
 void linphone_gtk_proxy_ok(GtkButton *button){
+	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *w=gtk_widget_get_toplevel(GTK_WIDGET(button));
 	LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)g_object_get_data(G_OBJECT(w),"config");
 	int index=gtk_combo_box_get_active(GTK_COMBO_BOX(linphone_gtk_get_widget(w,"transport")));
+	LinphoneTransportType tport=(LinphoneTransportType)index;
 	gboolean was_editing=TRUE;
 	
 	if (!cfg){
@@ -765,7 +767,6 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 		gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(w,"proxy"))))==0){
 		if (index!=-1){
 			/*make sure transport was added to proxy address*/
-			LinphoneTransportType tport=(LinphoneTransportType)index;
 			LinphoneAddress *laddr=linphone_address_new(linphone_proxy_config_get_addr(cfg));
 			if (laddr){
 				if (linphone_address_get_transport(laddr)!=tport){
@@ -792,6 +793,17 @@ void linphone_gtk_proxy_ok(GtkButton *button){
 	linphone_proxy_config_enable_register(cfg,
 		gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"register"))));
+	
+	/* check if tls was asked but is not enabled in transport configuration*/
+	if (tport==LinphoneTransportTls){
+		LCSipTransports tports;
+		linphone_core_get_sip_transports(lc,&tports);
+		if (tports.tls_port==LC_SIP_TRANSPORT_DISABLED){
+			tports.tls_port=LC_SIP_TRANSPORT_RANDOM;
+		}
+		linphone_core_set_sip_transports(lc,&tports);
+	}
+	
 	if (was_editing){
 		if (linphone_proxy_config_done(cfg)==-1)
 			return;

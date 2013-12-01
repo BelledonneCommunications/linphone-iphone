@@ -2412,11 +2412,7 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 		if (transport){
 			SalAddress *route=sal_address_new(NULL);
 			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)dest));
-#ifdef USE_BELLESIP
 			sal_address_set_port(route,sal_address_get_port((SalAddress*)dest));
-#else
-			sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)dest));
-#endif
 			sal_address_set_transport_name(route,transport);
 			ret=ms_list_append(ret,route);
 		}
