@@ -74,6 +74,10 @@ extern "C" {
 #endif
 #endif
 
+#ifdef BUILD_LDAP
+#include "ldap/ldapprovider.h"
+#endif
+
 struct _LinphoneCallParams{
 	LinphoneCall *referer; /*in case this call creation is consecutive to an incoming transfer, this points to the original call */
 	int audio_bw; /* bandwidth limit for audio stream */
@@ -655,6 +659,10 @@ struct _LinphoneCore
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
+
+#ifdef BUILD_LDAP
+	LinphoneLDAPContactProvider* ldap;
+#endif //BUILD_LDAP
 };
 
 

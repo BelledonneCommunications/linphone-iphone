@@ -2158,6 +2158,15 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch)
 BELLE_SIP_DECLARE_TYPES_END
 
+typedef unsigned int ContactSearchID;
+
+struct _LinphoneContactSearch;
+typedef struct _LinphoneContactSearch LinphoneContactSearch;
+
+typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friends, void* data );
+
+
+LINPHONE_PUBLIC LinphoneContactSearch* linphone_core_ldap_launch_search(LinphoneCore* lc, const char* predicate, ContactSearchCallback cb, void* userdata);
 
 #ifdef __cplusplus
 }

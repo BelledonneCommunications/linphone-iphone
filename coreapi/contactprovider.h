@@ -19,16 +19,13 @@
 
 /* LinphoneContactSearchRequest */
 
-typedef unsigned int ContactSearchID;
-
-typedef void (*ContactSearchCallback)( ContactSearchID id, MSList* friends, void* data );
-
-typedef struct {
+struct _LinphoneContactSearch{
+	belle_sip_object_t base;
 	ContactSearchID id;
 	char* predicate;
 	ContactSearchCallback cb;
 	void* data;
-} LinphoneContactSearch;
+};
 
 #define LINPHONE_CONTACT_SEARCH(obj) BELLE_SIP_CAST(obj,LinphoneContactSearch)
 BELLE_SIP_DECLARE_VPTR(LinphoneContactSearch)

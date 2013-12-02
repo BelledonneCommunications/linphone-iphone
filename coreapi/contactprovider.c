@@ -30,11 +30,13 @@ void linphone_contact_search_init(LinphoneContactSearch* obj,
 	obj->predicate = ms_strdup(predicate?predicate:"");
 	obj->cb   = cb;
 	obj->data = cb_data;
+	ms_message("LinphoneContactSearch@%p(id:%d, pred:%s, cb:%p, data:%p)",
+		obj, obj->id, obj->predicate, obj->cb, obj->data);
 }
 
 static void linphone_contact_search_destroy( LinphoneContactSearch* req) {
+	ms_message( "~LinphoneContactSearch(%p)", req);
 	if( req->predicate ) ms_free(req->predicate);
-	ms_free(req);
 }
 
 ContactSearchID linphone_contact_search_get_id(LinphoneContactSearch* obj)
@@ -49,7 +51,7 @@ const char*linphone_contact_search_get_predicate(LinphoneContactSearch* obj)
 
 void linphone_contact_search_invoke_cb(LinphoneContactSearch* req, MSList* friends)
 {
-	if( req->cb ) req->cb(req->id, friends, req->data);
+	if( req->cb ) req->cb(req, friends, req->data);
 }
 
 int linphone_contact_search_compare(const void* a, const void* b) {
