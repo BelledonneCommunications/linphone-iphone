@@ -25,29 +25,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/mediastream.h"
 #include "lpconfig.h"
 
+// stat
+#ifndef WIN32
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 static void register_failure(SalOp *op, SalError error, SalReason reason, const char *details);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
 	if (call->params.in_conference != call->current_params.in_conference) return SAL_MEDIA_DESCRIPTION_CHANGED;
 	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_CHANGED;
-	return sal_media_description_equals(oldmd, newmd);
+	if (call->localdesc_changed) ms_message("Local description has changed: %i", call->localdesc_changed);
+	return call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
 }
 
 void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
-	SalStreamDescription *old_audiodesc = NULL;
-	SalStreamDescription *old_videodesc = NULL;
 	SalStreamDescription *new_audiodesc = NULL;
 	SalStreamDescription *new_videodesc = NULL;
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < old_md->n_active_streams; i++) {
-		if (old_md->streams[i].type == SalAudio) {
-			old_audiodesc = &old_md->streams[i];
-		} else if (old_md->streams[i].type == SalVideo) {
-			old_videodesc = &old_md->streams[i];
-		}
-	}
 	for (i = 0; i < new_md->n_active_streams; i++) {
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
@@ -68,22 +67,9 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 		ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 		rtp_session_set_remote_addr_full(call->videostream->ms.session, rtp_addr, new_videodesc->rtp_port, rtcp_addr, new_videodesc->rtcp_port);
 	}
+#else
+	(void)new_videodesc;
 #endif
-
-	/* Copy address and port values from new_md to old_md since we will keep old_md as resultdesc */
-	strcpy(old_md->addr, new_md->addr);
-	if (old_audiodesc && new_audiodesc) {
-		strcpy(old_audiodesc->rtp_addr, new_audiodesc->rtp_addr);
-		strcpy(old_audiodesc->rtcp_addr, new_audiodesc->rtcp_addr);
-		old_audiodesc->rtp_port = new_audiodesc->rtp_port;
-		old_audiodesc->rtcp_port = new_audiodesc->rtcp_port;
-	}
-	if (old_videodesc && new_videodesc) {
-		strcpy(old_videodesc->rtp_addr, new_videodesc->rtp_addr);
-		strcpy(old_videodesc->rtcp_addr, new_videodesc->rtcp_addr);
-		old_videodesc->rtp_port = new_videodesc->rtp_port;
-		old_videodesc->rtcp_port = new_videodesc->rtcp_port;
-	}
 }
 
 void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md){
@@ -105,9 +91,6 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 				ms_message("Media descriptions are different, need to restart the streams.");
 			} else {
 				if (md_changed == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
-					/*as nothing has changed, keep the oldmd */
-					call->resultdesc=oldmd;
-					sal_media_description_unref(new_md);
 					if (call->all_muted){
 						ms_message("Early media finished, unmuting inputs...");
 						/*we were in early media, now we want to enable real media */
@@ -120,7 +103,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 #endif
 					}
 					ms_message("No need to restart streams, SDP is unchanged.");
-					return;
+					goto end;
 				}else {
 					if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED) {
 						ms_message("Network parameters have changed, update them.");
@@ -130,17 +113,13 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 						ms_message("Crypto parameters have changed, update them.");
 						linphone_call_update_crypto_parameters(call, oldmd, new_md);
 					}
-					call->resultdesc = oldmd;
-					sal_media_description_unref(new_md);
-					return;
+					goto end;
 				}
 			}
 		}
 		linphone_call_stop_media_streams (call);
 		linphone_call_init_media_streams (call);
 	}
-	if (oldmd) 
-		sal_media_description_unref(oldmd);
 	
 	if (new_md) {
 		bool_t all_muted=FALSE;
@@ -162,6 +141,10 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	if (call->state==LinphoneCallPausing && call->paused_by_app && ms_list_size(lc->calls)==1){
 		linphone_core_play_named_tone(lc,LinphoneToneCallOnHold);
 	}
+	end:
+	if (oldmd) 
+		sal_media_description_unref(oldmd);
+	
 }
 #if 0
 static bool_t is_duplicate_call(LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to){
@@ -901,6 +884,46 @@ static void ping_reply(SalOp *op){
 	}
 }
 
+static const char *get_client_cert_path(LinphoneCore *lc) {
+	static char cldir[200] = {0};
+	#ifdef HAVE_GETENV
+	if (!cldir[0]) {
+		static char default_path[200] = {0};
+		snprintf(default_path, sizeof(default_path), "%s%s", getenv("HOME"), "/linphone_certs");
+		snprintf(cldir, sizeof(cldir), "%s", lp_config_get_string(lc->config,"sip","client_certificates_dir", default_path));
+	}
+	#endif
+	return cldir;
+}
+static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
+		char chain_file[200];
+		char key_file[200];
+		const char *path = get_client_cert_path(lc);
+
+		snprintf(chain_file, sizeof(chain_file), "%s%s", path, "/chain.pem");
+
+		snprintf(key_file, sizeof(key_file), "%s%s", path, "/key.pem");
+
+#ifndef WIN32
+		{
+		// optinal check for files
+		struct stat st;
+		if (stat(key_file,&st)) {
+			ms_warning("No client certificate key found in %s", key_file);
+			return FALSE;
+		}
+		if (stat(chain_file,&st)) {
+			ms_warning("No client certificate chain found in %s", chain_file);
+			return FALSE;
+		}
+		}
+#endif
+
+		sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM );
+		sal_signing_key_parse_file(sai, key_file, "");
+		return sai->certificates && sai->key;
+}
+
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain);
 	if (ai) {
@@ -916,18 +939,25 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 }
 static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	if (fill_auth_info(lc,sai)) {
-		return TRUE;
-	} else {
-		if (lc->vtable.auth_info_requested) {
-			lc->vtable.auth_info_requested(lc,sai->realm,sai->username,sai->domain);
-			if (fill_auth_info(lc,sai)) {
-				return TRUE;
+	if (sai->mode == SalAuthModeHttpDigest) {
+		if (fill_auth_info(lc,sai)) {
+			return TRUE;
+		} else {
+			if (lc->vtable.auth_info_requested) {
+				lc->vtable.auth_info_requested(lc,sai->realm,sai->username,sai->domain);
+				if (fill_auth_info(lc,sai)) {
+					return TRUE;
+				}
 			}
+			return FALSE;
 		}
+	} else if (sai->mode == SalAuthModeTls) {
+		return fill_auth_info_with_client_certificate(lc,sai);
+	} else {
 		return FALSE;
 	}
 }
+
 static void notify_refer(SalOp *op, SalReferStatus status){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*) sal_op_get_user_pointer(op);

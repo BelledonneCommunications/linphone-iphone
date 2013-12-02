@@ -43,24 +43,34 @@ static MSWebCam *get_nowebcam_device(){
 }
 #endif
 
-static bool_t generate_b64_crypto_key(int key_length, char* key_out) {
+static bool_t generate_b64_crypto_key(int key_length, char* key_out, size_t key_out_size) {
 	int b64_size;
-	uint8_t* tmp = (uint8_t*) malloc(key_length);			
-	if (ortp_crypto_get_random(tmp, key_length)!=0) {
+	uint8_t* tmp = (uint8_t*) ms_malloc0(key_length);
+	if (sal_get_random_bytes(tmp, key_length)==NULL) {
 		ms_error("Failed to generate random key");
-		free(tmp);
+		ms_free(tmp);
 		return FALSE;
 	}
 	
 	b64_size = b64_encode((const char*)tmp, key_length, NULL, 0);
 	if (b64_size == 0) {
+		ms_error("Failed to get b64 result size");
+		ms_free(tmp);
+		return FALSE;
+	}
+	if (b64_size>=key_out_size){
+		ms_error("Insufficient room for writing base64 SRTP key");
+		ms_free(tmp);
+		return FALSE;
+	}
+	b64_size=b64_encode((const char*)tmp, key_length, key_out, key_out_size);
+	if (b64_size == 0) {
 		ms_error("Failed to b64 encode key");
-		free(tmp);
+		ms_free(tmp);
 		return FALSE;
 	}
 	key_out[b64_size] = '\0';
-	b64_encode((const char*)tmp, key_length, key_out, 40);
-	free(tmp);
+	ms_free(tmp);
 	return TRUE;
 }
 
@@ -293,17 +303,18 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 		if (md->streams[i].proto == SalProtoRtpSavp) {
 			if (keep_srtp_keys && old_md && old_md->streams[i].proto==SalProtoRtpSavp){
 				int j;
+				ms_message("Keeping same crypto keys.");
 				for(j=0;j<SAL_CRYPTO_ALGO_MAX;++j){
 					memcpy(&md->streams[i].crypto[j],&old_md->streams[i].crypto[j],sizeof(SalSrtpCryptoAlgo));
 				}
 			}else{
 				md->streams[i].crypto[0].tag = 1;
 				md->streams[i].crypto[0].algo = AES_128_SHA1_80;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key))
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[0].master_key, SAL_SRTP_KEY_SIZE))
 					md->streams[i].crypto[0].algo = 0;
 				md->streams[i].crypto[1].tag = 2;
 				md->streams[i].crypto[1].algo = AES_128_SHA1_32;
-				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key))
+				if (!generate_b64_crypto_key(30, md->streams[i].crypto[1].master_key, SAL_SRTP_KEY_SIZE))
 					md->streams[i].crypto[1].algo = 0;
 				md->streams[i].crypto[2].algo = 0;
 			}
@@ -322,7 +333,10 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 #endif  //BUILD_UPNP
 	linphone_address_destroy(addr);
 	call->localdesc=md;
-	if (old_md) sal_media_description_unref(old_md);
+	if (old_md){
+		call->localdesc_changed=sal_media_description_equals(md,old_md);
+		sal_media_description_unref(old_md);
+	}
 }
 
 static int find_port_offset(LinphoneCore *lc, SalStreamType type){
@@ -762,6 +776,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 static void linphone_call_destroy(LinphoneCall *obj)
 {
 	ms_message("Call [%p] freed.",obj);
+	linphone_call_stop_media_streams(obj);
 #ifdef BUILD_UPNP
 	linphone_call_delete_upnp_session(obj);
 #endif //BUILD_UPNP
@@ -1537,6 +1552,9 @@ static RtpProfile *make_profile(LinphoneCall *call, const SalMediaDescription *m
 	for(elem=desc->payloads;elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number;
+		/* make a copy of the payload type, so that we left the ones from the SalStreamDescription unchanged.
+		 If the SalStreamDescription is freed, this will have no impact on the running streams*/
+		pt=payload_type_clone(pt);
 
 		if ((pt->flags & PAYLOAD_TYPE_FLAG_CAN_SEND) && first) {
 			if (desc->type==SalAudio){
@@ -1925,7 +1943,6 @@ void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
 void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescription *old_md, SalMediaDescription *new_md) {
 	SalStreamDescription *old_stream;
 	SalStreamDescription *new_stream;
-	int i;
 
 	old_stream = sal_media_description_find_stream(old_md, SalProtoRtpSavp, SalAudio);
 	new_stream = sal_media_description_find_stream(new_md, SalProtoRtpSavp, SalAudio);
@@ -1939,11 +1956,6 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 			} else {
 				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
 				call->audiostream_encrypted = FALSE;
-			}
-			for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
-				old_stream->crypto[i].tag = new_stream->crypto[i].tag;
-				old_stream->crypto[i].algo = new_stream->crypto[i].algo;
-				strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
 			}
 		}
 	}
@@ -1961,11 +1973,6 @@ void linphone_call_update_crypto_parameters(LinphoneCall *call, SalMediaDescript
 			} else {
 				ms_warning("Failed to find local crypto algo with tag: %d", new_stream->crypto_local_tag);
 				call->videostream_encrypted = FALSE;
-			}
-			for (i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
-				old_stream->crypto[i].tag = new_stream->crypto[i].tag;
-				old_stream->crypto[i].algo = new_stream->crypto[i].algo;
-				strncpy(old_stream->crypto[i].master_key, new_stream->crypto[i].master_key, sizeof(old_stream->crypto[i].master_key) - 1);
 			}
 		}
 	}
@@ -2031,6 +2038,7 @@ void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		}
 		audio_stream_stop(call->audiostream);
 		call->audiostream=NULL;
+		call->current_params.audio_codec = NULL;
 	}
 }
 
@@ -2044,6 +2052,7 @@ void linphone_call_stop_video_stream(LinphoneCall *call) {
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		call->current_params.video_codec = NULL;
 	}
 #endif
 }
@@ -2056,12 +2065,10 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		ms_event_queue_skip(call->core->msevq);
 	}
 	if (call->audio_profile){
-		rtp_profile_clear_all(call->audio_profile);
 		rtp_profile_destroy(call->audio_profile);
 		call->audio_profile=NULL;
 	}
 	if (call->video_profile){
-		rtp_profile_clear_all(call->video_profile);
 		rtp_profile_destroy(call->video_profile);
 		call->video_profile=NULL;
 	}
@@ -2550,7 +2557,7 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
  * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * 
- * cx and cy are updated in return in case their coordinates were to excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
+ * cx and cy are updated in return in case their coordinates were too excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
 **/
 void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
 	VideoStream* vstream = call->videostream;

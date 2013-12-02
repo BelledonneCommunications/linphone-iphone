@@ -220,7 +220,7 @@ static void info_message_with_args(bool_t with_content) {
 	info=linphone_core_create_info_message(marie->lc);
 	linphone_info_message_add_header(info,"Weather","still bad");
 	if (with_content) {
-		LinphoneContent ct;
+		LinphoneContent ct={0};
 		ct.type="application";
 		ct.subtype="somexml";
 		ct.data=(void*)info_content;

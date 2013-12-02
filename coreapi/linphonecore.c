@@ -942,6 +942,7 @@ static void build_video_devices_table(LinphoneCore *lc){
 static void video_config_read(LinphoneCore *lc){
 #ifdef VIDEO_ENABLED
 	int capture, display, self_view;
+	int automatic_video=1;
 #endif
 	const char *str;	
 #ifdef VIDEO_ENABLED	
@@ -958,11 +959,14 @@ static void video_config_read(LinphoneCore *lc){
 		lp_config_get_string(lc->config,"video","size","cif"));
 
 #ifdef VIDEO_ENABLED
+#if defined(ANDROID) || defined(__ios)
+	automatic_video=0;
+#endif
 	capture=lp_config_get_int(lc->config,"video","capture",1);
 	display=lp_config_get_int(lc->config,"video","display",1);
 	self_view=lp_config_get_int(lc->config,"video","self_view",1);
-	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",1);
-	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",1);
+	vpol.automatically_initiate=lp_config_get_int(lc->config,"video","automatically_initiate",automatic_video);
+	vpol.automatically_accept=lp_config_get_int(lc->config,"video","automatically_accept",automatic_video);
 	linphone_core_enable_video_capture(lc, capture);
 	linphone_core_enable_video_display(lc, display);
 	linphone_core_enable_video_preview(lc,lp_config_get_int(lc->config,"video","show_local",0));
@@ -1889,6 +1893,13 @@ static int apply_transports(LinphoneCore *lc){
 }
 
 /**
+ * Returns TRUE if given transport type is supported by the library, FALSE otherwise.
+**/
+bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp){
+	return sal_transport_available(lc->sal,(SalTransport)tp);
+}
+
+/**
  * Sets the ports to be used for each of transport (UDP or TCP)
  *
  * A zero value port for a given transport means the transport
@@ -2275,8 +2286,8 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
 		enum_lookup_res_free(enumres);
 		return uri;
 	}
-	/* check if we have a "sip:" */
-	if (strstr(url,"sip:")==NULL){
+	/* check if we have a "sip:" or a "sips:" */
+	if ( (strstr(url,"sip:")==NULL) && (strstr(url,"sips:")==NULL) ){
 		/* this doesn't look like a true sip uri */
 		if (strchr(url,'@')!=NULL){
 			/* seems like sip: is missing !*/
@@ -2401,11 +2412,7 @@ static MSList *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneA
 		if (transport){
 			SalAddress *route=sal_address_new(NULL);
 			sal_address_set_domain(route,sal_address_get_domain((SalAddress*)dest));
-#ifdef USE_BELLESIP
 			sal_address_set_port(route,sal_address_get_port((SalAddress*)dest));
-#else
-			sal_address_set_port_int(route,sal_address_get_port_int((SalAddress*)dest));
-#endif
 			sal_address_set_transport_name(route,transport);
 			ret=ms_list_append(ret,route);
 		}
@@ -2852,6 +2859,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 	if (md){
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md)){
 			sal_call_decline(call->op,SalReasonMedia,NULL);
+			linphone_call_stop_media_streams(call);
 			linphone_core_del_call(lc,call);
 			linphone_call_unref(call);
 			return;
@@ -4896,8 +4904,10 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 
 /* unsets the video id for all calls (indeed it may be kept by filters or videostream object itself by paused calls)*/
 static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned long id){
+#ifdef VIDEO_ENABLED
 	LinphoneCall *call;
 	MSList *elem;
+#endif
 	
 	if (id!=0 && id!=-1) {
 		ms_error("Invalid use of unset_video_window_id()");
@@ -5495,7 +5505,7 @@ static void sound_config_uninit(LinphoneCore *lc)
 
 	if (config->local_ring) ms_free(config->local_ring);
 	if (config->remote_ring) ms_free(config->remote_ring);
-	ms_snd_card_manager_destroy();
+
 }
 
 static void video_config_uninit(LinphoneCore *lc)
@@ -5644,11 +5654,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->rec_file!=NULL){
 		ms_free(lc->rec_file);
 	}
-
+	if(lc->presence_model){
+		linphone_presence_model_unref(lc->presence_model);
+	}
 	linphone_core_free_payload_types(lc);
 	
 	linphone_core_message_storage_close(lc);
-	ortp_exit();
+	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 }
 

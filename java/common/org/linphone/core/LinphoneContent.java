@@ -18,10 +18,18 @@ public interface LinphoneContent {
 	 */
 	String getSubtype();
 	/**
+	 * Get the encoding applied to the data, can be null if no encoding.
+	**/
+	String getEncoding();
+	/**
 	 * Get the data as a string.
 	 * @return the data
 	 */
 	String getDataAsString();
+	/**
+	 * Get the data as a byte array.
+	**/
+	byte [] getData();
 	/**
 	 * Get the data size.
 	 * @return the data size.
@@ -39,8 +47,16 @@ public interface LinphoneContent {
 	 */
 	void setSubtype(String subtype);
 	/**
+	 * Set the encoding applied to the data, can be null if no encoding.
+	**/
+	void setEncoding(String encoding);
+	/**
 	 * Set the data, supplied as String.
 	 * @param data the data
 	 */
 	void setStringData(String data);
+	/**
+	 * Set the data, as a byte buffer.
+	**/
+	void setData(byte data[]);
 }

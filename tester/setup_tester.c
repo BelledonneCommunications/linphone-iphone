@@ -68,11 +68,35 @@ static void core_sip_transport_test(void) {
 	linphone_core_destroy(lc);
 }
 
+static void linphone_interpret_url_test()
+{
+	LinphoneCoreVTable v_table;
+	LinphoneCore* lc;
+	const char* sips_address = "sips:margaux@sip.linphone.org";
+	LinphoneAddress* address;
+	
+	memset ( &v_table,0,sizeof ( v_table ) );
+	lc = linphone_core_new ( &v_table,NULL,NULL,NULL );
+	CU_ASSERT_PTR_NOT_NULL_FATAL ( lc );
+
+	address = linphone_core_interpret_url(lc, sips_address);
+
+	CU_ASSERT_PTR_NOT_NULL_FATAL(address);
+	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_scheme(address), "sips");
+	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_username(address), "margaux");
+	CU_ASSERT_STRING_EQUAL_FATAL(linphone_address_get_domain(address), "sip.linphone.org");
+
+	linphone_address_destroy(address);
+
+	linphone_core_destroy ( lc );
+}
+
 
 test_t setup_tests[] = {
 	{ "Linphone Address", linphone_address_test },
 	{ "Linphone core init/uninit", core_init_test },
-	{ "Linphone random transport port",core_sip_transport_test}
+	{ "Linphone random transport port",core_sip_transport_test},
+	{ "Linphone interpret url", linphone_interpret_url_test }
 };
 
 test_suite_t setup_test_suite = {

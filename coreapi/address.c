@@ -112,11 +112,21 @@ void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
  * Sets the port number.
 **/
 void linphone_address_set_port(LinphoneAddress *uri, int port){
-#ifdef USE_BELLESIP
 	sal_address_set_port(uri,port);
-#else
-	sal_address_set_port_int(uri,port);
-#endif
+}
+
+/**
+ * Set a transport.
+**/
+void linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
+	sal_address_set_transport(uri,(SalTransport)tp);
+}
+
+/**
+ * Get the transport.
+**/
+LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri){
+	return (LinphoneTransportType)sal_address_get_transport(uri);
 }
 
 /**
@@ -140,6 +150,13 @@ char *linphone_address_as_string(const LinphoneAddress *u){
 **/
 char *linphone_address_as_string_uri_only(const LinphoneAddress *u){
 	return sal_address_as_string_uri_only(u);
+}
+
+/**
+ * Returns true if address refers to a secure location (sips)
+**/
+bool_t linphone_address_is_secure(const LinphoneAddress *uri){
+	return sal_address_is_secure(uri);
 }
 
 static bool_t strings_equals(const char *s1, const char *s2){

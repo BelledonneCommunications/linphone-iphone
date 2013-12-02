@@ -7,9 +7,11 @@ You need:
  - Macports: http://www.macports.org/
    Download and install macports using its user friendly installer.
 
-- In order to enable generation of bundle for multiple macos version it is recommended to edit /opt/local/etc/macports/macports.conf to add the 
-  following line:
- macosx_deployment_target 10.6
+- In order to enable generation of bundle for multiple macos version and 32 bit processors, it is recommended to:
+	1) edit /opt/local/etc/macports/macports.conf to add the following line:
+		macosx_deployment_target 10.6
+	2) edit /opt/local/etc/macports/variants.conf to add the following line:
+		+universal
 
 - Install build time dependencies
  $ sudo port install automake autoconf libtool intltool
@@ -34,7 +36,16 @@ You need:
 
 The softwares below need to be compiled manually. To ensure compatibility with multiple mac os version it is recommended to do:
  $ export MACOSX_DEPLOYMENT_TARGET=10.6 
+ $ export CFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
+ $ export OBJCFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
+ $ export CXXFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
+ $ export LDFLAGS="-arch i386 -arch x86_64 -mmacosx-version-min=10.5"
 
+- Install polarssl (encryption library used by belle-sip)
+ $ git clone git://git.linphone.org/polarssl.git -b linphone
+ $ cd polarssl
+ $ ./autogen.sh && ./configure --prefix=/opt/local && make
+ $ sudo make install
 
 - Install belle-sip (sip stack)
  $ git clone git://git.linphone.org/belle-sip.git

@@ -26,22 +26,22 @@ public class LinphoneEventImpl implements LinphoneEvent {
 		denySubscription(mNativePtr,reason.mValue);
 	}
 
-	private native int notify(long nativeptr, String type, String subtype, String data);
+	private native int notify(long nativeptr, String type, String subtype, byte data[], String encoding);
 	@Override
 	public void notify(LinphoneContent content) {
-		notify(mNativePtr,content.getType(),content.getSubtype(),content.getDataAsString());
+		notify(mNativePtr,content.getType(),content.getSubtype(),content.getData(),content.getEncoding());
 	}
 
-	private native int updateSubscribe(long nativePtr, String type, String subtype, String data);
+	private native int updateSubscribe(long nativePtr, String type, String subtype, byte data[], String encoding);
 	@Override
 	public void updateSubscribe(LinphoneContent content) {
-		updateSubscribe(mNativePtr,content.getType(), content.getSubtype(),content.getDataAsString());
+		updateSubscribe(mNativePtr,content.getType(), content.getSubtype(),content.getData(),content.getEncoding());
 	}
 
-	private native int updatePublish(long nativePtr, String type, String subtype, String data);
+	private native int updatePublish(long nativePtr, String type, String subtype, byte data[], String encoding);
 	@Override
 	public void updatePublish(LinphoneContent content) {
-		updatePublish(mNativePtr,content.getType(), content.getSubtype(),content.getDataAsString());
+		updatePublish(mNativePtr,content.getType(), content.getSubtype(),content.getData(),content.getEncoding());
 	}
 
 	private native int terminate(long nativePtr);

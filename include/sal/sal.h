@@ -85,12 +85,9 @@ const char *sal_address_get_display_name(const SalAddress* addr);
 const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
 const char *sal_address_get_username(const SalAddress *addr);
 const char *sal_address_get_domain(const SalAddress *addr);
-#ifdef USE_BELLESIP
 int sal_address_get_port(const SalAddress *addr);
-#else
-const char * sal_address_get_port(const SalAddress *addr);
-int sal_address_get_port_int(const SalAddress *addr);
-#endif
+bool_t sal_address_is_secure(const SalAddress *addr);
+
 SalTransport sal_address_get_transport(const SalAddress* addr);
 const char* sal_address_get_transport_name(const SalAddress* addr);
 
@@ -169,11 +166,13 @@ typedef struct SalIceRemoteCandidate {
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN 256
 #define SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN 256
 
+#define SAL_SRTP_KEY_SIZE 41
+
 typedef struct SalSrtpCryptoAlgo {
 	unsigned int tag;
 	enum ortp_srtp_crypto_suite_t algo;
 	/* 41= 40 max(key_length for all algo) + '\0' */
-	char master_key[41];
+	char master_key[SAL_SRTP_KEY_SIZE];
 } SalSrtpCryptoAlgo;
 
 #define SAL_CRYPTO_ALGO_MAX 4
@@ -331,6 +330,29 @@ typedef enum SalTextDeliveryStatus{
 	SalTextDeliveryFailed
 }SalTextDeliveryStatus;
 
+/**
+ * auth event mode
+ * */
+typedef enum SalAuthMode { /*this enum must be same as belle_sip_auth_mode_t*/
+	SalAuthModeHttpDigest, /** Digest authentication requested*/
+	SalAuthModeTls /** Client certificate requested*/
+}SalAuthMode;
+
+struct _SalCertificatesChain;
+typedef struct _SalCertificatesChain SalCertificatesChain;
+struct _SalSigningKey;
+typedef struct _SalSigningKey SalSigningKey;
+
+/**
+ * Format of certificate buffer
+ * */
+typedef enum SalCertificateRawFormat {/*this enum must be same as belle_sip_certificate_raw_format_t*/
+	SAL_CERTIFICATE_RAW_FORMAT_PEM, /** PEM format*/
+	SAL_CERTIFICATE_RAW_FORMAT_DER /** ASN.1 raw format*/
+}SalCertificateRawFormat;
+
+
+
 typedef struct SalAuthInfo{
 	char *username;
 	char *userid;
@@ -338,6 +360,9 @@ typedef struct SalAuthInfo{
 	char *realm;
 	char *domain;
 	char *ha1;
+	SalAuthMode mode;
+	SalSigningKey *key;
+	SalCertificatesChain *certificates;
 }SalAuthInfo;
 
 typedef struct SalBody{
@@ -424,10 +449,34 @@ SalAuthInfo* sal_auth_info_new();
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(SalAuthInfo* auth_info);
 LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
+SalAuthMode sal_auth_info_get_mode(const SalAuthInfo* auth_info);
+SalSigningKey *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info);
+SalCertificatesChain *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info);
+void sal_auth_info_set_mode(SalAuthInfo* auth_info, SalAuthMode mode);
+
+/** Parse a file containing either a certificate chain order in PEM format or a single DER cert
+ * @param auth_info structure where to store the result of parsing
+ * @param path path to certificate chain file
+ * @param format either PEM or DER
+ */
+void sal_certificates_chain_parse_file(SalAuthInfo* auth_info, const char* path, SalCertificateRawFormat format);
+
+/**
+ * Parse a file containing either a private or public rsa key
+ * @param auth_info structure where to store the result of parsing
+ * @param passwd password (optionnal)
+ */
+void sal_signing_key_parse_file(SalAuthInfo* auth_info, const char* path, const char *passwd);
+
+void sal_certificates_chain_delete(SalCertificatesChain *chain);
+void sal_signing_key_delete(SalSigningKey *key);
+
+
 
 void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_secure);
 int sal_unlisten_ports(Sal *ctx);
+int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);
 int sal_reset_transports(Sal *ctx);
 ortp_socket_t sal_get_socket(Sal *ctx);
@@ -594,8 +643,10 @@ void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t ipl
 
 typedef void (*SalResolverCallback)(void *data, const char *name, struct addrinfo *ai_list);
 
-unsigned long sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data);
-void sal_resolve_cancel(Sal *sal, unsigned long id);
+typedef struct SalResolverContext SalResolverContext;
+
+SalResolverContext * sal_resolve_a(Sal* sal, const char *name, int port, int family, SalResolverCallback cb, void *data);
+//void sal_resolve_cancel(Sal *sal, SalResolverContext *ctx);
 
 SalCustomHeader *sal_custom_header_append(SalCustomHeader *ch, const char *name, const char *value);
 const char *sal_custom_header_find(const SalCustomHeader *ch, const char *name);
@@ -636,4 +687,10 @@ LINPHONE_PUBLIC	void sal_set_dns_timeout(Sal* sal,int timeout);
 LINPHONE_PUBLIC int sal_get_dns_timeout(const Sal* sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);
 LINPHONE_PUBLIC const char *sal_get_dns_user_hosts_file(const Sal *sal);
+unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
+
+int sal_body_has_type(const SalBody *body, const char *type, const char *subtype);
+/*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
+int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
+
 #endif

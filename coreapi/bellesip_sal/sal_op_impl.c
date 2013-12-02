@@ -220,13 +220,13 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	belle_sip_uri_t* outbound_proxy=NULL;
 	belle_sip_header_contact_t* contact;
 	int result =-1;
+	belle_sip_uri_t *next_hop_uri=NULL;
 	
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 	
 	if (!op->dialog || belle_sip_dialog_get_state(op->dialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
 		const MSList *elem=sal_op_get_route_addresses(op);
-		belle_sip_uri_t *next_hop_uri;
 		const char *transport;
 		const char *method=belle_sip_request_get_method(request);
 		
@@ -234,24 +234,25 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
 			next_hop_uri=outbound_proxy;
 		}else{
-			next_hop_uri=belle_sip_request_get_uri(request);
+			next_hop_uri=(belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_request_get_uri(request));
 		}
 		transport=belle_sip_uri_get_transport_param(next_hop_uri);
 		if (transport==NULL){
 			/*compatibility mode: by default it should be udp as not explicitely set and if no udp listening point is available, then use
 			 * the first available transport*/
-			if (belle_sip_provider_get_listening_point(prov,"UDP")==0){
-				if (belle_sip_provider_get_listening_point(prov,"TCP")!=NULL){
-					transport="tcp";
-				}else if (belle_sip_provider_get_listening_point(prov,"TLS")!=NULL){
-					transport="tls";
+			if (!belle_sip_uri_is_secure(next_hop_uri)){
+				if (belle_sip_provider_get_listening_point(prov,"UDP")==0){
+					if (belle_sip_provider_get_listening_point(prov,"TCP")!=NULL){
+						transport="tcp";
+					}else if (belle_sip_provider_get_listening_point(prov,"TLS")!=NULL ){
+						transport="tls";
+					}
+				}
+				if (transport){
+					belle_sip_message("Transport is not specified, using %s because UDP is not available.",transport);
+					belle_sip_uri_set_transport_param(next_hop_uri,transport);
 				}
 			}
-			if (transport){
-				belle_sip_message("Transport is not specified, using %s because UDP is not available.",transport);
-				belle_sip_uri_set_transport_param(next_hop_uri,transport);
-			}
-			/* not really usefull belle_sip_uri_fix(next_hop_uri);*/
 		}
 		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport && 
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
@@ -279,7 +280,7 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 		/*hmm just in case we already have authentication param in cache*/
 		belle_sip_provider_add_authorization(op->base.root->prov,request,NULL,NULL);
 	}
-	result = belle_sip_client_transaction_send_request_to(client_transaction,outbound_proxy/*might be null*/);
+	result = belle_sip_client_transaction_send_request_to(client_transaction,next_hop_uri/*might be null*/);
 	
 	/*update call id if not set yet for this OP*/
 	if (result == 0 && !op->base.call_id) {

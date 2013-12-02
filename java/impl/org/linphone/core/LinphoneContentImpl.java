@@ -1,11 +1,14 @@
 package org.linphone.core;
 
 public class LinphoneContentImpl implements LinphoneContent {
-	private String mType, mSubtype, mData;
-	public LinphoneContentImpl(String type, String subtype, String data){
+	private String mType, mSubtype, mEncoding;
+	private byte[] mData;
+
+	public LinphoneContentImpl(String type, String subtype, byte data[], String encoding ){
 		mType=type;
 		mSubtype=subtype;
 		mData=data;
+		mEncoding=encoding;
 	}
 	
 	@Override
@@ -20,12 +23,12 @@ public class LinphoneContentImpl implements LinphoneContent {
 
 	@Override
 	public String getDataAsString() {
-		return mData;
+		return new String(mData);
 	}
 
 	@Override
 	public int getSize() {
-		return mData.length();
+		return mData.length;
 	}
 
 	@Override
@@ -40,7 +43,27 @@ public class LinphoneContentImpl implements LinphoneContent {
 
 	@Override
 	public void setStringData(String data) {
+		mData=data.getBytes();
+	}
+
+	@Override
+	public void setData(byte data[]){
 		mData=data;
+	}
+
+	@Override
+	public String getEncoding() {
+		return mEncoding;
+	}
+
+	@Override
+	public byte[] getData() {
+		return mData;
+	}
+
+	@Override
+	public void setEncoding(String encoding) {
+		mEncoding=encoding;
 	}
 
 }
