@@ -107,11 +107,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	lc =  linphone_core_new(v_table,NULL,*filepath!='\0' ? filepath : NULL,NULL);
 
 	sal_enable_test_features(lc->sal,TRUE);
-#ifndef ANDROID
 	snprintf(rootcapath, sizeof(rootcapath), "%s/certificates/cn/cacert.pem", path);
-#else
-	snprintf(rootcapath, sizeof(rootcapath), "%s/cacert.pem", path);
-#endif
 	linphone_core_set_root_ca(lc,rootcapath);
 
 	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
@@ -525,6 +521,7 @@ void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	jclass cls = (*env)->GetObjectClass(env, current_obj);
 	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
+	(*env)->DeleteLocalRef(env,javaString);
 }
 
 JNIEXPORT 
