@@ -331,7 +331,7 @@ void liblinphone_tester_uninit(void) {
 
 int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) {
 	int i;
-
+	int ret;
 	/* initialize the CUnit test registry */
 	if (CUE_SUCCESS != CU_initialize_registry())
 		return CU_get_error();
@@ -366,8 +366,9 @@ int liblinphone_tester_run_tests(const char *suite_name, const char *test_name) 
 		}
 	}
 
+	ret=CU_get_number_of_tests_failed()!=0;
 	CU_cleanup_registry();
-	return CU_get_error();
+	return ret;
 }
 
 #ifdef ANDROID
