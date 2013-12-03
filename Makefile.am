@@ -37,7 +37,7 @@ SDK_EXCLUDED= \
 
 GTK_PREFIX=/
 GTK_THEME=Outcrop
-GTK_FILELIST=gtk+-2.22.1.filelist
+GTK_FILELIST=gtk+-2.24.8.filelist
 GTK_FILELIST_PATH=$(abs_top_srcdir)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
 WINBINDIST_FILES=`cat $(abs_top_srcdir)/$(LINPHONEDEPS_FILELIST)`
@@ -101,31 +101,33 @@ endif
 other-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in $(WINBINDIST_FILES) ; do \
-		if test -d $$file; then \
+		if test -d $(prefix)/$$file; then \
 			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
-			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			cp $(prefix)/$$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done
-	cp /mingw/bin/libgcc_s*.dll \
-		/mingw/bin/libstdc++-6.dll \
-		/mingw/bin/libintl-8.dll \
-		/mingw/bin/libiconv-2.dll \
-		/mingw/bin/pthreadGC2.dll \
-		$(INSTALLDIR_WITH_PREFIX)/bin/.
+	if test -d /mingw/bin ; then \
+		cp /mingw/bin/libgcc_s*.dll \
+			/mingw/bin/libstdc++-6.dll \
+			/mingw/bin/libintl-8.dll \
+			/mingw/bin/libiconv-2.dll \
+			/mingw/bin/pthreadGC2.dll \
+			$(INSTALLDIR_WITH_PREFIX)/bin/. \
+	fi
 
 
 gtk-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in `cat $(GTK_FILELIST_PATH)` ; do \
-		if test -d $$file; then \
+		if test -d $(prefix)/$$file; then \
 			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
-			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			cp $(prefix)/$$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done && \
 	$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/share/themes && \
-	cp -rf share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
+	cp -rf $(prefix)/share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
 
 zip:
 	rm -f $(ZIPFILE)

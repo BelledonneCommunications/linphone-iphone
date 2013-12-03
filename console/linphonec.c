@@ -1075,7 +1075,7 @@ linphonec_initialize_readline()
 	rl_attempted_completion_function = linephonec_readline_completion;
 
 	/* printf("Readline initialized.\n"); */
-        setlinebuf(stdout);
+	setlinebuf(stdout);
 	return 0;
 }
 

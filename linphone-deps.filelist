@@ -1,4 +1,6 @@
 ./bin/avcodec-53.dll
+./bin/libspeex-1.dll
+./bin/libspeexdsp-1.dll
 ./bin/avutil-51.dll
 ./bin/libeay32.dll
 ./bin/ssleay32.dll

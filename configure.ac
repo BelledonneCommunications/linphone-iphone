@@ -23,6 +23,7 @@ LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to
 
 LIBLINPHONE_SO_VERSION=$LIBLINPHONE_SO_CURRENT:$LIBLINPHONE_SO_REVISION:$LIBLINPHONE_SO_AGE
 
+AC_SUBST(LIBLINPHONE_SO_CURRENT, $LIBLINPHONE_SO_CURRENT)
 AC_SUBST(LIBLINPHONE_SO_VERSION, $LIBLINPHONE_SO_VERSION)
 AC_SUBST(LINPHONE_VERSION)
 
@@ -35,6 +36,8 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 AC_SUBST([docdir], [${datadir}/doc])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR([m4])
+
+gl_LD_OUTPUT_DEF
 
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
@@ -61,6 +64,7 @@ case $target in
 		GUI_FLAGS="-mwindows"
 		CONSOLE_FLAGS="-mconsole"
 		mingw_found=yes
+		AC_CHECK_TOOL(WINDRES, windres)
 	;;
 	armv6-apple-darwin|armv7-apple-darwin|i386-apple-darwin|armv7s-apple-darwin)
 		CFLAGS="$CFLAGS -DTARGET_OS_IPHONE "
@@ -145,7 +149,7 @@ else
 fi
 
 GETTEXT_PACKAGE=linphone
-AC_SUBST(GETTEXT_PACKAGE)
+AC_SUBST([GETTEXT_PACKAGE])
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The name of the gettext package name])
 dnl AC_CHECK_LIB(intl,libintl_gettext)
 
@@ -821,6 +825,12 @@ else
                                         ],[foo=bar],[$CUNIT_LIBS])
 fi
 
+case "$target_os" in
+	*linux*)
+		# Eliminate -lstdc++ addition to postdeps for cross compiles.
+		postdeps_CXX=`echo " $postdeps_CXX " | sed 's, -lstdc++ ,,g'`
+	;;
+esac
 
 dnl ##################################################
 dnl # Check for doxygen
