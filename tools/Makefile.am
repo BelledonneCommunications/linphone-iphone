@@ -11,8 +11,7 @@ COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	$(LIBXML2_CFLAGS) 
 
-#-fpermissive to workaround a g++ bug on macos 32bit SDK.
-AM_CXXFLAGS=$(LIBXML2_CFLAGS) -fpermissive $(STRICT_OPTIONS) 
+AM_CXXFLAGS=$(LIBXML2_CFLAGS) $(STRICT_OPTIONS)
 
 EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
