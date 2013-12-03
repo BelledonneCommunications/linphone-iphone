@@ -169,7 +169,52 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 
 void test_cb( LinphoneContactSearch* req, MSList* friends, void* data )
 {
-	ms_message("LDAP Search CB received ");
+	ms_message("LDAP Search CB received:");
+	GtkEntry*    uribar = GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
+	GtkTreeModel* model = gtk_entry_completion_get_model(gtk_entry_get_completion(uribar));
+	GtkListStore*  list = GTK_LIST_STORE(model);
+	GtkTreeIter iter;
+
+
+
+	// clear completion list from previous LDAP completion suggestions
+	if (!gtk_tree_model_get_iter_first(model,&iter)) return;
+	do {
+		int type;
+		char* url;
+		bool_t valid = TRUE;
+		gtk_tree_model_get(model,&iter,1,&type,0,&url,-1);
+		if (type == COMPLETION_LDAP) {
+			ms_message("Removing entry for %s", url?url:"NULL");
+			valid = gtk_list_store_remove(list, &iter);
+		} else {
+			ms_message("Keep entry for %s (type %d)", url?url:"NULL", type);
+		}
+
+		if( url ) g_free(url);
+		if( !valid ) break;
+
+	}while(gtk_tree_model_iter_next(model,&iter));
+
+	while( friends ){
+		LinphoneFriend* lf = friends->data;
+		if( lf ) {
+			const LinphoneAddress* la = linphone_friend_get_address(lf);
+			if( la ){
+				char *addr = linphone_address_as_string(la);
+
+				if( addr ){
+					ms_message("Match: name=%s, addr=%s", linphone_friend_get_name(lf), addr);
+					gtk_list_store_insert_with_values(list, &iter, -1,
+													  0, addr,
+													  1, COMPLETION_LDAP, -1);
+					ms_free(addr);
+				}
+			}
+		}
+		friends = friends->next;
+	}
+	gtk_entry_completion_complete(gtk_entry_get_completion(uribar));
 }
 
 
@@ -177,7 +222,10 @@ void test_btn_clicked_cb(GtkWidget *button)
 {
 	ms_message("test_button_clicked_cb");
 	LinphoneCore* core = linphone_gtk_get_core();
-	linphone_core_ldap_launch_search(core, "mar", test_cb, (void*)0x12345678);
+	GtkWidget *uri_bar=linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar");
+	const gchar* pred = gtk_entry_buffer_get_text(gtk_entry_get_buffer((GtkEntry*)uri_bar));
+
+	linphone_core_ldap_launch_search(core, pred, test_cb, (void*)0x12345678);
 }
 
 void linphone_gtk_internet_kind_changed(GtkWidget *combo){

@@ -46,6 +46,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
 
+enum {
+	COMPLETION_HISTORY,
+	COMPLETION_LDAP
+};
+
 GdkPixbuf * create_pixbuf(const gchar *filename);
 GdkPixbufAnimation *create_pixbuf_animation(const gchar *filename);
 void add_pixmap_directory(const gchar *directory);

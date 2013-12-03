@@ -629,12 +629,28 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	return TRUE;
 }
 
+static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, const gchar *key, GtkTreeIter *iter, gpointer user_data){
+	char* address = NULL;
+	gboolean ret  = FALSE;
+	gchar *tmp= NULL;
+	gtk_tree_model_get(gtk_entry_completion_get_model(completion),iter,0,&address,-1);
+	ms_message("In matchFunc(): key=%s, addr=%s",key,address);
+
+	tmp = g_utf8_casefold(address,-1);
+	if (tmp){
+		if (strstr(tmp,key))
+			ret=TRUE;
+		g_free(tmp);
+	}
+	return ret;
+}
+
 static void load_uri_history(){
 	GtkEntry *uribar=GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
 	char key[20];
 	int i;
 	GtkEntryCompletion *gep=gtk_entry_completion_new();
-	GtkListStore *model=gtk_list_store_new(1,G_TYPE_STRING);
+	GtkListStore *model=gtk_list_store_new(2,G_TYPE_STRING,G_TYPE_INT);
 	for (i=0;;i++){
 		const char *uri;
 		snprintf(key,sizeof(key),"uri%i",i);
@@ -642,13 +658,14 @@ static void load_uri_history(){
 		if (uri!=NULL) {
 			GtkTreeIter iter;
 			gtk_list_store_append(model,&iter);
-			gtk_list_store_set(model,&iter,0,uri,-1);
+			gtk_list_store_set(model,&iter,0,uri,1,COMPLETION_HISTORY,-1);
 			if (i==0) gtk_entry_set_text(uribar,uri);
 		}
 		else break;
 	}
 	gtk_entry_completion_set_model(gep,GTK_TREE_MODEL(model));
 	gtk_entry_completion_set_text_column(gep,0);
+	gtk_entry_completion_set_match_func(gep,uribar_completion_matchfunc, NULL, NULL);
 	gtk_entry_set_completion(uribar,gep);
 }
 
@@ -697,7 +714,7 @@ static void completion_add_text(GtkEntry *entry, const char *text){
 	}
 	/* and prepend it on top of the list */
 	gtk_list_store_prepend(GTK_LIST_STORE(model),&iter);
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,text,-1);
+	gtk_list_store_set(GTK_LIST_STORE(model),&iter,0,text,1,COMPLETION_HISTORY,-1);
 	save_uri_history();
 }
 
