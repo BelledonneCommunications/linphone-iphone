@@ -82,6 +82,21 @@ endif
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
+if HAVE_LD_OUTPUT_DEF
+liblinphone_la_LDFLAGS += -Wl,--output-def,liblinphone-$(LIBLINPHONE_SO_CURRENT).def
+defexecdir = $(libdir)
+defexec_DATA = liblinphone-$(LIBLINPHONE_SO_CURRENT).def
+CLEANFILES = $(defexec_DATA)
+
+liblinphone-$(LIBLINPHONE_SO_CURRENT).def: liblinphone.la
+
+if BUILD_WIN32
+defexec_DATA += liblinphone-$(LIBLINPHONE_SO_CURRENT).lib
+liblinphone-$(LIBLINPHONE_SO_CURRENT).lib: liblinphone-$(LIBLINPHONE_SO_CURRENT).def liblinphone.la
+	$(DLLTOOL) --dllname liblinphone-$(LIBLINPHONE_SO_CURRENT).dll --input-def liblinphone-$(LIBLINPHONE_SO_CURRENT).def --output-lib $@ liblinphone.la
+endif
+endif
+
 liblinphone_la_LIBADD= \
 		$(SIPSTACK_LIBS) \
 		$(MEDIASTREAMER_LIBS) \
