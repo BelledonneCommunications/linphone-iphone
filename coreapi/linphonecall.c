@@ -2282,7 +2282,8 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as!=NULL) ? (media_stream_get_up_bw(as)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs!=NULL) ? (media_stream_get_down_bw(vs)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth=(vs!=NULL) ? (media_stream_get_up_bw(vs)*1e-3) : 0;
-	ms_message("bandwidth usage: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
+	ms_message("bandwidth usage for call [%p]: audio=[d=%.1f,u=%.1f] video=[d=%.1f,u=%.1f] kbit/sec",
+		call,
 		call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth,
 		call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth ,
 		call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth,

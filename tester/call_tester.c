@@ -103,7 +103,7 @@ static void check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee)
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
 
-	for (i=0; i<12 /*=6s*/; i++) {
+	for (i=0; i<24 /*=12s need at least one exchange of SR to maybe 10s*/; i++) {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
 				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
 				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
@@ -133,7 +133,11 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
 	bool_t result=FALSE;
-
+	char hellopath[256];
+	/*use playfile for callee to avoid locking on capture card*/
+	linphone_core_use_files (callee_mgr->lc,TRUE);
+	snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", liblinphone_tester_file_prefix);
+	linphone_core_set_play_file(callee_mgr->lc,hellopath);
 	if (!caller_params){
 		CU_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
 	}else{

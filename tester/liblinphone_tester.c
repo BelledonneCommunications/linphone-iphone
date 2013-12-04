@@ -96,6 +96,7 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	char ringbackpath[256]={0};
 	char rootcapath[256]={0};
 	char dnsuserhostspath[256]={0};
+	char nowebcampath[256]={0};
 	
 	if (path==NULL) path=".";
 
@@ -113,11 +114,13 @@ static LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* 
 	sprintf(dnsuserhostspath, "%s/%s", path, userhostsfile);
 	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
 
-	sprintf(ringpath, "%s/%s", path, "oldphone.wav");
-	sprintf(ringbackpath, "%s/%s", path, "ringback.wav");
+	snprintf(ringpath,sizeof(ringpath), "%s/sounds/oldphone.wav",path);
+	snprintf(ringbackpath,sizeof(ringbackpath), "%s/sounds/ringback.wav", path);
 	linphone_core_set_ring(lc, ringpath);
 	linphone_core_set_ringback(lc, ringbackpath);
 
+	snprintf(nowebcampath, sizeof(nowebcampath), "%s/images/nowebcamCIF.jpg", path);
+	linphone_core_set_static_picture(lc,nowebcampath);
 	return lc;
 }
 
